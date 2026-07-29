@@ -1,21 +1,25 @@
-// import 'package:flutter/material.dart';
-// class ResponsiveLayout extends StatelessWidget {
-//   final LocationRepository repository;
+import 'package:flutter/material.dart';
 
-//   const ResponsiveLayout({super.key});
-  
-//   @override
-//   Widget build(BuildContext context) {
-//     return LayoutBuilder(
-//       builder: (context, constraints) {
-//         if (constraints.maxWidth > 800) {
-//           return WebHomeScreen(repository: repository);
-//         } else {
-//           return MobileHomeScreen(repository: repository);
-//         }
-//       },
-//     );
-//   }
-// }
+class ResponsiveLayout extends StatelessWidget {
+  final Widget mobile;
+  final Widget web;
 
-class ResponsiveLayout {}
+  const ResponsiveLayout({
+    super.key,
+    required this.mobile,
+    required this.web,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth >= 800) {
+          return web;
+        } else {
+          return mobile;
+        }
+      },
+    );
+  }
+}
