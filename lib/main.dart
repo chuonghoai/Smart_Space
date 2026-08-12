@@ -5,8 +5,11 @@ import 'routes/app_router.dart';
 import 'core/localization/locale_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   runApp(const SmartSpaceStaffApp());
 }
 
@@ -19,7 +22,7 @@ class SmartSpaceStaffApp extends StatelessWidget {
       listenable: Listenable.merge([localeProvider, themeProvider]),
       builder: (context, child) {
         return MaterialApp.router(
-          title: 'SmartSpace Staff',
+          title: 'SmartSpace Admin',
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: themeProvider.themeMode,
@@ -30,7 +33,10 @@ class SmartSpaceStaffApp extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [Locale('vi'), Locale('en')],
+          supportedLocales: const [
+            Locale('vi'),
+            Locale('en'),
+          ],
           routerConfig: appRouter,
         );
       },

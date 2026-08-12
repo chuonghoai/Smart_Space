@@ -3,13 +3,13 @@ import 'package:smartspace_staff/core/api/pagination.dart';
 class ApiResponse<T> {
   final bool success;
   final String message;
-  final T data;
+  final T? data;
   final Pagination? pagination;
 
   ApiResponse({
     required this.success,
     required this.message,
-    required this.data,
+    this.data,
     this.pagination,
   });
 
@@ -18,9 +18,9 @@ class ApiResponse<T> {
     T Function(dynamic json) fromJsonT,
   ) {
     return ApiResponse(
-      success: json['success'] as bool,
-      message: json['message'] as String,
-      data: fromJsonT(json['data']),
+      success: json['success'] as bool? ?? false,
+      message: json['message'] as String? ?? '',
+      data: json['data'] != null ? fromJsonT(json['data']) : null,
       pagination: json['pagination'] != null
           ? Pagination.fromJson(json['pagination'] as Map<String, dynamic>)
           : null,
