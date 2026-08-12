@@ -1,0 +1,123 @@
+import 'package:smartspace_admin/core/api/api_response.dart';
+import 'package:smartspace_admin/core/constants/registration_status.dart';
+import 'package:smartspace_admin/core/constants/role_constant.dart';
+import 'package:smartspace_admin/core/storage/secured_storage.dart';
+import 'package:smartspace_admin/core/storage/shared_preferences.dart';
+import 'package:smartspace_admin/features/auth/models/token_model.dart';
+import 'package:smartspace_admin/features/auth/repositories/auth_repo.dart';
+import 'package:smartspace_admin/features/profile/models/user_model.dart';
+
+class AuthRepoMock implements AuthRepo {
+  @override
+  Future<ApiResponse<TokenModel>> login(
+    String email,
+    String password,
+    bool rememberMe,
+  ) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return ApiResponse(
+      success: true,
+      message: 'Đăng nhập thành công',
+      data: TokenModel(
+        accessToken: 'abcdanfnjkasnflasjnlfnsfl',
+        refreshToken: 'rfjklanjfklanjslf',
+        registrationStatus: ERegistrationStatus.completed,
+        userModel: UserModel(
+          id: 'abcd',
+          email: 'trinhthy333@gmail.com',
+          fullname: 'Hong Hac',
+          avatarUrl: 'https://ui-avatars.com/api/?name=TH',
+          role: ERole.client,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Future<ApiResponse<void>> logout() async {
+    await sharedPreferencesService.clear();
+    await securedStorageService.clear();
+    return ApiResponse(success: true, message: 'logout thanh cong', data: null);
+  }
+
+  @override
+  Future<ApiResponse<TokenModel>> refreshToken(String refreshToken) async {
+    return ApiResponse(
+      success: true,
+      message: 'cập nhật access token mới nhất',
+      data: TokenModel(
+        accessToken: 'abcdefeffefef',
+        refreshToken: 'refreshToken',
+      ),
+    );
+  }
+
+  // Step 1
+  @override
+  Future<ApiResponse<void>> sendOtpRegister(String email) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return ApiResponse(
+      success: true,
+      message: 'gửi mã otp thành công',
+      data: null,
+    );
+  }
+
+  // Step 2
+  @override
+  Future<ApiResponse<void>> verifyOtpRegister(String email, String otp) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return ApiResponse(
+      success: true,
+      message: 'xác thực mã otp thành công',
+      data: null,
+    );
+  }
+
+  // Step 3
+  @override
+  Future<ApiResponse<TokenModel>> register(
+    String email,
+    String password,
+    String confirmPassword,
+  ) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return ApiResponse(
+      success: true,
+      message: 'đăng ký thành công',
+      data: TokenModel(
+        accessToken: 'abcdanfnjkasnflasjnlfnsfl',
+        refreshToken: 'rfjklanjfklanjslf',
+        registrationStatus: ERegistrationStatus.incomplete,
+        userModel: UserModel(
+          id: 'abcd',
+          email: 'trinhthy333@gmail.com',
+          fullname: 'Hong Hac',
+          avatarUrl: 'https://ui-avatars.com/api/?name=TH',
+          role: ERole.client,
+        ),
+      ),
+    );
+  }
+
+  // Step 4
+  @override
+  Future<ApiResponse<UserModel>> updateProfile(
+    String fullName,
+    String phone,
+    String? avatarUrl,
+  ) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return ApiResponse(
+      success: true,
+      message: 'cập nhật thông tin thành công',
+      data: UserModel(
+        id: 'abcd',
+        email: 'trinhthy333@gmail.com',
+        fullname: fullName,
+        avatarUrl: 'https://ui-avatars.com/api/?name=TH',
+        role: ERole.client,
+      ),
+    );
+  }
+}

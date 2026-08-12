@@ -1,13 +1,13 @@
-enum Role {
+enum ERole {
   admin('admin'),
   staff('staff'),
-  user('user');
+  client('client');
 
   final String value;
-  const Role(this.value);
+  const ERole(this.value);
 
-  static Role? fromString(String val) {
-    for (var role in Role.values) {
+  static ERole? fromString(String val) {
+    for (var role in ERole.values) {
       if (role.value == val) return role;
     }
     return null;

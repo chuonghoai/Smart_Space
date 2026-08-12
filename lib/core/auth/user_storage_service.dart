@@ -1,9 +1,11 @@
+import 'package:smartspace_admin/features/profile/models/user_model.dart';
+
 import '../storage/secured_storage.dart';
 
 const String _userKey = 'user';
 
 class UserStorageService {
-  Future<void> saveUser(Map<String, dynamic> user) async {
+  Future<void> saveUser(UserModel user) async {
     await securedStorageService.set(_userKey, user);
   }
 

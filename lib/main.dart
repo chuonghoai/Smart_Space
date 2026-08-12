@@ -5,8 +5,11 @@ import 'routes/app_router.dart';
 import 'core/localization/locale_provider.dart';
 import 'core/theme/app_theme.dart';
 import 'core/theme/theme_provider.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await dotenv.load(fileName: ".env");
   runApp(const SmartSpaceAdminApp());
 }
 
@@ -30,7 +33,10 @@ class SmartSpaceAdminApp extends StatelessWidget {
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
           ],
-          supportedLocales: const [Locale('vi'), Locale('en')],
+          supportedLocales: const [
+            Locale('vi'),
+            Locale('en'),
+          ],
           routerConfig: appRouter,
         );
       },

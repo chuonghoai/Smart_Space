@@ -5,9 +5,9 @@ import '../interceptors/error_interceptor.dart';
 
 final Dio dioInstance = Dio(
   BaseOptions(
-    baseUrl: EnvConfig.apiUrl,
-    connectTimeout: const Duration(milliseconds: EnvConfig.apiTimeout),
-    receiveTimeout: const Duration(milliseconds: EnvConfig.apiTimeout),
+    baseUrl: EnvConfig.apiBaseUrl,
+    connectTimeout: Duration(milliseconds: EnvConfig.apiTimeout),
+    receiveTimeout: Duration(milliseconds: EnvConfig.apiTimeout),
     headers: {
       'Content-Type': 'application/json',
     },
