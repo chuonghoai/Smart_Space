@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import '../auth/token_service.dart';
+import '../auth/access_token_service.dart';
 
 class AuthInterceptor extends Interceptor {
   @override
@@ -7,7 +7,7 @@ class AuthInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
-    final token = await tokenService.getAccessToken();
+    final token = await accessTokenService.getAccessToken();
 
     if (token != null && token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';

@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class LocalStorageService {
+class SharedPreferencesService {
   Future<void> set(String key, dynamic value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString(key, jsonEncode(value));
@@ -27,4 +27,4 @@ class LocalStorageService {
   }
 }
 
-final localStorageService = LocalStorageService();
+final sharedPreferencesService = SharedPreferencesService();
