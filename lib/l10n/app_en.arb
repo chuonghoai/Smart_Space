@@ -1,0 +1,12 @@
+{
+  "@@locale": "en",
+  "appTitle": "My App",
+  "login": "Login",
+  "email": "Email",
+  "password": "Password",
+  "welcome": "Welcome",
+  "settings": "Settings",
+  "language": "Language",
+  "vietnamese": "Vietnamese",
+  "english": "English"
+}

@@ -1,9 +1,9 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:dio/dio.dart';
+import 'package:smartspace_admin/core/auth/refresh_token_service.dart';
+import 'package:smartspace_admin/core/storage/secured_storage.dart';
 import '../../routes/app_router.dart';
-import '../auth/token_service.dart';
-import '../auth/user_storage_service.dart';
 
 class ErrorInterceptor extends Interceptor {
   static final StreamController<String> unauthenticatedStream =
@@ -18,14 +18,13 @@ class ErrorInterceptor extends Interceptor {
     final requestUrl = err.requestOptions.path;
 
     if (status == 401 && !requestUrl.contains('/auth/login')) {
-      final currentUser = await userStorageService.getUser();
+      final refreshToken = await refreshTokenService.getRefreshToken();
       String reason = 'unauthorized';
-      if (currentUser != null) {
+      if (refreshToken != null) {
         reason = 'expired';
       }
 
-      await userStorageService.removeUser();
-      await tokenService.clear();
+      await securedStorageService.clear();
 
       unauthenticatedStream.add(reason);
       appRouter.go('/login');
@@ -33,10 +32,12 @@ class ErrorInterceptor extends Interceptor {
 
     if (status == 403) {
       log('Forbidden');
+      // TODO: add toast to notif error
     }
 
     if (status == 500) {
       log('Server error');
+      // TODO: add toast to notif error
     }
 
     super.onError(err, handler);
