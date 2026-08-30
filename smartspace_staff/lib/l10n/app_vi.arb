@@ -1,0 +1,12 @@
+{
+  "@@locale": "vi",
+  "appTitle": "Ứng dụng của tôi",
+  "login": "Đăng nhập",
+  "email": "Email",
+  "password": "Mật khẩu",
+  "welcome": "Chào mừng",
+  "settings": "Cài đặt",
+  "language": "Ngôn ngữ",
+  "vietnamese": "Tiếng Việt",
+  "english": "Tiếng Anh"
+}
