@@ -1,6 +1,7 @@
 package com.vn.smart_space.dto.response.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.vn.smart_space.consts.ERegistrationStatus;
 import com.vn.smart_space.consts.ERole;
 
 import lombok.AccessLevel;
@@ -30,5 +31,7 @@ public class UserResponse {
     String avatarUrl;
 
     ERole role;
+
+    ERegistrationStatus registrationStatus;
 
 }

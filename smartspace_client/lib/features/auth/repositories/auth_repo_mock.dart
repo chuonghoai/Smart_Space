@@ -73,6 +73,23 @@ class AuthRepoMock implements AuthRepo {
     );
   }
 
+  @override
+  Future<ApiResponse<UserModel>> getMe() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return ApiResponse(
+      success: true,
+      message: 'get me thành công',
+      data: UserModel(
+        id: 'abcd',
+        email: 'trinhthy333@gmail.com',
+        fullname: 'Hong Hac',
+        avatarUrl: 'https://ui-avatars.com/api/?name=TH&format=png',
+        role: ERole.client,
+        registrationStatus: ERegistrationStatus.completed,
+      ),
+    );
+  }
+
   // Step 1
   @override
   Future<ApiResponse<void>> sendOtpRegister(String email) async {

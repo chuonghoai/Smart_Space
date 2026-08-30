@@ -109,6 +109,12 @@ public class UserService implements IUserService {
     }
 
     @Override
+    public UserResponse getMe(String email) {
+        User user = findUserByEmail(email);
+        return userMapper.toUserResponse(user);
+    }
+
+    @Override
     @Transactional
     public void resetPassword(ResetPasswordRequest request) {
 

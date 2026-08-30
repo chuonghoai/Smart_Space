@@ -291,7 +291,8 @@ public class AuthenticationService implements IAuthenticationService {
 
     @Override
     public ERegistrationStatus determineRegistrationStatus(User user) {
-        if (user.getPhone() != null && !user.getPhone().isBlank()) {
+        if (user.getPhone() != null && !user.getPhone().isBlank()
+            && user.getFullName() != null && !user.getFullName().isBlank()) {
             return ERegistrationStatus.complete;
         }
         return ERegistrationStatus.incomplete;

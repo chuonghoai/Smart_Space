@@ -93,6 +93,20 @@ class AuthService {
     }
   }
 
+  /// Get current user profile and update local storage
+  Future<UserModel?> getMe() async {
+    try {
+      final response = await authRepo.getMe();
+      if (response.success && response.data != null) {
+        await userStorageService.saveUser(response.data!);
+        return response.data;
+      }
+    } catch (e) {
+      // Ignore errors, return null
+    }
+    return null;
+  }
+
   /// Register step 1: Send OTP with email
   Future<ApiResponse<void>> sendOtpRegister(String email) async {
     return await authRepo.sendOtpRegister(email);

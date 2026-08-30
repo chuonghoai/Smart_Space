@@ -23,6 +23,9 @@ public interface IUserService {
     // Find User By Email
     User findUserByEmail(String email);
 
+    // Get Me
+    UserResponse getMe(String email);
+
     // Update Profile
     UserResponse updateProfile(String email, UpdateProfileRequest request);
 

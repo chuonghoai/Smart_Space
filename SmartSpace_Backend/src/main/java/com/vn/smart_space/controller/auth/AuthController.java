@@ -3,6 +3,7 @@ package com.vn.smart_space.controller.auth;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -83,6 +84,13 @@ public class AuthController {
                 authenticationService.logout(token);
                 return ResponseEntity.ok(ApiResponse.success("Logout success", null));
 
+        }
+
+        // Get Me
+        @GetMapping("/me")
+        public ResponseEntity<ApiResponse> getMe(@AuthenticationPrincipal Jwt jwt) {
+                UserResponse userResponse = userService.getMe(jwt.getSubject());
+                return ResponseEntity.ok(ApiResponse.success("Get profile success", userResponse));
         }
 
         // 5. Register

@@ -41,6 +41,14 @@ class AuthRepoApi implements AuthRepo {
     );
   }
 
+  @override
+  Future<ApiResponse<UserModel>> getMe() async {
+    return await apiClient.get<UserModel>(
+      '/auth/me',
+      decoder: (json) => UserModel.fromJson(json),
+    );
+  }
+
   // Step 1
   @override
   Future<ApiResponse<void>> sendOtpRegister(String email) async {

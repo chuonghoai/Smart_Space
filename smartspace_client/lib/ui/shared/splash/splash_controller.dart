@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:smartspace_client/core/constants/registration_status.dart';
 import 'package:smartspace_client/core/auth/access_token_service.dart';
 import 'package:smartspace_client/core/auth/refresh_token_service.dart';
 import 'package:smartspace_client/core/auth/user_storage_service.dart';
@@ -39,16 +40,22 @@ class SplashController extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
 
-      // Access token valid -> /home
+      // Access token valid -> getMe -> /home or /complete-profile
       if (accessToken != null && accessToken.isNotEmpty) {
-        await locationService.getCurrentPosition(); // Request location permission if not granted yet
+        final currentUser = await authService.getMe();
+        await locationService.getCurrentPosition();
         if (!context.mounted) return;
-        connectionManager.startConnections();
-        context.go(RouterPath.home);
+
+        if (currentUser?.registrationStatus == ERegistrationStatus.completed) {
+          connectionManager.startConnections();
+          context.go(RouterPath.home);
+        } else {
+          context.go(RouterPath.completeProfile);
+        }
         return;
       }
 
-      // Access token invalid && refresh token valid -> refresh access token -> /home
+      // Access token invalid && refresh token valid -> refresh access token -> getMe -> /home or /complete-profile
       if (refreshToken != null && refreshToken.isNotEmpty) {
         bool success = false;
         try {
@@ -60,10 +67,17 @@ class SplashController extends ChangeNotifier {
         }
         if (!context.mounted) return;
         if (success) {
-          await locationService.getCurrentPosition(); // Request location permission if not granted yet
+          final currentUser = await authService.getMe();
+          await locationService.getCurrentPosition();
           if (!context.mounted) return;
-          connectionManager.startConnections();
-          context.go(RouterPath.home);
+
+          if (currentUser?.registrationStatus ==
+              ERegistrationStatus.completed) {
+            connectionManager.startConnections();
+            context.go(RouterPath.home);
+          } else {
+            context.go(RouterPath.completeProfile);
+          }
           return;
         }
       }
