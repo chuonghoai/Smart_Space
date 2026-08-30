@@ -44,4 +44,8 @@ class EnvConfig {
         return 'http://localhost:$port';
     }
   }
+
+  static String get googleClientId {
+    return dotenv.env['GOOGLE_CLIENT_ID'] ?? const String.fromEnvironment('GOOGLE_CLIENT_ID', defaultValue: '');
+  }
 }

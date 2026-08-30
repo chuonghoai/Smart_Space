@@ -58,7 +58,7 @@ class _SmartSpaceAppState extends State<SmartSpaceAdminApp> with WidgetsBindingO
       builder: (context, child) {
         return MaterialApp.router(
           scaffoldMessengerKey: scaffoldMessengerKey,
-          title: 'SmartSpace Client',
+          title: 'SmartSpace Admin',
           theme: AppTheme.lightTheme,
           darkTheme: AppTheme.darkTheme,
           themeMode: themeProvider.themeMode,

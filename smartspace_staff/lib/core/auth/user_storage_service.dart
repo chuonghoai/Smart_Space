@@ -9,11 +9,12 @@ class UserStorageService {
     await securedStorageService.set(_userKey, user);
   }
 
-  Future<Map<String, dynamic>?> getUser() async {
+  Future<UserModel?> getUser() async {
     final data = await securedStorageService.get<Map<String, dynamic>>(
       _userKey,
     );
-    return data;
+    if (data == null) return null;
+    return UserModel.fromJson(data);
   }
 
   Future<void> removeUser() async {

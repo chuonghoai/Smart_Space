@@ -26,7 +26,28 @@ class AuthRepoMock implements AuthRepo {
           id: 'abcd',
           email: 'trinhthy333@gmail.com',
           fullname: 'Hong Hac',
-          avatarUrl: 'https://ui-avatars.com/api/?name=TH',
+          avatarUrl: 'https://ui-avatars.com/api/?name=TH&format=png',
+          role: ERole.client,
+        ),
+      ),
+    );
+  }
+
+  @override
+  Future<ApiResponse<TokenModel>> loginGoogle(String idToken) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return ApiResponse(
+      success: true,
+      message: 'Đăng nhập Google thành công',
+      data: TokenModel(
+        accessToken: 'abcdanfnjkasnflasjnlfnsfl',
+        refreshToken: 'rfjklanjfklanjslf',
+        registrationStatus: ERegistrationStatus.completed,
+        userModel: UserModel(
+          id: 'abcd',
+          email: 'trinhthy333@gmail.com',
+          fullname: 'Hong Hac Google',
+          avatarUrl: 'https://ui-avatars.com/api/?name=TH&format=png',
           role: ERole.client,
         ),
       ),
@@ -48,6 +69,23 @@ class AuthRepoMock implements AuthRepo {
       data: TokenModel(
         accessToken: 'abcdefeffefef',
         refreshToken: 'refreshToken',
+      ),
+    );
+  }
+
+  @override
+  Future<ApiResponse<UserModel>> getMe() async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return ApiResponse(
+      success: true,
+      message: 'get me thành công',
+      data: UserModel(
+        id: 'abcd',
+        email: 'trinhthy333@gmail.com',
+        fullname: 'Hong Hac',
+        avatarUrl: 'https://ui-avatars.com/api/?name=TH&format=png',
+        role: ERole.client,
+        registrationStatus: ERegistrationStatus.completed,
       ),
     );
   }
@@ -93,7 +131,7 @@ class AuthRepoMock implements AuthRepo {
           id: 'abcd',
           email: 'trinhthy333@gmail.com',
           fullname: 'Hong Hac',
-          avatarUrl: 'https://ui-avatars.com/api/?name=TH',
+          avatarUrl: 'https://ui-avatars.com/api/?name=TH&format=png',
           role: ERole.client,
         ),
       ),
@@ -115,9 +153,50 @@ class AuthRepoMock implements AuthRepo {
         id: 'abcd',
         email: 'trinhthy333@gmail.com',
         fullname: fullName,
-        avatarUrl: 'https://ui-avatars.com/api/?name=TH',
+        avatarUrl: 'https://ui-avatars.com/api/?name=TH&format=png',
         role: ERole.client,
       ),
+    );
+  }
+
+  // Forgot password
+  @override
+  Future<ApiResponse<void>> sendOtpForgotPassword(String email) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return ApiResponse(
+      success: true,
+      message: 'gửi otp thành công',
+      data: null,
+    );
+  }
+
+  @override
+  Future<ApiResponse<void>> resetPassword(
+    String email,
+    String otp,
+    String newPassword,
+    String confirmPassword,
+  ) async {
+    await Future.delayed(Duration(milliseconds: 500));
+    return ApiResponse(
+      success: true,
+      message: 'Đặt lại mật khẩu thành công, vui lòng đăng nhập lại',
+      data: null,
+    );
+  }
+
+  // Change password
+  @override
+  Future<ApiResponse<void>> changePassword(
+    String currentPassword,
+    String newPassword,
+    String confirmPassword,
+  ) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return ApiResponse(
+      success: true,
+      message: 'Đổi mật khẩu thành công',
+      data: null,
     );
   }
 }
