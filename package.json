@@ -1,0 +1,24 @@
+{
+  "name": "smartspace-monorepo",
+  "version": "1.0.0",
+  "description": "Task runner for SmartSpace monorepo",
+  "private": true,
+  "scripts": {
+    "help": "node -e \"console.log('SmartSpace Development Commands\\n\\nDevelopment:\\n  npm run backend:dev\\n  npm run client:dev\\n  npm run admin:dev\\n  npm run staff:dev\\n\\nTesting:\\n  npm run backend:test\\n  npm run client:test\\n  npm run admin:test\\n  npm run staff:test\\n\\nBuild:\\n  npm run backend:build\\n  npm run client:build\\n  npm run admin:build\\n  npm run staff:build\\n\\nAnalyze:\\n  npm run client:analyze\\n  npm run admin:analyze\\n  npm run staff:analyze')\"",
+    "backend:dev": "cd SmartSpace_Backend && mvn spring-boot:run",
+    "client:dev": "cd smartspace_client && flutter run",
+    "admin:dev": "cd smartspace_admin && flutter run",
+    "staff:dev": "cd smartspace_staff && flutter run",
+    "backend:test": "cd SmartSpace_Backend && mvn test",
+    "client:test": "cd smartspace_client && flutter test",
+    "admin:test": "cd smartspace_admin && flutter test",
+    "staff:test": "cd smartspace_staff && flutter test",
+    "backend:build": "cd SmartSpace_Backend && mvn clean package -DskipTests",
+    "client:build": "cd smartspace_client && flutter build apk",
+    "admin:build": "cd smartspace_admin && flutter build apk",
+    "staff:build": "cd smartspace_staff && flutter build apk",
+    "client:analyze": "cd smartspace_client && flutter analyze",
+    "admin:analyze": "cd smartspace_admin && flutter analyze",
+    "staff:analyze": "cd smartspace_staff && flutter analyze"
+  }
+}
