@@ -1,11 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:smartspace_admin/core/constants/registration_status.dart';
 import 'package:smartspace_admin/core/auth/access_token_service.dart';
 import 'package:smartspace_admin/core/auth/refresh_token_service.dart';
 import 'package:smartspace_admin/core/auth/user_storage_service.dart';
 import 'package:smartspace_admin/core/interceptors/error_interceptor.dart';
 import 'package:smartspace_admin/core/localization/locale_provider.dart';
 import 'package:smartspace_admin/core/theme/theme_provider.dart';
+import 'package:smartspace_admin/features/auth/services/auth_service.dart';
+import 'package:smartspace_admin/routes/router_path.dart';
+import 'package:smartspace_admin/util/location_service.dart';
+import 'package:smartspace_admin/core/connection/connection_manager.dart';
 
 class SplashController extends ChangeNotifier {
   bool _isLoading = true;
@@ -35,21 +40,60 @@ class SplashController extends ChangeNotifier {
       _isLoading = false;
       notifyListeners();
 
+      // Access token valid -> getMe -> /home or /complete-profile
       if (accessToken != null && accessToken.isNotEmpty) {
-        context.go('/home');
+        final currentUser = await authService.getMe();
+        await locationService.getCurrentPosition();
+        if (!context.mounted) return;
+
+        if (currentUser?.registrationStatus == ERegistrationStatus.completed) {
+          connectionManager.startConnections();
+          context.go(RouterPath.home);
+        } else {
+          context.go(RouterPath.completeProfile);
+        }
         return;
       }
 
-      if ((refreshToken != null && refreshToken.isNotEmpty) || user != null) {
-        // TODO: Refresh access token
+      // Access token invalid && refresh token valid -> refresh access token -> getMe -> /home or /complete-profile
+      if (refreshToken != null && refreshToken.isNotEmpty) {
+        bool success = false;
+        try {
+          success = await authService
+              .refreshToken(refreshToken)
+              .timeout(const Duration(seconds: 3));
+        } catch (_) {
+          // Ignore timeout or other errors; fallback to login
+        }
+        if (!context.mounted) return;
+        if (success) {
+          final currentUser = await authService.getMe();
+          await locationService.getCurrentPosition();
+          if (!context.mounted) return;
+
+          if (currentUser?.registrationStatus ==
+              ERegistrationStatus.completed) {
+            connectionManager.startConnections();
+            context.go(RouterPath.home);
+          } else {
+            context.go(RouterPath.completeProfile);
+          }
+          return;
+        }
+      }
+
+      // AT, RT invalid && user valid -> logout -> /login
+      if (user != null) {
+        await authService.logout();
+        if (!context.mounted) return;
         ErrorInterceptor.unauthenticatedStream.add('expired');
-        context.go('/login');
+        context.go(RouterPath.login);
         return;
       }
 
-      // No session data at all -> unauthorized
+      // No session data at all -> unauthorized -> /login
       ErrorInterceptor.unauthenticatedStream.add('unauthorized');
-      context.go('/login');
+      context.go(RouterPath.login);
     } catch (e) {
       _isLoading = false;
       _errorMessage = e.toString();

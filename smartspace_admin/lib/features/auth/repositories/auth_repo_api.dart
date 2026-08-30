@@ -19,6 +19,15 @@ class AuthRepoApi implements AuthRepo {
   }
 
   @override
+  Future<ApiResponse<TokenModel>> loginGoogle(String idToken) async {
+    return await apiClient.post<TokenModel>(
+      '/auth/login/google',
+      data: {'idToken': idToken},
+      decoder: (json) => TokenModel.fromJson(json),
+    );
+  }
+
+  @override
   Future<ApiResponse<void>> logout() {
     return apiClient.post<void>('/auth/logout');
   }
@@ -29,6 +38,14 @@ class AuthRepoApi implements AuthRepo {
       '/auth/refresh-token',
       data: {'refresh_token': refreshToken},
       decoder: (json) => TokenModel.fromJson(json),
+    );
+  }
+
+  @override
+  Future<ApiResponse<UserModel>> getMe() async {
+    return await apiClient.get<UserModel>(
+      '/auth/me',
+      decoder: (json) => UserModel.fromJson(json),
     );
   }
 
@@ -80,6 +97,50 @@ class AuthRepoApi implements AuthRepo {
       '/auth/update-profile',
       data: {'fullName': fullName, 'phone': phone, 'avatarUrl': avatarUrl},
       decoder: (json) => UserModel.fromJson(json),
+    );
+  }
+
+  // Forgot password
+  @override
+  Future<ApiResponse<void>> sendOtpForgotPassword(String email) async {
+    return await apiClient.post<void>(
+      '/auth/send-otp-forgot-password',
+      data: {'email': email},
+    );
+  }
+
+  @override
+  Future<ApiResponse<void>> resetPassword(
+    String email,
+    String otp,
+    String newPassword,
+    String confirmPassword,
+  ) async {
+    return await apiClient.post<void>(
+      '/auth/reset-password',
+      data: {
+        'email': email,
+        'otp': otp,
+        'new_password': newPassword,
+        'confirm_password': confirmPassword,
+      },
+    );
+  }
+
+  // Đổi mật khẩu
+  @override
+  Future<ApiResponse<void>> changePassword(
+    String currentPassword,
+    String newPassword,
+    String confirmPassword,
+  ) async {
+    return await apiClient.put<void>(
+      '/auth/change-password',
+      data: {
+        'currentPassword': currentPassword,
+        'newPassword': newPassword,
+        'confirmPassword': confirmPassword,
+      },
     );
   }
 }

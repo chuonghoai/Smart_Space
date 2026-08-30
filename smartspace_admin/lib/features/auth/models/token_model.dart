@@ -26,4 +26,13 @@ class TokenModel {
           : null,
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'access_token': accessToken,
+      'refresh_token': refreshToken,
+      'registration_status': registrationStatus?.value,
+      'user': userModel?.toJson(),
+    };
+  }
 }

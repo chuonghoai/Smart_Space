@@ -18,7 +18,7 @@ class ThemeProvider extends ChangeNotifier {
 
   Future<void> _loadThemeMode() async {
     final savedMode = await sharedPreferencesService.get<String>(_themeModeKey);
-    
+
     if (savedMode != null) {
       switch (savedMode) {
         case 'light':
@@ -33,7 +33,7 @@ class ThemeProvider extends ChangeNotifier {
           break;
       }
     }
-    
+
     _isInitialized = true;
     notifyListeners();
   }
