@@ -3,6 +3,7 @@ import 'package:smartspace_client/core/constants/registration_status.dart';
 import 'package:smartspace_client/core/constants/role_constant.dart';
 import 'package:smartspace_client/core/storage/secured_storage.dart';
 import 'package:smartspace_client/core/storage/shared_preferences.dart';
+import 'package:smartspace_client/features/auth/models/DeviceSessionModel.dart';
 import 'package:smartspace_client/features/auth/models/token_model.dart';
 import 'package:smartspace_client/features/auth/repositories/auth_repo.dart';
 import 'package:smartspace_client/features/profile/models/user_model.dart';
@@ -13,6 +14,9 @@ class AuthRepoMock implements AuthRepo {
     String email,
     String password,
     bool rememberMe,
+    String deviceId,
+    String deviceName,
+    String platform,
   ) async {
     await Future.delayed(const Duration(milliseconds: 500));
     return ApiResponse(
@@ -34,7 +38,12 @@ class AuthRepoMock implements AuthRepo {
   }
 
   @override
-  Future<ApiResponse<TokenModel>> loginGoogle(String idToken) async {
+  Future<ApiResponse<TokenModel>> loginGoogle(
+    String idToken,
+    String deviceId,
+    String deviceName,
+    String platform,
+  ) async {
     await Future.delayed(const Duration(milliseconds: 500));
     return ApiResponse(
       success: true,
@@ -118,6 +127,9 @@ class AuthRepoMock implements AuthRepo {
     String email,
     String password,
     String confirmPassword,
+    String deviceId,
+    String deviceName,
+    String platform,
   ) async {
     await Future.delayed(const Duration(milliseconds: 500));
     return ApiResponse(
@@ -198,5 +210,61 @@ class AuthRepoMock implements AuthRepo {
       message: 'Đổi mật khẩu thành công',
       data: null,
     );
+  }
+
+  // Session Management
+  @override
+  Future<ApiResponse<List<DeviceSessionModel>>> getActiveSessions(
+    String currentDeviceId,
+  ) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return ApiResponse(
+      success: true,
+      message: '',
+      data: [
+        DeviceSessionModel(
+          sessionId: currentDeviceId,
+          deviceName: 'Samsung Galaxy S24',
+          platform: 'android',
+          ipAddress: '192.168.1.10',
+          isCurrentDevice: true,
+          lastActiveAt: DateTime.now().millisecondsSinceEpoch,
+        ),
+        DeviceSessionModel(
+          sessionId: 'dev-002',
+          deviceName: 'Chrome trên Windows 11',
+          platform: 'web',
+          ipAddress: '118.69.45.12',
+          isCurrentDevice: false,
+          lastActiveAt: DateTime.now()
+              .subtract(const Duration(hours: 2))
+              .millisecondsSinceEpoch,
+        ),
+        DeviceSessionModel(
+          sessionId: 'dev-003',
+          deviceName: 'iPhone 15 Pro',
+          platform: 'ios',
+          ipAddress: '10.0.0.5',
+          isCurrentDevice: false,
+          lastActiveAt: DateTime.now()
+              .subtract(const Duration(days: 1))
+              .millisecondsSinceEpoch,
+        ),
+      ],
+    );
+  }
+
+  @override
+  Future<ApiResponse<void>> revokeSession(String deviceId) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return ApiResponse(success: true, message: '', data: null);
+  }
+
+  @override
+  Future<ApiResponse<void>> revokeAllOtherSessions(
+    String currentDeviceId,
+  ) async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    return ApiResponse(success: true, message: '', data: null);
   }
 }

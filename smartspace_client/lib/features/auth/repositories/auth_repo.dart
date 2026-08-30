@@ -1,4 +1,5 @@
 import 'package:smartspace_client/core/api/api_response.dart';
+import 'package:smartspace_client/features/auth/models/DeviceSessionModel.dart';
 import 'package:smartspace_client/features/auth/models/token_model.dart';
 import 'package:smartspace_client/features/profile/models/user_model.dart';
 
@@ -7,9 +8,17 @@ abstract class AuthRepo {
     String email,
     String password,
     bool rememberMe,
+    String deviceId,
+    String deviceName,
+    String platform,
   );
 
-  Future<ApiResponse<TokenModel>> loginGoogle(String idToken);
+  Future<ApiResponse<TokenModel>> loginGoogle(
+    String idToken,
+    String deviceId,
+    String deviceName,
+    String platform,
+  );
 
   // Step 1: Nhập email, nhận OTP
   Future<ApiResponse<void>> sendOtpRegister(String email);
@@ -20,6 +29,9 @@ abstract class AuthRepo {
     String email,
     String password,
     String confirmPassword,
+    String deviceId,
+    String deviceName,
+    String platform,
   );
   // Step 4: Bổ sung thông tin (Nếu user thoát giữa chừng, tài khoản vẫn tồn tại và có thể đăng nhập)
   Future<ApiResponse<UserModel>> updateProfile(
@@ -47,4 +59,11 @@ abstract class AuthRepo {
     String newPassword,
     String confirmPassword,
   );
+
+  // Session Management
+  Future<ApiResponse<List<DeviceSessionModel>>> getActiveSessions(
+    String currentDeviceId,
+  );
+  Future<ApiResponse<void>> revokeSession(String deviceId);
+  Future<ApiResponse<void>> revokeAllOtherSessions(String currentDeviceId);
 }

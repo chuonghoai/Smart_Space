@@ -8,7 +8,9 @@ import com.vn.smart_space.dto.request.auth.LoginRequest;
 import com.vn.smart_space.dto.request.auth.RefreshTokenRequest;
 import com.vn.smart_space.dto.response.IntrospectResponse;
 import com.vn.smart_space.dto.response.auth.LoginResponse;
+import com.vn.smart_space.dto.response.auth.SessionResponse;
 import com.vn.smart_space.model.User;
+import java.util.List;
 
 public interface IAuthenticationService {
 
@@ -27,6 +29,11 @@ public interface IAuthenticationService {
     // Logout
     void logout(String token);
 
+    // Session Management
+    List<SessionResponse> getActiveSessions(String userId, String currentDeviceId);
+    void revokeSession(String userId, String deviceId);
+    void revokeAllOtherSessions(String userId, String currentDeviceId);
+
     // OTP for Registration
     void sendOtpRegister(String email);
 
@@ -37,7 +44,7 @@ public interface IAuthenticationService {
 
     void verifyOtpForgotPassword(String otpKey, String otp);
 
-    void saveRefreshTokenToRedis(String userId, TokenPayload refreshToken);
+    void saveRefreshTokenToRedis(String userId, TokenPayload refreshToken, String deviceId, String deviceName, String platform, String ipAddress);
 
     ERegistrationStatus determineRegistrationStatus(User user);
 

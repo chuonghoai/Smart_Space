@@ -41,7 +41,7 @@ public class JwtService implements IJwtService {
     private final InvalidatedTokenRepository invalidatedTokenRepository;
 
     @Override
-    public TokenPayload generateAccessToken(User user) {
+    public TokenPayload generateAccessToken(User user, String deviceId) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         Date issueTime = new Date();
@@ -58,6 +58,7 @@ public class JwtService implements IJwtService {
                 .jwtID(jwtId)
                 .claim("scope", buildScope(user))
                 .claim("userId", user.getId())
+                .claim("deviceId", deviceId)
                 .claim("tokenType", "access")
                 .build();
 

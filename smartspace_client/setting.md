@@ -1,48 +1,36 @@
-# Yêu cầu thiết kế UI/UX: Màn hình Đổi mật khẩu (Change Password)
+# Yêu cầu thiết kế UI/UX: Màn hình Quản lý thiết bị (Manage Devices / Active Sessions)
 
-**Nền tảng:** Mobile App (iOS / Android)
-**Chủ đề (Theme):** Sáng (Light mode), tối giản, phông nền trắng, phần header có hoa văn mờ.
+**Nền tảng:** Mobile App (Môi trường Flutter)
+**Chủ đề (Theme):** Sáng (Light mode), hiện đại, tối giản, các thành phần được phân chia rõ ràng bằng đường viền mỏng hoặc nền dạng thẻ (card) bo góc nhẹ.
 
-## 1. Phần Header (Tiêu đề và Điều hướng)
+## 1. Phần Header (App Bar)
 
-- **Background Header:** Có một dải hoa văn (pattern) mờ dạng sóng cong ở phía trên cùng, tông màu vàng/cam nhạt, gradient nhạt dần xuống dưới.
-- **Nút Back (Quay lại):** Nằm ở góc trên bên trái, icon mũi tên hướng sang trái, màu đen.
-- **Tiêu đề trang:** "Đổi mật khẩu" (Căn trái, ngay dưới nút Back, chữ to, in đậm, màu đen).
+- **Nút Back (Quay lại):** Nằm ở góc trên bên trái.
+- **Tiêu đề trang:** "Quản lý thiết bị" (Căn giữa hoặc căn trái, chữ đậm, rõ nét).
 
-## 2. Phần Body (Form nhập liệu)
+## 2. Phần Body (Danh sách Thiết bị đang đăng nhập)
 
-Bao gồm 3 ô nhập liệu (Input field). Mỗi ô nhập liệu bao gồm:
+Hiển thị một danh sách (ListView) các thiết bị có phiên đăng nhập hợp lệ. Phía trên cùng có tiêu đề nhóm: **"Thiết bị đã đăng nhập"** (in đậm).
 
-- **Label (Tiêu đề ô):** Căn trái, chữ màu đen, in đậm nhẹ. Theo sau là **dấu sao màu đỏ (\*)** biểu thị trường bắt buộc.
-- **Input Box (Ô nhập liệu):**
-  - Viền (Border) màu xám nhạt, bo góc nhẹ (rounded corners).
-  - Text placeholder (Văn bản gợi ý): "Nhập thông tin", màu xám nhạt.
-  - Icon bên phải (Right Icon): Icon con mắt bị gạch chéo (ẩn mật khẩu), màu xám.
+### 2.1. Thiết bị hiện tại (This Device)
 
-### Chi tiết các ô nhập liệu:
+Cần được làm nổi bật để người dùng nhận biết đây là thiết bị họ đang cầm trên tay.
 
-1. **Ô 1:**
-   - Label: `Mật khẩu hiện tại *`
-2. **Ô 2:**
-   - Label: `Mật khẩu mới *`
-3. **Ô 3:**
-   - Label: `Nhập lại mật khẩu mới *`
+- **Header thẻ:** Có dòng chữ nhỏ màu xanh lá "Thiết bị này" và icon checkmark (✓) màu xanh lá ở góc phải.
+- **Icon thiết bị:** Biểu tượng điện thoại di động (📱) nằm bên trái.
+- **Thông tin chi tiết (nằm giữa):**
+  - Tên thiết bị: VD "iPhone 15 Pro Max" (Chữ màu đen, in đậm).
+  - Vị trí: VD "Hồ Chí Minh, Việt Nam" (Chữ màu xám, kích thước nhỏ hơn).
+  - Trạng thái: Một chấm tròn nhỏ màu xanh lá cây + text "Đang hoạt động" (Active now).
+- **Action:** KHÔNG có nút đăng xuất ở thiết bị này.
 
-## 3. Phần Hướng dẫn/Yêu cầu mật khẩu
+### 2.2. Các thiết bị khác (Other Devices)
 
-Danh sách các điều kiện để tạo mật khẩu hợp lệ, nằm dưới ô nhập liệu thứ 3:
+Nằm dưới thiết bị hiện tại, ngăn cách bằng đường viền mỏng (divider).
 
-- Trình bày dạng danh sách có dấu check (dấu tích ✓) đầu dòng.
-- Dấu check mảnh, màu đen.
-- Text màu đen, kích thước chữ nhỏ hơn label.
-- **Nội dung:**
-  - ✓ Mật khẩu phải từ 8 đến 20 ký tự
-  - ✓ Bao gồm số, chữ viết hoa, chữ viết thường
-  - ✓ Bao gồm ít nhất một ký tự đặc biệt !@#$^()\_
-
-## 4. Phần Footer (Nút Hành động)
-
-- **Nút "Xác nhận" (Confirm):**
-  - Nút to, bo góc, trải dài toàn màn hình (có margin 2 bên).
-  - Đặt cố định (fixed) ở dưới cùng màn hình (trên thanh home indicator).
-  - Màu sắc: Nền màu đỏ đậm (Red), chữ màu trắng, in đậm.
+- **Icon thiết bị:** Biểu tượng máy tính (💻) cho trình duyệt web hoặc điện thoại cho mobile app.
+- **Thông tin chi tiết (nằm giữa):**
+  - Tên thiết bị/Trình duyệt: VD "Chrome trên Windows 11" (Chữ màu đen, in đậm).
+  - Vị trí: VD "Hà Nội, Việt Nam" (Chữ màu xám).
+  - Thời gian: VD "Hoạt động lần cuối lúc 10:30 AM" (Chữ màu xám).
+- **Action (Nút Đăng xuất đơn lẻ):** Nằm ở cạnh phải của mỗi dòng thiết bị. Nút nhỏ, viền màu đỏ, chữ màu đỏ "Đăng xuất" (Outline button).

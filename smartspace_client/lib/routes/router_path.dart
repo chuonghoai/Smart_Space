@@ -9,4 +9,5 @@ class RouterPath {
   static const String forgotPassword = '/forgot-password';
   static const String settings = '/settings';
   static const String changePassword = '/change-password';
+  static const String manageDevices = '/manage-devices';
 }

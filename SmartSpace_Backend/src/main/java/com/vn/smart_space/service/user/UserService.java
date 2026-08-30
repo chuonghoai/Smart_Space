@@ -81,12 +81,18 @@ public class UserService implements IUserService {
         userRepository.save(user);
 
         // Login
-        TokenPayload accessToken = jwtService.generateAccessToken(user);
+        TokenPayload accessToken = jwtService.generateAccessToken(user, request.getDeviceId());
 
         boolean rememberMe = Boolean.TRUE.equals(request.getRememberMe());
         TokenPayload refreshToken = jwtService.generateRefreshToken(user, rememberMe);
 
-        authenticationService.saveRefreshTokenToRedis(user.getId(), refreshToken);
+        authenticationService.saveRefreshTokenToRedis(
+            user.getId(), refreshToken,
+            request.getDeviceId(),
+            request.getDeviceName(),
+            request.getPlatform(),
+            request.getIpAddress()
+        );
 
         return LoginResponse.builder()
                 .accessToken(accessToken.getToken())

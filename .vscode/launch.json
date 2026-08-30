@@ -1,0 +1,14 @@
+{
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Spring Boot-SmartSpaceApplication<SmartSpace>",
+      "request": "launch",
+      "cwd": "${workspaceFolder}",
+      "mainClass": "com.vn.smart_space.SmartSpaceApplication",
+      "projectName": "SmartSpace",
+      "args": "",
+      "envFile": "${workspaceFolder}/.env"
+    }
+  ]
+}

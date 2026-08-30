@@ -142,5 +142,19 @@
   "changePasswordFailed": "Đổi mật khẩu thất bại",
   "passwordReqLength": "Mật khẩu phải từ 8 đến 20 ký tự",
   "passwordReqMixed": "Bao gồm số, chữ viết hoa, chữ viết thường",
-  "passwordReqSpecial": "Bao gồm ít nhất một ký tự đặc biệt !@#$^()_"
+  "passwordReqSpecial": "Bao gồm ít nhất một ký tự đặc biệt !@#$^()_",
+
+  "loggedInDevices": "Thiết bị đã đăng nhập",
+  "thisDevice": "Thiết bị này",
+  "activeNow": "Đang hoạt động",
+  "logoutDevice": "Đăng xuất",
+  "logoutDeviceConfirmTitle": "Đăng xuất khỏi thiết bị?",
+  "logoutDeviceConfirmMessage": "Phiên đăng nhập trên \"{deviceName}\" sẽ bị kết thúc.",
+  "@logoutDeviceConfirmMessage": { "placeholders": { "deviceName": { "type": "String" } } },
+  "logoutAllOtherDevices": "Đăng xuất tất cả thiết bị khác",
+  "logoutAllConfirmTitle": "Đăng xuất tất cả thiết bị khác?",
+  "logoutAllConfirmMessage": "Tất cả phiên ngoại trừ thiết bị này sẽ bị kết thúc.",
+  "noOtherDevices": "Không có thiết bị khác đang đăng nhập.",
+  "deviceLogoutSuccess": "Đã đăng xuất thiết bị.",
+  "allDevicesLogoutSuccess": "Đã đăng xuất tất cả thiết bị khác."
 }

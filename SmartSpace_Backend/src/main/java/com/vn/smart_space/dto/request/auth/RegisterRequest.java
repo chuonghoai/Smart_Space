@@ -28,4 +28,11 @@ public class RegisterRequest {
 
     Boolean rememberMe;
 
+    @NotBlank(message = "DeviceId is required")
+    String deviceId;
+    
+    String deviceName;
+    String platform;
+    String ipAddress;
+
 }

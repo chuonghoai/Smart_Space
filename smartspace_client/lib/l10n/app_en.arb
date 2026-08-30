@@ -142,5 +142,19 @@
   "changePasswordFailed": "Failed to change password",
   "passwordReqLength": "Password must be 8-20 characters",
   "passwordReqMixed": "Include numbers, uppercase, lowercase",
-  "passwordReqSpecial": "Include at least one special character !@#$^()_"
+  "passwordReqSpecial": "Include at least one special character !@#$^()_",
+
+  "loggedInDevices": "Logged in devices",
+  "thisDevice": "This device",
+  "activeNow": "Active now",
+  "logoutDevice": "Logout",
+  "logoutDeviceConfirmTitle": "Logout from device?",
+  "logoutDeviceConfirmMessage": "The session on \"{deviceName}\" will be ended.",
+  "@logoutDeviceConfirmMessage": { "placeholders": { "deviceName": { "type": "String" } } },
+  "logoutAllOtherDevices": "Logout all other devices",
+  "logoutAllConfirmTitle": "Logout all other devices?",
+  "logoutAllConfirmMessage": "All sessions except this device will be ended.",
+  "noOtherDevices": "No other devices logged in.",
+  "deviceLogoutSuccess": "Device logged out.",
+  "allDevicesLogoutSuccess": "All other devices logged out."
 }

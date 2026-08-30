@@ -74,6 +74,7 @@ class _WebSettingsScreenState extends State<WebSettingsScreen> {
                     theme: theme,
                     icon: Icons.phone_android_outlined,
                     label: l10n.manageDevices,
+                    onTap: () => context.push(RouterPath.manageDevices),
                   ),
                   _buildItem(
                     theme: theme,

@@ -2,14 +2,15 @@ import 'package:smartspace_client/core/api/api_response.dart';
 import 'package:smartspace_client/core/auth/access_token_service.dart';
 import 'package:smartspace_client/core/auth/refresh_token_service.dart';
 import 'package:smartspace_client/core/auth/user_storage_service.dart';
+import 'package:smartspace_client/core/connection/connection_manager.dart';
 import 'package:smartspace_client/core/constants/use_mock.dart';
 import 'package:smartspace_client/core/notification/firebase_service.dart';
+import 'package:smartspace_client/features/auth/models/DeviceSessionModel.dart';
 import 'package:smartspace_client/features/auth/models/token_model.dart';
 import 'package:smartspace_client/features/auth/repositories/auth_repo.dart';
 import 'package:smartspace_client/features/auth/repositories/auth_repo_api.dart';
 import 'package:smartspace_client/features/auth/repositories/auth_repo_mock.dart';
 import 'package:smartspace_client/features/profile/models/user_model.dart';
-import 'package:smartspace_client/core/connection/connection_manager.dart';
 
 class AuthService {
   final AuthRepo authRepo;
@@ -21,8 +22,18 @@ class AuthService {
     String email,
     String password,
     bool rememberMe,
+    String deviceId,
+    String deviceName,
+    String platform,
   ) async {
-    final response = await authRepo.login(email, password, rememberMe);
+    final response = await authRepo.login(
+      email,
+      password,
+      rememberMe,
+      deviceId,
+      deviceName,
+      platform,
+    );
     final data = response.data;
 
     if (response.success &&
@@ -42,8 +53,16 @@ class AuthService {
 
   Future<({ApiResponse<TokenModel> response, bool wsConnected})> loginGoogle(
     String idToken,
+    String deviceId,
+    String deviceName,
+    String platform,
   ) async {
-    final response = await authRepo.loginGoogle(idToken);
+    final response = await authRepo.loginGoogle(
+      idToken,
+      deviceId,
+      deviceName,
+      platform,
+    );
     final data = response.data;
 
     if (response.success &&
@@ -122,8 +141,18 @@ class AuthService {
     String email,
     String password,
     String confirmPassword,
+    String deviceId,
+    String deviceName,
+    String platform,
   ) async {
-    final response = await authRepo.register(email, password, confirmPassword);
+    final response = await authRepo.register(
+      email,
+      password,
+      confirmPassword,
+      deviceId,
+      deviceName,
+      platform,
+    );
     final data = response.data;
 
     if (response.success && data != null) {
@@ -182,6 +211,20 @@ class AuthService {
       newPassword,
       confirmPassword,
     );
+  }
+
+  Future<ApiResponse<List<DeviceSessionModel>>> getActiveSessions(
+    String currentDeviceId,
+  ) {
+    return authRepo.getActiveSessions(currentDeviceId);
+  }
+
+  Future<ApiResponse<void>> revokeSession(String sessionId) {
+    return authRepo.revokeSession(sessionId);
+  }
+
+  Future<ApiResponse<void>> revokeAllOtherSessions(String currentDeviceId) {
+    return authRepo.revokeAllOtherSessions(currentDeviceId);
   }
 }
 

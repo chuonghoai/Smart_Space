@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:smartspace_client/core/utils/device_info_util.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smartspace_client/core/constants/registration_status.dart';
 import 'package:smartspace_client/features/auth/services/auth_service.dart';
@@ -41,10 +42,17 @@ class LoginController extends ChangeNotifier {
     notifyListeners();
 
     try {
+      final deviceId = await DeviceInfoUtil.getDeviceId();
+      final deviceName = await DeviceInfoUtil.getDeviceName();
+      final platform = DeviceInfoUtil.getPlatform();
+
       final result = await _authService.login(
         email.trim(),
         password,
         rememberMe,
+        deviceId,
+        deviceName,
+        platform,
       );
       final response = result.response;
 
@@ -100,7 +108,16 @@ class LoginController extends ChangeNotifier {
         return;
       }
 
-      final result = await _authService.loginGoogle(idToken);
+      final deviceId = await DeviceInfoUtil.getDeviceId();
+      final deviceName = await DeviceInfoUtil.getDeviceName();
+      final platform = DeviceInfoUtil.getPlatform();
+
+      final result = await _authService.loginGoogle(
+        idToken,
+        deviceId,
+        deviceName,
+        platform,
+      );
       final response = result.response;
 
       if (response.success && response.data != null) {

@@ -5,9 +5,11 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 @Getter
+@Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LoginRequest {
 
@@ -20,5 +22,12 @@ public class LoginRequest {
     String password;
 
     Boolean rememberMe;
+    
+    @NotBlank(message = "DeviceId is required")
+    String deviceId;
+    
+    String deviceName;
+    String platform;
+    String ipAddress;
 
 }

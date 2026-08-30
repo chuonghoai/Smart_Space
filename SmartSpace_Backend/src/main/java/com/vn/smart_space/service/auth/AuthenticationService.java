@@ -30,18 +30,22 @@ import com.vn.smart_space.dto.request.auth.LoginRequest;
 import com.vn.smart_space.dto.request.auth.RefreshTokenRequest;
 import com.vn.smart_space.dto.response.IntrospectResponse;
 import com.vn.smart_space.dto.response.auth.LoginResponse;
+import com.vn.smart_space.dto.response.auth.SessionResponse;
 import com.vn.smart_space.exception.BadRequestException;
 import com.vn.smart_space.exception.UnauthorizedException;
 import com.vn.smart_space.mapper.UserMapper;
 import com.vn.smart_space.model.InvalidatedToken;
+import com.vn.smart_space.model.RefreshTokenSession;
 import com.vn.smart_space.model.User;
 import com.vn.smart_space.repository.InvalidatedTokenRepository;
+import com.vn.smart_space.repository.RefreshTokenSessionRepository;
 import com.vn.smart_space.repository.UserRepository;
 import com.vn.smart_space.service.jwt.IJwtService;
 import com.vn.smart_space.service.mail.IMailService;
 import com.vn.smart_space.utils.OtpGenerator;
 
 import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +53,7 @@ public class AuthenticationService implements IAuthenticationService {
 
     private final UserRepository userRepository;
     private final InvalidatedTokenRepository invalidatedTokenRepository;
+    private final RefreshTokenSessionRepository sessionRepository;
 
     private final IJwtService jwtService;
     private final IMailService mailService;
@@ -61,8 +66,6 @@ public class AuthenticationService implements IAuthenticationService {
 
     @Value("${google.client-id}")
     private String googleClientId;
-
-    private static final String REFRESH_TOKEN_PREFIX = "refresh_token:";
 
     // Introspect Token
     @Override
@@ -98,13 +101,19 @@ public class AuthenticationService implements IAuthenticationService {
         }
 
         // Generate Access Token
-        TokenPayload accessToken = jwtService.generateAccessToken(user);
+        TokenPayload accessToken = jwtService.generateAccessToken(user, request.getDeviceId());
 
         // Generate Refresh Token
         boolean rememberMe = Boolean.TRUE.equals(request.getRememberMe());
         TokenPayload refreshToken = jwtService.generateRefreshToken(user, rememberMe);
 
-        saveRefreshTokenToRedis(user.getId(), refreshToken);
+        saveRefreshTokenToRedis(
+            user.getId(), refreshToken,
+            request.getDeviceId(),
+            request.getDeviceName(),
+            request.getPlatform(),
+            request.getIpAddress()
+        );
 
         return LoginResponse.builder()
                 .accessToken(accessToken.getToken())
@@ -153,9 +162,16 @@ public class AuthenticationService implements IAuthenticationService {
                 });
 
         // Generate JWT tokens
-        TokenPayload accessToken = jwtService.generateAccessToken(user);
+        TokenPayload accessToken = jwtService.generateAccessToken(user, request.getDeviceId());
         TokenPayload refreshToken = jwtService.generateRefreshToken(user, true);
-        saveRefreshTokenToRedis(user.getId(), refreshToken);
+        
+        saveRefreshTokenToRedis(
+            user.getId(), refreshToken,
+            request.getDeviceId(),
+            request.getDeviceName(),
+            request.getPlatform(),
+            request.getIpAddress()
+        );
 
         return LoginResponse.builder()
                 .accessToken(accessToken.getToken())
@@ -187,8 +203,13 @@ public class AuthenticationService implements IAuthenticationService {
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
             String email = signedJWT.getJWTClaimsSet().getSubject();
-            userRepository.findByEmail(email).ifPresent(user -> stringRedisTemplate.delete(
-                    REFRESH_TOKEN_PREFIX + user.getId()));
+            String deviceId = (String) signedJWT.getJWTClaimsSet().getClaim("deviceId");
+            
+            userRepository.findByEmail(email).ifPresent(user -> {
+                if (deviceId != null) {
+                    revokeSession(user.getId(), deviceId);
+                }
+            });
         } catch (ParseException e) {
             // Access token đã blacklist
         }
@@ -215,22 +236,28 @@ public class AuthenticationService implements IAuthenticationService {
                     .orElseThrow(() -> new UnauthorizedException(
                             "User không tồn tại"));
 
-            String redisKey = REFRESH_TOKEN_PREFIX + user.getId();
-            String storedToken = stringRedisTemplate.opsForValue()
-                    .get(redisKey);
-            if (storedToken == null || !storedToken.equals(refreshToken)) {
-                throw new UnauthorizedException(
-                        "Refresh token đã bị thu hồi");
-            }
+            List<RefreshTokenSession> sessions = sessionRepository.findByUserId(user.getId());
+            RefreshTokenSession currentSession = sessions.stream()
+                .filter(s -> s.getRefreshToken().equals(refreshToken))
+                .findFirst()
+                .orElseThrow(() -> new UnauthorizedException("Refresh token đã bị thu hồi hoặc không hợp lệ trên thiết bị này"));
+
             TokenPayload newAccessToken = jwtService
-                    .generateAccessToken(user);
+                    .generateAccessToken(user, currentSession.getDeviceId());
 
             Boolean rememberMe = (Boolean) signedJWT.getJWTClaimsSet().getClaim("rememberMe");
             boolean isRememberMe = Boolean.TRUE.equals(rememberMe);
             TokenPayload newRefreshToken = jwtService
                     .generateRefreshToken(user, isRememberMe);
 
-            saveRefreshTokenToRedis(user.getId(), newRefreshToken);
+            saveRefreshTokenToRedis(
+                user.getId(), newRefreshToken,
+                currentSession.getDeviceId(),
+                currentSession.getDeviceName(),
+                currentSession.getPlatform(),
+                currentSession.getIpAddress()
+            );
+            
             return LoginResponse.builder()
                     .accessToken(newAccessToken.getToken())
                     .refreshToken(newRefreshToken.getToken())
@@ -240,6 +267,36 @@ public class AuthenticationService implements IAuthenticationService {
         } catch (ParseException e) {
             throw new UnauthorizedException("Token không hợp lệ");
         }
+    }
+
+    @Override
+    public List<SessionResponse> getActiveSessions(String userId, String currentDeviceId) {
+        List<RefreshTokenSession> sessions = sessionRepository.findByUserId(userId);
+        return sessions.stream().map(s -> SessionResponse.builder()
+                .sessionId(s.getDeviceId())
+                .deviceName(s.getDeviceName())
+                .platform(s.getPlatform())
+                .ipAddress(s.getIpAddress())
+                .currentDevice(s.getDeviceId().equals(currentDeviceId))
+                .lastActiveAt(s.getLastActiveAt())
+                .build()
+        ).toList();
+    }
+
+    @Override
+    @Transactional
+    public void revokeSession(String userId, String deviceId) {
+        String key = userId + ":" + deviceId;
+        sessionRepository.deleteById(key);
+    }
+
+    @Override
+    @Transactional
+    public void revokeAllOtherSessions(String userId, String currentDeviceId) {
+        List<RefreshTokenSession> sessions = sessionRepository.findByUserId(userId);
+        sessions.stream()
+            .filter(s -> !s.getDeviceId().equals(currentDeviceId))
+            .forEach(s -> sessionRepository.deleteById(s.getId()));
     }
 
     // SEND OTP FOR REGISTRATION
@@ -280,13 +337,26 @@ public class AuthenticationService implements IAuthenticationService {
 
     @Override
     public void saveRefreshTokenToRedis(
-            String userId, TokenPayload refreshToken) {
+            String userId, TokenPayload refreshToken,
+            String deviceId, String deviceName,
+            String platform, String ipAddress) {
+            
         long ttlSeconds = (refreshToken.getExpiryTime().getTime()
                 - System.currentTimeMillis()) / 1000;
-        stringRedisTemplate.opsForValue().set(
-                REFRESH_TOKEN_PREFIX + userId,
-                refreshToken.getToken(),
-                Duration.ofSeconds(ttlSeconds));
+
+        String key = userId + ":" + deviceId;
+
+        sessionRepository.save(RefreshTokenSession.builder()
+                .id(key)
+                .userId(userId)
+                .deviceId(deviceId)
+                .refreshToken(refreshToken.getToken())
+                .deviceName(deviceName)
+                .platform(platform)
+                .ipAddress(ipAddress)
+                .lastActiveAt(System.currentTimeMillis())
+                .ttl(ttlSeconds)
+                .build());
     }
 
     @Override

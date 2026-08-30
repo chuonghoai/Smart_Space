@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smartspace_client/features/auth/services/auth_service.dart';
+import 'package:smartspace_client/core/utils/device_info_util.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/routes/router_path.dart';
 import 'package:smartspace_client/util/media_upload.dart';
@@ -147,10 +148,17 @@ class RegisterController extends ChangeNotifier {
     _setError(null);
 
     try {
+      final deviceId = await DeviceInfoUtil.getDeviceId();
+      final deviceName = await DeviceInfoUtil.getDeviceName();
+      final platform = DeviceInfoUtil.getPlatform();
+
       final response = await _authService.register(
         _email,
         password,
         confirmPassword,
+        deviceId,
+        deviceName,
+        platform,
       );
 
       if (response.success && response.data != null) {

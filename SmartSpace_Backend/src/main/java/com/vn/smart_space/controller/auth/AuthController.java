@@ -6,10 +6,15 @@ import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
+import jakarta.servlet.http.HttpServletRequest;
+import java.util.List;
 
 import com.vn.smart_space.dto.ApiResponse;
 import com.vn.smart_space.dto.request.auth.DevCreateAccountRequest;
@@ -23,6 +28,7 @@ import com.vn.smart_space.dto.request.auth.VerifyOTPRegisterRequest;
 import com.vn.smart_space.dto.request.user.ChangePasswordRequest;
 import com.vn.smart_space.dto.request.user.UpdateProfileRequest;
 import com.vn.smart_space.dto.response.auth.LoginResponse;
+import com.vn.smart_space.dto.response.auth.SessionResponse;
 import com.vn.smart_space.dto.response.user.UserResponse;
 import com.vn.smart_space.service.auth.IAuthenticationService;
 import com.vn.smart_space.service.user.IUserService;
@@ -40,8 +46,11 @@ public class AuthController {
 
         // 1. Login Basic
         @PostMapping("/login")
-        public ResponseEntity<ApiResponse> login(@RequestBody @Valid LoginRequest request) {
+        public ResponseEntity<ApiResponse> login(
+                @RequestBody @Valid LoginRequest request,
+                HttpServletRequest httpRequest) {
 
+                request.setIpAddress(httpRequest.getRemoteAddr());
                 LoginResponse loginResponse = authenticationService.loginBasic(request);
                 return ResponseEntity.ok(ApiResponse.builder()
                                 .success(true)
@@ -53,8 +62,11 @@ public class AuthController {
 
         // 2. Login Google
         @PostMapping("/login/google")
-        public ResponseEntity<ApiResponse> loginGoogle(@RequestBody @Valid GoogleLoginRequest request) {
+        public ResponseEntity<ApiResponse> loginGoogle(
+                @RequestBody @Valid GoogleLoginRequest request,
+                HttpServletRequest httpRequest) {
 
+                request.setIpAddress(httpRequest.getRemoteAddr());
                 LoginResponse loginResponse = authenticationService.loginGoogle(request);
                 return ResponseEntity.ok(ApiResponse.builder()
                                 .success(true)
@@ -83,7 +95,36 @@ public class AuthController {
                 String token = authHeader.replace("Bearer ", "");
                 authenticationService.logout(token);
                 return ResponseEntity.ok(ApiResponse.success("Logout success", null));
+        }
 
+        // 4a. Get Active Sessions
+        @GetMapping("/sessions")
+        public ResponseEntity<ApiResponse> getActiveSessions(
+                @AuthenticationPrincipal Jwt jwt,
+                @RequestParam String currentDeviceId) {
+                String userId = jwt.getClaim("userId").toString();
+                List<SessionResponse> sessions = authenticationService.getActiveSessions(userId, currentDeviceId);
+                return ResponseEntity.ok(ApiResponse.success("Get sessions success", sessions));
+        }
+
+        // 4b. Revoke specific session
+        @DeleteMapping("/sessions/{deviceId}")
+        public ResponseEntity<ApiResponse> revokeSession(
+                @AuthenticationPrincipal Jwt jwt,
+                @PathVariable String deviceId) {
+                String userId = jwt.getClaim("userId").toString();
+                authenticationService.revokeSession(userId, deviceId);
+                return ResponseEntity.ok(ApiResponse.success("Session revoked", null));
+        }
+
+        // 4c. Revoke all other sessions
+        @DeleteMapping("/sessions")
+        public ResponseEntity<ApiResponse> revokeAllOtherSessions(
+                @AuthenticationPrincipal Jwt jwt,
+                @RequestParam String currentDeviceId) {
+                String userId = jwt.getClaim("userId").toString();
+                authenticationService.revokeAllOtherSessions(userId, currentDeviceId);
+                return ResponseEntity.ok(ApiResponse.success("All other sessions revoked", null));
         }
 
         // Get Me
@@ -95,8 +136,11 @@ public class AuthController {
 
         // 5. Register
         @PostMapping("/register")
-        public ResponseEntity<ApiResponse> register(@RequestBody @Valid RegisterRequest request) {
+        public ResponseEntity<ApiResponse> register(
+                @RequestBody @Valid RegisterRequest request,
+                HttpServletRequest httpRequest) {
 
+                request.setIpAddress(httpRequest.getRemoteAddr());
                 LoginResponse loginResponse = userService.createUser(request);
                 return ResponseEntity.ok(ApiResponse.success("User registered successfully", loginResponse));
 
