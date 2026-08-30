@@ -37,7 +37,7 @@ class EnvConfig {
     // Mobile
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
-        return 'http://10.0.2.2:$port';
+        return 'http://$lanIp:$port';
       case TargetPlatform.iOS:
         return 'http://localhost:$port';
       default:
