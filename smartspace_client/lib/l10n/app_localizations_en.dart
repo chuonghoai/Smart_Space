@@ -444,4 +444,34 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allDevicesLogoutSuccess => 'All other devices logged out.';
+
+  @override
+  String get editProfile => 'Edit Profile';
+
+  @override
+  String get dateOfBirth => 'Date of Birth';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get genderMale => 'Male';
+
+  @override
+  String get genderFemale => 'Female';
+
+  @override
+  String get genderOther => 'Other';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get profileUpdateSuccess => 'Profile updated successfully';
+
+  @override
+  String get profileUpdateFailed => 'Failed to update profile';
+
+  @override
+  String get changeAvatar => 'Change avatar';
 }

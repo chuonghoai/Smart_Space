@@ -168,9 +168,17 @@ class AuthService {
   Future<ApiResponse<UserModel>> updateProfile(
     String fullName,
     String phone,
-    String? avatarUrl,
-  ) async {
-    final response = await authRepo.updateProfile(fullName, phone, avatarUrl);
+    String? avatarUrl, [
+    String? dateOfBirth,
+    String? gender,
+  ]) async {
+    final response = await authRepo.updateProfile(
+      fullName,
+      phone,
+      avatarUrl,
+      dateOfBirth,
+      gender,
+    );
     final data = response.data;
 
     if (response.success && data != null) {

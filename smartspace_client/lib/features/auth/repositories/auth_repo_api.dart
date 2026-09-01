@@ -118,11 +118,19 @@ class AuthRepoApi implements AuthRepo {
   Future<ApiResponse<UserModel>> updateProfile(
     String fullName,
     String phone,
-    String? avatarUrl,
-  ) async {
+    String? avatarUrl, [
+    String? dateOfBirth,
+    String? gender,
+  ]) async {
     return await apiClient.put<UserModel>(
       '/auth/update-profile',
-      data: {'fullName': fullName, 'phone': phone, 'avatarUrl': avatarUrl},
+      data: {
+        'fullName': fullName,
+        'phone': phone,
+        'avatarUrl': avatarUrl,
+        if (dateOfBirth != null) 'dateOfBirth': dateOfBirth,
+        if (gender != null) 'gender': gender,
+      },
       decoder: (json) => UserModel.fromJson(json),
     );
   }

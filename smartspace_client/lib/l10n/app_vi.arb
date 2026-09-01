@@ -156,5 +156,17 @@
   "logoutAllConfirmMessage": "Tất cả phiên ngoại trừ thiết bị này sẽ bị kết thúc.",
   "noOtherDevices": "Không có thiết bị khác đang đăng nhập.",
   "deviceLogoutSuccess": "Đã đăng xuất thiết bị.",
-  "allDevicesLogoutSuccess": "Đã đăng xuất tất cả thiết bị khác."
+  "allDevicesLogoutSuccess": "Đã đăng xuất tất cả thiết bị khác.",
+
+  "editProfile": "Chỉnh sửa hồ sơ",
+  "dateOfBirth": "Ngày sinh",
+  "gender": "Giới tính",
+  "genderMale": "Nam",
+  "genderFemale": "Nữ",
+  "genderOther": "Khác",
+  "saveChanges": "Lưu thay đổi",
+  "profileUpdateSuccess": "Cập nhật hồ sơ thành công",
+  "profileUpdateFailed": "Cập nhật hồ sơ thất bại",
+  "changeAvatar": "Đổi ảnh đại diện"
+
 }

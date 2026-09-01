@@ -37,8 +37,10 @@ abstract class AuthRepo {
   Future<ApiResponse<UserModel>> updateProfile(
     String fullName,
     String phone,
-    String? avatarUrl,
-  );
+    String? avatarUrl, [
+    String? dateOfBirth,
+    String? gender,
+  ]);
 
   Future<ApiResponse<void>> logout();
   Future<ApiResponse<TokenModel>> refreshToken(String refreshToken);

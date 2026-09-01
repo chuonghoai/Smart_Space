@@ -443,4 +443,34 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get allDevicesLogoutSuccess => 'Đã đăng xuất tất cả thiết bị khác.';
+
+  @override
+  String get editProfile => 'Chỉnh sửa hồ sơ';
+
+  @override
+  String get dateOfBirth => 'Ngày sinh';
+
+  @override
+  String get gender => 'Giới tính';
+
+  @override
+  String get genderMale => 'Nam';
+
+  @override
+  String get genderFemale => 'Nữ';
+
+  @override
+  String get genderOther => 'Khác';
+
+  @override
+  String get saveChanges => 'Lưu thay đổi';
+
+  @override
+  String get profileUpdateSuccess => 'Cập nhật hồ sơ thành công';
+
+  @override
+  String get profileUpdateFailed => 'Cập nhật hồ sơ thất bại';
+
+  @override
+  String get changeAvatar => 'Đổi ảnh đại diện';
 }

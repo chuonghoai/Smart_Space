@@ -156,5 +156,16 @@
   "logoutAllConfirmMessage": "All sessions except this device will be ended.",
   "noOtherDevices": "No other devices logged in.",
   "deviceLogoutSuccess": "Device logged out.",
-  "allDevicesLogoutSuccess": "All other devices logged out."
+  "allDevicesLogoutSuccess": "All other devices logged out.",
+
+  "editProfile": "Edit Profile",
+  "dateOfBirth": "Date of Birth",
+  "gender": "Gender",
+  "genderMale": "Male",
+  "genderFemale": "Female",
+  "genderOther": "Other",
+  "saveChanges": "Save Changes",
+  "profileUpdateSuccess": "Profile updated successfully",
+  "profileUpdateFailed": "Failed to update profile",
+  "changeAvatar": "Change avatar"
 }

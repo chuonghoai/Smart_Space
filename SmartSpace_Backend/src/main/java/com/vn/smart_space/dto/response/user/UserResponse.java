@@ -1,6 +1,9 @@
 package com.vn.smart_space.dto.response.user;
 
+import java.time.LocalDate;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.vn.smart_space.consts.EGender;
 import com.vn.smart_space.consts.ERegistrationStatus;
 import com.vn.smart_space.consts.ERole;
 
@@ -33,5 +36,10 @@ public class UserResponse {
     ERole role;
 
     ERegistrationStatus registrationStatus;
+
+    String phone;
+    @JsonProperty("date_of_birth")
+    LocalDate dateOfBirth;
+    EGender gender;
 
 }

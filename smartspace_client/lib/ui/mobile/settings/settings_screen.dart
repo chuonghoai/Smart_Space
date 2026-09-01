@@ -205,7 +205,7 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
               color: theme.colorScheme.onSurfaceVariant,
             ),
             onPressed: () {
-              // TODO: Navigate to Edit Profile
+              context.push(RouterPath.editProfile);
             },
           ),
         ],

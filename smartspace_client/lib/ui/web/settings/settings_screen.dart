@@ -209,7 +209,7 @@ class _WebSettingsScreenState extends State<WebSettingsScreen> {
               color: theme.colorScheme.onSurfaceVariant,
             ),
             onPressed: () {
-              // TODO: Navigate to Edit Profile
+              context.push(RouterPath.editProfile);
             },
           ),
         ],

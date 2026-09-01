@@ -87,12 +87,11 @@ public class UserService implements IUserService {
         TokenPayload refreshToken = jwtService.generateRefreshToken(user, rememberMe);
 
         authenticationService.saveRefreshTokenToRedis(
-            user.getId(), refreshToken,
-            request.getDeviceId(),
-            request.getDeviceName(),
-            request.getPlatform(),
-            request.getIpAddress()
-        );
+                user.getId(), refreshToken,
+                request.getDeviceId(),
+                request.getDeviceName(),
+                request.getPlatform(),
+                request.getIpAddress());
 
         return LoginResponse.builder()
                 .accessToken(accessToken.getToken())
@@ -148,6 +147,12 @@ public class UserService implements IUserService {
         user.setPhone(request.getPhone());
         if (request.getAvatarUrl() != null) {
             user.setAvatarUrl(request.getAvatarUrl());
+        }
+        if (request.getDateOfBirth() != null) {
+            user.setDateOfBirth(request.getDateOfBirth());
+        }
+        if (request.getGender() != null) {
+            user.setGender(request.getGender());
         }
 
         userRepository.save(user);

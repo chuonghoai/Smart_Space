@@ -155,8 +155,10 @@ class AuthRepoMock implements AuthRepo {
   Future<ApiResponse<UserModel>> updateProfile(
     String fullName,
     String phone,
-    String? avatarUrl,
-  ) async {
+    String? avatarUrl, [
+    String? dateOfBirth,
+    String? gender,
+  ]) async {
     await Future.delayed(const Duration(milliseconds: 500));
     return ApiResponse(
       success: true,
