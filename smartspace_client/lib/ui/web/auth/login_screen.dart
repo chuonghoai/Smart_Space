@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:google_sign_in_web/web_only.dart' as web_gsi;
 import 'package:smartspace_client/routes/router_path.dart';
 import 'package:smartspace_client/ui/mobile/auth/login/login_controller.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
@@ -20,11 +21,23 @@ class _WebLoginScreenState extends State<WebLoginScreen> {
   final FocusNode _passwordFocusNode = FocusNode();
   bool _rememberMe = false;
   bool _obscurePassword = true;
+  bool _googleInitialized = false;
 
   @override
   void initState() {
     super.initState();
     _controller = LoginController();
+    _initGoogleSignIn();
+  }
+
+  Future<void> _initGoogleSignIn() async {
+    await _controller.initializeGoogleSignIn();
+    if (mounted) {
+      _controller.listenForWebGoogleSignIn(context);
+      setState(() {
+        _googleInitialized = true;
+      });
+    }
   }
 
   @override
@@ -224,23 +237,30 @@ class _WebLoginScreenState extends State<WebLoginScreen> {
                 ],
               ),
               const SizedBox(height: 40),
-              OutlinedButton.icon(
-                onPressed: _controller.isLoading
-                    ? null
-                    : () {
-                        _controller.loginWithGoogle(context);
-                      },
-                icon: const Icon(Icons.g_mobiledata, size: 28),
-                label: Text(l10n.googleLogin),
-                style: OutlinedButton.styleFrom(
-                  padding: const EdgeInsets.symmetric(vertical: 20),
-                  foregroundColor: colorScheme.onSurface,
-                  side: BorderSide(color: theme.dividerColor),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
+
+              // Google Sign-In Button (Web) — rendered by Google SDK
+              if (_googleInitialized)
+                SizedBox(
+                  height: 44,
+                  child: web_gsi.renderButton(
+                    configuration: web_gsi.GSIButtonConfiguration(
+                      type: web_gsi.GSIButtonType.standard,
+                      theme: web_gsi.GSIButtonTheme.outline,
+                      size: web_gsi.GSIButtonSize.large,
+                      shape: web_gsi.GSIButtonShape.rectangular,
+                      text: web_gsi.GSIButtonText.signinWith,
+                      minimumWidth: 400,
+                    ),
+                  ),
+                )
+              else
+                const SizedBox(
+                  height: 44,
+                  child: Center(
+                    child: CircularProgressIndicator(strokeWidth: 2),
                   ),
                 ),
-              ),
+
               const SizedBox(height: 32),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,

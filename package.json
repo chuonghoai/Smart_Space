@@ -6,7 +6,7 @@
   "scripts": {
     "help": "node -e \"console.log('SmartSpace Development Commands\\n\\nDevelopment:\\n  npm run backend:dev\\n  npm run client:dev\\n  npm run admin:dev\\n  npm run staff:dev\\n\\nTesting:\\n  npm run backend:test\\n  npm run client:test\\n  npm run admin:test\\n  npm run staff:test\\n\\nBuild:\\n  npm run backend:build\\n  npm run client:build\\n  npm run admin:build\\n  npm run staff:build\\n\\nAnalyze:\\n  npm run client:analyze\\n  npm run admin:analyze\\n  npm run staff:analyze')\"",
     "backend:dev": "cd SmartSpace_Backend && mvn spring-boot:run",
-    "client:dev": "cd smartspace_client && flutter run",
+    "client:dev": "cd smartspace_client && flutter run -d chrome --web-port=9090",
     "admin:dev": "cd smartspace_admin && flutter run",
     "staff:dev": "cd smartspace_staff && flutter run",
     "backend:test": "cd SmartSpace_Backend && mvn test",
