@@ -7,6 +7,8 @@ import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/ui/mobile/layout/app_layout.dart';
 import 'package:smartspace_client/features/reports/utils/report_status_ext.dart';
 import 'package:smartspace_client/ui/shared/components/dangerous_reports_slider.dart';
+import 'package:go_router/go_router.dart';
+import 'package:smartspace_client/routes/router_path.dart';
 
 class MobileHomeScreen extends ConsumerWidget {
   const MobileHomeScreen({super.key});
@@ -51,7 +53,7 @@ class MobileHomeScreen extends ConsumerWidget {
                       subtitle: l10n.subTitleCreateReport,
                       icon: Icons.add_circle_outline,
                       onTap: () {
-                        // TODO: Navigate to create report flow
+                        context.push(RouterPath.createReport);
                       },
                     ),
                     const SizedBox(height: 24),

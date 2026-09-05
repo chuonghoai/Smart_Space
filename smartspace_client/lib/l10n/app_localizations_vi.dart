@@ -490,4 +490,108 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get dateOfBirthEmptyMessage =>
       'Bạn có muốn tiếp tục? Có thể thêm ngày sinh trong cài đặt sau.';
+
+  @override
+  String get createReportTitle => 'Tạo phản ánh';
+
+  @override
+  String get reportTitleLabel => 'Tiêu đề *';
+
+  @override
+  String get reportDescLabel => 'Mô tả *';
+
+  @override
+  String get reportAddressLabel => 'Địa chỉ';
+
+  @override
+  String get reportLocationDescLabel => 'Mô tả vị trí';
+
+  @override
+  String get reportAnonymous => 'Gửi ẩn danh';
+
+  @override
+  String get submitReport => 'Gửi phản ánh';
+
+  @override
+  String get pickImage => 'Thư viện';
+
+  @override
+  String get takePhoto => 'Chụp ảnh';
+
+  @override
+  String get reloadLocation => 'Tải lại vị trí';
+
+  @override
+  String get maxImagesError => 'Chỉ được chọn tối đa 10 ảnh';
+
+  @override
+  String get requiredFieldError => 'Trường này là bắt buộc';
+
+  @override
+  String get uploadingReport =>
+      'Đang tải phản ánh lên, vui lòng không đóng ứng dụng...';
+
+  @override
+  String get locationServicesDisabled => 'Dịch vụ vị trí bị vô hiệu hóa.';
+
+  @override
+  String get locationPermissionsDenied => 'Quyền truy cập vị trí bị từ chối.';
+
+  @override
+  String get locationPermissionsPermanentlyDenied =>
+      'Quyền truy cập vị trí bị từ chối vĩnh viễn.';
+
+  @override
+  String uploadingImageProgress(Object current, Object total) {
+    return 'Đang tải ảnh lên... ($current/$total)';
+  }
+
+  @override
+  String get uploadingImage => 'Đang tải ảnh lên';
+
+  @override
+  String imageProgress(Object current, Object total) {
+    return 'Ảnh $current/$total';
+  }
+
+  @override
+  String get creatingReportSystem => 'Đang tạo phản ánh...';
+
+  @override
+  String get almostDone => 'Sắp hoàn tất';
+
+  @override
+  String get creatingReportOnSystem => 'Đang tạo phản ánh trên hệ thống...';
+
+  @override
+  String get createReportSuccess => 'Tạo phản ánh thành công!';
+
+  @override
+  String get success => 'Thành công';
+
+  @override
+  String get reportRecorded => 'Phản ánh của bạn đã được ghi nhận.';
+
+  @override
+  String errorString(Object error) {
+    return 'Lỗi: $error';
+  }
+
+  @override
+  String get errorPrefix => 'Lỗi';
+
+  @override
+  String cannotCreateReportError(Object error) {
+    return 'Không thể tạo phản ánh: $error';
+  }
+
+  @override
+  String errorOccurredSendingReport(Object error) {
+    return 'Có lỗi xảy ra khi gửi phản ánh: $error';
+  }
+
+  @override
+  String sendingReportProgress(Object current, Object total) {
+    return 'Đang gửi phản ánh... ($current/$total)';
+  }
 }

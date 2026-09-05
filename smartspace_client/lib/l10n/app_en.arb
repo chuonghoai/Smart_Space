@@ -172,5 +172,69 @@
   "requiredLabel": "Required",
   "genderOtherConfirmMessage": "Are you sure you want to select \"Other\" as your gender?",
   "dateOfBirthEmptyTitle": "Your date of birth is empty",
-  "dateOfBirthEmptyMessage": "Are you sure you want to continue? You can add your date of birth in the settings."
+  "dateOfBirthEmptyMessage": "Are you sure you want to continue? You can add your date of birth in the settings.",
+
+  "createReportTitle": "Create Report",
+  "reportTitleLabel": "Title *",
+  "reportDescLabel": "Description *",
+  "reportAddressLabel": "Address",
+  "reportLocationDescLabel": "Location Description",
+  "reportAnonymous": "Send anonymously",
+  "submitReport": "Submit Report",
+  "pickImage": "Gallery",
+  "takePhoto": "Camera",
+  "reloadLocation": "Reload Location",
+  "maxImagesError": "Max 10 images allowed",
+  "requiredFieldError": "This field is required",
+  "uploadingReport": "Uploading report, please do not close the app...",
+  "locationServicesDisabled": "Location services are disabled.",
+  "locationPermissionsDenied": "Location permissions are denied.",
+  "locationPermissionsPermanentlyDenied": "Location permissions are permanently denied.",
+  "uploadingImageProgress": "Uploading image... ({current}/{total})",
+  "@uploadingImageProgress": {
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "uploadingImage": "Uploading image",
+  "imageProgress": "Image {current}/{total}",
+  "@imageProgress": {
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "creatingReportSystem": "Creating report...",
+  "almostDone": "Almost done",
+  "creatingReportOnSystem": "Creating report on the system...",
+  "createReportSuccess": "Create report successfully!",
+  "success": "Success",
+  "reportRecorded": "Your report has been recorded.",
+  "errorString": "Error: {error}",
+  "@errorString": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorPrefix": "Error",
+  "cannotCreateReportError": "Cannot create report: {error}",
+  "@cannotCreateReportError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorOccurredSendingReport": "An error occurred while sending report: {error}",
+  "@errorOccurredSendingReport": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "sendingReportProgress": "Sending report... ({current}/{total})",
+  "@sendingReportProgress": {
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  }
 }

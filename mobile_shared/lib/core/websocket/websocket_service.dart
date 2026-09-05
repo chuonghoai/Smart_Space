@@ -42,12 +42,22 @@ class WebSocketService extends ChangeNotifier {
         .replaceFirst('https://', 'wss://');
     final wsUrl = '$wsBase/ws';
 
+    final stompHeaders = <String, String>{'Authorization': 'Bearer $token'};
+    final wsHeaders = <String, dynamic>{'Authorization': 'Bearer $token'};
+
     _client = StompClient(
       config: StompConfig(
         url: wsUrl,
         // Gửi JWT trong STOMP CONNECT frame
-        stompConnectHeaders: {'Authorization': 'Bearer $token'},
-        webSocketConnectHeaders: {'Authorization': 'Bearer $token'},
+        stompConnectHeaders: stompHeaders,
+        webSocketConnectHeaders: wsHeaders,
+        beforeConnect: () async {
+          final currentToken = await _tokenService.getAccessToken();
+          if (currentToken != null && currentToken.isNotEmpty) {
+            stompHeaders['Authorization'] = 'Bearer $currentToken';
+            wsHeaders['Authorization'] = 'Bearer $currentToken';
+          }
+        },
         onConnect: _onConnected,
         onDisconnect: _onDisconnected,
         onStompError: _onError,

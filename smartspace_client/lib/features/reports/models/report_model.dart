@@ -31,7 +31,7 @@ class ReportModel {
       imageUrl: json['image_url'] as String? ?? '',
       latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
       longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
-      status: _mapStatus(json['status'] as String?),
+      status: mapStatus(json['status'] as String?),
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now()
           : DateTime.now(),
@@ -75,7 +75,7 @@ class ReportModel {
     );
   }
 
-  static ReportStatus _mapStatus(String? status) {
+  static ReportStatus mapStatus(String? status) {
     switch (status) {
       case 'processed':
       case 'Đã xử lý':

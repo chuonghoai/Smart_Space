@@ -172,5 +172,69 @@
   "requiredLabel": "Bắt buộc",
   "genderOtherConfirmMessage": "Bạn có chắc chắn muốn chọn giới tính \"Khác\"?",
   "dateOfBirthEmptyTitle": "Bạn chưa nhập ngày sinh",
-  "dateOfBirthEmptyMessage": "Bạn có muốn tiếp tục? Có thể thêm ngày sinh trong cài đặt sau."
+  "dateOfBirthEmptyMessage": "Bạn có muốn tiếp tục? Có thể thêm ngày sinh trong cài đặt sau.",
+
+  "createReportTitle": "Tạo phản ánh",
+  "reportTitleLabel": "Tiêu đề *",
+  "reportDescLabel": "Mô tả *",
+  "reportAddressLabel": "Địa chỉ",
+  "reportLocationDescLabel": "Mô tả vị trí",
+  "reportAnonymous": "Gửi ẩn danh",
+  "submitReport": "Gửi phản ánh",
+  "pickImage": "Thư viện",
+  "takePhoto": "Chụp ảnh",
+  "reloadLocation": "Tải lại vị trí",
+  "maxImagesError": "Chỉ được chọn tối đa 10 ảnh",
+  "requiredFieldError": "Trường này là bắt buộc",
+  "uploadingReport": "Đang tải phản ánh lên, vui lòng không đóng ứng dụng...",
+  "locationServicesDisabled": "Dịch vụ vị trí bị vô hiệu hóa.",
+  "locationPermissionsDenied": "Quyền truy cập vị trí bị từ chối.",
+  "locationPermissionsPermanentlyDenied": "Quyền truy cập vị trí bị từ chối vĩnh viễn.",
+  "uploadingImageProgress": "Đang tải ảnh lên... ({current}/{total})",
+  "@uploadingImageProgress": {
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "uploadingImage": "Đang tải ảnh lên",
+  "imageProgress": "Ảnh {current}/{total}",
+  "@imageProgress": {
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "creatingReportSystem": "Đang tạo phản ánh...",
+  "almostDone": "Sắp hoàn tất",
+  "creatingReportOnSystem": "Đang tạo phản ánh trên hệ thống...",
+  "createReportSuccess": "Tạo phản ánh thành công!",
+  "success": "Thành công",
+  "reportRecorded": "Phản ánh của bạn đã được ghi nhận.",
+  "errorString": "Lỗi: {error}",
+  "@errorString": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorPrefix": "Lỗi",
+  "cannotCreateReportError": "Không thể tạo phản ánh: {error}",
+  "@cannotCreateReportError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorOccurredSendingReport": "Có lỗi xảy ra khi gửi phản ánh: {error}",
+  "@errorOccurredSendingReport": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "sendingReportProgress": "Đang gửi phản ánh... ({current}/{total})",
+  "@sendingReportProgress": {
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  }
 }

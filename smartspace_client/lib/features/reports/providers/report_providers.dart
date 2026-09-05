@@ -143,6 +143,35 @@ class ReportsNotifier extends StateNotifier<ReportsState> {
     }
   }
 
+  Future<void> addNewReport(ReportModel report) async {
+    final position = await locationService.getCurrentPosition();
+    double? distance;
+    if (position != null) {
+      distance = locationService.calculateDistance(
+        position.latitude,
+        position.longitude,
+        report.latitude,
+        report.longitude,
+      );
+    }
+    
+    final reportWithDistance = report.copyWith(distanceInMeters: distance);
+    
+    final List<ReportModel> currentList = List.from(state.recentReports);
+    currentList.add(reportWithDistance);
+    currentList.sort((a, b) {
+      final distA = a.distanceInMeters ?? double.infinity;
+      final distB = b.distanceInMeters ?? double.infinity;
+      return distA.compareTo(distB);
+    });
+    
+    if (currentList.length > 5) {
+      currentList.removeLast();
+    }
+    
+    state = state.copyWith(recentReports: currentList);
+  }
+
   Future<void> refreshAll() async {
     await Future.wait([
       fetchDangerousReports(forceRefresh: true),

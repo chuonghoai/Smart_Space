@@ -1045,6 +1045,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Are you sure you want to continue? You can add your date of birth in the settings.'**
   String get dateOfBirthEmptyMessage;
+
+  /// No description provided for @createReportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Report'**
+  String get createReportTitle;
+
+  /// No description provided for @reportTitleLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Title *'**
+  String get reportTitleLabel;
+
+  /// No description provided for @reportDescLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Description *'**
+  String get reportDescLabel;
+
+  /// No description provided for @reportAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Address'**
+  String get reportAddressLabel;
+
+  /// No description provided for @reportLocationDescLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Location Description'**
+  String get reportLocationDescLabel;
+
+  /// No description provided for @reportAnonymous.
+  ///
+  /// In en, this message translates to:
+  /// **'Send anonymously'**
+  String get reportAnonymous;
+
+  /// No description provided for @submitReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Report'**
+  String get submitReport;
+
+  /// No description provided for @pickImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get pickImage;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get takePhoto;
+
+  /// No description provided for @reloadLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Reload Location'**
+  String get reloadLocation;
+
+  /// No description provided for @maxImagesError.
+  ///
+  /// In en, this message translates to:
+  /// **'Max 10 images allowed'**
+  String get maxImagesError;
+
+  /// No description provided for @requiredFieldError.
+  ///
+  /// In en, this message translates to:
+  /// **'This field is required'**
+  String get requiredFieldError;
+
+  /// No description provided for @uploadingReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading report, please do not close the app...'**
+  String get uploadingReport;
+
+  /// No description provided for @locationServicesDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Location services are disabled.'**
+  String get locationServicesDisabled;
+
+  /// No description provided for @locationPermissionsDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permissions are denied.'**
+  String get locationPermissionsDenied;
+
+  /// No description provided for @locationPermissionsPermanentlyDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permissions are permanently denied.'**
+  String get locationPermissionsPermanentlyDenied;
+
+  /// No description provided for @uploadingImageProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading image... ({current}/{total})'**
+  String uploadingImageProgress(Object current, Object total);
+
+  /// No description provided for @uploadingImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading image'**
+  String get uploadingImage;
+
+  /// No description provided for @imageProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Image {current}/{total}'**
+  String imageProgress(Object current, Object total);
+
+  /// No description provided for @creatingReportSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating report...'**
+  String get creatingReportSystem;
+
+  /// No description provided for @almostDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Almost done'**
+  String get almostDone;
+
+  /// No description provided for @creatingReportOnSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'Creating report on the system...'**
+  String get creatingReportOnSystem;
+
+  /// No description provided for @createReportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Create report successfully!'**
+  String get createReportSuccess;
+
+  /// No description provided for @success.
+  ///
+  /// In en, this message translates to:
+  /// **'Success'**
+  String get success;
+
+  /// No description provided for @reportRecorded.
+  ///
+  /// In en, this message translates to:
+  /// **'Your report has been recorded.'**
+  String get reportRecorded;
+
+  /// No description provided for @errorString.
+  ///
+  /// In en, this message translates to:
+  /// **'Error: {error}'**
+  String errorString(Object error);
+
+  /// No description provided for @errorPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get errorPrefix;
+
+  /// No description provided for @cannotCreateReportError.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot create report: {error}'**
+  String cannotCreateReportError(Object error);
+
+  /// No description provided for @errorOccurredSendingReport.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred while sending report: {error}'**
+  String errorOccurredSendingReport(Object error);
+
+  /// No description provided for @sendingReportProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending report... ({current}/{total})'**
+  String sendingReportProgress(Object current, Object total);
 }
 
 class _AppLocalizationsDelegate

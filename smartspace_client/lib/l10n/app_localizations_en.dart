@@ -491,4 +491,108 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get dateOfBirthEmptyMessage =>
       'Are you sure you want to continue? You can add your date of birth in the settings.';
+
+  @override
+  String get createReportTitle => 'Create Report';
+
+  @override
+  String get reportTitleLabel => 'Title *';
+
+  @override
+  String get reportDescLabel => 'Description *';
+
+  @override
+  String get reportAddressLabel => 'Address';
+
+  @override
+  String get reportLocationDescLabel => 'Location Description';
+
+  @override
+  String get reportAnonymous => 'Send anonymously';
+
+  @override
+  String get submitReport => 'Submit Report';
+
+  @override
+  String get pickImage => 'Gallery';
+
+  @override
+  String get takePhoto => 'Camera';
+
+  @override
+  String get reloadLocation => 'Reload Location';
+
+  @override
+  String get maxImagesError => 'Max 10 images allowed';
+
+  @override
+  String get requiredFieldError => 'This field is required';
+
+  @override
+  String get uploadingReport =>
+      'Uploading report, please do not close the app...';
+
+  @override
+  String get locationServicesDisabled => 'Location services are disabled.';
+
+  @override
+  String get locationPermissionsDenied => 'Location permissions are denied.';
+
+  @override
+  String get locationPermissionsPermanentlyDenied =>
+      'Location permissions are permanently denied.';
+
+  @override
+  String uploadingImageProgress(Object current, Object total) {
+    return 'Uploading image... ($current/$total)';
+  }
+
+  @override
+  String get uploadingImage => 'Uploading image';
+
+  @override
+  String imageProgress(Object current, Object total) {
+    return 'Image $current/$total';
+  }
+
+  @override
+  String get creatingReportSystem => 'Creating report...';
+
+  @override
+  String get almostDone => 'Almost done';
+
+  @override
+  String get creatingReportOnSystem => 'Creating report on the system...';
+
+  @override
+  String get createReportSuccess => 'Create report successfully!';
+
+  @override
+  String get success => 'Success';
+
+  @override
+  String get reportRecorded => 'Your report has been recorded.';
+
+  @override
+  String errorString(Object error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String get errorPrefix => 'Error';
+
+  @override
+  String cannotCreateReportError(Object error) {
+    return 'Cannot create report: $error';
+  }
+
+  @override
+  String errorOccurredSendingReport(Object error) {
+    return 'An error occurred while sending report: $error';
+  }
+
+  @override
+  String sendingReportProgress(Object current, Object total) {
+    return 'Sending report... ($current/$total)';
+  }
 }

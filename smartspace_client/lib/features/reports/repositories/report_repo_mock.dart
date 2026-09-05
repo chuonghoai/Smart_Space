@@ -1,5 +1,6 @@
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
+import 'package:smartspace_client/features/reports/models/report_dto.dart';
 import 'package:smartspace_client/features/reports/repositories/report_repo.dart';
 
 class ReportRepoMock implements ReportRepo {
@@ -72,6 +73,25 @@ class ReportRepoMock implements ReportRepo {
           createdAt: DateTime.now().subtract(const Duration(minutes: 30)),
         ),
       ],
+    );
+  }
+
+  @override
+  Future<ApiResponse<ReportModel>> createReport(ReportDto reportDto) async {
+    await Future.delayed(const Duration(seconds: 2));
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: ReportModel(
+        id: 'new_1',
+        title: reportDto.title,
+        description: reportDto.description,
+        imageUrl: reportDto.imageUrls.isNotEmpty ? reportDto.imageUrls.first : '',
+        latitude: reportDto.latitude,
+        longitude: reportDto.longitude,
+        status: ReportStatus.pending,
+        createdAt: DateTime.now(),
+      ),
     );
   }
 }

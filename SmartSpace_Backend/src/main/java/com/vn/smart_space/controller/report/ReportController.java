@@ -31,4 +31,16 @@ public class ReportController {
         List<ReportResponse> reports = reportService.getRecentReports(filter, userLat, userLong);
         return ResponseEntity.ok(ApiResponse.success("Success", reports));
     }
+
+    @PostMapping
+    public ResponseEntity<ApiResponse> createReport(
+            @org.springframework.security.core.annotation.AuthenticationPrincipal org.springframework.security.oauth2.jwt.Jwt jwt,
+            @org.springframework.web.bind.annotation.RequestBody com.vn.smart_space.dto.request.report.ReportCreateRequest request) {
+        String userId = null;
+        if (jwt != null && jwt.hasClaim("userId")) {
+            userId = jwt.getClaim("userId").toString();
+        }
+        com.vn.smart_space.dto.response.report.ReportDetailResponse response = reportService.createReport(request, userId);
+        return ResponseEntity.ok(ApiResponse.success("Report created successfully", response));
+    }
 }

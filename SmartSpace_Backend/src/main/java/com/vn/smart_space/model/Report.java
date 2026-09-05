@@ -33,7 +33,7 @@ public class Report extends AbstractEntity {
     Double longitude;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "severity", nullable = false)
+    @Column(name = "severity")
     EReportSeverity severity;
 
     @Enumerated(EnumType.STRING)
@@ -43,6 +43,18 @@ public class Report extends AbstractEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     User user;
+
+    @Column(name = "image_urls", columnDefinition = "TEXT")
+    String imageUrls;
+
+    @Column(name = "address")
+    String address;
+
+    @Column(name = "location_description", columnDefinition = "TEXT")
+    String locationDescription;
+
+    @Column(name = "is_anonymous")
+    Boolean isAnonymous;
 
     @Transient
     Double distanceInMeters;

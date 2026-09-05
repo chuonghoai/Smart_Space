@@ -82,6 +82,7 @@ class _SmartSpaceAppState extends State<SmartSpaceApp> with WidgetsBindingObserv
           locale: localeProvider.locale,
           localizationsDelegates: const [
             AppLocalizations.delegate,
+            SharedLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,
             GlobalWidgetsLocalizations.delegate,
             GlobalCupertinoLocalizations.delegate,
