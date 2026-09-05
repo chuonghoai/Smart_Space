@@ -5,3 +5,4 @@ npm-debug.log*
 **/GeneratedPluginRegistrant.swift
 **/pubspec.lock
 .vscode/
+**/generated_plugins.cmake
