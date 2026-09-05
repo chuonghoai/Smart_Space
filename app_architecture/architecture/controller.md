@@ -1,19 +1,21 @@
-# Quy tắc Controller Layer
+# Controller Layer
 
-Controller đóng vai trò làm cầu nối giữa UI và business logic (Service).
+Trong dự án `smartspace_client`, Controller đóng vai trò là **UI Controller** (như `HomeController`, `SettingsController`).
 
-### Trách nhiệm của Controller:
-- Nhận input/action từ UI.
-- Quản lý UI state cần thiết.
-- Quản lý các trạng thái như `isLoading`, `error`, `success`.
-- Điều phối flow giữa UI và Service.
-- Gọi Service để thực hiện nghiệp vụ.
-- Xử lý kết quả trả về từ Service để cập nhật state hoặc quyết định UI flow.
-- Thực hiện navigation (sử dụng GoRouter) khi điều hướng là một phần của UI/application flow.
-- **Controller có thể quản lý hoặc triển khai animation logic của UI** khi animation cần được điều phối cùng với UI state hoặc interaction flow. Việc đặt animation logic trong Controller phải hợp lý với context của tính năng và không biến Controller thành nơi chứa toàn bộ presentation code.
+## Trách nhiệm (Responsibility)
+- Quản lý **Local UI State** (ví dụ: cờ `isLoading`, error message tạm thời, form data chưa lưu).
+- Lắng nghe (listen) các thay đổi từ **Feature Provider** để cập nhật state cục bộ nếu cần.
+- Điều phối các hành động từ UI (gọi hàm `manualRefresh`, handle button click).
 
-### Controller KHÔNG NÊN:
-- Trực tiếp thực hiện HTTP/API request (đây là nhiệm vụ của Repository/Service).
-- Chứa code truy cập database/data source trực tiếp.
-- Duplicate business logic đã có trong Service.
-- Tách riêng Controller cho Mobile và Web nếu logic nghiệp vụ của 2 nền tảng là hoàn toàn giống nhau (Sử dụng Controller dùng chung).
+## Quy tắc DO / DON'T
+
+**DO:**
+- Khai báo dưới dạng `StateNotifier<T>` của Riverpod.
+- Truyền `Ref` vào constructor để có thể read/listen các Provider khác.
+- Lắng nghe Provider bằng `ref.listen`.
+- Xử lý các logic thuần tuý của UI (ví dụ: check điều kiện trước khi gọi Provider).
+
+**DON'T:**
+- KHÔNG gọi API trực tiếp (`apiClient.get()`).
+- KHÔNG chứa business logic phức tạp của hệ thống (phải đẩy xuống Feature Provider hoặc Service).
+- KHÔNG lưu trữ dữ liệu domain lâu dài (đó là việc của Feature Provider).
