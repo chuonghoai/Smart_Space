@@ -1,2 +1,5 @@
 node_modules/
 npm-debug.log*
+
+# Ignore Flutter plugin registrant - auto-generated
+**/GeneratedPluginRegistrant.swift

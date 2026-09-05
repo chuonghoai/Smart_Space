@@ -1,8 +1,9 @@
 ---
 name: smp-analyzeTask
 description: >-
-  Phân tích một task trước khi bắt đầu implementation. 
-  Không thực hiện thay đổi code, chỉ trả về phân tích.
+  Phân tích một task trước khi bắt đầu implementation.
+  Không thực hiện thay đổi code, chỉ trả về phân tích. 
+  Đặc biệt chú ý phân tích các yêu cầu liên quan đến UI, Dark/Light mode, và Localization.
 ---
 
 # smp-analyzeTask

@@ -5,7 +5,7 @@ Mọi thay đổi liên quan đến mã nguồn (code) đều phải tuân thủ
 ## Source of Truth (Nguồn chân lý)
 - **App**: Mọi code liên quan đến app phải tuân thủ tài liệu trong `app_architecture/`
 - **Backend**: Mọi code liên quan đến backend phải tuân thủ tài liệu trong `backend_architecture/`
-- **UI/UX**: Các task liên quan đến giao diện phải tuân thủ `app_architecture/design/design.md`
+- **UI/UX & Localization**: Các task liên quan đến giao diện và L10n phải tuân thủ `app_architecture/design/design.md` và [Shared UI & Localization Rules](shared-ui-l10n-rules.md)
 
 Tài liệu Architecture là nguồn chân lý. Không được tự tạo convention mới trái với các tài liệu này.
 

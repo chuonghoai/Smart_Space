@@ -12,6 +12,7 @@ Mục đích: Review branch hiện tại so với `dev`.
 ## Dependencies
 - [Shared Architecture Rules](../rules/shared-architecture-rules.md)
 - [Shared Reporting Rules](../rules/shared-reporting-rules.md)
+- [Shared UI & Localization Rules](../rules/shared-ui-l10n-rules.md)
 - UI/Design rules: `app_architecture/design/design.md`
 
 ## Quy trình thực hiện (Workflow)
@@ -34,8 +35,8 @@ So sánh branch hiện tại với `dev`. Xác định chính xác: files added,
 Đánh giá trên 4 khía cạnh:
 1. **Functional:** Requirement, happy path, edge case, error handling, loading/empty state, permission/auth.
 2. **Architecture:** Đúng kiến trúc không? Sai layer? Duplicate logic? Bypass abstraction? Dependency sai chiều?
-3. **Code Quality:** Readability, maintainability, naming, null safety, logging.
-4. **Design (Nếu có UI):** Layout, navigation, interaction, consistency so với `design.md`.
+3. **Code Quality:** Readability, maintainability, naming, null safety, logging. MUST check for hardcoded user-facing strings theo `shared-ui-l10n-rules.md`.
+4. **Design (Nếu có UI):** Layout, navigation, interaction, consistency so với `design.md`. MUST check Dark/Light mode compatibility và KHÔNG hardcode màu sai quy tắc theo `shared-ui-l10n-rules.md`.
 
 ### Output
 Tạo review report với cấu trúc:

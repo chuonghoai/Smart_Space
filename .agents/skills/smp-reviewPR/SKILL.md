@@ -13,6 +13,7 @@ Mục đích: Workflow tổng hợp và là Skill quan trọng nhất để qu�
 - [smp-reviewSecurityPerformance](../smp-reviewSecurityPerformance/SKILL.md)
 - [Shared Git Rules](../../rules/shared-git-rules.md)
 - [Shared Reporting Rules](../../rules/shared-reporting-rules.md)
+- [Shared UI & Localization Rules](../../rules/shared-ui-l10n-rules.md)
 
 ## Quy trình thực hiện (Workflow)
 
