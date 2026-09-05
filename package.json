@@ -19,6 +19,7 @@
     "staff:build": "cd smartspace_staff && flutter build apk",
     "client:analyze": "cd smartspace_client && flutter analyze",
     "admin:analyze": "cd smartspace_admin && flutter analyze",
-    "staff:analyze": "cd smartspace_staff && flutter analyze"
+    "staff:analyze": "cd smartspace_staff && flutter analyze",
+    "flutter:get": "cd smartspace_admin && flutter pub get && cd ../smartspace_client && flutter pub get && cd ../smartspace_staff && flutter pub get"
   }
 }
