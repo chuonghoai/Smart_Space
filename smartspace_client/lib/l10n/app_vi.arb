@@ -167,6 +167,10 @@
   "saveChanges": "Lưu thay đổi",
   "profileUpdateSuccess": "Cập nhật hồ sơ thành công",
   "profileUpdateFailed": "Cập nhật hồ sơ thất bại",
-  "changeAvatar": "Đổi ảnh đại diện"
-
+  "changeAvatar": "Đổi ảnh đại diện",
+  "optionalLabel": "Không bắt buộc",
+  "requiredLabel": "Bắt buộc",
+  "genderOtherConfirmMessage": "Bạn có chắc chắn muốn chọn giới tính \"Khác\"?",
+  "dateOfBirthEmptyTitle": "Bạn chưa nhập ngày sinh",
+  "dateOfBirthEmptyMessage": "Bạn có muốn tiếp tục? Có thể thêm ngày sinh trong cài đặt sau."
 }

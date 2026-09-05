@@ -473,4 +473,21 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get changeAvatar => 'Đổi ảnh đại diện';
+
+  @override
+  String get optionalLabel => 'Không bắt buộc';
+
+  @override
+  String get requiredLabel => 'Bắt buộc';
+
+  @override
+  String get genderOtherConfirmMessage =>
+      'Bạn có chắc chắn muốn chọn giới tính \"Khác\"?';
+
+  @override
+  String get dateOfBirthEmptyTitle => 'Bạn chưa nhập ngày sinh';
+
+  @override
+  String get dateOfBirthEmptyMessage =>
+      'Bạn có muốn tiếp tục? Có thể thêm ngày sinh trong cài đặt sau.';
 }

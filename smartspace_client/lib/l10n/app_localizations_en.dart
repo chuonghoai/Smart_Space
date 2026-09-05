@@ -474,4 +474,21 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get changeAvatar => 'Change avatar';
+
+  @override
+  String get optionalLabel => 'Optional';
+
+  @override
+  String get requiredLabel => 'Required';
+
+  @override
+  String get genderOtherConfirmMessage =>
+      'Are you sure you want to select \"Other\" as your gender?';
+
+  @override
+  String get dateOfBirthEmptyTitle => 'Your date of birth is empty';
+
+  @override
+  String get dateOfBirthEmptyMessage =>
+      'Are you sure you want to continue? You can add your date of birth in the settings.';
 }

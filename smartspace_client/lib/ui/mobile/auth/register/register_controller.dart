@@ -37,6 +37,24 @@ class RegisterController extends ChangeNotifier {
 
   String? _selectedAvatarName;
 
+  // Gender state
+  String? _selectedGender = 'other';
+  String? get selectedGender => _selectedGender;
+
+  // Date of birth state
+  String? _dateOfBirth;
+  String? get dateOfBirth => _dateOfBirth;
+
+  void setGender(String gender) {
+    _selectedGender = gender;
+    notifyListeners();
+  }
+
+  void setDateOfBirth(String? dob) {
+    _dateOfBirth = dob;
+    notifyListeners();
+  }
+
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
@@ -187,6 +205,8 @@ class RegisterController extends ChangeNotifier {
     required BuildContext context,
     required String fullname,
     required String phone,
+    String? dateOfBirth,
+    String? gender,
   }) async {
     final l10n = AppLocalizations.of(context)!;
     if (_isLoading) return;
@@ -228,6 +248,8 @@ class RegisterController extends ChangeNotifier {
         fullname.trim(),
         phone.trim(),
         avatarUrl,
+        dateOfBirth?.isNotEmpty == true ? dateOfBirth : null,
+        gender,
       );
       debugPrint('▶ [completeProfile] API response received');
       debugPrint('▶ [completeProfile] success: ${response.success}');
@@ -264,6 +286,8 @@ class RegisterController extends ChangeNotifier {
     _otp = '';
     _selectedAvatarBytes = null;
     _selectedAvatarName = null;
+    _selectedGender = null;
+    _dateOfBirth = null;
     _error = null;
     _isLoading = false;
     notifyListeners();

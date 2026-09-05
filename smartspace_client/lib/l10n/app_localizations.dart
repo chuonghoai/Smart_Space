@@ -1015,6 +1015,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Change avatar'**
   String get changeAvatar;
+
+  /// No description provided for @optionalLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Optional'**
+  String get optionalLabel;
+
+  /// No description provided for @requiredLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Required'**
+  String get requiredLabel;
+
+  /// No description provided for @genderOtherConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to select \"Other\" as your gender?'**
+  String get genderOtherConfirmMessage;
+
+  /// No description provided for @dateOfBirthEmptyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your date of birth is empty'**
+  String get dateOfBirthEmptyTitle;
+
+  /// No description provided for @dateOfBirthEmptyMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to continue? You can add your date of birth in the settings.'**
+  String get dateOfBirthEmptyMessage;
 }
 
 class _AppLocalizationsDelegate

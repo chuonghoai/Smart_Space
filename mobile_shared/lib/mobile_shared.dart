@@ -20,6 +20,7 @@ export 'core/theme/app_theme.dart';
 export 'core/toast/toast_service.dart';
 export 'util/device_info_util.dart';
 export 'core/websocket/websocket_service.dart';
+export 'core/widgets/confirm_dialog.dart';
 
 export 'util/distance_updater_provider.dart';
 export 'util/location_service.dart';

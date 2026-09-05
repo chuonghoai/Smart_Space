@@ -167,5 +167,10 @@
   "saveChanges": "Save Changes",
   "profileUpdateSuccess": "Profile updated successfully",
   "profileUpdateFailed": "Failed to update profile",
-  "changeAvatar": "Change avatar"
+  "changeAvatar": "Change avatar",
+  "optionalLabel": "Optional",
+  "requiredLabel": "Required",
+  "genderOtherConfirmMessage": "Are you sure you want to select \"Other\" as your gender?",
+  "dateOfBirthEmptyTitle": "Your date of birth is empty",
+  "dateOfBirthEmptyMessage": "Are you sure you want to continue? You can add your date of birth in the settings."
 }

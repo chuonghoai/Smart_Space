@@ -28,8 +28,8 @@ class UserModel {
     return UserModel(
       id: json['id'] as String,
       email: json['email'] as String,
-      fullname: json['fullname'] as String,
-      avatarUrl: json['avatar_url'] as String,
+      fullname: json['fullname'] as String? ?? '',
+      avatarUrl: json['avatar_url'] as String? ?? '',
       role: ERole.fromString(json['role'] as String)!,
       registrationStatus: json['registrationStatus'] != null
           ? ERegistrationStatus.fromString(json['registrationStatus'] as String)
