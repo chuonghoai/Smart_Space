@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smartspace_client/features/auth/models/DeviceSessionModel.dart';
+import 'package:mobile_shared/features/auth/models/DeviceSessionModel.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/ui/mobile/settings/manage_devices_controller.dart';
 

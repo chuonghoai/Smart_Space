@@ -13,7 +13,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mobile_shared/mobile_shared.dart';
 import 'firebase_options.dart';
-import 'features/auth/services/auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,14 +21,6 @@ void main() async {
   await dotenv.load(fileName: ".env");
   
   await FirebaseService.initialize(DefaultFirebaseOptions.currentPlatform);
-  
-  ErrorInterceptor.onRefreshToken = (String refreshToken) async {
-    return await authService.refreshToken(refreshToken);
-  };
-  
-  ErrorInterceptor.onLogout = () async {
-    await authService.logout();
-  };
   
   ErrorInterceptor.unauthenticatedStream.stream.listen((String reason) {
     appRouter.go(RouterPath.login);

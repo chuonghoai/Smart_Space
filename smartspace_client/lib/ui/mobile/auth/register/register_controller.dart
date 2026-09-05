@@ -2,7 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:smartspace_client/features/auth/services/auth_service.dart';
+import 'package:mobile_shared/features/auth/services/auth_service.dart';
 import 'package:mobile_shared/util/device_info_util.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/routes/router_path.dart';

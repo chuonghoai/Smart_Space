@@ -5,11 +5,11 @@ import 'package:mobile_shared/core/auth/user_storage_service.dart';
 import 'package:mobile_shared/core/connection/connection_manager.dart';
 import 'package:mobile_shared/core/constants/use_mock.dart';
 import 'package:mobile_shared/core/notification/firebase_service.dart';
-import 'package:smartspace_client/features/auth/models/DeviceSessionModel.dart';
-import 'package:smartspace_client/features/auth/models/token_model.dart';
-import 'package:smartspace_client/features/auth/repositories/auth_repo.dart';
-import 'package:smartspace_client/features/auth/repositories/auth_repo_api.dart';
-import 'package:smartspace_client/features/auth/repositories/auth_repo_mock.dart';
+import 'package:mobile_shared/features/auth/models/DeviceSessionModel.dart';
+import 'package:mobile_shared/features/auth/models/token_model.dart';
+import 'package:mobile_shared/features/auth/repositories/auth_repo.dart';
+import 'package:mobile_shared/features/auth/repositories/auth_repo_api.dart';
+import 'package:mobile_shared/features/auth/repositories/auth_repo_mock.dart';
 import 'package:mobile_shared/core/auth/models/user_model.dart';
 
 class AuthService {

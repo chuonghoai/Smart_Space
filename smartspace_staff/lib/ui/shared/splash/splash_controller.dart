@@ -7,7 +7,7 @@ import 'package:mobile_shared/core/auth/user_storage_service.dart';
 import 'package:mobile_shared/core/interceptors/error_interceptor.dart';
 import 'package:mobile_shared/core/localization/locale_provider.dart';
 import 'package:mobile_shared/core/theme/theme_provider.dart';
-import 'package:smartspace_staff/features/auth/services/auth_service.dart';
+import 'package:mobile_shared/features/auth/services/auth_service.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
 import 'package:mobile_shared/util/location_service.dart';
 import 'package:mobile_shared/core/connection/connection_manager.dart';

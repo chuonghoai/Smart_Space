@@ -3,9 +3,9 @@ import 'package:mobile_shared/core/constants/registration_status.dart';
 import 'package:mobile_shared/core/constants/role_constant.dart';
 import 'package:mobile_shared/core/storage/secured_storage.dart';
 import 'package:mobile_shared/core/storage/shared_preferences.dart';
-import 'package:smartspace_client/features/auth/models/DeviceSessionModel.dart';
-import 'package:smartspace_client/features/auth/models/token_model.dart';
-import 'package:smartspace_client/features/auth/repositories/auth_repo.dart';
+import 'package:mobile_shared/features/auth/models/DeviceSessionModel.dart';
+import 'package:mobile_shared/features/auth/models/token_model.dart';
+import 'package:mobile_shared/features/auth/repositories/auth_repo.dart';
 import 'package:mobile_shared/core/auth/models/user_model.dart';
 
 class AuthRepoMock implements AuthRepo {

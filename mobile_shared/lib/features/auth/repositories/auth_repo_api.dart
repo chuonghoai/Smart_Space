@@ -1,8 +1,9 @@
 import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
-import 'package:smartspace_admin/features/auth/models/token_model.dart';
-import 'package:smartspace_admin/features/auth/repositories/auth_repo.dart';
-import 'package:mobile_shared/mobile_shared.dart';
+import 'package:mobile_shared/features/auth/models/DeviceSessionModel.dart';
+import 'package:mobile_shared/features/auth/models/token_model.dart';
+import 'package:mobile_shared/features/auth/repositories/auth_repo.dart';
+import 'package:mobile_shared/core/auth/models/user_model.dart';
 
 class AuthRepoApi implements AuthRepo {
   @override
@@ -10,19 +11,39 @@ class AuthRepoApi implements AuthRepo {
     String email,
     String password,
     bool rememberMe,
+    String deviceId,
+    String deviceName,
+    String platform,
   ) async {
     return await apiClient.post<TokenModel>(
       '/auth/login',
-      data: {'email': email, 'password': password, 'rememberMe': rememberMe},
+      data: {
+        'email': email,
+        'password': password,
+        'rememberMe': rememberMe,
+        'deviceId': deviceId,
+        'deviceName': deviceName,
+        'platform': platform,
+      },
       decoder: (json) => TokenModel.fromJson(json),
     );
   }
 
   @override
-  Future<ApiResponse<TokenModel>> loginGoogle(String idToken) async {
+  Future<ApiResponse<TokenModel>> loginGoogle(
+    String idToken,
+    String deviceId,
+    String deviceName,
+    String platform,
+  ) async {
     return await apiClient.post<TokenModel>(
       '/auth/login/google',
-      data: {'idToken': idToken},
+      data: {
+        'idToken': idToken,
+        'deviceId': deviceId,
+        'deviceName': deviceName,
+        'platform': platform,
+      },
       decoder: (json) => TokenModel.fromJson(json),
     );
   }
@@ -73,6 +94,9 @@ class AuthRepoApi implements AuthRepo {
     String email,
     String password,
     String confirmPassword,
+    String deviceId,
+    String deviceName,
+    String platform,
   ) async {
     return await apiClient.post<TokenModel>(
       '/auth/register',
@@ -81,6 +105,9 @@ class AuthRepoApi implements AuthRepo {
         'password': password,
         'confirm_password': confirmPassword,
         'rememberMe': true,
+        'deviceId': deviceId,
+        'deviceName': deviceName,
+        'platform': platform,
       },
       decoder: (json) => TokenModel.fromJson(json),
     );
@@ -91,11 +118,19 @@ class AuthRepoApi implements AuthRepo {
   Future<ApiResponse<UserModel>> updateProfile(
     String fullName,
     String phone,
-    String? avatarUrl,
-  ) async {
+    String? avatarUrl, [
+    String? dateOfBirth,
+    String? gender,
+  ]) async {
     return await apiClient.put<UserModel>(
       '/auth/update-profile',
-      data: {'fullName': fullName, 'phone': phone, 'avatarUrl': avatarUrl},
+      data: {
+        'fullName': fullName,
+        'phone': phone,
+        'avatarUrl': avatarUrl,
+        if (dateOfBirth != null) 'dateOfBirth': dateOfBirth,
+        if (gender != null) 'gender': gender,
+      },
       decoder: (json) => UserModel.fromJson(json),
     );
   }
@@ -141,6 +176,34 @@ class AuthRepoApi implements AuthRepo {
         'newPassword': newPassword,
         'confirmPassword': confirmPassword,
       },
+    );
+  }
+
+  //  Session Management
+  @override
+  Future<ApiResponse<List<DeviceSessionModel>>> getActiveSessions(
+    String currentDeviceId,
+  ) async {
+    return await apiClient.get<List<DeviceSessionModel>>(
+      '/auth/sessions',
+      queryParameters: {'currentDeviceId': currentDeviceId},
+      decoder: (json) =>
+          (json as List).map((e) => DeviceSessionModel.fromJson(e)).toList(),
+    );
+  }
+
+  @override
+  Future<ApiResponse<void>> revokeSession(String deviceId) async {
+    return await apiClient.delete<void>('/auth/sessions/$deviceId');
+  }
+
+  @override
+  Future<ApiResponse<void>> revokeAllOtherSessions(
+    String currentDeviceId,
+  ) async {
+    return await apiClient.delete<void>(
+      '/auth/sessions',
+      queryParameters: {'currentDeviceId': currentDeviceId},
     );
   }
 }

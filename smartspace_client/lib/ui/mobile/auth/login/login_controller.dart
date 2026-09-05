@@ -8,7 +8,7 @@ import 'package:mobile_shared/core/config/env_config.dart';
 import 'package:mobile_shared/core/connection/connection_manager.dart';
 import 'package:mobile_shared/core/constants/registration_status.dart';
 import 'package:mobile_shared/util/device_info_util.dart';
-import 'package:smartspace_client/features/auth/services/auth_service.dart';
+import 'package:mobile_shared/features/auth/services/auth_service.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/routes/router_path.dart';
 

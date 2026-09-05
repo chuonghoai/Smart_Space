@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_shared/core/auth/user_storage_service.dart';
-import 'package:smartspace_staff/features/auth/services/auth_service.dart';
+import 'package:mobile_shared/features/auth/services/auth_service.dart';
 import 'package:smartspace_staff/features/notifications/providers/notification_provider.dart';
 import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';

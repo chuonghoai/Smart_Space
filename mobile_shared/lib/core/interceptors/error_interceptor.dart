@@ -4,13 +4,11 @@ import 'package:dio/dio.dart';
 import 'package:mobile_shared/core/auth/refresh_token_service.dart';
 import 'package:mobile_shared/core/auth/access_token_service.dart';
 import 'package:mobile_shared/core/auth/user_storage_service.dart';
+import 'package:mobile_shared/features/auth/services/auth_service.dart';
 
 class ErrorInterceptor extends Interceptor {
   static final StreamController<String> unauthenticatedStream =
       StreamController<String>.broadcast();
-
-  static Future<bool> Function(String)? onRefreshToken;
-  static Future<void> Function()? onLogout;
 
   static int _refreshCount = 0;
   static DateTime _lastRefreshTime = DateTime.now();
@@ -50,8 +48,8 @@ class ErrorInterceptor extends Interceptor {
       final refreshToken = await refreshTokenService.getRefreshToken();
       String reason = 'unauthorized';
 
-      if (refreshToken != null && onRefreshToken != null) {
-        bool refreshTokenSuccess = await onRefreshToken!(refreshToken);
+      if (refreshToken != null) {
+        bool refreshTokenSuccess = await authService.refreshToken(refreshToken);
 
         if (refreshTokenSuccess) {
           try {
@@ -72,9 +70,10 @@ class ErrorInterceptor extends Interceptor {
         reason = 'expired';
       }
 
-      if (onLogout != null) {
-        await onLogout!();
-      } else {
+      try {
+        await authService.logout();
+      } catch (_) {
+        // Fallback clear
         await accessTokenService.clear();
         await refreshTokenService.clear();
         await userStorageService.clear();

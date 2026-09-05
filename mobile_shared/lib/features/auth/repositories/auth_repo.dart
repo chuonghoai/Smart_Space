@@ -1,6 +1,6 @@
 import 'package:mobile_shared/core/api/api_response.dart';
-import 'package:smartspace_client/features/auth/models/DeviceSessionModel.dart';
-import 'package:smartspace_client/features/auth/models/token_model.dart';
+import 'package:mobile_shared/features/auth/models/DeviceSessionModel.dart';
+import 'package:mobile_shared/features/auth/models/token_model.dart';
 import 'package:mobile_shared/core/auth/models/user_model.dart';
 
 abstract class AuthRepo {

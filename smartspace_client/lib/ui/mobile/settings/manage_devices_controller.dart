@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_shared/util/device_info_util.dart';
-import 'package:smartspace_client/features/auth/models/DeviceSessionModel.dart';
-import 'package:smartspace_client/features/auth/services/auth_service.dart';
+import 'package:mobile_shared/features/auth/models/DeviceSessionModel.dart';
+import 'package:mobile_shared/features/auth/services/auth_service.dart';
 
 class ManageDevicesController extends ChangeNotifier {
   final AuthService _authService;

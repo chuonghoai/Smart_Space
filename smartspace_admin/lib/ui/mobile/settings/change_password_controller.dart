@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smartspace_admin/features/auth/services/auth_service.dart';
+import 'package:mobile_shared/features/auth/services/auth_service.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 
 class ChangePasswordController extends ChangeNotifier {

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:smartspace_staff/features/auth/services/auth_service.dart';
+import 'package:mobile_shared/features/auth/services/auth_service.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
 
