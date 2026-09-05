@@ -1,6 +1,6 @@
-import 'package:smartspace_admin/core/api/api_response.dart';
+import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:smartspace_admin/features/auth/models/token_model.dart';
-import 'package:smartspace_admin/features/profile/models/user_model.dart';
+import 'package:mobile_shared/mobile_shared.dart';
 
 abstract class AuthRepo {
   Future<ApiResponse<TokenModel>> login(

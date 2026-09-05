@@ -1,10 +1,11 @@
+import 'package:mobile_shared/mobile_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartspace_admin/ui/mobile/home/home_controller.dart';
 import 'package:smartspace_admin/features/reports/models/report_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/features/reports/utils/report_status_ext.dart';
-import 'package:smartspace_admin/util/distance_formatter.dart';
+import 'package:mobile_shared/util/distance_formatter.dart';
 import 'package:smartspace_admin/ui/web/layout/web_layout.dart';
 import 'package:smartspace_admin/ui/shared/components/dangerous_reports_slider.dart';
 
@@ -319,7 +320,7 @@ class _ReportCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 12),
                         Text(
-                          DistanceFormatter.format(report.distanceInMeters!, l10n),
+                          DistanceFormatter.format(report.distanceInMeters!, SharedLocalizations.of(context)!),
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),

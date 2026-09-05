@@ -5,7 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:smartspace_staff/features/auth/services/auth_service.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
-import 'package:smartspace_staff/util/media_upload.dart';
+import 'package:mobile_shared/util/media_upload.dart';
 
 class RegisterController extends ChangeNotifier {
   final AuthService _authService;
@@ -205,7 +205,9 @@ class RegisterController extends ChangeNotifier {
 
       if (_selectedAvatarFile != null) {
         debugPrint('▶ [completeProfile] Uploading avatar...');
-        avatarUrl = await _mediaUploadUtil.uploadMedia(_selectedAvatarFile!);
+        avatarUrl = await _mediaUploadUtil.uploadMedia(
+            await _selectedAvatarFile!.readAsBytes(), 
+            _selectedAvatarFile!.path.split('/').last);
         debugPrint('▶ [completeProfile] avatarUrl: $avatarUrl');
       }
 

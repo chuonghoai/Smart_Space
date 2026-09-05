@@ -1,7 +1,7 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:smartspace_admin/core/auth/user_storage_service.dart';
+import 'package:mobile_shared/core/auth/user_storage_service.dart';
 import 'package:smartspace_admin/features/notifications/providers/notification_provider.dart';
-import 'package:smartspace_admin/features/profile/models/user_model.dart';
+import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_admin/features/reports/models/report_model.dart';
 import 'package:smartspace_admin/features/reports/providers/report_providers.dart';
 

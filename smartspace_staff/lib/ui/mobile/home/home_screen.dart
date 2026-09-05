@@ -1,3 +1,4 @@
+import 'package:mobile_shared/mobile_shared.dart';
 // ignore_for_file: deprecated_member_use
 
 import 'package:flutter/material.dart';
@@ -7,7 +8,7 @@ import 'package:smartspace_staff/features/reports/models/report_model.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:smartspace_staff/ui/mobile/layout/app_layout.dart';
 import 'package:smartspace_staff/features/reports/utils/report_status_ext.dart';
-import 'package:smartspace_staff/util/distance_formatter.dart';
+import 'package:mobile_shared/util/distance_formatter.dart';
 import 'package:smartspace_staff/ui/shared/components/dangerous_reports_slider.dart';
 
 class MobileHomeScreen extends ConsumerWidget {
@@ -380,7 +381,7 @@ class _ReportCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          DistanceFormatter.format(report.distanceInMeters!, l10n),
+                          DistanceFormatter.format(report.distanceInMeters!, SharedLocalizations.of(context)!),
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),

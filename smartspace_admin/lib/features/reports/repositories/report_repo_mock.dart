@@ -1,4 +1,4 @@
-import 'package:smartspace_admin/core/api/api_response.dart';
+import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:smartspace_admin/features/reports/models/report_model.dart';
 import 'package:smartspace_admin/features/reports/repositories/report_repo.dart';
 

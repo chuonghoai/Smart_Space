@@ -1,23 +1,46 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'package:smartspace_staff/core/notification/firebase_service.dart';
 import 'l10n/app_localizations.dart';
 import 'routes/app_router.dart';
-import 'core/localization/locale_provider.dart';
-import 'core/theme/app_theme.dart';
-import 'core/theme/theme_provider.dart';
+import 'routes/router_path.dart';
+import 'package:mobile_shared/core/localization/locale_provider.dart';
+import 'package:mobile_shared/core/theme/theme_provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
-import 'package:smartspace_staff/core/toast/toast_service.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:smartspace_staff/core/connection/connection_manager.dart';
+import 'package:mobile_shared/mobile_shared.dart';
+import 'firebase_options.dart';
+import 'features/auth/services/auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   usePathUrlStrategy();
   await dotenv.load(fileName: ".env");
-  await FirebaseService.initialize();
+  
+  await FirebaseService.initialize(DefaultFirebaseOptions.currentPlatform);
+  
+  ErrorInterceptor.onRefreshToken = (String refreshToken) async {
+    return await authService.refreshToken(refreshToken);
+  };
+  
+  ErrorInterceptor.onLogout = () async {
+    await authService.logout();
+  };
+  
+  ErrorInterceptor.unauthenticatedStream.stream.listen((String reason) {
+    appRouter.go(RouterPath.login);
+    final context = navigatorKey.currentContext;
+    if (context != null && reason == 'session_expired') {
+      final l10n = AppLocalizations.of(context);
+      if (l10n != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.sessionExpired)),
+        );
+      }
+    }
+  });
+
   runApp(const ProviderScope(child: SmartSpaceStaffApp()));
 }
 

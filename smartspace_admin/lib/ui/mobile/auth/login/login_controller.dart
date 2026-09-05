@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
-import 'package:smartspace_admin/core/constants/registration_status.dart';
+import 'package:mobile_shared/core/constants/registration_status.dart';
 import 'package:smartspace_admin/features/auth/services/auth_service.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:google_sign_in/google_sign_in.dart' as google_sign_in_pkg;
-import 'package:smartspace_admin/core/config/env_config.dart';
-import 'package:smartspace_admin/core/connection/connection_manager.dart';
+import 'package:mobile_shared/core/config/env_config.dart';
+import 'package:mobile_shared/core/connection/connection_manager.dart';
 
 class LoginController extends ChangeNotifier {
   final AuthService _authService;

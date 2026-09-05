@@ -1,15 +1,15 @@
-import 'package:smartspace_staff/core/api/api_response.dart';
-import 'package:smartspace_staff/core/auth/access_token_service.dart';
-import 'package:smartspace_staff/core/auth/refresh_token_service.dart';
-import 'package:smartspace_staff/core/auth/user_storage_service.dart';
-import 'package:smartspace_staff/core/constants/use_mock.dart';
-import 'package:smartspace_staff/core/notification/firebase_service.dart';
+import 'package:mobile_shared/core/api/api_response.dart';
+import 'package:mobile_shared/core/auth/access_token_service.dart';
+import 'package:mobile_shared/core/auth/refresh_token_service.dart';
+import 'package:mobile_shared/core/auth/user_storage_service.dart';
+import 'package:mobile_shared/core/constants/use_mock.dart';
+import 'package:mobile_shared/core/notification/firebase_service.dart';
 import 'package:smartspace_staff/features/auth/models/token_model.dart';
 import 'package:smartspace_staff/features/auth/repositories/auth_repo.dart';
 import 'package:smartspace_staff/features/auth/repositories/auth_repo_api.dart';
 import 'package:smartspace_staff/features/auth/repositories/auth_repo_mock.dart';
-import 'package:smartspace_staff/features/profile/models/user_model.dart';
-import 'package:smartspace_staff/core/connection/connection_manager.dart';
+import 'package:mobile_shared/mobile_shared.dart';
+import 'package:mobile_shared/core/connection/connection_manager.dart';
 
 class AuthService {
   final AuthRepo authRepo;

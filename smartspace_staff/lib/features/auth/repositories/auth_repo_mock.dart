@@ -1,11 +1,11 @@
-import 'package:smartspace_staff/core/api/api_response.dart';
-import 'package:smartspace_staff/core/constants/registration_status.dart';
-import 'package:smartspace_staff/core/constants/role_constant.dart';
-import 'package:smartspace_staff/core/storage/secured_storage.dart';
-import 'package:smartspace_staff/core/storage/shared_preferences.dart';
+import 'package:mobile_shared/core/api/api_response.dart';
+import 'package:mobile_shared/core/constants/registration_status.dart';
+import 'package:mobile_shared/core/constants/role_constant.dart';
+import 'package:mobile_shared/core/storage/secured_storage.dart';
+import 'package:mobile_shared/core/storage/shared_preferences.dart';
 import 'package:smartspace_staff/features/auth/models/token_model.dart';
 import 'package:smartspace_staff/features/auth/repositories/auth_repo.dart';
-import 'package:smartspace_staff/features/profile/models/user_model.dart';
+import 'package:mobile_shared/mobile_shared.dart';
 
 class AuthRepoMock implements AuthRepo {
   @override

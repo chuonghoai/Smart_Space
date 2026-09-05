@@ -1,5 +1,5 @@
-import 'package:smartspace_staff/core/constants/registration_status.dart';
-import 'package:smartspace_staff/features/profile/models/user_model.dart';
+import 'package:mobile_shared/core/constants/registration_status.dart';
+import 'package:mobile_shared/mobile_shared.dart';
 
 class TokenModel {
   final String accessToken;

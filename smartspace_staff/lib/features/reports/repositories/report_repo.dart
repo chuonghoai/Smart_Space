@@ -1,4 +1,4 @@
-import 'package:smartspace_staff/core/api/api_response.dart';
+import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:smartspace_staff/features/reports/models/report_model.dart';
 
 abstract class ReportRepo {
