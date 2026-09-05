@@ -5,6 +5,7 @@ import '../auth/access_token_service.dart';
 class AuthInterceptor extends Interceptor {
   static const _publicPaths = [
     '/auth/login',
+    '/auth/login/google',
     '/auth/register',
     '/auth/refresh-token',
     '/auth/send-otp-register',
