@@ -1,0 +1,13 @@
+{
+  "distanceFromYou": "Cách bạn {value} {unit}",
+  "@distanceFromYou": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  }
+}

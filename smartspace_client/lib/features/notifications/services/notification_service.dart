@@ -1,5 +1,5 @@
-import 'package:smartspace_client/core/api/api_response.dart';
-import 'package:smartspace_client/core/constants/use_mock.dart';
+import 'package:mobile_shared/core/api/api_response.dart';
+import 'package:mobile_shared/core/constants/use_mock.dart';
 import 'package:smartspace_client/features/notifications/models/notification_count_model.dart';
 import 'package:smartspace_client/features/notifications/repositories/notification_repo.dart';
 import 'package:smartspace_client/features/notifications/repositories/notification_repo_api.dart';

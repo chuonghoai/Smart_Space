@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:smartspace_client/core/constants/registration_status.dart';
-import 'package:smartspace_client/core/auth/access_token_service.dart';
-import 'package:smartspace_client/core/auth/refresh_token_service.dart';
-import 'package:smartspace_client/core/auth/user_storage_service.dart';
-import 'package:smartspace_client/core/interceptors/error_interceptor.dart';
-import 'package:smartspace_client/core/localization/locale_provider.dart';
-import 'package:smartspace_client/core/theme/theme_provider.dart';
+import 'package:mobile_shared/core/constants/registration_status.dart';
+import 'package:mobile_shared/core/auth/access_token_service.dart';
+import 'package:mobile_shared/core/auth/refresh_token_service.dart';
+import 'package:mobile_shared/core/auth/user_storage_service.dart';
+import 'package:mobile_shared/core/interceptors/error_interceptor.dart';
+import 'package:mobile_shared/core/localization/locale_provider.dart';
+import 'package:mobile_shared/core/theme/theme_provider.dart';
 import 'package:smartspace_client/features/auth/services/auth_service.dart';
 import 'package:smartspace_client/routes/router_path.dart';
-import 'package:smartspace_client/util/location_service.dart';
-import 'package:smartspace_client/core/connection/connection_manager.dart';
+import 'package:mobile_shared/util/location_service.dart';
+import 'package:mobile_shared/core/connection/connection_manager.dart';
 
 class SplashController extends ChangeNotifier {
   bool _isLoading = true;

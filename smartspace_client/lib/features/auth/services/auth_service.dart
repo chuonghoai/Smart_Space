@@ -1,16 +1,16 @@
-import 'package:smartspace_client/core/api/api_response.dart';
-import 'package:smartspace_client/core/auth/access_token_service.dart';
-import 'package:smartspace_client/core/auth/refresh_token_service.dart';
-import 'package:smartspace_client/core/auth/user_storage_service.dart';
-import 'package:smartspace_client/core/connection/connection_manager.dart';
-import 'package:smartspace_client/core/constants/use_mock.dart';
-import 'package:smartspace_client/core/notification/firebase_service.dart';
+import 'package:mobile_shared/core/api/api_response.dart';
+import 'package:mobile_shared/core/auth/access_token_service.dart';
+import 'package:mobile_shared/core/auth/refresh_token_service.dart';
+import 'package:mobile_shared/core/auth/user_storage_service.dart';
+import 'package:mobile_shared/core/connection/connection_manager.dart';
+import 'package:mobile_shared/core/constants/use_mock.dart';
+import 'package:mobile_shared/core/notification/firebase_service.dart';
 import 'package:smartspace_client/features/auth/models/DeviceSessionModel.dart';
 import 'package:smartspace_client/features/auth/models/token_model.dart';
 import 'package:smartspace_client/features/auth/repositories/auth_repo.dart';
 import 'package:smartspace_client/features/auth/repositories/auth_repo_api.dart';
 import 'package:smartspace_client/features/auth/repositories/auth_repo_mock.dart';
-import 'package:smartspace_client/features/profile/models/user_model.dart';
+import 'package:mobile_shared/core/auth/models/user_model.dart';
 
 class AuthService {
   final AuthRepo authRepo;

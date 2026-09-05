@@ -2,8 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/services/report_service.dart';
-import 'package:smartspace_client/util/distance_updater_provider.dart';
-import 'package:smartspace_client/util/location_service.dart';
+import 'package:mobile_shared/util/distance_updater_provider.dart';
+import 'package:mobile_shared/util/location_service.dart';
 
 class ReportsState {
   final List<ReportModel> dangerousReports;

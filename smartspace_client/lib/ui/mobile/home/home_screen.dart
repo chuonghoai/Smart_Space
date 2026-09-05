@@ -1,5 +1,4 @@
-// ignore_for_file: deprecated_member_use
-
+import 'package:mobile_shared/mobile_shared.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartspace_client/ui/mobile/home/home_controller.dart';
@@ -7,7 +6,6 @@ import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/ui/mobile/layout/app_layout.dart';
 import 'package:smartspace_client/features/reports/utils/report_status_ext.dart';
-import 'package:smartspace_client/util/distance_formatter.dart';
 import 'package:smartspace_client/ui/shared/components/dangerous_reports_slider.dart';
 
 class MobileHomeScreen extends ConsumerWidget {
@@ -138,7 +136,7 @@ class MobileHomeScreen extends ConsumerWidget {
                                 Icons.inbox_outlined,
                                 size: 64,
                                 color: theme.colorScheme.onSurfaceVariant
-                                    .withOpacity(0.5),
+                                    .withValues(alpha: 0.5),
                               ),
                               const SizedBox(height: 16),
                               Text(
@@ -194,7 +192,7 @@ class _PrimaryActionCard extends StatelessWidget {
       color: theme.colorScheme.primary,
       borderRadius: BorderRadius.circular(16),
       elevation: 2,
-      shadowColor: theme.colorScheme.primary.withOpacity(0.4),
+      shadowColor: theme.colorScheme.primary.withValues(alpha: 0.4),
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(16),
@@ -207,7 +205,7 @@ class _PrimaryActionCard extends StatelessWidget {
               Container(
                 padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.onPrimary.withOpacity(0.2),
+                  color: theme.colorScheme.onPrimary.withValues(alpha: 0.2),
                   shape: BoxShape.circle,
                 ),
                 child: Icon(icon, size: 32, color: theme.colorScheme.onPrimary),
@@ -224,7 +222,7 @@ class _PrimaryActionCard extends StatelessWidget {
               Text(
                 subtitle,
                 style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onPrimary.withOpacity(0.8),
+                  color: theme.colorScheme.onPrimary.withValues(alpha: 0.8),
                 ),
               ),
             ],
@@ -259,7 +257,7 @@ class _QuickActionCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: theme.colorScheme.outlineVariant.withOpacity(0.5),
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
         ),
       ),
       child: InkWell(
@@ -328,7 +326,7 @@ class _ReportCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
         side: BorderSide(
-          color: theme.colorScheme.outlineVariant.withOpacity(0.5),
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
         ),
       ),
       child: Padding(
@@ -380,7 +378,7 @@ class _ReportCard extends StatelessWidget {
                         ),
                         const SizedBox(width: 8),
                         Text(
-                          DistanceFormatter.format(report.distanceInMeters!, l10n),
+                          DistanceFormatter.format(report.distanceInMeters!, SharedLocalizations.of(context)!),
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                           ),
@@ -395,7 +393,7 @@ class _ReportCard extends StatelessWidget {
                       vertical: 4,
                     ),
                     decoration: BoxDecoration(
-                      color: statusColor.withOpacity(0.1),
+                      color: statusColor.withValues(alpha: 0.1),
                       borderRadius: BorderRadius.circular(4),
                     ),
                     child: Text(

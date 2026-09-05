@@ -1,9 +1,9 @@
-import 'package:smartspace_client/core/api/api_client.dart';
-import 'package:smartspace_client/core/api/api_response.dart';
+import 'package:mobile_shared/core/api/api_client.dart';
+import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:smartspace_client/features/auth/models/DeviceSessionModel.dart';
 import 'package:smartspace_client/features/auth/models/token_model.dart';
 import 'package:smartspace_client/features/auth/repositories/auth_repo.dart';
-import 'package:smartspace_client/features/profile/models/user_model.dart';
+import 'package:mobile_shared/core/auth/models/user_model.dart';
 
 class AuthRepoApi implements AuthRepo {
   @override

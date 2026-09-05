@@ -2,11 +2,11 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:smartspace_client/core/auth/user_storage_service.dart';
+import 'package:mobile_shared/core/auth/user_storage_service.dart';
 import 'package:smartspace_client/features/auth/services/auth_service.dart';
-import 'package:smartspace_client/features/profile/models/user_model.dart';
+import 'package:mobile_shared/core/auth/models/user_model.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
-import 'package:smartspace_client/util/media_upload.dart';
+import 'package:mobile_shared/util/media_upload.dart';
 
 class EditProfileController extends ChangeNotifier {
   final AuthService _authService;

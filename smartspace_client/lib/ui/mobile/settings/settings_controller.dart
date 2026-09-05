@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:smartspace_client/core/auth/user_storage_service.dart';
+import 'package:mobile_shared/core/auth/user_storage_service.dart';
 import 'package:smartspace_client/features/auth/services/auth_service.dart';
-import 'package:smartspace_client/features/profile/models/user_model.dart';
+import 'package:mobile_shared/core/auth/models/user_model.dart';
 import 'package:smartspace_client/routes/app_router.dart';
 import 'package:smartspace_client/routes/router_path.dart';
 

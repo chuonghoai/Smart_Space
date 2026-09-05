@@ -1,0 +1,13 @@
+{
+  "distanceFromYou": "{value} {unit} away",
+  "@distanceFromYou": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      },
+      "unit": {
+        "type": "String"
+      }
+    }
+  }
+}
