@@ -16,4 +16,11 @@ import lombok.experimental.FieldDefaults;
 public class GoogleLoginRequest {
     @NotBlank(message = "ID Token không được để trống")
     String idToken;
+
+    @NotBlank(message = "DeviceId is required")
+    String deviceId;
+    
+    String deviceName;
+    String platform;
+    String ipAddress;
 }

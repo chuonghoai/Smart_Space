@@ -405,4 +405,73 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get passwordReqSpecial =>
       'Include at least one special character !@#\$^()_';
+
+  @override
+  String get loggedInDevices => 'Logged in devices';
+
+  @override
+  String get thisDevice => 'This device';
+
+  @override
+  String get activeNow => 'Active now';
+
+  @override
+  String get logoutDevice => 'Logout';
+
+  @override
+  String get logoutDeviceConfirmTitle => 'Logout from device?';
+
+  @override
+  String logoutDeviceConfirmMessage(String deviceName) {
+    return 'The session on \"$deviceName\" will be ended.';
+  }
+
+  @override
+  String get logoutAllOtherDevices => 'Logout all other devices';
+
+  @override
+  String get logoutAllConfirmTitle => 'Logout all other devices?';
+
+  @override
+  String get logoutAllConfirmMessage =>
+      'All sessions except this device will be ended.';
+
+  @override
+  String get noOtherDevices => 'No other devices logged in.';
+
+  @override
+  String get deviceLogoutSuccess => 'Device logged out.';
+
+  @override
+  String get allDevicesLogoutSuccess => 'All other devices logged out.';
+
+  @override
+  String get editProfile => 'Edit Profile';
+
+  @override
+  String get dateOfBirth => 'Date of Birth';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get genderMale => 'Male';
+
+  @override
+  String get genderFemale => 'Female';
+
+  @override
+  String get genderOther => 'Other';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get profileUpdateSuccess => 'Profile updated successfully';
+
+  @override
+  String get profileUpdateFailed => 'Failed to update profile';
+
+  @override
+  String get changeAvatar => 'Change avatar';
 }

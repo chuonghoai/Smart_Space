@@ -404,4 +404,73 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get passwordReqSpecial =>
       'Bao gồm ít nhất một ký tự đặc biệt !@#\$^()_';
+
+  @override
+  String get loggedInDevices => 'Thiết bị đã đăng nhập';
+
+  @override
+  String get thisDevice => 'Thiết bị này';
+
+  @override
+  String get activeNow => 'Đang hoạt động';
+
+  @override
+  String get logoutDevice => 'Đăng xuất';
+
+  @override
+  String get logoutDeviceConfirmTitle => 'Đăng xuất khỏi thiết bị?';
+
+  @override
+  String logoutDeviceConfirmMessage(String deviceName) {
+    return 'Phiên đăng nhập trên \"$deviceName\" sẽ bị kết thúc.';
+  }
+
+  @override
+  String get logoutAllOtherDevices => 'Đăng xuất tất cả thiết bị khác';
+
+  @override
+  String get logoutAllConfirmTitle => 'Đăng xuất tất cả thiết bị khác?';
+
+  @override
+  String get logoutAllConfirmMessage =>
+      'Tất cả phiên ngoại trừ thiết bị này sẽ bị kết thúc.';
+
+  @override
+  String get noOtherDevices => 'Không có thiết bị khác đang đăng nhập.';
+
+  @override
+  String get deviceLogoutSuccess => 'Đã đăng xuất thiết bị.';
+
+  @override
+  String get allDevicesLogoutSuccess => 'Đã đăng xuất tất cả thiết bị khác.';
+
+  @override
+  String get editProfile => 'Chỉnh sửa hồ sơ';
+
+  @override
+  String get dateOfBirth => 'Ngày sinh';
+
+  @override
+  String get gender => 'Giới tính';
+
+  @override
+  String get genderMale => 'Nam';
+
+  @override
+  String get genderFemale => 'Nữ';
+
+  @override
+  String get genderOther => 'Khác';
+
+  @override
+  String get saveChanges => 'Lưu thay đổi';
+
+  @override
+  String get profileUpdateSuccess => 'Cập nhật hồ sơ thành công';
+
+  @override
+  String get profileUpdateFailed => 'Cập nhật hồ sơ thất bại';
+
+  @override
+  String get changeAvatar => 'Đổi ảnh đại diện';
 }

@@ -1,5 +1,5 @@
-import 'package:smartspace_client/core/constants/role_constant.dart';
 import 'package:smartspace_client/core/constants/registration_status.dart';
+import 'package:smartspace_client/core/constants/role_constant.dart';
 
 class UserModel {
   final String id;
@@ -8,6 +8,9 @@ class UserModel {
   final String avatarUrl;
   final ERole role;
   final ERegistrationStatus? registrationStatus;
+  final String? phone;
+  final String? dateOfBirth;
+  final String? gender;
 
   UserModel({
     required this.id,
@@ -16,6 +19,9 @@ class UserModel {
     required this.avatarUrl,
     required this.role,
     this.registrationStatus,
+    this.phone,
+    this.dateOfBirth,
+    this.gender,
   });
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
@@ -28,6 +34,9 @@ class UserModel {
       registrationStatus: json['registrationStatus'] != null
           ? ERegistrationStatus.fromString(json['registrationStatus'] as String)
           : null,
+      phone: json['phone'] as String?,
+      dateOfBirth: json['date_of_birth'] as String?,
+      gender: json['gender'] as String?,
     );
   }
 
@@ -38,6 +47,9 @@ class UserModel {
       'fullname': fullname,
       'avatar_url': avatarUrl,
       'role': role.value,
+      if (phone != null) 'phone': phone,
+      if (dateOfBirth != null) 'date_of_birth': dateOfBirth,
+      if (gender != null) 'gender': gender,
     };
   }
 }

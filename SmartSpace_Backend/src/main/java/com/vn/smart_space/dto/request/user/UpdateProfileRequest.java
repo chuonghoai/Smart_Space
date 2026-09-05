@@ -1,5 +1,9 @@
 package com.vn.smart_space.dto.request.user;
 
+import java.time.LocalDate;
+
+import com.vn.smart_space.consts.EGender;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -17,5 +21,8 @@ public class UpdateProfileRequest {
     String phone;
 
     String avatarUrl;
+
+    LocalDate dateOfBirth;
+    EGender gender;
 
 }

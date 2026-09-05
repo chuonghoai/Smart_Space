@@ -1,4 +1,3 @@
-import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smartspace_client/ui/mobile/auth/register/register_controller.dart';
@@ -87,24 +86,25 @@ class _MobileCompleteProfileScreenState
                       child: Stack(
                         alignment: Alignment.bottomRight,
                         children: [
-                          CircleAvatar(
-                            radius: 50,
-                            backgroundColor:
-                                colorScheme.surfaceContainerHighest,
-                            backgroundImage:
-                                _controller.selectedAvatarFile != null
-                                ? FileImage(
-                                    File(_controller.selectedAvatarFile!.path),
-                                  )
-                                : null,
-                            child: _controller.selectedAvatarFile == null
-                                ? Icon(
+                          _controller.selectedAvatarBytes != null
+                              ? ClipOval(
+                                  child: Image.memory(
+                                    _controller.selectedAvatarBytes!,
+                                    width: 100,
+                                    height: 100,
+                                    fit: BoxFit.cover,
+                                  ),
+                                )
+                              : CircleAvatar(
+                                  radius: 50,
+                                  backgroundColor:
+                                      colorScheme.surfaceContainerHighest,
+                                  child: Icon(
                                     Icons.person_outline,
                                     size: 50,
                                     color: colorScheme.onSurfaceVariant,
-                                  )
-                                : null,
-                          ),
+                                  ),
+                                ),
                           Container(
                             padding: const EdgeInsets.all(4),
                             decoration: BoxDecoration(

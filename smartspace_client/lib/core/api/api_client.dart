@@ -185,12 +185,14 @@ class ApiClient {
   Future<ApiResponse<T>> delete<T>(
     String url, {
     Options? options,
+    Map<String, dynamic>? queryParameters,
     T Function(dynamic)? decoder,
   }) async {
     try {
       final response = await dioInstance.delete<Map<String, dynamic>>(
         url,
         options: options,
+        queryParameters: queryParameters,
       );
       return ApiResponse.fromJson(
         response.data!,

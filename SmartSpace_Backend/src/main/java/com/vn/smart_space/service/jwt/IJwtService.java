@@ -6,7 +6,7 @@ import com.vn.smart_space.dto.TokenPayload;
 import com.vn.smart_space.model.User;
 
 public interface IJwtService {
-    TokenPayload generateAccessToken(User user);
+    TokenPayload generateAccessToken(User user, String deviceId);
 
     TokenPayload generateRefreshToken(User user, boolean rememberMe);
 

@@ -1,8 +1,9 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:smartspace_client/features/auth/services/auth_service.dart';
+import 'package:smartspace_client/core/utils/device_info_util.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/routes/router_path.dart';
 import 'package:smartspace_client/util/media_upload.dart';
@@ -29,9 +30,11 @@ class RegisterController extends ChangeNotifier {
   String _otp = '';
   String get otp => _otp;
 
-  // Image file
-  File? _selectedAvatarFile;
-  File? get selectedAvatarFile => _selectedAvatarFile;
+  // Avatar bytes
+  Uint8List? _selectedAvatarBytes;
+  Uint8List? get selectedAvatarBytes => _selectedAvatarBytes;
+
+  String? _selectedAvatarName;
 
   void _setLoading(bool value) {
     _isLoading = value;
@@ -147,10 +150,17 @@ class RegisterController extends ChangeNotifier {
     _setError(null);
 
     try {
+      final deviceId = await DeviceInfoUtil.getDeviceId();
+      final deviceName = await DeviceInfoUtil.getDeviceName();
+      final platform = DeviceInfoUtil.getPlatform();
+
       final response = await _authService.register(
         _email,
         password,
         confirmPassword,
+        deviceId,
+        deviceName,
+        platform,
       );
 
       if (response.success && response.data != null) {
@@ -200,12 +210,15 @@ class RegisterController extends ChangeNotifier {
       debugPrint('▶ [completeProfile] fullname: ${fullname.trim()}');
       debugPrint('▶ [completeProfile] phone: ${phone.trim()}');
       debugPrint(
-        '▶ [completeProfile] hasAvatar: ${_selectedAvatarFile != null}',
+        '▶ [completeProfile] hasAvatar: ${_selectedAvatarBytes != null}',
       );
 
-      if (_selectedAvatarFile != null) {
+      if (_selectedAvatarBytes != null) {
         debugPrint('▶ [completeProfile] Uploading avatar...');
-        avatarUrl = await _mediaUploadUtil.uploadMedia(_selectedAvatarFile!);
+        avatarUrl = await _mediaUploadUtil.uploadMedia(
+          _selectedAvatarBytes!,
+          _selectedAvatarName ?? 'avatar.jpg',
+        );
         debugPrint('▶ [completeProfile] avatarUrl: $avatarUrl');
       }
 
@@ -247,7 +260,8 @@ class RegisterController extends ChangeNotifier {
   void reset() {
     _email = '';
     _otp = '';
-    _selectedAvatarFile = null;
+    _selectedAvatarBytes = null;
+    _selectedAvatarName = null;
     _error = null;
     _isLoading = false;
     notifyListeners();
@@ -259,7 +273,8 @@ class RegisterController extends ChangeNotifier {
       final picker = ImagePicker();
       final pickedFile = await picker.pickImage(source: source);
       if (pickedFile != null) {
-        _selectedAvatarFile = File(pickedFile.path);
+        _selectedAvatarBytes = await pickedFile.readAsBytes();
+        _selectedAvatarName = pickedFile.name;
         notifyListeners();
       }
     } catch (e) {
