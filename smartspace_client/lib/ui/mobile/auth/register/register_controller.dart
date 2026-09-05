@@ -2,6 +2,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mobile_shared/core/connection/connection_manager.dart';
 import 'package:mobile_shared/features/auth/services/auth_service.dart';
 import 'package:mobile_shared/util/device_info_util.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
@@ -236,6 +237,7 @@ class RegisterController extends ChangeNotifier {
       if (response.success && response.data != null) {
         if (context.mounted) {
           reset();
+          connectionManager.startConnections();
           context.go(RouterPath.home);
         }
       } else {
