@@ -9,13 +9,13 @@
     "backend:dev": "cd SmartSpace_Backend && mvn spring-boot:run",
 
     "client-web:dev": "cd smartspace_client && flutter run -d chrome --web-port=9090",
-    "client:dev": "powershell -ExecutionPolicy Bypass -File update_ip.ps1 && cd smartspace_client && flutter run",
+    "client:dev": "powershell -ExecutionPolicy Bypass -File update_ip.ps1 && cd smartspace_client && flutter run --web-port=9090",
 
     "admin-web:dev": "cd smartspace_admin && flutter run -d chrome --web-port=9090",
-    "admin:dev": "powershell -ExecutionPolicy Bypass -File update_ip.ps1 && cd smartspace_admin && flutter run",
+    "admin:dev": "powershell -ExecutionPolicy Bypass -File update_ip.ps1 && cd smartspace_admin && flutter run --web-port=9090",
 
     "staff-web:dev": "cd smartspace_staff && flutter run -d chrome --web-port=9090",
-    "staff:dev": "powershell -ExecutionPolicy Bypass -File update_ip.ps1 && cd smartspace_staff && flutter run",
+    "staff:dev": "powershell -ExecutionPolicy Bypass -File update_ip.ps1 && cd smartspace_staff && flutter run --web-port=9090",
 
     "backend:test": "cd SmartSpace_Backend && mvn test",
     "client:test": "cd smartspace_client && flutter test",
