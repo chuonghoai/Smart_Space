@@ -1,7 +1,26 @@
+import 'dart:convert';
+import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class EnvConfig {
+  static String? _lanIp;
+
+  static Future<void> init() async {
+    try {
+      final String jsonString = await rootBundle.loadString('packages/mobile_shared/assets/local.json');
+      final Map<String, dynamic> jsonMap = jsonDecode(jsonString);
+      
+      final ip = jsonMap['lanIp'] as String?;
+      if (ip == null || ip.isEmpty) {
+        throw Exception("lanIp is empty or not found in local.json");
+      }
+      _lanIp = ip;
+    } catch (e) {
+      throw Exception("Failed to load local.json. Please run 'npm run client:dev' or 'update_ip.ps1' to generate it. Error: $e");
+    }
+  }
+
   static int get apiTimeout {
     final timeoutStr =
         dotenv.env['API_TIMEOUT'] ??
@@ -18,7 +37,7 @@ class EnvConfig {
 
     // Development environment
     final String port = dotenv.env['PORT'] ?? '3000';
-    final String lanIp = dotenv.env['LAN_IP'] ?? '10.0.2.2';
+    final String lanIp = _lanIp ?? dotenv.env['LAN_IP'] ?? '10.0.2.2';
 
     // Web config
     if (kIsWeb) {

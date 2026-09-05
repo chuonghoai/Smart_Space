@@ -15,6 +15,7 @@ import 'features/auth/services/auth_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await EnvConfig.init();
   usePathUrlStrategy();
   await dotenv.load(fileName: ".env");
   

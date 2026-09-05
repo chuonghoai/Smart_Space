@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:smartspace_staff/ui/mobile/auth/login/login_screen.dart';
 import 'package:smartspace_staff/ui/responsive/responsive_layout.dart';
-import 'package:smartspace_staff/ui/web/auth/login_screen.dart';
+import 'package:smartspace_staff/ui/web/auth/login_screen_stub.dart'
+    if (dart.library.js_interop) 'package:smartspace_staff/ui/web/auth/login_screen.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
