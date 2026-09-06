@@ -236,5 +236,13 @@
       "current": {},
       "total": {}
     }
-  }
+  },
+  "navigateToReport": "Navigate",
+  "viewDetail": "View Detail",
+  "myLocation": "My Location",
+  "filterReports": "Filter Reports",
+  "refresh": "Refresh",
+  "filter": "Filter",
+  "dangerousReports": "Dangerous",
+  "recentReports": "Recent"
 }

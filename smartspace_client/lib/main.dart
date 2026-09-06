@@ -12,6 +12,8 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'package:mobile_shared/mobile_shared.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
 import 'firebase_options.dart';
 
 void main() async {
@@ -19,6 +21,12 @@ void main() async {
   await EnvConfig.init();
   usePathUrlStrategy();
   await dotenv.load(fileName: ".env");
+
+  // Initialize Mapbox (Mobile only — Web uses Mapbox GL JS)
+  if (!kIsWeb) {
+    final mapboxToken = dotenv.env['MAPBOX_ACCESS_TOKEN'] ?? '';
+    mapbox.MapboxOptions.setAccessToken(mapboxToken);
+  }
   
   await FirebaseService.initialize(DefaultFirebaseOptions.currentPlatform);
   

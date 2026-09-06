@@ -236,5 +236,13 @@
       "current": {},
       "total": {}
     }
-  }
+  },
+  "navigateToReport": "Chỉ đường",
+  "viewDetail": "Xem chi tiết",
+  "myLocation": "Vị trí của tôi",
+  "filterReports": "Bộ lọc báo cáo",
+  "refresh": "Tải lại",
+  "filter": "Bộ lọc",
+  "dangerousReports": "Nguy hiểm",
+  "recentReports": "Gần đây"
 }

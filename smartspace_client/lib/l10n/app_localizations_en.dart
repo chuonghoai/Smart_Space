@@ -250,7 +250,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get home => 'Home';
 
   @override
-  String get recentReports => 'Recent reports';
+  String get recentReports => 'Recent';
 
   @override
   String get noReportsYet => 'No reports yet';
@@ -262,7 +262,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get logout => 'Log out';
 
   @override
-  String get dangerousReports => 'Dangerous warnings';
+  String get dangerousReports => 'Dangerous';
 
   @override
   String get map => 'Map';
@@ -595,4 +595,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String sendingReportProgress(Object current, Object total) {
     return 'Sending report... ($current/$total)';
   }
+
+  @override
+  String get navigateToReport => 'Navigate';
+
+  @override
+  String get viewDetail => 'View Detail';
+
+  @override
+  String get myLocation => 'My Location';
+
+  @override
+  String get filterReports => 'Filter Reports';
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
+  String get filter => 'Filter';
 }
