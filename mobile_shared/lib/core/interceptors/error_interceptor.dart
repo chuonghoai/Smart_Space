@@ -15,6 +15,9 @@ class ErrorInterceptor extends Interceptor {
   static int _refreshCount = 0;
   static DateTime _lastRefreshTime = DateTime.now();
 
+  static bool _isRefreshing = false;
+  static Completer<bool>? _refreshCompleter;
+
   @override
   Future<void> onError(
     DioException err,
@@ -47,6 +50,28 @@ class ErrorInterceptor extends Interceptor {
         return handler.next(err);
       }
 
+      if (_isRefreshing) {
+        final isSuccess = await _refreshCompleter!.future;
+        if (isSuccess) {
+          try {
+            final newAccessToken = await accessTokenService.getAccessToken();
+            err.requestOptions.headers['Authorization'] = 'Bearer $newAccessToken';
+            err.requestOptions.extra['isRetry'] = true;
+            final response = await dioInstance.fetch(err.requestOptions);
+            return handler.resolve(response);
+          } on DioException catch (retryErr) {
+            return handler.next(retryErr);
+          } catch (e) {
+            return handler.next(err);
+          }
+        } else {
+          return handler.next(err);
+        }
+      }
+
+      _isRefreshing = true;
+      _refreshCompleter = Completer<bool>();
+
       final refreshToken = await refreshTokenService.getRefreshToken();
       String reason = 'unauthorized';
 
@@ -54,13 +79,16 @@ class ErrorInterceptor extends Interceptor {
         bool refreshTokenSuccess = await authService.refreshToken(refreshToken);
 
         if (refreshTokenSuccess) {
+          _isRefreshing = false;
+          _refreshCompleter?.complete(true);
+
           try {
             final newAccessToken = await accessTokenService.getAccessToken();
             err.requestOptions.headers['Authorization'] =
                 'Bearer $newAccessToken';
             err.requestOptions.extra['isRetry'] = true;
             final response = await dioInstance.fetch(err.requestOptions);
-            debugPrint("Refrested token success");
+            debugPrint("Refreshed token success");
             return handler.resolve(response);
           } on DioException catch (retryErr) {
             return handler.next(retryErr);
@@ -71,6 +99,9 @@ class ErrorInterceptor extends Interceptor {
 
         reason = 'expired';
       }
+
+      _isRefreshing = false;
+      _refreshCompleter?.complete(false);
 
       try {
         await authService.logout();
