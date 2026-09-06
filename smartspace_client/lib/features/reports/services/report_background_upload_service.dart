@@ -1,8 +1,8 @@
+import 'dart:convert';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:smartspace_client/features/reports/models/report_dto.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
-import 'package:flutter/material.dart';
 import 'dart:ui' as ui;
 import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_client/features/reports/services/report_service.dart';
@@ -93,7 +93,15 @@ class ReportBackgroundUploadService extends ChangeNotifier {
       if (response.success && response.data != null) {
         _lastUploadedReport = response.data;
         _statusMessage = l10n.createReportSuccess;
-        await _showNotification(0, 0, l10n.success, l10n.reportRecorded, showProgress: false, payload: response.data!.id);
+        
+        final actionData = {
+          "type": "REPORT_DETAIL",
+          "payload": {
+             "reportId": response.data!.id
+          }
+        };
+        
+        await _showNotification(0, 0, l10n.success, l10n.reportRecorded, showProgress: false, payload: jsonEncode(actionData));
         if (onSuccess != null) {
           onSuccess(response.data!);
         }

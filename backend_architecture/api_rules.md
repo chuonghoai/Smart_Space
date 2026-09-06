@@ -45,3 +45,20 @@
 - **Kiểm tra trước khi code:** Khi cần một logic, LUÔN search xem có Service nào đang làm việc tương tự không.
 - **Tái sử dụng (Reuse):** Inject Service có sẵn (ví dụ: `IUserService`) thay vì viết lại logic vào Service hiện tại.
 - **Shared Helpers:** Các logic không thuộc domain cụ thể (như tạo OTP, parse ngày tháng) phải được để trong package `utils` (ví dụ `OtpGenerator`).
+
+## 5. Push Notification Rules (WebSocket & FCM)
+Khi backend phát đi các thông báo (Push Notification) qua WebSocket hoặc Firebase Cloud Messaging (FCM), phải tuân thủ chuẩn format `Action Data` chung để client có thể parse một cách nhất quán:
+- Bắt buộc phải có `type` (Action Type) định nghĩa loại thông báo (vd: `REPORT_DETAIL`, `INVOICE_DETAIL`).
+- Bắt buộc phải có `payload` (JSON String hoặc object) chứa dữ liệu chi tiết.
+
+**Đối với WebSocket (`NotificationEvent`):**
+Trường `actionData` phải là JSON String format: `{"type": "...", "payload": {...}}`
+
+**Đối với FCM (`fcmData` Map):**
+Data map phải truyền 2 key riêng biệt là `type` và `payload`:
+```java
+Map<String, String> fcmData = Map.of(
+    "type", "REPORT_DETAIL",
+    "payload", "{\"reportId\":\"" + report.getId() + "\"}"
+);
+```

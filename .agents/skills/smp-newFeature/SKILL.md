@@ -13,6 +13,7 @@ Mục đích: Tiếp nhận mô tả chức năng mới và xây dựng Implemen
 - [Shared Workflow](../rules/shared-workflow.md)
 - [Shared Architecture Rules](../rules/shared-architecture-rules.md)
 - [Shared UI & Localization Rules](../rules/shared-ui-l10n-rules.md)
+- Khuyến nghị tham khảo: `app_architecture/architecture/push_notification_rules.md` (nếu liên quan đến Notification).
 
 ## Quy trình thực hiện (Workflow)
 

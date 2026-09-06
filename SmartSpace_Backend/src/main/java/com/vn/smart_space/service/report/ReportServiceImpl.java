@@ -142,7 +142,9 @@ public class ReportServiceImpl implements IReportService {
             try {
                 String title = "Tạo phản ánh thành công";
                 String message = "Phản ánh của bạn đã được ghi nhận và đang chờ xử lý.";
-                String actionData = "{\"reportId\":\"" + report.getId() + "\"}";
+                
+                // Standardized actionData: { "type": "...", "payload": { ... } }
+                String actionData = "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"" + report.getId() + "\"}}";
                 
                 // Create DB Notification
                 notificationService.createNotification(userId, title, message, actionData);
@@ -154,8 +156,8 @@ public class ReportServiceImpl implements IReportService {
 
                 // Send FCM
                 Map<String, String> fcmData = Map.of(
-                    "reportId", report.getId(),
-                    "type", "REPORT_CREATED"
+                    "type", "REPORT_DETAIL",
+                    "payload", "{\"reportId\":\"" + report.getId() + "\"}"
                 );
                 NotificationRequest notif = new NotificationRequest(title, message, fcmData);
                 fcmService.sendToUser(userId, notif);

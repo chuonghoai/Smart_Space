@@ -46,7 +46,7 @@ public class JwtService implements IJwtService {
 
         Date issueTime = new Date();
         Date expiryTime = new Date(Instant.ofEpochMilli(issueTime.getTime())
-                .plus(1, ChronoUnit.MINUTES) 
+                .plus(10, ChronoUnit.MINUTES) 
                 .toEpochMilli());
         String jwtId = UUID.randomUUID().toString();
 

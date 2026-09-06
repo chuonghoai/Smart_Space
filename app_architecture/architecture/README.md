@@ -29,3 +29,6 @@ graph TD
 - KHÔNG để Controller gọi trực tiếp Repository bỏ qua Provider/Service.
 - Dependency chỉ được truyền từ trên xuống dưới (hoặc UI lắng nghe Provider).
 - Mọi logic xử lý state phức tạp nên nằm ở Provider, còn UI Controller chỉ đóng vai trò mediator để hiển thị.
+
+## Tham Khảo Thêm
+- [Quy tắc Push Notification (WebSocket & FCM)](push_notification_rules.md)
