@@ -5,9 +5,9 @@ import 'package:smartspace_client/ui/mobile/home/home_controller.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/features/reports/utils/report_status_ext.dart';
-import 'package:mobile_shared/util/distance_formatter.dart';
 import 'package:smartspace_client/ui/web/layout/web_layout.dart';
 import 'package:smartspace_client/ui/shared/components/dangerous_reports_slider.dart';
+import 'package:go_router/go_router.dart';
 
 class WebHomeScreen extends ConsumerWidget {
   const WebHomeScreen({super.key});
@@ -273,15 +273,20 @@ class _ReportCard extends StatelessWidget {
           color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 64,
-              height: 64,
-              decoration: BoxDecoration(
+      child: InkWell(
+        onTap: () {
+          context.push('/reports/${report.id}');
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 64,
+                height: 64,
+                decoration: BoxDecoration(
                 color: theme.colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(8),
                 image: DecorationImage(
@@ -348,6 +353,6 @@ class _ReportCard extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 }

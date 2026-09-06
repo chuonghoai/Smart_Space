@@ -1,6 +1,7 @@
 import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
+import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_client/features/reports/models/report_dto.dart';
 import 'package:smartspace_client/features/reports/repositories/report_repo.dart';
 
@@ -43,6 +44,19 @@ class ReportRepoApi implements ReportRepo {
       decoder: (json) {
         if (json is Map<String, dynamic>) {
           return ReportModel.fromJson(json);
+        }
+        throw Exception('Invalid response format');
+      },
+    );
+  }
+
+  @override
+  Future<ApiResponse<ReportDetailModel>> getReportDetail(String reportId) async {
+    return await apiClient.get<ReportDetailModel>(
+      '/reports/$reportId',
+      decoder: (json) {
+        if (json is Map<String, dynamic>) {
+          return ReportDetailModel.fromJson(json);
         }
         throw Exception('Invalid response format');
       },

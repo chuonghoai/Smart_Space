@@ -39,10 +39,7 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
     if (state == AppLifecycleState.resumed) {
       Geolocator.isLocationServiceEnabled().then((enabled) {
         if (enabled && mounted) {
-          final report = ref.read(reportDetailProvider(widget.reportId)).valueOrNull;
-          if (report != null && report.distanceInMeters == null) {
-            ref.read(reportDetailProvider(widget.reportId).notifier).refresh();
-          }
+          ref.invalidate(reportDistanceProvider(widget.reportId));
         }
       });
     }
@@ -82,7 +79,7 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
     }
 
     // Refresh provider to get distance
-    ref.read(reportDetailProvider(widget.reportId).notifier).refresh();
+    ref.invalidate(reportDistanceProvider(widget.reportId));
   }
 
   Future<void> _openGoogleMaps(double lat, double lng) async {
@@ -189,25 +186,47 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                         const SizedBox(height: 24),
 
                         // Map & Distance
-                        if (report.distanceInMeters != null)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: Text(
-                              l10n.distanceFromYou((report.distanceInMeters! / 1000).toStringAsFixed(1)),
-                              style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                            ),
-                          )
-                        else
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: 8.0),
-                            child: InkWell(
-                              onTap: _requestLocationPermission,
-                              child: Text(
-                                l10n.turnOnLocationToViewDistance,
-                                style: TextStyle(color: theme.colorScheme.primary, decoration: TextDecoration.underline),
+                        Consumer(
+                          builder: (context, ref, child) {
+                            final distanceAsync = ref.watch(reportDistanceProvider(widget.reportId));
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 8.0),
+                              child: distanceAsync.when(
+                                data: (distance) => Text(
+                                  l10n.distanceFromYou((distance / 1000).toStringAsFixed(1)),
+                                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                                ),
+                                loading: () => Row(
+                                  children: [
+                                    const SizedBox(
+                                      width: 16,
+                                      height: 16,
+                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Text(l10n.calculatingDistance),
+                                  ],
+                                ),
+                                error: (err, stack) {
+                                  String errorMsg = l10n.turnOnLocationToViewDistance;
+                                  if (err == 'LOCATION_DISABLED') {
+                                    errorMsg = l10n.locationServiceDisabledError;
+                                  } else if (err == 'PERMISSION_DENIED') {
+                                    errorMsg = l10n.locationPermissionDeniedForeverError;
+                                  }
+                                  
+                                  return InkWell(
+                                    onTap: _requestLocationPermission,
+                                    child: Text(
+                                      errorMsg,
+                                      style: TextStyle(color: theme.colorScheme.primary, decoration: TextDecoration.underline),
+                                    ),
+                                  );
+                                },
                               ),
-                            ),
-                          ),
+                            );
+                          },
+                        ),
 
                         // Map View
                         Container(

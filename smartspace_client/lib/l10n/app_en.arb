@@ -244,5 +244,32 @@
   "refresh": "Refresh",
   "filter": "Filter",
   "dangerousReports": "Dangerous",
-  "recentReports": "Recent"
+  "recentReports": "Recent",
+  "calculatingDistance": "Calculating distance...",
+  "reportDetails": "Report Details",
+  "turnOnLocationToViewDistance": "Turn on location to view the distance from the incident to your location",
+  "openInGoogleMaps": "Open in Google Maps",
+  "createdAtLabel": "Created at",
+  "statusLabel": "Status",
+  "severityLabel": "Severity",
+  "severityLow": "Low",
+  "severityMedium": "Medium",
+  "severityHigh": "High",
+  "severityCritical": "Critical",
+  "locationServiceDisabledError": "Please enable location services on your device",
+  "locationPermissionDeniedForeverError": "Location permissions are permanently denied, please go to settings to enable",
+  "cannotOpenGoogleMapsError": "Cannot open Google Maps",
+  "distanceFromYou": "{distance} km away",
+  "@distanceFromYou": {
+    "placeholders": {
+      "distance": {}
+    }
+  },
+  "errorOccurred": "An error occurred:\n{error}",
+  "@errorOccurred": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "retryButton": "Retry"
 }

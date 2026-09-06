@@ -280,8 +280,8 @@ class AppLocalizationsVi extends AppLocalizations {
   String get dangerous => 'NGUY HIỂM';
 
   @override
-  String distanceFromYou(String value, String unit) {
-    return 'Cách bạn $value $unit';
+  String distanceFromYou(Object distance) {
+    return 'Cách bạn: $distance km';
   }
 
   @override
@@ -612,4 +612,57 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get filter => 'Bộ lọc';
+
+  @override
+  String get calculatingDistance => 'Đang tính khoảng cách...';
+
+  @override
+  String get reportDetails => 'Chi tiết phản ánh';
+
+  @override
+  String get turnOnLocationToViewDistance =>
+      'Bật vị trí để xem khoảng cách từ nơi xảy ra đến vị trí của bạn';
+
+  @override
+  String get openInGoogleMaps => 'Mở trên Google Maps';
+
+  @override
+  String get createdAtLabel => 'Thời gian tạo';
+
+  @override
+  String get statusLabel => 'Trạng thái';
+
+  @override
+  String get severityLabel => 'Mức độ';
+
+  @override
+  String get severityLow => 'Thấp';
+
+  @override
+  String get severityMedium => 'Trung bình';
+
+  @override
+  String get severityHigh => 'Cao';
+
+  @override
+  String get severityCritical => 'Khẩn cấp';
+
+  @override
+  String get locationServiceDisabledError =>
+      'Vui lòng bật dịch vụ vị trí trên thiết bị';
+
+  @override
+  String get locationPermissionDeniedForeverError =>
+      'Quyền vị trí bị từ chối vĩnh viễn, vui lòng vào cài đặt để bật';
+
+  @override
+  String get cannotOpenGoogleMapsError => 'Không thể mở Google Maps';
+
+  @override
+  String errorOccurred(Object error) {
+    return 'Đã xảy ra lỗi:\n$error';
+  }
+
+  @override
+  String get retryButton => 'Thử lại';
 }

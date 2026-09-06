@@ -1,5 +1,6 @@
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
+import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_client/features/reports/models/report_dto.dart';
 import 'package:smartspace_client/features/reports/repositories/report_repo.dart';
 
@@ -90,6 +91,29 @@ class ReportRepoMock implements ReportRepo {
         latitude: reportDto.latitude,
         longitude: reportDto.longitude,
         status: ReportStatus.pending,
+        createdAt: DateTime.now(),
+      ),
+    );
+  }
+
+  @override
+  Future<ApiResponse<ReportDetailModel>> getReportDetail(String reportId) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: ReportDetailModel(
+        id: reportId,
+        title: 'Mock Report Title',
+        description: 'Mock Report Description',
+        imageUrls: ['https://ui-avatars.com/api/?name=Mock&background=random'],
+        latitude: 10.8231,
+        longitude: 106.6297,
+        status: ReportStatus.pending,
+        severity: EReportSeverity.high,
+        isAnonymous: false,
+        address: 'Mock Address',
+        locationDescription: 'Mock Location',
         createdAt: DateTime.now(),
       ),
     );

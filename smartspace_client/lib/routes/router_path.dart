@@ -13,4 +13,5 @@ class RouterPath {
   static const String editProfile = '/edit-profile';
   static const String createReport = '/create-report';
   static const String map = '/map';
+  static const String reportDetail = '/reports/:id';
 }

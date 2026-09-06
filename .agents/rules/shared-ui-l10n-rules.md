@@ -1,3 +1,7 @@
+---
+trigger: always_on
+---
+
 # Shared UI & Localization Rules
 
 Mọi thay đổi liên quan đến Giao diện người dùng (UI) và Text hiển thị (User-facing text) MUST tuân thủ nghiêm ngặt các quy định sau đây. 
@@ -12,6 +16,8 @@ Mọi UI được tạo mới hoặc chỉnh sửa MUST hỗ trợ đúng cả h
 - **MUST NOT** dùng trực tiếp một màu cố định (fixed color) thay vì màu/theme token nếu project đã có theme/color token tương ứng.
 - **MUST** kiểm tra theme hiện tại của project trước khi tạo/chỉnh sửa UI.
 - **MUST** ưu tiên sử dụng hệ thống màu/theme/design token (cho Background, text, icon, border, divider, button, input, card...) đã có trong project phù hợp với theme hiện hành.
+- **MUST** phải tuân thủ quy tắc thiết kế UI của taste skill trong global workspace của máy tính, đảm bảo UI được thiết kế không bị AI_SL. Nếu không tìm thấy bộ quy tắc này trong global workspace thì bỏ qua
+- **MUST** tuân thủ quy tắc thiết kế màu sắc, font chữ trong app_architecture\design\design.md
 - **MUST** đảm bảo khi thêm màu mới, màu đó phù hợp và hiển thị tốt ở cả Light Mode và Dark Mode.
 - **MUST** kiểm tra trực tiếp các trường hợp tương phản giữa foreground và background ở cả 2 mode (không chỉ kiểm tra syntax/compile) trong quá trình thiết kế, code và review.
 - **MUST NOT** thay đổi màu để fix một mode nhưng làm hỏng mode còn lại.

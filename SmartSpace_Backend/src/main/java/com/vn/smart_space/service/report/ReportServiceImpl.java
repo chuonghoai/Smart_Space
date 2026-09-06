@@ -155,4 +155,28 @@ public class ReportServiceImpl implements IReportService {
         
         return response;
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReportDetailResponse getReportDetail(String reportId) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new RuntimeException("Report not found"));
+        
+        return ReportDetailResponse.builder()
+                .id(report.getId())
+                .title(report.getTitle())
+                .description(report.getDescription())
+                .imageUrls(report.getImageUrls() != null && !report.getImageUrls().isEmpty() 
+                    ? Arrays.asList(report.getImageUrls().split(",")) 
+                    : null)
+                .latitude(report.getLatitude())
+                .longitude(report.getLongitude())
+                .status(report.getStatus() != null ? report.getStatus().name() : null)
+                .severity(report.getSeverity() != null ? report.getSeverity().name() : null)
+                .isAnonymous(report.getIsAnonymous())
+                .address(report.getAddress())
+                .locationDescription(report.getLocationDescription())
+                .createdAt(report.getCreatedAt() != null ? report.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME) : null)
+                .build();
+    }
 }

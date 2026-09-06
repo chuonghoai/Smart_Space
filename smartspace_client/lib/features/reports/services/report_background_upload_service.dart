@@ -7,6 +7,7 @@ import 'dart:ui' as ui;
 import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_client/features/reports/services/report_service.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
+import 'package:smartspace_client/routes/app_router.dart';
 
 class ReportBackgroundUploadService extends ChangeNotifier {
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
@@ -36,10 +37,17 @@ class ReportBackgroundUploadService extends ChangeNotifier {
       android: initializationSettingsAndroid,
       iOS: initializationSettingsIOS,
     );
-    await _flutterLocalNotificationsPlugin.initialize(settings: initializationSettings);
+    await _flutterLocalNotificationsPlugin.initialize(
+      settings: initializationSettings,
+      onDidReceiveNotificationResponse: (NotificationResponse response) {
+        if (response.payload != null && response.payload!.isNotEmpty) {
+          appRouter.push('/reports/${response.payload}');
+        }
+      },
+    );
   }
 
-  Future<void> _showNotification(int progress, int maxProgress, String title, String body, {bool showProgress = true}) async {
+  Future<void> _showNotification(int progress, int maxProgress, String title, String body, {bool showProgress = true, String? payload}) async {
     final AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
       'upload_channel_id',
       'Upload Progress',
@@ -61,6 +69,7 @@ class ReportBackgroundUploadService extends ChangeNotifier {
       title: title,
       body: body,
       notificationDetails: platformChannelSpecifics,
+      payload: payload,
     );
   }
 
@@ -104,7 +113,7 @@ class ReportBackgroundUploadService extends ChangeNotifier {
       if (response.success && response.data != null) {
         _lastUploadedReport = response.data;
         _statusMessage = l10n.createReportSuccess;
-        await _showNotification(0, 0, l10n.success, l10n.reportRecorded, showProgress: false);
+        await _showNotification(0, 0, l10n.success, l10n.reportRecorded, showProgress: false, payload: response.data!.id);
         if (onSuccess != null) {
           onSuccess(response.data!);
         }

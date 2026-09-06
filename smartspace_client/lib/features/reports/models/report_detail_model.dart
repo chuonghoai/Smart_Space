@@ -1,28 +1,28 @@
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 
-enum EReportSeverity { low, medium, high, critical }  
+enum EReportSeverity { low, medium, high, critical }
 
-class ReportDetailModel extends ReportModel{
-  final EReportSeverity severity;     // Mức độ ưu tiên/nguy hiểm
+class ReportDetailModel extends ReportModel {
+  final EReportSeverity severity; // Mức độ ưu tiên/nguy hiểm
   final List<String> imageUrls;
-  final bool isAnonymous;             // Ẩn danh
-  final String? address;              // Địa chỉ
-  final String? locationDescription;   // Mô tả chi tiết địa điểm
+  final bool isAnonymous; // Ẩn danh
+  final String? address; // Địa chỉ
+  final String? locationDescription; // Mô tả chi tiết địa điểm
 
   ReportDetailModel({
-    required super.id, 
-    required super.title, 
-    required super.description, 
-    required super.latitude, 
-    required super.longitude, 
+    required super.id,
+    required super.title,
+    required super.description,
+    required super.latitude,
+    required super.longitude,
     required super.status,
-    required super.createdAt, 
+    required super.createdAt,
     super.distanceInMeters,
-    
-    required this.severity, 
-    required this.imageUrls, 
+
+    required this.severity,
+    required this.imageUrls,
     required this.isAnonymous,
-    this.address, 
+    this.address,
     this.locationDescription,
   }) : super(imageUrl: imageUrls.isNotEmpty ? imageUrls.first : '');
 
@@ -32,10 +32,13 @@ class ReportDetailModel extends ReportModel{
       if (json['image_urls'] is List) {
         parsedImageUrls = List<String>.from(json['image_urls']);
       } else if (json['image_urls'] is String) {
-        parsedImageUrls = (json['image_urls'] as String).split(',').where((e) => e.isNotEmpty).toList();
+        parsedImageUrls = (json['image_urls'] as String)
+            .split(',')
+            .where((e) => e.isNotEmpty)
+            .toList();
       }
     }
-    
+
     return ReportDetailModel(
       id: json['id']?.toString() ?? '',
       title: json['title'] as String? ?? '',
@@ -82,5 +85,40 @@ class ReportDetailModel extends ReportModel{
 
   static String _severityToString(EReportSeverity severity) {
     return severity.name.toUpperCase();
+  }
+
+  @override
+  ReportDetailModel copyWith({
+    String? id,
+    String? title,
+    String? description,
+    String?
+    imageUrl, // Note: not used but required for override signature match if any
+    double? latitude,
+    double? longitude,
+    ReportStatus? status,
+    DateTime? createdAt,
+    double? distanceInMeters,
+    EReportSeverity? severity,
+    List<String>? imageUrls,
+    bool? isAnonymous,
+    String? address,
+    String? locationDescription,
+  }) {
+    return ReportDetailModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      status: status ?? this.status,
+      createdAt: createdAt ?? this.createdAt,
+      distanceInMeters: distanceInMeters ?? this.distanceInMeters,
+      severity: severity ?? this.severity,
+      imageUrls: imageUrls ?? this.imageUrls,
+      isAnonymous: isAnonymous ?? this.isAnonymous,
+      address: address ?? this.address,
+      locationDescription: locationDescription ?? this.locationDescription,
+    );
   }
 }

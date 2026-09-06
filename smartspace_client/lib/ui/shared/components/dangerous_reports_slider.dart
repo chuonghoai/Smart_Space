@@ -1,10 +1,10 @@
 import 'package:mobile_shared/mobile_shared.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/features/reports/utils/report_status_ext.dart';
-import 'package:mobile_shared/util/distance_formatter.dart';
 
 class DangerousReportsSlider extends StatefulWidget {
   final List<ReportModel> reports;
@@ -88,51 +88,6 @@ class _DangerousReportsSliderState extends State<DangerousReportsSlider> {
                 },
               ),
 
-              // Left Arrow
-              if (widget.reports.length > 1)
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: IconButton(
-                      icon: const Icon(Icons.arrow_back_ios, color: Colors.white),
-                      onPressed: () {
-                        _pageController.previousPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      },
-                      style: IconButton.styleFrom(
-                        backgroundColor: Colors.black45,
-                      ),
-                    ),
-                  ),
-                ),
-
-              // Right Arrow
-              if (widget.reports.length > 1)
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: Padding(
-                    padding: const EdgeInsets.only(right: 8.0),
-                    child: IconButton(
-                      icon: const Icon(
-                        Icons.arrow_forward_ios,
-                        color: Colors.white,
-                      ),
-                      onPressed: () {
-                        _pageController.nextPage(
-                          duration: const Duration(milliseconds: 300),
-                          curve: Curves.easeInOut,
-                        );
-                      },
-                      style: IconButton.styleFrom(
-                        backgroundColor: Colors.black45,
-                      ),
-                    ),
-                  ),
-                ),
-
               // Pagination Dots
               if (widget.reports.length > 1)
                 Positioned(
@@ -205,15 +160,19 @@ class _DangerousReportSlide extends StatelessWidget {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
 
-    return Container(
-      decoration: BoxDecoration(
-        image: DecorationImage(
-          image: NetworkImage(report.imageUrl),
-          fit: BoxFit.cover,
-        ),
-      ),
+    return GestureDetector(
+      onTap: () {
+        context.push('/reports/${report.id}');
+      },
       child: Container(
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: NetworkImage(report.imageUrl),
+            fit: BoxFit.cover,
+          ),
+        ),
+        child: Container(
+          decoration: const BoxDecoration(
           gradient: LinearGradient(
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
@@ -268,6 +227,7 @@ class _DangerousReportSlide extends StatelessWidget {
           ],
         ),
       ),
+    ),
     );
   }
 }

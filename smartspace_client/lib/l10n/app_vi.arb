@@ -243,6 +243,33 @@
   "filterReports": "Bộ lọc báo cáo",
   "refresh": "Tải lại",
   "filter": "Bộ lọc",
+  "calculatingDistance": "Đang tính khoảng cách...",
   "dangerousReports": "Nguy hiểm",
-  "recentReports": "Gần đây"
+  "recentReports": "Gần đây",
+  "reportDetails": "Chi tiết phản ánh",
+  "turnOnLocationToViewDistance": "Bật vị trí để xem khoảng cách từ nơi xảy ra đến vị trí của bạn",
+  "openInGoogleMaps": "Mở trên Google Maps",
+  "createdAtLabel": "Thời gian tạo",
+  "statusLabel": "Trạng thái",
+  "severityLabel": "Mức độ",
+  "severityLow": "Thấp",
+  "severityMedium": "Trung bình",
+  "severityHigh": "Cao",
+  "severityCritical": "Khẩn cấp",
+  "locationServiceDisabledError": "Vui lòng bật dịch vụ vị trí trên thiết bị",
+  "locationPermissionDeniedForeverError": "Quyền vị trí bị từ chối vĩnh viễn, vui lòng vào cài đặt để bật",
+  "cannotOpenGoogleMapsError": "Không thể mở Google Maps",
+  "distanceFromYou": "Cách bạn: {distance} km",
+  "@distanceFromYou": {
+    "placeholders": {
+      "distance": {}
+    }
+  },
+  "errorOccurred": "Đã xảy ra lỗi:\n{error}",
+  "@errorOccurred": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "retryButton": "Thử lại"
 }

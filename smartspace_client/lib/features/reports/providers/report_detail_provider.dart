@@ -12,20 +12,7 @@ class ReportDetailNotifier extends FamilyAsyncNotifier<ReportDetailModel, String
   Future<ReportDetailModel> _fetchReportDetail(String reportId) async {
     final response = await reportService.getReportDetail(reportId);
     if (response.success && response.data != null) {
-      final report = response.data!;
-      // try calculate distance
-      final locationPermission = await Geolocator.checkPermission();
-      if (locationPermission == LocationPermission.always || locationPermission == LocationPermission.whileInUse) {
-         final isLocationServiceEnabled = await Geolocator.isLocationServiceEnabled();
-         if (isLocationServiceEnabled) {
-             final position = await Geolocator.getLastKnownPosition();
-             if (position != null) {
-                final distance = Geolocator.distanceBetween(position.latitude, position.longitude, report.latitude, report.longitude);
-                return report.copyWith(distanceInMeters: distance);
-             }
-         }
-      }
-      return report;
+      return response.data!;
     } else {
       throw Exception(response.message);
     }
@@ -45,3 +32,25 @@ class ReportDetailNotifier extends FamilyAsyncNotifier<ReportDetailModel, String
 final reportDetailProvider = AsyncNotifierProviderFamily<ReportDetailNotifier, ReportDetailModel, String>(
   () => ReportDetailNotifier(),
 );
+
+final reportDistanceProvider = FutureProvider.autoDispose.family<double, String>((ref, reportId) async {
+  final report = await ref.watch(reportDetailProvider(reportId).future);
+  
+  bool serviceEnabled = await Geolocator.isLocationServiceEnabled();
+  if (!serviceEnabled) throw 'LOCATION_DISABLED';
+  
+  LocationPermission permission = await Geolocator.checkPermission();
+  if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
+    throw 'PERMISSION_DENIED';
+  }
+  
+  Position? position = await Geolocator.getLastKnownPosition();
+  position ??= await Geolocator.getCurrentPosition(
+    // ignore: deprecated_member_use
+    desiredAccuracy: LocationAccuracy.high,
+    // ignore: deprecated_member_use
+    timeLimit: const Duration(seconds: 15),
+  );
+  
+  return Geolocator.distanceBetween(position.latitude, position.longitude, report.latitude, report.longitude);
+});

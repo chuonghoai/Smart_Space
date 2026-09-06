@@ -1,10 +1,12 @@
 package com.vn.smart_space.controller.report;
 
 import com.vn.smart_space.dto.ApiResponse;
+import com.vn.smart_space.dto.response.report.ReportDetailResponse;
 import com.vn.smart_space.dto.response.report.ReportResponse;
 import com.vn.smart_space.service.report.IReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -40,7 +42,13 @@ public class ReportController {
         if (jwt != null && jwt.hasClaim("userId")) {
             userId = jwt.getClaim("userId").toString();
         }
-        com.vn.smart_space.dto.response.report.ReportDetailResponse response = reportService.createReport(request, userId);
+        ReportDetailResponse response = reportService.createReport(request, userId);
         return ResponseEntity.ok(ApiResponse.success("Report created successfully", response));
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse> getReportDetail(@PathVariable String id) {
+        ReportDetailResponse report = reportService.getReportDetail(id);
+        return ResponseEntity.ok(ApiResponse.success("Success", report));
     }
 }

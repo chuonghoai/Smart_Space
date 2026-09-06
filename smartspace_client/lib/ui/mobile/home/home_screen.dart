@@ -331,15 +331,20 @@ class _ReportCard extends StatelessWidget {
           color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
         ),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Container(
-              width: 48,
-              height: 48,
-              decoration: BoxDecoration(
+      child: InkWell(
+        onTap: () {
+          context.push('/reports/${report.id}');
+        },
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Container(
+                width: 48,
+                height: 48,
+                decoration: BoxDecoration(
                 color: theme.colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(8),
                 image: DecorationImage(
@@ -412,6 +417,6 @@ class _ReportCard extends StatelessWidget {
           ],
         ),
       ),
-    );
+    ));
   }
 }

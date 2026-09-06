@@ -10,4 +10,5 @@ public interface IReportService {
     List<ReportResponse> getRecentReports(String filter, Double userLat, Double userLong);
     
     ReportDetailResponse createReport(ReportCreateRequest request, String userId);
+    ReportDetailResponse getReportDetail(String reportId);
 }

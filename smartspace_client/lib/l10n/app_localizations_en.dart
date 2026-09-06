@@ -280,8 +280,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dangerous => 'DANGEROUS';
 
   @override
-  String distanceFromYou(String value, String unit) {
-    return '$value $unit away';
+  String distanceFromYou(Object distance) {
+    return '$distance km away';
   }
 
   @override
@@ -613,4 +613,57 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get filter => 'Filter';
+
+  @override
+  String get calculatingDistance => 'Calculating distance...';
+
+  @override
+  String get reportDetails => 'Report Details';
+
+  @override
+  String get turnOnLocationToViewDistance =>
+      'Turn on location to view the distance from the incident to your location';
+
+  @override
+  String get openInGoogleMaps => 'Open in Google Maps';
+
+  @override
+  String get createdAtLabel => 'Created at';
+
+  @override
+  String get statusLabel => 'Status';
+
+  @override
+  String get severityLabel => 'Severity';
+
+  @override
+  String get severityLow => 'Low';
+
+  @override
+  String get severityMedium => 'Medium';
+
+  @override
+  String get severityHigh => 'High';
+
+  @override
+  String get severityCritical => 'Critical';
+
+  @override
+  String get locationServiceDisabledError =>
+      'Please enable location services on your device';
+
+  @override
+  String get locationPermissionDeniedForeverError =>
+      'Location permissions are permanently denied, please go to settings to enable';
+
+  @override
+  String get cannotOpenGoogleMapsError => 'Cannot open Google Maps';
+
+  @override
+  String errorOccurred(Object error) {
+    return 'An error occurred:\n$error';
+  }
+
+  @override
+  String get retryButton => 'Retry';
 }
