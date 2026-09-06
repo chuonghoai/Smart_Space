@@ -6,3 +6,5 @@ npm-debug.log*
 **/pubspec.lock
 .vscode/
 **/generated_plugins.cmake
+**/generated_plugin_registrant.cc
+**/generated_plugins.cmake
