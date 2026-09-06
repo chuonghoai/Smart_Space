@@ -250,7 +250,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get home => 'Trang chủ';
 
   @override
-  String get recentReports => 'Phản ánh gần đây';
+  String get recentReports => 'Gần đây';
 
   @override
   String get noReportsYet => 'Chưa có phản ánh nào';
@@ -262,7 +262,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get logout => 'Đăng xuất';
 
   @override
-  String get dangerousReports => 'Cảnh báo nguy hiểm';
+  String get dangerousReports => 'Nguy hiểm';
 
   @override
   String get map => 'Bản đồ';
@@ -594,4 +594,22 @@ class AppLocalizationsVi extends AppLocalizations {
   String sendingReportProgress(Object current, Object total) {
     return 'Đang gửi phản ánh... ($current/$total)';
   }
+
+  @override
+  String get navigateToReport => 'Chỉ đường';
+
+  @override
+  String get viewDetail => 'Xem chi tiết';
+
+  @override
+  String get myLocation => 'Vị trí của tôi';
+
+  @override
+  String get filterReports => 'Bộ lọc báo cáo';
+
+  @override
+  String get refresh => 'Tải lại';
+
+  @override
+  String get filter => 'Bộ lọc';
 }

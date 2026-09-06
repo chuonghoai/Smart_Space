@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong2/latlong.dart';
-import 'package:image_picker/image_picker.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:latlong2/latlong.dart';
+import 'package:smartspace_client/features/reports/providers/report_providers.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/ui/mobile/reports/create_report_controller.dart';
-import 'package:smartspace_client/features/reports/providers/report_providers.dart';
 
 class CreateReportScreen extends ConsumerWidget {
   const CreateReportScreen({super.key});
@@ -125,7 +125,10 @@ class _CreateReportForm extends ConsumerWidget {
           const SizedBox(height: 16),
 
           // Map
-          Text(l10n.reportLocationDescLabel, style: theme.textTheme.titleMedium),
+          Text(
+            l10n.reportLocationDescLabel,
+            style: theme.textTheme.titleMedium,
+          ),
           const SizedBox(height: 8),
           Row(
             children: [
@@ -167,7 +170,10 @@ class _CreateReportForm extends ConsumerWidget {
                 : (controller.latitude != null && controller.longitude != null)
                 ? FlutterMap(
                     options: MapOptions(
-                          initialCenter: LatLng(controller.latitude!, controller.longitude!),
+                      initialCenter: LatLng(
+                        controller.latitude!,
+                        controller.longitude!,
+                      ),
                       initialZoom: 15.0,
                       onTap: (tapPosition, point) {
                         controller.setLocation(point.latitude, point.longitude);
@@ -175,12 +181,16 @@ class _CreateReportForm extends ConsumerWidget {
                     ),
                     children: [
                       TileLayer(
-                            urlTemplate: 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
-                          ),
+                        urlTemplate:
+                            'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}',
+                      ),
                       MarkerLayer(
                         markers: [
                           Marker(
-                                point: LatLng(controller.latitude!, controller.longitude!),
+                            point: LatLng(
+                              controller.latitude!,
+                              controller.longitude!,
+                            ),
                             width: 40,
                             height: 40,
                             child: const Icon(
@@ -228,7 +238,10 @@ class _CreateReportForm extends ConsumerWidget {
                       top: 0,
                       right: 0,
                       child: IconButton(
-                        icon: const Icon(Icons.remove_circle, color: Colors.red),
+                        icon: const Icon(
+                          Icons.remove_circle,
+                          color: Colors.red,
+                        ),
                         onPressed: () => controller.removeImage(i),
                       ),
                     ),

@@ -41,7 +41,20 @@ INSERT INTO reports (id, created_at, updated_at, title, description, image_url, 
 ('r1', NOW(), NOW(), 'Đèn đường hỏng', 'Cột đèn số 12 bị hỏng không sáng vào ban đêm', 'https://picsum.photos/400/300?random=1', 10.762622, 106.660172, 'LOW', 'PENDING', 'u2'),
 ('r2', NOW(), NOW(), 'Rác thải đổ bừa bãi', 'Khu vực công viên có người đổ rác bừa bãi gây bốc mùi', 'https://picsum.photos/400/300?random=2', 10.763622, 106.661172, 'MEDIUM', 'PROCESSING', 'u3'),
 ('r3', NOW(), NOW(), 'Tai nạn giao thông', 'Tai nạn ở ngã tư, cần hỗ trợ khẩn cấp', 'https://picsum.photos/400/300?random=3', 10.764622, 106.662172, 'CRITICAL', 'PENDING', 'u2'),
-('r4', NOW(), NOW(), 'Đường ống nước vỡ', 'Nước ngập tràn ra đường hẻm 45', 'https://picsum.photos/400/300?random=4', 10.765622, 106.663172, 'HIGH', 'PROCESSED', 'u3');
+('r4', NOW(), NOW(), 'Đường ống nước vỡ', 'Nước ngập tràn ra đường hẻm 45', 'https://picsum.photos/400/300?random=4', 10.765622, 106.663172, 'HIGH', 'PROCESSED', 'u3'),
+-- Thêm data test map: trải rộng khắp TP.HCM
+('r5', NOW(), NOW(), 'Cháy nhỏ tại kho hàng', 'Phát hiện khói bốc lên từ kho hàng bỏ hoang, cần PCCC', 'https://picsum.photos/400/300?random=5', 10.7769, 106.7009, 'CRITICAL', 'PENDING', 'u2'),
+('r6', NOW(), NOW(), 'Hố tử thần trên đường', 'Hố sâu 50cm xuất hiện giữa đường Nguyễn Hữu Cảnh, nguy hiểm cho xe máy', 'https://picsum.photos/400/300?random=6', 10.7915, 106.7220, 'HIGH', 'PROCESSING', 'u3'),
+('r7', NOW(), NOW(), 'Cây đổ chắn đường', 'Cây lớn bật gốc sau mưa, chắn hết làn xe tại Q7', 'https://picsum.photos/400/300?random=7', 10.7340, 106.7218, 'HIGH', 'PENDING', 'u2'),
+('r8', NOW(), NOW(), 'Ngập nước kéo dài', 'Đường Tô Ngọc Vân ngập sâu 40cm, xe không lưu thông được', 'https://picsum.photos/400/300?random=8', 10.8488, 106.7590, 'MEDIUM', 'PROCESSING', 'u3'),
+('r9', NOW(), NOW(), 'Tiếng ồn công trình', 'Công trường thi công gây ồn quá mức cho phép vào ban đêm', 'https://picsum.photos/400/300?random=9', 10.8015, 106.6527, 'LOW', 'PROCESSED', 'u2'),
+('r10', NOW(), NOW(), 'Rò rỉ khí gas', 'Phát hiện mùi gas rò rỉ tại tòa nhà dân cư Q.Gò Vấp', 'https://picsum.photos/400/300?random=10', 10.8386, 106.6652, 'CRITICAL', 'PENDING', 'u3'),
+('r11', NOW(), NOW(), 'Vỉa hè bị lấn chiếm', 'Hàng quán chiếm hết vỉa hè, người đi bộ phải đi dưới lòng đường', 'https://picsum.photos/400/300?random=11', 10.7724, 106.6681, 'LOW', 'PENDING', 'u2'),
+('r12', NOW(), NOW(), 'Đường dây điện đứt', 'Dây điện trung thế bị đứt rơi xuống đường tại Q10', 'https://picsum.photos/400/300?random=12', 10.7726, 106.6690, 'CRITICAL', 'PROCESSING', 'u3'),
+('r13', NOW(), NOW(), 'Ô nhiễm kênh rạch', 'Nước kênh đen bốc mùi hôi thối tại Phú Nhuận', 'https://picsum.photos/400/300?random=13', 10.7990, 106.6830, 'MEDIUM', 'PROCESSED', 'u2'),
+('r14', NOW(), NOW(), 'Sạt lở bờ sông', 'Bờ sông Sài Gòn sạt lở nghiêm trọng, đe dọa nhà dân Q2', 'https://picsum.photos/400/300?random=14', 10.7870, 106.7450, 'HIGH', 'PENDING', 'u3'),
+('r15', NOW(), NOW(), 'Xe tải đổ dầu ra đường', 'Dầu nhớt tràn ra mặt đường, rất trơn trượt tại Q4', 'https://picsum.photos/400/300?random=15', 10.7580, 106.7010, 'HIGH', 'PENDING', 'u2'),
+('r16', NOW(), NOW(), 'Biển báo giao thông hỏng', 'Biển báo cấm rẽ trái bị xoay ngược hướng, gây nhầm lẫn', 'https://picsum.photos/400/300?random=16', 10.8200, 106.6920, 'LOW', 'PROCESSING', 'u3');
 
 -- --------------------------------------------------------
 -- Table: notifications

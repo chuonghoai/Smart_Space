@@ -33,7 +33,7 @@ public class ReportServiceImpl implements IReportService {
     @Transactional(readOnly = true)
     public List<ReportResponse> getDangerousReports() {
         List<Report> reports = reportRepository.findTopBySeverityInOrderByCreatedAtDesc(
-                Arrays.asList(EReportSeverity.HIGH, EReportSeverity.CRITICAL),
+                Arrays.asList(EReportSeverity.high, EReportSeverity.critical),
                 Limit.of(5));
         return reports.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
@@ -96,8 +96,8 @@ public class ReportServiceImpl implements IReportService {
         report.setDescription(request.getDescription());
         report.setLatitude(request.getLatitude());
         report.setLongitude(request.getLongitude());
-        report.setSeverity(EReportSeverity.LOW);
-        report.setStatus(EReportStatus.PENDING);
+        report.setSeverity(EReportSeverity.low);
+        report.setStatus(EReportStatus.pending);
         report.setAddress(request.getAddress());
         report.setLocationDescription(request.getLocationDescription());
         report.setIsAnonymous(request.getIsAnonymous() != null ? request.getIsAnonymous() : false);

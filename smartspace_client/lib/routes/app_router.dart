@@ -14,6 +14,7 @@ import 'package:smartspace_client/ui/responsive/screens/auth/register_otp_screen
 import 'package:smartspace_client/ui/responsive/screens/auth/register_password_screen.dart';
 import 'package:smartspace_client/ui/responsive/screens/auth/forgot_password_screen.dart';
 import 'package:smartspace_client/ui/mobile/reports/create_report_screen.dart';
+import 'package:smartspace_client/ui/responsive/screens/map/map_screen.dart';
 import 'package:flutter/material.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -73,6 +74,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.createReport,
       builder: (context, state) => const CreateReportScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.map,
+      builder: (context, state) => const MapScreen(),
     ),
   ],
 );

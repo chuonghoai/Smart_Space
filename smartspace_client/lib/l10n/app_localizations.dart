@@ -581,7 +581,7 @@ abstract class AppLocalizations {
   /// No description provided for @recentReports.
   ///
   /// In en, this message translates to:
-  /// **'Recent reports'**
+  /// **'Recent'**
   String get recentReports;
 
   /// No description provided for @noReportsYet.
@@ -605,7 +605,7 @@ abstract class AppLocalizations {
   /// No description provided for @dangerousReports.
   ///
   /// In en, this message translates to:
-  /// **'Dangerous warnings'**
+  /// **'Dangerous'**
   String get dangerousReports;
 
   /// No description provided for @map.
@@ -1225,6 +1225,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Sending report... ({current}/{total})'**
   String sendingReportProgress(Object current, Object total);
+
+  /// No description provided for @navigateToReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Navigate'**
+  String get navigateToReport;
+
+  /// No description provided for @viewDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'View Detail'**
+  String get viewDetail;
+
+  /// No description provided for @myLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'My Location'**
+  String get myLocation;
+
+  /// No description provided for @filterReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter Reports'**
+  String get filterReports;
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
+
+  /// No description provided for @filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get filter;
 }
 
 class _AppLocalizationsDelegate

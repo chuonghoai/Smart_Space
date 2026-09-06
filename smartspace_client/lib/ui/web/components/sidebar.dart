@@ -89,7 +89,7 @@ class WebSidebar extends ConsumerWidget {
                   icon: Icons.map_outlined,
                   label: l10n.map,
                   onTap: () {
-                    // TODO: Navigate to Map
+                    context.push(RouterPath.map);
                   },
                 ),
                 _SidebarItem(
