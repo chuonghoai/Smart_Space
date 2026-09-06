@@ -3,6 +3,7 @@ package com.vn.smart_space.service.report;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Limit;
@@ -13,21 +14,27 @@ import com.vn.smart_space.consts.EReportSeverity;
 import com.vn.smart_space.consts.EReportStatus;
 import com.vn.smart_space.dto.request.notification.NotificationRequest;
 import com.vn.smart_space.dto.request.report.ReportCreateRequest;
+import com.vn.smart_space.dto.response.notification.NotificationEvent;
 import com.vn.smart_space.dto.response.report.ReportDetailResponse;
 import com.vn.smart_space.dto.response.report.ReportResponse;
 import com.vn.smart_space.model.Report;
 import com.vn.smart_space.model.User;
 import com.vn.smart_space.repository.ReportRepository;
+import com.vn.smart_space.service.notification.IFCMService;
+import com.vn.smart_space.service.notification.INotificationService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ReportServiceImpl implements IReportService {
 
     private final ReportRepository reportRepository;
     private final org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
-    private final com.vn.smart_space.service.notification.IFCMService fcmService;
+    private final IFCMService fcmService;
+    private final INotificationService notificationService;
 
     @Override
     @Transactional(readOnly = true)
@@ -129,29 +136,36 @@ public class ReportServiceImpl implements IReportService {
                 .locationDescription(report.getLocationDescription())
                 .createdAt(report.getCreatedAt() != null ? report.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME) : null)
                 .build();
-                
-        // Dispatch to WebSocket
-        try {
-            messagingTemplate.convertAndSend("/topic/reports", response);
-        } catch (Exception e) {
-            // log
-        }
-        
-        // Notify Admins/Users
-        // Since we are creating, notify users or admins. For now, notify the user.
+                        
+        // Notify Users
         if (userId != null) {
             try {
-                NotificationRequest notif = 
-                    new NotificationRequest(
-                        "Tạo phản ánh thành công",
-                        "Phản ánh của bạn đã được ghi nhận và đang chờ xử lý.",
-                        null
-                    );
+                String title = "Tạo phản ánh thành công";
+                String message = "Phản ánh của bạn đã được ghi nhận và đang chờ xử lý.";
+                String actionData = "{\"reportId\":\"" + report.getId() + "\"}";
+                
+                // Create DB Notification
+                notificationService.createNotification(userId, title, message, actionData);
+                
+                // Send WebSocket Event to the user
+                NotificationEvent event = 
+                    new NotificationEvent(title, message, actionData);
+                messagingTemplate.convertAndSendToUser(userId, "/queue/notifications", event);
+
+                // Send FCM
+                Map<String, String> fcmData = Map.of(
+                    "reportId", report.getId(),
+                    "type", "REPORT_CREATED"
+                );
+                NotificationRequest notif = new NotificationRequest(title, message, fcmData);
                 fcmService.sendToUser(userId, notif);
             } catch (Exception e) {
-                // log
+                log.warn("[Notify] Failed to send notification for report {}: {}", report.getId(), e.getMessage());
             }
         }
+
+        // Notify Admin
+        // TODO: Push event notification to admins
         
         return response;
     }

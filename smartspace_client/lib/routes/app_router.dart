@@ -17,11 +17,13 @@ import 'package:smartspace_client/ui/mobile/reports/create_report_screen.dart';
 import 'package:smartspace_client/ui/responsive/screens/map/map_screen.dart';
 import 'package:smartspace_client/ui/mobile/reports/presentation/report_detail_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:mobile_shared/core/toast/toast_service.dart';
 
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+/// Re-export for convenience so existing callers of navigatorKey still compile.
+final GlobalKey<NavigatorState> navigatorKey = sharedNavigatorKey;
 
 final appRouter = GoRouter(
-  navigatorKey: navigatorKey,
+  navigatorKey: sharedNavigatorKey,
   initialLocation: RouterPath.splash,
   routes: [
     GoRoute(

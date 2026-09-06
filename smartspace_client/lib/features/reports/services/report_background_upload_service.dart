@@ -7,10 +7,11 @@ import 'dart:ui' as ui;
 import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_client/features/reports/services/report_service.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
-import 'package:smartspace_client/routes/app_router.dart';
 
 class ReportBackgroundUploadService extends ChangeNotifier {
-  final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  // Use the shared plugin instance from FirebaseService to avoid overwriting
+  // its onDidReceiveNotificationResponse handler on re-initialization.
+  FlutterLocalNotificationsPlugin get _plugin => FirebaseService.localNotificationsPlugin;
   
   bool _isUploading = false;
   bool get isUploading => _isUploading;
@@ -25,27 +26,6 @@ class ReportBackgroundUploadService extends ChangeNotifier {
 
   ReportModel? _lastUploadedReport;
   ReportModel? get lastUploadedReport => _lastUploadedReport;
-
-  ReportBackgroundUploadService() {
-    _initNotifications();
-  }
-
-  Future<void> _initNotifications() async {
-    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
-    const DarwinInitializationSettings initializationSettingsIOS = DarwinInitializationSettings();
-    const InitializationSettings initializationSettings = InitializationSettings(
-      android: initializationSettingsAndroid,
-      iOS: initializationSettingsIOS,
-    );
-    await _flutterLocalNotificationsPlugin.initialize(
-      settings: initializationSettings,
-      onDidReceiveNotificationResponse: (NotificationResponse response) {
-        if (response.payload != null && response.payload!.isNotEmpty) {
-          appRouter.push('/reports/${response.payload}');
-        }
-      },
-    );
-  }
 
   Future<void> _showNotification(int progress, int maxProgress, String title, String body, {bool showProgress = true, String? payload}) async {
     final AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
@@ -64,7 +44,7 @@ class ReportBackgroundUploadService extends ChangeNotifier {
       android: androidPlatformChannelSpecifics,
       iOS: const DarwinNotificationDetails(),
     );
-    await _flutterLocalNotificationsPlugin.show(
+    await _plugin.show(
       id: 0,
       title: title,
       body: body,
@@ -76,7 +56,7 @@ class ReportBackgroundUploadService extends ChangeNotifier {
   Future<void> startUploadAndCreateReport(ReportDto dto, List<Uint8List> images, {Function(ReportModel)? onSuccess}) async {
     if (_isUploading) return;
     
-    await _flutterLocalNotificationsPlugin.cancel(id: 0);
+    await _plugin.cancel(id: 0);
     
     final l10n = lookupAppLocalizations(ui.PlatformDispatcher.instance.locale);
 
@@ -118,12 +98,12 @@ class ReportBackgroundUploadService extends ChangeNotifier {
           onSuccess(response.data!);
         }
         scaffoldMessengerKey.currentState?.hideCurrentSnackBar();
-        scaffoldMessengerKey.currentState?.showSnackBar(
-          SnackBar(
-            content: Text(l10n.createReportSuccess),
-            backgroundColor: Colors.green,
-          ),
-        );
+        // scaffoldMessengerKey.currentState?.showSnackBar(
+        //   SnackBar(
+        //     content: Text(l10n.createReportSuccess),
+        //     backgroundColor: Colors.green,
+        //   ),
+        // );
       } else {
         _statusMessage = l10n.errorString(response.message);
         await _showNotification(0, 0, l10n.errorPrefix, l10n.cannotCreateReportError(response.message), showProgress: false);

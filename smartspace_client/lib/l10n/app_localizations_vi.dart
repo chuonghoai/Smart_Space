@@ -9,7 +9,10 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
-  String get appTitle => 'Smart Space';
+  String get appTitle => 'SmartSpace';
+
+  @override
+  String get actionView => 'Xem';
 
   @override
   String get login => 'Đăng nhập';

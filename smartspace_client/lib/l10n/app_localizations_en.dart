@@ -12,6 +12,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Smart Space';
 
   @override
+  String get actionView => 'View';
+
+  @override
   String get login => 'Log in';
 
   @override

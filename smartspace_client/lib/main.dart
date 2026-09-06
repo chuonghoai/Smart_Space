@@ -15,6 +15,7 @@ import 'package:mobile_shared/mobile_shared.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
 import 'firebase_options.dart';
+import 'features/app_services/app_services_initializer.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -81,23 +82,25 @@ class _SmartSpaceAppState extends State<SmartSpaceApp> with WidgetsBindingObserv
     return ListenableBuilder(
       listenable: Listenable.merge([localeProvider, themeProvider]),
       builder: (context, child) {
-        return MaterialApp.router(
-          scaffoldMessengerKey: scaffoldMessengerKey,
-          title: 'SmartSpace Client',
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: themeProvider.themeMode,
-          locale: localeProvider.locale,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            SharedLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [Locale('vi'), Locale('en')],
-          routerConfig: appRouter,
-          debugShowCheckedModeBanner: false,
+        return AppServicesInitializer(
+          child: MaterialApp.router(
+            scaffoldMessengerKey: scaffoldMessengerKey,
+            title: 'SmartSpace Client',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider.themeMode,
+            locale: localeProvider.locale,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              SharedLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('vi'), Locale('en')],
+            routerConfig: appRouter,
+            debugShowCheckedModeBanner: false,
+          ),
         );
       },
     );

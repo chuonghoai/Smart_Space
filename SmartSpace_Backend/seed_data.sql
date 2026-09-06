@@ -29,7 +29,7 @@ DELETE FROM users;
 -- Phụ thuộc: (Không)
 -- --------------------------------------------------------
 INSERT INTO users (id, created_at, updated_at, full_name, date_of_birth, phone, email, password, gender, role, status, avatar_url) VALUES
-('u1', NOW(), NOW(), 'Nguyễn Văn Admin', '1990-01-01', '0901234567', 'admin@gmail.com', '$2a$10$nosRTfjEU6rYa5Ps58DdEuEnns.WJrUKgAWR56/lpphULiTLUrJqy', 'male', 'admin', 'active', 'https://ui-avatars.com/api/?name=AD&background=6366f1&color=fff&size=200&bold=true&font-size=0.4'),
+('u4', NOW(), NOW(), 'Cư Dân 2', '1990-01-01', '0901234567', 'cudan2@gmail.com', '$2a$10$nosRTfjEU6rYa5Ps58DdEuEnns.WJrUKgAWR56/lpphULiTLUrJqy', 'male', 'admin', 'active', 'https://ui-avatars.com/api/?name=AD&background=6366f1&color=fff&size=200&bold=true&font-size=0.4'),
 ('u2', NOW(), NOW(), 'Trần Thị User', '1995-05-15', '0912345678', 'user@gmail.com', '$2a$10$nosRTfjEU6rYa5Ps58DdEuEnns.WJrUKgAWR56/lpphULiTLUrJqy', 'female', 'client', 'active', 'https://ui-avatars.com/api/?name=US&background=6366f1&color=fff&size=200&bold=true&font-size=0.4'),
 ('u3', NOW(), NOW(), 'Lê Hữu Cư Dân', '1992-10-20', '0923456789', 'cudan@gmail.com', '$2a$10$nosRTfjEU6rYa5Ps58DdEuEnns.WJrUKgAWR56/lpphULiTLUrJqy', 'male', 'client', 'active', 'https://ui-avatars.com/api/?name=CD&background=6366f1&color=fff&size=200&bold=true&font-size=0.4');
 
@@ -70,7 +70,7 @@ INSERT INTO notifications (id, created_at, updated_at, title, message, is_read, 
 -- Phụ thuộc: users, notifications
 -- --------------------------------------------------------
 INSERT INTO user_notification_states (id, created_at, updated_at, is_read, notification_id, user_id) VALUES
-('uns1', NOW(), NOW(), 0, 'n1', 'u1'),
+('uns1', NOW(), NOW(), 0, 'n1', 'u4'),
 ('uns2', NOW(), NOW(), 1, 'n1', 'u2'),
 ('uns3', NOW(), NOW(), 0, 'n1', 'u3');
 

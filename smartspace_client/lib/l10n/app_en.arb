@@ -1,6 +1,7 @@
 {
   "@@locale": "en",
   "appTitle": "Smart Space",
+  "actionView": "View",
   "login": "Log in",
   "email": "Email",
   "password": "Password",

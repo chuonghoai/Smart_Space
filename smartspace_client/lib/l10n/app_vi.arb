@@ -1,6 +1,7 @@
 {
   "@@locale": "vi",
-  "appTitle": "Smart Space",
+  "appTitle": "SmartSpace",
+  "actionView": "Xem",
   "login": "Đăng nhập",
   "email": "Email",
   "password": "Mật khẩu",

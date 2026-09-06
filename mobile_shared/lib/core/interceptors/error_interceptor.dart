@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'dart:developer';
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:mobile_shared/core/auth/refresh_token_service.dart';
 import 'package:mobile_shared/core/auth/access_token_service.dart';
 import 'package:mobile_shared/core/auth/user_storage_service.dart';
 import 'package:mobile_shared/features/auth/services/auth_service.dart';
+import 'package:mobile_shared/core/api/dio_client.dart';
 
 class ErrorInterceptor extends Interceptor {
   static final StreamController<String> unauthenticatedStream =
@@ -57,8 +59,8 @@ class ErrorInterceptor extends Interceptor {
             err.requestOptions.headers['Authorization'] =
                 'Bearer $newAccessToken';
             err.requestOptions.extra['isRetry'] = true;
-            final dio = Dio();
-            final response = await dio.fetch(err.requestOptions);
+            final response = await dioInstance.fetch(err.requestOptions);
+            debugPrint("Refrested token success");
             return handler.resolve(response);
           } on DioException catch (retryErr) {
             return handler.next(retryErr);

@@ -104,6 +104,12 @@ abstract class AppLocalizations {
   /// **'Smart Space'**
   String get appTitle;
 
+  /// No description provided for @actionView.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get actionView;
+
   /// No description provided for @login.
   ///
   /// In en, this message translates to:
