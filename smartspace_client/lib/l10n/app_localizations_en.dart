@@ -669,4 +669,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get retryButton => 'Retry';
+
+  @override
+  String get minuteAgo => 'min ago';
+
+  @override
+  String get hourAgo => 'hr ago';
+
+  @override
+  String get dayAgo => 'days ago';
 }
