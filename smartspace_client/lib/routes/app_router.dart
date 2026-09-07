@@ -1,20 +1,19 @@
 import 'package:go_router/go_router.dart';
 import 'package:smartspace_client/routes/router_path.dart';
-import 'package:smartspace_client/ui/responsive/screens/auth/login_screen.dart';
-import 'package:smartspace_client/ui/responsive/screens/settings/change_password_screen.dart';
-import 'package:smartspace_client/ui/responsive/screens/settings/edit_profile_screen.dart';
-import 'package:smartspace_client/ui/responsive/screens/settings/manage_devices_screen.dart';
-import 'package:smartspace_client/ui/responsive/screens/settings/settings_screen.dart';
+import 'package:smartspace_client/ui/mobile/auth/login/login_screen.dart';
+import 'package:smartspace_client/ui/mobile/auth/register/register_email_screen.dart';
+import 'package:smartspace_client/ui/mobile/auth/register/register_otp_screen.dart';
+import 'package:smartspace_client/ui/mobile/auth/register/register_password_screen.dart';
+import 'package:smartspace_client/ui/mobile/auth/forgot_password/forgot_password_screen.dart';
+import 'package:smartspace_client/ui/mobile/home/home_screen.dart';
+import 'package:smartspace_client/ui/mobile/map/map_screen.dart';
+import 'package:smartspace_client/ui/mobile/settings/change_password_screen.dart';
+import 'package:smartspace_client/ui/mobile/settings/edit_profile_screen.dart';
+import 'package:smartspace_client/ui/mobile/settings/manage_devices_screen.dart';
+import 'package:smartspace_client/ui/mobile/settings/settings_screen.dart';
 import 'package:smartspace_client/ui/shared/splash/splash_screen.dart';
-import 'package:smartspace_client/ui/responsive/screens/home/home_screen.dart';
-import 'package:smartspace_client/ui/responsive/screens/auth/complete_profile_screen.dart';
-
-import 'package:smartspace_client/ui/responsive/screens/auth/register_email_screen.dart';
-import 'package:smartspace_client/ui/responsive/screens/auth/register_otp_screen.dart';
-import 'package:smartspace_client/ui/responsive/screens/auth/register_password_screen.dart';
-import 'package:smartspace_client/ui/responsive/screens/auth/forgot_password_screen.dart';
+import 'package:smartspace_client/ui/mobile/auth/register/complete_profile_screen.dart';
 import 'package:smartspace_client/ui/mobile/reports/create_report_screen.dart';
-import 'package:smartspace_client/ui/responsive/screens/map/map_screen.dart';
 import 'package:smartspace_client/ui/mobile/reports/presentation/report_detail_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_shared/core/toast/toast_service.dart';
@@ -32,47 +31,47 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: RouterPath.login,
-      builder: (context, state) => const LoginScreen(),
+      builder: (context, state) => const MobileLoginScreen(),
     ),
     GoRoute(
       path: RouterPath.registerEmail,
-      builder: (context, state) => const RegisterEmailScreen(),
+      builder: (context, state) => const MobileRegisterEmailScreen(),
     ),
     GoRoute(
       path: RouterPath.registerOtp,
-      builder: (context, state) => const RegisterOtpScreen(),
+      builder: (context, state) => const MobileRegisterOtpScreen(),
     ),
     GoRoute(
       path: RouterPath.registerPassword,
-      builder: (context, state) => const RegisterPasswordScreen(),
+      builder: (context, state) => const MobileRegisterPasswordScreen(),
     ),
     GoRoute(
       path: RouterPath.home,
-      builder: (context, state) => const HomeScreen(),
+      builder: (context, state) => const MobileHomeScreen(),
     ),
     GoRoute(
       path: RouterPath.completeProfile,
-      builder: (context, state) => const CompleteProfileScreen(),
+      builder: (context, state) => const MobileCompleteProfileScreen(),
     ),
     GoRoute(
       path: RouterPath.forgotPassword,
-      builder: (context, state) => const ForgotPasswordScreen(),
+      builder: (context, state) => const MobileForgotPasswordScreen(),
     ),
     GoRoute(
       path: RouterPath.settings,
-      builder: (context, state) => const SettingsScreen(),
+      builder: (context, state) => const MobileSettingsScreen(),
     ),
     GoRoute(
       path: RouterPath.changePassword,
-      builder: (context, state) => const ChangePasswordScreen(),
+      builder: (context, state) => const MobileChangePasswordScreen(),
     ),
     GoRoute(
       path: RouterPath.manageDevices,
-      builder: (context, state) => const ManageDevicesScreen(),
+      builder: (context, state) => const MobileManageDevicesScreen(),
     ),
     GoRoute(
       path: RouterPath.editProfile,
-      builder: (context, state) => const EditProfileScreen(),
+      builder: (context, state) => const MobileEditProfileScreen(),
     ),
     GoRoute(
       path: RouterPath.createReport,
@@ -80,7 +79,7 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: RouterPath.map,
-      builder: (context, state) => const MapScreen(),
+      builder: (context, state) => const MobileMapScreen(),
     ),
     GoRoute(
       path: RouterPath.reportDetail,
