@@ -5,10 +5,10 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:smartspace_client/ui/mobile/map/map_controller.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/providers/report_providers.dart';
-import 'package:smartspace_client/ui/shared/components/map_controls.dart';
+import 'package:smartspace_client/ui/components/map_controls.dart';
 import 'package:mobile_shared/util/location_service.dart';
 import 'package:smartspace_client/routes/router_path.dart';
-import 'package:smartspace_client/ui/shared/components/report_info_sheet.dart';
+import 'package:smartspace_client/ui/components/report_info_sheet.dart';
 
 class _AnnotationClickListener extends OnPointAnnotationClickListener {
   final void Function(PointAnnotation annotation) onClick;

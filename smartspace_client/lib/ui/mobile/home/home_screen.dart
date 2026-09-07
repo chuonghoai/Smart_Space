@@ -4,9 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartspace_client/ui/mobile/home/home_controller.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
-import 'package:smartspace_client/ui/mobile/layout/app_layout.dart';
+import 'package:smartspace_client/ui/layout/app_layout.dart';
 import 'package:smartspace_client/features/reports/utils/report_status_ext.dart';
-import 'package:smartspace_client/ui/shared/components/dangerous_reports_slider.dart';
+import 'package:smartspace_client/ui/components/dangerous_reports_slider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smartspace_client/routes/router_path.dart';
 

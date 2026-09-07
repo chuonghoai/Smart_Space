@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:smartspace_client/ui/mobile/components/sidebar.dart';
-import 'package:smartspace_client/ui/mobile/components/top_bar.dart';
+import 'package:smartspace_client/ui/components/sidebar.dart';
+import 'package:smartspace_client/ui/components/top_bar.dart';
 
 class AppLayout extends StatelessWidget {
   final Widget child;
