@@ -90,7 +90,7 @@ public class CloudinaryService implements ICloudinaryService {
 
         } catch (Exception e) {
             log.error("Lỗi khi dọn dẹp media tạm thời trên Cloudinary", e);
-            throw new RuntimeException("Đã xảy ra lỗi khi xóa file tạm trên Cloudinary");
+            throw new RuntimeException("media.delete.error", e);
         }
 
         return totalDeleted;

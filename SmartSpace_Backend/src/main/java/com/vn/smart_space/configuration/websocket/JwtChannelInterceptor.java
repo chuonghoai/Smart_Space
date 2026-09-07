@@ -32,7 +32,7 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
             String authHeader = accessor.getFirstNativeHeader("Authorization");
 
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-                throw new MessagingException("Missing or invalid Authorization header");
+                throw new MessagingException("auth.token.missing_or_invalid");
             }
 
             String token = authHeader.substring(7);
@@ -50,7 +50,7 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
                 log.info("WebSocket CONNECT authenticated: user={}", jwt.getSubject());
             } catch (Exception e) {
                 log.error("WebSocket Authentication failed: {}", e.getMessage());
-                throw new MessagingException("Unauthorized: " + e.getMessage());
+                throw new MessagingException("auth.token.invalid");
             }
         }
         return message;

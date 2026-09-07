@@ -8,10 +8,10 @@ import lombok.Setter;
 @Getter
 @Setter
 public class MediaConfirmRequest {
-    @NotBlank(message = "publicId không được để trống")
+    @NotBlank(message = "{media.publicId.required}")
     private String publicId;
-    @NotBlank(message = "secureUrl không được để trống")
+    @NotBlank(message = "{media.secureUrl.required}")
     private String secureUrl;
-    @NotBlank(message = "resourceType không được để trống")
+    @NotBlank(message = "{media.resourceType.required}")
     private String resourceType; // "image"
 }

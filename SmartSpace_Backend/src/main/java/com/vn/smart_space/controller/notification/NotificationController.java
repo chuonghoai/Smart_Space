@@ -36,13 +36,13 @@ public class NotificationController {
                         "Notification đã hoạt động!",
                         Map.of("type", "test", "timestamp", String.valueOf(System.currentTimeMillis()))));
 
-        return ResponseEntity.ok(ApiResponse.success("Test notification sent to all devices", null));
+        return ResponseEntity.ok(ApiResponse.success("notification.test.success", null));
     }
 
     @GetMapping("/unread-count")
     public ResponseEntity<ApiResponse> getUnreadCount(@AuthenticationPrincipal Jwt jwt) {
         String userId = jwt.getClaim("userId").toString();
         NotificationCountResponse response = notificationService.getUnreadCount(userId);
-        return ResponseEntity.ok(ApiResponse.success("Success", response));
+        return ResponseEntity.ok(ApiResponse.success("system.success", response));
     }
 }

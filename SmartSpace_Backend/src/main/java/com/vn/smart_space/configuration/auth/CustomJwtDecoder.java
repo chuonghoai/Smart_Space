@@ -39,17 +39,17 @@ public class CustomJwtDecoder implements JwtDecoder {
                         .build());
 
         if (!response.isValid()) {
-            throw new JwtException("Token invalid");
+            throw new JwtException("auth.token.invalid");
         }
 
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
             String tokenType = (String) signedJWT.getJWTClaimsSet().getClaim("tokenType");
             if (!"access".equals(tokenType)) {
-                throw new JwtException("Only access tokens are accepted");
+                throw new JwtException("auth.token.invalid");
             }
         } catch (ParseException e) {
-            throw new JwtException("Token invalid");
+            throw new JwtException("auth.token.invalid");
         }
 
         if (Objects.isNull(nimbusJwtDecoder)) {

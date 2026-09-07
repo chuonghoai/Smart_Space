@@ -16,6 +16,6 @@ import lombok.experimental.FieldDefaults;
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateLanguageRequest {
-    @NotBlank(message = "Language is required")
+    @NotBlank(message = "{user.language.required}")
     String language;
 }

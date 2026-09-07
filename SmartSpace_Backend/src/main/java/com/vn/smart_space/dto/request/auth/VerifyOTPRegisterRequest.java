@@ -13,13 +13,13 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class VerifyOTPRegisterRequest {
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email is invalid")
+    @NotBlank(message = "{auth.email.required}")
+    @Email(message = "{auth.email.invalid}")
     String email;
 
     com.vn.smart_space.consts.ERole role;
 
-    @NotBlank(message = "OTP is required")
-    @Size(min = 6, max = 6, message = "OTP must be 6 digits")
+    @NotBlank(message = "{auth.otp.required}")
+    @Size(min = 6, max = 6, message = "{auth.otp.size}")
     String otp;
 }

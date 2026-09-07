@@ -12,7 +12,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class SendOtpForgotPasswordRequest {
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email is invalid")
+    @NotBlank(message = "{auth.email.required}")
+    @Email(message = "{auth.email.invalid}")
     String email;
 }

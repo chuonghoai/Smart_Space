@@ -2,6 +2,7 @@ import 'package:dio/dio.dart';
 import '../config/env_config.dart';
 import '../interceptors/auth_interceptor.dart';
 import '../interceptors/error_interceptor.dart';
+import '../interceptors/language_interceptor.dart';
 
 final Dio dioInstance = Dio(
   BaseOptions(
@@ -14,5 +15,6 @@ final Dio dioInstance = Dio(
   ),
 )..interceptors.addAll([
     AuthInterceptor(),
+    LanguageInterceptor(),
     ErrorInterceptor(),
   ]);

@@ -16,6 +16,7 @@ import com.vn.smart_space.dto.PageResponse;
 import com.vn.smart_space.dto.request.conversation.CreateConversationRequest;
 import com.vn.smart_space.dto.response.conversation.ConversationDetailResponse;
 import com.vn.smart_space.dto.response.conversation.CreateConversationResponse;
+import com.vn.smart_space.exception.BadRequestException;
 import com.vn.smart_space.mapper.ConversationMapper;
 import com.vn.smart_space.model.Conversation;
 import com.vn.smart_space.model.User;
@@ -47,14 +48,14 @@ public class ConversationService implements IConversationService {
 
         // Check user exists
         if (participantInfos.size() != participantIds.size()) {
-            throw new IllegalArgumentException("Not found user participant");
+            throw new BadRequestException("conversation.user.not_found");
         }
 
         EConversationType conversationType = request.conversationType();
         String participantHash = null;
         if (conversationType.equals(EConversationType.PRIVATE)) {
             if (participantIds.size() != 2)
-                throw new IllegalArgumentException("Private conversation must have 2 participants");
+                throw new BadRequestException("conversation.private.participants_count");
 
             participantHash = participantInfos.stream()
                     .map(User::getId)
@@ -72,11 +73,11 @@ public class ConversationService implements IConversationService {
         if (conversationType == EConversationType.GROUP) {
             // Group conversation must be has name
             if (request.name() == null || request.name().trim().isEmpty())
-                throw new IllegalArgumentException("Group conversation must be has name");
+                throw new BadRequestException("conversation.group.name_required");
 
             // Group conversation must be has at least 3 participants
             if (participantIds.size() < 3)
-                throw new IllegalArgumentException("Group conversation must be has at least 3 participants");
+                throw new BadRequestException("conversation.group.participants_count");
         }
 
         Conversation conversation = Conversation.builder()

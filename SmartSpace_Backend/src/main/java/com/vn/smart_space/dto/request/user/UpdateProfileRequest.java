@@ -15,7 +15,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class UpdateProfileRequest {
 
-    @NotBlank(message = "Full name is required")
+    @NotBlank(message = "{user.fullName.required}")
     String fullName;
 
     String phone;

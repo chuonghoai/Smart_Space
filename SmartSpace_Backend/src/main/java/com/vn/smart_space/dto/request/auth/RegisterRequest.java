@@ -14,17 +14,17 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RegisterRequest {
-    @NotBlank(message = "Email không được để trống")
-    @Email(message = "Email không hợp lệ")
+    @NotBlank(message = "{auth.email.required}")
+    @Email(message = "{auth.email.invalid}")
     String email;
 
     com.vn.smart_space.consts.ERole role;
 
-    @NotBlank(message = "Mật khẩu không được để trống")
+    @NotBlank(message = "{auth.password.required}")
     @StrongPassword
     String password;
 
-    @NotBlank(message = "Xác nhận mật khẩu không được để trống")
+    @NotBlank(message = "{auth.confirmPassword.required}")
     @JsonProperty("confirm_password")
     String confirmPassword;
 
@@ -32,7 +32,7 @@ public class RegisterRequest {
 
     String language;
 
-    @NotBlank(message = "DeviceId is required")
+    @NotBlank(message = "{auth.deviceId.required}")
     String deviceId;
     
     String deviceName;

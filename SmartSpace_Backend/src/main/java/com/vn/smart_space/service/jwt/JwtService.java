@@ -76,7 +76,7 @@ public class JwtService implements IJwtService {
                     .build();
         } catch (JOSEException e) {
             log.error("Cannot create token", e);
-            throw new RuntimeException("Can not generate token", e);
+            throw new RuntimeException("system.internal_error", e);
         }
     }
 
@@ -114,7 +114,7 @@ public class JwtService implements IJwtService {
                     .build();
         } catch (JOSEException e) {
             log.error("Cannot create token", e);
-            throw new RuntimeException("Can not generate token", e);
+            throw new RuntimeException("system.internal_error", e);
         }
     }
 
@@ -128,11 +128,11 @@ public class JwtService implements IJwtService {
             var verified = signedJWT.verify(verifier);
 
             if (!(verified && expiryTime.after(new Date())))
-                throw new UnauthorizedException("Token is invalid or expired");
+                throw new UnauthorizedException("auth.token.invalid_or_expired");
 
             return signedJWT;
         } catch (JOSEException | ParseException e) {
-            throw new UnauthorizedException("Token is invalid");
+            throw new UnauthorizedException("auth.token.invalid");
         }
     }
 
@@ -160,7 +160,7 @@ public class JwtService implements IJwtService {
                     .build();
 
         } catch (ParseException e) {
-            throw new RuntimeException("Invalid JWT token", e);
+            throw new RuntimeException("auth.token.invalid", e);
         }
     }
 

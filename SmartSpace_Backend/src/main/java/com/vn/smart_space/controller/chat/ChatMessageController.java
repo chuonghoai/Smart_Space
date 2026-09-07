@@ -31,7 +31,7 @@ public class ChatMessageController {
 
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
-                .message("Send chat message successfully")
+                .message("chat.send.success")
                 .data(data)
                 .build());
     }

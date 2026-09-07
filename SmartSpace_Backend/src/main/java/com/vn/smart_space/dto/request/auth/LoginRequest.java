@@ -16,23 +16,23 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class LoginRequest {
 
-    @NotBlank(message = "Email is required")
-    @Email(message = "Email is invalid")
+    @NotBlank(message = "{auth.email.required}")
+    @Email(message = "{auth.email.invalid}")
     String email;
 
-    @NotBlank(message = "Password is required")
-    @Size(min = 6, max = 50, message = "Password must be between 6 and 50 characters")
+    @NotBlank(message = "{auth.password.required}")
+    @Size(min = 6, max = 50, message = "{auth.password.size}")
     String password;
 
     Boolean rememberMe;
     ERole role;
     
-    @NotBlank(message = "DeviceId is required")
+    @NotBlank(message = "{auth.deviceId.required}")
     String deviceId;
     
     String deviceName;
 
-    @NotNull(message = "Platform is required")
+    @NotNull(message = "{auth.platform.required}")
     String platform;
 
     String language;

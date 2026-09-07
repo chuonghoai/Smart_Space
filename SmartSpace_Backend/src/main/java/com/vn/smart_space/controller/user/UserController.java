@@ -38,7 +38,7 @@ public class UserController {
         String userId = jwt.getClaim("userId").toString();
         userService.updateLanguage(userId, request.getLanguage());
         
-        return ResponseEntity.ok(ApiResponse.success("Language updated successfully", null));
+        return ResponseEntity.ok(ApiResponse.success("user.language.update.success", null));
     }
 
 }

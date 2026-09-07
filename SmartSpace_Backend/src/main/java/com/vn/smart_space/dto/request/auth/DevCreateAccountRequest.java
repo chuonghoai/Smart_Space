@@ -16,13 +16,13 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class DevCreateAccountRequest {
 
-    @NotBlank(message = "Email cannot be blank")
-    @Email(message = "Invalid email format")
+    @NotBlank(message = "{auth.email.required}")
+    @Email(message = "{auth.email.invalid}")
     String email;
 
-    @NotBlank(message = "Password cannot be blank")
+    @NotBlank(message = "{auth.password.required}")
     String password;
 
-    @NotBlank(message = "Role cannot be blank")
+    @NotBlank(message = "{auth.role.required}")
     String role;
 }

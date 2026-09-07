@@ -45,18 +45,18 @@ public class UserService implements IUserService {
     public LoginResponse createUser(RegisterRequest request) {
 
         if (userRepository.existsByEmailAndRole(request.getEmail(), request.getRole())) {
-            throw new BadRequestException("Email already exists for this role");
+            throw new BadRequestException("auth.email.exists");
         }
 
         if (!request.getPassword().equals(request.getConfirmPassword())) {
-            throw new BadRequestException("Mật khẩu xác nhận không khớp");
+            throw new BadRequestException("user.password.not_match");
         }
 
         // Check OTP is verified
         String verifiedKey = "otp_verified:register:" + request.getEmail() + ":" + request.getRole().name();
         String verified = stringRedisTemplate.opsForValue().get(verifiedKey);
         if (!"true".equals(verified)) {
-            throw new BadRequestException("Email chưa được xác thực OTP");
+            throw new BadRequestException("auth.email.unverified");
         }
         stringRedisTemplate.delete(verifiedKey);
 
@@ -105,13 +105,13 @@ public class UserService implements IUserService {
 
     @Override
     public User findUserById(String id) {
-        return userRepository.findById(id).orElseThrow(() -> new BadRequestException("User not found"));
+        return userRepository.findById(id).orElseThrow(() -> new BadRequestException("user.not_found"));
     }
 
     @Override
     public User findUserByEmailAndRole(String email, ERole role) {
         return userRepository.findByEmailAndRole(email, role)
-                .orElseThrow(() -> new BadRequestException("User not found with email: " + email + " and role: " + role));
+                .orElseThrow(() -> new BadRequestException("user.not_found"));
     }
 
     @Override
@@ -125,7 +125,7 @@ public class UserService implements IUserService {
     public void resetPassword(ResetPasswordRequest request) {
 
         if (!request.getNewPassword().equals(request.getConfirmPassword())) {
-            throw new BadRequestException("Mật khẩu xác nhận không khớp");
+            throw new BadRequestException("user.password.not_match");
         }
 
         User user = findUserByEmailAndRole(request.getEmail(), request.getRole());
@@ -168,11 +168,11 @@ public class UserService implements IUserService {
         try {
             role = ERole.valueOf(request.getRole().toLowerCase());
         } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Invalid role");
+            throw new BadRequestException("auth.role.invalid");
         }
 
         if (userRepository.existsByEmailAndRole(request.getEmail(), role)) {
-            throw new BadRequestException("Email already exists for this role");
+            throw new BadRequestException("auth.email.exists");
         }
 
         String emailPrefix = request.getEmail().split("@")[0];
@@ -200,11 +200,11 @@ public class UserService implements IUserService {
 
         User user = findUserById(userId);
         if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
-            throw new BadRequestException("Mật khẩu hiện tại không chính xác");
+            throw new BadRequestException("user.password.invalid");
         }
 
         if (!request.newPassword().equals(request.confirmPassword())) {
-            throw new BadRequestException("Mật khẩu xác nhận không khớp");
+            throw new BadRequestException("user.password.not_match");
         }
 
         user.setPassword(passwordEncoder.encode(request.newPassword()));

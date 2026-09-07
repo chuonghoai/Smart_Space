@@ -92,11 +92,11 @@ public class AuthenticationService implements IAuthenticationService {
     @Override
     public LoginResponse loginBasic(LoginRequest request) {
         User user = userRepository.findByEmailAndRole(request.getEmail(), request.getRole())
-                .orElseThrow(() -> new BadRequestException("Email hoặc mật khẩu không chính xác"));
+                .orElseThrow(() -> new BadRequestException("auth.invalid_credentials"));
 
         boolean isPasswordMatch = passwordEncoder.matches(request.getPassword(), user.getPassword());
         if (!isPasswordMatch) {
-            throw new BadRequestException("Email hoặc mật khẩu không chính xác");
+            throw new BadRequestException("auth.invalid_credentials");
         }
 
         if (request.getLanguage() != null && !request.getLanguage().isBlank()) {
@@ -141,11 +141,11 @@ public class AuthenticationService implements IAuthenticationService {
         try {
             idToken = verifier.verify(request.getIdToken());
         } catch (GeneralSecurityException | IOException e) {
-            throw new BadRequestException("Google token không hợp lệ");
+            throw new BadRequestException("auth.google_token.invalid");
         }
 
         if (idToken == null) {
-            throw new BadRequestException("Google token không hợp lệ hoặc đã hết hạn");
+            throw new BadRequestException("auth.google_token.expired");
         }
 
         // Extract info user
@@ -240,19 +240,19 @@ public class AuthenticationService implements IAuthenticationService {
                     .getClaim("tokenType");
 
             if (!"refresh".equals(tokenType)) {
-                throw new UnauthorizedException("Token không hợp lệ");
+                throw new UnauthorizedException("auth.token.invalid");
             }
 
             String userId = (String) signedJWT.getJWTClaimsSet().getClaim("userId");
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new UnauthorizedException(
-                            "User không tồn tại"));
+                            "user.not_found"));
 
             List<RefreshTokenSession> sessions = sessionRepository.findByUserId(user.getId());
             RefreshTokenSession currentSession = sessions.stream()
                 .filter(s -> s.getRefreshToken().equals(refreshToken))
                 .findFirst()
-                .orElseThrow(() -> new UnauthorizedException("Refresh token đã bị thu hồi hoặc không hợp lệ trên thiết bị này"));
+                .orElseThrow(() -> new UnauthorizedException("auth.token.invalid"));
 
             TokenPayload newAccessToken = jwtService
                     .generateAccessToken(user, currentSession.getDeviceId());
@@ -277,7 +277,7 @@ public class AuthenticationService implements IAuthenticationService {
                     .user(userMapper.toUserResponse(user))
                     .build();
         } catch (ParseException e) {
-            throw new UnauthorizedException("Token không hợp lệ");
+            throw new UnauthorizedException("auth.token.invalid");
         }
     }
 
@@ -316,7 +316,7 @@ public class AuthenticationService implements IAuthenticationService {
     @Transactional
     public void sendOtpRegister(String email, com.vn.smart_space.consts.ERole role) {
         if (userRepository.existsByEmailAndRole(email, role)) {
-            throw new BadRequestException("Email đã tồn tại trong hệ thống cho vai trò này");
+            throw new BadRequestException("auth.email.exists");
         }
         sendOtp(email + ":" + role.name(), "otp:register:", "cooldown:otp:");
     }
@@ -381,7 +381,7 @@ public class AuthenticationService implements IAuthenticationService {
     private void sendOtp(String email, String otpKeyPrefix, String cooldownKeyPrefix) {
         String cooldownKey = cooldownKeyPrefix + email;
         if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(cooldownKey))) {
-            throw new BadRequestException("Vui lòng đợi 60 giây trước khi gửi lại OTP");
+            throw new BadRequestException("auth.otp.wait");
         }
 
         String otp = OtpGenerator.generateOtp();
@@ -403,8 +403,7 @@ public class AuthenticationService implements IAuthenticationService {
         Boolean exists = stringRedisTemplate.hasKey(otpKey);
 
         if (!Boolean.TRUE.equals(exists)) {
-            throw new BadRequestException(
-                    "OTP không tồn tại hoặc đã hết hạn");
+            throw new BadRequestException("auth.otp.invalid");
         }
 
         // Get Data OTP Redis
@@ -416,17 +415,14 @@ public class AuthenticationService implements IAuthenticationService {
         if (savedOtp == null || savedAttempts == null) {
             stringRedisTemplate.delete(otpKey);
 
-            throw new BadRequestException(
-                    "Dữ liệu OTP không hợp lệ");
+            throw new BadRequestException("auth.otp.invalid_data");
         }
 
         int attempts = Integer.parseInt(savedAttempts);
         if (attempts >= 5) {
             stringRedisTemplate.delete(otpKey);
 
-            throw new BadRequestException(
-                    "Bạn đã nhập sai OTP quá 5 lần. "
-                            + "Vui lòng lấy OTP mới");
+            throw new BadRequestException("auth.otp.limit_exceeded");
         }
 
         // OTP Not Match
@@ -446,17 +442,10 @@ public class AuthenticationService implements IAuthenticationService {
             if (attemptsAfter >= 5) {
                 stringRedisTemplate.delete(otpKey);
 
-                throw new BadRequestException(
-                        "Bạn đã nhập sai OTP quá 5 lần. "
-                                + "Vui lòng lấy OTP mới");
+                throw new BadRequestException("auth.otp.limit_exceeded");
             }
 
-            int remaining = 5 - attemptsAfter;
-
-            throw new BadRequestException(
-                    "OTP không chính xác. Còn "
-                            + remaining
-                            + " lần thử");
+            throw new BadRequestException("auth.otp.incorrect");
         }
 
         // OTP Match

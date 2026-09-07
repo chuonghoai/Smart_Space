@@ -38,7 +38,7 @@ public class ConversationController {
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
                 .data(response)
-                .message("Conversation created successfully")
+                .message("conversation.create.success")
                 .build());
     }
 
@@ -55,7 +55,7 @@ public class ConversationController {
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
                 .data(data)
-                .message("My conversation retrieved successfully")
+                .message("conversation.get.success")
                 .build());
     }
 

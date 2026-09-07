@@ -6,7 +6,6 @@ import com.vn.smart_space.dto.response.report.ReportResponse;
 import com.vn.smart_space.service.report.IReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -21,7 +20,7 @@ public class ReportController {
     @GetMapping("/dangerous")
     public ResponseEntity<ApiResponse> getDangerousReports() {
         List<ReportResponse> reports = reportService.getDangerousReports();
-        return ResponseEntity.ok(ApiResponse.success("Success", reports));
+        return ResponseEntity.ok(ApiResponse.success("system.success", reports));
     }
 
     @GetMapping("/recent")
@@ -31,7 +30,7 @@ public class ReportController {
             @RequestParam(name = "user_long", required = false) Double userLong) {
         
         List<ReportResponse> reports = reportService.getRecentReports(filter, userLat, userLong);
-        return ResponseEntity.ok(ApiResponse.success("Success", reports));
+        return ResponseEntity.ok(ApiResponse.success("system.success", reports));
     }
 
     @PostMapping
@@ -43,12 +42,12 @@ public class ReportController {
             userId = jwt.getClaim("userId").toString();
         }
         ReportDetailResponse response = reportService.createReport(request, userId);
-        return ResponseEntity.ok(ApiResponse.success("Report created successfully", response));
+        return ResponseEntity.ok(ApiResponse.success("report.create.success", response));
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> getReportDetail(@PathVariable String id) {
         ReportDetailResponse report = reportService.getReportDetail(id);
-        return ResponseEntity.ok(ApiResponse.success("Success", report));
+        return ResponseEntity.ok(ApiResponse.success("system.success", report));
     }
 }

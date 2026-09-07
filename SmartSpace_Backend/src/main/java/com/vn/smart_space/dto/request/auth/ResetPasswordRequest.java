@@ -12,23 +12,23 @@ import lombok.Setter;
 @Getter
 @Setter
 public class ResetPasswordRequest {
-    @NotBlank(message = "Email không được để trống")
-    @Email(message = "Email không hợp lệ")
+    @NotBlank(message = "{auth.email.required}")
+    @Email(message = "{auth.email.invalid}")
     private String email;
 
     private com.vn.smart_space.consts.ERole role;
 
-    @NotBlank(message = "OTP không được để trống")
-    @Size(min = 6, max = 6, message = "OTP phải có 6 chữ số")
+    @NotBlank(message = "{auth.otp.required}")
+    @Size(min = 6, max = 6, message = "{auth.otp.size}")
     private String otp;
 
     @JsonProperty("new_password")
-    @NotBlank(message = "Mật khẩu mới không được để trống")
-    @Size(min = 6, message = "Mật khẩu phải có ít nhất 6 ký tự")
+    @NotBlank(message = "{auth.newPassword.required}")
+    @Size(min = 6, message = "{auth.password.size}")
     @StrongPassword
     private String newPassword;
 
     @JsonProperty("confirm_password")
-    @NotBlank(message = "Xác nhận mật khẩu không được để trống")
+    @NotBlank(message = "{auth.confirmPassword.required}")
     private String confirmPassword;
 }

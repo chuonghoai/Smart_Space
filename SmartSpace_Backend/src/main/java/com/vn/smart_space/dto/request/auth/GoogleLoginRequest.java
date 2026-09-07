@@ -17,17 +17,17 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class GoogleLoginRequest {
-    @NotBlank(message = "ID Token không được để trống")
+    @NotBlank(message = "{auth.idToken.required}")
     String idToken;
 
-    @NotBlank(message = "DeviceId is required")
+    @NotBlank(message = "{auth.deviceId.required}")
     String deviceId;
     
     String deviceName;
     String platform;
     String ipAddress;
 
-    @NotNull(message = "Role is required")
+    @NotNull(message = "{auth.role.required}")
     ERole role;
 
     String language;
