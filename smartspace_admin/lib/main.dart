@@ -11,6 +11,9 @@ import 'package:flutter_web_plugins/url_strategy.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_shared/mobile_shared.dart';
 import 'firebase_options.dart';
+import 'package:smartspace_admin/features/app_services/ws_services_registry.dart';
+import 'package:smartspace_admin/features/app_services/app_services_initializer.dart';
+import 'package:smartspace_admin/features/test_realtime/services/test_ws_service.dart';
 
 
 void main() async {
@@ -33,6 +36,8 @@ void main() async {
       }
     }
   });
+
+  WsServicesRegistry.register(TestWsService());
 
   runApp(const ProviderScope(child: SmartSpaceAdminApp()));
 }
@@ -72,22 +77,24 @@ class _SmartSpaceAppState extends State<SmartSpaceAdminApp> with WidgetsBindingO
     return ListenableBuilder(
       listenable: Listenable.merge([localeProvider, themeProvider]),
       builder: (context, child) {
-        return MaterialApp.router(
-          scaffoldMessengerKey: scaffoldMessengerKey,
-          title: 'SmartSpace Admin',
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: themeProvider.themeMode,
-          locale: localeProvider.locale,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [Locale('vi'), Locale('en')],
-          routerConfig: appRouter,
-          debugShowCheckedModeBanner: false,
+        return AppServicesInitializer(
+          child: MaterialApp.router(
+            scaffoldMessengerKey: scaffoldMessengerKey,
+            title: 'SmartSpace Admin',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider.themeMode,
+            locale: localeProvider.locale,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('vi'), Locale('en')],
+            routerConfig: appRouter,
+            debugShowCheckedModeBanner: false,
+          ),
         );
       },
     );

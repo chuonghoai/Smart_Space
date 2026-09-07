@@ -1,21 +1,18 @@
 import 'dart:convert' as dart_convert;
 import 'package:flutter/foundation.dart';
-import 'package:mobile_shared/core/websocket/websocket_service.dart';
-import 'package:mobile_shared/core/toast/toast_service.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile_shared/mobile_shared.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
 import 'package:smartspace_client/features/notifications/models/notification_action.dart';
 import 'package:smartspace_client/features/notifications/services/notification_router.dart';
+import 'package:smartspace_client/features/notifications/providers/notification_provider.dart';
+import 'package:smartspace_client/l10n/app_localizations.dart';
+import 'package:smartspace_client/features/app_services/ws_services_registry.dart';
 
-class NotificationWsService {
+class NotificationWsService implements WsFeatureService {
   StompUnsubscribe? _wsSubscription;
-  final VoidCallback onNotificationReceived;
-  final String actionLabel;
 
-  NotificationWsService({
-    required this.onNotificationReceived,
-    required this.actionLabel,
-  });
-
+  @override
   void setup() {
     if (_wsSubscription != null) {
       debugPrint('[WS-Notif] Listener already set up, skipping.');
@@ -40,19 +37,27 @@ class NotificationWsService {
                 action = NotificationAction.fromJson(actionDataMap);
               }
 
-              // Notify UnreadCount Provider
-              onNotificationReceived();
+              // Lấy context từ global navigator key
+              final context = sharedNavigatorKey.currentContext;
+              if (context != null) {
+                // Update Unread Count qua Riverpod
+                ProviderScope.containerOf(context)
+                    .read(notificationProvider.notifier)
+                    .onNotificationReceived();
 
-              final finalAction = action;
+                // Show toast
+                final l10n = AppLocalizations.of(context);
+                final actionLabel = l10n?.actionView;
+                final finalAction = action;
 
-              // Show toast
-              Toast.showTopNotification(
-                context: null,
-                title: title,
-                message: message,
-                actionLabel: finalAction != null && finalAction.type.isNotEmpty ? actionLabel : null,
-                onAction: finalAction != null && finalAction.type.isNotEmpty ? () => NotificationRouter.handleAction(finalAction) : null,
-              );
+                Toast.showTopNotification(
+                  context: null,
+                  title: title,
+                  message: message,
+                  actionLabel: finalAction != null && finalAction.type.isNotEmpty ? actionLabel : null,
+                  onAction: finalAction != null && finalAction.type.isNotEmpty ? () => NotificationRouter.handleAction(finalAction) : null,
+                );
+              }
             } catch (e) {
               debugPrint('[WS-Notif] Parse error: $e');
             }
@@ -69,6 +74,7 @@ class NotificationWsService {
     }
   }
 
+  @override
   void reset() {
     if (_wsSubscription != null) {
       debugPrint('[WS-Notif] Connection dropped clearing subscription for future re-subscribe.');
@@ -77,6 +83,7 @@ class NotificationWsService {
     }
   }
 
+  @override
   void dispose() {
     _wsSubscription?.call();
     _wsSubscription = null;
