@@ -76,7 +76,7 @@ class MobileHomeScreen extends ConsumerWidget {
                             title: l10n.map,
                             icon: Icons.map_outlined,
                             onTap: () {
-                              // TODO: Navigate to map
+                              context.push(RouterPath.map);
                             },
                           ),
                         ),
