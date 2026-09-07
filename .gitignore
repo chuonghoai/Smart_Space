@@ -8,3 +8,5 @@ npm-debug.log*
 **/generated_plugins.cmake
 **/generated_plugin_registrant.cc
 **/generated_plugins.cmake
+smartspace_staff/windows/flutter/generated_plugins.cmake
+smartspace_admin/windows/flutter/generated_plugins.cmake
