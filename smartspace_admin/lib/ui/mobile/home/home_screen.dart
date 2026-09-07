@@ -6,10 +6,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartspace_admin/ui/mobile/home/home_controller.dart';
 import 'package:smartspace_admin/features/reports/models/report_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
-import 'package:smartspace_admin/ui/mobile/layout/app_layout.dart';
+import 'package:smartspace_admin/ui/layout/app_layout.dart';
 import 'package:smartspace_admin/features/reports/utils/report_status_ext.dart';
 import 'package:mobile_shared/util/distance_formatter.dart';
-import 'package:smartspace_admin/ui/shared/components/dangerous_reports_slider.dart';
+import 'package:smartspace_admin/ui/components/dangerous_reports_slider.dart';
 
 class MobileHomeScreen extends ConsumerWidget {
   const MobileHomeScreen({super.key});

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartspace_admin/features/notifications/providers/notification_provider.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
-import 'package:smartspace_admin/ui/shared/components/connection_indicator.dart';
+import 'package:smartspace_admin/ui/components/connection_indicator.dart';
 
 class TopBar extends ConsumerWidget implements PreferredSizeWidget {
   const TopBar({super.key});

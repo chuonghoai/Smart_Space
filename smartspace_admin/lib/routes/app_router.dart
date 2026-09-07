@@ -1,15 +1,15 @@
 import 'package:go_router/go_router.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
-import 'package:smartspace_admin/ui/responsive/screens/auth/login_screen.dart';
-import 'package:smartspace_admin/ui/responsive/screens/settings/change_password_screen.dart';
-import 'package:smartspace_admin/ui/responsive/screens/settings/settings_screen.dart';
+import 'package:smartspace_admin/ui/mobile/auth/login/login_screen.dart';
+import 'package:smartspace_admin/ui/mobile/auth/register/register_email_screen.dart';
+import 'package:smartspace_admin/ui/mobile/auth/register/register_otp_screen.dart';
+import 'package:smartspace_admin/ui/mobile/auth/register/register_password_screen.dart';
+import 'package:smartspace_admin/ui/mobile/auth/forgot_password/forgot_password_screen.dart';
+import 'package:smartspace_admin/ui/mobile/home/home_screen.dart';
+import 'package:smartspace_admin/ui/mobile/settings/change_password_screen.dart';
+import 'package:smartspace_admin/ui/mobile/settings/settings_screen.dart';
 import 'package:smartspace_admin/ui/shared/splash/splash_screen.dart';
-import 'package:smartspace_admin/ui/responsive/screens/home/home_screen.dart';
-import 'package:smartspace_admin/ui/responsive/screens/auth/complete_profile_screen.dart';
-import 'package:smartspace_admin/ui/responsive/screens/auth/register_email_screen.dart';
-import 'package:smartspace_admin/ui/responsive/screens/auth/register_otp_screen.dart';
-import 'package:smartspace_admin/ui/responsive/screens/auth/register_password_screen.dart';
-import 'package:smartspace_admin/ui/responsive/screens/auth/forgot_password_screen.dart';
+import 'package:smartspace_admin/ui/mobile/auth/register/complete_profile_screen.dart';
 import 'package:flutter/material.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
@@ -24,39 +24,39 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: RouterPath.login,
-      builder: (context, state) => const LoginScreen(),
+      builder: (context, state) => const MobileLoginScreen(),
     ),
     GoRoute(
       path: RouterPath.registerEmail,
-      builder: (context, state) => const RegisterEmailScreen(),
+      builder: (context, state) => const MobileRegisterEmailScreen(),
     ),
     GoRoute(
       path: RouterPath.registerOtp,
-      builder: (context, state) => const RegisterOtpScreen(),
+      builder: (context, state) => const MobileRegisterOtpScreen(),
     ),
     GoRoute(
       path: RouterPath.registerPassword,
-      builder: (context, state) => const RegisterPasswordScreen(),
+      builder: (context, state) => const MobileRegisterPasswordScreen(),
     ),
     GoRoute(
       path: RouterPath.home,
-      builder: (context, state) => const HomeScreen(),
+      builder: (context, state) => const MobileHomeScreen(),
     ),
     GoRoute(
       path: RouterPath.completeProfile,
-      builder: (context, state) => const CompleteProfileScreen(),
+      builder: (context, state) => const MobileCompleteProfileScreen(),
     ),
     GoRoute(
       path: RouterPath.forgotPassword,
-      builder: (context, state) => const ForgotPasswordScreen(),
+      builder: (context, state) => const MobileForgotPasswordScreen(),
     ),
     GoRoute(
       path: RouterPath.settings,
-      builder: (context, state) => const SettingsScreen(),
+      builder: (context, state) => const MobileSettingsScreen(),
     ),
     GoRoute(
       path: RouterPath.changePassword,
-      builder: (context, state) => const ChangePasswordScreen(),
+      builder: (context, state) => const MobileChangePasswordScreen(),
     ),
   ],
 );
