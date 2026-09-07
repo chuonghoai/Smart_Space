@@ -18,6 +18,8 @@ public class RegisterRequest {
     @Email(message = "Email không hợp lệ")
     String email;
 
+    com.vn.smart_space.consts.ERole role;
+
     @NotBlank(message = "Mật khẩu không được để trống")
     @StrongPassword
     String password;

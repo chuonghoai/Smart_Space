@@ -5,6 +5,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mobile_shared/core/connection/connection_manager.dart';
 import 'package:mobile_shared/features/auth/services/auth_service.dart';
 import 'package:mobile_shared/util/device_info_util.dart';
+import 'package:mobile_shared/core/constants/role_constant.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/routes/router_path.dart';
 import 'package:mobile_shared/util/media_upload.dart';
@@ -90,7 +91,7 @@ class RegisterController extends ChangeNotifier {
     _email = emailInput.trim();
 
     try {
-      final response = await _authService.sendOtpRegister(_email);
+      final response = await _authService.sendOtpRegister(_email, ERole.client);
 
       if (response.success) {
         if (context.mounted) {
@@ -128,7 +129,7 @@ class RegisterController extends ChangeNotifier {
     _otp = otpInput.trim();
 
     try {
-      final response = await _authService.verifyOtpRegister(_email, _otp);
+      final response = await _authService.verifyOtpRegister(_email, _otp, ERole.client);
 
       if (response.success) {
         if (context.mounted) {
@@ -180,6 +181,7 @@ class RegisterController extends ChangeNotifier {
         deviceId,
         deviceName,
         platform,
+        ERole.client,
       );
 
       if (response.success && response.data != null) {

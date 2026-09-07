@@ -7,6 +7,7 @@ import 'package:google_sign_in/google_sign_in.dart' as google_sign_in_pkg;
 import 'package:mobile_shared/core/config/env_config.dart';
 import 'package:mobile_shared/core/connection/connection_manager.dart';
 import 'package:mobile_shared/core/constants/registration_status.dart';
+import 'package:mobile_shared/core/constants/role_constant.dart';
 import 'package:mobile_shared/util/device_info_util.dart';
 import 'package:mobile_shared/features/auth/services/auth_service.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
@@ -55,6 +56,7 @@ class LoginController extends ChangeNotifier {
         deviceId,
         deviceName,
         platform,
+        ERole.client,
       );
       final response = result.response;
 
@@ -221,6 +223,7 @@ class LoginController extends ChangeNotifier {
         deviceId,
         deviceName,
         platform,
+        ERole.client,
       );
       final response = result.response;
 

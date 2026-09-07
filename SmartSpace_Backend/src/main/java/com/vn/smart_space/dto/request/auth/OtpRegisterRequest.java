@@ -15,4 +15,6 @@ public class OtpRegisterRequest {
     @NotBlank(message = "Email is required")
     @Email(message = "Email is invalid")
     String email;
+
+    com.vn.smart_space.consts.ERole role;
 }

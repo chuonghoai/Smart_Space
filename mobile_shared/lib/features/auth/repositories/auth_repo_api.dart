@@ -1,9 +1,7 @@
-import 'package:mobile_shared/core/api/api_client.dart';
-import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/features/auth/models/DeviceSessionModel.dart';
 import 'package:mobile_shared/features/auth/models/token_model.dart';
 import 'package:mobile_shared/features/auth/repositories/auth_repo.dart';
-import 'package:mobile_shared/core/auth/models/user_model.dart';
+import 'package:mobile_shared/mobile_shared.dart';
 
 class AuthRepoApi implements AuthRepo {
   @override
@@ -14,9 +12,10 @@ class AuthRepoApi implements AuthRepo {
     String deviceId,
     String deviceName,
     String platform,
+    ERole role,
   ) async {
     return await apiClient.post<TokenModel>(
-      '/auth/login/client',
+      '/auth/login',
       data: {
         'email': email,
         'password': password,
@@ -24,6 +23,7 @@ class AuthRepoApi implements AuthRepo {
         'deviceId': deviceId,
         'deviceName': deviceName,
         'platform': platform,
+        'role': role.name,
       },
       decoder: (json) => TokenModel.fromJson(json),
     );
@@ -35,6 +35,7 @@ class AuthRepoApi implements AuthRepo {
     String deviceId,
     String deviceName,
     String platform,
+    ERole role,
   ) async {
     return await apiClient.post<TokenModel>(
       '/auth/login/google',
@@ -43,6 +44,7 @@ class AuthRepoApi implements AuthRepo {
         'deviceId': deviceId,
         'deviceName': deviceName,
         'platform': platform,
+        'role': role.name,
       },
       decoder: (json) => TokenModel.fromJson(json),
     );
@@ -72,19 +74,19 @@ class AuthRepoApi implements AuthRepo {
 
   // Step 1
   @override
-  Future<ApiResponse<void>> sendOtpRegister(String email) async {
+  Future<ApiResponse<void>> sendOtpRegister(String email, ERole role) async {
     return await apiClient.post<void>(
       '/auth/send-otp-register',
-      data: {'email': email},
+      data: {'email': email, 'role': role.name},
     );
   }
 
   // Step 2
   @override
-  Future<ApiResponse<void>> verifyOtpRegister(String email, String otp) async {
+  Future<ApiResponse<void>> verifyOtpRegister(String email, String otp, ERole role) async {
     return await apiClient.post<void>(
       '/auth/verify-otp-register',
-      data: {'email': email, 'otp': otp},
+      data: {'email': email, 'otp': otp, 'role': role.name},
     );
   }
 
@@ -97,6 +99,7 @@ class AuthRepoApi implements AuthRepo {
     String deviceId,
     String deviceName,
     String platform,
+    ERole role,
   ) async {
     return await apiClient.post<TokenModel>(
       '/auth/register',
@@ -108,6 +111,7 @@ class AuthRepoApi implements AuthRepo {
         'deviceId': deviceId,
         'deviceName': deviceName,
         'platform': platform,
+        'role': role.name,
       },
       decoder: (json) => TokenModel.fromJson(json),
     );
@@ -150,6 +154,7 @@ class AuthRepoApi implements AuthRepo {
     String otp,
     String newPassword,
     String confirmPassword,
+    ERole role,
   ) async {
     return await apiClient.post<void>(
       '/auth/reset-password',
@@ -158,6 +163,7 @@ class AuthRepoApi implements AuthRepo {
         'otp': otp,
         'new_password': newPassword,
         'confirm_password': confirmPassword,
+        'role': role.name,
       },
     );
   }

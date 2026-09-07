@@ -1,7 +1,6 @@
-import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/features/auth/models/DeviceSessionModel.dart';
 import 'package:mobile_shared/features/auth/models/token_model.dart';
-import 'package:mobile_shared/core/auth/models/user_model.dart';
+import 'package:mobile_shared/mobile_shared.dart';
 
 abstract class AuthRepo {
   Future<ApiResponse<TokenModel>> login(
@@ -11,6 +10,7 @@ abstract class AuthRepo {
     String deviceId,
     String deviceName,
     String platform,
+    ERole role,
   );
 
   Future<ApiResponse<TokenModel>> loginGoogle(
@@ -18,12 +18,13 @@ abstract class AuthRepo {
     String deviceId,
     String deviceName,
     String platform,
+    ERole role,
   );
 
   // Step 1: Nhập email, nhận OTP
-  Future<ApiResponse<void>> sendOtpRegister(String email);
+  Future<ApiResponse<void>> sendOtpRegister(String email, ERole role);
   // Step 2: Nhập OTP
-  Future<ApiResponse<void>> verifyOtpRegister(String email, String otp);
+  Future<ApiResponse<void>> verifyOtpRegister(String email, String otp, ERole role);
   // Step 3: Nhập mật khẩu
   Future<ApiResponse<TokenModel>> register(
     String email,
@@ -32,6 +33,7 @@ abstract class AuthRepo {
     String deviceId,
     String deviceName,
     String platform,
+    ERole role,
   );
   // Step 4: Bổ sung thông tin (Nếu user thoát giữa chừng, tài khoản vẫn tồn tại và có thể đăng nhập)
   Future<ApiResponse<UserModel>> updateProfile(
@@ -54,6 +56,7 @@ abstract class AuthRepo {
     String otp,
     String newPassword,
     String confirmPassword,
+    ERole role,
   );
   // Đổi mật khẩu
   Future<ApiResponse<void>> changePassword(

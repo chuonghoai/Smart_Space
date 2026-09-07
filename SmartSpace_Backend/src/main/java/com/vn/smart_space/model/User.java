@@ -27,7 +27,9 @@ import lombok.experimental.FieldDefaults;
 @Entity
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {
+        @jakarta.persistence.UniqueConstraint(columnNames = {"email", "role"})
+})
 public class User extends AbstractEntity {
 
     @Column(name = "full_name")
@@ -39,7 +41,7 @@ public class User extends AbstractEntity {
     @Column(name = "phone")
     String phone;
 
-    @Column(name = "email", unique = true)
+    @Column(name = "email")
     String email;
 
     @JsonIgnore

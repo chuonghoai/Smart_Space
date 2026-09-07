@@ -7,6 +7,7 @@ import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:mobile_shared/util/media_upload.dart';
 import 'package:mobile_shared/util/device_info_util.dart';
+import 'package:mobile_shared/core/constants/role_constant.dart';
 
 class RegisterController extends ChangeNotifier {
   final AuthService _authService;
@@ -69,7 +70,7 @@ class RegisterController extends ChangeNotifier {
     _email = emailInput.trim();
 
     try {
-      final response = await _authService.sendOtpRegister(_email);
+      final response = await _authService.sendOtpRegister(_email, ERole.admin);
 
       if (response.success) {
         if (context.mounted) {
@@ -107,7 +108,7 @@ class RegisterController extends ChangeNotifier {
     _otp = otpInput.trim();
 
     try {
-      final response = await _authService.verifyOtpRegister(_email, _otp);
+      final response = await _authService.verifyOtpRegister(_email, _otp, ERole.admin);
 
       if (response.success) {
         if (context.mounted) {
@@ -159,6 +160,7 @@ class RegisterController extends ChangeNotifier {
         deviceId,
         deviceName,
         platform,
+        ERole.admin,
       );
 
       if (response.success && response.data != null) {

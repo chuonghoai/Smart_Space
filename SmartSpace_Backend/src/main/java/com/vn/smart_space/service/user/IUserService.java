@@ -20,19 +20,19 @@ public interface IUserService {
     // Find User By Id
     User findUserById(String id);
 
-    // Find User By Email
-    User findUserByEmail(String email);
+    // Find User By Email And Role
+    User findUserByEmailAndRole(String email, com.vn.smart_space.consts.ERole role);
 
     // Get Me
-    UserResponse getMe(String email);
+    UserResponse getMe(String userId);
 
     // Update Profile
-    UserResponse updateProfile(String email, UpdateProfileRequest request);
+    UserResponse updateProfile(String userId, UpdateProfileRequest request);
 
     // Dev API: Create user directly
     void devCreateAccount(DevCreateAccountRequest request);
 
     // Change Password
-    void changePassword(String email, ChangePasswordRequest request);
+    void changePassword(String userId, ChangePasswordRequest request);
 
 }

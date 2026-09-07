@@ -17,8 +17,16 @@ class AuthRepoMock implements AuthRepo {
     String deviceId,
     String deviceName,
     String platform,
+    ERole role,
   ) async {
     await Future.delayed(const Duration(milliseconds: 500));
+    var role0 = ERole.client;
+    if (role == ERole.admin) {
+      role0 = ERole.admin;
+    } else if (role == ERole.staff) {
+      role0 = ERole.staff;
+    }
+
     return ApiResponse(
       success: true,
       message: 'Đăng nhập thành công',
@@ -31,7 +39,7 @@ class AuthRepoMock implements AuthRepo {
           email: 'trinhthy333@gmail.com',
           fullname: 'Hong Hac',
           avatarUrl: 'https://ui-avatars.com/api/?name=TH&format=png',
-          role: ERole.client,
+          role: role0,
         ),
       ),
     );
@@ -43,6 +51,7 @@ class AuthRepoMock implements AuthRepo {
     String deviceId,
     String deviceName,
     String platform,
+    ERole role,
   ) async {
     await Future.delayed(const Duration(milliseconds: 500));
     return ApiResponse(
@@ -101,7 +110,7 @@ class AuthRepoMock implements AuthRepo {
 
   // Step 1
   @override
-  Future<ApiResponse<void>> sendOtpRegister(String email) async {
+  Future<ApiResponse<void>> sendOtpRegister(String email, ERole role) async {
     await Future.delayed(const Duration(milliseconds: 500));
     return ApiResponse(
       success: true,
@@ -112,7 +121,7 @@ class AuthRepoMock implements AuthRepo {
 
   // Step 2
   @override
-  Future<ApiResponse<void>> verifyOtpRegister(String email, String otp) async {
+  Future<ApiResponse<void>> verifyOtpRegister(String email, String otp, ERole role) async {
     await Future.delayed(const Duration(milliseconds: 500));
     return ApiResponse(
       success: true,
@@ -130,6 +139,7 @@ class AuthRepoMock implements AuthRepo {
     String deviceId,
     String deviceName,
     String platform,
+    ERole role,
   ) async {
     await Future.delayed(const Duration(milliseconds: 500));
     return ApiResponse(
@@ -190,6 +200,7 @@ class AuthRepoMock implements AuthRepo {
     String otp,
     String newPassword,
     String confirmPassword,
+    ERole role,
   ) async {
     await Future.delayed(Duration(milliseconds: 500));
     return ApiResponse(

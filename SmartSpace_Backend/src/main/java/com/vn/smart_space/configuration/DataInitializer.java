@@ -20,10 +20,18 @@ public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
     @Override
     public void run(String... args) throws Exception {
-        if (!userRepository.existsByEmail("admin@gmail.com")) {
+        try {
+            jdbcTemplate.execute("ALTER TABLE users DROP INDEX UK6dotkott2kjsp8vw4d0m25fb7");
+            log.info("Dropped legacy unique index on email");
+        } catch (Exception e) {
+            log.info("Legacy index might not exist or already dropped: " + e.getMessage());
+        }
+
+        if (!userRepository.existsByEmailAndRole("admin@gmail.com", ERole.admin)) {
             log.info("Khởi tạo tài khoản admin mặc định...");
             User admin = new User();
             admin.setEmail("admin@gmail.com");

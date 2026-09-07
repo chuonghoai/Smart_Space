@@ -20,7 +20,6 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.nimbusds.jwt.SignedJWT;
 import com.vn.smart_space.consts.ERegistrationStatus;
-import com.vn.smart_space.consts.ERole;
 import com.vn.smart_space.consts.EUserStatus;
 import com.vn.smart_space.dto.JwtInfo;
 import com.vn.smart_space.dto.TokenPayload;
@@ -91,8 +90,8 @@ public class AuthenticationService implements IAuthenticationService {
 
     // Login Basic
     @Override
-    public LoginResponse loginBasic(LoginRequest request, ERole userRole) {
-        User user = userRepository.findByEmail(request.getEmail())
+    public LoginResponse loginBasic(LoginRequest request) {
+        User user = userRepository.findByEmailAndRole(request.getEmail(), request.getRole())
                 .orElseThrow(() -> new BadRequestException("Email hoặc mật khẩu không chính xác"));
 
         boolean isPasswordMatch = passwordEncoder.matches(request.getPassword(), user.getPassword());
@@ -150,12 +149,12 @@ public class AuthenticationService implements IAuthenticationService {
         String fullName = (String) payload.get("name");
 
         // Find or create User
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmailAndRole(email, request.getRole())
                 .orElseGet(() -> {
                     User newUser = User.builder()
                             .email(email)
                             .fullName(fullName != null ? fullName : email.split("@")[0])
-                            .role(ERole.client)
+                            .role(request.getRole())
                             .status(EUserStatus.active)
                             .build();
                     return userRepository.save(newUser);
@@ -202,10 +201,10 @@ public class AuthenticationService implements IAuthenticationService {
 
         try {
             SignedJWT signedJWT = SignedJWT.parse(token);
-            String email = signedJWT.getJWTClaimsSet().getSubject();
+            String userId = (String) signedJWT.getJWTClaimsSet().getClaim("userId");
             String deviceId = (String) signedJWT.getJWTClaimsSet().getClaim("deviceId");
             
-            userRepository.findByEmail(email).ifPresent(user -> {
+            userRepository.findById(userId).ifPresent(user -> {
                 if (deviceId != null) {
                     revokeSession(user.getId(), deviceId);
                 }
@@ -231,8 +230,8 @@ public class AuthenticationService implements IAuthenticationService {
                 throw new UnauthorizedException("Token không hợp lệ");
             }
 
-            String email = signedJWT.getJWTClaimsSet().getSubject();
-            User user = userRepository.findByEmail(email)
+            String userId = (String) signedJWT.getJWTClaimsSet().getClaim("userId");
+            User user = userRepository.findById(userId)
                     .orElseThrow(() -> new UnauthorizedException(
                             "User không tồn tại"));
 
@@ -302,30 +301,28 @@ public class AuthenticationService implements IAuthenticationService {
     // SEND OTP FOR REGISTRATION
     @Override
     @Transactional
-    public void sendOtpRegister(String email) {
-        if (userRepository.findByEmail(email).isPresent()) {
-            throw new BadRequestException("Email đã tồn tại trong hệ thống");
+    public void sendOtpRegister(String email, com.vn.smart_space.consts.ERole role) {
+        if (userRepository.existsByEmailAndRole(email, role)) {
+            throw new BadRequestException("Email đã tồn tại trong hệ thống cho vai trò này");
         }
-        sendOtp(email, "otp:register:", "cooldown:otp:");
+        sendOtp(email + ":" + role.name(), "otp:register:", "cooldown:otp:");
     }
 
     // Send OTP Forgot password
     @Override
     public void sendOtpForgotPassword(String email) {
-        if (userRepository.findByEmail(email).isEmpty()) {
-            throw new BadRequestException("Email không tồn tại trong hệ thống");
-        }
+        // Here we just send OTP for the email, ignoring role since we will ask for it in reset password
         sendOtp(email, "otp:forgot_password:", "cooldown:otp_forgot:");
     }
 
     @Override
     @Transactional
-    public void verifyOtpRegister(String email, String otp) {
+    public void verifyOtpRegister(String email, String otp, com.vn.smart_space.consts.ERole role) {
 
-        String otpKey = "otp:register:" + email;
+        String otpKey = "otp:register:" + email + ":" + role.name();
         verifyOtp(otpKey, otp);
 
-        String verifiedKey = "otp_verified:register:" + email;
+        String verifiedKey = "otp_verified:register:" + email + ":" + role.name();
         stringRedisTemplate.opsForValue().set(verifiedKey, "true", Duration.ofMinutes(10));
 
     }

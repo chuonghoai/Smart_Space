@@ -16,6 +16,8 @@ public class ResetPasswordRequest {
     @Email(message = "Email không hợp lệ")
     private String email;
 
+    private com.vn.smart_space.consts.ERole role;
+
     @NotBlank(message = "OTP không được để trống")
     @Size(min = 6, max = 6, message = "OTP phải có 6 chữ số")
     private String otp;

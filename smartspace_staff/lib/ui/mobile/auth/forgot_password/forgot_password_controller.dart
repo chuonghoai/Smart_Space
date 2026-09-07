@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_shared/core/constants/role_constant.dart';
 import 'package:mobile_shared/features/auth/services/auth_service.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
@@ -114,6 +115,7 @@ class ForgotPasswordController extends ChangeNotifier {
         otp.trim(),
         newPassword,
         confirmPassword,
+        ERole.staff,
       );
 
       if (response.success) {

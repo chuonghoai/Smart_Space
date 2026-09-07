@@ -3,6 +3,7 @@ import 'package:mobile_shared/core/auth/access_token_service.dart';
 import 'package:mobile_shared/core/auth/refresh_token_service.dart';
 import 'package:mobile_shared/core/auth/user_storage_service.dart';
 import 'package:mobile_shared/core/connection/connection_manager.dart';
+import 'package:mobile_shared/core/constants/role_constant.dart';
 import 'package:mobile_shared/core/constants/use_mock.dart';
 import 'package:mobile_shared/core/notification/firebase_service.dart';
 import 'package:mobile_shared/features/auth/models/DeviceSessionModel.dart';
@@ -25,6 +26,7 @@ class AuthService {
     String deviceId,
     String deviceName,
     String platform,
+    ERole role,
   ) async {
     final response = await authRepo.login(
       email,
@@ -33,6 +35,7 @@ class AuthService {
       deviceId,
       deviceName,
       platform,
+      role,
     );
     final data = response.data;
 
@@ -56,12 +59,14 @@ class AuthService {
     String deviceId,
     String deviceName,
     String platform,
+    ERole role,
   ) async {
     final response = await authRepo.loginGoogle(
       idToken,
       deviceId,
       deviceName,
       platform,
+      role,
     );
     final data = response.data;
 
@@ -127,13 +132,13 @@ class AuthService {
   }
 
   /// Register step 1: Send OTP with email
-  Future<ApiResponse<void>> sendOtpRegister(String email) async {
-    return await authRepo.sendOtpRegister(email);
+  Future<ApiResponse<void>> sendOtpRegister(String email, ERole role) async {
+    return await authRepo.sendOtpRegister(email, role);
   }
 
   /// Register step 2: Verify OTP with email
-  Future<ApiResponse<void>> verifyOtpRegister(String email, String otp) async {
-    return await authRepo.verifyOtpRegister(email, otp);
+  Future<ApiResponse<void>> verifyOtpRegister(String email, String otp, ERole role) async {
+    return await authRepo.verifyOtpRegister(email, otp, role);
   }
 
   /// Register step 3: Create account successfully with registrationStatus = incomplete
@@ -144,6 +149,7 @@ class AuthService {
     String deviceId,
     String deviceName,
     String platform,
+    ERole role,
   ) async {
     final response = await authRepo.register(
       email,
@@ -152,6 +158,7 @@ class AuthService {
       deviceId,
       deviceName,
       platform,
+      role,
     );
     final data = response.data;
 
@@ -199,12 +206,14 @@ class AuthService {
     String otp,
     String newPassword,
     String confirmPassword,
+    ERole role,
   ) async {
     return await authRepo.resetPassword(
       email,
       otp,
       newPassword,
       confirmPassword,
+      role,
     );
   }
 

@@ -1,5 +1,7 @@
 package com.vn.smart_space.dto.request.auth;
 
+import com.vn.smart_space.consts.ERole;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -22,6 +24,7 @@ public class LoginRequest {
     String password;
 
     Boolean rememberMe;
+    ERole role;
     
     @NotBlank(message = "DeviceId is required")
     String deviceId;

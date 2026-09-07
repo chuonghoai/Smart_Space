@@ -1,5 +1,7 @@
 package com.vn.smart_space.dto.request.auth;
 
+import com.vn.smart_space.consts.ERole;
+
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -23,4 +25,5 @@ public class GoogleLoginRequest {
     String deviceName;
     String platform;
     String ipAddress;
+    ERole role;
 }

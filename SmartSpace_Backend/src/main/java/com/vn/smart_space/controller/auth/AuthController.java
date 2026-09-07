@@ -16,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
-import com.vn.smart_space.consts.ERole;
 import com.vn.smart_space.dto.ApiResponse;
 import com.vn.smart_space.dto.request.auth.DevCreateAccountRequest;
 import com.vn.smart_space.dto.request.auth.GoogleLoginRequest;
@@ -46,43 +45,13 @@ public class AuthController {
         private final IUserService userService;
 
         // 1. Login Basic
-        @PostMapping("/login/client")
-        public ResponseEntity<ApiResponse> loginClient(
+        @PostMapping("/login")
+        public ResponseEntity<ApiResponse> login(
                 @RequestBody @Valid LoginRequest request,
                 HttpServletRequest httpRequest) {
 
                 request.setIpAddress(httpRequest.getRemoteAddr());
-                LoginResponse loginResponse = authenticationService.loginBasic(request, ERole.client);
-                return ResponseEntity.ok(ApiResponse.builder()
-                                .success(true)
-                                .data(loginResponse)
-                                .message("Login success")
-                                .build());
-
-        }
-
-        @PostMapping("/login/admin")
-        public ResponseEntity<ApiResponse> loginAdmin(
-                @RequestBody @Valid LoginRequest request,
-                HttpServletRequest httpRequest) {
-
-                request.setIpAddress(httpRequest.getRemoteAddr());
-                LoginResponse loginResponse = authenticationService.loginBasic(request, ERole.admin);
-                return ResponseEntity.ok(ApiResponse.builder()
-                                .success(true)
-                                .data(loginResponse)
-                                .message("Login success")
-                                .build());
-
-        }
-
-        @PostMapping("/login/staff")
-        public ResponseEntity<ApiResponse> loginStaff(
-                @RequestBody @Valid LoginRequest request,
-                HttpServletRequest httpRequest) {
-
-                request.setIpAddress(httpRequest.getRemoteAddr());
-                LoginResponse loginResponse = authenticationService.loginBasic(request, ERole.staff);
+                LoginResponse loginResponse = authenticationService.loginBasic(request);
                 return ResponseEntity.ok(ApiResponse.builder()
                                 .success(true)
                                 .data(loginResponse)
@@ -161,7 +130,7 @@ public class AuthController {
         // Get Me
         @GetMapping("/me")
         public ResponseEntity<ApiResponse> getMe(@AuthenticationPrincipal Jwt jwt) {
-                UserResponse userResponse = userService.getMe(jwt.getSubject());
+                UserResponse userResponse = userService.getMe(jwt.getClaim("userId").toString());
                 return ResponseEntity.ok(ApiResponse.success("Get profile success", userResponse));
         }
 
@@ -181,20 +150,20 @@ public class AuthController {
         @PostMapping("/send-otp-register")
         public ResponseEntity<ApiResponse> sendOtpRegister(@RequestBody @Valid OtpRegisterRequest request) {
 
-                authenticationService.sendOtpRegister(request.getEmail());
+                authenticationService.sendOtpRegister(request.getEmail(), request.getRole());
                 return ResponseEntity.ok(ApiResponse.success("Send OTP register successfully", null));
         }
 
         @PostMapping("/verify-otp-register")
         public ResponseEntity<ApiResponse> verifyOtpRegister(@RequestBody @Valid VerifyOTPRegisterRequest request) {
-                authenticationService.verifyOtpRegister(request.getEmail(), request.getOtp());
+                authenticationService.verifyOtpRegister(request.getEmail(), request.getOtp(), request.getRole());
                 return ResponseEntity.ok(ApiResponse.success("Verify OTP register successfully", null));
         }
 
         // 7. Reset Password
 
         @PostMapping("send-otp-forgot-password")
-        public ResponseEntity<ApiResponse> sendOtpForgotPassword(@RequestBody @Valid OtpRegisterRequest request) {
+        public ResponseEntity<ApiResponse> sendOtpForgotPassword(@RequestBody @Valid com.vn.smart_space.dto.request.auth.SendOtpForgotPasswordRequest request) {
                 authenticationService.sendOtpForgotPassword(request.getEmail());
                 return ResponseEntity.ok(ApiResponse.success("Send OTP forgot password successfully", null));
         }
@@ -210,7 +179,7 @@ public class AuthController {
         public ResponseEntity<ApiResponse> updateProfile(
                         @AuthenticationPrincipal Jwt jwt,
                         @RequestBody @Valid UpdateProfileRequest request) {
-                UserResponse userResponse = userService.updateProfile(jwt.getSubject(), request);
+                UserResponse userResponse = userService.updateProfile(jwt.getClaim("userId").toString(), request);
                 return ResponseEntity.ok(ApiResponse.success("Profile updated successfully", userResponse));
         }
 
@@ -226,7 +195,7 @@ public class AuthController {
         public ResponseEntity<ApiResponse> changePassword(
                         @AuthenticationPrincipal Jwt jwt,
                         @RequestBody @Valid ChangePasswordRequest request) {
-                userService.changePassword(jwt.getSubject(), request);
+                userService.changePassword(jwt.getClaim("userId").toString(), request);
                 return ResponseEntity.ok(ApiResponse.success("Change password successfully", null));
         }
 

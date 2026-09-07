@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_shared/core/constants/registration_status.dart';
+import 'package:mobile_shared/core/constants/role_constant.dart';
 import 'package:mobile_shared/features/auth/services/auth_service.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
@@ -53,6 +54,7 @@ class LoginController extends ChangeNotifier {
         deviceId,
         deviceName,
         platform,
+        ERole.staff,
       );
       final response = result.response;
 
@@ -112,7 +114,7 @@ class LoginController extends ChangeNotifier {
       final deviceName = await DeviceInfoUtil.getDeviceName();
       final platform = DeviceInfoUtil.getPlatform();
 
-      final result = await _authService.loginGoogle(idToken, deviceId, deviceName, platform);
+      final result = await _authService.loginGoogle(idToken, deviceId, deviceName, platform, ERole.staff);
       final response = result.response;
 
       if (response.success && response.data != null) {
