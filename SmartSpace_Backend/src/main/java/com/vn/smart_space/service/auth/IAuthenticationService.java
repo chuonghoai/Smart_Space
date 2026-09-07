@@ -1,6 +1,7 @@
 package com.vn.smart_space.service.auth;
 
 import com.vn.smart_space.consts.ERegistrationStatus;
+import com.vn.smart_space.consts.ERole;
 import com.vn.smart_space.dto.TokenPayload;
 import com.vn.smart_space.dto.request.auth.GoogleLoginRequest;
 import com.vn.smart_space.dto.request.auth.IntrospectRequest;
@@ -18,7 +19,7 @@ public interface IAuthenticationService {
     IntrospectResponse introspect(IntrospectRequest request);
 
     // Login Basic
-    LoginResponse loginBasic(LoginRequest request);
+    LoginResponse loginBasic(LoginRequest request, ERole userRole);
 
     // Login Google
     LoginResponse loginGoogle(GoogleLoginRequest request);

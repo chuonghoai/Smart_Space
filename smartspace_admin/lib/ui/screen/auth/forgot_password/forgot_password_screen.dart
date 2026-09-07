@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smartspace_admin/ui/mobile/auth/forgot_password/forgot_password_controller.dart';
+import 'package:smartspace_admin/ui/screen/auth/forgot_password/forgot_password_controller.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import '../../../shared/login_setting/login_setting.dart';
 

@@ -1,15 +1,15 @@
 import 'package:go_router/go_router.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
-import 'package:smartspace_admin/ui/mobile/auth/login/login_screen.dart';
-import 'package:smartspace_admin/ui/mobile/auth/register/register_email_screen.dart';
-import 'package:smartspace_admin/ui/mobile/auth/register/register_otp_screen.dart';
-import 'package:smartspace_admin/ui/mobile/auth/register/register_password_screen.dart';
-import 'package:smartspace_admin/ui/mobile/auth/forgot_password/forgot_password_screen.dart';
-import 'package:smartspace_admin/ui/mobile/home/home_screen.dart';
-import 'package:smartspace_admin/ui/mobile/settings/change_password_screen.dart';
-import 'package:smartspace_admin/ui/mobile/settings/settings_screen.dart';
+import 'package:smartspace_admin/ui/screen/auth/login/login_screen.dart';
+import 'package:smartspace_admin/ui/screen/auth/register/register_email_screen.dart';
+import 'package:smartspace_admin/ui/screen/auth/register/register_otp_screen.dart';
+import 'package:smartspace_admin/ui/screen/auth/register/register_password_screen.dart';
+import 'package:smartspace_admin/ui/screen/auth/forgot_password/forgot_password_screen.dart';
+import 'package:smartspace_admin/ui/screen/home/home_screen.dart';
+import 'package:smartspace_admin/ui/screen/settings/change_password_screen.dart';
+import 'package:smartspace_admin/ui/screen/settings/settings_screen.dart';
 import 'package:smartspace_admin/ui/shared/splash/splash_screen.dart';
-import 'package:smartspace_admin/ui/mobile/auth/register/complete_profile_screen.dart';
+import 'package:smartspace_admin/ui/screen/auth/register/complete_profile_screen.dart';
 import 'package:flutter/material.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

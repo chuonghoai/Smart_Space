@@ -1,41 +1,31 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:smartspace_admin/ui/mobile/auth/register/register_controller.dart';
+import 'package:smartspace_admin/ui/screen/auth/register/register_controller.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/shared/login_setting/login_setting.dart';
 
-class MobileRegisterPasswordScreen extends StatefulWidget {
-  const MobileRegisterPasswordScreen({super.key});
+class MobileRegisterEmailScreen extends StatefulWidget {
+  const MobileRegisterEmailScreen({super.key});
 
   @override
-  State<MobileRegisterPasswordScreen> createState() =>
-      _MobileRegisterPasswordScreenState();
+  State<MobileRegisterEmailScreen> createState() =>
+      _MobileRegisterEmailScreenState();
 }
 
-class _MobileRegisterPasswordScreenState
-    extends State<MobileRegisterPasswordScreen> {
+class _MobileRegisterEmailScreenState extends State<MobileRegisterEmailScreen> {
   late final RegisterController _controller;
-  final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
-
-  bool _obscurePassword = true;
-  bool _obscureConfirmPassword = true;
-  final FocusNode _passwordFocusNode = FocusNode();
-  final FocusNode _confirmPasswordFocusNode = FocusNode();
+  final TextEditingController _emailController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _controller = registerController;
+    _controller.reset();
   }
 
   @override
   void dispose() {
-    _passwordController.dispose();
-    _confirmPasswordController.dispose();
-    _passwordFocusNode.dispose();
-    _confirmPasswordFocusNode.dispose();
+    _emailController.dispose();
     super.dispose();
   }
 
@@ -95,7 +85,7 @@ class _MobileRegisterPasswordScreenState
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    l10n.passwordTitle,
+                    l10n.emailTitle,
                     style: textTheme.bodyLarge?.copyWith(
                       color: colorScheme.onSurfaceVariant,
                     ),
@@ -119,80 +109,31 @@ class _MobileRegisterPasswordScreenState
                     const SizedBox(height: 16),
                   ],
 
-                  // Password input
+                  // Email input
                   Text(
-                    l10n.password,
+                    l10n.email,
                     style: textTheme.labelLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
                   TextField(
-                    controller: _passwordController,
-                    focusNode: _passwordFocusNode,
-                    obscureText: _obscurePassword,
-                    textInputAction: TextInputAction.next,
-                    onSubmitted: (_) =>
-                        _confirmPasswordFocusNode.requestFocus(),
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
                     decoration: InputDecoration(
-                      hintText: l10n.enterPassword,
-                      prefixIcon: const Icon(Icons.lock_outline),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscurePassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscurePassword = !_obscurePassword;
-                          });
-                        },
-                      ),
+                      hintText: l10n.enterEmail,
+                      prefixIcon: const Icon(Icons.email_outlined),
                     ),
                     onChanged: (value) => _controller.clearError(),
-                  ),
-                  const SizedBox(height: 20),
-
-                  // Confirm Password input
-                  Text(
-                    l10n.confirmPassword,
-                    style: textTheme.labelLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                  const SizedBox(height: 8),
-                  TextField(
-                    controller: _confirmPasswordController,
-                    focusNode: _confirmPasswordFocusNode,
-                    obscureText: _obscureConfirmPassword,
                     textInputAction: TextInputAction.done,
                     onSubmitted: (_) {
                       if (!_controller.isLoading) {
-                        _controller.registerAccount(
+                        _controller.sendOtp(
                           context: context,
-                          password: _passwordController.text,
-                          confirmPassword: _confirmPasswordController.text,
+                          emailInput: _emailController.text,
                         );
                       }
                     },
-                    decoration: InputDecoration(
-                      hintText: l10n.confirmPassword,
-                      prefixIcon: const Icon(Icons.lock_outline),
-                      suffixIcon: IconButton(
-                        icon: Icon(
-                          _obscureConfirmPassword
-                              ? Icons.visibility_off
-                              : Icons.visibility,
-                        ),
-                        onPressed: () {
-                          setState(() {
-                            _obscureConfirmPassword = !_obscureConfirmPassword;
-                          });
-                        },
-                      ),
-                    ),
-                    onChanged: (value) => _controller.clearError(),
                   ),
                   const SizedBox(height: 32),
 
@@ -201,10 +142,9 @@ class _MobileRegisterPasswordScreenState
                     onPressed: _controller.isLoading
                         ? null
                         : () {
-                            _controller.registerAccount(
+                            _controller.sendOtp(
                               context: context,
-                              password: _passwordController.text,
-                              confirmPassword: _confirmPasswordController.text,
+                              emailInput: _emailController.text,
                             );
                           },
                     style: ElevatedButton.styleFrom(
@@ -217,7 +157,7 @@ class _MobileRegisterPasswordScreenState
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : Text(
-                            l10n.createAccount,
+                            l10n.next,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,

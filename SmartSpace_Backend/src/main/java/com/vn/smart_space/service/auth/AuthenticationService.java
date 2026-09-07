@@ -91,7 +91,7 @@ public class AuthenticationService implements IAuthenticationService {
 
     // Login Basic
     @Override
-    public LoginResponse loginBasic(LoginRequest request) {
+    public LoginResponse loginBasic(LoginRequest request, ERole userRole) {
         User user = userRepository.findByEmail(request.getEmail())
                 .orElseThrow(() -> new BadRequestException("Email hoặc mật khẩu không chính xác"));
 

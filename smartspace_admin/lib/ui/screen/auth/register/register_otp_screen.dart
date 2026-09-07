@@ -1,31 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:smartspace_admin/ui/mobile/auth/register/register_controller.dart';
+import 'package:smartspace_admin/ui/screen/auth/register/register_controller.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/shared/login_setting/login_setting.dart';
 
-class MobileRegisterEmailScreen extends StatefulWidget {
-  const MobileRegisterEmailScreen({super.key});
+class MobileRegisterOtpScreen extends StatefulWidget {
+  const MobileRegisterOtpScreen({super.key});
 
   @override
-  State<MobileRegisterEmailScreen> createState() =>
-      _MobileRegisterEmailScreenState();
+  State<MobileRegisterOtpScreen> createState() =>
+      _MobileRegisterOtpScreenState();
 }
 
-class _MobileRegisterEmailScreenState extends State<MobileRegisterEmailScreen> {
+class _MobileRegisterOtpScreenState extends State<MobileRegisterOtpScreen> {
   late final RegisterController _controller;
-  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _otpController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
     _controller = registerController;
-    _controller.reset();
   }
 
   @override
   void dispose() {
-    _emailController.dispose();
+    _otpController.dispose();
     super.dispose();
   }
 
@@ -85,9 +84,16 @@ class _MobileRegisterEmailScreenState extends State<MobileRegisterEmailScreen> {
                   ),
                   const SizedBox(height: 8),
                   Text(
-                    l10n.emailTitle,
+                    l10n.otpTitle,
                     style: textTheme.bodyLarge?.copyWith(
                       color: colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  Text(
+                    '${l10n.otpSentTo}: ${_controller.email}',
+                    style: textTheme.bodyMedium?.copyWith(
+                      color: colorScheme.primary,
                     ),
                   ),
                   const SizedBox(height: 32),
@@ -109,28 +115,28 @@ class _MobileRegisterEmailScreenState extends State<MobileRegisterEmailScreen> {
                     const SizedBox(height: 16),
                   ],
 
-                  // Email input
+                  // OTP input
                   Text(
-                    l10n.email,
+                    l10n.otp,
                     style: textTheme.labelLarge?.copyWith(
                       fontWeight: FontWeight.bold,
                     ),
                   ),
                   const SizedBox(height: 8),
                   TextField(
-                    controller: _emailController,
-                    keyboardType: TextInputType.emailAddress,
+                    controller: _otpController,
+                    keyboardType: TextInputType.number,
                     decoration: InputDecoration(
-                      hintText: l10n.enterEmail,
-                      prefixIcon: const Icon(Icons.email_outlined),
+                      hintText: l10n.enterOtp,
+                      prefixIcon: const Icon(Icons.security),
                     ),
                     onChanged: (value) => _controller.clearError(),
                     textInputAction: TextInputAction.done,
                     onSubmitted: (_) {
                       if (!_controller.isLoading) {
-                        _controller.sendOtp(
+                        _controller.verifyOtp(
                           context: context,
-                          emailInput: _emailController.text,
+                          otpInput: _otpController.text,
                         );
                       }
                     },
@@ -142,9 +148,9 @@ class _MobileRegisterEmailScreenState extends State<MobileRegisterEmailScreen> {
                     onPressed: _controller.isLoading
                         ? null
                         : () {
-                            _controller.sendOtp(
+                            _controller.verifyOtp(
                               context: context,
-                              emailInput: _emailController.text,
+                              otpInput: _otpController.text,
                             );
                           },
                     style: ElevatedButton.styleFrom(
@@ -157,7 +163,7 @@ class _MobileRegisterEmailScreenState extends State<MobileRegisterEmailScreen> {
                             child: CircularProgressIndicator(strokeWidth: 2),
                           )
                         : Text(
-                            l10n.next,
+                            l10n.verify,
                             style: const TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.bold,

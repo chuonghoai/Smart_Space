@@ -16,7 +16,7 @@ class AuthRepoApi implements AuthRepo {
     String platform,
   ) async {
     return await apiClient.post<TokenModel>(
-      '/auth/login',
+      '/auth/login/client',
       data: {
         'email': email,
         'password': password,

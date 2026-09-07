@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
-import 'package:smartspace_admin/ui/mobile/settings/change_password_controller.dart';
+import 'package:smartspace_admin/ui/screen/settings/change_password_controller.dart';
 
 class MobileChangePasswordScreen extends StatefulWidget {
   const MobileChangePasswordScreen({super.key});

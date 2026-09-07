@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
-import 'package:smartspace_admin/ui/mobile/settings/settings_controller.dart';
+import 'package:smartspace_admin/ui/screen/settings/settings_controller.dart';
 import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
 
 class MobileSettingsScreen extends StatefulWidget {

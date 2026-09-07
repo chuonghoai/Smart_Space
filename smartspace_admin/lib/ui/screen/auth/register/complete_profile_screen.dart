@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:smartspace_admin/ui/mobile/auth/register/register_controller.dart';
+import 'package:smartspace_admin/ui/screen/auth/register/register_controller.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 
 class MobileCompleteProfileScreen extends StatefulWidget {

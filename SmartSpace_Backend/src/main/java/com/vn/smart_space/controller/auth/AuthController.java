@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
+import com.vn.smart_space.consts.ERole;
 import com.vn.smart_space.dto.ApiResponse;
 import com.vn.smart_space.dto.request.auth.DevCreateAccountRequest;
 import com.vn.smart_space.dto.request.auth.GoogleLoginRequest;
@@ -45,13 +46,43 @@ public class AuthController {
         private final IUserService userService;
 
         // 1. Login Basic
-        @PostMapping("/login")
-        public ResponseEntity<ApiResponse> login(
+        @PostMapping("/login/client")
+        public ResponseEntity<ApiResponse> loginClient(
                 @RequestBody @Valid LoginRequest request,
                 HttpServletRequest httpRequest) {
 
                 request.setIpAddress(httpRequest.getRemoteAddr());
-                LoginResponse loginResponse = authenticationService.loginBasic(request);
+                LoginResponse loginResponse = authenticationService.loginBasic(request, ERole.client);
+                return ResponseEntity.ok(ApiResponse.builder()
+                                .success(true)
+                                .data(loginResponse)
+                                .message("Login success")
+                                .build());
+
+        }
+
+        @PostMapping("/login/admin")
+        public ResponseEntity<ApiResponse> loginAdmin(
+                @RequestBody @Valid LoginRequest request,
+                HttpServletRequest httpRequest) {
+
+                request.setIpAddress(httpRequest.getRemoteAddr());
+                LoginResponse loginResponse = authenticationService.loginBasic(request, ERole.admin);
+                return ResponseEntity.ok(ApiResponse.builder()
+                                .success(true)
+                                .data(loginResponse)
+                                .message("Login success")
+                                .build());
+
+        }
+
+        @PostMapping("/login/staff")
+        public ResponseEntity<ApiResponse> loginStaff(
+                @RequestBody @Valid LoginRequest request,
+                HttpServletRequest httpRequest) {
+
+                request.setIpAddress(httpRequest.getRemoteAddr());
+                LoginResponse loginResponse = authenticationService.loginBasic(request, ERole.staff);
                 return ResponseEntity.ok(ApiResponse.builder()
                                 .success(true)
                                 .data(loginResponse)
