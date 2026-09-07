@@ -272,5 +272,8 @@
       "error": {}
     }
   },
-  "retryButton": "Thử lại"
+  "retryButton": "Thử lại",
+  "minuteAgo": "phút trước",
+  "hourAgo": "giờ trước",
+  "dayAgo": "ngày trước"
 }

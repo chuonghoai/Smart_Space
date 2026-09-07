@@ -11,8 +11,9 @@ import 'package:smartspace_client/l10n/app_localizations.dart';
 class ReportBackgroundUploadService extends ChangeNotifier {
   // Use the shared plugin instance from FirebaseService to avoid overwriting
   // its onDidReceiveNotificationResponse handler on re-initialization.
-  FlutterLocalNotificationsPlugin get _plugin => FirebaseService.localNotificationsPlugin;
-  
+  FlutterLocalNotificationsPlugin get _plugin =>
+      FirebaseService.localNotificationsPlugin;
+
   bool _isUploading = false;
   bool get isUploading => _isUploading;
 
@@ -27,19 +28,27 @@ class ReportBackgroundUploadService extends ChangeNotifier {
   ReportModel? _lastUploadedReport;
   ReportModel? get lastUploadedReport => _lastUploadedReport;
 
-  Future<void> _showNotification(int progress, int maxProgress, String title, String body, {bool showProgress = true, String? payload}) async {
-    final AndroidNotificationDetails androidPlatformChannelSpecifics = AndroidNotificationDetails(
-      'upload_channel_id',
-      'Upload Progress',
-      channelDescription: 'Shows progress for report uploads',
-      importance: Importance.max,
-      priority: Priority.high,
-      showProgress: showProgress,
-      maxProgress: maxProgress,
-      progress: progress,
-      onlyAlertOnce: true,
-      enableVibration: false,
-    );
+  Future<void> _showNotification(
+    int progress,
+    int maxProgress,
+    String title,
+    String body, {
+    bool showProgress = true,
+    String? payload,
+  }) async {
+    final AndroidNotificationDetails androidPlatformChannelSpecifics =
+        AndroidNotificationDetails(
+          'upload_channel_id',
+          'Upload Progress',
+          channelDescription: 'Shows progress for report uploads',
+          importance: Importance.max,
+          priority: Priority.high,
+          showProgress: showProgress,
+          maxProgress: maxProgress,
+          progress: progress,
+          onlyAlertOnce: true,
+          enableVibration: false,
+        );
     final NotificationDetails platformChannelSpecifics = NotificationDetails(
       android: androidPlatformChannelSpecifics,
       iOS: const DarwinNotificationDetails(),
@@ -53,11 +62,15 @@ class ReportBackgroundUploadService extends ChangeNotifier {
     );
   }
 
-  Future<void> startUploadAndCreateReport(ReportDto dto, List<Uint8List> images, {Function(ReportModel)? onSuccess}) async {
+  Future<void> startUploadAndCreateReport(
+    ReportDto dto,
+    List<Uint8List> images, {
+    Function(ReportModel)? onSuccess,
+  }) async {
     if (_isUploading) return;
-    
+
     await _plugin.cancel(id: 0);
-    
+
     final l10n = lookupAppLocalizations(ui.PlatformDispatcher.instance.locale);
 
     _isUploading = true;
@@ -68,15 +81,26 @@ class ReportBackgroundUploadService extends ChangeNotifier {
 
     try {
       List<String> uploadedUrls = [];
-      
+
       for (int i = 0; i < images.length; i++) {
         _currentStep = i + 1;
-        _statusMessage = l10n.uploadingImageProgress(_currentStep, images.length);
+        _statusMessage = l10n.uploadingImageProgress(
+          _currentStep,
+          images.length,
+        );
         notifyListeners();
-        
-        await _showNotification(_currentStep, _totalSteps, l10n.uploadingImage, l10n.imageProgress(_currentStep, images.length));
-        
-        String url = await mediaUploadUtil.uploadMedia(images[i], 'report_img_$i.jpg');
+
+        await _showNotification(
+          _currentStep,
+          _totalSteps,
+          l10n.uploadingImage,
+          l10n.imageProgress(_currentStep, images.length),
+        );
+
+        String url = await mediaUploadUtil.uploadMedia(
+          images[i],
+          'report_img_$i.jpg',
+        );
         if (url.isNotEmpty) {
           uploadedUrls.add(url);
         }
@@ -85,7 +109,12 @@ class ReportBackgroundUploadService extends ChangeNotifier {
       _currentStep = _totalSteps;
       _statusMessage = l10n.creatingReportSystem;
       notifyListeners();
-      await _showNotification(_currentStep, _totalSteps, l10n.almostDone, l10n.creatingReportOnSystem);
+      await _showNotification(
+        _currentStep,
+        _totalSteps,
+        l10n.almostDone,
+        l10n.creatingReportOnSystem,
+      );
 
       ReportDto updatedDto = dto.copyWith(imageUrls: uploadedUrls);
       final response = await reportService.createReport(updatedDto);
@@ -93,15 +122,20 @@ class ReportBackgroundUploadService extends ChangeNotifier {
       if (response.success && response.data != null) {
         _lastUploadedReport = response.data;
         _statusMessage = l10n.createReportSuccess;
-        
+
         final actionData = {
           "type": "REPORT_DETAIL",
-          "payload": {
-             "reportId": response.data!.id
-          }
+          "payload": {"reportId": response.data!.id},
         };
-        
-        await _showNotification(0, 0, l10n.success, l10n.reportRecorded, showProgress: false, payload: jsonEncode(actionData));
+
+        await _showNotification(
+          0,
+          0,
+          l10n.success,
+          l10n.reportRecorded,
+          showProgress: false,
+          payload: jsonEncode(actionData),
+        );
         if (onSuccess != null) {
           onSuccess(response.data!);
         }
@@ -114,11 +148,23 @@ class ReportBackgroundUploadService extends ChangeNotifier {
         // );
       } else {
         _statusMessage = l10n.errorString(response.message);
-        await _showNotification(0, 0, l10n.errorPrefix, l10n.cannotCreateReportError(response.message), showProgress: false);
+        await _showNotification(
+          0,
+          0,
+          l10n.errorPrefix,
+          l10n.cannotCreateReportError(response.message),
+          showProgress: false,
+        );
       }
     } catch (e) {
       _statusMessage = l10n.errorString(e.toString());
-      await _showNotification(0, 0, l10n.errorPrefix, l10n.errorOccurredSendingReport(e.toString()), showProgress: false);
+      await _showNotification(
+        0,
+        0,
+        l10n.errorPrefix,
+        l10n.errorOccurredSendingReport(e.toString()),
+        showProgress: false,
+      );
     } finally {
       _isUploading = false;
       notifyListeners();

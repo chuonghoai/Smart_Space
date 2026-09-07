@@ -272,5 +272,8 @@
       "error": {}
     }
   },
-  "retryButton": "Retry"
+  "retryButton": "Retry",
+  "minuteAgo": "min ago",
+  "hourAgo": "hr ago",
+  "dayAgo": "days ago"
 }

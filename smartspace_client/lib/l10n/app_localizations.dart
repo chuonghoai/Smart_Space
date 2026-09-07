@@ -1363,6 +1363,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Retry'**
   String get retryButton;
+
+  /// No description provided for @minuteAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'min ago'**
+  String get minuteAgo;
+
+  /// No description provided for @hourAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'hr ago'**
+  String get hourAgo;
+
+  /// No description provided for @dayAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'days ago'**
+  String get dayAgo;
 }
 
 class _AppLocalizationsDelegate

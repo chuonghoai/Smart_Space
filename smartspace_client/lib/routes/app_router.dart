@@ -83,9 +83,8 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: RouterPath.reportDetail,
-      builder: (context, state) => ReportDetailScreen(
-        reportId: state.pathParameters['id']!,
-      ),
+      builder: (context, state) =>
+          ReportDetailScreen(reportId: state.pathParameters['id']!),
     ),
   ],
 );
