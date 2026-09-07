@@ -3,6 +3,7 @@ package com.vn.smart_space.dto.request.auth;
 import com.vn.smart_space.consts.ERole;
 
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,5 +26,9 @@ public class GoogleLoginRequest {
     String deviceName;
     String platform;
     String ipAddress;
+
+    @NotNull(message = "Role is required")
     ERole role;
+
+    String language;
 }

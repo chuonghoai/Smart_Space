@@ -76,6 +76,7 @@ public class UserService implements IUserService {
                 .status(EUserStatus.active)
                 .fullName(emailPrefix)
                 .avatarUrl(defaultAvatar)
+                .language(request.getLanguage() != null ? request.getLanguage() : "vi")
                 .build();
 
         userRepository.save(user);
@@ -209,6 +210,19 @@ public class UserService implements IUserService {
         user.setPassword(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
 
+    }
+
+    @Override
+    @Transactional
+    public void updateLanguage(String userId, String language) {
+        User user = findUserById(userId);
+        if (language != null && !language.isBlank()) {
+            user.setLanguage(language);
+            userRepository.save(user);
+            // Cập nhật lại cache trong Redis
+            String redisKey = "user_language:" + userId;
+            stringRedisTemplate.opsForValue().set(redisKey, language);
+        }
     }
 
 }

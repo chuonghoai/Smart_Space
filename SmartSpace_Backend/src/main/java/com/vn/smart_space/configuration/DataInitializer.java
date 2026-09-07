@@ -31,6 +31,13 @@ public class DataInitializer implements CommandLineRunner {
             log.info("Legacy index might not exist or already dropped: " + e.getMessage());
         }
 
+        try {
+            jdbcTemplate.execute("UPDATE users SET language = 'vi' WHERE language IS NULL");
+            log.info("Migrated existing users to default language 'vi'");
+        } catch (Exception e) {
+            log.warn("Failed to migrate user language: " + e.getMessage());
+        }
+
         if (!userRepository.existsByEmailAndRole("admin@gmail.com", ERole.admin)) {
             log.info("Khởi tạo tài khoản admin mặc định...");
             User admin = new User();
@@ -41,6 +48,7 @@ public class DataInitializer implements CommandLineRunner {
             admin.setFullName("Nguyễn Văn Admin");
             admin.setGender(EGender.male);
             admin.setPhone("0901234567");
+            admin.setLanguage("vi");
             admin.setAvatarUrl("https://ui-avatars.com/api/?name=AD&background=6366f1&color=fff&size=200&bold=true&font-size=0.4");
             
             userRepository.save(admin);

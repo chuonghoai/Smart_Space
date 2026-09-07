@@ -63,4 +63,8 @@ public class User extends AbstractEntity {
     @Column(name = "avatar_url")
     String avatarUrl;
 
+    @Column(name = "language")
+    @Builder.Default
+    String language = "vi";
+
 }

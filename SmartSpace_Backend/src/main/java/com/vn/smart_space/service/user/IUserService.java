@@ -35,4 +35,7 @@ public interface IUserService {
     // Change Password
     void changePassword(String userId, ChangePasswordRequest request);
 
+    // Update Language
+    void updateLanguage(String userId, String language);
+
 }

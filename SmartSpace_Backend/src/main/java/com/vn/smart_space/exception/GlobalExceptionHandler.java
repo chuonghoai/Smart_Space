@@ -11,12 +11,18 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import com.vn.smart_space.dto.ApiResponse;
 
+import com.vn.smart_space.service.i18n.MessageService;
+
 import jakarta.validation.ConstraintViolationException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice
 @Slf4j
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
+
+    private final MessageService messageService;
     @ExceptionHandler({ MethodArgumentNotValidException.class,
             ConstraintViolationException.class })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -67,7 +73,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.builder()
                         .success(false)
-                        .message(e.getMessage())
+                        .message(messageService.get(e.getMessage()))
                         .build());
     }
 
@@ -77,7 +83,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.builder()
                         .success(false)
-                        .message(e.getMessage())
+                        .message(messageService.get(e.getMessage()))
                         .build());
     }
 
@@ -87,7 +93,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ApiResponse.builder()
                         .success(false)
-                        .message(e.getMessage())
+                        .message(messageService.get(e.getMessage()))
                         .build());
     }
 
@@ -98,7 +104,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.builder()
                         .success(false)
-                        .message("Hệ thống đang bận, vui lòng thử lại sau!")
+                        .message(messageService.get("system.internal_error", "Hệ thống đang bận, vui lòng thử lại sau!"))
                         .build());
     }
 }

@@ -30,6 +30,8 @@ public class RegisterRequest {
 
     Boolean rememberMe;
 
+    String language;
+
     @NotBlank(message = "DeviceId is required")
     String deviceId;
     

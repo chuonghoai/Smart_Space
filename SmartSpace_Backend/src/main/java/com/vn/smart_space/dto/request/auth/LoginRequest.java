@@ -4,6 +4,7 @@ import com.vn.smart_space.consts.ERole;
 
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -30,7 +31,11 @@ public class LoginRequest {
     String deviceId;
     
     String deviceName;
+
+    @NotNull(message = "Platform is required")
     String platform;
+
+    String language;
     String ipAddress;
 
 }

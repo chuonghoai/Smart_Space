@@ -99,6 +99,11 @@ public class AuthenticationService implements IAuthenticationService {
             throw new BadRequestException("Email hoặc mật khẩu không chính xác");
         }
 
+        if (request.getLanguage() != null && !request.getLanguage().isBlank()) {
+            user.setLanguage(request.getLanguage());
+            userRepository.save(user);
+        }
+
         // Generate Access Token
         TokenPayload accessToken = jwtService.generateAccessToken(user, request.getDeviceId());
 
@@ -150,12 +155,20 @@ public class AuthenticationService implements IAuthenticationService {
 
         // Find or create User
         User user = userRepository.findByEmailAndRole(email, request.getRole())
+                .map(existingUser -> {
+                    if (request.getLanguage() != null && !request.getLanguage().isBlank()) {
+                        existingUser.setLanguage(request.getLanguage());
+                        return userRepository.save(existingUser);
+                    }
+                    return existingUser;
+                })
                 .orElseGet(() -> {
                     User newUser = User.builder()
                             .email(email)
                             .fullName(fullName != null ? fullName : email.split("@")[0])
                             .role(request.getRole())
                             .status(EUserStatus.active)
+                            .language(request.getLanguage() != null ? request.getLanguage() : "vi")
                             .build();
                     return userRepository.save(newUser);
                 });
