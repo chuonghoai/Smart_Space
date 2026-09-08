@@ -1,6 +1,5 @@
 import 'package:mobile_shared/core/api/api_response.dart';
-import 'package:mobile_shared/core/auth/access_token_service.dart';
-import 'package:mobile_shared/core/auth/refresh_token_service.dart';
+import 'package:mobile_shared/core/auth/token_storage.dart';
 import 'package:mobile_shared/core/auth/user_storage_service.dart';
 import 'package:mobile_shared/core/connection/connection_manager.dart';
 import 'package:mobile_shared/core/constants/role_constant.dart';
@@ -43,8 +42,8 @@ class AuthService {
         data != null &&
         data.accessToken.isNotEmpty &&
         data.refreshToken.isNotEmpty) {
-      await accessTokenService.saveAccessToken(data.accessToken);
-      await refreshTokenService.saveRefreshToken(data.refreshToken);
+      await TokenStorage.saveAccessToken(data.accessToken);
+      await TokenStorage.saveRefreshToken(data.refreshToken);
       await userStorageService.saveUser(data.userModel!);
 
       // Kết nối WebSocket và FCM sẽ được xử lý ngầm trong LoginController
@@ -74,8 +73,8 @@ class AuthService {
         data != null &&
         data.accessToken.isNotEmpty &&
         data.refreshToken.isNotEmpty) {
-      await accessTokenService.saveAccessToken(data.accessToken);
-      await refreshTokenService.saveRefreshToken(data.refreshToken);
+      await TokenStorage.saveAccessToken(data.accessToken);
+      await TokenStorage.saveRefreshToken(data.refreshToken);
       await userStorageService.saveUser(data.userModel!);
 
       return (response: response, wsConnected: true);
@@ -98,8 +97,7 @@ class AuthService {
       // Xóa FCM token của thiết bị hiện tại
       await FirebaseService.clearTokenOnServer();
       // Xóa token
-      accessTokenService.clear();
-      refreshTokenService.clear();
+      await TokenStorage.clearAuth();
       userStorageService.clear();
       connectionManager.stopAllAndCleanUp();
     }
@@ -109,8 +107,8 @@ class AuthService {
   Future<bool> refreshToken(String refreshToken) async {
     try {
       final response = await authRepo.refreshToken(refreshToken);
-      await accessTokenService.saveAccessToken(response.data!.accessToken);
-      await refreshTokenService.saveRefreshToken(response.data!.refreshToken);
+      await TokenStorage.saveAccessToken(response.data!.accessToken);
+      await TokenStorage.saveRefreshToken(response.data!.refreshToken);
       return true;
     } catch (e) {
       return false;
@@ -163,8 +161,8 @@ class AuthService {
     final data = response.data;
 
     if (response.success && data != null) {
-      await accessTokenService.saveAccessToken(data.accessToken);
-      await refreshTokenService.saveRefreshToken(data.refreshToken);
+      await TokenStorage.saveAccessToken(data.accessToken);
+      await TokenStorage.saveRefreshToken(data.refreshToken);
       await userStorageService.saveUser(data.userModel!);
     }
 

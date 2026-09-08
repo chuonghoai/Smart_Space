@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_shared/core/constants/registration_status.dart';
-import 'package:mobile_shared/core/auth/access_token_service.dart';
-import 'package:mobile_shared/core/auth/refresh_token_service.dart';
+import 'package:mobile_shared/core/auth/token_storage.dart';
 import 'package:mobile_shared/core/auth/user_storage_service.dart';
 import 'package:mobile_shared/core/interceptors/error_interceptor.dart';
 import 'package:mobile_shared/core/localization/locale_provider.dart';
@@ -32,8 +31,8 @@ class SplashController extends ChangeNotifier {
       ]);
 
       // Check authentication
-      final accessToken = await accessTokenService.getAccessToken();
-      final refreshToken = await refreshTokenService.getRefreshToken();
+      final accessToken = await TokenStorage.getAccessToken();
+      final refreshToken = await TokenStorage.getRefreshToken();
       final user = await userStorageService.getUser();
 
       if (!context.mounted) return;

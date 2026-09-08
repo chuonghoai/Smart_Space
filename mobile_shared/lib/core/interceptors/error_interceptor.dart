@@ -2,8 +2,7 @@ import 'dart:async';
 import 'dart:developer';
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import 'package:mobile_shared/core/auth/refresh_token_service.dart';
-import 'package:mobile_shared/core/auth/access_token_service.dart';
+import 'package:mobile_shared/core/auth/token_storage.dart';
 import 'package:mobile_shared/core/auth/user_storage_service.dart';
 import 'package:mobile_shared/features/auth/services/auth_service.dart';
 import 'package:mobile_shared/core/api/dio_client.dart';
@@ -42,8 +41,7 @@ class ErrorInterceptor extends Interceptor {
       }
 
       if (_refreshCount > 5) {
-        await accessTokenService.clear();
-        await refreshTokenService.clear();
+        await TokenStorage.clearAuth();
         await userStorageService.clear();
         
         unauthenticatedStream.add('session_expired');
@@ -54,7 +52,7 @@ class ErrorInterceptor extends Interceptor {
         final isSuccess = await _refreshCompleter!.future;
         if (isSuccess) {
           try {
-            final newAccessToken = await accessTokenService.getAccessToken();
+            final newAccessToken = await TokenStorage.getAccessToken();
             err.requestOptions.headers['Authorization'] = 'Bearer $newAccessToken';
             err.requestOptions.extra['isRetry'] = true;
             final response = await dioInstance.fetch(err.requestOptions);
@@ -72,7 +70,7 @@ class ErrorInterceptor extends Interceptor {
       _isRefreshing = true;
       _refreshCompleter = Completer<bool>();
 
-      final refreshToken = await refreshTokenService.getRefreshToken();
+      final refreshToken = await TokenStorage.getRefreshToken();
       String reason = 'unauthorized';
 
       if (refreshToken != null) {
@@ -83,7 +81,7 @@ class ErrorInterceptor extends Interceptor {
           _refreshCompleter?.complete(true);
 
           try {
-            final newAccessToken = await accessTokenService.getAccessToken();
+            final newAccessToken = await TokenStorage.getAccessToken();
             err.requestOptions.headers['Authorization'] =
                 'Bearer $newAccessToken';
             err.requestOptions.extra['isRetry'] = true;
@@ -107,8 +105,7 @@ class ErrorInterceptor extends Interceptor {
         await authService.logout();
       } catch (_) {
         // Fallback clear
-        await accessTokenService.clear();
-        await refreshTokenService.clear();
+        await TokenStorage.clearAuth();
         await userStorageService.clear();
       }
       unauthenticatedStream.add(reason);

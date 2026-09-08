@@ -21,6 +21,7 @@ import 'package:smartspace_client/features/notifications/services/notification_w
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await TokenStorage.init(AppScope.client);
   await EnvConfig.init();
   usePathUrlStrategy();
   await dotenv.load(fileName: ".env");

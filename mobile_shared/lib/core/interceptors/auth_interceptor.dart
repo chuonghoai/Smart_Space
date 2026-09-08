@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
-import '../auth/access_token_service.dart';
+import '../auth/token_storage.dart';
 
 class AuthInterceptor extends Interceptor {
   static const _publicPaths = [
@@ -37,7 +37,7 @@ class AuthInterceptor extends Interceptor {
     }
 
     try {
-      final token = await accessTokenService.getAccessToken();
+      final token = await TokenStorage.getAccessToken();
       debugPrint(
         '[AuthInterceptor] token: ${token != null ? "${token.substring(0, 20)}..." : "NULL"}',
       );

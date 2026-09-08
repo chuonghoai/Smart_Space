@@ -18,6 +18,7 @@ import 'package:smartspace_admin/features/test_realtime/services/test_ws_service
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await TokenStorage.init(AppScope.admin);
   await EnvConfig.init();
   usePathUrlStrategy();
   await dotenv.load(fileName: ".env");

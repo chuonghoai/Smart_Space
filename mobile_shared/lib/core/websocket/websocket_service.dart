@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
-import 'package:mobile_shared/core/auth/access_token_service.dart';
+import 'package:mobile_shared/core/auth/token_storage.dart';
 import 'package:mobile_shared/core/config/env_config.dart';
 import 'package:mobile_shared/core/connection/connection_state_provider.dart';
 import 'package:mobile_shared/core/exceptions/connection_exception.dart';
@@ -9,10 +9,7 @@ import 'package:mobile_shared/core/exceptions/connection_exception.dart';
 enum WebSocketStatus { disconnected, connecting, connected, error }
 
 class WebSocketService extends ChangeNotifier {
-  final AccessTokenService _tokenService;
-
-  WebSocketService({AccessTokenService? tokenService})
-    : _tokenService = tokenService ?? accessTokenService;
+  WebSocketService();
 
   StompClient? _client;
 
@@ -31,7 +28,7 @@ class WebSocketService extends ChangeNotifier {
       return _connectionCompleter?.future ?? Future.value(false);
     }
 
-    final token = await _tokenService.getAccessToken();
+    final token = await TokenStorage.getAccessToken();
     if (token == null || token.isEmpty) return false;
 
     _setStatus(WebSocketStatus.connecting);
@@ -52,7 +49,7 @@ class WebSocketService extends ChangeNotifier {
         stompConnectHeaders: stompHeaders,
         webSocketConnectHeaders: wsHeaders,
         beforeConnect: () async {
-          final currentToken = await _tokenService.getAccessToken();
+          final currentToken = await TokenStorage.getAccessToken();
           if (currentToken != null && currentToken.isNotEmpty) {
             stompHeaders['Authorization'] = 'Bearer $currentToken';
             wsHeaders['Authorization'] = 'Bearer $currentToken';

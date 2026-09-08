@@ -9,7 +9,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:481022634874:android:814aba3152594b3a0ac4c3",
         "android_client_info": {
-          "package_name": "com.example.smartspace_client"
+          "package_name": "com.example.smartspace_staff"
         }
       },
       "oauth_client": [
@@ -17,7 +17,7 @@
           "client_id": "481022634874-mamto0l2vnsm1at354m7ukrfftbho4rn.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.smartspace_client",
+            "package_name": "com.example.smartspace_staff",
             "certificate_hash": "168fe804607436c9fb2879c315b1a8f649655a3a"
           }
         },
@@ -25,7 +25,7 @@
           "client_id": "481022634874-vjh6l45p4athe6n56mlsgi8qag6aicqa.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.smartspace_client",
+            "package_name": "com.example.smartspace_staff",
             "certificate_hash": "febe26af48f41d3def3e1d74120c951fa4ca77f1"
           }
         },

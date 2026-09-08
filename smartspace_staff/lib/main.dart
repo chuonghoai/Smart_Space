@@ -15,6 +15,7 @@ import 'firebase_options.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await TokenStorage.init(AppScope.staff);
   await EnvConfig.init();
   usePathUrlStrategy();
   await dotenv.load(fileName: ".env");
