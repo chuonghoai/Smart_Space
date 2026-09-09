@@ -1,9 +1,6 @@
 class RouterPath {
   static const String splash = '/splash';
   static const String login = '/login';
-  static const String registerEmail = '/register-email';
-  static const String registerOtp = '/register-otp';
-  static const String registerPassword = '/register-password';
   static const String home = '/home';
   static const String completeProfile = '/complete-profile';
   static const String forgotPassword = '/forgot-password';

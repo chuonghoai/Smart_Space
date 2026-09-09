@@ -405,4 +405,40 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get passwordReqSpecial =>
       'Include at least one special character !@#\$^()_';
+
+  @override
+  String get users => 'Users';
+
+  @override
+  String get staff => 'Staff';
+
+  @override
+  String get admins => 'Admins';
+
+  @override
+  String get issues => 'Issues';
+
+  @override
+  String get needsYourAttention => 'Needs Your Attention';
+
+  @override
+  String get recentActivity => 'Recent Activity';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get pendingConfirmation => 'Pending Confirmation';
+
+  @override
+  String get inProgress => 'In Progress';
+
+  @override
+  String get resolved => 'Resolved';
+
+  @override
+  String get noRecentActivity => 'No recent activity';
+
+  @override
+  String get adminOverview => 'Admin Overview';
 }

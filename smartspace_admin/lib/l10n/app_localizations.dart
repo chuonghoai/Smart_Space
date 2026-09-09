@@ -883,6 +883,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Include at least one special character !@#\$^()_'**
   String get passwordReqSpecial;
+
+  /// No description provided for @users.
+  ///
+  /// In en, this message translates to:
+  /// **'Users'**
+  String get users;
+
+  /// No description provided for @staff.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get staff;
+
+  /// No description provided for @admins.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins'**
+  String get admins;
+
+  /// No description provided for @issues.
+  ///
+  /// In en, this message translates to:
+  /// **'Issues'**
+  String get issues;
+
+  /// No description provided for @needsYourAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs Your Attention'**
+  String get needsYourAttention;
+
+  /// No description provided for @recentActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Activity'**
+  String get recentActivity;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @pendingConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Confirmation'**
+  String get pendingConfirmation;
+
+  /// No description provided for @inProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In Progress'**
+  String get inProgress;
+
+  /// No description provided for @resolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get resolved;
+
+  /// No description provided for @noRecentActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'No recent activity'**
+  String get noRecentActivity;
+
+  /// No description provided for @adminOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Overview'**
+  String get adminOverview;
 }
 
 class _AppLocalizationsDelegate

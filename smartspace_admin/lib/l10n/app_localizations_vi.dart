@@ -404,4 +404,40 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get passwordReqSpecial =>
       'Bao gồm ít nhất một ký tự đặc biệt !@#\$^()_';
+
+  @override
+  String get users => 'Người dùng';
+
+  @override
+  String get staff => 'Nhân viên';
+
+  @override
+  String get admins => 'Quản trị viên';
+
+  @override
+  String get issues => 'Vấn đề';
+
+  @override
+  String get needsYourAttention => 'Cần bạn chú ý';
+
+  @override
+  String get recentActivity => 'Hoạt động gần đây';
+
+  @override
+  String get all => 'Tất cả';
+
+  @override
+  String get pendingConfirmation => 'Chờ xác nhận';
+
+  @override
+  String get inProgress => 'Đang xử lý';
+
+  @override
+  String get resolved => 'Đã xử lý';
+
+  @override
+  String get noRecentActivity => 'Không có hoạt động gần đây';
+
+  @override
+  String get adminOverview => 'Tổng quan';
 }

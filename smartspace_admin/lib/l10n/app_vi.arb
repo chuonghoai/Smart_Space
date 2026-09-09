@@ -142,5 +142,18 @@
   "changePasswordFailed": "Đổi mật khẩu thất bại",
   "passwordReqLength": "Mật khẩu phải từ 8 đến 20 ký tự",
   "passwordReqMixed": "Bao gồm số, chữ viết hoa, chữ viết thường",
-  "passwordReqSpecial": "Bao gồm ít nhất một ký tự đặc biệt !@#$^()_"
+  "passwordReqSpecial": "Bao gồm ít nhất một ký tự đặc biệt !@#$^()_",
+  
+  "users": "Người dùng",
+  "staff": "Nhân viên",
+  "admins": "Quản trị viên",
+  "issues": "Vấn đề",
+  "needsYourAttention": "Cần bạn chú ý",
+  "recentActivity": "Hoạt động gần đây",
+  "all": "Tất cả",
+  "pendingConfirmation": "Chờ xác nhận",
+  "inProgress": "Đang xử lý",
+  "resolved": "Đã xử lý",
+  "noRecentActivity": "Không có hoạt động gần đây",
+  "adminOverview": "Tổng quan"
 }

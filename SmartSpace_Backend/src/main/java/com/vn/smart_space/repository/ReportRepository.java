@@ -22,4 +22,7 @@ public interface ReportRepository extends JpaRepository<Report, String> {
         @Query(value = "SELECT * FROM reports r ORDER BY (6371000 * acos(cos(radians(:userLat)) * cos(radians(r.latitude)) * cos(radians(r.longitude) - radians(:userLong)) + sin(radians(:userLat)) * sin(radians(r.latitude)))) ASC", nativeQuery = true)
         List<Report> findNearestReports(@Param("userLat") Double userLat, @Param("userLong") Double userLong,
                         Limit limit);
+
+        @Query("SELECT r FROM Report r WHERE r.status IN :statuses ORDER BY r.createdAt DESC")
+        List<Report> findByStatusInOrderByCreatedAtDesc(@Param("statuses") List<com.vn.smart_space.consts.EReportStatus> statuses, org.springframework.data.domain.Pageable pageable);
 }

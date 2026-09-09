@@ -33,6 +33,7 @@ public class UserService implements IUserService {
     private final IJwtService jwtService;
 
     private final UserRepository userRepository;
+    private final com.vn.smart_space.repository.ActivityHistoryRepository activityHistoryRepository;
     private final PasswordEncoder passwordEncoder;
 
     private final StringRedisTemplate stringRedisTemplate;
@@ -79,7 +80,14 @@ public class UserService implements IUserService {
                 .language(request.getLanguage() != null ? request.getLanguage() : "vi")
                 .build();
 
-        userRepository.save(user);
+        user = userRepository.save(user);
+        
+        com.vn.smart_space.model.ActivityHistory activity = com.vn.smart_space.model.ActivityHistory.builder()
+            .actor(user)
+            .i18nKey("activity.user.registered")
+            .targetId(user.getId())
+            .build();
+        activityHistoryRepository.save(activity);
 
         // Login
         TokenPayload accessToken = jwtService.generateAccessToken(user, request.getDeviceId());
