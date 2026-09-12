@@ -440,4 +440,12 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get adminOverview => 'Tổng quan';
+
+  @override
+  String get noPendingReports => 'Không có báo cáo nào đang chờ';
+
+  @override
+  String pendingReportsAttention(int count) {
+    return 'Bạn có $count báo cáo đang chờ cần xác nhận.';
+  }
 }

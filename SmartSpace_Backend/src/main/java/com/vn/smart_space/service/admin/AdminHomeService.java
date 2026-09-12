@@ -37,7 +37,7 @@ public class AdminHomeService {
                 .userCount(userRepository.countByRole(ERole.client))
                 .staffCount(userRepository.countByRole(ERole.staff))
                 .adminCount(userRepository.countByRole(ERole.admin))
-                .issueCount(reportRepository.count())
+                .issueCount(reportRepository.countByStatusIn(List.of(EReportStatus.pending, EReportStatus.processing)))
                 .build();
     }
 
@@ -45,9 +45,19 @@ public class AdminHomeService {
         List<ActivityHistory> activities = activityHistoryRepository.findRecentActivities(PageRequest.of(0, limit));
         
         return activities.stream().map(a -> {
-            String message = a.getI18nKey() != null
-                    ? messageSource.getMessage(a.getI18nKey(), null, a.getI18nKey(), locale != null ? locale : Locale.getDefault())
-                    : "";
+            String message = "";
+            if (a.getI18nKey() != null && !a.getI18nKey().trim().isEmpty()) {
+                String raw = a.getI18nKey().trim();
+                int lastSpaceIndex = raw.lastIndexOf(' ');
+                if (lastSpaceIndex != -1) {
+                    String prefix = raw.substring(0, lastSpaceIndex).trim();
+                    String key = raw.substring(lastSpaceIndex + 1).trim();
+                    String translated = messageSource.getMessage(key, null, key, locale != null ? locale : Locale.getDefault());
+                    message = prefix.isEmpty() ? translated : prefix + " " + translated;
+                } else {
+                    message = messageSource.getMessage(raw, null, raw, locale != null ? locale : Locale.getDefault());
+                }
+            }
             String actorName = a.getActor() != null ? a.getActor().getFullName() : null;
             String actorAvatar = a.getActor() != null ? a.getActor().getAvatarUrl() : null;
             

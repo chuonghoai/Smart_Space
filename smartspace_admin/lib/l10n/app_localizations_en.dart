@@ -441,4 +441,12 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get adminOverview => 'Admin Overview';
+
+  @override
+  String get noPendingReports => 'No pending reports';
+
+  @override
+  String pendingReportsAttention(int count) {
+    return 'You have $count pending report(s) that need confirmation.';
+  }
 }

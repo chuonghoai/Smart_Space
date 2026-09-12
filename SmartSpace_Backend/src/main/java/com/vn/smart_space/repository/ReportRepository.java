@@ -25,4 +25,7 @@ public interface ReportRepository extends JpaRepository<Report, String> {
 
         @Query("SELECT r FROM Report r WHERE r.status IN :statuses ORDER BY r.createdAt DESC")
         List<Report> findByStatusInOrderByCreatedAtDesc(@Param("statuses") List<com.vn.smart_space.consts.EReportStatus> statuses, org.springframework.data.domain.Pageable pageable);
+
+        long countByStatusIn(List<com.vn.smart_space.consts.EReportStatus> statuses);
 }
+

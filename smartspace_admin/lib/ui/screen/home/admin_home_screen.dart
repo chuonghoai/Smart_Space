@@ -2,7 +2,9 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
 import 'package:smartspace_admin/features/home/application/home_providers.dart';
+import 'package:smartspace_admin/features/home/models/recent_report_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/layout/app_layout.dart';
 
@@ -90,10 +92,10 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
               crossAxisSpacing: 16,
               childAspectRatio: 2.5,
               children: [
-                _buildStatCard(l10n.users, data['userCount']?.toString() ?? '0', Icons.people, theme),
-                _buildStatCard(l10n.staff, data['staffCount']?.toString() ?? '0', Icons.badge, theme),
-                _buildStatCard(l10n.admins, data['adminCount']?.toString() ?? '0', Icons.admin_panel_settings, theme),
-                _buildStatCard(l10n.issues, data['issueCount']?.toString() ?? '0', Icons.warning, theme),
+                _buildStatCard(l10n.users, data.userCount.toString(), Icons.people, theme),
+                _buildStatCard(l10n.staff, data.staffCount.toString(), Icons.badge, theme),
+                _buildStatCard(l10n.admins, data.adminCount.toString(), Icons.admin_panel_settings, theme),
+                _buildStatCard(l10n.issues, data.issueCount.toString(), Icons.warning, theme),
               ],
             );
           },
@@ -158,7 +160,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
         pendingReportsAsync.when(
           data: (reports) {
             if (reports.isEmpty) {
-              return Text('No pending items', style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor));
+              return Text(l10n.noPendingReports, style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor));
             }
             final count = reports.length;
             return Container(
@@ -173,7 +175,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
                   const SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'You have $count pending report(s) that need confirmation.',
+                      l10n.pendingReportsAttention(count),
                       style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onErrorContainer),
                     ),
                   ),
@@ -213,11 +215,11 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
                 final activity = activities[index];
                 return ListTile(
                   leading: CircleAvatar(
-                    backgroundImage: activity['actorAvatarUrl'] != null ? NetworkImage(activity['actorAvatarUrl']) : null,
-                    child: activity['actorAvatarUrl'] == null ? const Icon(Icons.person) : null,
+                    backgroundImage: activity.actorAvatarUrl != null ? NetworkImage(activity.actorAvatarUrl!) : null,
+                    child: activity.actorAvatarUrl == null ? const Icon(Icons.person) : null,
                   ),
-                  title: Text(activity['message'] ?? ''),
-                  subtitle: Text(activity['createdAt'] ?? ''),
+                  title: Text(activity.message),
+                  subtitle: Text(_formatDateTime(activity.createdAt)),
                 );
               },
             );
@@ -241,18 +243,27 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
           style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 16),
-        TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          labelColor: theme.primaryColor,
-          unselectedLabelColor: theme.hintColor,
-          indicatorColor: theme.primaryColor,
-          tabs: [
-            Tab(text: l10n.all),
-            Tab(text: l10n.pendingConfirmation),
-            Tab(text: l10n.inProgress),
-            Tab(text: l10n.resolved),
-          ],
+        LayoutBuilder(
+          builder: (context, constraints) {
+            final isWide = constraints.maxWidth >= 500;
+            return TabBar(
+              controller: _tabController,
+              isScrollable: !isWide,
+              tabAlignment: isWide ? TabAlignment.fill : TabAlignment.start,
+              labelColor: theme.colorScheme.primary,
+              unselectedLabelColor: theme.hintColor,
+              indicatorColor: theme.colorScheme.primary,
+              indicatorSize: TabBarIndicatorSize.tab,
+              dividerColor: theme.dividerColor.withValues(alpha: 0.12),
+              onTap: (_) => setState(() {}),
+              tabs: [
+                Tab(text: l10n.all),
+                Tab(text: l10n.pendingConfirmation),
+                Tab(text: l10n.inProgress),
+                Tab(text: l10n.resolved),
+              ],
+            );
+          },
         ),
         const SizedBox(height: 16),
         reportsAsync.when(
@@ -270,7 +281,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
               separatorBuilder: (_, _) => const SizedBox(height: 12),
               itemBuilder: (context, index) {
                 final report = reports[index];
-                return _buildReportCard(report, theme);
+                return _buildReportCard(report, theme, l10n);
               },
             );
           },
@@ -281,7 +292,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
     );
   }
 
-  Widget _buildReportCard(Map<String, dynamic> report, ThemeData theme) {
+  Widget _buildReportCard(RecentReportModel report, ThemeData theme, AppLocalizations l10n) {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -289,7 +300,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -298,11 +309,11 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          if (report['imageUrl'] != null)
+          if (report.imageUrl != null)
             ClipRRect(
               borderRadius: BorderRadius.circular(8),
               child: Image.network(
-                report['imageUrl'],
+                report.imageUrl!,
                 width: 60,
                 height: 60,
                 fit: BoxFit.cover,
@@ -314,57 +325,86 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
                 ),
               ),
             ),
-          if (report['imageUrl'] != null) const SizedBox(width: 16),
+          if (report.imageUrl != null) const SizedBox(width: 16),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  report['title'] ?? '',
+                  report.title,
                   style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  report['createdAt'] ?? '',
+                  _formatDateTime(report.createdAt),
                   style: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor),
                 ),
-                const SizedBox(height: 8),
-                if (report['assignedStaffName'] != null)
+                if (report.assignedStaffName != null) ...[
+                  const SizedBox(height: 8),
                   Row(
                     children: [
                       CircleAvatar(
                         radius: 12,
-                        backgroundImage: report['assignedStaffAvatarUrl'] != null
-                            ? NetworkImage(report['assignedStaffAvatarUrl'])
+                        backgroundImage: report.assignedStaffAvatarUrl != null
+                            ? NetworkImage(report.assignedStaffAvatarUrl!)
                             : null,
-                        child: report['assignedStaffAvatarUrl'] == null
+                        child: report.assignedStaffAvatarUrl == null
                             ? const Icon(Icons.person, size: 16)
                             : null,
                       ),
                       const SizedBox(width: 8),
                       Text(
-                        report['assignedStaffName'],
+                        report.assignedStaffName!,
                         style: theme.textTheme.bodySmall,
                       ),
                     ],
                   ),
+                ],
               ],
             ),
           ),
+          const SizedBox(width: 12),
+          _buildReportStatusBadge(report.status, theme, l10n),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReportStatusBadge(String? status, ThemeData theme, AppLocalizations l10n) {
+    final isDark = theme.brightness == Brightness.dark;
+    final color = _getStatusColor(status, isDark);
+    final label = _getStatusLabel(status, l10n);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: isDark ? 0.15 : 0.08),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: color.withValues(alpha: isDark ? 0.35 : 0.22),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+            width: 6,
+            height: 6,
             decoration: BoxDecoration(
-              color: _getStatusColor(report['status']).withOpacity(0.1),
-              borderRadius: BorderRadius.circular(4),
+              color: color,
+              shape: BoxShape.circle,
             ),
-            child: Text(
-              report['status'] ?? '',
-              style: theme.textTheme.bodySmall?.copyWith(
-                color: _getStatusColor(report['status']),
-                fontWeight: FontWeight.bold,
-              ),
+          ),
+          const SizedBox(width: 6),
+          Text(
+            label,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: color,
+              fontWeight: FontWeight.w600,
+              letterSpacing: 0.2,
             ),
           ),
         ],
@@ -372,18 +412,45 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
     );
   }
 
-  Color _getStatusColor(String? status) {
+  String _getStatusLabel(String? status, AppLocalizations l10n) {
     switch (status?.toLowerCase()) {
       case 'processed':
-        return Colors.green;
+      case 'resolved':
+        return l10n.reportStatusProcessed;
       case 'processing':
-        return Colors.orange;
+        return l10n.reportStatusProcessing;
       case 'pending':
-        return Colors.blue;
+        return l10n.reportStatusPending;
       case 'rejected':
-        return Colors.red;
+        return l10n.reportStatusRejected;
       default:
-        return Colors.grey;
+        return l10n.reportStatusUnknown;
+    }
+  }
+
+  Color _getStatusColor(String? status, bool isDark) {
+    switch (status?.toLowerCase()) {
+      case 'processed':
+      case 'resolved':
+        return isDark ? const Color(0xFF66BB6A) : const Color(0xFF2E7D32);
+      case 'processing':
+        return isDark ? const Color(0xFF26A69A) : const Color(0xFF00796B);
+      case 'pending':
+        return isDark ? const Color(0xFFFFCA28) : const Color(0xFFF57F17);
+      case 'rejected':
+        return isDark ? const Color(0xFFEF5350) : const Color(0xFFC62828);
+      default:
+        return isDark ? Colors.grey[400]! : Colors.grey[600]!;
+    }
+  }
+
+  String _formatDateTime(String? dateStr) {
+    if (dateStr == null || dateStr.trim().isEmpty) return '';
+    try {
+      final dateTime = DateTime.parse(dateStr).toLocal();
+      return DateFormat('HH:mm - dd/MM/yyyy').format(dateTime);
+    } catch (_) {
+      return dateStr;
     }
   }
 }
