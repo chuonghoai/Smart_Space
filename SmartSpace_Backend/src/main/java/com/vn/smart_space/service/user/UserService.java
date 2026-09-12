@@ -82,9 +82,10 @@ public class UserService implements IUserService {
 
         user = userRepository.save(user);
         
-        String i18nKey = (user.getEmail() != null && !user.getEmail().trim().isEmpty())
-                ? user.getEmail().trim() + " activity.user.registered"
-                : "activity.user.registered";
+        String actorName = (user.getFullName() != null && !user.getFullName().trim().isEmpty())
+                ? user.getFullName().trim()
+                : (user.getEmail() != null && !user.getEmail().trim().isEmpty() ? user.getEmail().trim() : "Người dùng");
+        String i18nKey = "activity.user.registered|" + actorName;
 
         com.vn.smart_space.model.ActivityHistory activity = com.vn.smart_space.model.ActivityHistory.builder()
             .actor(user)

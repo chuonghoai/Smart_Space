@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:smartspace_admin/features/home/application/home_providers.dart';
 import 'package:smartspace_admin/features/home/models/recent_report_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
+import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
 
 class NewReportsSlider extends ConsumerStatefulWidget {
   const NewReportsSlider({super.key});
@@ -193,48 +195,54 @@ class _NewReportsSliderState extends ConsumerState<NewReportsSlider> {
         ? report.address!
         : l10n.noAddress;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 2),
-      padding: const EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: theme.dividerColor.withValues(alpha: isDark ? 0.15 : 0.08),
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.04),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
+    return InkWell(
+      onTap: () => context.push('/reports/${report.id}'),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 2),
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: theme.dividerColor.withValues(alpha: isDark ? 0.15 : 0.08),
           ),
-        ],
-      ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: isDark ? 0.25 : 0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // Image Thumbnail
-          ClipRRect(
+          AppNetworkImage(
+            url: report.imageUrl,
+            width: 75,
+            height: 110,
             borderRadius: BorderRadius.circular(12),
-            child: (report.imageUrl != null && report.imageUrl!.isNotEmpty)
-                ? Image.network(
-                    report.imageUrl!,
-                    width: 75,
-                    height: 110,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => Container(
-                      width: 75,
-                      height: 110,
-                      color: isDark ? Colors.grey[800] : Colors.grey[200],
-                      child: const Icon(Icons.image_not_supported, size: 28),
-                    ),
-                  )
-                : Container(
-                    width: 75,
-                    height: 110,
-                    color: theme.primaryColor.withValues(alpha: 0.1),
-                    child: Icon(Icons.report_problem_outlined, color: theme.primaryColor, size: 30),
-                  ),
+            fit: BoxFit.cover,
+            errorWidget: Container(
+              width: 75,
+              height: 110,
+              decoration: BoxDecoration(
+                color: isDark ? Colors.grey[800] : Colors.grey[200],
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: const Icon(Icons.image_not_supported, size: 28),
+            ),
+            placeholderWidget: Container(
+              width: 75,
+              height: 110,
+              decoration: BoxDecoration(
+                color: theme.primaryColor.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Icon(Icons.report_problem_outlined, color: theme.primaryColor, size: 30),
+            ),
           ),
           const SizedBox(width: 14),
           // Info Details (Title, CreatedAt, Address) - NO status pending
@@ -284,6 +292,7 @@ class _NewReportsSliderState extends ConsumerState<NewReportsSlider> {
           ),
         ],
       ),
+    ),
     );
   }
 }

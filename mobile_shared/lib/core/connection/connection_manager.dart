@@ -4,6 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:mobile_shared/core/connection/connection_state_provider.dart';
 import 'package:mobile_shared/core/notification/firebase_service.dart';
 import 'package:mobile_shared/core/websocket/websocket_service.dart';
+import 'package:mobile_shared/features/auth/services/auth_service.dart';
 
 class ConnectionManagerService {
   bool _isRunning = false;
@@ -24,6 +25,9 @@ class ConnectionManagerService {
     
     connectionStateProvider.setConnecting();
     
+    // 0. Start scheduled 28-min token refresh
+    authService.startScheduledTokenRefresh();
+
     // 1. WebSocket connects
     webSocketService.removeListener(_onSocketStateChanged);
     webSocketService.addListener(_onSocketStateChanged);

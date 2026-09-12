@@ -473,4 +473,83 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noAddress => 'No address provided';
+
+  @override
+  String get reportDetailTitle => 'Report Details';
+
+  @override
+  String get reportInfoSection => 'Report Information';
+
+  @override
+  String get reporterInfoSection => 'Reporter';
+
+  @override
+  String get anonymousUser => 'Anonymous';
+
+  @override
+  String get anonymousDescription =>
+      'The user chose to remain anonymous when submitting this report';
+
+  @override
+  String get locationSection => 'Incident Location';
+
+  @override
+  String get openInGoogleMaps => 'Open in Google Maps';
+
+  @override
+  String get assignStaffSection => 'Assign Staff';
+
+  @override
+  String get selectStaffPrompt => 'Select staff to process';
+
+  @override
+  String get noStaffAvailable => 'No staff found in the system';
+
+  @override
+  String get severitySection => 'Severity Level';
+
+  @override
+  String get severityLow => 'Low';
+
+  @override
+  String get severityMedium => 'Medium';
+
+  @override
+  String get severityHigh => 'High';
+
+  @override
+  String get severityCritical => 'Critical';
+
+  @override
+  String get processReportButton => 'Process Report';
+
+  @override
+  String get assignSuccessMessage =>
+      'Staff assigned and processing started successfully!';
+
+  @override
+  String get assignFailedMessage =>
+      'Failed to process report, please try again.';
+
+  @override
+  String get assignedStaffInfo => 'Assigned Staff';
+
+  @override
+  String get createdAtLabel => 'Submitted At';
+
+  @override
+  String get statusLabel => 'Status';
+
+  @override
+  String get cannotOpenMaps => 'Cannot open map application';
+
+  @override
+  String get changeStaff => 'Change staff';
+
+  @override
+  String get noImageAvailable => 'No image available';
+
+  @override
+  String get anonymousAdminNotice =>
+      'Anonymous report (Visible only to administrators)';
 }

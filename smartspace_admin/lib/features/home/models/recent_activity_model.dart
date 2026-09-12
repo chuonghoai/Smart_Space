@@ -3,6 +3,7 @@ class RecentActivityModel {
   final String? actorName;
   final String? actorAvatarUrl;
   final String? targetId;
+  final String? targetType;
   final String message;
   final String? createdAt;
 
@@ -11,6 +12,7 @@ class RecentActivityModel {
     this.actorName,
     this.actorAvatarUrl,
     this.targetId,
+    this.targetType,
     required this.message,
     this.createdAt,
   });
@@ -21,6 +23,7 @@ class RecentActivityModel {
       actorName: json['actorName']?.toString(),
       actorAvatarUrl: json['actorAvatarUrl']?.toString(),
       targetId: json['targetId']?.toString(),
+      targetType: json['targetType']?.toString(),
       message: json['message']?.toString() ?? '',
       createdAt: json['createdAt']?.toString(),
     );
@@ -32,6 +35,7 @@ class RecentActivityModel {
       'actorName': actorName,
       'actorAvatarUrl': actorAvatarUrl,
       'targetId': targetId,
+      'targetType': targetType,
       'message': message,
       'createdAt': createdAt,
     };
