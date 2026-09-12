@@ -955,6 +955,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Admin Overview'**
   String get adminOverview;
+
+  /// No description provided for @noPendingReports.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending reports'**
+  String get noPendingReports;
+
+  /// No description provided for @pendingReportsAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'You have {count} pending report(s) that need confirmation.'**
+  String pendingReportsAttention(int count);
 }
 
 class _AppLocalizationsDelegate

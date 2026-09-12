@@ -155,5 +155,14 @@
   "inProgress": "Đang xử lý",
   "resolved": "Đã xử lý",
   "noRecentActivity": "Không có hoạt động gần đây",
-  "adminOverview": "Tổng quan"
+  "adminOverview": "Tổng quan",
+  "noPendingReports": "Không có báo cáo nào đang chờ",
+  "pendingReportsAttention": "Bạn có {count} báo cáo đang chờ cần xác nhận.",
+  "@pendingReportsAttention": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

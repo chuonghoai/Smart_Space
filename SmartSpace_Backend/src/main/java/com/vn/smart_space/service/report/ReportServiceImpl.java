@@ -32,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ReportServiceImpl implements IReportService {
 
     private final ReportRepository reportRepository;
+    private final com.vn.smart_space.repository.UserRepository userRepository;
     private final org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
     private final IFCMService fcmService;
     private final INotificationService notificationService;
@@ -116,17 +117,22 @@ public class ReportServiceImpl implements IReportService {
         }
         
         if (userId != null) {
-            User user = new User();
-            user.setId(userId);
+            User user = userRepository.findById(userId).orElse(null);
             report.setUser(user);
         }
         
         report = reportRepository.save(report);
         
         if (userId != null) {
+            User actor = report.getUser();
+            String actorName = (actor != null && actor.getFullName() != null && !actor.getFullName().trim().isEmpty())
+                    ? actor.getFullName().trim()
+                    : "";
+            String i18nKey = actorName.isEmpty() ? "activity.report.created" : actorName + " activity.report.created";
+
             com.vn.smart_space.model.ActivityHistory activity = com.vn.smart_space.model.ActivityHistory.builder()
-                .actor(report.getUser())
-                .i18nKey("activity.report.created")
+                .actor(actor)
+                .i18nKey(i18nKey)
                 .targetId(report.getId())
                 .build();
             activityHistoryRepository.save(activity);

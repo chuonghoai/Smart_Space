@@ -1,14 +1,18 @@
+import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/home_repository.dart';
+import '../models/admin_overview_model.dart';
+import '../models/recent_activity_model.dart';
+import '../models/recent_report_model.dart';
 
 // Overview Provider
-class AdminOverviewNotifier extends AsyncNotifier<Map<String, dynamic>?> {
+class AdminOverviewNotifier extends AsyncNotifier<AdminOverviewModel?> {
   @override
-  Future<Map<String, dynamic>?> build() async {
+  Future<AdminOverviewModel?> build() async {
     return _fetchOverview();
   }
 
-  Future<Map<String, dynamic>?> _fetchOverview() async {
+  Future<AdminOverviewModel?> _fetchOverview() async {
     final response = await homeRepository.getAdminOverview();
     if (response.success && response.data != null) {
       return response.data;
@@ -22,18 +26,18 @@ class AdminOverviewNotifier extends AsyncNotifier<Map<String, dynamic>?> {
   }
 }
 
-final adminOverviewProvider = AsyncNotifierProvider<AdminOverviewNotifier, Map<String, dynamic>?>(
+final adminOverviewProvider = AsyncNotifierProvider<AdminOverviewNotifier, AdminOverviewModel?>(
   () => AdminOverviewNotifier(),
 );
 
 // Recent Activity Provider
-class RecentActivityNotifier extends AsyncNotifier<List<dynamic>> {
+class RecentActivityNotifier extends AsyncNotifier<List<RecentActivityModel>> {
   @override
-  Future<List<dynamic>> build() async {
+  Future<List<RecentActivityModel>> build() async {
     return _fetchActivities();
   }
 
-  Future<List<dynamic>> _fetchActivities() async {
+  Future<List<RecentActivityModel>> _fetchActivities() async {
     final response = await homeRepository.getRecentActivities();
     if (response.success && response.data != null) {
       return response.data!;
@@ -47,18 +51,24 @@ class RecentActivityNotifier extends AsyncNotifier<List<dynamic>> {
   }
 }
 
-final recentActivityProvider = AsyncNotifierProvider<RecentActivityNotifier, List<dynamic>>(
+final recentActivityProvider = AsyncNotifierProvider<RecentActivityNotifier, List<RecentActivityModel>>(
   () => RecentActivityNotifier(),
 );
 
 // Recent Reports Provider
-class RecentReportNotifier extends FamilyAsyncNotifier<List<dynamic>, String> {
+class RecentReportNotifier extends FamilyAsyncNotifier<List<RecentReportModel>, String> {
   @override
-  Future<List<dynamic>> build(String arg) async {
+  Future<List<RecentReportModel>> build(String arg) async {
+    final link = ref.keepAlive();
+    final timer = Timer(const Duration(minutes: 10), () {
+      link.close();
+    });
+    ref.onDispose(() => timer.cancel());
+
     return _fetchReports(arg);
   }
 
-  Future<List<dynamic>> _fetchReports(String tab) async {
+  Future<List<RecentReportModel>> _fetchReports(String tab) async {
     final response = await homeRepository.getRecentReports(tab: tab);
     if (response.success && response.data != null) {
       return response.data!;
@@ -72,6 +82,8 @@ class RecentReportNotifier extends FamilyAsyncNotifier<List<dynamic>, String> {
   }
 }
 
-final recentReportProvider = AsyncNotifierProviderFamily<RecentReportNotifier, List<dynamic>, String>(
+final recentReportProvider = AsyncNotifierProviderFamily<RecentReportNotifier, List<RecentReportModel>, String>(
   () => RecentReportNotifier(),
 );
+
+

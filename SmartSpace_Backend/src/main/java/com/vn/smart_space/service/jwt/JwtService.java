@@ -96,6 +96,7 @@ public class JwtService implements IJwtService {
                 .issueTime(issueTime)
                 .expirationTime(expiryTime)
                 .jwtID(jwtId)
+                .claim("userId", user.getId())
                 .claim("tokenType", "refresh")
                 .claim("rememberMe", rememberMe)
                 .build();

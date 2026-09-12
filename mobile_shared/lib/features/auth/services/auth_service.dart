@@ -107,9 +107,12 @@ class AuthService {
   Future<bool> refreshToken(String refreshToken) async {
     try {
       final response = await authRepo.refreshToken(refreshToken);
-      await TokenStorage.saveAccessToken(response.data!.accessToken);
-      await TokenStorage.saveRefreshToken(response.data!.refreshToken);
-      return true;
+      if (response.success && response.data != null) {
+        await TokenStorage.saveAccessToken(response.data!.accessToken);
+        await TokenStorage.saveRefreshToken(response.data!.refreshToken);
+        return true;
+      }
+      return false;
     } catch (e) {
       return false;
     }

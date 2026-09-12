@@ -155,5 +155,14 @@
   "inProgress": "In Progress",
   "resolved": "Resolved",
   "noRecentActivity": "No recent activity",
-  "adminOverview": "Admin Overview"
+  "adminOverview": "Admin Overview",
+  "noPendingReports": "No pending reports",
+  "pendingReportsAttention": "You have {count} pending report(s) that need confirmation.",
+  "@pendingReportsAttention": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }
