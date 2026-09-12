@@ -967,6 +967,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'You have {count} pending report(s) that need confirmation.'**
   String pendingReportsAttention(int count);
+
+  /// No description provided for @newBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get newBadge;
+
+  /// No description provided for @actionView.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get actionView;
+
+  /// No description provided for @newReportToastTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New report submitted'**
+  String get newReportToastTitle;
 }
 
 class _AppLocalizationsDelegate

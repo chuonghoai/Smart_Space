@@ -164,5 +164,8 @@
         "type": "int"
       }
     }
-  }
+  },
+  "newBadge": "Mới",
+  "actionView": "Xem",
+  "newReportToastTitle": "Có phản ánh mới"
 }

@@ -182,8 +182,49 @@ public class ReportServiceImpl implements IReportService {
             }
         }
 
-        // Notify Admin
-        // TODO: Push event notification to admins
+        // Notify Admins
+        try {
+            List<User> admins = userRepository.findByRole(com.vn.smart_space.consts.ERole.admin);
+            if (admins != null && !admins.isEmpty()) {
+                String adminTitle = "Có phản ánh mới";
+                String adminMessage = report.getTitle() != null && !report.getTitle().trim().isEmpty() 
+                        ? report.getTitle().trim() 
+                        : "Một phản ánh mới vừa được tạo và đang chờ xử lý.";
+
+                String createdAtStr = report.getCreatedAt() != null 
+                        ? report.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME) 
+                        : java.time.LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+
+                String adminActionData = String.format(
+                    "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\", \"title\": \"%s\", \"status\": \"%s\", \"severity\": \"%s\", \"createdAt\": \"%s\", \"imageUrl\": \"%s\"}}",
+                    report.getId(),
+                    report.getTitle() != null ? report.getTitle().replace("\"", "\\\"") : "",
+                    report.getStatus() != null ? report.getStatus().name() : "pending",
+                    report.getSeverity() != null ? report.getSeverity().name() : "low",
+                    createdAtStr,
+                    report.getImageUrl() != null ? report.getImageUrl() : ""
+                );
+
+                NotificationEvent adminEvent = new NotificationEvent(adminTitle, adminMessage, adminActionData);
+                Map<String, String> adminFcmData = Map.of(
+                    "type", "REPORT_DETAIL",
+                    "payload", "{\"reportId\":\"" + report.getId() + "\"}"
+                );
+                NotificationRequest adminNotif = new NotificationRequest(adminTitle, adminMessage, adminFcmData);
+
+                for (User admin : admins) {
+                    try {
+                        notificationService.createNotification(admin.getId(), adminTitle, adminMessage, adminActionData);
+                        messagingTemplate.convertAndSendToUser(admin.getId(), "/queue/notifications", adminEvent);
+                        fcmService.sendToUser(admin.getId(), adminNotif);
+                    } catch (Exception ex) {
+                        log.warn("[Notify Admin] Failed to notify admin {}: {}", admin.getId(), ex.getMessage());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.warn("[Notify Admin] Error while notifying admins for report {}: {}", report.getId(), e.getMessage());
+        }
         
         return response;
     }

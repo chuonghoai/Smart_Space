@@ -1,10 +1,10 @@
-// ignore_for_file: deprecated_member_use
-
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_shared/core/auth/user_storage_service.dart';
 import 'package:smartspace_admin/features/home/application/home_providers.dart';
 import 'package:smartspace_admin/features/home/models/recent_report_model.dart';
+import 'package:smartspace_admin/features/notifications/providers/notification_provider.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/layout/app_layout.dart';
 
@@ -37,13 +37,23 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
   }
 
   Future<void> _onRefresh() async {
-    ref.read(adminOverviewProvider.notifier).refresh();
-    ref.read(recentActivityProvider.notifier).refresh();
-    ref.read(recentReportProvider(_tabs[_tabController.index]).notifier).refresh();
+    final currentTab = _tabs[_tabController.index];
+    final futures = <Future<void>>[
+      userStorageService.getUser(),
+      ref.read(adminOverviewProvider.notifier).refresh(),
+      ref.read(recentActivityProvider.notifier).refresh(),
+      ref.read(recentReportProvider('pending').notifier).refresh(),
+      ref.read(notificationProvider.notifier).fetchCount(forceRefresh: true),
+    ];
+    if (currentTab != 'pending') {
+      futures.add(ref.read(recentReportProvider(currentTab).notifier).refresh());
+    }
+    await Future.wait(futures);
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.watch(notificationProvider);
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -114,7 +124,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withOpacity(0.05),
+            color: Colors.black.withValues(alpha: 0.05),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -125,7 +135,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: theme.primaryColor.withOpacity(0.1),
+              color: theme.primaryColor.withValues(alpha: 0.1),
               borderRadius: BorderRadius.circular(8),
             ),
             child: Icon(icon, color: theme.primaryColor),
@@ -152,39 +162,67 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          l10n.needsYourAttention,
-          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              l10n.needsYourAttention,
+              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            pendingReportsAsync.maybeWhen(
+              data: (reports) => reports.isNotEmpty
+                  ? Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.error.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '${reports.length}',
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: theme.colorScheme.error,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    )
+                  : const SizedBox.shrink(),
+              orElse: () => const SizedBox.shrink(),
+            ),
+          ],
         ),
         const SizedBox(height: 16),
         pendingReportsAsync.when(
           data: (reports) {
             if (reports.isEmpty) {
-              return Text(l10n.noPendingReports, style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor));
-            }
-            final count = reports.length;
-            return Container(
-              padding: const EdgeInsets.all(16),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.errorContainer,
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Row(
-                children: [
-                  Icon(Icons.assignment_late, color: theme.colorScheme.error),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      l10n.pendingReportsAttention(count),
-                      style: theme.textTheme.bodyMedium?.copyWith(color: theme.colorScheme.onErrorContainer),
-                    ),
+              return Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: theme.cardColor,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: theme.dividerColor.withValues(alpha: 0.1),
                   ),
-                ],
-              ),
+                ),
+                child: Text(
+                  l10n.noPendingReports,
+                  style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
+                ),
+              );
+            }
+            return ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: reports.length,
+              separatorBuilder: (_, _) => const SizedBox(height: 12),
+              itemBuilder: (context, index) {
+                final report = reports[index];
+                return _buildReportCard(report, theme, l10n);
+              },
             );
           },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stack) => const SizedBox(),
+          loading: () => const Center(child: Padding(padding: EdgeInsets.all(16.0), child: CircularProgressIndicator())),
+          error: (error, stack) => Text('Error: $error', style: TextStyle(color: theme.colorScheme.error)),
         ),
       ],
     );
@@ -292,7 +330,21 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
     );
   }
 
+  bool _isWithin10Minutes(String? dateStr) {
+    if (dateStr == null || dateStr.trim().isEmpty) return false;
+    try {
+      final dateTime = DateTime.parse(dateStr).toLocal();
+      final diff = DateTime.now().difference(dateTime);
+      return !diff.isNegative && diff.inMinutes <= 10;
+    } catch (_) {
+      return false;
+    }
+  }
+
   Widget _buildReportCard(RecentReportModel report, ThemeData theme, AppLocalizations l10n) {
+    final isNew = _isWithin10Minutes(report.createdAt);
+    final isDark = theme.brightness == Brightness.dark;
+
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
@@ -320,7 +372,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
                 errorBuilder: (context, error, stackTrace) => Container(
                   width: 60,
                   height: 60,
-                  color: Colors.grey[200],
+                  color: isDark ? Colors.grey[800] : Colors.grey[200],
                   child: const Icon(Icons.image_not_supported),
                 ),
               ),
@@ -366,8 +418,42 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
             ),
           ),
           const SizedBox(width: 12),
-          _buildReportStatusBadge(report.status, theme, l10n),
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.end,
+            children: [
+              if (isNew) ...[
+                _buildNewBadge(theme, isDark, l10n),
+                const SizedBox(height: 6),
+              ],
+              _buildReportStatusBadge(report.status, theme, l10n),
+            ],
+          ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildNewBadge(ThemeData theme, bool isDark, AppLocalizations l10n) {
+    final badgeBg = isDark ? const Color(0xFF5C1D1D) : const Color(0xFFFFEBEE);
+    final badgeColor = isDark ? const Color(0xFFFF8A80) : const Color(0xFFD32F2F);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: badgeBg,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: badgeColor.withValues(alpha: isDark ? 0.5 : 0.3),
+          width: 1,
+        ),
+      ),
+      child: Text(
+        l10n.newBadge,
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: badgeColor,
+          fontWeight: FontWeight.bold,
+          fontSize: 10,
+        ),
       ),
     );
   }

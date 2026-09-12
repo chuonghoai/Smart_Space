@@ -24,6 +24,18 @@ class AdminOverviewNotifier extends AsyncNotifier<AdminOverviewModel?> {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() => _fetchOverview());
   }
+
+  void incrementIssueCount() {
+    state = state.whenData((current) {
+      if (current == null) return null;
+      return AdminOverviewModel(
+        userCount: current.userCount,
+        staffCount: current.staffCount,
+        adminCount: current.adminCount,
+        issueCount: current.issueCount + 1,
+      );
+    });
+  }
 }
 
 final adminOverviewProvider = AsyncNotifierProvider<AdminOverviewNotifier, AdminOverviewModel?>(
@@ -79,6 +91,14 @@ class RecentReportNotifier extends FamilyAsyncNotifier<List<RecentReportModel>, 
   Future<void> refresh() async {
     state = const AsyncLoading();
     state = await AsyncValue.guard(() => _fetchReports(arg));
+  }
+
+  void prependReport(RecentReportModel report) {
+    state = state.whenData((currentList) {
+      // Remove duplicate if it already exists
+      final filtered = currentList.where((item) => item.id != report.id).toList();
+      return [report, ...filtered];
+    });
   }
 }
 

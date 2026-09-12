@@ -14,6 +14,7 @@ import 'firebase_options.dart';
 import 'package:smartspace_admin/features/app_services/ws_services_registry.dart';
 import 'package:smartspace_admin/features/app_services/app_services_initializer.dart';
 import 'package:smartspace_admin/features/test_realtime/services/test_ws_service.dart';
+import 'package:smartspace_admin/features/notifications/services/notification_ws_service.dart';
 
 
 void main() async {
@@ -39,6 +40,7 @@ void main() async {
   });
 
   WsServicesRegistry.register(TestWsService());
+  WsServicesRegistry.register(NotificationWsService());
 
   runApp(const ProviderScope(child: SmartSpaceAdminApp()));
 }

@@ -448,4 +448,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String pendingReportsAttention(int count) {
     return 'Bạn có $count báo cáo đang chờ cần xác nhận.';
   }
+
+  @override
+  String get newBadge => 'Mới';
+
+  @override
+  String get actionView => 'Xem';
+
+  @override
+  String get newReportToastTitle => 'Có phản ánh mới';
 }

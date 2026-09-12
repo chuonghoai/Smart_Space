@@ -33,6 +33,7 @@ class NotificationState {
 
 class NotificationNotifier extends StateNotifier<NotificationState> {
   final NotificationService _service;
+  Timer? _debounceTimer;
 
   NotificationNotifier(this._service) : super(NotificationState()) {
     fetchCount();
@@ -62,6 +63,29 @@ class NotificationNotifier extends StateNotifier<NotificationState> {
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
     }
+  }
+
+  void onNotificationReceived() {
+    // Optimistically increment unread count if we have state
+    if (state.countModel != null) {
+      final current = state.countModel!;
+      state = state.copyWith(
+        countModel: NotificationCountModel(
+          notifNumber: current.notifNumber + 1,
+        ),
+      );
+    }
+
+    _debounceTimer?.cancel();
+    _debounceTimer = Timer(const Duration(seconds: 1), () {
+      fetchCount(forceRefresh: true);
+    });
+  }
+
+  @override
+  void dispose() {
+    _debounceTimer?.cancel();
+    super.dispose();
   }
 }
 

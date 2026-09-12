@@ -449,4 +449,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String pendingReportsAttention(int count) {
     return 'You have $count pending report(s) that need confirmation.';
   }
+
+  @override
+  String get newBadge => 'New';
+
+  @override
+  String get actionView => 'View';
+
+  @override
+  String get newReportToastTitle => 'New report submitted';
 }
