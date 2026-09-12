@@ -142,5 +142,18 @@
   "changePasswordFailed": "Failed to change password",
   "passwordReqLength": "Password must be 8-20 characters",
   "passwordReqMixed": "Include numbers, uppercase, lowercase",
-  "passwordReqSpecial": "Include at least one special character !@#$^()_"
+  "passwordReqSpecial": "Include at least one special character !@#$^()_",
+  
+  "users": "Users",
+  "staff": "Staff",
+  "admins": "Admins",
+  "issues": "Issues",
+  "needsYourAttention": "Needs Your Attention",
+  "recentActivity": "Recent Activity",
+  "all": "All",
+  "pendingConfirmation": "Pending Confirmation",
+  "inProgress": "In Progress",
+  "resolved": "Resolved",
+  "noRecentActivity": "No recent activity",
+  "adminOverview": "Admin Overview"
 }

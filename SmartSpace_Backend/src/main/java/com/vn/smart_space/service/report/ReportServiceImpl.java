@@ -35,6 +35,7 @@ public class ReportServiceImpl implements IReportService {
     private final org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
     private final IFCMService fcmService;
     private final INotificationService notificationService;
+    private final com.vn.smart_space.repository.ActivityHistoryRepository activityHistoryRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -121,6 +122,15 @@ public class ReportServiceImpl implements IReportService {
         }
         
         report = reportRepository.save(report);
+        
+        if (userId != null) {
+            com.vn.smart_space.model.ActivityHistory activity = com.vn.smart_space.model.ActivityHistory.builder()
+                .actor(report.getUser())
+                .i18nKey("activity.report.created")
+                .targetId(report.getId())
+                .build();
+            activityHistoryRepository.save(activity);
+        }
         
         ReportDetailResponse response = ReportDetailResponse.builder()
                 .id(report.getId())

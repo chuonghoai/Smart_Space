@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:smartspace_admin/ui/screen/auth/forgot_password/forgot_password_controller.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
@@ -126,6 +127,15 @@ class _AdminForgotPasswordScreenState extends State<AdminForgotPasswordScreen> {
                             focusNode: _emailFocusNode,
                             keyboardType: TextInputType.emailAddress,
                             textInputAction: TextInputAction.done,
+                            dragStartBehavior: DragStartBehavior.down,
+                            mouseCursor: SystemMouseCursors.text,
+                            onTap: () {
+                              if (_emailController.selection.baseOffset != _emailController.selection.extentOffset) {
+                                _emailController.selection = TextSelection.collapsed(
+                                  offset: _emailController.selection.extentOffset,
+                                );
+                              }
+                            },
                             onSubmitted: (_) {
                               if (!_controller.isSendingOtp && !_controller.isResettingPassword) {
                                 _controller.sendOtp(context: context, email: _emailController.text);
@@ -159,6 +169,15 @@ class _AdminForgotPasswordScreenState extends State<AdminForgotPasswordScreen> {
                       focusNode: _otpFocusNode,
                       keyboardType: TextInputType.number,
                       textInputAction: TextInputAction.next,
+                      dragStartBehavior: DragStartBehavior.down,
+                      mouseCursor: SystemMouseCursors.text,
+                      onTap: () {
+                        if (_otpController.selection.baseOffset != _otpController.selection.extentOffset) {
+                          _otpController.selection = TextSelection.collapsed(
+                            offset: _otpController.selection.extentOffset,
+                          );
+                        }
+                      },
                       onSubmitted: (_) => _newPasswordFocusNode.requestFocus(),
                       decoration: InputDecoration(
                         hintText: l10n.enterOtp,
@@ -174,6 +193,15 @@ class _AdminForgotPasswordScreenState extends State<AdminForgotPasswordScreen> {
                       focusNode: _newPasswordFocusNode,
                       obscureText: _obscureNewPassword,
                       textInputAction: TextInputAction.next,
+                      dragStartBehavior: DragStartBehavior.down,
+                      mouseCursor: SystemMouseCursors.text,
+                      onTap: () {
+                        if (_newPasswordController.selection.baseOffset != _newPasswordController.selection.extentOffset) {
+                          _newPasswordController.selection = TextSelection.collapsed(
+                            offset: _newPasswordController.selection.extentOffset,
+                          );
+                        }
+                      },
                       onSubmitted: (_) => _confirmPasswordFocusNode.requestFocus(),
                       decoration: InputDecoration(
                         hintText: l10n.enterPassword,
@@ -197,6 +225,15 @@ class _AdminForgotPasswordScreenState extends State<AdminForgotPasswordScreen> {
                       focusNode: _confirmPasswordFocusNode,
                       obscureText: _obscureConfirmPassword,
                       textInputAction: TextInputAction.done,
+                      dragStartBehavior: DragStartBehavior.down,
+                      mouseCursor: SystemMouseCursors.text,
+                      onTap: () {
+                        if (_confirmPasswordController.selection.baseOffset != _confirmPasswordController.selection.extentOffset) {
+                          _confirmPasswordController.selection = TextSelection.collapsed(
+                            offset: _confirmPasswordController.selection.extentOffset,
+                          );
+                        }
+                      },
                       onSubmitted: (_) {
                         if (!_controller.isResettingPassword && _controller.otpSent) {
                           _controller.resetPassword(
