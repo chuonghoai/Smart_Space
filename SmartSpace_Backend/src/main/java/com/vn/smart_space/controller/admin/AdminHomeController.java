@@ -1,8 +1,6 @@
 package com.vn.smart_space.controller.admin;
 
-import com.vn.smart_space.dto.response.admin.ActivityHistoryResponse;
-import com.vn.smart_space.dto.response.admin.AdminOverviewResponse;
-import com.vn.smart_space.dto.response.admin.RecentReportResponse;
+import com.vn.smart_space.dto.ApiResponse;
 import com.vn.smart_space.service.admin.AdminHomeService;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -14,11 +12,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Locale;
 
 @RestController
-@RequestMapping("/api/v1/admin")
+@RequestMapping("/admin")
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class AdminHomeController {
@@ -26,24 +23,24 @@ public class AdminHomeController {
     AdminHomeService adminHomeService;
 
     @GetMapping("/home/overview")
-    @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<AdminOverviewResponse> getOverview() {
-        return ResponseEntity.ok(adminHomeService.getOverview());
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<ApiResponse> getOverview() {
+        return ResponseEntity.ok(ApiResponse.success("system.success", adminHomeService.getOverview()));
     }
 
     @GetMapping("/activities")
-    @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<List<ActivityHistoryResponse>> getRecentActivities(
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<ApiResponse> getRecentActivities(
             @RequestParam(defaultValue = "6") int limit,
             Locale locale) {
-        return ResponseEntity.ok(adminHomeService.getRecentActivities(limit, locale));
+        return ResponseEntity.ok(ApiResponse.success("system.success", adminHomeService.getRecentActivities(limit, locale)));
     }
 
     @GetMapping("/reports/recent")
-    @PreAuthorize("hasAuthority('admin')")
-    public ResponseEntity<List<RecentReportResponse>> getRecentReports(
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<ApiResponse> getRecentReports(
             @RequestParam(defaultValue = "all") String tab,
             @RequestParam(defaultValue = "6") int limit) {
-        return ResponseEntity.ok(adminHomeService.getRecentReports(tab, limit));
+        return ResponseEntity.ok(ApiResponse.success("system.success", adminHomeService.getRecentReports(tab, limit)));
     }
 }

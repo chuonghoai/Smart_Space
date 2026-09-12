@@ -29,11 +29,14 @@ public class SecurityConfig {
     };
     private final CustomJwtDecoder customJwtDecoder;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
+    private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
 
-    public SecurityConfig(CustomJwtDecoder customJwtDecoder, JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint) {
+    public SecurityConfig(CustomJwtDecoder customJwtDecoder,
+                          JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint,
+                          JwtAccessDeniedHandler jwtAccessDeniedHandler) {
         this.customJwtDecoder = customJwtDecoder;
         this.jwtAuthenticationEntryPoint = jwtAuthenticationEntryPoint;
-
+        this.jwtAccessDeniedHandler = jwtAccessDeniedHandler;
     }
 
     @Bean
@@ -50,7 +53,8 @@ public class SecurityConfig {
                 .jwt(jwtConfigurer -> jwtConfigurer
                         .decoder(customJwtDecoder)
                         .jwtAuthenticationConverter(jwtAuthenticationConverter()))
-                .authenticationEntryPoint(jwtAuthenticationEntryPoint));
+                .authenticationEntryPoint(jwtAuthenticationEntryPoint)
+                .accessDeniedHandler(jwtAccessDeniedHandler));
 
         // 3. Tắt CSRF vì đang dùng JWT Stateless
         httpSecurity.csrf(AbstractHttpConfigurer::disable);

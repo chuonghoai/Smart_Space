@@ -1,3 +1,4 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
@@ -99,6 +100,15 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                       focusNode: _emailFocusNode,
                       keyboardType: TextInputType.emailAddress,
                       textInputAction: TextInputAction.next,
+                      dragStartBehavior: DragStartBehavior.down,
+                      mouseCursor: SystemMouseCursors.text,
+                      onTap: () {
+                        if (_emailController.selection.baseOffset != _emailController.selection.extentOffset) {
+                          _emailController.selection = TextSelection.collapsed(
+                            offset: _emailController.selection.extentOffset,
+                          );
+                        }
+                      },
                       onSubmitted: (_) => _passwordFocusNode.requestFocus(),
                       decoration: InputDecoration(
                         hintText: l10n.email,
@@ -113,6 +123,15 @@ class _AdminLoginScreenState extends State<AdminLoginScreen> {
                       focusNode: _passwordFocusNode,
                       obscureText: _obscurePassword,
                       textInputAction: TextInputAction.done,
+                      dragStartBehavior: DragStartBehavior.down,
+                      mouseCursor: SystemMouseCursors.text,
+                      onTap: () {
+                        if (_passwordController.selection.baseOffset != _passwordController.selection.extentOffset) {
+                          _passwordController.selection = TextSelection.collapsed(
+                            offset: _passwordController.selection.extentOffset,
+                          );
+                        }
+                      },
                       onSubmitted: (_) {
                         if (!_controller.isLoading) {
                           _controller.login(context: context, email: _emailController.text, password: _passwordController.text, rememberMe: _rememberMe);

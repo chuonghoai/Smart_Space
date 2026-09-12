@@ -45,7 +45,9 @@ public class AdminHomeService {
         List<ActivityHistory> activities = activityHistoryRepository.findRecentActivities(PageRequest.of(0, limit));
         
         return activities.stream().map(a -> {
-            String message = messageSource.getMessage(a.getI18nKey(), null, a.getI18nKey(), locale);
+            String message = a.getI18nKey() != null
+                    ? messageSource.getMessage(a.getI18nKey(), null, a.getI18nKey(), locale != null ? locale : Locale.getDefault())
+                    : "";
             String actorName = a.getActor() != null ? a.getActor().getFullName() : null;
             String actorAvatar = a.getActor() != null ? a.getActor().getAvatarUrl() : null;
             
