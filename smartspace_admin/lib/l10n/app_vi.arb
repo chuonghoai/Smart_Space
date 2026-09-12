@@ -167,5 +167,10 @@
   },
   "newBadge": "Mới",
   "actionView": "Xem",
-  "newReportToastTitle": "Có phản ánh mới"
+  "newReportToastTitle": "Có phản ánh mới",
+  "pendingIssues": "Chờ xử lý",
+  "processingIssues": "Đang xử lý",
+  "viewAllReports": "Xem tất cả",
+  "newReportsSectionTitle": "Phản ánh mới tiếp nhận",
+  "noAddress": "Chưa cập nhật địa chỉ"
 }

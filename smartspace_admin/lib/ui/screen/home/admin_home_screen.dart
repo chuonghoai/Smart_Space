@@ -7,6 +7,7 @@ import 'package:smartspace_admin/features/home/models/recent_report_model.dart';
 import 'package:smartspace_admin/features/notifications/providers/notification_provider.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/layout/app_layout.dart';
+import 'package:smartspace_admin/ui/screen/home/widgets/new_reports_slider.dart';
 
 class AdminHomeScreen extends ConsumerStatefulWidget {
   const AdminHomeScreen({super.key});
@@ -66,13 +67,20 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // 1. Slider Report vừa được tạo
+              const NewReportsSlider(),
+              const SizedBox(height: 20),
+
+              // 2. Tổng quan
               _buildOverviewSection(context, l10n, theme),
               const SizedBox(height: 24),
-              _buildNeedsAttentionSection(context, l10n, theme),
-              const SizedBox(height: 24),
-              _buildRecentActivitySection(context, l10n, theme),
-              const SizedBox(height: 24),
+
+              // 3. Phản ánh gần đây
               _buildRecentReportSection(context, l10n, theme),
+              const SizedBox(height: 24),
+
+              // 4. Hoạt động gần đây
+              _buildRecentActivitySection(context, l10n, theme),
             ],
           ),
         ),
@@ -98,14 +106,16 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
               crossAxisCount: 2,
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 16,
-              crossAxisSpacing: 16,
-              childAspectRatio: 2.5,
+              mainAxisSpacing: 12,
+              crossAxisSpacing: 12,
+              childAspectRatio: 2.3,
               children: [
-                _buildStatCard(l10n.users, data.userCount.toString(), Icons.people, theme),
-                _buildStatCard(l10n.staff, data.staffCount.toString(), Icons.badge, theme),
-                _buildStatCard(l10n.admins, data.adminCount.toString(), Icons.admin_panel_settings, theme),
-                _buildStatCard(l10n.issues, data.issueCount.toString(), Icons.warning, theme),
+                _buildStatCard(l10n.users, data.userCount.toString(), Icons.people_outline, theme, Colors.blue),
+                _buildStatCard(l10n.staff, data.staffCount.toString(), Icons.badge_outlined, theme, Colors.indigo),
+                _buildStatCard(l10n.admins, data.adminCount.toString(), Icons.admin_panel_settings_outlined, theme, Colors.purple),
+                _buildStatCard(l10n.issues, data.issueCount.toString(), Icons.warning_amber_rounded, theme, Colors.red),
+                _buildStatCard(l10n.pendingIssues, data.pendingCount.toString(), Icons.hourglass_top_outlined, theme, Colors.orange),
+                _buildStatCard(l10n.processingIssues, data.processingCount.toString(), Icons.autorenew_rounded, theme, Colors.teal),
               ],
             );
           },
@@ -116,7 +126,8 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
     );
   }
 
-  Widget _buildStatCard(String title, String count, IconData icon, ThemeData theme) {
+  Widget _buildStatCard(String title, String count, IconData icon, ThemeData theme, [Color? customColor]) {
+    final color = customColor ?? theme.primaryColor;
     return Container(
       padding: const EdgeInsets.all(12),
       decoration: BoxDecoration(
@@ -135,10 +146,10 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
           Container(
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
-              color: theme.primaryColor.withValues(alpha: 0.1),
+              color: color.withValues(alpha: 0.12),
               borderRadius: BorderRadius.circular(8),
             ),
-            child: Icon(icon, color: theme.primaryColor),
+            child: Icon(icon, color: color, size: 22),
           ),
           const SizedBox(width: 12),
           Expanded(
@@ -153,119 +164,6 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
           ),
         ],
       ),
-    );
-  }
-
-  Widget _buildNeedsAttentionSection(BuildContext context, AppLocalizations l10n, ThemeData theme) {
-    final pendingReportsAsync = ref.watch(recentReportProvider('pending'));
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Text(
-              l10n.needsYourAttention,
-              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-            ),
-            pendingReportsAsync.maybeWhen(
-              data: (reports) => reports.isNotEmpty
-                  ? Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.error.withValues(alpha: 0.12),
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Text(
-                        '${reports.length}',
-                        style: theme.textTheme.labelMedium?.copyWith(
-                          color: theme.colorScheme.error,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    )
-                  : const SizedBox.shrink(),
-              orElse: () => const SizedBox.shrink(),
-            ),
-          ],
-        ),
-        const SizedBox(height: 16),
-        pendingReportsAsync.when(
-          data: (reports) {
-            if (reports.isEmpty) {
-              return Container(
-                width: double.infinity,
-                padding: const EdgeInsets.all(16),
-                decoration: BoxDecoration(
-                  color: theme.cardColor,
-                  borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: theme.dividerColor.withValues(alpha: 0.1),
-                  ),
-                ),
-                child: Text(
-                  l10n.noPendingReports,
-                  style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
-                ),
-              );
-            }
-            return ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: reports.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final report = reports[index];
-                return _buildReportCard(report, theme, l10n);
-              },
-            );
-          },
-          loading: () => const Center(child: Padding(padding: EdgeInsets.all(16.0), child: CircularProgressIndicator())),
-          error: (error, stack) => Text('Error: $error', style: TextStyle(color: theme.colorScheme.error)),
-        ),
-      ],
-    );
-  }
-
-  Widget _buildRecentActivitySection(BuildContext context, AppLocalizations l10n, ThemeData theme) {
-    final activityAsync = ref.watch(recentActivityProvider);
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          l10n.recentActivity,
-          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 16),
-        activityAsync.when(
-          data: (activities) {
-            if (activities.isEmpty) {
-              return Text(l10n.noRecentActivity, style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor));
-            }
-            return ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: activities.length,
-              separatorBuilder: (_, _) => const Divider(),
-              itemBuilder: (context, index) {
-                final activity = activities[index];
-                return ListTile(
-                  leading: CircleAvatar(
-                    backgroundImage: activity.actorAvatarUrl != null ? NetworkImage(activity.actorAvatarUrl!) : null,
-                    child: activity.actorAvatarUrl == null ? const Icon(Icons.person) : null,
-                  ),
-                  title: Text(activity.message),
-                  subtitle: Text(_formatDateTime(activity.createdAt)),
-                );
-              },
-            );
-          },
-          loading: () => const Center(child: CircularProgressIndicator()),
-          error: (error, stack) => Text('Error: $error', style: TextStyle(color: theme.colorScheme.error)),
-        ),
-      ],
     );
   }
 
@@ -312,15 +210,30 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
                 child: Text(l10n.noReportsYet, style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor)),
               );
             }
-            return ListView.separated(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              itemCount: reports.length,
-              separatorBuilder: (_, _) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                final report = reports[index];
-                return _buildReportCard(report, theme, l10n);
-              },
+            return Column(
+              children: [
+                ListView.separated(
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  itemCount: reports.length,
+                  separatorBuilder: (_, _) => const SizedBox(height: 12),
+                  itemBuilder: (context, index) {
+                    final report = reports[index];
+                    return _buildReportCard(report, theme, l10n);
+                  },
+                ),
+                const SizedBox(height: 12),
+                Center(
+                  child: TextButton.icon(
+                    onPressed: () {
+                      // TODO: Navigate to all reports list screen
+                      debugPrint('[AdminHome] View all reports clicked');
+                    },
+                    icon: const Icon(Icons.arrow_forward, size: 16),
+                    label: Text(l10n.viewAllReports),
+                  ),
+                ),
+              ],
             );
           },
           loading: () => const Padding(padding: EdgeInsets.all(16), child: Center(child: CircularProgressIndicator())),
@@ -330,19 +243,60 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
     );
   }
 
-  bool _isWithin10Minutes(String? dateStr) {
+  Widget _buildRecentActivitySection(BuildContext context, AppLocalizations l10n, ThemeData theme) {
+    final activityAsync = ref.watch(recentActivityProvider);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          l10n.recentActivity,
+          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 16),
+        activityAsync.when(
+          data: (activities) {
+            if (activities.isEmpty) {
+              return Text(l10n.noRecentActivity, style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor));
+            }
+            return ListView.separated(
+              shrinkWrap: true,
+              physics: const NeverScrollableScrollPhysics(),
+              itemCount: activities.length,
+              separatorBuilder: (_, _) => const Divider(),
+              itemBuilder: (context, index) {
+                final activity = activities[index];
+                return ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage: activity.actorAvatarUrl != null ? NetworkImage(activity.actorAvatarUrl!) : null,
+                    child: activity.actorAvatarUrl == null ? const Icon(Icons.person) : null,
+                  ),
+                  title: Text(activity.message),
+                  subtitle: Text(_formatDateTime(activity.createdAt)),
+                );
+              },
+            );
+          },
+          loading: () => const Center(child: CircularProgressIndicator()),
+          error: (error, stack) => Text('Error: $error', style: TextStyle(color: theme.colorScheme.error)),
+        ),
+      ],
+    );
+  }
+
+  bool _isWithin1Hour(String? dateStr) {
     if (dateStr == null || dateStr.trim().isEmpty) return false;
     try {
       final dateTime = DateTime.parse(dateStr).toLocal();
       final diff = DateTime.now().difference(dateTime);
-      return !diff.isNegative && diff.inMinutes <= 10;
+      return !diff.isNegative && diff.inMinutes <= 60;
     } catch (_) {
       return false;
     }
   }
 
   Widget _buildReportCard(RecentReportModel report, ThemeData theme, AppLocalizations l10n) {
-    final isNew = _isWithin10Minutes(report.createdAt);
+    final isNew = _isWithin1Hour(report.createdAt);
     final isDark = theme.brightness == Brightness.dark;
 
     return Container(

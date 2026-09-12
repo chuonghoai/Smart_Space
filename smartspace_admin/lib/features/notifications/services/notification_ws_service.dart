@@ -61,6 +61,7 @@ class NotificationWsService implements WsFeatureService {
                       severity: payload['severity'] as String? ?? 'low',
                       createdAt: payload['createdAt'] as String? ?? DateTime.now().toIso8601String(),
                       imageUrl: payload['imageUrl'] as String?,
+                      address: payload['address'] as String?,
                     );
 
                     container.read(recentReportProvider('pending').notifier).prependReport(reportModel);

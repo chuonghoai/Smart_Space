@@ -167,5 +167,10 @@
   },
   "newBadge": "New",
   "actionView": "View",
-  "newReportToastTitle": "New report submitted"
+  "newReportToastTitle": "New report submitted",
+  "pendingIssues": "Pending",
+  "processingIssues": "Processing",
+  "viewAllReports": "View all",
+  "newReportsSectionTitle": "Newly Submitted Reports",
+  "noAddress": "No address provided"
 }

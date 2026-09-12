@@ -457,4 +457,19 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get newReportToastTitle => 'Có phản ánh mới';
+
+  @override
+  String get pendingIssues => 'Chờ xử lý';
+
+  @override
+  String get processingIssues => 'Đang xử lý';
+
+  @override
+  String get viewAllReports => 'Xem tất cả';
+
+  @override
+  String get newReportsSectionTitle => 'Phản ánh mới tiếp nhận';
+
+  @override
+  String get noAddress => 'Chưa cập nhật địa chỉ';
 }

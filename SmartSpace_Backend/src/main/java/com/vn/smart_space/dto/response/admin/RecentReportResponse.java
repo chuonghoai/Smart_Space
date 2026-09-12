@@ -23,6 +23,7 @@ public class RecentReportResponse {
     EReportSeverity severity;
     LocalDateTime createdAt;
     String imageUrl;
+    String address;
     String assignedStaffName;
     String assignedStaffAvatarUrl;
 }

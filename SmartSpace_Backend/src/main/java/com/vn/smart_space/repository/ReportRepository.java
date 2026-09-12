@@ -27,5 +27,7 @@ public interface ReportRepository extends JpaRepository<Report, String> {
         List<Report> findByStatusInOrderByCreatedAtDesc(@Param("statuses") List<com.vn.smart_space.consts.EReportStatus> statuses, org.springframework.data.domain.Pageable pageable);
 
         long countByStatusIn(List<com.vn.smart_space.consts.EReportStatus> statuses);
+
+        long countByStatus(com.vn.smart_space.consts.EReportStatus status);
 }
 

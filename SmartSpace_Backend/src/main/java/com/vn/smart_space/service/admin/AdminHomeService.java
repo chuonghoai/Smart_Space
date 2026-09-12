@@ -38,6 +38,8 @@ public class AdminHomeService {
                 .staffCount(userRepository.countByRole(ERole.staff))
                 .adminCount(userRepository.countByRole(ERole.admin))
                 .issueCount(reportRepository.countByStatusIn(List.of(EReportStatus.pending, EReportStatus.processing)))
+                .pendingCount(reportRepository.countByStatus(EReportStatus.pending))
+                .processingCount(reportRepository.countByStatus(EReportStatus.processing))
                 .build();
     }
 
@@ -97,6 +99,7 @@ public class AdminHomeService {
                     .severity(r.getSeverity())
                     .createdAt(r.getCreatedAt())
                     .imageUrl(r.getImageUrl())
+                    .address(r.getAddress() != null && !r.getAddress().trim().isEmpty() ? r.getAddress() : r.getLocationDescription())
                     .assignedStaffName(staff != null ? staff.getFullName() : null)
                     .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
                     .build();

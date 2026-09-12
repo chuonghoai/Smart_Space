@@ -17,4 +17,6 @@ public class AdminOverviewResponse {
     long staffCount;
     long adminCount;
     long issueCount;
+    long pendingCount;
+    long processingCount;
 }

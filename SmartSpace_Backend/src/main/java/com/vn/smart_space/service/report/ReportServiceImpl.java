@@ -196,13 +196,14 @@ public class ReportServiceImpl implements IReportService {
                         : java.time.LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
 
                 String adminActionData = String.format(
-                    "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\", \"title\": \"%s\", \"status\": \"%s\", \"severity\": \"%s\", \"createdAt\": \"%s\", \"imageUrl\": \"%s\"}}",
+                    "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\", \"title\": \"%s\", \"status\": \"%s\", \"severity\": \"%s\", \"createdAt\": \"%s\", \"imageUrl\": \"%s\", \"address\": \"%s\"}}",
                     report.getId(),
                     report.getTitle() != null ? report.getTitle().replace("\"", "\\\"") : "",
                     report.getStatus() != null ? report.getStatus().name() : "pending",
                     report.getSeverity() != null ? report.getSeverity().name() : "low",
                     createdAtStr,
-                    report.getImageUrl() != null ? report.getImageUrl() : ""
+                    report.getImageUrl() != null ? report.getImageUrl() : "",
+                    report.getAddress() != null ? report.getAddress().replace("\"", "\\\"") : (report.getLocationDescription() != null ? report.getLocationDescription().replace("\"", "\\\"") : "")
                 );
 
                 NotificationEvent adminEvent = new NotificationEvent(adminTitle, adminMessage, adminActionData);

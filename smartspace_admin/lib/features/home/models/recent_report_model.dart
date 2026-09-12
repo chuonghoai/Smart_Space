@@ -5,6 +5,7 @@ class RecentReportModel {
   final String? severity;
   final String? createdAt;
   final String? imageUrl;
+  final String? address;
   final String? assignedStaffName;
   final String? assignedStaffAvatarUrl;
 
@@ -15,6 +16,7 @@ class RecentReportModel {
     this.severity,
     this.createdAt,
     this.imageUrl,
+    this.address,
     this.assignedStaffName,
     this.assignedStaffAvatarUrl,
   });
@@ -27,6 +29,7 @@ class RecentReportModel {
       severity: json['severity']?.toString(),
       createdAt: json['createdAt']?.toString(),
       imageUrl: json['imageUrl']?.toString(),
+      address: json['address']?.toString(),
       assignedStaffName: json['assignedStaffName']?.toString(),
       assignedStaffAvatarUrl: json['assignedStaffAvatarUrl']?.toString(),
     );
@@ -40,6 +43,7 @@ class RecentReportModel {
       'severity': severity,
       'createdAt': createdAt,
       'imageUrl': imageUrl,
+      'address': address,
       'assignedStaffName': assignedStaffName,
       'assignedStaffAvatarUrl': assignedStaffAvatarUrl,
     };

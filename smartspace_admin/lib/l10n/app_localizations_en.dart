@@ -458,4 +458,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newReportToastTitle => 'New report submitted';
+
+  @override
+  String get pendingIssues => 'Pending';
+
+  @override
+  String get processingIssues => 'Processing';
+
+  @override
+  String get viewAllReports => 'View all';
+
+  @override
+  String get newReportsSectionTitle => 'Newly Submitted Reports';
+
+  @override
+  String get noAddress => 'No address provided';
 }

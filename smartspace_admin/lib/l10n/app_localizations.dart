@@ -985,6 +985,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New report submitted'**
   String get newReportToastTitle;
+
+  /// No description provided for @pendingIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pendingIssues;
+
+  /// No description provided for @processingIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing'**
+  String get processingIssues;
+
+  /// No description provided for @viewAllReports.
+  ///
+  /// In en, this message translates to:
+  /// **'View all'**
+  String get viewAllReports;
+
+  /// No description provided for @newReportsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Newly Submitted Reports'**
+  String get newReportsSectionTitle;
+
+  /// No description provided for @noAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'No address provided'**
+  String get noAddress;
 }
 
 class _AppLocalizationsDelegate

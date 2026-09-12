@@ -28,11 +28,9 @@ class AdminOverviewNotifier extends AsyncNotifier<AdminOverviewModel?> {
   void incrementIssueCount() {
     state = state.whenData((current) {
       if (current == null) return null;
-      return AdminOverviewModel(
-        userCount: current.userCount,
-        staffCount: current.staffCount,
-        adminCount: current.adminCount,
+      return current.copyWith(
         issueCount: current.issueCount + 1,
+        pendingCount: current.pendingCount + 1,
       );
     });
   }
