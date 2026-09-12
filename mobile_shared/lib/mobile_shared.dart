@@ -3,6 +3,7 @@ export 'core/api/api_response.dart';
 export 'core/api/pagination.dart';
 export 'core/auth/app_scope.dart';
 export 'core/auth/token_storage.dart';
+export 'core/auth/jwt_utils.dart';
 export 'core/auth/user_storage_service.dart';
 export 'core/auth/models/user_model.dart';
 export 'core/config/env_config.dart';
@@ -21,6 +22,7 @@ export 'core/toast/toast_service.dart';
 export 'util/device_info_util.dart';
 export 'core/websocket/websocket_service.dart';
 export 'core/widgets/confirm_dialog.dart';
+export 'core/widgets/fullscreen_image_viewer.dart';
 
 export 'util/distance_updater_provider.dart';
 export 'util/location_service.dart';

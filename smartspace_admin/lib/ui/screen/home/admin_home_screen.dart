@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile_shared/core/auth/user_storage_service.dart';
+import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_admin/features/home/application/home_providers.dart';
 import 'package:smartspace_admin/features/home/models/recent_report_model.dart';
 import 'package:smartspace_admin/features/notifications/providers/notification_provider.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/layout/app_layout.dart';
 import 'package:smartspace_admin/ui/screen/home/widgets/new_reports_slider.dart';
+import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
 
 class AdminHomeScreen extends ConsumerStatefulWidget {
   const AdminHomeScreen({super.key});
@@ -62,7 +64,9 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
       child: RefreshIndicator(
         onRefresh: _onRefresh,
         child: SingleChildScrollView(
-          physics: const AlwaysScrollableScrollPhysics(),
+          physics: const AlwaysScrollableScrollPhysics(
+            parent: ClampingScrollPhysics(),
+          ),
           padding: const EdgeInsets.all(16.0),
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -263,16 +267,48 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
               shrinkWrap: true,
               physics: const NeverScrollableScrollPhysics(),
               itemCount: activities.length,
-              separatorBuilder: (_, _) => const Divider(),
+              separatorBuilder: (_, _) => Divider(
+                height: 1,
+                thickness: 0.5,
+                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+              ),
               itemBuilder: (context, index) {
                 final activity = activities[index];
+                final isReportActivity = activity.targetId != null &&
+                    (activity.targetType == 'REPORT' ||
+                        (activity.targetType == null &&
+                            (activity.message.toLowerCase().contains('phản ánh') ||
+                                activity.message.toLowerCase().contains('report'))));
+
                 return ListTile(
+                  dense: true,
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 2, vertical: 2),
                   leading: CircleAvatar(
+                    radius: 15,
                     backgroundImage: activity.actorAvatarUrl != null ? NetworkImage(activity.actorAvatarUrl!) : null,
-                    child: activity.actorAvatarUrl == null ? const Icon(Icons.person) : null,
+                    child: activity.actorAvatarUrl == null ? const Icon(Icons.person, size: 15) : null,
                   ),
-                  title: Text(activity.message),
-                  subtitle: Text(_formatDateTime(activity.createdAt)),
+                  title: Text(
+                    activity.message,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontSize: 13,
+                      fontWeight: FontWeight.w500,
+                      height: 1.3,
+                    ),
+                  ),
+                  subtitle: Text(
+                    _formatDateTime(activity.createdAt),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      fontSize: 11,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                  trailing: isReportActivity
+                      ? Icon(Icons.arrow_forward_ios_rounded, size: 12, color: theme.hintColor)
+                      : null,
+                  onTap: isReportActivity
+                      ? () => context.push('/reports/${activity.targetId}')
+                      : null,
                 );
               },
             );
@@ -299,78 +335,84 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
     final isNew = _isWithin1Hour(report.createdAt);
     final isDark = theme.brightness == Brightness.dark;
 
-    return Container(
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: theme.cardColor,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          if (report.imageUrl != null)
-            ClipRRect(
-              borderRadius: BorderRadius.circular(8),
-              child: Image.network(
-                report.imageUrl!,
+    return InkWell(
+      onTap: () => context.push('/reports/${report.id}'),
+      borderRadius: BorderRadius.circular(12),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: theme.cardColor,
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              blurRadius: 10,
+              offset: const Offset(0, 4),
+            ),
+          ],
+        ),
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (report.imageUrl != null && report.imageUrl!.isNotEmpty)
+              AppNetworkImage(
+                url: report.imageUrl,
                 width: 60,
                 height: 60,
+                borderRadius: BorderRadius.circular(8),
                 fit: BoxFit.cover,
-                errorBuilder: (context, error, stackTrace) => Container(
+                errorWidget: Container(
                   width: 60,
                   height: 60,
-                  color: isDark ? Colors.grey[800] : Colors.grey[200],
-                  child: const Icon(Icons.image_not_supported),
+                  decoration: BoxDecoration(
+                    color: isDark ? Colors.grey[800] : Colors.grey[200],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: const Icon(Icons.image_not_supported, size: 24),
                 ),
               ),
-            ),
-          if (report.imageUrl != null) const SizedBox(width: 16),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  report.title,
-                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                ),
-                const SizedBox(height: 4),
-                Text(
-                  _formatDateTime(report.createdAt),
-                  style: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor),
-                ),
-                if (report.assignedStaffName != null) ...[
-                  const SizedBox(height: 8),
-                  Row(
-                    children: [
-                      CircleAvatar(
-                        radius: 12,
-                        backgroundImage: report.assignedStaffAvatarUrl != null
-                            ? NetworkImage(report.assignedStaffAvatarUrl!)
-                            : null,
-                        child: report.assignedStaffAvatarUrl == null
-                            ? const Icon(Icons.person, size: 16)
-                            : null,
-                      ),
-                      const SizedBox(width: 8),
-                      Text(
-                        report.assignedStaffName!,
-                        style: theme.textTheme.bodySmall,
-                      ),
-                    ],
+            if (report.imageUrl != null && report.imageUrl!.isNotEmpty) const SizedBox(width: 16),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    report.title,
+                    style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
                   ),
+                  const SizedBox(height: 4),
+                  Text(
+                    _formatDateTime(report.createdAt),
+                    style: theme.textTheme.bodySmall?.copyWith(color: theme.hintColor),
+                  ),
+                  if (report.assignedStaffName != null && report.assignedStaffName!.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        AppNetworkImage(
+                          url: report.assignedStaffAvatarUrl,
+                          width: 24,
+                          height: 24,
+                          isCircle: true,
+                          errorWidget: CircleAvatar(
+                            radius: 12,
+                            backgroundColor: theme.colorScheme.primaryContainer,
+                            child: const Icon(Icons.person, size: 14),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          report.assignedStaffName!,
+                          style: theme.textTheme.bodySmall,
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
-              ],
+              ),
             ),
-          ),
           const SizedBox(width: 12),
           Column(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -384,6 +426,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
           ),
         ],
       ),
+    ),
     );
   }
 

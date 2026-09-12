@@ -22,16 +22,27 @@ class RecentReportModel {
   });
 
   factory RecentReportModel.fromJson(Map<String, dynamic> json) {
+    // Parse single image url or first of image_urls
+    String? imgUrl = json['image_url']?.toString() ?? json['imageUrl']?.toString();
+    if (imgUrl == null || imgUrl.isEmpty) {
+      final imgUrls = json['image_urls'] ?? json['images'];
+      if (imgUrls is List && imgUrls.isNotEmpty) {
+        imgUrl = imgUrls.first?.toString();
+      } else if (imgUrls is String && imgUrls.isNotEmpty) {
+        imgUrl = imgUrls.split(',').first.trim();
+      }
+    }
+
     return RecentReportModel(
       id: json['id']?.toString() ?? '',
       title: json['title']?.toString() ?? '',
       status: json['status']?.toString(),
       severity: json['severity']?.toString(),
-      createdAt: json['createdAt']?.toString(),
-      imageUrl: json['imageUrl']?.toString(),
+      createdAt: (json['created_at'] ?? json['createdAt'])?.toString(),
+      imageUrl: imgUrl,
       address: json['address']?.toString(),
-      assignedStaffName: json['assignedStaffName']?.toString(),
-      assignedStaffAvatarUrl: json['assignedStaffAvatarUrl']?.toString(),
+      assignedStaffName: (json['assigned_staff_name'] ?? json['assignedStaffName'])?.toString(),
+      assignedStaffAvatarUrl: (json['assigned_staff_avatar_url'] ?? json['assignedStaffAvatarUrl'])?.toString(),
     );
   }
 

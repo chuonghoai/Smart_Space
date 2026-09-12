@@ -1015,6 +1015,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No address provided'**
   String get noAddress;
+
+  /// No description provided for @reportDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Details'**
+  String get reportDetailTitle;
+
+  /// No description provided for @reportInfoSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Information'**
+  String get reportInfoSection;
+
+  /// No description provided for @reporterInfoSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Reporter'**
+  String get reporterInfoSection;
+
+  /// No description provided for @anonymousUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous'**
+  String get anonymousUser;
+
+  /// No description provided for @anonymousDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'The user chose to remain anonymous when submitting this report'**
+  String get anonymousDescription;
+
+  /// No description provided for @locationSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Incident Location'**
+  String get locationSection;
+
+  /// No description provided for @openInGoogleMaps.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in Google Maps'**
+  String get openInGoogleMaps;
+
+  /// No description provided for @assignStaffSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign Staff'**
+  String get assignStaffSection;
+
+  /// No description provided for @selectStaffPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Select staff to process'**
+  String get selectStaffPrompt;
+
+  /// No description provided for @noStaffAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No staff found in the system'**
+  String get noStaffAvailable;
+
+  /// No description provided for @severitySection.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity Level'**
+  String get severitySection;
+
+  /// No description provided for @severityLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get severityLow;
+
+  /// No description provided for @severityMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get severityMedium;
+
+  /// No description provided for @severityHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get severityHigh;
+
+  /// No description provided for @severityCritical.
+  ///
+  /// In en, this message translates to:
+  /// **'Critical'**
+  String get severityCritical;
+
+  /// No description provided for @processReportButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Process Report'**
+  String get processReportButton;
+
+  /// No description provided for @assignSuccessMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff assigned and processing started successfully!'**
+  String get assignSuccessMessage;
+
+  /// No description provided for @assignFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to process report, please try again.'**
+  String get assignFailedMessage;
+
+  /// No description provided for @assignedStaffInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Staff'**
+  String get assignedStaffInfo;
+
+  /// No description provided for @createdAtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted At'**
+  String get createdAtLabel;
+
+  /// No description provided for @statusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get statusLabel;
+
+  /// No description provided for @cannotOpenMaps.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot open map application'**
+  String get cannotOpenMaps;
+
+  /// No description provided for @changeStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Change staff'**
+  String get changeStaff;
+
+  /// No description provided for @noImageAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No image available'**
+  String get noImageAvailable;
+
+  /// No description provided for @anonymousAdminNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous report (Visible only to administrators)'**
+  String get anonymousAdminNotice;
 }
 
 class _AppLocalizationsDelegate

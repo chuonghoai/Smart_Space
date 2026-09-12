@@ -1,10 +1,12 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
+import 'package:mobile_shared/core/auth/jwt_utils.dart';
 import 'package:mobile_shared/core/auth/token_storage.dart';
 import 'package:mobile_shared/core/config/env_config.dart';
 import 'package:mobile_shared/core/connection/connection_state_provider.dart';
 import 'package:mobile_shared/core/exceptions/connection_exception.dart';
+import 'package:mobile_shared/features/auth/services/auth_service.dart';
 
 enum WebSocketStatus { disconnected, connecting, connected, error }
 
@@ -49,7 +51,22 @@ class WebSocketService extends ChangeNotifier {
         stompConnectHeaders: stompHeaders,
         webSocketConnectHeaders: wsHeaders,
         beforeConnect: () async {
-          final currentToken = await TokenStorage.getAccessToken();
+          String? currentToken = await TokenStorage.getAccessToken();
+          if (currentToken == null ||
+              currentToken.isEmpty ||
+              JwtUtils.isExpired(currentToken, threshold: const Duration(minutes: 1))) {
+            final refreshToken = await TokenStorage.getRefreshToken();
+            if (refreshToken != null && refreshToken.isNotEmpty) {
+              debugPrint('🔄 [WS] Access token expired or near expiry, refreshing before connect...');
+              final success = await authService.refreshToken(refreshToken);
+              if (success) {
+                currentToken = await TokenStorage.getAccessToken();
+                debugPrint('🟢 [WS] Access token refreshed successfully before connect');
+              } else {
+                debugPrint('🔴 [WS] Refresh token failed in beforeConnect');
+              }
+            }
+          }
           if (currentToken != null && currentToken.isNotEmpty) {
             stompHeaders['Authorization'] = 'Bearer $currentToken';
             wsHeaders['Authorization'] = 'Bearer $currentToken';
@@ -97,6 +114,15 @@ class WebSocketService extends ChangeNotifier {
     _setStatus(WebSocketStatus.error);
     if (!(_connectionCompleter?.isCompleted ?? true)) {
       _connectionCompleter?.complete(false);
+    }
+    // Khi gặp lỗi token, chủ động làm mới token để lần reconnect kế tiếp thành công
+    if (frame.body?.contains('auth.token') == true) {
+      TokenStorage.getRefreshToken().then((rt) {
+        if (rt != null && rt.isNotEmpty) {
+          debugPrint('🔄 [WS] Proactively refreshing token after auth error...');
+          authService.refreshToken(rt);
+        }
+      });
     }
   }
 

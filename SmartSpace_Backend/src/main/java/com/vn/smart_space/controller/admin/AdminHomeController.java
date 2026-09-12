@@ -35,12 +35,4 @@ public class AdminHomeController {
             Locale locale) {
         return ResponseEntity.ok(ApiResponse.success("system.success", adminHomeService.getRecentActivities(limit, locale)));
     }
-
-    @GetMapping("/reports/recent")
-    @PreAuthorize("hasRole('admin')")
-    public ResponseEntity<ApiResponse> getRecentReports(
-            @RequestParam(defaultValue = "all") String tab,
-            @RequestParam(defaultValue = "6") int limit) {
-        return ResponseEntity.ok(ApiResponse.success("system.success", adminHomeService.getRecentReports(tab, limit)));
-    }
 }

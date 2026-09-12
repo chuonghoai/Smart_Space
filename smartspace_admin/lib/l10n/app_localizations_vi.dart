@@ -472,4 +472,83 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get noAddress => 'Chưa cập nhật địa chỉ';
+
+  @override
+  String get reportDetailTitle => 'Chi tiết phản ánh';
+
+  @override
+  String get reportInfoSection => 'Thông tin phản ánh';
+
+  @override
+  String get reporterInfoSection => 'Người gửi';
+
+  @override
+  String get anonymousUser => 'Ẩn danh';
+
+  @override
+  String get anonymousDescription =>
+      'Người dùng đã ẩn danh tính khi gửi phản ánh này';
+
+  @override
+  String get locationSection => 'Vị trí sự cố';
+
+  @override
+  String get openInGoogleMaps => 'Mở Google Maps';
+
+  @override
+  String get assignStaffSection => 'Phân công nhân viên';
+
+  @override
+  String get selectStaffPrompt => 'Chọn nhân viên xử lý';
+
+  @override
+  String get noStaffAvailable => 'Không tìm thấy nhân viên nào trong hệ thống';
+
+  @override
+  String get severitySection => 'Mức độ nghiêm trọng';
+
+  @override
+  String get severityLow => 'Thấp';
+
+  @override
+  String get severityMedium => 'Trung bình';
+
+  @override
+  String get severityHigh => 'Cao';
+
+  @override
+  String get severityCritical => 'Khẩn cấp';
+
+  @override
+  String get processReportButton => 'Xử lý phản ánh';
+
+  @override
+  String get assignSuccessMessage =>
+      'Phân công nhân viên và bắt đầu xử lý thành công!';
+
+  @override
+  String get assignFailedMessage =>
+      'Không thể xử lý phản ánh, vui lòng thử lại.';
+
+  @override
+  String get assignedStaffInfo => 'Nhân viên đang phụ trách';
+
+  @override
+  String get createdAtLabel => 'Thời gian gửi';
+
+  @override
+  String get statusLabel => 'Trạng thái';
+
+  @override
+  String get cannotOpenMaps => 'Không thể mở ứng dụng bản đồ';
+
+  @override
+  String get changeStaff => 'Thay đổi nhân viên';
+
+  @override
+  String get noImageAvailable => 'Không có hình ảnh';
+
+  @override
+  String get anonymousAdminNotice =>
+      'Phản ánh ẩn danh (Chỉ quản trị viên mới có thể xem thông tin này)';
 }

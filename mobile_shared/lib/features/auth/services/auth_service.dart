@@ -1,3 +1,5 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/core/auth/token_storage.dart';
 import 'package:mobile_shared/core/auth/user_storage_service.dart';
@@ -45,6 +47,7 @@ class AuthService {
       await TokenStorage.saveAccessToken(data.accessToken);
       await TokenStorage.saveRefreshToken(data.refreshToken);
       await userStorageService.saveUser(data.userModel!);
+      startScheduledTokenRefresh();
 
       // Kết nối WebSocket và FCM sẽ được xử lý ngầm trong LoginController
       return (response: response, wsConnected: true);
@@ -76,6 +79,7 @@ class AuthService {
       await TokenStorage.saveAccessToken(data.accessToken);
       await TokenStorage.saveRefreshToken(data.refreshToken);
       await userStorageService.saveUser(data.userModel!);
+      startScheduledTokenRefresh();
 
       return (response: response, wsConnected: true);
     }
@@ -94,6 +98,7 @@ class AuthService {
       );
     } finally {
       // Gọi API logout
+      stopScheduledTokenRefresh();
       // Xóa FCM token của thiết bị hiện tại
       await FirebaseService.clearTokenOnServer();
       // Xóa token
@@ -101,6 +106,34 @@ class AuthService {
       userStorageService.clear();
       connectionManager.stopAllAndCleanUp();
     }
+  }
+
+  static Timer? _scheduledRefreshTimer;
+
+  /// Bắt đầu cơ chế scheduled định kỳ làm mới access token mỗi 28 phút
+  void startScheduledTokenRefresh() {
+    _scheduledRefreshTimer?.cancel();
+    _scheduledRefreshTimer = Timer.periodic(const Duration(minutes: 28), (timer) async {
+      final rt = await TokenStorage.getRefreshToken();
+      if (rt != null && rt.isNotEmpty) {
+        debugPrint('⏰ [AuthService] Scheduled 28-minute token refresh triggered...');
+        final success = await refreshToken(rt);
+        if (success) {
+          debugPrint('🟢 [AuthService] Scheduled 28-minute token refresh succeeded');
+        } else {
+          debugPrint('🔴 [AuthService] Scheduled 28-minute token refresh failed');
+        }
+      } else {
+        timer.cancel();
+      }
+    });
+    debugPrint('⏰ [AuthService] Scheduled token refresh initialized (every 28 minutes)');
+  }
+
+  /// Dừng scheduled timer khi logout
+  void stopScheduledTokenRefresh() {
+    _scheduledRefreshTimer?.cancel();
+    _scheduledRefreshTimer = null;
   }
 
   /// Refresh access token with refresh token in secured storage

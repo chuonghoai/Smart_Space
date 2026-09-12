@@ -38,4 +38,28 @@ public class ReportDetailResponse {
 
     @JsonProperty("distance_in_meters")
     private Double distanceInMeters;
+
+    @JsonProperty("user_name")
+    private String userName;
+
+    @JsonProperty("user_phone")
+    private String userPhone;
+
+    @JsonProperty("user_avatar_url")
+    private String userAvatarUrl;
+
+    @JsonProperty("assigned_staff_id")
+    private String assignedStaffId;
+
+    @JsonProperty("assigned_staff_name")
+    private String assignedStaffName;
+
+    @JsonProperty("assigned_staff_phone")
+    private String assignedStaffPhone;
+
+    @JsonProperty("assigned_staff_email")
+    private String assignedStaffEmail;
+
+    @JsonProperty("assigned_staff_avatar_url")
+    private String assignedStaffAvatarUrl;
 }
