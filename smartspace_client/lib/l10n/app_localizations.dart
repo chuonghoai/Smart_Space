@@ -560,6 +560,30 @@ abstract class AppLocalizations {
   /// **'My reports'**
   String get myReports;
 
+  /// No description provided for @totalReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Reports'**
+  String get totalReports;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @thisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get thisWeek;
+
+  /// No description provided for @older.
+  ///
+  /// In en, this message translates to:
+  /// **'Older'**
+  String get older;
+
   /// No description provided for @notifications.
   ///
   /// In en, this message translates to:

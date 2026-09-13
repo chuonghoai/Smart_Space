@@ -37,6 +37,21 @@ class ReportRepoApi implements ReportRepo {
   }
 
   @override
+  Future<ApiResponse<List<ReportModel>>> getMyReports() async {
+    return await apiClient.get<List<ReportModel>>(
+      '/reports/my-reports',
+      decoder: (json) {
+        if (json is List) {
+          return json
+              .map((e) => ReportModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        }
+        return [];
+      },
+    );
+  }
+
+  @override
   Future<ApiResponse<ReportModel>> createReport(ReportDto reportDto) async {
     return await apiClient.post<ReportModel>(
       '/reports',

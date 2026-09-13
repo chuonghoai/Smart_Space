@@ -14,4 +14,5 @@ class RouterPath {
   static const String createReport = '/create-report';
   static const String map = '/map';
   static const String reportDetail = '/reports/:id';
+  static const String myReports = '/my-reports';
 }

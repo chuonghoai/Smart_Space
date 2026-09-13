@@ -241,6 +241,18 @@ class AppLocalizationsVi extends AppLocalizations {
   String get myReports => 'Phản ánh của tôi';
 
   @override
+  String get totalReports => 'Tổng phản ánh';
+
+  @override
+  String get today => 'Hôm nay';
+
+  @override
+  String get thisWeek => 'Tuần này';
+
+  @override
+  String get older => 'Cũ hơn';
+
+  @override
   String get notifications => 'Thông báo';
 
   @override

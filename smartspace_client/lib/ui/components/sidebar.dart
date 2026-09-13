@@ -124,7 +124,7 @@ class Sidebar extends ConsumerWidget {
                     label: l10n.myReports,
                     onTap: () {
                       Navigator.pop(context);
-                      // TODO: Navigate to My Reports
+                      context.push(RouterPath.myReports);
                     },
                   ),
                   _SidebarItem(

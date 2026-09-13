@@ -7,5 +7,6 @@ abstract class ReportRepo {
   Future<ApiResponse<List<ReportModel>>> getDangerousReports();
   Future<ApiResponse<List<ReportModel>>> getRecentReports();
   Future<ApiResponse<ReportModel>> createReport(ReportDto reportDto);
+  Future<ApiResponse<List<ReportModel>>> getMyReports();
   Future<ApiResponse<ReportDetailModel>> getReportDetail(String reportId);
 }

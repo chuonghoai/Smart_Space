@@ -66,7 +66,7 @@ class MobileHomeScreen extends ConsumerWidget {
                             title: l10n.myReports,
                             icon: Icons.history,
                             onTap: () {
-                              // TODO: Navigate to my reports
+                              context.push(RouterPath.myReports);
                             },
                           ),
                         ),

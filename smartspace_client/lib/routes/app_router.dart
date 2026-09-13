@@ -15,6 +15,7 @@ import 'package:smartspace_client/ui/shared/splash/splash_screen.dart';
 import 'package:smartspace_client/ui/mobile/auth/register/complete_profile_screen.dart';
 import 'package:smartspace_client/ui/mobile/reports/create_report_screen.dart';
 import 'package:smartspace_client/ui/mobile/reports/presentation/report_detail_screen.dart';
+import 'package:smartspace_client/ui/mobile/reports/my_reports_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_shared/core/toast/toast_service.dart';
 
@@ -85,6 +86,10 @@ final appRouter = GoRouter(
       path: RouterPath.reportDetail,
       builder: (context, state) =>
           ReportDetailScreen(reportId: state.pathParameters['id']!),
+    ),
+    GoRoute(
+      path: RouterPath.myReports,
+      builder: (context, state) => const MyReportsScreen(),
     ),
   ],
 );

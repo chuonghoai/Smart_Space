@@ -241,6 +241,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myReports => 'My reports';
 
   @override
+  String get totalReports => 'Total Reports';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get thisWeek => 'This week';
+
+  @override
+  String get older => 'Older';
+
+  @override
   String get notifications => 'Notifications';
 
   @override

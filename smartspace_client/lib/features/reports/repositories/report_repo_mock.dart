@@ -78,6 +78,47 @@ class ReportRepoMock implements ReportRepo {
   }
 
   @override
+  Future<ApiResponse<List<ReportModel>>> getMyReports() async {
+    await Future.delayed(const Duration(seconds: 1));
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: [
+        ReportModel(
+          id: 'm1',
+          title: 'Đèn đường hỏng',
+          description: 'Đèn không sáng',
+          imageUrl: 'https://ui-avatars.com/api/?name=Light&background=random',
+          latitude: 10.8231,
+          longitude: 106.6297,
+          status: ReportStatus.processing,
+          createdAt: DateTime.now().subtract(const Duration(hours: 2)),
+        ),
+        ReportModel(
+          id: 'm2',
+          title: 'Hố ga mất nắp',
+          description: 'Nguy hiểm',
+          imageUrl: 'https://ui-avatars.com/api/?name=Hole&background=random',
+          latitude: 10.8231,
+          longitude: 106.6297,
+          status: ReportStatus.processed,
+          createdAt: DateTime.now().subtract(const Duration(days: 2)),
+        ),
+        ReportModel(
+          id: 'm3',
+          title: 'Rác thải sai quy định',
+          description: 'Rác đổ bừa bãi',
+          imageUrl: 'https://ui-avatars.com/api/?name=Trash&background=random',
+          latitude: 10.8231,
+          longitude: 106.6297,
+          status: ReportStatus.rejected,
+          createdAt: DateTime.now().subtract(const Duration(days: 10)),
+        ),
+      ],
+    );
+  }
+
+  @override
   Future<ApiResponse<ReportModel>> createReport(ReportDto reportDto) async {
     await Future.delayed(const Duration(seconds: 2));
     return ApiResponse(
