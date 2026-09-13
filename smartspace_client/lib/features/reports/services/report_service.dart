@@ -20,8 +20,8 @@ class ReportService {
     return await reportRepo.getRecentReports();
   }
 
-  Future<ApiResponse<List<ReportModel>>> getMyReports() async {
-    return await reportRepo.getMyReports();
+  Future<ApiResponse<List<ReportModel>>> getMyReports({String? status, int limit = 50}) async {
+    return await reportRepo.getMyReports(status: status, limit: limit);
   }
 
   Future<ApiResponse<ReportModel>> createReport(ReportDto reportDto) async {

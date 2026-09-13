@@ -16,4 +16,6 @@ public interface IReportService {
 
     List<RecentReportResponse> getAdminRecentReports(String tab, int limit);
     ReportDetailResponse assignReport(String reportId, ReportAssignRequest request, String adminId);
+
+    List<ReportResponse> getMyReports(String userId, String status, int limit);
 }

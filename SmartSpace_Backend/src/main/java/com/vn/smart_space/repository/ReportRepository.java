@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import com.vn.smart_space.consts.EReportSeverity;
+import com.vn.smart_space.consts.EReportStatus;
 import com.vn.smart_space.model.Report;
 
 public interface ReportRepository extends JpaRepository<Report, String> {
@@ -24,10 +25,15 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                         Limit limit);
 
         @Query("SELECT r FROM Report r WHERE r.status IN :statuses ORDER BY r.createdAt DESC")
-        List<Report> findByStatusInOrderByCreatedAtDesc(@Param("statuses") List<com.vn.smart_space.consts.EReportStatus> statuses, org.springframework.data.domain.Pageable pageable);
+        List<Report> findByStatusInOrderByCreatedAtDesc(
+                        @Param("statuses") List<com.vn.smart_space.consts.EReportStatus> statuses,
+                        org.springframework.data.domain.Pageable pageable);
 
         long countByStatusIn(List<com.vn.smart_space.consts.EReportStatus> statuses);
 
         long countByStatus(com.vn.smart_space.consts.EReportStatus status);
-}
 
+        // Get My Reports For Client
+        @Query("SELECT r FROM Report r WHERE r.user.id = :userId AND (:status IS NULL OR r.status = :status) ORDER BY r.createdAt DESC")
+        List<Report> findMyReports(@Param("userId") String userId, @Param("status") EReportStatus status, Limit limit);
+}

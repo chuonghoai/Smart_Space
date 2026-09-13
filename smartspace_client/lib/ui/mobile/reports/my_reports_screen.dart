@@ -32,14 +32,14 @@ class MyReportsScreen extends ConsumerWidget {
                       Text(state.error!, style: TextStyle(color: theme.colorScheme.error)),
                       const SizedBox(height: 16),
                       ElevatedButton(
-                        onPressed: () => notifier.fetchMyReports(),
+                        onPressed: () => notifier.refresh(),
                         child: Text(l10n.retryButton),
                       ),
                     ],
                   ),
                 )
               : RefreshIndicator(
-                  onRefresh: () => notifier.fetchMyReports(),
+                  onRefresh: () => notifier.refresh(),
                   child: ListView(
                     padding: const EdgeInsets.all(16),
                     children: [
@@ -183,7 +183,7 @@ class MyReportsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    if (state.filteredReports.isEmpty) {
+    if (state.displayReports.isEmpty) {
       return [
         Padding(
           padding: const EdgeInsets.only(top: 40),

@@ -37,9 +37,13 @@ class ReportRepoApi implements ReportRepo {
   }
 
   @override
-  Future<ApiResponse<List<ReportModel>>> getMyReports() async {
+  Future<ApiResponse<List<ReportModel>>> getMyReports({String? status, int limit = 50}) async {
+    final Map<String, dynamic> queryParams = {'limit': limit};
+    if (status != null) queryParams['status'] = status;
+
     return await apiClient.get<List<ReportModel>>(
       '/reports/my-reports',
+      queryParameters: queryParams,
       decoder: (json) {
         if (json is List) {
           return json

@@ -6,6 +6,8 @@ import com.vn.smart_space.dto.response.report.ReportResponse;
 import com.vn.smart_space.service.report.IReportService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.oauth2.jwt.Jwt;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -28,7 +30,7 @@ public class ReportController {
             @RequestParam(required = false) String filter,
             @RequestParam(name = "user_lat", required = false) Double userLat,
             @RequestParam(name = "user_long", required = false) Double userLong) {
-        
+
         List<ReportResponse> reports = reportService.getRecentReports(filter, userLat, userLong);
         return ResponseEntity.ok(ApiResponse.success("system.success", reports));
     }
@@ -49,5 +51,15 @@ public class ReportController {
     public ResponseEntity<ApiResponse> getReportDetail(@PathVariable String id) {
         ReportDetailResponse report = reportService.getReportDetail(id);
         return ResponseEntity.ok(ApiResponse.success("system.success", report));
+    }
+
+    @GetMapping("/my-reports")
+    public ResponseEntity<ApiResponse> getMyReports(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "50") int limit) {
+        String userId = jwt.getClaim("userId").toString();
+        List<ReportResponse> reports = reportService.getMyReports(userId, status, limit);
+        return ResponseEntity.ok(ApiResponse.success("system.success", reports));
     }
 }
