@@ -551,4 +551,16 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get anonymousAdminNotice =>
       'Phản ánh ẩn danh (Chỉ quản trị viên mới có thể xem thông tin này)';
+
+  @override
+  String get manageReports => 'Quản lý phản ánh';
+
+  @override
+  String get manageUsers => 'Quản lý người dùng';
+
+  @override
+  String get manageStaffs => 'Quản lý nhân viên';
+
+  @override
+  String get spaceMap => 'Bản đồ không gian';
 }

@@ -197,5 +197,9 @@
   "cannotOpenMaps": "Không thể mở ứng dụng bản đồ",
   "changeStaff": "Thay đổi nhân viên",
   "noImageAvailable": "Không có hình ảnh",
-  "anonymousAdminNotice": "Phản ánh ẩn danh (Chỉ quản trị viên mới có thể xem thông tin này)"
+  "anonymousAdminNotice": "Phản ánh ẩn danh (Chỉ quản trị viên mới có thể xem thông tin này)",
+  "manageReports": "Quản lý phản ánh",
+  "manageUsers": "Quản lý người dùng",
+  "manageStaffs": "Quản lý nhân viên",
+  "spaceMap": "Bản đồ không gian"
 }

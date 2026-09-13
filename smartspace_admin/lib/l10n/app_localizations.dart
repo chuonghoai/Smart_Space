@@ -1165,6 +1165,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Anonymous report (Visible only to administrators)'**
   String get anonymousAdminNotice;
+
+  /// No description provided for @manageReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Reports'**
+  String get manageReports;
+
+  /// No description provided for @manageUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Users'**
+  String get manageUsers;
+
+  /// No description provided for @manageStaffs.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Staffs'**
+  String get manageStaffs;
+
+  /// No description provided for @spaceMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Space Map'**
+  String get spaceMap;
 }
 
 class _AppLocalizationsDelegate

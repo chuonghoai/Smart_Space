@@ -197,5 +197,9 @@
   "cannotOpenMaps": "Cannot open map application",
   "changeStaff": "Change staff",
   "noImageAvailable": "No image available",
-  "anonymousAdminNotice": "Anonymous report (Visible only to administrators)"
+  "anonymousAdminNotice": "Anonymous report (Visible only to administrators)",
+  "manageReports": "Manage Reports",
+  "manageUsers": "Manage Users",
+  "manageStaffs": "Manage Staffs",
+  "spaceMap": "Space Map"
 }

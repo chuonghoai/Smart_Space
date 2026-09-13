@@ -552,4 +552,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get anonymousAdminNotice =>
       'Anonymous report (Visible only to administrators)';
+
+  @override
+  String get manageReports => 'Manage Reports';
+
+  @override
+  String get manageUsers => 'Manage Users';
+
+  @override
+  String get manageStaffs => 'Manage Staffs';
+
+  @override
+  String get spaceMap => 'Space Map';
 }

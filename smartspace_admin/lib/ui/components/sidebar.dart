@@ -84,8 +84,8 @@ class Sidebar extends ConsumerWidget {
                 padding: const EdgeInsets.symmetric(vertical: 8),
                 children: [
                   _SidebarItem(
-                    icon: Icons.home_outlined,
-                    label: l10n.home,
+                    icon: Icons.dashboard_outlined,
+                    label: l10n.adminOverview,
                     onTap: () {
                       context.go(RouterPath.home);
                     },
@@ -120,26 +120,34 @@ class Sidebar extends ConsumerWidget {
                   ),
                   _SidebarItem(
                     icon: Icons.report_outlined,
-                    label: l10n.myReports,
+                    label: l10n.manageReports,
                     onTap: () {
                       Navigator.pop(context);
-                      // TODO: Navigate to My Reports
+                      // TODO: Navigate to Manage Reports
                     },
                   ),
                   _SidebarItem(
                     icon: Icons.map_outlined,
-                    label: l10n.map,
+                    label: l10n.spaceMap,
                     onTap: () {
                       Navigator.pop(context);
-                      // TODO: Navigate to Map
+                      // TODO: Navigate to Space Map
                     },
                   ),
                   _SidebarItem(
-                    icon: Icons.article_outlined,
-                    label: l10n.news,
+                    icon: Icons.people_outline,
+                    label: l10n.manageUsers,
                     onTap: () {
                       Navigator.pop(context);
-                      // TODO: Navigate to news
+                      // TODO: Navigate to Manage Users
+                    },
+                  ),
+                  _SidebarItem(
+                    icon: Icons.badge_outlined,
+                    label: l10n.manageStaffs,
+                    onTap: () {
+                      Navigator.pop(context);
+                      // TODO: Navigate to Manage Staffs
                     },
                   ),
 
