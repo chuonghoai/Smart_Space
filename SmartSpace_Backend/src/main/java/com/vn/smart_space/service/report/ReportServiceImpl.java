@@ -1,5 +1,9 @@
 package com.vn.smart_space.service.report;
 
+import com.vn.smart_space.exception.ResourceNotFoundException;
+import com.vn.smart_space.repository.ActivityHistoryRepository;
+import com.vn.smart_space.repository.UserRepository;
+
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
@@ -37,11 +41,11 @@ import lombok.extern.slf4j.Slf4j;
 public class ReportServiceImpl implements IReportService {
 
     private final ReportRepository reportRepository;
-    private final com.vn.smart_space.repository.UserRepository userRepository;
+    private final UserRepository userRepository;
     private final org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
     private final IFCMService fcmService;
     private final INotificationService notificationService;
-    private final com.vn.smart_space.repository.ActivityHistoryRepository activityHistoryRepository;
+    private final ActivityHistoryRepository activityHistoryRepository;
 
     @Override
     @Transactional(readOnly = true)
@@ -135,7 +139,7 @@ public class ReportServiceImpl implements IReportService {
                     : (actor != null && actor.getEmail() != null ? actor.getEmail().trim() : "Người dùng");
             String i18nKey = "activity.report.created|" + actorName;
 
-            com.vn.smart_space.model.ActivityHistory activity = com.vn.smart_space.model.ActivityHistory.builder()
+            ActivityHistory activity = ActivityHistory.builder()
                     .actor(actor)
                     .i18nKey(i18nKey)
                     .targetId(report.getId())
@@ -189,7 +193,7 @@ public class ReportServiceImpl implements IReportService {
 
         // Notify Admins
         try {
-            List<User> admins = userRepository.findByRole(com.vn.smart_space.consts.ERole.admin);
+            List<User> admins = userRepository.findByRole(ERole.admin);
             if (admins != null && !admins.isEmpty()) {
                 String adminTitle = "Có phản ánh mới";
                 String adminMessage = report.getTitle() != null && !report.getTitle().trim().isEmpty()
@@ -241,7 +245,7 @@ public class ReportServiceImpl implements IReportService {
     @Transactional(readOnly = true)
     public ReportDetailResponse getReportDetail(String reportId) {
         Report report = reportRepository.findById(reportId)
-                .orElseThrow(() -> new com.vn.smart_space.exception.ResourceNotFoundException("report.not_found"));
+                .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
 
         User user = report.getUser();
         User staff = report.getAssignedStaff();
@@ -324,10 +328,10 @@ public class ReportServiceImpl implements IReportService {
             String adminId) {
 
         Report report = reportRepository.findById(reportId)
-                .orElseThrow(() -> new com.vn.smart_space.exception.ResourceNotFoundException("report.not_found"));
+                .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
 
         User staff = userRepository.findById(request.getStaffId())
-                .orElseThrow(() -> new com.vn.smart_space.exception.ResourceNotFoundException("staff.not_found"));
+                .orElseThrow(() -> new ResourceNotFoundException("staff.not_found"));
 
         if (request.getSeverity() != null && !request.getSeverity().trim().isEmpty()) {
             try {

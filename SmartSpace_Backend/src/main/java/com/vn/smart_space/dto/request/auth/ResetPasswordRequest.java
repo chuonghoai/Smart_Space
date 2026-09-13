@@ -1,5 +1,7 @@
 package com.vn.smart_space.dto.request.auth;
 
+import com.vn.smart_space.consts.ERole;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vn.smart_space.validation.StrongPassword;
 
@@ -16,7 +18,7 @@ public class ResetPasswordRequest {
     @Email(message = "{auth.email.invalid}")
     private String email;
 
-    private com.vn.smart_space.consts.ERole role;
+    private ERole role;
 
     @NotBlank(message = "{auth.otp.required}")
     @Size(min = 6, max = 6, message = "{auth.otp.size}")

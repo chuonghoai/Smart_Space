@@ -1,5 +1,7 @@
 package com.vn.smart_space.service.user;
 
+import com.vn.smart_space.consts.ERole;
+
 import com.vn.smart_space.dto.request.auth.DevCreateAccountRequest;
 import com.vn.smart_space.dto.request.auth.RegisterRequest;
 import com.vn.smart_space.dto.request.auth.ResetPasswordRequest;
@@ -21,7 +23,7 @@ public interface IUserService {
     User findUserById(String id);
 
     // Find User By Email And Role
-    User findUserByEmailAndRole(String email, com.vn.smart_space.consts.ERole role);
+    User findUserByEmailAndRole(String email, ERole role);
 
     // Get Me
     UserResponse getMe(String userId);

@@ -1,5 +1,7 @@
 package com.vn.smart_space.service.auth;
 
+import com.vn.smart_space.consts.ERole;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.ParseException;
@@ -314,7 +316,7 @@ public class AuthenticationService implements IAuthenticationService {
     // SEND OTP FOR REGISTRATION
     @Override
     @Transactional
-    public void sendOtpRegister(String email, com.vn.smart_space.consts.ERole role) {
+    public void sendOtpRegister(String email, ERole role) {
         if (userRepository.existsByEmailAndRole(email, role)) {
             throw new BadRequestException("auth.email.exists");
         }
@@ -330,7 +332,7 @@ public class AuthenticationService implements IAuthenticationService {
 
     @Override
     @Transactional
-    public void verifyOtpRegister(String email, String otp, com.vn.smart_space.consts.ERole role) {
+    public void verifyOtpRegister(String email, String otp, ERole role) {
 
         String otpKey = "otp:register:" + email + ":" + role.name();
         verifyOtp(otpKey, otp);

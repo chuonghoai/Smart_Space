@@ -1,5 +1,7 @@
 package com.vn.smart_space.service.auth;
 
+import com.vn.smart_space.consts.ERole;
+
 import com.vn.smart_space.consts.ERegistrationStatus;
 import com.vn.smart_space.dto.TokenPayload;
 import com.vn.smart_space.dto.request.auth.GoogleLoginRequest;
@@ -35,9 +37,9 @@ public interface IAuthenticationService {
     void revokeAllOtherSessions(String userId, String currentDeviceId);
 
     // OTP for Registration
-    void sendOtpRegister(String email, com.vn.smart_space.consts.ERole role);
+    void sendOtpRegister(String email, ERole role);
 
-    void verifyOtpRegister(String email, String otp, com.vn.smart_space.consts.ERole role);
+    void verifyOtpRegister(String email, String otp, ERole role);
 
     // OTP for Forgot Password
     void sendOtpForgotPassword(String email);

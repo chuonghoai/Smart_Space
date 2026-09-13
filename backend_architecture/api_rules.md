@@ -62,3 +62,11 @@ Map<String, String> fcmData = Map.of(
     "payload", "{\"reportId\":\"" + report.getId() + "\"}"
 );
 ```
+
+## 6. Coding Convention Rules (Java)
+**DO:**
+- Luôn sử dụng standard `import` ở đầu file (ví dụ: `import com.vn.smart_space.model.ActivityHistory;`).
+- Sử dụng tên class ngắn gọn trong code (ví dụ: `ActivityHistory activity = new ActivityHistory();`).
+
+**DON'T (Tuyệt đối KHÔNG):**
+- KHÔNG sử dụng fully qualified class name trực tiếp trong code block (như `com.vn.smart_space.model.ActivityHistory activity = ...`). Điều này gây rối code và không đúng chuẩn Java. Hãy luôn `import` đúng chuẩn ở đầu file.

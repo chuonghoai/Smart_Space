@@ -1,5 +1,7 @@
 package com.vn.smart_space.dto.request.auth;
 
+import com.vn.smart_space.consts.ERole;
+
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
@@ -17,7 +19,7 @@ public class VerifyOTPRegisterRequest {
     @Email(message = "{auth.email.invalid}")
     String email;
 
-    com.vn.smart_space.consts.ERole role;
+    ERole role;
 
     @NotBlank(message = "{auth.otp.required}")
     @Size(min = 6, max = 6, message = "{auth.otp.size}")

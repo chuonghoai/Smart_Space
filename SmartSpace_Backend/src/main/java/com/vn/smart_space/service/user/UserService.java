@@ -1,5 +1,7 @@
 package com.vn.smart_space.service.user;
 
+import com.vn.smart_space.repository.ActivityHistoryRepository;
+
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import com.vn.smart_space.dto.response.auth.LoginResponse;
 import com.vn.smart_space.dto.response.user.UserResponse;
 import com.vn.smart_space.exception.BadRequestException;
 import com.vn.smart_space.mapper.UserMapper;
+import com.vn.smart_space.model.ActivityHistory;
 import com.vn.smart_space.model.User;
 import com.vn.smart_space.repository.UserRepository;
 import com.vn.smart_space.service.auth.IAuthenticationService;
@@ -33,7 +36,7 @@ public class UserService implements IUserService {
     private final IJwtService jwtService;
 
     private final UserRepository userRepository;
-    private final com.vn.smart_space.repository.ActivityHistoryRepository activityHistoryRepository;
+    private final ActivityHistoryRepository activityHistoryRepository;
     private final PasswordEncoder passwordEncoder;
 
     private final StringRedisTemplate stringRedisTemplate;
@@ -87,7 +90,7 @@ public class UserService implements IUserService {
                 : (user.getEmail() != null && !user.getEmail().trim().isEmpty() ? user.getEmail().trim() : "Người dùng");
         String i18nKey = "activity.user.registered|" + actorName;
 
-        com.vn.smart_space.model.ActivityHistory activity = com.vn.smart_space.model.ActivityHistory.builder()
+        ActivityHistory activity = ActivityHistory.builder()
             .actor(user)
             .i18nKey(i18nKey)
             .targetId(user.getId())

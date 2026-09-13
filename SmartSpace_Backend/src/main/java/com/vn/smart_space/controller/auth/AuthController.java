@@ -1,5 +1,7 @@
 package com.vn.smart_space.controller.auth;
 
+import com.vn.smart_space.dto.request.auth.SendOtpForgotPasswordRequest;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -163,7 +165,7 @@ public class AuthController {
         // 7. Reset Password
 
         @PostMapping("send-otp-forgot-password")
-        public ResponseEntity<ApiResponse> sendOtpForgotPassword(@RequestBody @Valid com.vn.smart_space.dto.request.auth.SendOtpForgotPasswordRequest request) {
+        public ResponseEntity<ApiResponse> sendOtpForgotPassword(@RequestBody @Valid SendOtpForgotPasswordRequest request) {
                 authenticationService.sendOtpForgotPassword(request.getEmail());
                 return ResponseEntity.ok(ApiResponse.success("auth.otp.forgot_password.send.success", null));
         }

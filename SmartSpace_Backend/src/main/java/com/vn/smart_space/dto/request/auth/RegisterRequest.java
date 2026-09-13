@@ -1,5 +1,7 @@
 package com.vn.smart_space.dto.request.auth;
 
+import com.vn.smart_space.consts.ERole;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vn.smart_space.validation.StrongPassword;
 
@@ -18,7 +20,7 @@ public class RegisterRequest {
     @Email(message = "{auth.email.invalid}")
     String email;
 
-    com.vn.smart_space.consts.ERole role;
+    ERole role;
 
     @NotBlank(message = "{auth.password.required}")
     @StrongPassword

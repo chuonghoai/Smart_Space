@@ -1,5 +1,8 @@
 package com.vn.smart_space.controller.report;
 
+import com.vn.smart_space.dto.request.report.ReportCreateRequest;
+import org.springframework.web.bind.annotation.RequestBody;
+
 import com.vn.smart_space.dto.ApiResponse;
 import com.vn.smart_space.dto.response.report.ReportDetailResponse;
 import com.vn.smart_space.dto.response.report.ReportResponse;
@@ -38,7 +41,7 @@ public class ReportController {
     @PostMapping
     public ResponseEntity<ApiResponse> createReport(
             @org.springframework.security.core.annotation.AuthenticationPrincipal org.springframework.security.oauth2.jwt.Jwt jwt,
-            @org.springframework.web.bind.annotation.RequestBody com.vn.smart_space.dto.request.report.ReportCreateRequest request) {
+            @RequestBody ReportCreateRequest request) {
         String userId = null;
         if (jwt != null && jwt.hasClaim("userId")) {
             userId = jwt.getClaim("userId").toString();
