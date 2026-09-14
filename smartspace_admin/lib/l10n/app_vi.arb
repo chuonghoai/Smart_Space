@@ -217,5 +217,36 @@
   "phoneNumber": "SĐT",
   "statusTitle": "Trạng thái",
   "noStaffInSystem": "Chưa có nhân viên nào trong hệ thống",
-  "noStaffFound": "Không tìm thấy nhân viên nào phù hợp"
+  "noStaffFound": "Không tìm thấy nhân viên nào phù hợp",
+  "lockAccount": "Khoá tài khoản",
+  "unlockAccount": "Mở khoá tài khoản",
+  "lockAccountConfirm": "Bạn có chắc muốn khoá tài khoản nhân viên này?",
+  "unlockAccountConfirm": "Bạn có chắc muốn mở khoá tài khoản nhân viên này?",
+  "updateStatusSuccess": "Cập nhật trạng thái thành công",
+  "updateStatusFailed": "Cập nhật trạng thái thất bại",
+  "processingReports": "{count} phản ánh đang xử lý",
+  "@processingReports": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dateOfBirth": "Ngày sinh",
+  "gender": "Giới tính",
+  "genderMale": "Nam",
+  "genderFemale": "Nữ",
+  "genderOther": "Khác",
+  "createStaff": "Tạo nhân viên",
+  "uploadAvatar": "Tải ảnh đại diện",
+  "changeAvatar": "Đổi ảnh",
+  "avatarSizeError": "Ảnh phải nhỏ hơn 5MB",
+  "selectDate": "Chọn ngày",
+  "selectGender": "Chọn giới tính",
+  "addStaffFailed": "Thêm nhân viên thất bại",
+  "editStaff": "Chỉnh sửa nhân viên",
+  "updateStaff": "Cập nhật",
+  "updateStaffSuccess": "Cập nhật thành công",
+  "updateStaffFailed": "Cập nhật thất bại",
+  "editInfo": "Chỉnh sửa"
 }

@@ -73,7 +73,7 @@ class _WebStaffViewState extends ConsumerState<WebStaffView> {
           ),
         ),
         FilledButton.icon(
-          onPressed: () => showAddStaffDialog(context, l10n, theme),
+          onPressed: () => showStaffFormDialog(context, l10n, theme, ref),
           icon: const Icon(Icons.add, size: 18),
           label: Text(l10n.addStaff),
           style: FilledButton.styleFrom(
@@ -271,17 +271,44 @@ class _WebStaffViewState extends ConsumerState<WebStaffView> {
                   )),
                   DataCell(StaffStatusChip(isActive: staff.isActive)),
                   DataCell(
-                    PopupMenuButton<String>(
-                      icon: const Icon(Icons.more_vert, size: 20),
-                      onSelected: (v) {
-                        if (v == 'detail') {
-                          showStaffDetailSheet(
-                              context, l10n, theme, staff);
-                        }
-                      },
-                      itemBuilder: (_) => [
-                        PopupMenuItem(
-                            value: 'detail', child: Text(l10n.viewDetails)),
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Tooltip(
+                          message: l10n.viewDetails,
+                          child: IconButton(
+                            icon: const Icon(Icons.visibility_outlined, size: 20),
+                            onPressed: () => showStaffDetailSheet(
+                                context, l10n, theme, staff, ref),
+                          ),
+                        ),
+                        Tooltip(
+                          message: l10n.editInfo,
+                          child: IconButton(
+                            icon: const Icon(Icons.edit_outlined, size: 20),
+                            onPressed: () => showStaffFormDialog(
+                                context, l10n, theme, ref,
+                                editingStaff: staff),
+                          ),
+                        ),
+                        Tooltip(
+                          message: staff.isActive
+                              ? l10n.lockAccount
+                              : l10n.unlockAccount,
+                          child: IconButton(
+                            icon: Icon(
+                              staff.isActive
+                                  ? Icons.lock_outline
+                                  : Icons.lock_open,
+                              size: 20,
+                              color: staff.isActive
+                                  ? theme.colorScheme.error
+                                  : theme.colorScheme.primary,
+                            ),
+                            onPressed: () => confirmToggleStaffStatus(
+                                context, l10n, theme, staff, ref),
+                          ),
+                        ),
                       ],
                     ),
                   ),

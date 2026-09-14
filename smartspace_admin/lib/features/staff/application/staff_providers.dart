@@ -1,5 +1,7 @@
 import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../data/staff_repository.dart';
 import '../models/staff_list_response.dart';
 
@@ -27,6 +29,72 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
       return response.data!;
     }
     throw Exception(response.message);
+  }
+
+  // Update Status
+  Future<bool> toggleStaffStatus(String staffId, bool isCurrentlyActive) async {
+    final newStatus = isCurrentlyActive ? 'blocked' : 'active';
+    final response = await staffRepository.updateStaffStatus(
+      staffId,
+      newStatus,
+    );
+    if (response.success) {
+      ref.invalidateSelf();
+      return true;
+    }
+    return false;
+  }
+
+  // Create Staff
+  Future<bool> createStaff({
+    required String fullName,
+    required String email,
+    required String password,
+    String? phone,
+    String? dateOfBirth,
+    String? gender,
+    String? avatarUrl,
+  }) async {
+    final response = await staffRepository.createStaff(
+      fullName: fullName,
+      email: email,
+      password: password,
+      phone: phone,
+      dateOfBirth: dateOfBirth,
+      gender: gender,
+      avatarUrl: avatarUrl,
+    );
+    if (response.success) {
+      ref.invalidateSelf();
+      return true;
+    }
+    return false;
+  }
+
+  // Update Staff
+  Future<bool> updateStaff({
+    required String staffId,
+    required String fullName,
+    required String email,
+    String? phone,
+    String? dateOfBirth,
+    String? gender,
+    String? avatarUrl,
+  }) async {
+    final response = await staffRepository.updateStaff(
+      staffId: staffId,
+      fullName: fullName,
+      email: email,
+      phone: phone,
+      dateOfBirth: dateOfBirth,
+      gender: gender,
+      avatarUrl: avatarUrl,
+    );
+    if (response.success) {
+      ref.invalidateSelf();
+      return true;
+    }
+    return false;
   }
 
   Future<void> refresh() async {
@@ -69,7 +137,7 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
   }
 }
 
-final staffListProvider = AutoDisposeAsyncNotifierProvider<StaffListNotifier,
-    StaffListResponse>(
-  () => StaffListNotifier(),
-);
+final staffListProvider =
+    AutoDisposeAsyncNotifierProvider<StaffListNotifier, StaffListResponse>(
+      () => StaffListNotifier(),
+    );

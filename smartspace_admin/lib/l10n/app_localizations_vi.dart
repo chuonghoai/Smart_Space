@@ -611,4 +611,80 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get noStaffFound => 'Không tìm thấy nhân viên nào phù hợp';
+
+  @override
+  String get lockAccount => 'Khoá tài khoản';
+
+  @override
+  String get unlockAccount => 'Mở khoá tài khoản';
+
+  @override
+  String get lockAccountConfirm =>
+      'Bạn có chắc muốn khoá tài khoản nhân viên này?';
+
+  @override
+  String get unlockAccountConfirm =>
+      'Bạn có chắc muốn mở khoá tài khoản nhân viên này?';
+
+  @override
+  String get updateStatusSuccess => 'Cập nhật trạng thái thành công';
+
+  @override
+  String get updateStatusFailed => 'Cập nhật trạng thái thất bại';
+
+  @override
+  String processingReports(int count) {
+    return '$count phản ánh đang xử lý';
+  }
+
+  @override
+  String get dateOfBirth => 'Ngày sinh';
+
+  @override
+  String get gender => 'Giới tính';
+
+  @override
+  String get genderMale => 'Nam';
+
+  @override
+  String get genderFemale => 'Nữ';
+
+  @override
+  String get genderOther => 'Khác';
+
+  @override
+  String get createStaff => 'Tạo nhân viên';
+
+  @override
+  String get uploadAvatar => 'Tải ảnh đại diện';
+
+  @override
+  String get changeAvatar => 'Đổi ảnh';
+
+  @override
+  String get avatarSizeError => 'Ảnh phải nhỏ hơn 5MB';
+
+  @override
+  String get selectDate => 'Chọn ngày';
+
+  @override
+  String get selectGender => 'Chọn giới tính';
+
+  @override
+  String get addStaffFailed => 'Thêm nhân viên thất bại';
+
+  @override
+  String get editStaff => 'Chỉnh sửa nhân viên';
+
+  @override
+  String get updateStaff => 'Cập nhật';
+
+  @override
+  String get updateStaffSuccess => 'Cập nhật thành công';
+
+  @override
+  String get updateStaffFailed => 'Cập nhật thất bại';
+
+  @override
+  String get editInfo => 'Chỉnh sửa';
 }

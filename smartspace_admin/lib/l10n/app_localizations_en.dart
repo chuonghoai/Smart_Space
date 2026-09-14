@@ -612,4 +612,80 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noStaffFound => 'No matching staff found';
+
+  @override
+  String get lockAccount => 'Lock Account';
+
+  @override
+  String get unlockAccount => 'Unlock Account';
+
+  @override
+  String get lockAccountConfirm =>
+      'Are you sure you want to lock this staff account?';
+
+  @override
+  String get unlockAccountConfirm =>
+      'Are you sure you want to unlock this staff account?';
+
+  @override
+  String get updateStatusSuccess => 'Status updated successfully';
+
+  @override
+  String get updateStatusFailed => 'Failed to update status';
+
+  @override
+  String processingReports(int count) {
+    return '$count reports processing';
+  }
+
+  @override
+  String get dateOfBirth => 'Date of Birth';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get genderMale => 'Male';
+
+  @override
+  String get genderFemale => 'Female';
+
+  @override
+  String get genderOther => 'Other';
+
+  @override
+  String get createStaff => 'Create Staff';
+
+  @override
+  String get uploadAvatar => 'Upload Avatar';
+
+  @override
+  String get changeAvatar => 'Change Photo';
+
+  @override
+  String get avatarSizeError => 'Image must be less than 5MB';
+
+  @override
+  String get selectDate => 'Select date';
+
+  @override
+  String get selectGender => 'Select gender';
+
+  @override
+  String get addStaffFailed => 'Failed to add staff';
+
+  @override
+  String get editStaff => 'Edit Staff';
+
+  @override
+  String get updateStaff => 'Update';
+
+  @override
+  String get updateStaffSuccess => 'Staff updated successfully';
+
+  @override
+  String get updateStaffFailed => 'Failed to update staff';
+
+  @override
+  String get editInfo => 'Edit';
 }

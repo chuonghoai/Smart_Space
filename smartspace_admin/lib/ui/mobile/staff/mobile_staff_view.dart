@@ -49,7 +49,7 @@ class _MobileStaffViewState extends ConsumerState<MobileStaffView> {
                       ),
                       IconButton.filled(
                         onPressed: () =>
-                            showAddStaffDialog(context, l10n, theme),
+                            showStaffFormDialog(context, l10n, theme, ref),
                         icon: const Icon(Icons.add),
                         style: IconButton.styleFrom(
                           backgroundColor: theme.colorScheme.primary,
@@ -152,7 +152,7 @@ class _MobileStaffViewState extends ConsumerState<MobileStaffView> {
                     return StaffCard(
                       staff: staff,
                       onTap: () =>
-                          showStaffDetailSheet(context, l10n, theme, staff),
+                          showStaffDetailSheet(context, l10n, theme, staff, ref),
                     );
                   },
                 ),

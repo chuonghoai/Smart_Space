@@ -1285,6 +1285,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No matching staff found'**
   String get noStaffFound;
+
+  /// No description provided for @lockAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock Account'**
+  String get lockAccount;
+
+  /// No description provided for @unlockAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock Account'**
+  String get unlockAccount;
+
+  /// No description provided for @lockAccountConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to lock this staff account?'**
+  String get lockAccountConfirm;
+
+  /// No description provided for @unlockAccountConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to unlock this staff account?'**
+  String get unlockAccountConfirm;
+
+  /// No description provided for @updateStatusSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Status updated successfully'**
+  String get updateStatusSuccess;
+
+  /// No description provided for @updateStatusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update status'**
+  String get updateStatusFailed;
+
+  /// No description provided for @processingReports.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} reports processing'**
+  String processingReports(int count);
+
+  /// No description provided for @dateOfBirth.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of Birth'**
+  String get dateOfBirth;
+
+  /// No description provided for @gender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get gender;
+
+  /// No description provided for @genderMale.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get genderMale;
+
+  /// No description provided for @genderFemale.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get genderFemale;
+
+  /// No description provided for @genderOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get genderOther;
+
+  /// No description provided for @createStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Staff'**
+  String get createStaff;
+
+  /// No description provided for @uploadAvatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Avatar'**
+  String get uploadAvatar;
+
+  /// No description provided for @changeAvatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Photo'**
+  String get changeAvatar;
+
+  /// No description provided for @avatarSizeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Image must be less than 5MB'**
+  String get avatarSizeError;
+
+  /// No description provided for @selectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date'**
+  String get selectDate;
+
+  /// No description provided for @selectGender.
+  ///
+  /// In en, this message translates to:
+  /// **'Select gender'**
+  String get selectGender;
+
+  /// No description provided for @addStaffFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to add staff'**
+  String get addStaffFailed;
+
+  /// No description provided for @editStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Staff'**
+  String get editStaff;
+
+  /// No description provided for @updateStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get updateStaff;
+
+  /// No description provided for @updateStaffSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff updated successfully'**
+  String get updateStaffSuccess;
+
+  /// No description provided for @updateStaffFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update staff'**
+  String get updateStaffFailed;
+
+  /// No description provided for @editInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editInfo;
 }
 
 class _AppLocalizationsDelegate

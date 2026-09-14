@@ -217,5 +217,36 @@
   "phoneNumber": "Phone",
   "statusTitle": "Status",
   "noStaffInSystem": "No staff in system",
-  "noStaffFound": "No matching staff found"
+  "noStaffFound": "No matching staff found",
+  "lockAccount": "Lock Account",
+  "unlockAccount": "Unlock Account",
+  "lockAccountConfirm": "Are you sure you want to lock this staff account?",
+  "unlockAccountConfirm": "Are you sure you want to unlock this staff account?",
+  "updateStatusSuccess": "Status updated successfully",
+  "updateStatusFailed": "Failed to update status",
+  "processingReports": "{count} reports processing",
+  "@processingReports": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dateOfBirth": "Date of Birth",
+  "gender": "Gender",
+  "genderMale": "Male",
+  "genderFemale": "Female",
+  "genderOther": "Other",
+  "createStaff": "Create Staff",
+  "uploadAvatar": "Upload Avatar",
+  "changeAvatar": "Change Photo",
+  "avatarSizeError": "Image must be less than 5MB",
+  "selectDate": "Select date",
+  "selectGender": "Select gender",
+  "addStaffFailed": "Failed to add staff",
+  "editStaff": "Edit Staff",
+  "updateStaff": "Update",
+  "updateStaffSuccess": "Staff updated successfully",
+  "updateStaffFailed": "Failed to update staff",
+  "editInfo": "Edit"
 }
