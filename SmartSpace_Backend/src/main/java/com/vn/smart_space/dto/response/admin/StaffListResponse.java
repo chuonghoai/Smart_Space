@@ -1,5 +1,6 @@
 package com.vn.smart_space.dto.response.admin;
 
+import com.vn.smart_space.dto.PageResponse;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -12,12 +13,7 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class StaffResponse {
-    String id;
-    String fullName;
-    String email;
-    String phoneNumber;
-    String avatarUrl;
-    String status; // "active" | "blocked"
-    long processingCount;
+public class StaffListResponse {
+    StaffSummaryResponse summary;
+    PageResponse<StaffResponse> staffs;
 }

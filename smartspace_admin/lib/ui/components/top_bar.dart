@@ -7,7 +7,8 @@ import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/components/connection_indicator.dart';
 
 class TopBar extends ConsumerWidget implements PreferredSizeWidget {
-  const TopBar({super.key});
+  final bool showMenuButton;
+  const TopBar({super.key, this.showMenuButton = true});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -17,6 +18,7 @@ class TopBar extends ConsumerWidget implements PreferredSizeWidget {
     final unreadCount = notificationState.countModel?.notifNumber ?? 0;
 
     return AppBar(
+      automaticallyImplyLeading: showMenuButton,
       title: const _TopBarSearchBox(),
       actions: [
         const Padding(

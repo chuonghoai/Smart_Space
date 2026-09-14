@@ -6,6 +6,7 @@ import 'package:smartspace_admin/ui/screen/home/admin_home_screen.dart';
 import 'package:smartspace_admin/ui/screen/reports/admin_report_detail_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/change_password_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/settings_screen.dart';
+import 'package:smartspace_admin/ui/screen/staff/staff_management_screen.dart';
 import 'package:smartspace_admin/ui/shared/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_shared/mobile_shared.dart';
@@ -47,6 +48,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.changePassword,
       builder: (context, state) => const MobileChangePasswordScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.staffManagement,
+      builder: (context, state) => const StaffManagementScreen(),
     ),
   ],
 );

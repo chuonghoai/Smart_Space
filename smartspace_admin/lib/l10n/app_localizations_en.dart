@@ -564,4 +564,52 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get spaceMap => 'Space Map';
+
+  @override
+  String get addStaff => 'Add Staff';
+
+  @override
+  String get activeStatus => 'Active';
+
+  @override
+  String get blockedStatus => 'Blocked';
+
+  @override
+  String get staffMember => 'Staff';
+
+  @override
+  String get processingStatus => 'Processing';
+
+  @override
+  String get viewDetails => 'View Details';
+
+  @override
+  String get staffNotFound => 'Staff not found';
+
+  @override
+  String get filterByStatus => 'Filter by status';
+
+  @override
+  String get addNewStaff => 'Add new staff';
+
+  @override
+  String get create => 'Create';
+
+  @override
+  String get addStaffSuccess => 'Staff added successfully';
+
+  @override
+  String get totalStaff => 'Total Staff';
+
+  @override
+  String get phoneNumber => 'Phone';
+
+  @override
+  String get statusTitle => 'Status';
+
+  @override
+  String get noStaffInSystem => 'No staff in system';
+
+  @override
+  String get noStaffFound => 'No matching staff found';
 }

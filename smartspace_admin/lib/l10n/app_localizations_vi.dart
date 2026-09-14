@@ -563,4 +563,52 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get spaceMap => 'Bản đồ không gian';
+
+  @override
+  String get addStaff => 'Thêm nhân viên';
+
+  @override
+  String get activeStatus => 'Hoạt động';
+
+  @override
+  String get blockedStatus => 'Đã khoá';
+
+  @override
+  String get staffMember => 'Nhân viên';
+
+  @override
+  String get processingStatus => 'Đang xử lý';
+
+  @override
+  String get viewDetails => 'Xem chi tiết';
+
+  @override
+  String get staffNotFound => 'Không tìm thấy nhân viên';
+
+  @override
+  String get filterByStatus => 'Lọc theo trạng thái';
+
+  @override
+  String get addNewStaff => 'Thêm nhân viên mới';
+
+  @override
+  String get create => 'Tạo';
+
+  @override
+  String get addStaffSuccess => 'Đã thêm nhân viên thành công';
+
+  @override
+  String get totalStaff => 'Tổng nhân viên';
+
+  @override
+  String get phoneNumber => 'SĐT';
+
+  @override
+  String get statusTitle => 'Trạng thái';
+
+  @override
+  String get noStaffInSystem => 'Chưa có nhân viên nào trong hệ thống';
+
+  @override
+  String get noStaffFound => 'Không tìm thấy nhân viên nào phù hợp';
 }

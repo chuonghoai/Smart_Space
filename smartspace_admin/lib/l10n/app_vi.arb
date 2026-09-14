@@ -201,5 +201,21 @@
   "manageReports": "Quản lý phản ánh",
   "manageUsers": "Quản lý người dùng",
   "manageStaffs": "Quản lý nhân viên",
-  "spaceMap": "Bản đồ không gian"
+  "spaceMap": "Bản đồ không gian",
+  "addStaff": "Thêm nhân viên",
+  "activeStatus": "Hoạt động",
+  "blockedStatus": "Đã khoá",
+  "staffMember": "Nhân viên",
+  "processingStatus": "Đang xử lý",
+  "viewDetails": "Xem chi tiết",
+  "staffNotFound": "Không tìm thấy nhân viên",
+  "filterByStatus": "Lọc theo trạng thái",
+  "addNewStaff": "Thêm nhân viên mới",
+  "create": "Tạo",
+  "addStaffSuccess": "Đã thêm nhân viên thành công",
+  "totalStaff": "Tổng nhân viên",
+  "phoneNumber": "SĐT",
+  "statusTitle": "Trạng thái",
+  "noStaffInSystem": "Chưa có nhân viên nào trong hệ thống",
+  "noStaffFound": "Không tìm thấy nhân viên nào phù hợp"
 }

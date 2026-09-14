@@ -12,12 +12,9 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class StaffResponse {
-    String id;
-    String fullName;
-    String email;
-    String phoneNumber;
-    String avatarUrl;
-    String status; // "active" | "blocked"
-    long processingCount;
+public class StaffSummaryResponse {
+    long total;
+    long active;
+    long blocked;
+    long totalProcessing;
 }

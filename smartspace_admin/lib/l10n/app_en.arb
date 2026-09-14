@@ -201,5 +201,21 @@
   "manageReports": "Manage Reports",
   "manageUsers": "Manage Users",
   "manageStaffs": "Manage Staffs",
-  "spaceMap": "Space Map"
+  "spaceMap": "Space Map",
+  "addStaff": "Add Staff",
+  "activeStatus": "Active",
+  "blockedStatus": "Blocked",
+  "staffMember": "Staff",
+  "processingStatus": "Processing",
+  "viewDetails": "View Details",
+  "staffNotFound": "Staff not found",
+  "filterByStatus": "Filter by status",
+  "addNewStaff": "Add new staff",
+  "create": "Create",
+  "addStaffSuccess": "Staff added successfully",
+  "totalStaff": "Total Staff",
+  "phoneNumber": "Phone",
+  "statusTitle": "Status",
+  "noStaffInSystem": "No staff in system",
+  "noStaffFound": "No matching staff found"
 }

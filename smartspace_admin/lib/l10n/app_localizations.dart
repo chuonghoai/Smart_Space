@@ -1189,6 +1189,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Space Map'**
   String get spaceMap;
+
+  /// No description provided for @addStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Staff'**
+  String get addStaff;
+
+  /// No description provided for @activeStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeStatus;
+
+  /// No description provided for @blockedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked'**
+  String get blockedStatus;
+
+  /// No description provided for @staffMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get staffMember;
+
+  /// No description provided for @processingStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing'**
+  String get processingStatus;
+
+  /// No description provided for @viewDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View Details'**
+  String get viewDetails;
+
+  /// No description provided for @staffNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff not found'**
+  String get staffNotFound;
+
+  /// No description provided for @filterByStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by status'**
+  String get filterByStatus;
+
+  /// No description provided for @addNewStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Add new staff'**
+  String get addNewStaff;
+
+  /// No description provided for @create.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get create;
+
+  /// No description provided for @addStaffSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff added successfully'**
+  String get addStaffSuccess;
+
+  /// No description provided for @totalStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Staff'**
+  String get totalStaff;
+
+  /// No description provided for @phoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get phoneNumber;
+
+  /// No description provided for @statusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get statusTitle;
+
+  /// No description provided for @noStaffInSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'No staff in system'**
+  String get noStaffInSystem;
+
+  /// No description provided for @noStaffFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching staff found'**
+  String get noStaffFound;
 }
 
 class _AppLocalizationsDelegate

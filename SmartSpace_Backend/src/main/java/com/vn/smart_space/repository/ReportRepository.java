@@ -36,4 +36,13 @@ public interface ReportRepository extends JpaRepository<Report, String> {
         // Get My Reports For Client
         @Query("SELECT r FROM Report r WHERE r.user.id = :userId AND (:status IS NULL OR r.status = :status) ORDER BY r.createdAt DESC")
         List<Report> findMyReports(@Param("userId") String userId, @Param("status") EReportStatus status, Limit limit);
+
+        // Count Report Processing For Staff
+        @Query("SELECT r.assignedStaff.id, COUNT(r) FROM Report r " +
+                        "WHERE r.assignedStaff.id IN :staffIds AND r.status = :status " +
+                        "GROUP BY r.assignedStaff.id")
+        List<Object[]> countByAssignedStaffIdInAndStatus(
+                        @Param("staffIds") List<String> staffIds,
+                        @Param("status") EReportStatus status);
+
 }
