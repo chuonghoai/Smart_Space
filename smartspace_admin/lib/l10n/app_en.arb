@@ -248,5 +248,11 @@
   "updateStaff": "Update",
   "updateStaffSuccess": "Staff updated successfully",
   "updateStaffFailed": "Failed to update staff",
-  "editInfo": "Edit"
+  "editInfo": "Edit",
+  "staffStatusChart": "Staff Status",
+  "workloadChart": "Workload Distribution",
+  "activeStaff": "Active",
+  "blockedStaff": "Blocked",
+  "reportsProcessing": "reports processing",
+  "noWorkloadData": "No staff currently processing reports"
 }

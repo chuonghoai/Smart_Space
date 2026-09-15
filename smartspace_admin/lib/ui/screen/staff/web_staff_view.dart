@@ -4,6 +4,7 @@ import 'package:smartspace_admin/features/staff/application/staff_providers.dart
 import 'package:smartspace_admin/features/staff/models/staff_list_response.dart';
 import 'package:smartspace_admin/features/staff/models/staff_summary_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
+import 'package:smartspace_admin/ui/screen/staff/staff_charts.dart';
 import 'package:smartspace_admin/ui/screen/staff/staff_shared_widgets.dart';
 
 class WebStaffView extends ConsumerStatefulWidget {
@@ -41,6 +42,35 @@ class _WebStaffViewState extends ConsumerState<WebStaffView> {
           staffAsync.when(
             data: (data) => _buildWebSummaryCards(theme, data.summary, l10n),
             loading: () => const SizedBox(height: 90),
+            error: (_, _) => const SizedBox.shrink(),
+          ),
+          const SizedBox(height: 20),
+
+          // Charts Row
+          ref.watch(staffChartProvider).when(
+            data: (chartData) => Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  flex: 1,
+                  child: StaffStatusDonutChart(
+                    activeCount: chartData.activeStaff,
+                    blockedCount: chartData.blockedStaff,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  flex: 2,
+                  child: StaffWorkloadBarChart(
+                    topWorkload: chartData.topWorkload,
+                  ),
+                ),
+              ],
+            ),
+            loading: () => const SizedBox(
+              height: 220,
+              child: Center(child: CircularProgressIndicator()),
+            ),
             error: (_, _) => const SizedBox.shrink(),
           ),
           const SizedBox(height: 20),

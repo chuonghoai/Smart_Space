@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/staff_repository.dart';
+import '../models/staff_chart_model.dart';
 import '../models/staff_list_response.dart';
 
 class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
@@ -141,3 +142,9 @@ final staffListProvider =
     AutoDisposeAsyncNotifierProvider<StaffListNotifier, StaffListResponse>(
       () => StaffListNotifier(),
     );
+
+final staffChartProvider = FutureProvider.autoDispose<StaffChartModel>((
+  ref,
+) async {
+  return staffRepository.getChartData();
+});

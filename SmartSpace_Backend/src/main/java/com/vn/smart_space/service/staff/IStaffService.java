@@ -3,6 +3,7 @@ package com.vn.smart_space.service.staff;
 import com.vn.smart_space.dto.request.admin.CreateStaffRequest;
 import com.vn.smart_space.dto.request.admin.UpdateStaffRequest;
 import com.vn.smart_space.dto.request.admin.UpdateStaffStatusRequest;
+import com.vn.smart_space.dto.response.admin.StaffChartResponse;
 import com.vn.smart_space.dto.response.admin.StaffListResponse;
 import com.vn.smart_space.dto.response.admin.StaffResponse;
 import java.util.List;
@@ -17,4 +18,8 @@ public interface IStaffService {
     StaffResponse createStaff(CreateStaffRequest request, String adminId);
 
     StaffResponse updateStaff(String staffId, UpdateStaffRequest request, String adminId);
+
+    // Chart Staff
+    StaffChartResponse getChartData();
+
 }

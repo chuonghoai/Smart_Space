@@ -688,4 +688,22 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get editInfo => 'Edit';
+
+  @override
+  String get staffStatusChart => 'Staff Status';
+
+  @override
+  String get workloadChart => 'Workload Distribution';
+
+  @override
+  String get activeStaff => 'Active';
+
+  @override
+  String get blockedStaff => 'Blocked';
+
+  @override
+  String get reportsProcessing => 'reports processing';
+
+  @override
+  String get noWorkloadData => 'No staff currently processing reports';
 }

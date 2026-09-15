@@ -45,4 +45,13 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                         @Param("staffIds") List<String> staffIds,
                         @Param("status") EReportStatus status);
 
+        // Find Top N Staff with most processing reports
+
+        @Query("SELECT r.assignedStaff.id, r.assignedStaff.fullName, COUNT(r) " +
+                        "FROM Report r " +
+                        "WHERE r.status = :status AND r.assignedStaff IS NOT NULL " +
+                        "GROUP BY r.assignedStaff.id, r.assignedStaff.fullName " +
+                        "ORDER BY COUNT(r) DESC")
+        List<Object[]> findTopStaffByProcessingCount(@Param("status") EReportStatus status, Limit limit);
+
 }

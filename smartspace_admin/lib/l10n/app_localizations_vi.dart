@@ -687,4 +687,22 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get editInfo => 'Chỉnh sửa';
+
+  @override
+  String get staffStatusChart => 'Trạng thái nhân viên';
+
+  @override
+  String get workloadChart => 'Khối lượng công việc';
+
+  @override
+  String get activeStaff => 'Đang hoạt động';
+
+  @override
+  String get blockedStaff => 'Đã khoá';
+
+  @override
+  String get reportsProcessing => 'báo cáo đang xử lý';
+
+  @override
+  String get noWorkloadData => 'Chưa có nhân viên nào đang xử lý báo cáo';
 }

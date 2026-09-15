@@ -20,7 +20,6 @@ import com.vn.smart_space.dto.request.admin.UpdateStaffStatusRequest;
 import com.vn.smart_space.service.staff.IStaffService;
 
 import jakarta.validation.Valid;
-
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -31,53 +30,61 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StaffController {
 
-    IStaffService staffService;
+        IStaffService staffService;
 
-    @PreAuthorize("hasRole('admin')")
-    @GetMapping
-    public ResponseEntity<ApiResponse> getStaffs(
-            @RequestParam(defaultValue = "1") int page,
-            @RequestParam(defaultValue = "10") int size,
-            @RequestParam(required = false) String search,
-            @RequestParam(required = false) String status) {
+        @PreAuthorize("hasRole('admin')")
+        @GetMapping
+        public ResponseEntity<ApiResponse> getStaffs(
+                        @RequestParam(defaultValue = "1") int page,
+                        @RequestParam(defaultValue = "10") int size,
+                        @RequestParam(required = false) String search,
+                        @RequestParam(required = false) String status) {
 
-        return ResponseEntity.ok(
-                ApiResponse.success("system.success",
-                        staffService.getStaffsPaged(page, size, search, status)));
-    }
+                return ResponseEntity.ok(
+                                ApiResponse.success("system.success",
+                                                staffService.getStaffsPaged(page, size, search, status)));
+        }
 
-    @PreAuthorize("hasRole('admin')")
-    @PutMapping("/{id}/status")
-    public ResponseEntity<ApiResponse> updateStaffStatus(@PathVariable String id,
-            @RequestBody UpdateStaffStatusRequest request,
-            @AuthenticationPrincipal Jwt jwt) {
-        String adminId = jwt != null ? jwt.getClaimAsString("userId") : null;
-        staffService.updateStaffStatus(id, request, adminId);
-        return ResponseEntity.ok(
-                ApiResponse.success("system.success", null));
-    }
+        @PreAuthorize("hasRole('admin')")
+        @PutMapping("/{id}/status")
+        public ResponseEntity<ApiResponse> updateStaffStatus(@PathVariable String id,
+                        @RequestBody UpdateStaffStatusRequest request,
+                        @AuthenticationPrincipal Jwt jwt) {
+                String adminId = jwt != null ? jwt.getClaimAsString("userId") : null;
+                staffService.updateStaffStatus(id, request, adminId);
+                return ResponseEntity.ok(
+                                ApiResponse.success("system.success", null));
+        }
 
-    @PreAuthorize("hasRole('admin')")
-    @PostMapping
-    public ResponseEntity<ApiResponse> createStaff(
-            @RequestBody @Valid CreateStaffRequest request,
-            @AuthenticationPrincipal Jwt jwt) {
-        String adminId = jwt != null ? jwt.getClaimAsString("userId") : null;
-        return ResponseEntity.ok(
-                ApiResponse.success("staff.create.success",
-                        staffService.createStaff(request, adminId)));
-    }
+        @PreAuthorize("hasRole('admin')")
+        @PostMapping
+        public ResponseEntity<ApiResponse> createStaff(
+                        @RequestBody @Valid CreateStaffRequest request,
+                        @AuthenticationPrincipal Jwt jwt) {
+                String adminId = jwt != null ? jwt.getClaimAsString("userId") : null;
+                return ResponseEntity.ok(
+                                ApiResponse.success("staff.create.success",
+                                                staffService.createStaff(request, adminId)));
+        }
 
-    @PreAuthorize("hasRole('admin')")
-    @PutMapping("/{id}")
-    public ResponseEntity<ApiResponse> updateStaff(
-            @PathVariable String id,
-            @RequestBody @Valid UpdateStaffRequest request,
-            @AuthenticationPrincipal Jwt jwt) {
-        String adminId = jwt != null ? jwt.getClaimAsString("userId") : null;
-        return ResponseEntity.ok(
-                ApiResponse.success("staff.update.success",
-                        staffService.updateStaff(id, request, adminId)));
-    }
+        @PreAuthorize("hasRole('admin')")
+        @PutMapping("/{id}")
+        public ResponseEntity<ApiResponse> updateStaff(
+                        @PathVariable String id,
+                        @RequestBody @Valid UpdateStaffRequest request,
+                        @AuthenticationPrincipal Jwt jwt) {
+                String adminId = jwt != null ? jwt.getClaimAsString("userId") : null;
+                return ResponseEntity.ok(
+                                ApiResponse.success("staff.update.success",
+                                                staffService.updateStaff(id, request, adminId)));
+        }
+
+        @PreAuthorize("hasRole('admin')")
+        @GetMapping("/chart-data")
+        public ResponseEntity<ApiResponse> getChartData() {
+                return ResponseEntity.ok(
+                                ApiResponse.success("system.success",
+                                                staffService.getChartData()));
+        }
 
 }

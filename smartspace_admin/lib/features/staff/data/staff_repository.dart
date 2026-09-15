@@ -1,5 +1,6 @@
 import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
+import 'package:smartspace_admin/features/staff/models/staff_chart_model.dart';
 
 import '../models/staff_list_response.dart';
 
@@ -52,6 +53,7 @@ class StaffRepository {
       },
     );
   }
+
   Future<ApiResponse> updateStaff({
     required String staffId,
     required String fullName,
@@ -72,6 +74,17 @@ class StaffRepository {
         if (avatarUrl != null) 'avatarUrl': avatarUrl,
       },
     );
+  }
+
+  Future<StaffChartModel> getChartData() async {
+    final response = await apiClient.get<Map<String, dynamic>>(
+      '/admin/staffs/chart-data',
+      decoder: (json) => json as Map<String, dynamic>,
+    );
+    if (response.success && response.data != null) {
+      return StaffChartModel.fromJson(response.data!);
+    }
+    throw Exception(response.message);
   }
 }
 

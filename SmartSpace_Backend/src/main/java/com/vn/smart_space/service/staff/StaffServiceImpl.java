@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +22,7 @@ import com.vn.smart_space.dto.PageResponse;
 import com.vn.smart_space.dto.request.admin.CreateStaffRequest;
 import com.vn.smart_space.dto.request.admin.UpdateStaffRequest;
 import com.vn.smart_space.dto.request.admin.UpdateStaffStatusRequest;
+import com.vn.smart_space.dto.response.admin.StaffChartResponse;
 import com.vn.smart_space.dto.response.admin.StaffListResponse;
 import com.vn.smart_space.dto.response.admin.StaffResponse;
 import com.vn.smart_space.dto.response.admin.StaffSummaryResponse;
@@ -314,5 +316,29 @@ public class StaffServiceImpl implements IStaffService {
                 return adminId != null
                                 ? userRepository.findById(adminId).orElse(null)
                                 : null;
+        }
+
+        @Override
+        @Transactional(readOnly = true)
+        public StaffChartResponse getChartData() {
+                long total = userRepository.countByRole(ERole.staff);
+                long active = userRepository.countByRoleAndStatus(ERole.staff, EUserStatus.active);
+                long blocked = userRepository.countByRoleAndStatus(ERole.staff, EUserStatus.blocked);
+
+                List<Object[]> topRows = reportRepository.findTopStaffByProcessingCount(
+                                EReportStatus.processing, Limit.of(7));
+                List<StaffChartResponse.WorkloadItem> topWorkload = topRows.stream()
+                                .map(row -> StaffChartResponse.WorkloadItem.builder()
+                                                .staffId((String) row[0])
+                                                .staffName((String) row[1])
+                                                .processingCount((Long) row[2])
+                                                .build())
+                                .collect(Collectors.toList());
+                return StaffChartResponse.builder()
+                                .totalStaff(total)
+                                .activeStaff(active)
+                                .blockedStaff(blocked)
+                                .topWorkload(topWorkload)
+                                .build();
         }
 }

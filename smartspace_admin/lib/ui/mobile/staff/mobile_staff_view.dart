@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartspace_admin/features/staff/application/staff_providers.dart';
 import 'package:smartspace_admin/features/staff/models/staff_summary_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
+import 'package:smartspace_admin/ui/screen/staff/staff_charts.dart';
 import 'package:smartspace_admin/ui/screen/staff/staff_shared_widgets.dart';
 
 class MobileStaffView extends ConsumerStatefulWidget {
@@ -65,6 +66,28 @@ class _MobileStaffViewState extends ConsumerState<MobileStaffView> {
                     data: (data) =>
                         _buildMobileSummaryCards(theme, data.summary, l10n),
                     loading: () => const SizedBox(height: 80),
+                    error: (_, _) => const SizedBox.shrink(),
+                  ),
+                  const SizedBox(height: 12),
+
+                  // Charts — xếp dọc
+                  ref.watch(staffChartProvider).when(
+                    data: (chartData) => Column(
+                      children: [
+                        StaffStatusDonutChart(
+                          activeCount: chartData.activeStaff,
+                          blockedCount: chartData.blockedStaff,
+                        ),
+                        const SizedBox(height: 12),
+                        StaffWorkloadBarChart(
+                          topWorkload: chartData.topWorkload,
+                        ),
+                      ],
+                    ),
+                    loading: () => const SizedBox(
+                      height: 120,
+                      child: Center(child: CircularProgressIndicator()),
+                    ),
                     error: (_, _) => const SizedBox.shrink(),
                   ),
                   const SizedBox(height: 12),

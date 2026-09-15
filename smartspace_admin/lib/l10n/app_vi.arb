@@ -248,5 +248,11 @@
   "updateStaff": "Cập nhật",
   "updateStaffSuccess": "Cập nhật thành công",
   "updateStaffFailed": "Cập nhật thất bại",
-  "editInfo": "Chỉnh sửa"
+  "editInfo": "Chỉnh sửa",
+  "staffStatusChart": "Trạng thái nhân viên",
+  "workloadChart": "Khối lượng công việc",
+  "activeStaff": "Đang hoạt động",
+  "blockedStaff": "Đã khoá",
+  "reportsProcessing": "báo cáo đang xử lý",
+  "noWorkloadData": "Chưa có nhân viên nào đang xử lý báo cáo"
 }

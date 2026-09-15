@@ -1429,6 +1429,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Edit'**
   String get editInfo;
+
+  /// No description provided for @staffStatusChart.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Status'**
+  String get staffStatusChart;
+
+  /// No description provided for @workloadChart.
+  ///
+  /// In en, this message translates to:
+  /// **'Workload Distribution'**
+  String get workloadChart;
+
+  /// No description provided for @activeStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeStaff;
+
+  /// No description provided for @blockedStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked'**
+  String get blockedStaff;
+
+  /// No description provided for @reportsProcessing.
+  ///
+  /// In en, this message translates to:
+  /// **'reports processing'**
+  String get reportsProcessing;
+
+  /// No description provided for @noWorkloadData.
+  ///
+  /// In en, this message translates to:
+  /// **'No staff currently processing reports'**
+  String get noWorkloadData;
 }
 
 class _AppLocalizationsDelegate
