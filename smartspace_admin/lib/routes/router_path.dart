@@ -8,4 +8,5 @@ class RouterPath {
   static const String settings = '/settings';
   static const String changePassword = '/change-password';
   static const String staffManagement = '/staff-management';
+  static const String reportDashboard = '/report-dashboard';
 }

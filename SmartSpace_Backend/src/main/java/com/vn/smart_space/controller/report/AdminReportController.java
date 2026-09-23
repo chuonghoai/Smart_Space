@@ -37,4 +37,17 @@ public class AdminReportController {
         String adminId = jwt != null ? jwt.getClaimAsString("userId") : null;
         return ResponseEntity.ok(ApiResponse.success("report.assign.success", reportService.assignReport(id, request, adminId)));
     }
+
+    @GetMapping("/statistics")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<ApiResponse> getReportStatistics() {
+        return ResponseEntity.ok(ApiResponse.success("system.success", reportService.getReportStatistics()));
+    }
+
+    @GetMapping("/trend")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<ApiResponse> getReportTrend(
+            @RequestParam(defaultValue = "daily") String period) {
+        return ResponseEntity.ok(ApiResponse.success("system.success", reportService.getReportTrend(period)));
+    }
 }

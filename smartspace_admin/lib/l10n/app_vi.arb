@@ -254,5 +254,17 @@
   "activeStaff": "Đang hoạt động",
   "blockedStaff": "Đã khoá",
   "reportsProcessing": "báo cáo đang xử lý",
-  "noWorkloadData": "Chưa có nhân viên nào đang xử lý báo cáo"
+  "noWorkloadData": "Chưa có nhân viên nào đang xử lý báo cáo",
+  "reportDashboard": "Thống kê phản ánh",
+  "totalReports": "Tổng phản ánh",
+  "pendingReports": "Chờ xử lý",
+  "processingReportsLabel": "Đang xử lý",
+  "resolvedReports": "Đã xử lý",
+  "rejectedReports": "Từ chối",
+  "reportTrend": "Xu hướng phản ánh",
+  "daily": "Ngày",
+  "weekly": "Tuần",
+  "monthly": "Tháng",
+  "severityDistribution": "Phân bổ theo mức độ",
+  "noData": "Chưa có dữ liệu"
 }

@@ -705,4 +705,40 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get noWorkloadData => 'Chưa có nhân viên nào đang xử lý báo cáo';
+
+  @override
+  String get reportDashboard => 'Thống kê phản ánh';
+
+  @override
+  String get totalReports => 'Tổng phản ánh';
+
+  @override
+  String get pendingReports => 'Chờ xử lý';
+
+  @override
+  String get processingReportsLabel => 'Đang xử lý';
+
+  @override
+  String get resolvedReports => 'Đã xử lý';
+
+  @override
+  String get rejectedReports => 'Từ chối';
+
+  @override
+  String get reportTrend => 'Xu hướng phản ánh';
+
+  @override
+  String get daily => 'Ngày';
+
+  @override
+  String get weekly => 'Tuần';
+
+  @override
+  String get monthly => 'Tháng';
+
+  @override
+  String get severityDistribution => 'Phân bổ theo mức độ';
+
+  @override
+  String get noData => 'Chưa có dữ liệu';
 }

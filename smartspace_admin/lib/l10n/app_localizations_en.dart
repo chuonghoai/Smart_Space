@@ -706,4 +706,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noWorkloadData => 'No staff currently processing reports';
+
+  @override
+  String get reportDashboard => 'Report Dashboard';
+
+  @override
+  String get totalReports => 'Total Reports';
+
+  @override
+  String get pendingReports => 'Pending';
+
+  @override
+  String get processingReportsLabel => 'Processing';
+
+  @override
+  String get resolvedReports => 'Resolved';
+
+  @override
+  String get rejectedReports => 'Rejected';
+
+  @override
+  String get reportTrend => 'Report Trend';
+
+  @override
+  String get daily => 'Daily';
+
+  @override
+  String get weekly => 'Weekly';
+
+  @override
+  String get monthly => 'Monthly';
+
+  @override
+  String get severityDistribution => 'Severity Distribution';
+
+  @override
+  String get noData => 'No data available';
 }

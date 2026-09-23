@@ -254,5 +254,17 @@
   "activeStaff": "Active",
   "blockedStaff": "Blocked",
   "reportsProcessing": "reports processing",
-  "noWorkloadData": "No staff currently processing reports"
+  "noWorkloadData": "No staff currently processing reports",
+  "reportDashboard": "Report Dashboard",
+  "totalReports": "Total Reports",
+  "pendingReports": "Pending",
+  "processingReportsLabel": "Processing",
+  "resolvedReports": "Resolved",
+  "rejectedReports": "Rejected",
+  "reportTrend": "Report Trend",
+  "daily": "Daily",
+  "weekly": "Weekly",
+  "monthly": "Monthly",
+  "severityDistribution": "Severity Distribution",
+  "noData": "No data available"
 }

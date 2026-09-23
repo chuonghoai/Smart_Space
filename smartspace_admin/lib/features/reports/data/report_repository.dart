@@ -1,6 +1,8 @@
 import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import '../models/report_detail_model.dart';
+import '../models/report_statistics_model.dart';
+import '../models/report_trend_model.dart';
 import '../models/staff_model.dart';
 
 class ReportRepository {
@@ -32,6 +34,27 @@ class ReportRepository {
         'severity': severity,
       },
       decoder: (json) => ReportDetailModel.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  Future<ApiResponse<ReportStatisticsModel>> getReportStatistics() async {
+    return apiClient.get(
+      '/admin/reports/statistics',
+      decoder: (json) => ReportStatisticsModel.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  Future<ApiResponse<List<ReportTrendItem>>> getReportTrend(String period) async {
+    return apiClient.get(
+      '/admin/reports/trend',
+      queryParameters: {'period': period},
+      decoder: (json) {
+        final map = json as Map<String, dynamic>;
+        final list = map['items'] as List<dynamic>? ?? [];
+        return list
+            .map((e) => ReportTrendItem.fromJson(e as Map<String, dynamic>))
+            .toList();
+      },
     );
   }
 }

@@ -54,4 +54,36 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                         "ORDER BY COUNT(r) DESC")
         List<Object[]> findTopStaffByProcessingCount(@Param("status") EReportStatus status, Limit limit);
 
+        // Dashboard: group by status
+        @Query("SELECT r.status, COUNT(r) FROM Report r GROUP BY r.status")
+        List<Object[]> countGroupByStatus();
+
+        // Dashboard: group by severity (exclude null)
+        @Query("SELECT r.severity, COUNT(r) FROM Report r WHERE r.severity IS NOT NULL GROUP BY r.severity")
+        List<Object[]> countGroupBySeverity();
+
+        // Dashboard trend: daily (last 7 days)
+        @Query(value = "SELECT DATE_FORMAT(created_at, '%d/%m') AS label, COUNT(*) AS cnt " +
+                        "FROM reports " +
+                        "WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 6 DAY) " +
+                        "GROUP BY DATE(created_at), label " +
+                        "ORDER BY DATE(created_at) ASC", nativeQuery = true)
+        List<Object[]> countDailyTrend();
+
+        // Dashboard trend: weekly (last 8 weeks)
+        @Query(value = "SELECT CONCAT('Tuần ', WEEK(created_at)) AS label, COUNT(*) AS cnt " +
+                        "FROM reports " +
+                        "WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 8 WEEK) " +
+                        "GROUP BY YEARWEEK(created_at), label " +
+                        "ORDER BY YEARWEEK(created_at) ASC", nativeQuery = true)
+        List<Object[]> countWeeklyTrend();
+
+        // Dashboard trend: monthly (last 6 months)
+        @Query(value = "SELECT DATE_FORMAT(created_at, '%m/%Y') AS label, COUNT(*) AS cnt " +
+                        "FROM reports " +
+                        "WHERE created_at >= DATE_SUB(CURDATE(), INTERVAL 6 MONTH) " +
+                        "GROUP BY YEAR(created_at), MONTH(created_at), label " +
+                        "ORDER BY YEAR(created_at) ASC, MONTH(created_at) ASC", nativeQuery = true)
+        List<Object[]> countMonthlyTrend();
+
 }

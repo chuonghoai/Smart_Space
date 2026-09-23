@@ -1465,6 +1465,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No staff currently processing reports'**
   String get noWorkloadData;
+
+  /// No description provided for @reportDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Dashboard'**
+  String get reportDashboard;
+
+  /// No description provided for @totalReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Reports'**
+  String get totalReports;
+
+  /// No description provided for @pendingReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pendingReports;
+
+  /// No description provided for @processingReportsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing'**
+  String get processingReportsLabel;
+
+  /// No description provided for @resolvedReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get resolvedReports;
+
+  /// No description provided for @rejectedReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get rejectedReports;
+
+  /// No description provided for @reportTrend.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Trend'**
+  String get reportTrend;
+
+  /// No description provided for @daily.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily'**
+  String get daily;
+
+  /// No description provided for @weekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get weekly;
+
+  /// No description provided for @monthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get monthly;
+
+  /// No description provided for @severityDistribution.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity Distribution'**
+  String get severityDistribution;
+
+  /// No description provided for @noData.
+  ///
+  /// In en, this message translates to:
+  /// **'No data available'**
+  String get noData;
 }
 
 class _AppLocalizationsDelegate

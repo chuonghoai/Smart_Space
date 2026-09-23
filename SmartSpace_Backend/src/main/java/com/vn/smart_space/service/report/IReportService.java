@@ -3,6 +3,8 @@ package com.vn.smart_space.service.report;
 import com.vn.smart_space.dto.request.admin.ReportAssignRequest;
 import com.vn.smart_space.dto.request.report.ReportCreateRequest;
 import com.vn.smart_space.dto.response.admin.RecentReportResponse;
+import com.vn.smart_space.dto.response.admin.ReportStatisticsResponse;
+import com.vn.smart_space.dto.response.admin.ReportTrendResponse;
 import com.vn.smart_space.dto.response.report.ReportDetailResponse;
 import com.vn.smart_space.dto.response.report.ReportResponse;
 import java.util.List;
@@ -18,4 +20,8 @@ public interface IReportService {
     ReportDetailResponse assignReport(String reportId, ReportAssignRequest request, String adminId);
 
     List<ReportResponse> getMyReports(String userId, String status, int limit);
+
+    // Dashboard statistics
+    ReportStatisticsResponse getReportStatistics();
+    ReportTrendResponse getReportTrend(String period);
 }

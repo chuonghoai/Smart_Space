@@ -123,7 +123,7 @@ class Sidebar extends ConsumerWidget {
                     label: l10n.manageReports,
                     onTap: () {
                       Navigator.pop(context);
-                      // TODO: Navigate to Manage Reports
+                      context.push(RouterPath.reportDashboard);
                     },
                   ),
                   _SidebarItem(
@@ -357,7 +357,7 @@ class WebSidebar extends ConsumerWidget {
                 isExpanded: isExpanded,
                 isSelected: false,
                 onTap: () {
-                  // TODO: Navigate to Manage Reports
+                  context.push(RouterPath.reportDashboard);
                 },
               ),
               _WebSidebarItem(

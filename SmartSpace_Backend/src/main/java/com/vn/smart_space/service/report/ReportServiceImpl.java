@@ -6,6 +6,7 @@ import com.vn.smart_space.repository.UserRepository;
 
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,6 +23,8 @@ import com.vn.smart_space.dto.request.admin.ReportAssignRequest;
 import com.vn.smart_space.dto.request.notification.NotificationRequest;
 import com.vn.smart_space.dto.request.report.ReportCreateRequest;
 import com.vn.smart_space.dto.response.admin.RecentReportResponse;
+import com.vn.smart_space.dto.response.admin.ReportStatisticsResponse;
+import com.vn.smart_space.dto.response.admin.ReportTrendResponse;
 import com.vn.smart_space.dto.response.notification.NotificationEvent;
 import com.vn.smart_space.dto.response.report.ReportDetailResponse;
 import com.vn.smart_space.dto.response.report.ReportResponse;
@@ -432,5 +435,64 @@ public class ReportServiceImpl implements IReportService {
 
         List<Report> reports = reportRepository.findMyReports(userId, reportStatus, Limit.of(safeLimit));
         return reports.stream().map(this::mapToResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReportStatisticsResponse getReportStatistics() {
+        // Count by status
+        List<Object[]> statusRows = reportRepository.countGroupByStatus();
+        Map<String, Integer> byStatus = new LinkedHashMap<>();
+        // Initialize with 0 for all statuses
+        byStatus.put("pending", 0);
+        byStatus.put("processing", 0);
+        byStatus.put("resolved", 0);
+        byStatus.put("rejected", 0);
+        for (Object[] row : statusRows) {
+            String key = row[0] != null ? row[0].toString().toLowerCase() : "unknown";
+            // Map "processed" -> "resolved" to match frontend expectation
+            if ("processed".equals(key)) key = "resolved";
+            int count = row[1] != null ? ((Number) row[1]).intValue() : 0;
+            byStatus.put(key, count);
+        }
+        int total = byStatus.values().stream().mapToInt(Integer::intValue).sum();
+
+        // Count by severity
+        List<Object[]> severityRows = reportRepository.countGroupBySeverity();
+        Map<String, Integer> bySeverity = new LinkedHashMap<>();
+        for (Object[] row : severityRows) {
+            String key = row[0] != null ? row[0].toString().toLowerCase() : "unknown";
+            int count = row[1] != null ? ((Number) row[1]).intValue() : 0;
+            bySeverity.put(key, count);
+        }
+
+        return ReportStatisticsResponse.builder()
+                .total(total)
+                .byStatus(byStatus)
+                .bySeverity(bySeverity)
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReportTrendResponse getReportTrend(String period) {
+        List<Object[]> rows;
+        if ("weekly".equalsIgnoreCase(period)) {
+            rows = reportRepository.countWeeklyTrend();
+        } else if ("monthly".equalsIgnoreCase(period)) {
+            rows = reportRepository.countMonthlyTrend();
+        } else {
+            // default: daily
+            rows = reportRepository.countDailyTrend();
+        }
+
+        List<ReportTrendResponse.TrendItem> items = rows.stream()
+                .map(row -> ReportTrendResponse.TrendItem.builder()
+                        .label(row[0] != null ? row[0].toString() : "")
+                        .count(row[1] != null ? ((Number) row[1]).intValue() : 0)
+                        .build())
+                .collect(Collectors.toList());
+
+        return ReportTrendResponse.builder().items(items).build();
     }
 }
