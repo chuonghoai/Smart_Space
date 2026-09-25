@@ -196,7 +196,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseEnterPassword => 'Please enter password';
 
   @override
-  String get pleaseEnterFullName => 'Please enter full name';
+  String get pleaseEnterFullName => 'Please enter your full name';
 
   @override
   String get pleaseEnterPhoneNumber => 'Please enter phone number';
@@ -587,7 +587,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get staffNotFound => 'Staff not found';
 
   @override
-  String get filterByStatus => 'Filter by status';
+  String get filterByStatus => 'Status';
 
   @override
   String get addNewStaff => 'Add new staff';
@@ -742,4 +742,67 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noData => 'No data available';
+
+  @override
+  String get reportList => 'Report List';
+
+  @override
+  String get tableView => 'Table';
+
+  @override
+  String get kanbanView => 'Kanban';
+
+  @override
+  String get filterBySeverity => 'Severity';
+
+  @override
+  String get filterByAssignee => 'Assignee';
+
+  @override
+  String get selectDateRange => 'Select Date';
+
+  @override
+  String get clearFilters => 'Clear Filters';
+
+  @override
+  String get reporter => 'Reporter';
+
+  @override
+  String get reportIdShort => 'ID';
+
+  @override
+  String get noReportsFound => 'No reports found';
+
+  @override
+  String get loadMore => 'Load More';
+
+  @override
+  String get invalidTransition => 'Invalid status transition';
+
+  @override
+  String get reportTitle => 'Title';
+
+  @override
+  String get severityLabel => 'Severity';
+
+  @override
+  String get assignee => 'Assignee';
+
+  @override
+  String get createdDate => 'Created Date';
+
+  @override
+  String get pendingStatus => 'Pending';
+
+  @override
+  String get editProfile => 'Edit Profile';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get profileUpdateSuccess => 'Profile updated successfully';
+
+  @override
+  String get profileUpdateFailed => 'Failed to update profile';
 }

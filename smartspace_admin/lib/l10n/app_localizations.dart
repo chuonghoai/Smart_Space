@@ -473,7 +473,7 @@ abstract class AppLocalizations {
   /// No description provided for @pleaseEnterFullName.
   ///
   /// In en, this message translates to:
-  /// **'Please enter full name'**
+  /// **'Please enter your full name'**
   String get pleaseEnterFullName;
 
   /// No description provided for @pleaseEnterPhoneNumber.
@@ -1235,7 +1235,7 @@ abstract class AppLocalizations {
   /// No description provided for @filterByStatus.
   ///
   /// In en, this message translates to:
-  /// **'Filter by status'**
+  /// **'Status'**
   String get filterByStatus;
 
   /// No description provided for @addNewStaff.
@@ -1537,6 +1537,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No data available'**
   String get noData;
+
+  /// No description provided for @reportList.
+  ///
+  /// In en, this message translates to:
+  /// **'Report List'**
+  String get reportList;
+
+  /// No description provided for @tableView.
+  ///
+  /// In en, this message translates to:
+  /// **'Table'**
+  String get tableView;
+
+  /// No description provided for @kanbanView.
+  ///
+  /// In en, this message translates to:
+  /// **'Kanban'**
+  String get kanbanView;
+
+  /// No description provided for @filterBySeverity.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity'**
+  String get filterBySeverity;
+
+  /// No description provided for @filterByAssignee.
+  ///
+  /// In en, this message translates to:
+  /// **'Assignee'**
+  String get filterByAssignee;
+
+  /// No description provided for @selectDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Date'**
+  String get selectDateRange;
+
+  /// No description provided for @clearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Filters'**
+  String get clearFilters;
+
+  /// No description provided for @reporter.
+  ///
+  /// In en, this message translates to:
+  /// **'Reporter'**
+  String get reporter;
+
+  /// No description provided for @reportIdShort.
+  ///
+  /// In en, this message translates to:
+  /// **'ID'**
+  String get reportIdShort;
+
+  /// No description provided for @noReportsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No reports found'**
+  String get noReportsFound;
+
+  /// No description provided for @loadMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Load More'**
+  String get loadMore;
+
+  /// No description provided for @invalidTransition.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid status transition'**
+  String get invalidTransition;
+
+  /// No description provided for @reportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get reportTitle;
+
+  /// No description provided for @severityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity'**
+  String get severityLabel;
+
+  /// No description provided for @assignee.
+  ///
+  /// In en, this message translates to:
+  /// **'Assignee'**
+  String get assignee;
+
+  /// No description provided for @createdDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Created Date'**
+  String get createdDate;
+
+  /// No description provided for @pendingStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pendingStatus;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editProfile;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChanges;
+
+  /// No description provided for @profileUpdateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully'**
+  String get profileUpdateSuccess;
+
+  /// No description provided for @profileUpdateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update profile'**
+  String get profileUpdateFailed;
 }
 
 class _AppLocalizationsDelegate

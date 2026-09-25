@@ -5,7 +5,9 @@ import 'package:smartspace_admin/ui/screen/auth/forgot_password/forgot_password_
 import 'package:smartspace_admin/ui/screen/home/admin_home_screen.dart';
 import 'package:smartspace_admin/ui/screen/reports/admin_report_detail_screen.dart';
 import 'package:smartspace_admin/ui/screen/reports/report_dashboard_screen.dart';
+import 'package:smartspace_admin/ui/screen/reports/report_list_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/change_password_screen.dart';
+import 'package:smartspace_admin/ui/screen/settings/edit_profile_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/settings_screen.dart';
 import 'package:smartspace_admin/ui/screen/staff/staff_management_screen.dart';
 import 'package:smartspace_admin/ui/shared/splash/splash_screen.dart';
@@ -47,6 +49,10 @@ final appRouter = GoRouter(
       builder: (context, state) => const MobileSettingsScreen(),
     ),
     GoRoute(
+      path: RouterPath.editProfile,
+      builder: (context, state) => const AdminEditProfileScreen(),
+    ),
+    GoRoute(
       path: RouterPath.changePassword,
       builder: (context, state) => const MobileChangePasswordScreen(),
     ),
@@ -57,6 +63,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.reportDashboard,
       builder: (context, state) => const ReportDashboardScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.reportList,
+      builder: (context, state) => const ReportListScreen(),
     ),
   ],
 );

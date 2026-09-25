@@ -1,9 +1,7 @@
 package com.vn.smart_space.service.report;
 
-import com.vn.smart_space.exception.ResourceNotFoundException;
-import com.vn.smart_space.repository.ActivityHistoryRepository;
-import com.vn.smart_space.repository.UserRepository;
-
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -12,6 +10,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Limit;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,16 +21,21 @@ import com.vn.smart_space.consts.ERole;
 import com.vn.smart_space.dto.request.admin.ReportAssignRequest;
 import com.vn.smart_space.dto.request.notification.NotificationRequest;
 import com.vn.smart_space.dto.request.report.ReportCreateRequest;
+import com.vn.smart_space.dto.PageResponse;
 import com.vn.smart_space.dto.response.admin.RecentReportResponse;
+import com.vn.smart_space.dto.response.admin.ReportListResponse;
 import com.vn.smart_space.dto.response.admin.ReportStatisticsResponse;
 import com.vn.smart_space.dto.response.admin.ReportTrendResponse;
 import com.vn.smart_space.dto.response.notification.NotificationEvent;
 import com.vn.smart_space.dto.response.report.ReportDetailResponse;
 import com.vn.smart_space.dto.response.report.ReportResponse;
+import com.vn.smart_space.exception.ResourceNotFoundException;
 import com.vn.smart_space.model.ActivityHistory;
 import com.vn.smart_space.model.Report;
 import com.vn.smart_space.model.User;
+import com.vn.smart_space.repository.ActivityHistoryRepository;
 import com.vn.smart_space.repository.ReportRepository;
+import com.vn.smart_space.repository.UserRepository;
 import com.vn.smart_space.service.notification.IFCMService;
 import com.vn.smart_space.service.notification.INotificationService;
 
@@ -451,7 +455,8 @@ public class ReportServiceImpl implements IReportService {
         for (Object[] row : statusRows) {
             String key = row[0] != null ? row[0].toString().toLowerCase() : "unknown";
             // Map "processed" -> "resolved" to match frontend expectation
-            if ("processed".equals(key)) key = "resolved";
+            if ("processed".equals(key))
+                key = "resolved";
             int count = row[1] != null ? ((Number) row[1]).intValue() : 0;
             byStatus.put(key, count);
         }
@@ -494,5 +499,128 @@ public class ReportServiceImpl implements IReportService {
                 .collect(Collectors.toList());
 
         return ReportTrendResponse.builder().items(items).build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReportListResponse getAdminReportList(int page, int size, String status, String severity, String assigneeId,
+            String from, String to, String search) {
+
+        // 1. Parse enums (null = no filter)
+        EReportStatus statusEnum = null;
+        if (status != null && !status.trim().isEmpty() && !"all".equalsIgnoreCase(status)) {
+            try { statusEnum = EReportStatus.valueOf(status.toLowerCase()); } catch (Exception ignored) {}
+        }
+        EReportSeverity severityEnum = null;
+        if (severity != null && !severity.trim().isEmpty() && !"all".equalsIgnoreCase(severity)) {
+            try { severityEnum = EReportSeverity.valueOf(severity.toLowerCase()); } catch (Exception ignored) {}
+        }
+
+        // 2. Parse dates
+        LocalDateTime fromDt = null;
+        LocalDateTime toDt = null;
+        try {
+            if (from != null && !from.trim().isEmpty()) fromDt = LocalDate.parse(from.trim()).atStartOfDay();
+            if (to   != null && !to.trim().isEmpty())   toDt   = LocalDate.parse(to.trim()).atTime(23, 59, 59);
+        } catch (Exception e) {
+            log.warn("[ReportList] Invalid date filter from={} to={}", from, to);
+        }
+
+        // 3. Normalize search + assigneeId
+        String searchParam = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
+        String assigneeParam = (assigneeId != null && !assigneeId.trim().isEmpty()) ? assigneeId.trim() : null;
+
+        // 4. Query
+        int safePage = Math.max(1, page);
+        int safeSize = Math.max(1, Math.min(size, 100));
+        PageRequest pageable = PageRequest.of(safePage - 1, safeSize);
+        Page<Report> reportPage = reportRepository.findAllFiltered(
+                statusEnum, severityEnum, assigneeParam, fromDt, toDt, searchParam, pageable);
+
+        // 5. Map Report -> RecentReportResponse (bổ sung userName, userEmail)
+        List<RecentReportResponse> content = reportPage.getContent().stream().map(r -> {
+            User staff = r.getAssignedStaff();
+            User user  = r.getUser();
+            boolean anon = Boolean.TRUE.equals(r.getIsAnonymous());
+            return RecentReportResponse.builder()
+                    .id(r.getId())
+                    .title(r.getTitle())
+                    .status(r.getStatus())
+                    .severity(r.getSeverity())
+                    .createdAt(r.getCreatedAt())
+                    .imageUrl(r.getImageUrl())
+                    .address(r.getAddress() != null && !r.getAddress().trim().isEmpty()
+                            ? r.getAddress() : r.getLocationDescription())
+                    .assignedStaffName(staff != null ? staff.getFullName() : null)
+                    .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
+                    .userName(anon ? null : (user != null ? user.getFullName() : null))
+                    .userEmail(anon ? null : (user != null ? user.getEmail() : null))
+                    .build();
+        }).collect(Collectors.toList());
+
+        // 6. Wrap in PageResponse
+        PageResponse<RecentReportResponse> pageResp = PageResponse.<RecentReportResponse>builder()
+                .currentPage(safePage)
+                .pageSize(safeSize)
+                .totalPages(reportPage.getTotalPages())
+                .totalElements(reportPage.getTotalElements())
+                .content(content)
+                .build();
+
+        return ReportListResponse.builder().reports(pageResp).build();
+    }
+
+    @Override
+    @Transactional
+    public ReportDetailResponse updateReportStatus(String reportId, String newStatus, String adminId) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new RuntimeException("report.not.found"));
+        EReportStatus current = report.getStatus();
+        EReportStatus next = EReportStatus.valueOf(newStatus.toLowerCase());
+        // Validate flow: pending -> processing -> processed, rejected from pending/processing
+        boolean valid = switch (current) {
+            case pending    -> next == EReportStatus.processing || next == EReportStatus.rejected;
+            case processing -> next == EReportStatus.processed  || next == EReportStatus.rejected;
+            default -> false;
+        };
+        if (!valid) throw new RuntimeException("report.invalid.status.transition");
+        report.setStatus(next);
+        return mapToDetailResponse(reportRepository.save(report));
+    }
+
+    // Helper: map Report -> ReportDetailResponse (reused by updateReportStatus)
+    private ReportDetailResponse mapToDetailResponse(Report report) {
+        User user  = report.getUser();
+        User staff = report.getAssignedStaff();
+        List<String> images = null;
+        if (report.getImageUrls() != null && !report.getImageUrls().trim().isEmpty()) {
+            images = Arrays.stream(report.getImageUrls().split(","))
+                    .map(String::trim).filter(s -> !s.isEmpty()).collect(Collectors.toList());
+        } else if (report.getImageUrl() != null && !report.getImageUrl().trim().isEmpty()) {
+            images = List.of(report.getImageUrl().trim());
+        }
+        return ReportDetailResponse.builder()
+                .id(report.getId())
+                .title(report.getTitle())
+                .description(report.getDescription())
+                .imageUrls(images)
+                .latitude(report.getLatitude())
+                .longitude(report.getLongitude())
+                .status(report.getStatus() != null ? report.getStatus().name() : null)
+                .severity(report.getSeverity() != null ? report.getSeverity().name() : null)
+                .isAnonymous(report.getIsAnonymous())
+                .address(report.getAddress())
+                .locationDescription(report.getLocationDescription())
+                .createdAt(report.getCreatedAt() != null
+                        ? report.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME) : null)
+                .userName(user != null ? user.getFullName() : null)
+                .userPhone(user != null ? user.getPhone() : null)
+                .userAvatarUrl(user != null ? user.getAvatarUrl() : null)
+                .assignedStaffId(staff != null ? staff.getId() : null)
+                .assignedStaffName(staff != null ? staff.getFullName() : null)
+                .assignedStaffPhone(staff != null ? staff.getPhone() : null)
+                .assignedStaffEmail(staff != null ? staff.getEmail() : null)
+                .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
+                .build();
     }
 }

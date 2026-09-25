@@ -26,4 +26,8 @@ public class RecentReportResponse {
     String address;
     String assignedStaffName;
     String assignedStaffAvatarUrl;
+
+    String userName;
+    String userEmail;
+
 }

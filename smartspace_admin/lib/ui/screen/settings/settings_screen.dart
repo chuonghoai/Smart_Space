@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
+import 'package:smartspace_admin/ui/layout/app_layout.dart';
 import 'package:smartspace_admin/ui/screen/settings/settings_controller.dart';
 import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
 
@@ -33,15 +34,18 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    return Scaffold(
-      appBar: AppBar(
+    return AppLayout(
+      customAppBar: AppBar(
         title: Text(l10n.settingsTitle),
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () => context.pop(),
-        ),
+        automaticallyImplyLeading: false,
+        leading: context.canPop()
+            ? IconButton(
+                icon: const Icon(Icons.arrow_back),
+                onPressed: () => context.pop(),
+              )
+            : null,
       ),
-      body: ListenableBuilder(
+      child: ListenableBuilder(
         listenable: _controller,
         builder: (context, _) {
           return ListView(
@@ -203,9 +207,7 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
               Icons.edit_outlined,
               color: theme.colorScheme.onSurfaceVariant,
             ),
-            onPressed: () {
-              // TODO: Navigate to Edit Profile
-            },
+          onPressed: () => context.push(RouterPath.editProfile),
           ),
         ],
       ),

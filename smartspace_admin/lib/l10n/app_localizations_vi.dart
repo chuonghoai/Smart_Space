@@ -517,7 +517,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get severityHigh => 'Cao';
 
   @override
-  String get severityCritical => 'Khẩn cấp';
+  String get severityCritical => 'Nghiêm trọng';
 
   @override
   String get processReportButton => 'Xử lý phản ánh';
@@ -586,7 +586,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get staffNotFound => 'Không tìm thấy nhân viên';
 
   @override
-  String get filterByStatus => 'Lọc theo trạng thái';
+  String get filterByStatus => 'Trạng thái';
 
   @override
   String get addNewStaff => 'Thêm nhân viên mới';
@@ -741,4 +741,67 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get noData => 'Chưa có dữ liệu';
+
+  @override
+  String get reportList => 'Danh sách phản ánh';
+
+  @override
+  String get tableView => 'Bảng';
+
+  @override
+  String get kanbanView => 'Kanban';
+
+  @override
+  String get filterBySeverity => 'Mức độ';
+
+  @override
+  String get filterByAssignee => 'Nhân viên phụ trách';
+
+  @override
+  String get selectDateRange => 'Chọn ngày';
+
+  @override
+  String get clearFilters => 'Xóa bộ lọc';
+
+  @override
+  String get reporter => 'Người gửi';
+
+  @override
+  String get reportIdShort => 'Mã';
+
+  @override
+  String get noReportsFound => 'Không tìm thấy phản ánh nào';
+
+  @override
+  String get loadMore => 'Xem thêm';
+
+  @override
+  String get invalidTransition => 'Không thể chuyển trạng thái này';
+
+  @override
+  String get reportTitle => 'Tiêu đề';
+
+  @override
+  String get severityLabel => 'Mức độ';
+
+  @override
+  String get assignee => 'Nhân viên';
+
+  @override
+  String get createdDate => 'Ngày tạo';
+
+  @override
+  String get pendingStatus => 'Chờ xử lý';
+
+  @override
+  String get editProfile => 'Chỉnh sửa hồ sơ';
+
+  @override
+  String get saveChanges => 'Lưu thay đổi';
+
+  @override
+  String get profileUpdateSuccess => 'Cập nhật hồ sơ thành công';
+
+  @override
+  String get profileUpdateFailed => 'Cập nhật hồ sơ thất bại';
 }

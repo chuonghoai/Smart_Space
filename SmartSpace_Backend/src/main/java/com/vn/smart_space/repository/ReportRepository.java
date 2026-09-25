@@ -1,8 +1,11 @@
 package com.vn.smart_space.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.Limit;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -85,5 +88,27 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                         "GROUP BY YEAR(created_at), MONTH(created_at), label " +
                         "ORDER BY YEAR(created_at) ASC, MONTH(created_at) ASC", nativeQuery = true)
         List<Object[]> countMonthlyTrend();
+
+        // Report list: multi-filter + pageable
+        @Query("SELECT r FROM Report r LEFT JOIN r.user u " +
+                        "WHERE (:status IS NULL OR r.status = :status) " +
+                        "AND (:severity IS NULL OR r.severity = :severity) " +
+                        "AND (:assigneeId IS NULL OR r.assignedStaff.id = :assigneeId) " +
+                        "AND (:from IS NULL OR r.createdAt >= :from) " +
+                        "AND (:to IS NULL OR r.createdAt <= :to) " +
+                        "AND (:search IS NULL OR " +
+                        "     LOWER(r.id) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+                        "     LOWER(r.title) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+                        "     (r.isAnonymous = false AND u IS NOT NULL AND LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%'))) OR " +
+                        "     (r.isAnonymous = false AND u IS NOT NULL AND LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')))) " +
+                        "ORDER BY r.createdAt DESC")
+        Page<Report> findAllFiltered(
+                        @Param("status") EReportStatus status,
+                        @Param("severity") EReportSeverity severity,
+                        @Param("assigneeId") String assigneeId,
+                        @Param("from") LocalDateTime from,
+                        @Param("to") LocalDateTime to,
+                        @Param("search") String search,
+                        Pageable pageable);
 
 }
