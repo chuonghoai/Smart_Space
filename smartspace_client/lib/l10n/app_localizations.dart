@@ -1405,6 +1405,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'days ago'**
   String get dayAgo;
+
+  /// No description provided for @routeHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get routeHome;
+
+  /// No description provided for @routeSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get routeSettings;
+
+  /// No description provided for @routeMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get routeMap;
+
+  /// No description provided for @routeCreateReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Report'**
+  String get routeCreateReport;
+
+  /// No description provided for @routeMyReports.
+  ///
+  /// In en, this message translates to:
+  /// **'My Reports'**
+  String get routeMyReports;
+
+  /// No description provided for @routeEditProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get routeEditProfile;
+
+  /// No description provided for @routeChangePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get routeChangePassword;
+
+  /// No description provided for @routeManageDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Devices'**
+  String get routeManageDevices;
 }
 
 class _AppLocalizationsDelegate

@@ -690,4 +690,28 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get dayAgo => 'days ago';
+
+  @override
+  String get routeHome => 'Home';
+
+  @override
+  String get routeSettings => 'Settings';
+
+  @override
+  String get routeMap => 'Map';
+
+  @override
+  String get routeCreateReport => 'Create Report';
+
+  @override
+  String get routeMyReports => 'My Reports';
+
+  @override
+  String get routeEditProfile => 'Edit Profile';
+
+  @override
+  String get routeChangePassword => 'Change Password';
+
+  @override
+  String get routeManageDevices => 'Manage Devices';
 }

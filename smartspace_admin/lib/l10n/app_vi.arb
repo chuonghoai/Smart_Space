@@ -320,5 +320,14 @@
   "mapMyLocation": "Vị trí của tôi",
   "minuteAgo": "phút trước",
   "hourAgo": "giờ trước",
-  "dayAgo": "ngày trước"
+  "dayAgo": "ngày trước",
+
+  "routeHome": "Trang chủ",
+  "routeSettings": "Cài đặt",
+  "routeEditProfile": "Chỉnh sửa hồ sơ",
+  "routeChangePassword": "Đổi mật khẩu",
+  "routeStaffManagement": "Quản lý nhân viên",
+  "routeReportDashboard": "Thống kê phản ánh",
+  "routeReportList": "Danh sách phản ánh",
+  "routeSpaceMap": "Bản đồ không gian"
 }

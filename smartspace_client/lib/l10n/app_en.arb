@@ -279,5 +279,14 @@
   "retryButton": "Retry",
   "minuteAgo": "min ago",
   "hourAgo": "hr ago",
-  "dayAgo": "days ago"
+  "dayAgo": "days ago",
+
+  "routeHome": "Home",
+  "routeSettings": "Settings",
+  "routeMap": "Map",
+  "routeCreateReport": "Create Report",
+  "routeMyReports": "My Reports",
+  "routeEditProfile": "Edit Profile",
+  "routeChangePassword": "Change Password",
+  "routeManageDevices": "Manage Devices"
 }

@@ -2,8 +2,10 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:smartspace_admin/features/notifications/providers/notification_provider.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
+import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/components/connection_indicator.dart';
 
 class TopBar extends ConsumerWidget implements PreferredSizeWidget {
@@ -69,94 +71,58 @@ class TopBar extends ConsumerWidget implements PreferredSizeWidget {
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
-class _TopBarSearchBox extends StatefulWidget {
+class _TopBarSearchBox extends StatelessWidget {
   const _TopBarSearchBox();
-
-  @override
-  State<_TopBarSearchBox> createState() => _TopBarSearchBoxState();
-}
-
-class _TopBarSearchBoxState extends State<_TopBarSearchBox> {
-  final FocusNode _focusNode = FocusNode();
-  bool _isFocused = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _focusNode.addListener(() {
-      setState(() {
-        _isFocused = _focusNode.hasFocus;
-      });
-    });
-  }
-
-  @override
-  void dispose() {
-    _focusNode.dispose();
-    super.dispose();
-  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-
     final radius = BorderRadius.circular(50);
     
-    return AnimatedContainer(
-      duration: const Duration(milliseconds: 200),
-      height: 42,
-      decoration: BoxDecoration(
-        color: _isFocused
-            ? theme.colorScheme.surface
-            : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-        borderRadius: radius,
-        boxShadow: _isFocused
-            ? [
-                BoxShadow(
-                  color: theme.colorScheme.primary.withValues(alpha: 0.1),
-                  blurRadius: 8,
-                  offset: const Offset(0, 2),
+    return GestureDetector(
+      onTap: () {
+        context.push(RouterPath.search);
+      },
+      child: Hero(
+        tag: 'search_bar_hero',
+        child: Material(
+          type: MaterialType.canvas,
+          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          clipBehavior: Clip.antiAlias,
+          shape: RoundedRectangleBorder(
+            borderRadius: radius,
+            side: const BorderSide(
+              color: Colors.transparent,
+              width: 1.5,
+            ),
+          ),
+          child: SizedBox(
+            height: 42,
+            child: Row(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Icon(
+                    Icons.search,
+                    size: 22,
+                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                  ),
                 ),
-              ]
-            : null,
-      ),
-      foregroundDecoration: BoxDecoration(
-        borderRadius: radius,
-        border: Border.all(
-          color: _isFocused ? theme.colorScheme.primary : Colors.transparent,
-          width: 1.5,
+                Expanded(
+                  child: Text(
+                    l10n.searchPlaceholder,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                    ),
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
-      ),
-      clipBehavior: Clip.antiAlias,
-      child: TextField(
-        focusNode: _focusNode,
-        decoration: InputDecoration(
-          hintText: l10n.searchPlaceholder,
-          hintStyle: theme.textTheme.bodyMedium?.copyWith(
-            color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-          ),
-          prefixIcon: Icon(
-            Icons.search,
-            size: 22,
-            color: _isFocused
-                ? theme.colorScheme.primary
-                : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-          ),
-          border: InputBorder.none,
-          enabledBorder: InputBorder.none,
-          focusedBorder: InputBorder.none,
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 16,
-            vertical: 10,
-          ),
-          isDense: true,
-        ),
-        style: theme.textTheme.bodyMedium,
-        textInputAction: TextInputAction.search,
-        onSubmitted: (_) {
-          // TODO: implement search logic
-        },
       ),
     );
   }

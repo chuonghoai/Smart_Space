@@ -15,6 +15,8 @@ import 'package:smartspace_admin/ui/shared/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_shared/mobile_shared.dart';
 
+import 'package:smartspace_admin/ui/screen/search/search_screen.dart';
+
 /// Re-export for convenience so existing callers of navigatorKey still compile.
 final GlobalKey<NavigatorState> navigatorKey = sharedNavigatorKey;
 
@@ -72,6 +74,16 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.spaceMap,
       builder: (context, state) => const AdminMapScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.search,
+      pageBuilder: (context, state) => CustomTransitionPage(
+        key: state.pageKey,
+        child: const AdminSearchScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
     ),
   ],
 );

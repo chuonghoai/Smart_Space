@@ -16,8 +16,9 @@ import 'package:smartspace_client/ui/mobile/auth/register/complete_profile_scree
 import 'package:smartspace_client/ui/mobile/reports/create_report_screen.dart';
 import 'package:smartspace_client/ui/mobile/reports/presentation/report_detail_screen.dart';
 import 'package:smartspace_client/ui/mobile/reports/my_reports_screen.dart';
-import 'package:flutter/material.dart';
 import 'package:mobile_shared/core/toast/toast_service.dart';
+import 'package:smartspace_client/ui/mobile/search/search_screen.dart';
+import 'package:flutter/material.dart';
 
 /// Re-export for convenience so existing callers of navigatorKey still compile.
 final GlobalKey<NavigatorState> navigatorKey = sharedNavigatorKey;
@@ -90,6 +91,16 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.myReports,
       builder: (context, state) => const MyReportsScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.search,
+      pageBuilder: (context, state) => CustomTransitionPage(
+        key: state.pageKey,
+        child: const MobileSearchScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
     ),
   ],
 );

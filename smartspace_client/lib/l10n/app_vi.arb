@@ -279,5 +279,14 @@
   "retryButton": "Thử lại",
   "minuteAgo": "phút trước",
   "hourAgo": "giờ trước",
-  "dayAgo": "ngày trước"
+  "dayAgo": "ngày trước",
+
+  "routeHome": "Trang chủ",
+  "routeSettings": "Cài đặt",
+  "routeMap": "Bản đồ",
+  "routeCreateReport": "Tạo phản ánh",
+  "routeMyReports": "Phản ánh của tôi",
+  "routeEditProfile": "Chỉnh sửa hồ sơ",
+  "routeChangePassword": "Đổi mật khẩu",
+  "routeManageDevices": "Quản lý thiết bị"
 }

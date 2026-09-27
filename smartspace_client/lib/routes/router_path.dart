@@ -1,18 +1,21 @@
+import 'package:smartspace_client/routes/route_name.dart';
+
 class RouterPath {
-  static const String splash = '/splash';
-  static const String login = '/login';
-  static const String registerEmail = '/register-email';
-  static const String registerOtp = '/register-otp';
-  static const String registerPassword = '/register-password';
-  static const String home = '/home';
-  static const String completeProfile = '/complete-profile';
-  static const String forgotPassword = '/forgot-password';
-  static const String settings = '/settings';
-  static const String changePassword = '/change-password';
-  static const String manageDevices = '/manage-devices';
-  static const String editProfile = '/edit-profile';
-  static const String createReport = '/create-report';
-  static const String map = '/map';
-  static const String reportDetail = '/reports/:id';
-  static const String myReports = '/my-reports';
+  static String get splash => RouteName.splash.path;
+  static String get login => RouteName.login.path;
+  static String get registerEmail => RouteName.registerEmail.path;
+  static String get registerOtp => RouteName.registerOtp.path;
+  static String get registerPassword => RouteName.registerPassword.path;
+  static String get home => RouteName.home.path;
+  static String get completeProfile => RouteName.completeProfile.path;
+  static String get forgotPassword => RouteName.forgotPassword.path;
+  static String get settings => RouteName.settings.path;
+  static String get changePassword => RouteName.changePassword.path;
+  static String get manageDevices => RouteName.manageDevices.path;
+  static String get editProfile => RouteName.editProfile.path;
+  static String get createReport => RouteName.createReport.path;
+  static String get map => RouteName.map.path;
+  static String get reportDetail => RouteName.reportDetail.path;
+  static String get myReports => RouteName.myReports.path;
+  static String get search => RouteName.search.path;
 }

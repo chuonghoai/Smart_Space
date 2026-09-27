@@ -877,4 +877,28 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get dayAgo => 'ngày trước';
+
+  @override
+  String get routeHome => 'Trang chủ';
+
+  @override
+  String get routeSettings => 'Cài đặt';
+
+  @override
+  String get routeEditProfile => 'Chỉnh sửa hồ sơ';
+
+  @override
+  String get routeChangePassword => 'Đổi mật khẩu';
+
+  @override
+  String get routeStaffManagement => 'Quản lý nhân viên';
+
+  @override
+  String get routeReportDashboard => 'Thống kê phản ánh';
+
+  @override
+  String get routeReportList => 'Danh sách phản ánh';
+
+  @override
+  String get routeSpaceMap => 'Bản đồ không gian';
 }

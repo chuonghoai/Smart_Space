@@ -320,5 +320,14 @@
   "mapMyLocation": "My Location",
   "minuteAgo": "min ago",
   "hourAgo": "h ago",
-  "dayAgo": "days ago"
+  "dayAgo": "days ago",
+
+  "routeHome": "Home",
+  "routeSettings": "Settings",
+  "routeEditProfile": "Edit Profile",
+  "routeChangePassword": "Change Password",
+  "routeStaffManagement": "Manage Staffs",
+  "routeReportDashboard": "Report Dashboard",
+  "routeReportList": "Report List",
+  "routeSpaceMap": "Space Map"
 }
