@@ -804,4 +804,77 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get profileUpdateFailed => 'Cập nhật hồ sơ thất bại';
+
+  @override
+  String get mapFilterTitle => 'Lọc phản ánh';
+
+  @override
+  String get mapHeatmapMode => 'Bản đồ nhiệt';
+
+  @override
+  String get mapMarkerMode => 'Điểm đánh dấu';
+
+  @override
+  String mapClusterCount(int count) {
+    return '$count phản ánh';
+  }
+
+  @override
+  String get mapStaffTracking => 'Theo dõi nhân viên';
+
+  @override
+  String mapNewReportToast(String address) {
+    return 'Phản ánh mới tại $address';
+  }
+
+  @override
+  String get mapAssignStaff => 'Giao nhân viên';
+
+  @override
+  String get mapNearestStaff => 'Nhân viên gần nhất';
+
+  @override
+  String get mapViewDetail => 'Xem chi tiết';
+
+  @override
+  String get mapNoReportsInArea => 'Không có phản ánh trong khu vực này';
+
+  @override
+  String get mapFilterStatus => 'Trạng thái';
+
+  @override
+  String get mapFilterSeverity => 'Mức độ';
+
+  @override
+  String get mapFilterDateRange => 'Khoảng thời gian';
+
+  @override
+  String get mapFilterAssignee => 'Người được giao';
+
+  @override
+  String get mapFilterAll => 'Tất cả';
+
+  @override
+  String get mapFilterClear => 'Xóa bộ lọc';
+
+  @override
+  String get mapFilterApply => 'Áp dụng';
+
+  @override
+  String get mapLegendTitle => 'Chú thích';
+
+  @override
+  String get mapRefresh => 'Làm mới';
+
+  @override
+  String get mapMyLocation => 'Vị trí của tôi';
+
+  @override
+  String get minuteAgo => 'phút trước';
+
+  @override
+  String get hourAgo => 'giờ trước';
+
+  @override
+  String get dayAgo => 'ngày trước';
 }

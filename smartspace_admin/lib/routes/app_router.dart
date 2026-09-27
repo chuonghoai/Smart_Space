@@ -9,6 +9,7 @@ import 'package:smartspace_admin/ui/screen/reports/report_list_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/change_password_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/edit_profile_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/settings_screen.dart';
+import 'package:smartspace_admin/ui/screen/map/admin_map_screen.dart';
 import 'package:smartspace_admin/ui/screen/staff/staff_management_screen.dart';
 import 'package:smartspace_admin/ui/shared/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -67,6 +68,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.reportList,
       builder: (context, state) => const ReportListScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.spaceMap,
+      builder: (context, state) => const AdminMapScreen(),
     ),
   ],
 );

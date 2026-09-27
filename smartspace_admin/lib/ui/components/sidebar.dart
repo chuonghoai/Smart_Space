@@ -131,7 +131,7 @@ class Sidebar extends ConsumerWidget {
                     label: l10n.spaceMap,
                     onTap: () {
                       Navigator.pop(context);
-                      // TODO: Navigate to Space Map
+                      context.push(RouterPath.spaceMap);
                     },
                   ),
                   _SidebarItem(
@@ -364,10 +364,8 @@ class WebSidebar extends ConsumerWidget {
                 icon: Icons.map_outlined,
                 label: l10n.spaceMap,
                 isExpanded: isExpanded,
-                isSelected: false,
-                onTap: () {
-                  // TODO: Navigate to Space Map
-                },
+                isSelected: currentPath == RouterPath.spaceMap,
+                onTap: () => context.go(RouterPath.spaceMap),
               ),
               _WebSidebarItem(
                 icon: Icons.people_outline,

@@ -22,6 +22,7 @@ import com.vn.smart_space.dto.request.admin.ReportAssignRequest;
 import com.vn.smart_space.dto.request.notification.NotificationRequest;
 import com.vn.smart_space.dto.request.report.ReportCreateRequest;
 import com.vn.smart_space.dto.PageResponse;
+import com.vn.smart_space.dto.response.admin.MapReportResponse;
 import com.vn.smart_space.dto.response.admin.RecentReportResponse;
 import com.vn.smart_space.dto.response.admin.ReportListResponse;
 import com.vn.smart_space.dto.response.admin.ReportStatisticsResponse;
@@ -553,6 +554,8 @@ public class ReportServiceImpl implements IReportService {
                             ? r.getAddress() : r.getLocationDescription())
                     .assignedStaffName(staff != null ? staff.getFullName() : null)
                     .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
+                    .latitude(r.getLatitude())
+                    .longitude(r.getLongitude())
                     .userName(anon ? null : (user != null ? user.getFullName() : null))
                     .userEmail(anon ? null : (user != null ? user.getEmail() : null))
                     .build();
@@ -622,5 +625,53 @@ public class ReportServiceImpl implements IReportService {
                 .assignedStaffEmail(staff != null ? staff.getEmail() : null)
                 .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
                 .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<MapReportResponse> getAdminMapReports(String status, String severity, String assigneeId,
+            String from, String to, int limit) {
+        // Parse enums
+        EReportStatus statusEnum = null;
+        if (status != null && !status.trim().isEmpty() && !"all".equalsIgnoreCase(status)) {
+            try { statusEnum = EReportStatus.valueOf(status.toLowerCase()); } catch (Exception ignored) {}
+        }
+        EReportSeverity severityEnum = null;
+        if (severity != null && !severity.trim().isEmpty() && !"all".equalsIgnoreCase(severity)) {
+            try { severityEnum = EReportSeverity.valueOf(severity.toLowerCase()); } catch (Exception ignored) {}
+        }
+
+        // Parse dates
+        LocalDateTime fromDt = null;
+        LocalDateTime toDt = null;
+        try {
+            if (from != null && !from.trim().isEmpty()) fromDt = LocalDate.parse(from.trim()).atStartOfDay();
+            if (to   != null && !to.trim().isEmpty())   toDt   = LocalDate.parse(to.trim()).atTime(23, 59, 59);
+        } catch (Exception e) {
+            log.warn("[MapReports] Invalid date filter from={} to={}", from, to);
+        }
+
+        String assigneeParam = (assigneeId != null && !assigneeId.trim().isEmpty()) ? assigneeId.trim() : null;
+        int safeLimit = Math.max(1, Math.min(limit, 500));
+
+        Page<Report> reportPage = reportRepository.findAllFiltered(
+                statusEnum, severityEnum, assigneeParam, fromDt, toDt, null,
+                PageRequest.of(0, safeLimit));
+
+        return reportPage.getContent().stream()
+                .filter(r -> r.getLatitude() != null && r.getLongitude() != null)
+                .map(r -> MapReportResponse.builder()
+                        .id(r.getId())
+                        .title(r.getTitle())
+                        .status(r.getStatus())
+                        .severity(r.getSeverity())
+                        .latitude(r.getLatitude())
+                        .longitude(r.getLongitude())
+                        .imageUrl(r.getImageUrl())
+                        .address(r.getAddress() != null && !r.getAddress().trim().isEmpty()
+                                ? r.getAddress() : r.getLocationDescription())
+                        .createdAt(r.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
     }
 }

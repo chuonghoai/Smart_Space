@@ -16,21 +16,14 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class RecentReportResponse {
+public class MapReportResponse {
     String id;
     String title;
     EReportStatus status;
     EReportSeverity severity;
-    LocalDateTime createdAt;
-    String imageUrl;
-    String address;
-    String assignedStaffName;
-    String assignedStaffAvatarUrl;
-
     Double latitude;
     Double longitude;
-
-    String userName;
-    String userEmail;
-
+    String imageUrl;
+    String address;
+    LocalDateTime createdAt;
 }

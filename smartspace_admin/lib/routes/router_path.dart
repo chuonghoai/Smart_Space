@@ -11,4 +11,5 @@ class RouterPath {
   static const String staffManagement = '/staff-management';
   static const String reportDashboard = '/report-dashboard';
   static const String reportList = '/report-list';
+  static const String spaceMap = '/space-map';
 }

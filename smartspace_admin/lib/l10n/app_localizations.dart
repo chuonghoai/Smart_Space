@@ -1663,6 +1663,144 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Failed to update profile'**
   String get profileUpdateFailed;
+
+  /// No description provided for @mapFilterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter Reports'**
+  String get mapFilterTitle;
+
+  /// No description provided for @mapHeatmapMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Heatmap'**
+  String get mapHeatmapMode;
+
+  /// No description provided for @mapMarkerMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Markers'**
+  String get mapMarkerMode;
+
+  /// No description provided for @mapClusterCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} reports'**
+  String mapClusterCount(int count);
+
+  /// No description provided for @mapStaffTracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Tracking'**
+  String get mapStaffTracking;
+
+  /// No description provided for @mapNewReportToast.
+  ///
+  /// In en, this message translates to:
+  /// **'New report at {address}'**
+  String mapNewReportToast(String address);
+
+  /// No description provided for @mapAssignStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign Staff'**
+  String get mapAssignStaff;
+
+  /// No description provided for @mapNearestStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearest Staff'**
+  String get mapNearestStaff;
+
+  /// No description provided for @mapViewDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'View Detail'**
+  String get mapViewDetail;
+
+  /// No description provided for @mapNoReportsInArea.
+  ///
+  /// In en, this message translates to:
+  /// **'No reports in this area'**
+  String get mapNoReportsInArea;
+
+  /// No description provided for @mapFilterStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get mapFilterStatus;
+
+  /// No description provided for @mapFilterSeverity.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity'**
+  String get mapFilterSeverity;
+
+  /// No description provided for @mapFilterDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Date Range'**
+  String get mapFilterDateRange;
+
+  /// No description provided for @mapFilterAssignee.
+  ///
+  /// In en, this message translates to:
+  /// **'Assignee'**
+  String get mapFilterAssignee;
+
+  /// No description provided for @mapFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get mapFilterAll;
+
+  /// No description provided for @mapFilterClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Filters'**
+  String get mapFilterClear;
+
+  /// No description provided for @mapFilterApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get mapFilterApply;
+
+  /// No description provided for @mapLegendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Legend'**
+  String get mapLegendTitle;
+
+  /// No description provided for @mapRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get mapRefresh;
+
+  /// No description provided for @mapMyLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'My Location'**
+  String get mapMyLocation;
+
+  /// No description provided for @minuteAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'min ago'**
+  String get minuteAgo;
+
+  /// No description provided for @hourAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'h ago'**
+  String get hourAgo;
+
+  /// No description provided for @dayAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'days ago'**
+  String get dayAgo;
 }
 
 class _AppLocalizationsDelegate

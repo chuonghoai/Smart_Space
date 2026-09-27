@@ -92,4 +92,17 @@ public class AdminReportController {
         return ResponseEntity.ok(ApiResponse.success("system.success",
                 reportService.updateReportStatus(id, body.get("status"), adminId)));
     }
+
+    @GetMapping("/map")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<ApiResponse> getMapReports(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) String severity,
+            @RequestParam(required = false) String assigneeId,
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to,
+            @RequestParam(defaultValue = "500") int limit) {
+        return ResponseEntity.ok(ApiResponse.success("system.success",
+                reportService.getAdminMapReports(status, severity, assigneeId, from, to, limit)));
+    }
 }

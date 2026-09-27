@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
@@ -7,6 +8,7 @@ import 'package:mobile_shared/core/localization/locale_provider.dart';
 import 'package:mobile_shared/core/theme/theme_provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_shared/mobile_shared.dart';
@@ -23,7 +25,13 @@ void main() async {
   await EnvConfig.init();
   usePathUrlStrategy();
   await dotenv.load(fileName: ".env");
-  
+
+  // Initialize Mapbox (Mobile only — Web uses Mapbox GL JS)
+  if (!kIsWeb) {
+    final mapboxToken = dotenv.env['MAPBOX_ACCESS_TOKEN'] ?? '';
+    mapbox.MapboxOptions.setAccessToken(mapboxToken);
+  }
+
   await FirebaseService.initialize(DefaultFirebaseOptions.currentPlatform);
   
   ErrorInterceptor.unauthenticatedStream.stream.listen((String reason) {

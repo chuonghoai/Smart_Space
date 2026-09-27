@@ -805,4 +805,77 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get profileUpdateFailed => 'Failed to update profile';
+
+  @override
+  String get mapFilterTitle => 'Filter Reports';
+
+  @override
+  String get mapHeatmapMode => 'Heatmap';
+
+  @override
+  String get mapMarkerMode => 'Markers';
+
+  @override
+  String mapClusterCount(int count) {
+    return '$count reports';
+  }
+
+  @override
+  String get mapStaffTracking => 'Staff Tracking';
+
+  @override
+  String mapNewReportToast(String address) {
+    return 'New report at $address';
+  }
+
+  @override
+  String get mapAssignStaff => 'Assign Staff';
+
+  @override
+  String get mapNearestStaff => 'Nearest Staff';
+
+  @override
+  String get mapViewDetail => 'View Detail';
+
+  @override
+  String get mapNoReportsInArea => 'No reports in this area';
+
+  @override
+  String get mapFilterStatus => 'Status';
+
+  @override
+  String get mapFilterSeverity => 'Severity';
+
+  @override
+  String get mapFilterDateRange => 'Date Range';
+
+  @override
+  String get mapFilterAssignee => 'Assignee';
+
+  @override
+  String get mapFilterAll => 'All';
+
+  @override
+  String get mapFilterClear => 'Clear Filters';
+
+  @override
+  String get mapFilterApply => 'Apply';
+
+  @override
+  String get mapLegendTitle => 'Legend';
+
+  @override
+  String get mapRefresh => 'Refresh';
+
+  @override
+  String get mapMyLocation => 'My Location';
+
+  @override
+  String get minuteAgo => 'min ago';
+
+  @override
+  String get hourAgo => 'h ago';
+
+  @override
+  String get dayAgo => 'days ago';
 }
