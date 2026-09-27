@@ -150,5 +150,18 @@
   "routeSettings": "Cài đặt",
   "routeReportDetail": "Chi tiết phản ánh",
   "staffSplashAppName": "SmartSpace Staff",
-  "staffSplashTagline": "Công cụ quản lý và xử lý phản ánh."
+  "staffSplashTagline": "Công cụ quản lý và xử lý phản ánh.",
+  "totalAssigned": "Tổng số",
+  "needsYourAttention": "Cần bạn xử lý",
+  "myWorkDashboard": "Công việc của tôi",
+  "gpsError": "Không thể định vị GPS, vui lòng kiểm tra lại thiết bị",
+  "filterAll": "Tất cả",
+  "distanceAway": "Cách {distance}",
+  "@distanceAway": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  }
 }

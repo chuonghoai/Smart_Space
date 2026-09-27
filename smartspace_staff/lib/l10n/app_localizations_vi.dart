@@ -428,4 +428,25 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get staffSplashTagline => 'Công cụ quản lý và xử lý phản ánh.';
+
+  @override
+  String get totalAssigned => 'Tổng số';
+
+  @override
+  String get needsYourAttention => 'Cần bạn xử lý';
+
+  @override
+  String get myWorkDashboard => 'Công việc của tôi';
+
+  @override
+  String get gpsError =>
+      'Không thể định vị GPS, vui lòng kiểm tra lại thiết bị';
+
+  @override
+  String get filterAll => 'Tất cả';
+
+  @override
+  String distanceAway(String distance) {
+    return 'Cách $distance';
+  }
 }

@@ -429,4 +429,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get staffSplashTagline => 'Incident management and processing tool.';
+
+  @override
+  String get totalAssigned => 'Total assigned';
+
+  @override
+  String get needsYourAttention => 'Needs your attention';
+
+  @override
+  String get myWorkDashboard => 'My Work';
+
+  @override
+  String get gpsError => 'Cannot locate GPS, please check your device';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String distanceAway(String distance) {
+    return '$distance away';
+  }
 }

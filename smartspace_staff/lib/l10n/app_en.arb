@@ -150,5 +150,18 @@
   "routeSettings": "Settings",
   "routeReportDetail": "Report Detail",
   "staffSplashAppName": "SmartSpace Staff",
-  "staffSplashTagline": "Incident management and processing tool."
+  "staffSplashTagline": "Incident management and processing tool.",
+  "totalAssigned": "Total assigned",
+  "needsYourAttention": "Needs your attention",
+  "myWorkDashboard": "My Work",
+  "gpsError": "Cannot locate GPS, please check your device",
+  "filterAll": "All",
+  "distanceAway": "{distance} away",
+  "@distanceAway": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  }
 }

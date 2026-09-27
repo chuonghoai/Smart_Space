@@ -65,4 +65,22 @@ public class ReportController {
         List<ReportResponse> reports = reportService.getMyReports(userId, status, limit);
         return ResponseEntity.ok(ApiResponse.success("system.success", reports));
     }
+
+    @GetMapping("/staff/assigned")
+    public ResponseEntity<ApiResponse> getStaffAssignedReports(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestParam(defaultValue = "all") String status,
+            @RequestParam(defaultValue = "10") int limit) {
+        String staffId = jwt.getClaim("userId").toString();
+        return ResponseEntity.ok(ApiResponse.success("system.success", 
+                reportService.getStaffAssignedReports(staffId, status, limit)));
+    }
+
+    @GetMapping("/staff/statistics")
+    public ResponseEntity<ApiResponse> getStaffReportStatistics(
+            @AuthenticationPrincipal Jwt jwt) {
+        String staffId = jwt.getClaim("userId").toString();
+        return ResponseEntity.ok(ApiResponse.success("system.success", 
+                reportService.getStaffReportStatistics(staffId)));
+    }
 }

@@ -28,12 +28,12 @@ class ReportModel {
       id: json['id']?.toString() ?? '',
       title: json['title'] as String? ?? '',
       description: json['description'] as String? ?? '',
-      imageUrl: json['image_url'] as String? ?? '',
+      imageUrl: (json['image_url'] ?? json['imageUrl']) as String? ?? '',
       latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
       longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
       status: _mapStatus(json['status'] as String?),
-      createdAt: json['created_at'] != null
-          ? DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now()
+      createdAt: (json['created_at'] ?? json['createdAt']) != null
+          ? DateTime.tryParse((json['created_at'] ?? json['createdAt']).toString()) ?? DateTime.now()
           : DateTime.now(),
     );
   }

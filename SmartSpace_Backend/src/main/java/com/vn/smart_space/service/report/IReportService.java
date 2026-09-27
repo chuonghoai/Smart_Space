@@ -42,4 +42,8 @@ public interface IReportService {
     // Admin Map — lightweight list with lat/lng, no pagination
     List<MapReportResponse> getAdminMapReports(String status, String severity, String assigneeId,
             String from, String to, int limit);
+
+    List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, int limit);
+
+    ReportStatisticsResponse getStaffReportStatistics(String staffId);
 }

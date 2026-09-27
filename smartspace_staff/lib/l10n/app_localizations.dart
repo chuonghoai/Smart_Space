@@ -931,6 +931,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Incident management and processing tool.'**
   String get staffSplashTagline;
+
+  /// No description provided for @totalAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Total assigned'**
+  String get totalAssigned;
+
+  /// No description provided for @needsYourAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs your attention'**
+  String get needsYourAttention;
+
+  /// No description provided for @myWorkDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'My Work'**
+  String get myWorkDashboard;
+
+  /// No description provided for @gpsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot locate GPS, please check your device'**
+  String get gpsError;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @distanceAway.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} away'**
+  String distanceAway(String distance);
 }
 
 class _AppLocalizationsDelegate

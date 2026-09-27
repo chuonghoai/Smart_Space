@@ -319,7 +319,7 @@ public class ReportServiceImpl implements IReportService {
                     .status(r.getStatus())
                     .severity(r.getSeverity())
                     .createdAt(r.getCreatedAt())
-                    .imageUrl(r.getImageUrl())
+                    .imageUrl((r.getImageUrls() != null && !r.getImageUrls().trim().isEmpty()) ? r.getImageUrls().split(",")[0].trim() : r.getImageUrl())
                     .address(r.getAddress() != null && !r.getAddress().trim().isEmpty() ? r.getAddress()
                             : r.getLocationDescription())
                     .assignedStaffName(staff != null ? staff.getFullName() : null)
@@ -438,7 +438,12 @@ public class ReportServiceImpl implements IReportService {
             }
         }
 
-        List<Report> reports = reportRepository.findMyReports(userId, reportStatus, Limit.of(safeLimit));
+        List<Report> reports;
+        if (reportStatus == null) {
+            reports = reportRepository.findByUserIdOrderByCreatedAtDesc(userId, Limit.of(safeLimit));
+        } else {
+            reports = reportRepository.findByUserIdAndStatusOrderByCreatedAtDesc(userId, reportStatus, Limit.of(safeLimit));
+        }
         return reports.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
 
@@ -673,5 +678,75 @@ public class ReportServiceImpl implements IReportService {
                         .createdAt(r.getCreatedAt())
                         .build())
                 .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, int limit) {
+        int safeLimit = Math.max(1, Math.min(limit, 100));
+        List<EReportStatus> statuses;
+        if ("resolved".equalsIgnoreCase(status) || "processed".equalsIgnoreCase(status)) {
+            statuses = List.of(EReportStatus.processed);
+        } else if ("pending".equalsIgnoreCase(status)) {
+            statuses = List.of(EReportStatus.pending);
+        } else if ("processing".equalsIgnoreCase(status)) {
+            statuses = List.of(EReportStatus.processing);
+        } else if ("rejected".equalsIgnoreCase(status)) {
+            statuses = List.of(EReportStatus.rejected);
+        } else {
+            // "all" or invalid or null defaults to pending + processing for staff dashboard
+            statuses = List.of(EReportStatus.pending, EReportStatus.processing);
+        }
+
+        List<Report> reports = reportRepository.findByAssignedStaffIdAndStatusInOrderByCreatedAtDesc(staffId, statuses, Limit.of(safeLimit));
+
+        return reports.stream().map(r -> {
+            User staff = r.getAssignedStaff();
+            User user = r.getUser();
+            boolean anon = Boolean.TRUE.equals(r.getIsAnonymous());
+            return RecentReportResponse.builder()
+                    .id(r.getId())
+                    .title(r.getTitle())
+                    .status(r.getStatus())
+                    .severity(r.getSeverity())
+                    .createdAt(r.getCreatedAt())
+                    .imageUrl(r.getImageUrls() != null && !r.getImageUrls().trim().isEmpty() ? 
+                        r.getImageUrls().trim().replaceAll("^\\[|\\]$", "").replaceAll("\"", "").split(",")[0].trim() : 
+                        r.getImageUrl())
+                    .address(r.getAddress() != null && !r.getAddress().trim().isEmpty() ? r.getAddress()
+                            : r.getLocationDescription())
+                    .assignedStaffName(staff != null ? staff.getFullName() : null)
+                    .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
+                    .latitude(r.getLatitude())
+                    .longitude(r.getLongitude())
+                    .userName(anon ? null : (user != null ? user.getFullName() : null))
+                    .userEmail(anon ? null : (user != null ? user.getEmail() : null))
+                    .build();
+        }).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReportStatisticsResponse getStaffReportStatistics(String staffId) {
+        List<Object[]> statusRows = reportRepository.countStaffReportsGroupByStatus(staffId);
+        Map<String, Integer> byStatus = new LinkedHashMap<>();
+        byStatus.put("pending", 0);
+        byStatus.put("processing", 0);
+        byStatus.put("resolved", 0);
+        byStatus.put("rejected", 0);
+        for (Object[] row : statusRows) {
+            String key = row[0] != null ? row[0].toString().toLowerCase() : "unknown";
+            if ("processed".equals(key))
+                key = "resolved";
+            int count = row[1] != null ? ((Number) row[1]).intValue() : 0;
+            byStatus.put(key, count);
+        }
+        int total = byStatus.values().stream().mapToInt(Integer::intValue).sum();
+
+        return ReportStatisticsResponse.builder()
+                .total(total)
+                .byStatus(byStatus)
+                .bySeverity(new LinkedHashMap<>())
+                .build();
     }
 }

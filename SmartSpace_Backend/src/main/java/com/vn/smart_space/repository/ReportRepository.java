@@ -37,8 +37,8 @@ public interface ReportRepository extends JpaRepository<Report, String> {
         long countByStatus(EReportStatus status);
 
         // Get My Reports For Client
-        @Query("SELECT r FROM Report r WHERE r.user.id = :userId AND (:status IS NULL OR r.status = :status) ORDER BY r.createdAt DESC")
-        List<Report> findMyReports(@Param("userId") String userId, @Param("status") EReportStatus status, Limit limit);
+        List<Report> findByUserIdOrderByCreatedAtDesc(String userId, Limit limit);
+        List<Report> findByUserIdAndStatusOrderByCreatedAtDesc(String userId, EReportStatus status, Limit limit);
 
         // Count Report Processing For Staff
         @Query("SELECT r.assignedStaff.id, COUNT(r) FROM Report r " +
@@ -60,6 +60,15 @@ public interface ReportRepository extends JpaRepository<Report, String> {
         // Dashboard: group by status
         @Query("SELECT r.status, COUNT(r) FROM Report r GROUP BY r.status")
         List<Object[]> countGroupByStatus();
+
+        // Staff Dashboard: find assigned reports
+        List<Report> findByAssignedStaffIdOrderByCreatedAtDesc(String staffId, Limit limit);
+        List<Report> findByAssignedStaffIdAndStatusOrderByCreatedAtDesc(String staffId, EReportStatus status, Limit limit);
+        List<Report> findByAssignedStaffIdAndStatusInOrderByCreatedAtDesc(String staffId, List<EReportStatus> statuses, Limit limit);
+
+        // Staff Dashboard: group by status for staff
+        @Query("SELECT r.status, COUNT(r) FROM Report r WHERE r.assignedStaff.id = :staffId GROUP BY r.status")
+        List<Object[]> countStaffReportsGroupByStatus(@Param("staffId") String staffId);
 
         // Dashboard: group by severity (exclude null)
         @Query("SELECT r.severity, COUNT(r) FROM Report r WHERE r.severity IS NOT NULL GROUP BY r.severity")

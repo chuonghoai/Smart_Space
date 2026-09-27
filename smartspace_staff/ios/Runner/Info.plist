@@ -45,5 +45,9 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Ứng dụng cần quyền vị trí để tính toán khoảng cách đến các phản ánh nhằm hỗ trợ xử lý công việc hiệu quả.</string>
+	<key>NSLocationAlwaysUsageDescription</key>
+	<string>Ứng dụng cần quyền vị trí để tính toán khoảng cách đến các phản ánh nhằm hỗ trợ xử lý công việc hiệu quả.</string>
 </dict>
 </plist>
