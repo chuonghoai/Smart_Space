@@ -43,6 +43,10 @@ Tạo Implementation Plan chỉ rõ:
 - File cần tạo, file cần sửa
 - Class/function/component, API, Model/Entity cần thêm/sửa
 - Flow dữ liệu, Architecture layer bị ảnh hưởng
+- Phân tích Routing: Khi tạo chức năng/màn hình mới, MUST tuân thủ cấu trúc route 3 file chuẩn của dự án:
+  1. `route_name.dart`: Định nghĩa đối tượng `AppRouteInfo` (path, nameKey, icon, isHiddenInSearch, priority) và thêm vào danh sách `allRoutes`.
+  2. `router_path.dart`: Tạo getter lấy path tham chiếu từ `RouteName` (vd: `static String get feature => RouteName.feature.path;`).
+  3. `app_router.dart`: Khai báo `GoRoute` map với màn hình tương ứng.
 - Phân tích UI: MUST tuân thủ Dark/Light mode, màu sắc/token cần sử dụng.
 - Phân tích L10n: MUST xác định các key L10n cần tạo mới hoặc tái sử dụng cho user-facing text.
 - Test cần thêm, Risk, Dependency, Migration (nếu có)
