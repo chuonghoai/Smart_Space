@@ -1,16 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:smartspace_admin/features/map/application/map_providers.dart';
 import 'package:smartspace_admin/features/map/models/map_report_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
+
 import 'admin_map_controller.dart';
+// Conditional import: web vs mobile
+import 'admin_map_screen_mobile.dart'
+    if (dart.library.html) 'admin_map_screen_web.dart'
+    as platform_map;
+import 'widgets/map_filter_panel.dart';
 import 'widgets/map_legend.dart';
 import 'widgets/map_report_sheet.dart';
-
-// Conditional import: web vs mobile
-import 'admin_map_screen_mobile.dart' if (dart.library.html) 'admin_map_screen_web.dart'
-    as platform_map;
 
 class AdminMapScreen extends ConsumerStatefulWidget {
   const AdminMapScreen({super.key});
@@ -60,7 +63,7 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
             if (Navigator.of(context).canPop()) {
               Navigator.of(context).pop();
             } else {
-              context.go('/');
+              context.go('/home');
             }
           },
         ),
@@ -99,6 +102,17 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
 
           // Legend
           const MapLegend(),
+
+          // Filter Panel (Top Left)
+          SafeArea(
+            child: Align(
+              alignment: Alignment.topLeft,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 450),
+                child: PointerInterceptor(child: const MapFilterPanel()),
+              ),
+            ),
+          ),
         ],
       ),
     );
