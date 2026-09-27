@@ -1849,6 +1849,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Space Map'**
   String get routeSpaceMap;
+
+  /// No description provided for @mapQuickAssignTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Assign'**
+  String get mapQuickAssignTitle;
+
+  /// No description provided for @mapSelectSeverity.
+  ///
+  /// In en, this message translates to:
+  /// **'Select severity'**
+  String get mapSelectSeverity;
 }
 
 class _AppLocalizationsDelegate

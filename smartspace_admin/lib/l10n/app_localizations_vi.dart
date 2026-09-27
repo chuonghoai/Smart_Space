@@ -879,6 +879,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get dayAgo => 'ngày trước';
 
   @override
+  @override
   String get routeHome => 'Trang chủ';
 
   @override
@@ -901,4 +902,10 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get routeSpaceMap => 'Bản đồ không gian';
+
+  @override
+  String get mapQuickAssignTitle => 'Phân công nhanh';
+
+  @override
+  String get mapSelectSeverity => 'Chọn mức độ';
 }

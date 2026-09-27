@@ -14,6 +14,7 @@ import 'admin_map_screen_mobile.dart'
 import 'widgets/map_filter_panel.dart';
 import 'widgets/map_legend.dart';
 import 'widgets/map_report_sheet.dart';
+import 'widgets/map_quick_assign_sheet.dart';
 
 class AdminMapScreen extends ConsumerStatefulWidget {
   const AdminMapScreen({super.key});
@@ -37,14 +38,37 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
-      builder: (_) => MapReportSheet(
-        report: report,
-        onViewDetail: () {
-          Navigator.of(context).pop();
-          context.push('/reports/${report.id}');
-        },
+      builder: (_) => PointerInterceptor(
+        child: MapReportSheet(
+          report: report,
+          onViewDetail: () {
+            Navigator.of(context).pop();
+            context.push('/reports/${report.id}');
+          },
+          onAssign: report.status == 'pending'
+              ? () {
+                  Navigator.of(context).pop(); // close MapReportSheet
+                  _sheetOpen = false;
+                  _showQuickAssign(report);
+                }
+              : null,
+        ),
       ),
     ).whenComplete(() => _sheetOpen = false);
+  }
+
+  void _showQuickAssign(MapReportModel report) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => PointerInterceptor(
+        child: MapQuickAssignSheet(
+          report: report,
+          onAssigned: () => ref.read(mapReportsProvider.notifier).refresh(),
+        ),
+      ),
+    );
   }
 
   @override

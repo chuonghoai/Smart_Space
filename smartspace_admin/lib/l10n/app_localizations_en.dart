@@ -880,6 +880,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dayAgo => 'days ago';
 
   @override
+  @override
   String get routeHome => 'Home';
 
   @override
@@ -902,4 +903,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get routeSpaceMap => 'Space Map';
+
+  @override
+  String get mapQuickAssignTitle => 'Quick Assign';
+
+  @override
+  String get mapSelectSeverity => 'Select severity';
 }

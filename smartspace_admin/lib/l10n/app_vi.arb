@@ -329,5 +329,7 @@
   "routeStaffManagement": "Quản lý nhân viên",
   "routeReportDashboard": "Thống kê phản ánh",
   "routeReportList": "Danh sách phản ánh",
-  "routeSpaceMap": "Bản đồ không gian"
+  "routeSpaceMap": "Bản đồ không gian",
+  "mapQuickAssignTitle": "Phân công nhanh",
+  "mapSelectSeverity": "Chọn mức độ"
 }

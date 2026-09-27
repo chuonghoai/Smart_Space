@@ -329,5 +329,7 @@
   "routeStaffManagement": "Manage Staffs",
   "routeReportDashboard": "Report Dashboard",
   "routeReportList": "Report List",
-  "routeSpaceMap": "Space Map"
+  "routeSpaceMap": "Space Map",
+  "mapQuickAssignTitle": "Quick Assign",
+  "mapSelectSeverity": "Select severity"
 }

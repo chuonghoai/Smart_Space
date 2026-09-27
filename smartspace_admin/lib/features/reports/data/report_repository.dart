@@ -18,9 +18,18 @@ class ReportRepository {
   Future<ApiResponse<List<StaffModel>>> getStaffs() async {
     return apiClient.get(
       '/admin/staffs',
-      decoder: (json) => (json as List<dynamic>)
-          .map((e) => StaffModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      queryParameters: {'size': 100, 'status': 'ACTIVE'},
+      decoder: (json) {
+        final map = json as Map<String, dynamic>;
+        final staffsMap = map['staffs'] as Map<String, dynamic>?;
+        if (staffsMap != null) {
+          final content = staffsMap['content'] as List<dynamic>? ?? [];
+          return content
+              .map((e) => StaffModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        }
+        return [];
+      },
     );
   }
 
