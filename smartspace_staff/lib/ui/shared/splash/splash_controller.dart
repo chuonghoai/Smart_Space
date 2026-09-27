@@ -28,7 +28,6 @@ class SplashController extends ChangeNotifier {
         themeProvider.initialize(),
         localeProvider.initialize(),
       ]);
-
       // Check authentication
       final accessToken = await TokenStorage.getAccessToken();
       final refreshToken = await TokenStorage.getRefreshToken();

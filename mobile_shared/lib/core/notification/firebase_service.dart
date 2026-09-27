@@ -41,7 +41,6 @@ class FirebaseService {
 
     FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
 
-    await _requestPermission();
 
     _listenForeground();
 
@@ -93,7 +92,7 @@ class FirebaseService {
     );
   }
 
-  static Future<void> _requestPermission() async {
+  static Future<void> requestPermission() async {
     final settings = await _messaging.requestPermission(
       alert: true,
       badge: true,

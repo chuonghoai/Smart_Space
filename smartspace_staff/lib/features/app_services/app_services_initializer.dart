@@ -43,6 +43,7 @@ class _AppServicesInitializerState
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FirebaseService.checkInitialMessage();
+      FirebaseService.requestPermission();
 
       if (connectionStateProvider.isReady()) {
         debugPrint('[AppServices] Already connected on first frame, setting up WebSocket listeners...');
