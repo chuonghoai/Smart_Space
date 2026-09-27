@@ -405,4 +405,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get passwordReqSpecial =>
       'Include at least one special character !@#\$^()_';
+
+  @override
+  String get actionView => 'View';
 }

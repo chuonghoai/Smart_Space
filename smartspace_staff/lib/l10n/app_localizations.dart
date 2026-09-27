@@ -883,6 +883,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Include at least one special character !@#\$^()_'**
   String get passwordReqSpecial;
+
+  /// No description provided for @actionView.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get actionView;
 }
 
 class _AppLocalizationsDelegate

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
@@ -6,19 +7,27 @@ import 'routes/router_path.dart';
 import 'package:mobile_shared/core/localization/locale_provider.dart';
 import 'package:mobile_shared/core/theme/theme_provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:flutter_web_plugins/url_strategy.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_shared/mobile_shared.dart';
 import 'firebase_options.dart';
+import 'features/app_services/app_services_initializer.dart';
+import 'package:smartspace_staff/features/app_services/ws_services_registry.dart';
+import 'package:smartspace_staff/features/notifications/services/notification_ws_service.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
 
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await TokenStorage.init(AppScope.staff);
   await EnvConfig.init();
-  usePathUrlStrategy();
   await dotenv.load(fileName: ".env");
+
+  // Initialize Mapbox (Mobile only — Web uses Mapbox GL JS)
+  if (!kIsWeb) {
+    final mapboxToken = dotenv.env['MAPBOX_ACCESS_TOKEN'] ?? '';
+    mapbox.MapboxOptions.setAccessToken(mapboxToken);
+  }
   
   await FirebaseService.initialize(DefaultFirebaseOptions.currentPlatform);
   
@@ -34,6 +43,8 @@ void main() async {
       }
     }
   });
+
+  WsServicesRegistry.register(NotificationWsService());
 
   runApp(const ProviderScope(child: SmartSpaceStaffApp()));
 }
@@ -73,22 +84,25 @@ class _SmartSpaceAppState extends State<SmartSpaceStaffApp> with WidgetsBindingO
     return ListenableBuilder(
       listenable: Listenable.merge([localeProvider, themeProvider]),
       builder: (context, child) {
-        return MaterialApp.router(
-          scaffoldMessengerKey: scaffoldMessengerKey,
-          title: 'SmartSpace Staff',
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: themeProvider.themeMode,
-          locale: localeProvider.locale,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [Locale('vi'), Locale('en')],
-          routerConfig: appRouter,
-          debugShowCheckedModeBanner: false,
+        return AppServicesInitializer(
+          child: MaterialApp.router(
+            scaffoldMessengerKey: scaffoldMessengerKey,
+            title: 'SmartSpace Staff',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider.themeMode,
+            locale: localeProvider.locale,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              SharedLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('vi'), Locale('en')],
+            routerConfig: appRouter,
+            debugShowCheckedModeBanner: false,
+          ),
         );
       },
     );

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobile_shared/core/constants/registration_status.dart';
 import 'package:mobile_shared/core/auth/token_storage.dart';
 import 'package:mobile_shared/core/auth/user_storage_service.dart';
 import 'package:mobile_shared/core/interceptors/error_interceptor.dart';
@@ -45,11 +44,11 @@ class SplashController extends ChangeNotifier {
         await locationService.getCurrentPosition();
         if (!context.mounted) return;
 
-        if (currentUser?.registrationStatus == ERegistrationStatus.completed) {
+        if (currentUser != null) {
           connectionManager.startConnections();
           context.go(RouterPath.home);
         } else {
-          context.go(RouterPath.completeProfile);
+          context.go(RouterPath.login);
         }
         return;
       }
@@ -70,12 +69,11 @@ class SplashController extends ChangeNotifier {
           await locationService.getCurrentPosition();
           if (!context.mounted) return;
 
-          if (currentUser?.registrationStatus ==
-              ERegistrationStatus.completed) {
+          if (currentUser != null) {
             connectionManager.startConnections();
             context.go(RouterPath.home);
           } else {
-            context.go(RouterPath.completeProfile);
+            context.go(RouterPath.login);
           }
           return;
         }

@@ -142,5 +142,6 @@
   "changePasswordFailed": "Đổi mật khẩu thất bại",
   "passwordReqLength": "Mật khẩu phải từ 8 đến 20 ký tự",
   "passwordReqMixed": "Bao gồm số, chữ viết hoa, chữ viết thường",
-  "passwordReqSpecial": "Bao gồm ít nhất một ký tự đặc biệt !@#$^()_"
+  "passwordReqSpecial": "Bao gồm ít nhất một ký tự đặc biệt !@#$^()_",
+  "actionView": "View"
 }

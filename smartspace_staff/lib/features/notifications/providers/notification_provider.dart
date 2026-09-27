@@ -38,6 +38,8 @@ class NotificationNotifier extends StateNotifier<NotificationState> {
     fetchCount();
   }
 
+  Timer? _fetchCountTimer;
+
   Future<void> fetchCount({bool forceRefresh = false}) async {
     // Check TTL
     if (!forceRefresh && state.lastFetched != null) {
@@ -62,6 +64,19 @@ class NotificationNotifier extends StateNotifier<NotificationState> {
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
     }
+  }
+
+  void onNotificationReceived() {
+    _fetchCountTimer?.cancel();
+    _fetchCountTimer = Timer(const Duration(milliseconds: 1000), () {
+      fetchCount(forceRefresh: true);
+    });
+  }
+
+  @override
+  void dispose() {
+    _fetchCountTimer?.cancel();
+    super.dispose();
   }
 }
 

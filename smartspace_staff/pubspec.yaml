@@ -54,6 +54,7 @@ dependencies:
   google_sign_in: ^7.2.0
   stomp_dart_client: ^3.0.1
   firebase_messaging: ^15.2.5
+  mapbox_maps_flutter: ^2.31.1
 
 dev_dependencies:
   flutter_test:

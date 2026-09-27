@@ -404,4 +404,7 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get passwordReqSpecial =>
       'Bao gồm ít nhất một ký tự đặc biệt !@#\$^()_';
+
+  @override
+  String get actionView => 'View';
 }

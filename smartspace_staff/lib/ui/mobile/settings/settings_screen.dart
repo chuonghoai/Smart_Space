@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
-import 'package:smartspace_staff/routes/router_path.dart';
 import 'package:smartspace_staff/ui/mobile/settings/settings_controller.dart';
 import 'package:smartspace_staff/ui/shared/image/app_network_image.dart';
 
@@ -61,12 +60,6 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                 theme: theme,
                 icon: Icons.lock_outlined,
                 label: l10n.loginSettings,
-              ),
-              _buildItem(
-                theme: theme,
-                icon: Icons.password,
-                label: l10n.changePassword,
-                onTap: () => context.push(RouterPath.changePassword),
               ),
               _buildItem(
                 theme: theme,

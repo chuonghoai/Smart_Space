@@ -6,7 +6,6 @@ import 'package:smartspace_admin/features/reports/application/report_list_provid
 import 'package:smartspace_admin/features/reports/models/report_list_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
-import 'report_table_view.dart' show SeverityChip;
 
 // Valid flow
 const _validTransitions = {
