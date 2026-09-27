@@ -143,5 +143,10 @@
   "passwordReqLength": "Password must be 8-20 characters",
   "passwordReqMixed": "Include numbers, uppercase, lowercase",
   "passwordReqSpecial": "Include at least one special character !@#$^()_",
-  "actionView": "View"
+  "actionView": "View",
+  "routeSplash": "Splash Screen",
+  "routeLogin": "Login",
+  "routeHome": "Home",
+  "routeSettings": "Settings",
+  "routeReportDetail": "Report Detail"
 }

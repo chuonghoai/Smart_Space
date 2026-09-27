@@ -1,7 +1,10 @@
+import 'package:smartspace_staff/routes/route_name.dart';
+
 class RouterPath {
-  static const String splash = '/splash';
-  static const String login = '/login';
-  static const String home = '/home';
-  static const String settings = '/setting';
-  static const String reportDetail = '/reports/:id';
+  static String get splash => RouteName.splash.path;
+  static String get login => RouteName.login.path;
+  static String get home => RouteName.home.path;
+  static String get settings => RouteName.settings.path;
+  static String get reportDetail => RouteName.reportDetail.path;
+  static String get search => RouteName.search.path;
 }

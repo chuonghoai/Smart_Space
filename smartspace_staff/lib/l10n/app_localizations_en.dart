@@ -408,4 +408,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get actionView => 'View';
+
+  @override
+  String get routeSplash => 'Splash Screen';
+
+  @override
+  String get routeLogin => 'Login';
+
+  @override
+  String get routeHome => 'Home';
+
+  @override
+  String get routeSettings => 'Settings';
+
+  @override
+  String get routeReportDetail => 'Report Detail';
 }

@@ -406,5 +406,20 @@ class AppLocalizationsVi extends AppLocalizations {
       'Bao gồm ít nhất một ký tự đặc biệt !@#\$^()_';
 
   @override
-  String get actionView => 'View';
+  String get actionView => 'Xem';
+
+  @override
+  String get routeSplash => 'Màn hình chào';
+
+  @override
+  String get routeLogin => 'Đăng nhập';
+
+  @override
+  String get routeHome => 'Trang chủ';
+
+  @override
+  String get routeSettings => 'Cài đặt';
+
+  @override
+  String get routeReportDetail => 'Chi tiết phản ánh';
 }

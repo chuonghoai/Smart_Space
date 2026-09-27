@@ -889,6 +889,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View'**
   String get actionView;
+
+  /// No description provided for @routeSplash.
+  ///
+  /// In en, this message translates to:
+  /// **'Splash Screen'**
+  String get routeSplash;
+
+  /// No description provided for @routeLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get routeLogin;
+
+  /// No description provided for @routeHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get routeHome;
+
+  /// No description provided for @routeSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get routeSettings;
+
+  /// No description provided for @routeReportDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Detail'**
+  String get routeReportDetail;
 }
 
 class _AppLocalizationsDelegate
