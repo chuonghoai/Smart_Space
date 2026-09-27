@@ -422,4 +422,10 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get routeReportDetail => 'Chi tiết phản ánh';
+
+  @override
+  String get staffSplashAppName => 'SmartSpace Staff';
+
+  @override
+  String get staffSplashTagline => 'Công cụ quản lý và xử lý phản ánh.';
 }

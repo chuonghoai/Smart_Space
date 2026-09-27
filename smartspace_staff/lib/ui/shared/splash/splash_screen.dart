@@ -80,38 +80,86 @@ class _SplashScreenState extends State<SplashScreen> {
               );
             }
 
-            return Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 32.0),
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(Icons.location_on, size: 80, color: colorScheme.primary),
-                  const SizedBox(height: 24),
-                  Text(
-                    l10n.smartSpaceAppName,
-                    style: textTheme.headlineLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: colorScheme.primary,
+            return Container(
+              width: double.infinity,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                  colors: [
+                    colorScheme.primaryContainer,
+                    colorScheme.surface,
+                  ],
+                ),
+              ),
+              child: SafeArea(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    const SizedBox(height: 48),
+                    // Main Logo Area
+                    Column(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(24),
+                          decoration: BoxDecoration(
+                            color: colorScheme.primary,
+                            shape: BoxShape.circle,
+                            boxShadow: [
+                              BoxShadow(
+                                color: colorScheme.shadow.withValues(alpha: 0.1),
+                                blurRadius: 20,
+                                offset: const Offset(0, 10),
+                              ),
+                            ],
+                          ),
+                          child: Icon(
+                            Icons.assignment_ind_rounded,
+                            size: 80,
+                            color: colorScheme.onPrimary,
+                          ),
+                        ),
+                        const SizedBox(height: 32),
+                        Text(
+                          l10n.staffSplashAppName,
+                          style: textTheme.headlineLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: colorScheme.primary,
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 40),
+                          child: Text(
+                            l10n.staffSplashTagline,
+                            style: textTheme.titleMedium?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                      ],
                     ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.splashTagline,
-                    style: textTheme.titleMedium?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
+                    // Loading Area at the bottom
+                    Padding(
+                      padding: const EdgeInsets.only(bottom: 64.0),
+                      child: Column(
+                        children: [
+                          CircularProgressIndicator(
+                            color: colorScheme.primary,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            l10n.loading,
+                            style: textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 64),
-                  const CircularProgressIndicator(),
-                  const SizedBox(height: 16),
-                  Text(
-                    l10n.loading,
-                    style: textTheme.bodySmall?.copyWith(
-                      color: colorScheme.onSurfaceVariant,
-                    ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             );
           },

@@ -919,6 +919,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Report Detail'**
   String get routeReportDetail;
+
+  /// No description provided for @staffSplashAppName.
+  ///
+  /// In en, this message translates to:
+  /// **'SmartSpace Staff'**
+  String get staffSplashAppName;
+
+  /// No description provided for @staffSplashTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Incident management and processing tool.'**
+  String get staffSplashTagline;
 }
 
 class _AppLocalizationsDelegate

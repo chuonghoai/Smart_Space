@@ -423,4 +423,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get routeReportDetail => 'Report Detail';
+
+  @override
+  String get staffSplashAppName => 'SmartSpace Staff';
+
+  @override
+  String get staffSplashTagline => 'Incident management and processing tool.';
 }

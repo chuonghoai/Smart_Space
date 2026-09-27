@@ -148,5 +148,7 @@
   "routeLogin": "Login",
   "routeHome": "Home",
   "routeSettings": "Settings",
-  "routeReportDetail": "Report Detail"
+  "routeReportDetail": "Report Detail",
+  "staffSplashAppName": "SmartSpace Staff",
+  "staffSplashTagline": "Incident management and processing tool."
 }

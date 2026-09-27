@@ -148,5 +148,7 @@
   "routeLogin": "Đăng nhập",
   "routeHome": "Trang chủ",
   "routeSettings": "Cài đặt",
-  "routeReportDetail": "Chi tiết phản ánh"
+  "routeReportDetail": "Chi tiết phản ánh",
+  "staffSplashAppName": "SmartSpace Staff",
+  "staffSplashTagline": "Công cụ quản lý và xử lý phản ánh."
 }
