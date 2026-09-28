@@ -4,7 +4,6 @@ import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
 import 'package:smartspace_admin/features/reports/application/report_list_providers.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
-import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/screen/reports/widgets/report_table_view.dart';
 
 /// Mobile card-based view for the report list (replaces table on small screens).

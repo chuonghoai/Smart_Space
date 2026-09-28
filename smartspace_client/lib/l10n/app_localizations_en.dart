@@ -714,4 +714,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get routeManageDevices => 'Manage Devices';
+
+  @override
+  String get routeNotifications => 'Notifications';
+
+  @override
+  String get markAllAsRead => 'Mark all as read';
+
+  @override
+  String get emptyNotification => 'You have no notifications.';
+
+  @override
+  String get unread => 'Unread';
 }

@@ -1453,6 +1453,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Manage Devices'**
   String get routeManageDevices;
+
+  /// No description provided for @routeNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get routeNotifications;
+
+  /// No description provided for @markAllAsRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all as read'**
+  String get markAllAsRead;
+
+  /// No description provided for @emptyNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no notifications.'**
+  String get emptyNotification;
+
+  /// No description provided for @unread.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread'**
+  String get unread;
 }
 
 class _AppLocalizationsDelegate

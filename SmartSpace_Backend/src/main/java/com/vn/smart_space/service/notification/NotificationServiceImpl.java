@@ -44,4 +44,43 @@ public class NotificationServiceImpl implements INotificationService {
                 .build();
         return notificationRepository.save(notification);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public com.vn.smart_space.dto.PageResponse<com.vn.smart_space.dto.response.notification.NotificationResponse> getMyNotifications(String userId, int page, int size) {
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
+        org.springframework.data.domain.Page<Notification> notifs = notificationRepository.findByUserIdOrUserIsNullOrderByCreatedAtDesc(userId, pageable);
+        
+        java.util.List<com.vn.smart_space.dto.response.notification.NotificationResponse> content = notifs.getContent().stream()
+                .map(n -> {
+                    long createdAtEpoch = n.getCreatedAt() != null ? n.getCreatedAt().atZone(java.time.ZoneId.systemDefault()).toInstant().toEpochMilli() : 0L;
+                    return com.vn.smart_space.dto.response.notification.NotificationResponse.builder()
+                        .id(n.getId())
+                        .title(n.getTitle())
+                        .message(n.getMessage())
+                        .imageUrl(n.getImageUrl())
+                        .isRead(n.getIsRead())
+                        .createdAt(createdAtEpoch)
+                        .actionData(n.getActionData())
+                        .build();
+                })
+                .collect(java.util.stream.Collectors.toList());
+
+        return com.vn.smart_space.dto.PageResponse.<com.vn.smart_space.dto.response.notification.NotificationResponse>builder()
+                .currentPage(notifs.getNumber())
+                .pageSize(notifs.getSize())
+                .totalPages(notifs.getTotalPages())
+                .totalElements(notifs.getTotalElements())
+                .content(content)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public void markAllAsRead(String userId) {
+        java.util.List<Notification> unreads = notificationRepository.findByUserIdAndIsReadFalse(userId);
+        unreads.forEach(n -> n.setIsRead(true));
+        notificationRepository.saveAll(unreads);
+        // Note: Broadcast notification read tracking can be added here if needed
+    }
 }

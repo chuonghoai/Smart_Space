@@ -17,6 +17,10 @@ $TestRegistry = @{
         TestClass   = "com.vn.smart_space.controller.report.CreateReportTest"
         Description = "Mo phong 1 Client tao phan anh su co thuc te (100% giong app) & kich hoat realtime websocket/FCM"
     }
+    "AssignReport" = @{
+        TestClass   = "com.vn.smart_space.controller.report.AssignReportTest"
+        Description = "Mo phong Client tao report, sau do Admin phan cong cho Staff de test realtime notification cho Client"
+    }
 }
 
 # -----------------------------------------------------------------------------

@@ -713,4 +713,16 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get routeManageDevices => 'Quản lý thiết bị';
+
+  @override
+  String get routeNotifications => 'Thông báo';
+
+  @override
+  String get markAllAsRead => 'Đánh dấu tất cả đã đọc';
+
+  @override
+  String get emptyNotification => 'Bạn chưa có thông báo nào.';
+
+  @override
+  String get unread => 'Chưa đọc';
 }

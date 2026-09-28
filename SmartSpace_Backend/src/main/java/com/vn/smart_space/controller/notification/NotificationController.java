@@ -12,9 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 import com.vn.smart_space.dto.ApiResponse;
 import com.vn.smart_space.dto.request.notification.NotificationRequest;
 import com.vn.smart_space.dto.response.notification.NotificationCountResponse;
+import com.vn.smart_space.dto.response.notification.NotificationResponse;
+import com.vn.smart_space.dto.PageResponse;
 import com.vn.smart_space.service.notification.IFCMService;
 import com.vn.smart_space.service.notification.INotificationService;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import lombok.RequiredArgsConstructor;
 
@@ -44,5 +48,22 @@ public class NotificationController {
         String userId = jwt.getClaim("userId").toString();
         NotificationCountResponse response = notificationService.getUnreadCount(userId);
         return ResponseEntity.ok(ApiResponse.success("system.success", response));
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<ApiResponse> getMyNotifications(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "20") int size) {
+        String userId = jwt.getClaim("userId").toString();
+        PageResponse<NotificationResponse> response = notificationService.getMyNotifications(userId, page, size);
+        return ResponseEntity.ok(ApiResponse.success("system.success", response));
+    }
+
+    @PutMapping("/my/read-all")
+    public ResponseEntity<ApiResponse> markAllAsRead(@AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt.getClaim("userId").toString();
+        notificationService.markAllAsRead(userId);
+        return ResponseEntity.ok(ApiResponse.success("system.success", null));
     }
 }

@@ -116,7 +116,7 @@ class Sidebar extends ConsumerWidget {
                         : null,
                     onTap: () {
                       Navigator.pop(context);
-                      // TODO: Navigate to Notifications
+                      context.push(RouterPath.notifications);
                     },
                   ),
                   _SidebarItem(

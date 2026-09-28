@@ -288,5 +288,9 @@
   "routeMyReports": "My Reports",
   "routeEditProfile": "Edit Profile",
   "routeChangePassword": "Change Password",
-  "routeManageDevices": "Manage Devices"
+  "routeManageDevices": "Manage Devices",
+  "routeNotifications": "Notifications",
+  "markAllAsRead": "Mark all as read",
+  "emptyNotification": "You have no notifications.",
+  "unread": "Unread"
 }

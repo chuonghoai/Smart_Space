@@ -18,6 +18,7 @@ import 'package:smartspace_client/ui/mobile/reports/presentation/report_detail_s
 import 'package:smartspace_client/ui/mobile/reports/my_reports_screen.dart';
 import 'package:mobile_shared/core/toast/toast_service.dart';
 import 'package:smartspace_client/ui/mobile/search/search_screen.dart';
+import 'package:smartspace_client/ui/mobile/notifications/notification_screen.dart';
 import 'package:flutter/material.dart';
 
 /// Re-export for convenience so existing callers of navigatorKey still compile.
@@ -87,6 +88,10 @@ final appRouter = GoRouter(
       path: RouterPath.reportDetail,
       builder: (context, state) =>
           ReportDetailScreen(reportId: state.pathParameters['id']!),
+    ),
+    GoRoute(
+      path: RouterPath.notifications,
+      builder: (context, state) => const NotificationScreen(),
     ),
     GoRoute(
       path: RouterPath.myReports,

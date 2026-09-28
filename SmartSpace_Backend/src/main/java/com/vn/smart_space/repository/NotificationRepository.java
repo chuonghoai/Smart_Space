@@ -12,4 +12,9 @@ public interface NotificationRepository extends JpaRepository<Notification, Stri
 
     @Query("SELECT COUNT(n) FROM Notification n WHERE n.user IS NULL")
     long countTotalBroadcastNotifications();
+
+    @Query("SELECT n FROM Notification n WHERE n.user.id = :userId OR n.user IS NULL ORDER BY n.createdAt DESC")
+    org.springframework.data.domain.Page<Notification> findByUserIdOrUserIsNullOrderByCreatedAtDesc(@Param("userId") String userId, org.springframework.data.domain.Pageable pageable);
+
+    java.util.List<Notification> findByUserIdAndIsReadFalse(String userId);
 }

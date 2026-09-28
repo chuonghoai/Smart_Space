@@ -288,5 +288,9 @@
   "routeMyReports": "Phản ánh của tôi",
   "routeEditProfile": "Chỉnh sửa hồ sơ",
   "routeChangePassword": "Đổi mật khẩu",
-  "routeManageDevices": "Quản lý thiết bị"
+  "routeManageDevices": "Quản lý thiết bị",
+  "routeNotifications": "Thông báo",
+  "markAllAsRead": "Đánh dấu tất cả đã đọc",
+  "emptyNotification": "Bạn chưa có thông báo nào.",
+  "unread": "Chưa đọc"
 }
