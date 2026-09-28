@@ -22,13 +22,29 @@ class ReportRepository {
       decoder: (json) {
         final map = json as Map<String, dynamic>;
         final staffsMap = map['staffs'] as Map<String, dynamic>?;
+        List<dynamic> content = [];
+        
         if (staffsMap != null) {
-          final content = staffsMap['content'] as List<dynamic>? ?? [];
-          return content
-              .map((e) => StaffModel.fromJson(e as Map<String, dynamic>))
-              .toList();
+          final contentRaw = staffsMap['content'];
+          if (contentRaw is List) {
+            content = contentRaw;
+          } else if (contentRaw is Map) {
+            content = contentRaw.values.toList();
+          }
+        } else {
+          if (map.containsKey('content')) {
+            final contentRaw = map['content'];
+            if (contentRaw is List) {
+              content = contentRaw;
+            } else if (contentRaw is Map) {
+              content = contentRaw.values.toList();
+            }
+          }
         }
-        return [];
+        
+        return content
+            .map((e) => StaffModel.fromJson(e as Map<String, dynamic>))
+            .toList();
       },
     );
   }

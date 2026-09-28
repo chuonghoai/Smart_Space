@@ -21,7 +21,14 @@ class StaffListResponse {
   factory StaffListResponse.fromJson(Map<String, dynamic> json) {
     final summaryJson = json['summary'] as Map<String, dynamic>? ?? {};
     final staffsJson = json['staffs'] as Map<String, dynamic>? ?? {};
-    final contentList = staffsJson['content'] as List<dynamic>? ?? [];
+    
+    List<dynamic> contentList = [];
+    final contentRaw = staffsJson['content'];
+    if (contentRaw is List) {
+      contentList = contentRaw;
+    } else if (contentRaw is Map) {
+      contentList = contentRaw.values.toList();
+    }
 
     return StaffListResponse(
       summary: StaffSummaryModel.fromJson(summaryJson),
