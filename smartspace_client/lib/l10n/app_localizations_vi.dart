@@ -728,4 +728,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get unread => 'Chưa đọc';
+
+  @override
+  String get assignedStaff => 'Nhân viên xử lý';
 }

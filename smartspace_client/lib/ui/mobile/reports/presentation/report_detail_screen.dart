@@ -185,6 +185,49 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                         ),
                         const SizedBox(height: 24),
 
+                        if (report.assignedStaffId != null) ...[
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  l10n.assignedStaff,
+                                  style: theme.textTheme.labelMedium?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: theme.colorScheme.primary,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Row(
+                                  children: [
+                                    CircleAvatar(
+                                      backgroundImage: report.assignedStaffAvatarUrl != null && report.assignedStaffAvatarUrl!.isNotEmpty
+                                          ? NetworkImage(report.assignedStaffAvatarUrl!)
+                                          : null,
+                                      child: (report.assignedStaffAvatarUrl == null || report.assignedStaffAvatarUrl!.isEmpty)
+                                          ? Icon(Icons.person, color: theme.colorScheme.onSurfaceVariant)
+                                          : null,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        report.assignedStaffName ?? 'Unknown',
+                                        style: theme.textTheme.titleMedium,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                        ],
+
                         // Map & Distance
                         Consumer(
                           builder: (context, ref, child) {
@@ -310,3 +353,4 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
     );
   }
 }
+

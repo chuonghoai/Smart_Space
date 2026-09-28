@@ -729,4 +729,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unread => 'Unread';
+
+  @override
+  String get assignedStaff => 'Assigned Staff';
 }

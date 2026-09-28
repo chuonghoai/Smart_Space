@@ -8,6 +8,9 @@ class ReportDetailModel extends ReportModel {
   final bool isAnonymous; // Ẩn danh
   final String? address; // Địa chỉ
   final String? locationDescription; // Mô tả chi tiết địa điểm
+  final String? assignedStaffId;
+  final String? assignedStaffName;
+  final String? assignedStaffAvatarUrl;
 
   ReportDetailModel({
     required super.id,
@@ -24,6 +27,9 @@ class ReportDetailModel extends ReportModel {
     required this.isAnonymous,
     this.address,
     this.locationDescription,
+    this.assignedStaffId,
+    this.assignedStaffName,
+    this.assignedStaffAvatarUrl,
   }) : super(imageUrl: imageUrls.isNotEmpty ? imageUrls.first : '');
 
   factory ReportDetailModel.fromJson(Map<String, dynamic> json) {
@@ -55,6 +61,9 @@ class ReportDetailModel extends ReportModel {
       address: json['address'] as String?,
       locationDescription: json['location_description'] as String?,
       distanceInMeters: (json['distance_in_meters'] as num?)?.toDouble(),
+      assignedStaffId: json['assigned_staff_id'] as String?,
+      assignedStaffName: json['assigned_staff_name'] as String?,
+      assignedStaffAvatarUrl: json['assigned_staff_avatar_url'] as String?,
     );
   }
 
@@ -66,6 +75,9 @@ class ReportDetailModel extends ReportModel {
     map['is_anonymous'] = isAnonymous;
     map['address'] = address;
     map['location_description'] = locationDescription;
+    map['assigned_staff_id'] = assignedStaffId;
+    map['assigned_staff_name'] = assignedStaffName;
+    map['assigned_staff_avatar_url'] = assignedStaffAvatarUrl;
     return map;
   }
 
@@ -104,6 +116,9 @@ class ReportDetailModel extends ReportModel {
     bool? isAnonymous,
     String? address,
     String? locationDescription,
+    String? assignedStaffId,
+    String? assignedStaffName,
+    String? assignedStaffAvatarUrl,
   }) {
     return ReportDetailModel(
       id: id ?? this.id,
@@ -119,6 +134,9 @@ class ReportDetailModel extends ReportModel {
       isAnonymous: isAnonymous ?? this.isAnonymous,
       address: address ?? this.address,
       locationDescription: locationDescription ?? this.locationDescription,
+      assignedStaffId: assignedStaffId ?? this.assignedStaffId,
+      assignedStaffName: assignedStaffName ?? this.assignedStaffName,
+      assignedStaffAvatarUrl: assignedStaffAvatarUrl ?? this.assignedStaffAvatarUrl,
     );
   }
 }

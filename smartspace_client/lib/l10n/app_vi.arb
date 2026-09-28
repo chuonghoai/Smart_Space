@@ -63,7 +63,6 @@
   "pleaseEnterEmail": "Vui lòng nhập email",
   "pleaseEnterOTP": "Vui lòng nhập mã OTP",
   "pleaseEnterPassword": "Vui lòng nhập mật khẩu",
-  "passwordsDoNotMatch": "Mật khẩu không khớp",
   "pleaseEnterFullName": "Vui lòng nhập họ tên",
   "pleaseEnterPhoneNumber": "Vui lòng nhập số điện thoại",
   "send": "Gửi",
@@ -86,25 +85,20 @@
   "help": "Trợ giúp",
   "aboutApp": "Về ứng dụng",
   "home": "Trang chủ",
-  "recentReports": "Phản ánh gần đây",
+  "recentReports": "Gần đây",
   "noReportsYet": "Chưa có phản ánh nào",
   "user": "Người dùng",
   "logout": "Đăng xuất",
-  "dangerousReports": "Cảnh báo nguy hiểm",
+  "dangerousReports": "Nguy hiểm",
   "map": "Bản đồ",
   "news": "Tin tức",
   "instructions": "Hướng dẫn",
   "viewAll": "Tất cả",
   "dangerous": "NGUY HIỂM",
-  "distanceFromYou": "Cách bạn {value} {unit}",
+  "distanceFromYou": "Cách bạn: {distance} km",
   "@distanceFromYou": {
     "placeholders": {
-      "value": {
-        "type": "String"
-      },
-      "unit": {
-        "type": "String"
-      }
+      "distance": {}
     }
   },
   "unitMeter": "m",
@@ -134,7 +128,6 @@
   "logoutConfirmTitle": "Đăng xuất",
   "logoutConfirmMessage": "Bạn có chắc chắn muốn đăng xuất?",
   "cancel": "Hủy",
-
   "changePasswordTitle": "Đổi mật khẩu",
   "currentPassword": "Mật khẩu hiện tại",
   "confirmNewPassword": "Nhập lại mật khẩu mới",
@@ -148,21 +141,25 @@
   "passwordReqLength": "Mật khẩu phải từ 8 đến 20 ký tự",
   "passwordReqMixed": "Bao gồm số, chữ viết hoa, chữ viết thường",
   "passwordReqSpecial": "Bao gồm ít nhất một ký tự đặc biệt !@#$^()_",
-
   "loggedInDevices": "Thiết bị đã đăng nhập",
   "thisDevice": "Thiết bị này",
   "activeNow": "Đang hoạt động",
   "logoutDevice": "Đăng xuất",
   "logoutDeviceConfirmTitle": "Đăng xuất khỏi thiết bị?",
   "logoutDeviceConfirmMessage": "Phiên đăng nhập trên \"{deviceName}\" sẽ bị kết thúc.",
-  "@logoutDeviceConfirmMessage": { "placeholders": { "deviceName": { "type": "String" } } },
+  "@logoutDeviceConfirmMessage": {
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
   "logoutAllOtherDevices": "Đăng xuất tất cả thiết bị khác",
   "logoutAllConfirmTitle": "Đăng xuất tất cả thiết bị khác?",
   "logoutAllConfirmMessage": "Tất cả phiên ngoại trừ thiết bị này sẽ bị kết thúc.",
   "noOtherDevices": "Không có thiết bị khác đang đăng nhập.",
   "deviceLogoutSuccess": "Đã đăng xuất thiết bị.",
   "allDevicesLogoutSuccess": "Đã đăng xuất tất cả thiết bị khác.",
-
   "editProfile": "Chỉnh sửa hồ sơ",
   "dateOfBirth": "Ngày sinh",
   "gender": "Giới tính",
@@ -178,7 +175,6 @@
   "genderOtherConfirmMessage": "Bạn có chắc chắn muốn chọn giới tính \"Khác\"?",
   "dateOfBirthEmptyTitle": "Bạn chưa nhập ngày sinh",
   "dateOfBirthEmptyMessage": "Bạn có muốn tiếp tục? Có thể thêm ngày sinh trong cài đặt sau.",
-
   "createReportTitle": "Tạo phản ánh",
   "reportTitleLabel": "Tiêu đề *",
   "reportDescLabel": "Mô tả *",
@@ -249,8 +245,6 @@
   "refresh": "Tải lại",
   "filter": "Bộ lọc",
   "calculatingDistance": "Đang tính khoảng cách...",
-  "dangerousReports": "Nguy hiểm",
-  "recentReports": "Gần đây",
   "reportDetails": "Chi tiết phản ánh",
   "turnOnLocationToViewDistance": "Bật vị trí để xem khoảng cách từ nơi xảy ra đến vị trí của bạn",
   "openInGoogleMaps": "Mở trên Google Maps",
@@ -264,12 +258,6 @@
   "locationServiceDisabledError": "Vui lòng bật dịch vụ vị trí trên thiết bị",
   "locationPermissionDeniedForeverError": "Quyền vị trí bị từ chối vĩnh viễn, vui lòng vào cài đặt để bật",
   "cannotOpenGoogleMapsError": "Không thể mở Google Maps",
-  "distanceFromYou": "Cách bạn: {distance} km",
-  "@distanceFromYou": {
-    "placeholders": {
-      "distance": {}
-    }
-  },
   "errorOccurred": "Đã xảy ra lỗi:\n{error}",
   "@errorOccurred": {
     "placeholders": {
@@ -281,7 +269,6 @@
   "hourAgo": "h trước",
   "dayAgo": "ngày trước",
   "justNow": "Vừa xong",
-
   "routeHome": "Trang chủ",
   "routeSettings": "Cài đặt",
   "routeMap": "Bản đồ",
@@ -293,5 +280,6 @@
   "routeNotifications": "Thông báo",
   "markAllAsRead": "Đánh dấu tất cả đã đọc",
   "emptyNotification": "Bạn chưa có thông báo nào.",
-  "unread": "Chưa đọc"
+  "unread": "Chưa đọc",
+  "assignedStaff": "Nhân viên xử lý"
 }

@@ -1483,6 +1483,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unread'**
   String get unread;
+
+  /// No description provided for @assignedStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Staff'**
+  String get assignedStaff;
 }
 
 class _AppLocalizationsDelegate
