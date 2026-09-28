@@ -62,8 +62,7 @@
   "pleaseEnterEmail": "Please enter email",
   "pleaseEnterOTP": "Please enter OTP",
   "pleaseEnterPassword": "Please enter password",
-  "passwordsDoNotMatch": "Passwords do not match",
-  "pleaseEnterFullName": "Please enter full name",
+  "pleaseEnterFullName": "Please enter your full name",
   "pleaseEnterPhoneNumber": "Please enter phone number",
   "send": "Send",
   "resetPassword": "Reset Password",
@@ -129,7 +128,6 @@
   "logoutConfirmTitle": "Log out",
   "logoutConfirmMessage": "Are you sure you want to log out?",
   "cancel": "Cancel",
-
   "changePasswordTitle": "Change Password",
   "currentPassword": "Current Password",
   "confirmNewPassword": "Confirm New Password",
@@ -143,7 +141,6 @@
   "passwordReqLength": "Password must be 8-20 characters",
   "passwordReqMixed": "Include numbers, uppercase, lowercase",
   "passwordReqSpecial": "Include at least one special character !@#$^()_",
-  
   "users": "Users",
   "staff": "Staff",
   "admins": "Admins",
@@ -209,7 +206,7 @@
   "processingStatus": "Processing",
   "viewDetails": "View Details",
   "staffNotFound": "Staff not found",
-  "filterByStatus": "Filter by status",
+  "filterByStatus": "Status",
   "addNewStaff": "Add new staff",
   "create": "Create",
   "addStaffSuccess": "Staff added successfully",
@@ -267,11 +264,9 @@
   "monthly": "Monthly",
   "severityDistribution": "Severity Distribution",
   "noData": "No data available",
-
   "reportList": "Report List",
   "tableView": "Table",
   "kanbanView": "Kanban",
-  "filterByStatus": "Status",
   "filterBySeverity": "Severity",
   "filterByAssignee": "Assignee",
   "selectDateRange": "Select Date",
@@ -281,10 +276,6 @@
   "noReportsFound": "No reports found",
   "loadMore": "Load More",
   "invalidTransition": "Invalid status transition",
-  "severityLow": "Low",
-  "severityMedium": "Medium",
-  "severityHigh": "High",
-  "severityCritical": "Critical",
   "reportTitle": "Title",
   "severityLabel": "Severity",
   "assignee": "Assignee",
@@ -294,16 +285,26 @@
   "saveChanges": "Save Changes",
   "profileUpdateSuccess": "Profile updated successfully",
   "profileUpdateFailed": "Failed to update profile",
-  "pleaseEnterFullName": "Please enter your full name",
-
   "mapFilterTitle": "Filter Reports",
   "mapHeatmapMode": "Heatmap",
   "mapMarkerMode": "Markers",
   "mapClusterCount": "{count} reports",
-  "@mapClusterCount": { "placeholders": { "count": { "type": "int" } } },
+  "@mapClusterCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "mapStaffTracking": "Staff Tracking",
   "mapNewReportToast": "New report at {address}",
-  "@mapNewReportToast": { "placeholders": { "address": { "type": "String" } } },
+  "@mapNewReportToast": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
   "mapAssignStaff": "Assign Staff",
   "mapNearestStaff": "Nearest Staff",
   "mapViewDetail": "View Detail",
@@ -321,7 +322,6 @@
   "minuteAgo": "min ago",
   "hourAgo": "h ago",
   "dayAgo": "days ago",
-
   "routeHome": "Home",
   "routeSettings": "Settings",
   "routeEditProfile": "Edit Profile",
@@ -331,5 +331,9 @@
   "routeReportList": "Report List",
   "routeSpaceMap": "Space Map",
   "mapQuickAssignTitle": "Quick Assign",
-  "mapSelectSeverity": "Select severity"
+  "mapSelectSeverity": "Select severity",
+  "routeNotifications": "Notifications",
+  "emptyNotification": "No notifications",
+  "justNow": "Just now",
+  "markAllAsRead": "Mark all as read"
 }

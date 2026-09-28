@@ -1861,6 +1861,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select severity'**
   String get mapSelectSeverity;
+
+  /// No description provided for @routeNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get routeNotifications;
+
+  /// No description provided for @emptyNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications'**
+  String get emptyNotification;
+
+  /// No description provided for @justNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get justNow;
+
+  /// No description provided for @markAllAsRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all as read'**
+  String get markAllAsRead;
 }
 
 class _AppLocalizationsDelegate

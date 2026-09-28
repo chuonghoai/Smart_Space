@@ -1,5 +1,6 @@
 import 'package:go_router/go_router.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
+import 'package:smartspace_admin/ui/screen/notifications/admin_notification_screen.dart';
 import 'package:smartspace_admin/ui/screen/auth/login/login_screen.dart';
 import 'package:smartspace_admin/ui/screen/auth/forgot_password/forgot_password_screen.dart';
 import 'package:smartspace_admin/ui/screen/home/admin_home_screen.dart';
@@ -84,6 +85,10 @@ final appRouter = GoRouter(
           return FadeTransition(opacity: animation, child: child);
         },
       ),
+    ),
+    GoRoute(
+      path: RouterPath.notifications,
+      builder: (context, state) => const AdminNotificationScreen(),
     ),
   ],
 );

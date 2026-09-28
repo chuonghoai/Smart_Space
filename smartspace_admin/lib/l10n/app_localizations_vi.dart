@@ -907,4 +907,16 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get mapSelectSeverity => 'Chọn mức độ';
+
+  @override
+  String get routeNotifications => 'Thông báo';
+
+  @override
+  String get emptyNotification => 'Không có thông báo nào';
+
+  @override
+  String get justNow => 'Vừa xong';
+
+  @override
+  String get markAllAsRead => 'Đánh dấu đã đọc tất cả';
 }

@@ -33,7 +33,7 @@ class TopBar extends ConsumerWidget implements PreferredSizeWidget {
             IconButton(
               icon: const Icon(Icons.notifications_none),
               onPressed: () {
-                // TODO: Navigate to notifications
+                context.push(RouterPath.notifications);
               },
               tooltip: l10n.notifications,
             ),

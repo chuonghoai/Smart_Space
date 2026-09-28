@@ -908,4 +908,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mapSelectSeverity => 'Select severity';
+
+  @override
+  String get routeNotifications => 'Notifications';
+
+  @override
+  String get emptyNotification => 'No notifications';
+
+  @override
+  String get justNow => 'Just now';
+
+  @override
+  String get markAllAsRead => 'Mark all as read';
 }

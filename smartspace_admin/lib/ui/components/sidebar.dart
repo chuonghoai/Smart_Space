@@ -114,10 +114,10 @@ class Sidebar extends ConsumerWidget {
                             ),
                           )
                         : null,
-                    isSelected: false,
+                    isSelected: currentPath == RouterPath.notifications,
                     onTap: () {
                       Navigator.pop(context);
-                      // TODO: Navigate to Notifications
+                      context.push(RouterPath.notifications);
                     },
                   ),
                   _SidebarItem(
@@ -354,10 +354,10 @@ class WebSidebar extends ConsumerWidget {
                 icon: Icons.notifications_outlined,
                 label: l10n.notifications,
                 isExpanded: isExpanded,
-                isSelected: false,
+                isSelected: currentPath == RouterPath.notifications,
                 badge: unreadCount > 0 ? unreadCount : null,
                 onTap: () {
-                  // TODO: Navigate to Notifications
+                  context.push(RouterPath.notifications);
                 },
               ),
               _WebSidebarItem(

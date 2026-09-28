@@ -62,7 +62,6 @@
   "pleaseEnterEmail": "Vui lòng nhập email",
   "pleaseEnterOTP": "Vui lòng nhập mã OTP",
   "pleaseEnterPassword": "Vui lòng nhập mật khẩu",
-  "passwordsDoNotMatch": "Mật khẩu không khớp",
   "pleaseEnterFullName": "Vui lòng nhập họ tên",
   "pleaseEnterPhoneNumber": "Vui lòng nhập số điện thoại",
   "send": "Gửi",
@@ -129,7 +128,6 @@
   "logoutConfirmTitle": "Đăng xuất",
   "logoutConfirmMessage": "Bạn có chắc chắn muốn đăng xuất?",
   "cancel": "Hủy",
-
   "changePasswordTitle": "Đổi mật khẩu",
   "currentPassword": "Mật khẩu hiện tại",
   "confirmNewPassword": "Nhập lại mật khẩu mới",
@@ -143,7 +141,6 @@
   "passwordReqLength": "Mật khẩu phải từ 8 đến 20 ký tự",
   "passwordReqMixed": "Bao gồm số, chữ viết hoa, chữ viết thường",
   "passwordReqSpecial": "Bao gồm ít nhất một ký tự đặc biệt !@#$^()_",
-  
   "users": "Người dùng",
   "staff": "Nhân viên",
   "admins": "Quản trị viên",
@@ -187,7 +184,7 @@
   "severityLow": "Thấp",
   "severityMedium": "Trung bình",
   "severityHigh": "Cao",
-  "severityCritical": "Khẩn cấp",
+  "severityCritical": "Nghiêm trọng",
   "processReportButton": "Xử lý phản ánh",
   "assignSuccessMessage": "Phân công nhân viên và bắt đầu xử lý thành công!",
   "assignFailedMessage": "Không thể xử lý phản ánh, vui lòng thử lại.",
@@ -209,7 +206,7 @@
   "processingStatus": "Đang xử lý",
   "viewDetails": "Xem chi tiết",
   "staffNotFound": "Không tìm thấy nhân viên",
-  "filterByStatus": "Lọc theo trạng thái",
+  "filterByStatus": "Trạng thái",
   "addNewStaff": "Thêm nhân viên mới",
   "create": "Tạo",
   "addStaffSuccess": "Đã thêm nhân viên thành công",
@@ -267,11 +264,9 @@
   "monthly": "Tháng",
   "severityDistribution": "Phân bổ theo mức độ",
   "noData": "Chưa có dữ liệu",
-
   "reportList": "Danh sách phản ánh",
   "tableView": "Bảng",
   "kanbanView": "Kanban",
-  "filterByStatus": "Trạng thái",
   "filterBySeverity": "Mức độ",
   "filterByAssignee": "Nhân viên phụ trách",
   "selectDateRange": "Chọn ngày",
@@ -281,10 +276,6 @@
   "noReportsFound": "Không tìm thấy phản ánh nào",
   "loadMore": "Xem thêm",
   "invalidTransition": "Không thể chuyển trạng thái này",
-  "severityLow": "Thấp",
-  "severityMedium": "Trung bình",
-  "severityHigh": "Cao",
-  "severityCritical": "Nghiêm trọng",
   "reportTitle": "Tiêu đề",
   "severityLabel": "Mức độ",
   "assignee": "Nhân viên",
@@ -294,16 +285,26 @@
   "saveChanges": "Lưu thay đổi",
   "profileUpdateSuccess": "Cập nhật hồ sơ thành công",
   "profileUpdateFailed": "Cập nhật hồ sơ thất bại",
-  "pleaseEnterFullName": "Vui lòng nhập họ tên",
-
   "mapFilterTitle": "Lọc phản ánh",
   "mapHeatmapMode": "Bản đồ nhiệt",
   "mapMarkerMode": "Điểm đánh dấu",
   "mapClusterCount": "{count} phản ánh",
-  "@mapClusterCount": { "placeholders": { "count": { "type": "int" } } },
+  "@mapClusterCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "mapStaffTracking": "Theo dõi nhân viên",
   "mapNewReportToast": "Phản ánh mới tại {address}",
-  "@mapNewReportToast": { "placeholders": { "address": { "type": "String" } } },
+  "@mapNewReportToast": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
   "mapAssignStaff": "Giao nhân viên",
   "mapNearestStaff": "Nhân viên gần nhất",
   "mapViewDetail": "Xem chi tiết",
@@ -321,7 +322,6 @@
   "minuteAgo": "phút trước",
   "hourAgo": "giờ trước",
   "dayAgo": "ngày trước",
-
   "routeHome": "Trang chủ",
   "routeSettings": "Cài đặt",
   "routeEditProfile": "Chỉnh sửa hồ sơ",
@@ -331,5 +331,9 @@
   "routeReportList": "Danh sách phản ánh",
   "routeSpaceMap": "Bản đồ không gian",
   "mapQuickAssignTitle": "Phân công nhanh",
-  "mapSelectSeverity": "Chọn mức độ"
+  "mapSelectSeverity": "Chọn mức độ",
+  "routeNotifications": "Thông báo",
+  "emptyNotification": "Không có thông báo nào",
+  "justNow": "Vừa xong",
+  "markAllAsRead": "Đánh dấu đã đọc tất cả"
 }

@@ -35,6 +35,8 @@ class AppRouteInfo {
         return l10n.routeReportList;
       case 'routeSpaceMap':
         return l10n.routeSpaceMap;
+      case 'routeNotifications':
+        return l10n.routeNotifications;
       default:
         return nameKey;
     }
@@ -126,6 +128,12 @@ class RouteName {
     icon: Icons.search,
     isHiddenInSearch: true,
   );
+  static const notifications = AppRouteInfo(
+    path: '/notifications',
+    nameKey: 'routeNotifications',
+    icon: Icons.notifications,
+    priority: 9,
+  );
 
   static const List<AppRouteInfo> allRoutes = [
     splash,
@@ -142,6 +150,7 @@ class RouteName {
     reportList,
     spaceMap,
     search,
+    notifications,
   ];
 
   static List<AppRouteInfo> get searchableRoutes {
