@@ -6,4 +6,5 @@ abstract class NotificationRepo {
   Future<ApiResponse<NotificationCountModel>> getUnreadCount();
   Future<ApiResponse<List<NotificationModel>>> getMyNotifications({int page = 0, int size = 20});
   Future<ApiResponse<void>> markAllAsRead();
+  Future<ApiResponse<void>> markAsRead(String id);
 }

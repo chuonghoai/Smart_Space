@@ -147,6 +147,30 @@ class NotificationNotifier extends StateNotifier<NotificationState> {
     }
   }
 
+  Future<void> markAsRead(String id) async {
+    try {
+      final response = await _service.markAsRead(id);
+      if (response.success) {
+        final updatedList = state.notifications.map((n) {
+          if (n.id == id && !n.isRead) {
+            return n.copyWith(isRead: true);
+          }
+          return n;
+        }).toList();
+
+        final currentCount = state.countModel?.notifNumber ?? 0;
+        final newCount = currentCount > 0 ? currentCount - 1 : 0;
+
+        state = state.copyWith(
+          notifications: updatedList,
+          countModel: state.countModel != null ? NotificationCountModel(notifNumber: newCount) : null,
+        );
+      }
+    } catch (e) {
+      // Ignore errors for now
+    }
+  }
+
   void onNotificationReceived() {
     _fetchCountTimer?.cancel();
     _fetchCountTimer = Timer(const Duration(milliseconds: 1000), () {

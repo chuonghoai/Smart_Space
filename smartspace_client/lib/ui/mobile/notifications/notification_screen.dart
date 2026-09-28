@@ -39,6 +39,10 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
   }
 
   void _handleNotificationTap(NotificationModel notification) {
+    if (!notification.isRead) {
+      ref.read(notificationProvider.notifier).markAsRead(notification.id);
+    }
+    
     if (notification.actionData != null) {
        final type = notification.actionData!.type;
        final id = notification.actionData!.payload['id'] ?? notification.actionData!.payload['reportId'];
@@ -93,6 +97,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                           }
                           final item = state.notifications[index];
                           return ListTile(
+                            tileColor: item.isRead ? Colors.transparent : theme.colorScheme.primary.withOpacity(0.08),
                             onTap: () => _handleNotificationTap(item),
                             leading: CircleAvatar(
                               backgroundColor: theme.colorScheme.surfaceContainerHighest,
@@ -124,13 +129,21 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
                                 ),
                                 const SizedBox(height: 4),
                                 Text(
-                                  _formatTime(item.createdAt),
+                                  _formatTime(item.createdAt, l10n),
                                   style: theme.textTheme.labelSmall?.copyWith(
                                     color: theme.colorScheme.onSurfaceVariant,
                                   ),
                                 ),
                               ],
                             ),
+                            trailing: !item.isRead ? Container(
+                              width: 8,
+                              height: 8,
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.primary,
+                                shape: BoxShape.circle,
+                              ),
+                            ) : null,
                           );
                         },
                       ),
@@ -138,11 +151,11 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
     );
   }
 
-  String _formatTime(DateTime time) {
+  String _formatTime(DateTime time, AppLocalizations l10n) {
     final diff = DateTime.now().difference(time);
-    if (diff.inDays > 0) return '${diff.inDays}d ago';
-    if (diff.inHours > 0) return '${diff.inHours}h ago';
-    if (diff.inMinutes > 0) return '${diff.inMinutes}m ago';
-    return 'Just now';
+    if (diff.inDays > 0) return '${diff.inDays}${l10n.dayAgo}';
+    if (diff.inHours > 0) return '${diff.inHours}${l10n.hourAgo}';
+    if (diff.inMinutes > 0) return '${diff.inMinutes}${l10n.minuteAgo}';
+    return l10n.justNow;
   }
 }

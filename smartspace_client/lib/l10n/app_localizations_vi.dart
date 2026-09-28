@@ -682,13 +682,16 @@ class AppLocalizationsVi extends AppLocalizations {
   String get retryButton => 'Thử lại';
 
   @override
-  String get minuteAgo => 'phút trước';
+  String get minuteAgo => 'p trước';
 
   @override
-  String get hourAgo => 'giờ trước';
+  String get hourAgo => 'h trước';
 
   @override
   String get dayAgo => 'ngày trước';
+
+  @override
+  String get justNow => 'Vừa xong';
 
   @override
   String get routeHome => 'Trang chủ';

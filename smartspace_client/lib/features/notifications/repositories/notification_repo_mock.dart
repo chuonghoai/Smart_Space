@@ -42,4 +42,14 @@ class NotificationRepoMock implements NotificationRepo {
       data: null,
     );
   }
+
+  @override
+  Future<ApiResponse<void>> markAsRead(String id) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: null,
+    );
+  }
 }

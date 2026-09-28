@@ -277,9 +277,10 @@
     }
   },
   "retryButton": "Retry",
-  "minuteAgo": "min ago",
-  "hourAgo": "hr ago",
-  "dayAgo": "days ago",
+  "minuteAgo": "m ago",
+  "hourAgo": "h ago",
+  "dayAgo": "d ago",
+  "justNow": "Just now",
 
   "routeHome": "Home",
   "routeSettings": "Settings",

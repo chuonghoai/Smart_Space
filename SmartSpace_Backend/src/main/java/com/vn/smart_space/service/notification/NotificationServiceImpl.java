@@ -90,4 +90,20 @@ public class NotificationServiceImpl implements INotificationService {
         notificationRepository.saveAll(unreads);
         // Note: Broadcast notification read tracking can be added here if needed
     }
+
+    @Override
+    @Transactional
+    public void markAsRead(String userId, String notificationId) {
+        Notification notification = notificationRepository.findById(notificationId)
+                .orElseThrow(() -> new com.vn.smart_space.exception.ResourceNotFoundException("Notification not found"));
+        
+        if (!notification.getUser().getId().equals(userId)) {
+            throw new com.vn.smart_space.exception.ResourceNotFoundException("Notification not found");
+        }
+
+        if (!Boolean.TRUE.equals(notification.getIsRead())) {
+            notification.setIsRead(true);
+            notificationRepository.save(notification);
+        }
+    }
 }

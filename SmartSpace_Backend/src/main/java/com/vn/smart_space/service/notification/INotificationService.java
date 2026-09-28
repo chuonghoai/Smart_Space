@@ -13,4 +13,5 @@ public interface INotificationService {
     Notification createNotification(String userId, String title, String message, String actionData, String imageUrl);
     PageResponse<NotificationResponse> getMyNotifications(String userId, int page, int size);
     void markAllAsRead(String userId);
+    void markAsRead(String userId, String notificationId);
 }

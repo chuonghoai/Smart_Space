@@ -20,6 +20,26 @@ class NotificationModel {
     this.actionData,
   });
 
+  NotificationModel copyWith({
+    String? id,
+    String? title,
+    String? message,
+    String? imageUrl,
+    bool? isRead,
+    DateTime? createdAt,
+    NotificationAction? actionData,
+  }) {
+    return NotificationModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      message: message ?? this.message,
+      imageUrl: imageUrl ?? this.imageUrl,
+      isRead: isRead ?? this.isRead,
+      createdAt: createdAt ?? this.createdAt,
+      actionData: actionData ?? this.actionData,
+    );
+  }
+
   factory NotificationModel.fromJson(Map<String, dynamic> json) {
     return NotificationModel(
       id: json['id'] ?? '',

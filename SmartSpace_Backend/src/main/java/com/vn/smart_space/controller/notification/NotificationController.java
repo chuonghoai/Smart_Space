@@ -66,4 +66,11 @@ public class NotificationController {
         notificationService.markAllAsRead(userId);
         return ResponseEntity.ok(ApiResponse.success("system.success", null));
     }
+
+    @PutMapping("/{id}/read")
+    public ResponseEntity<ApiResponse> markAsRead(@org.springframework.web.bind.annotation.PathVariable String id, @AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt.getClaim("userId").toString();
+        notificationService.markAsRead(userId, id);
+        return ResponseEntity.ok(ApiResponse.success("system.success", null));
+    }
 }

@@ -32,4 +32,11 @@ class NotificationRepoApi implements NotificationRepo {
       '/notifications/my/read-all',
     );
   }
+
+  @override
+  Future<ApiResponse<void>> markAsRead(String id) async {
+    return await apiClient.put<void>(
+      '/notifications/$id/read',
+    );
+  }
 }

@@ -1391,20 +1391,26 @@ abstract class AppLocalizations {
   /// No description provided for @minuteAgo.
   ///
   /// In en, this message translates to:
-  /// **'min ago'**
+  /// **'m ago'**
   String get minuteAgo;
 
   /// No description provided for @hourAgo.
   ///
   /// In en, this message translates to:
-  /// **'hr ago'**
+  /// **'h ago'**
   String get hourAgo;
 
   /// No description provided for @dayAgo.
   ///
   /// In en, this message translates to:
-  /// **'days ago'**
+  /// **'d ago'**
   String get dayAgo;
+
+  /// No description provided for @justNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get justNow;
 
   /// No description provided for @routeHome.
   ///

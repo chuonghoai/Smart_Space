@@ -277,9 +277,10 @@
     }
   },
   "retryButton": "Thử lại",
-  "minuteAgo": "phút trước",
-  "hourAgo": "giờ trước",
+  "minuteAgo": "p trước",
+  "hourAgo": "h trước",
   "dayAgo": "ngày trước",
+  "justNow": "Vừa xong",
 
   "routeHome": "Trang chủ",
   "routeSettings": "Cài đặt",

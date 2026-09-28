@@ -22,6 +22,10 @@ class NotificationService {
   Future<ApiResponse<void>> markAllAsRead() async {
     return await notificationRepo.markAllAsRead();
   }
+
+  Future<ApiResponse<void>> markAsRead(String id) async {
+    return await notificationRepo.markAsRead(id);
+  }
 }
 
 final notificationService = NotificationService(
