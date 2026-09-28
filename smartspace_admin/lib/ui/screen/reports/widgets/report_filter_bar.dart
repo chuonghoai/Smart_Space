@@ -167,7 +167,16 @@ class _DropdownChip extends StatelessWidget {
               isDense: true,
               style: theme.textTheme.labelMedium,
               items: items.entries
-                  .map((e) => DropdownMenuItem(value: e.key, child: Text(e.value)))
+                  .map((e) => DropdownMenuItem(
+                        value: e.key,
+                        child: ConstrainedBox(
+                          constraints: const BoxConstraints(maxWidth: 120),
+                          child: Text(
+                            e.value,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ))
                   .toList(),
               onChanged: onChanged,
             ),

@@ -20,6 +20,7 @@ class Sidebar extends ConsumerWidget {
     final theme = Theme.of(context);
     final notificationState = ref.watch(notificationProvider);
     final unreadCount = notificationState.countModel?.notifNumber ?? 0;
+    final currentPath = appRouter.routeInformationProvider.value.uri.path;
 
     return Drawer(
       child: SafeArea(
@@ -86,10 +87,10 @@ class Sidebar extends ConsumerWidget {
                   _SidebarItem(
                     icon: Icons.dashboard_outlined,
                     label: l10n.adminOverview,
+                    isSelected: currentPath == RouterPath.home || currentPath == '/',
                     onTap: () {
                       context.go(RouterPath.home);
                     },
-                    isSelected: true,
                   ),
                   _SidebarItem(
                     icon: Icons.notifications_outlined,
@@ -113,6 +114,7 @@ class Sidebar extends ConsumerWidget {
                             ),
                           )
                         : null,
+                    isSelected: false,
                     onTap: () {
                       Navigator.pop(context);
                       // TODO: Navigate to Notifications
@@ -121,22 +123,25 @@ class Sidebar extends ConsumerWidget {
                   _SidebarItem(
                     icon: Icons.report_outlined,
                     label: l10n.manageReports,
+                    isSelected: currentPath == RouterPath.reportDashboard,
                     onTap: () {
                       Navigator.pop(context);
-                      context.push(RouterPath.reportDashboard);
+                      context.go(RouterPath.reportDashboard);
                     },
                   ),
                   _SidebarItem(
                     icon: Icons.map_outlined,
                     label: l10n.spaceMap,
+                    isSelected: currentPath == RouterPath.spaceMap,
                     onTap: () {
                       Navigator.pop(context);
-                      context.push(RouterPath.spaceMap);
+                      context.go(RouterPath.spaceMap);
                     },
                   ),
                   _SidebarItem(
                     icon: Icons.people_outline,
                     label: l10n.manageUsers,
+                    isSelected: false,
                     onTap: () {
                       Navigator.pop(context);
                       // TODO: Navigate to Manage Users
@@ -145,9 +150,10 @@ class Sidebar extends ConsumerWidget {
                   _SidebarItem(
                     icon: Icons.badge_outlined,
                     label: l10n.manageStaffs,
+                    isSelected: currentPath == RouterPath.staffManagement,
                     onTap: () {
                       Navigator.pop(context);
-                      context.push(RouterPath.staffManagement);
+                      context.go(RouterPath.staffManagement);
                     },
                   ),
 
@@ -160,14 +166,16 @@ class Sidebar extends ConsumerWidget {
                   _SidebarItem(
                     icon: Icons.settings_outlined,
                     label: l10n.settings,
+                    isSelected: currentPath == RouterPath.settings,
                     onTap: () {
                       Navigator.pop(context);
-                      context.push(RouterPath.settings);
+                      context.go(RouterPath.settings);
                     },
                   ),
                   _SidebarItem(
                     icon: Icons.help_outline,
                     label: l10n.instructions,
+                    isSelected: false,
                     onTap: () {
                       Navigator.pop(context);
                       // TODO: Navigate to instructions
@@ -176,6 +184,7 @@ class Sidebar extends ConsumerWidget {
                   _SidebarItem(
                     icon: Icons.info_outline,
                     label: l10n.aboutApp,
+                    isSelected: false,
                     onTap: () {
                       Navigator.pop(context);
                       // TODO: Navigate to About application
@@ -250,7 +259,7 @@ class _SidebarItem extends StatelessWidget {
       ),
       trailing: trailing,
       selected: isSelected,
-      selectedTileColor: primaryColor.withOpacity(0.08),
+      selectedTileColor: theme.colorScheme.primaryContainer,
       onTap: onTap,
       contentPadding: const EdgeInsets.symmetric(horizontal: 24),
     );
@@ -355,9 +364,9 @@ class WebSidebar extends ConsumerWidget {
                 icon: Icons.report_outlined,
                 label: l10n.manageReports,
                 isExpanded: isExpanded,
-                isSelected: false,
+                isSelected: currentPath == RouterPath.reportDashboard,
                 onTap: () {
-                  context.push(RouterPath.reportDashboard);
+                  context.go(RouterPath.reportDashboard);
                 },
               ),
               _WebSidebarItem(
@@ -484,7 +493,7 @@ class _WebSidebarItem extends StatelessWidget {
             padding: const EdgeInsets.symmetric(vertical: 12),
             decoration: BoxDecoration(
               color: isSelected
-                  ? primaryColor.withOpacity(0.08)
+                  ? theme.colorScheme.primaryContainer
                   : Colors.transparent,
               border: isSelected
                   ? Border(left: BorderSide(color: primaryColor, width: 3))
@@ -528,7 +537,7 @@ class _WebSidebarItem extends StatelessWidget {
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
         decoration: BoxDecoration(
           color: isSelected
-              ? primaryColor.withOpacity(0.08)
+              ? theme.colorScheme.primaryContainer
               : Colors.transparent,
           border: isSelected
               ? Border(left: BorderSide(color: primaryColor, width: 3))

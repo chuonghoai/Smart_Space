@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartspace_admin/features/reports/application/report_list_providers.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/layout/app_layout.dart';
+import 'package:smartspace_admin/ui/screen/reports/widgets/report_card_view.dart';
 import 'package:smartspace_admin/ui/screen/reports/widgets/report_filter_bar.dart';
 import 'package:smartspace_admin/ui/screen/reports/widgets/report_kanban_board.dart';
 import 'package:smartspace_admin/ui/screen/reports/widgets/report_table_view.dart';
@@ -32,6 +33,7 @@ class _ReportListScreenState extends ConsumerState<ReportListScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final listAsync = ref.watch(reportListProvider);
+    final isMobile = MediaQuery.sizeOf(context).shortestSide < 600;
 
     return AppLayout(
       child: SingleChildScrollView(
@@ -65,8 +67,8 @@ class _ReportListScreenState extends ConsumerState<ReportListScreen> {
                   ),
                 ),
 
-                // View toggle (Web only)
-                if (kIsWeb)
+                // View toggle (desktop only)
+                if (!isMobile)
                   SegmentedButton<int>(
                     segments: [
                       ButtonSegment(
@@ -131,7 +133,9 @@ class _ReportListScreenState extends ConsumerState<ReportListScreen> {
             const SizedBox(height: 16),
 
             // Content
-            if (_viewMode == 0 || !kIsWeb)
+            if (isMobile)
+              const ReportCardView()
+            else if (_viewMode == 0)
               const ReportTableView()
             else
               const ReportKanbanBoard(),

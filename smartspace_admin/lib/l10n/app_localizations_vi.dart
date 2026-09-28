@@ -879,7 +879,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get dayAgo => 'ngày trước';
 
   @override
-  @override
   String get routeHome => 'Trang chủ';
 
   @override

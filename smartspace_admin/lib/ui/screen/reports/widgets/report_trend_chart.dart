@@ -47,19 +47,33 @@ class _ReportTrendChartState extends ConsumerState<ReportTrendChart> {
                   style: theme.textTheme.titleSmall
                       ?.copyWith(fontWeight: FontWeight.w600),
                 ),
-                SegmentedButton<String>(
-                  segments: periods.entries
-                      .map((e) => ButtonSegment(
-                            value: e.key,
-                            label: Text(e.value,
-                                style: const TextStyle(fontSize: 11)),
-                          ))
-                      .toList(),
-                  selected: {_selectedPeriod},
-                  onSelectionChanged: (selected) =>
-                      setState(() => _selectedPeriod = selected.first),
-                  style: SegmentedButton.styleFrom(
-                    visualDensity: VisualDensity.compact,
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.5),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: DropdownButtonHideUnderline(
+                    child: DropdownButton<String>(
+                      value: _selectedPeriod,
+                      isDense: true,
+                      icon: const Icon(Icons.arrow_drop_down, size: 20),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                      items: periods.entries
+                          .map((e) => DropdownMenuItem(
+                                value: e.key,
+                                child: Text(e.value),
+                              ))
+                          .toList(),
+                      onChanged: (selected) {
+                        if (selected != null) {
+                          setState(() => _selectedPeriod = selected);
+                        }
+                      },
+                    ),
                   ),
                 ),
               ],

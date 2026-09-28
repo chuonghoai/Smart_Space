@@ -880,7 +880,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dayAgo => 'days ago';
 
   @override
-  @override
   String get routeHome => 'Home';
 
   @override

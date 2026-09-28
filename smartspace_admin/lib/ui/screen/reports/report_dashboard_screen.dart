@@ -1,10 +1,10 @@
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartspace_admin/features/reports/application/report_dashboard_providers.dart';
 import 'package:smartspace_admin/features/reports/application/report_list_providers.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/layout/app_layout.dart';
+import 'package:smartspace_admin/ui/screen/reports/widgets/report_card_view.dart';
 import 'package:smartspace_admin/ui/screen/reports/widgets/report_filter_bar.dart';
 import 'package:smartspace_admin/ui/screen/reports/widgets/report_kanban_board.dart';
 import 'package:smartspace_admin/ui/screen/reports/widgets/report_severity_chart.dart';
@@ -35,6 +35,7 @@ class _ReportDashboardScreenState
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final isMobile = MediaQuery.sizeOf(context).shortestSide < 600;
 
     return AppLayout(
       child: RefreshIndicator(
@@ -100,8 +101,8 @@ class _ReportDashboardScreenState
                           ?.copyWith(fontWeight: FontWeight.bold),
                     ),
                   ),
-                  // View toggle — Web only
-                  if (kIsWeb)
+                  // View toggle — desktop only
+                  if (!isMobile)
                     SegmentedButton<int>(
                       segments: [
                         ButtonSegment(
@@ -167,8 +168,10 @@ class _ReportDashboardScreenState
               ),
               const SizedBox(height: 14),
 
-              // Table or Kanban
-              if (_viewMode == 0 || !kIsWeb)
+              // Table, Kanban, or Card
+              if (isMobile)
+                const ReportCardView()
+              else if (_viewMode == 0)
                 const ReportTableView()
               else
                 const ReportKanbanBoard(),
