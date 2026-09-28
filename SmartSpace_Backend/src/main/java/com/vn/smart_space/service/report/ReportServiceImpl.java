@@ -54,6 +54,7 @@ public class ReportServiceImpl implements IReportService {
     private final IFCMService fcmService;
     private final INotificationService notificationService;
     private final ActivityHistoryRepository activityHistoryRepository;
+    private final org.springframework.context.MessageSource messageSource;
 
     @Override
     @Transactional(readOnly = true)
@@ -182,10 +183,10 @@ public class ReportServiceImpl implements IReportService {
                         + "\"}}";
 
                 // Create DB Notification
-                notificationService.createNotification(userId, title, message, actionData);
+                notificationService.createNotification(userId, title, message, actionData, report.getImageUrl());
 
                 // Send WebSocket Event to the user
-                NotificationEvent event = new NotificationEvent(title, message, actionData);
+                NotificationEvent event = new NotificationEvent(title, message, actionData, report.getImageUrl());
                 messagingTemplate.convertAndSendToUser(userId, "/queue/notifications", event);
 
                 // Send FCM
@@ -225,7 +226,7 @@ public class ReportServiceImpl implements IReportService {
                                         ? report.getLocationDescription().replace("\"", "\\\"")
                                         : ""));
 
-                NotificationEvent adminEvent = new NotificationEvent(adminTitle, adminMessage, adminActionData);
+                NotificationEvent adminEvent = new NotificationEvent(adminTitle, adminMessage, adminActionData, report.getImageUrl());
                 Map<String, String> adminFcmData = Map.of(
                         "type", "REPORT_DETAIL",
                         "payload", "{\"reportId\":\"" + report.getId() + "\"}");
@@ -234,7 +235,7 @@ public class ReportServiceImpl implements IReportService {
                 for (User admin : admins) {
                     try {
                         notificationService.createNotification(admin.getId(), adminTitle, adminMessage,
-                                adminActionData);
+                                adminActionData, report.getImageUrl());
                         messagingTemplate.convertAndSendToUser(admin.getId(), "/queue/notifications", adminEvent);
                         fcmService.sendToUser(admin.getId(), adminNotif);
                     } catch (Exception ex) {
@@ -375,20 +376,21 @@ public class ReportServiceImpl implements IReportService {
         // Notify Admins via WebSocket & FCM
         try {
             List<User> admins = userRepository.findByRole(ERole.admin);
-            String title = "Phân công phản ánh thành công";
-            String message = String.format("Phản ánh '%s' đã được giao cho %s.", report.getTitle(),
-                    staff.getFullName());
             String actionData = String.format(
                     "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\", \"title\": \"%s\", \"status\": \"processing\", \"severity\": \"%s\"}}",
                     report.getId(),
                     report.getTitle() != null ? report.getTitle().replace("\"", "\\\"") : "",
                     report.getSeverity() != null ? report.getSeverity().name() : "low");
 
-            NotificationEvent event = new NotificationEvent(title, message, actionData);
-
             for (User a : admins) {
                 try {
-                    notificationService.createNotification(a.getId(), title, message, actionData);
+                    java.util.Locale adminLocale = new java.util.Locale(a.getLanguage() != null ? a.getLanguage() : "vi");
+                    String title = messageSource.getMessage("notification.report.assigned.admin.title", null, "Phân công phản ánh thành công", adminLocale);
+                    String staffN = staff.getFullName() != null && !staff.getFullName().trim().isEmpty() ? staff.getFullName().trim() : (staff.getEmail() != null ? staff.getEmail().trim() : "Nhân viên");
+                    String message = messageSource.getMessage("notification.report.assigned.admin.message", new Object[]{report.getTitle(), staffN}, String.format("Phản ánh '%s' đã được giao cho %s.", report.getTitle(), staffN), adminLocale);
+
+                    notificationService.createNotification(a.getId(), title, message, actionData, report.getImageUrl());
+                    NotificationEvent event = new NotificationEvent(title, message, actionData, report.getImageUrl());
                     messagingTemplate.convertAndSendToUser(a.getId(), "/queue/notifications", event);
                 } catch (Exception ex) {
                 }
@@ -402,16 +404,18 @@ public class ReportServiceImpl implements IReportService {
         // Notify Client
         if (report.getUser() != null) {
             try {
-                String clientTitle = "Phản ánh đang được xử lý";
-                String clientMessage = String.format("Phản ánh '%s' của bạn đã được phân công xử lý.",
-                        report.getTitle());
+                User client = report.getUser();
+                java.util.Locale clientLocale = new java.util.Locale(client.getLanguage() != null ? client.getLanguage() : "vi");
+                String clientTitle = messageSource.getMessage("notification.report.assigned.client.title", null, "Phản ánh đang được xử lý", clientLocale);
+                String clientMessage = messageSource.getMessage("notification.report.assigned.client.message", new Object[]{report.getTitle()}, String.format("Phản ánh '%s' của bạn đã được phân công xử lý.", report.getTitle()), clientLocale);
+                
                 String clientActionData = String
                         .format("{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}", report.getId());
 
-                notificationService.createNotification(report.getUser().getId(), clientTitle, clientMessage,
-                        clientActionData);
-                NotificationEvent clientEvent = new NotificationEvent(clientTitle, clientMessage, clientActionData);
-                messagingTemplate.convertAndSendToUser(report.getUser().getId(), "/queue/notifications", clientEvent);
+                notificationService.createNotification(client.getId(), clientTitle, clientMessage,
+                        clientActionData, report.getImageUrl());
+                NotificationEvent clientEvent = new NotificationEvent(clientTitle, clientMessage, clientActionData, report.getImageUrl());
+                messagingTemplate.convertAndSendToUser(client.getId(), "/queue/notifications", clientEvent);
 
                 NotificationRequest clientNotif = new NotificationRequest(
                         clientTitle, clientMessage,

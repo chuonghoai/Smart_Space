@@ -33,12 +33,19 @@ public class NotificationServiceImpl implements INotificationService {
     @Override
     @Transactional
     public Notification createNotification(String userId, String title, String message, String actionData) {
+        return createNotification(userId, title, message, actionData, null);
+    }
+
+    @Override
+    @Transactional
+    public Notification createNotification(String userId, String title, String message, String actionData, String imageUrl) {
         User user = new User();
         user.setId(userId);
         Notification notification = Notification.builder()
                 .title(title)
                 .message(message)
                 .actionData(actionData)
+                .imageUrl(imageUrl)
                 .user(user)
                 .isRead(false)
                 .build();

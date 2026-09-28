@@ -91,7 +91,7 @@ public class AssignReportTest {
         {
           "title": "Sự cố mất nước sinh hoạt tòa A",
           "description": "Tòa A đang mất nước từ 8h sáng, cần kiểm tra gấp.",
-          "image_urls": [],
+          "image_urls": ["https://suamaynangluonghcm.net/wp-content/uploads/2025/02/cach-sua-may-nuoc-nong-nang-luong-mat-troi-bi-mat-nuoc-67aaee5ac5f53.webp"],
           "latitude": 10.8506,
           "longitude": 106.7720,
           "is_anonymous": false,
@@ -126,7 +126,7 @@ public class AssignReportTest {
         System.out.println(">> Đã tạo report thành công. Report ID: " + reportId);
 
         // 3. Tạo JWT Bearer Token hợp lệ của Admin 'u1' (role: admin)
-        String adminToken = generateToken("admin@gmail.com", "u1", "admin");
+        String adminToken = generateToken("admin@gmail.com", "u1", "ROLE_admin");
         
         // 4. Admin phân công report cho staff 'u5'
         String assignRequestJson = """

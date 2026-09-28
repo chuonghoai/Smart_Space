@@ -42,7 +42,7 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
     if (notification.actionData != null) {
        final type = notification.actionData!.type;
        final id = notification.actionData!.payload['id'] ?? notification.actionData!.payload['reportId'];
-       if (type == 'REPORT' && id != null) {
+       if ((type == 'REPORT' || type == 'REPORT_DETAIL') && id != null) {
           context.push(RouterPath.reportDetail.replaceAll(':id', id.toString()));
        }
     }
