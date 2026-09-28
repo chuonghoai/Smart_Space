@@ -70,10 +70,19 @@ class RouteName {
     isHiddenInSearch: true,
   );
 
+  static const notifications = AppRouteInfo(
+    path: '/notifications',
+    nameKey: 'routeNotifications',
+    icon: Icons.notifications,
+    isHiddenInSearch: false,
+    priority: 5,
+  );
+
   static const List<AppRouteInfo> allRoutes = [
     splash,
     login,
     home,
+    notifications,
     settings,
     reportDetail,
     search,

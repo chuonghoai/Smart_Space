@@ -967,6 +967,156 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{distance} away'**
   String distanceAway(String distance);
+
+  /// No description provided for @routeNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get routeNotifications;
+
+  /// No description provided for @markAllAsRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all as read'**
+  String get markAllAsRead;
+
+  /// No description provided for @emptyNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no notifications.'**
+  String get emptyNotification;
+
+  /// No description provided for @dayAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'days ago'**
+  String get dayAgo;
+
+  /// No description provided for @hourAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'hours ago'**
+  String get hourAgo;
+
+  /// No description provided for @minuteAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'minutes ago'**
+  String get minuteAgo;
+
+  /// No description provided for @justNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get justNow;
+
+  /// No description provided for @calculatingDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculating distance...'**
+  String get calculatingDistance;
+
+  /// No description provided for @reportDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Details'**
+  String get reportDetails;
+
+  /// No description provided for @turnOnLocationToViewDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on location to view the distance from the incident to your location'**
+  String get turnOnLocationToViewDistance;
+
+  /// No description provided for @openInGoogleMaps.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in Google Maps'**
+  String get openInGoogleMaps;
+
+  /// No description provided for @createdAtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Created at'**
+  String get createdAtLabel;
+
+  /// No description provided for @statusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get statusLabel;
+
+  /// No description provided for @severityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity'**
+  String get severityLabel;
+
+  /// No description provided for @severityLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get severityLow;
+
+  /// No description provided for @severityMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get severityMedium;
+
+  /// No description provided for @severityHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get severityHigh;
+
+  /// No description provided for @severityCritical.
+  ///
+  /// In en, this message translates to:
+  /// **'Critical'**
+  String get severityCritical;
+
+  /// No description provided for @locationServiceDisabledError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enable location services on your device'**
+  String get locationServiceDisabledError;
+
+  /// No description provided for @locationPermissionDeniedForeverError.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permissions are permanently denied, please go to settings to enable'**
+  String get locationPermissionDeniedForeverError;
+
+  /// No description provided for @cannotOpenGoogleMapsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot open Google Maps'**
+  String get cannotOpenGoogleMapsError;
+
+  /// No description provided for @errorOccurred.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred:\n{error}'**
+  String errorOccurred(Object error);
+
+  /// No description provided for @retryButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retryButton;
+
+  /// No description provided for @assignedStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Staff'**
+  String get assignedStaff;
+
+  /// No description provided for @newLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get newLabel;
 }
 
 class _AppLocalizationsDelegate

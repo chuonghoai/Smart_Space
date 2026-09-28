@@ -23,4 +23,7 @@ public class ReportResponse {
 
     @JsonProperty("distance_in_meters")
     private Double distanceInMeters;
+
+    @JsonProperty("assigned_at")
+    private String assignedAt;
 }

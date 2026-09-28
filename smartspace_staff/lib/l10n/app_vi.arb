@@ -62,7 +62,6 @@
   "pleaseEnterEmail": "Vui lòng nhập email",
   "pleaseEnterOTP": "Vui lòng nhập mã OTP",
   "pleaseEnterPassword": "Vui lòng nhập mật khẩu",
-  "passwordsDoNotMatch": "Mật khẩu không khớp",
   "pleaseEnterFullName": "Vui lòng nhập họ tên",
   "pleaseEnterPhoneNumber": "Vui lòng nhập số điện thoại",
   "send": "Gửi",
@@ -129,7 +128,6 @@
   "logoutConfirmTitle": "Đăng xuất",
   "logoutConfirmMessage": "Bạn có chắc chắn muốn đăng xuất?",
   "cancel": "Hủy",
-
   "changePasswordTitle": "Đổi mật khẩu",
   "currentPassword": "Mật khẩu hiện tại",
   "confirmNewPassword": "Nhập lại mật khẩu mới",
@@ -163,5 +161,35 @@
         "type": "String"
       }
     }
-  }
+  },
+  "routeNotifications": "Thông báo",
+  "markAllAsRead": "Đánh dấu tất cả đã đọc",
+  "emptyNotification": "Bạn không có thông báo nào.",
+  "dayAgo": "ngày trước",
+  "hourAgo": "giờ trước",
+  "minuteAgo": "phút trước",
+  "justNow": "Vừa xong",
+  "calculatingDistance": "Đang tính khoảng cách...",
+  "reportDetails": "Chi tiết phản ánh",
+  "turnOnLocationToViewDistance": "Bật vị trí để xem khoảng cách từ nơi xảy ra đến vị trí của bạn",
+  "openInGoogleMaps": "Mở trên Google Maps",
+  "createdAtLabel": "Thời gian tạo",
+  "statusLabel": "Trạng thái",
+  "severityLabel": "Mức độ",
+  "severityLow": "Thấp",
+  "severityMedium": "Trung bình",
+  "severityHigh": "Cao",
+  "severityCritical": "Khẩn cấp",
+  "locationServiceDisabledError": "Vui lòng bật dịch vụ vị trí trên thiết bị",
+  "locationPermissionDeniedForeverError": "Quyền vị trí bị từ chối vĩnh viễn, vui lòng vào cài đặt để bật",
+  "cannotOpenGoogleMapsError": "Không thể mở Google Maps",
+  "errorOccurred": "Đã xảy ra lỗi:\n{error}",
+  "@errorOccurred": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "retryButton": "Thử lại",
+  "assignedStaff": "Nhân viên xử lý",
+  "newLabel": "Mới"
 }

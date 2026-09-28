@@ -55,6 +55,9 @@ dependencies:
   stomp_dart_client: ^3.0.1
   firebase_messaging: ^15.2.5
   mapbox_maps_flutter: ^2.31.1
+  flutter_map: ^8.3.2
+  latlong2: ^0.10.1
+  url_launcher: ^6.3.2
 
 dev_dependencies:
   flutter_test:

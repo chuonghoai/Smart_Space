@@ -40,9 +40,17 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
                 Jwt jwt = jwtDecoder.decode(token);
                 AbstractAuthenticationToken auth = jwtAuthenticationConverter.convert(jwt);
 
-                accessor.setUser(auth);
-
                 String userId = jwt.getClaimAsString("userId");
+
+                // Wrap auth so that principal.getName() returns userId (not email/subject).
+                // This is required because convertAndSendToUser() matches by
+                // principal.getName().
+                if (userId != null && !userId.isEmpty()) {
+                    accessor.setUser(new UserIdAuthenticationToken(auth, userId));
+                } else {
+                    accessor.setUser(auth);
+                }
+
                 if (accessor.getSessionAttributes() != null && userId != null) {
                     accessor.getSessionAttributes().put("userId", userId);
                 }

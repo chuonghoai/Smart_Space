@@ -10,6 +10,7 @@ class ReportModel {
   final ReportStatus status;
   final DateTime createdAt;
   final double? distanceInMeters;
+  final DateTime? assignedAt;
 
   ReportModel({
     required this.id,
@@ -21,6 +22,7 @@ class ReportModel {
     required this.status,
     required this.createdAt,
     this.distanceInMeters,
+    this.assignedAt,
   });
 
   factory ReportModel.fromJson(Map<String, dynamic> json) {
@@ -31,10 +33,13 @@ class ReportModel {
       imageUrl: (json['image_url'] ?? json['imageUrl']) as String? ?? '',
       latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
       longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
-      status: _mapStatus(json['status'] as String?),
+      status: mapStatus(json['status'] as String?),
       createdAt: (json['created_at'] ?? json['createdAt']) != null
           ? DateTime.tryParse((json['created_at'] ?? json['createdAt']).toString()) ?? DateTime.now()
           : DateTime.now(),
+      assignedAt: (json['assigned_at'] ?? json['assignedAt']) != null
+          ? DateTime.tryParse((json['assigned_at'] ?? json['assignedAt']).toString())
+          : null,
     );
   }
 
@@ -75,7 +80,7 @@ class ReportModel {
     );
   }
 
-  static ReportStatus _mapStatus(String? status) {
+  static ReportStatus mapStatus(String? status) {
     switch (status) {
       case 'processed':
       case 'Đã xử lý':

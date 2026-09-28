@@ -62,7 +62,6 @@
   "pleaseEnterEmail": "Please enter email",
   "pleaseEnterOTP": "Please enter OTP",
   "pleaseEnterPassword": "Please enter password",
-  "passwordsDoNotMatch": "Passwords do not match",
   "pleaseEnterFullName": "Please enter full name",
   "pleaseEnterPhoneNumber": "Please enter phone number",
   "send": "Send",
@@ -129,7 +128,6 @@
   "logoutConfirmTitle": "Log out",
   "logoutConfirmMessage": "Are you sure you want to log out?",
   "cancel": "Cancel",
-
   "changePasswordTitle": "Change Password",
   "currentPassword": "Current Password",
   "confirmNewPassword": "Confirm New Password",
@@ -163,5 +161,35 @@
         "type": "String"
       }
     }
-  }
+  },
+  "routeNotifications": "Notifications",
+  "markAllAsRead": "Mark all as read",
+  "emptyNotification": "You have no notifications.",
+  "dayAgo": "days ago",
+  "hourAgo": "hours ago",
+  "minuteAgo": "minutes ago",
+  "justNow": "Just now",
+  "calculatingDistance": "Calculating distance...",
+  "reportDetails": "Report Details",
+  "turnOnLocationToViewDistance": "Turn on location to view the distance from the incident to your location",
+  "openInGoogleMaps": "Open in Google Maps",
+  "createdAtLabel": "Created at",
+  "statusLabel": "Status",
+  "severityLabel": "Severity",
+  "severityLow": "Low",
+  "severityMedium": "Medium",
+  "severityHigh": "High",
+  "severityCritical": "Critical",
+  "locationServiceDisabledError": "Please enable location services on your device",
+  "locationPermissionDeniedForeverError": "Location permissions are permanently denied, please go to settings to enable",
+  "cannotOpenGoogleMapsError": "Cannot open Google Maps",
+  "errorOccurred": "An error occurred:\n{error}",
+  "@errorOccurred": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "retryButton": "Retry",
+  "assignedStaff": "Assigned Staff",
+  "newLabel": "New"
 }

@@ -449,4 +449,84 @@ class AppLocalizationsVi extends AppLocalizations {
   String distanceAway(String distance) {
     return 'Cách $distance';
   }
+
+  @override
+  String get routeNotifications => 'Thông báo';
+
+  @override
+  String get markAllAsRead => 'Đánh dấu tất cả đã đọc';
+
+  @override
+  String get emptyNotification => 'Bạn không có thông báo nào.';
+
+  @override
+  String get dayAgo => 'ngày trước';
+
+  @override
+  String get hourAgo => 'giờ trước';
+
+  @override
+  String get minuteAgo => 'phút trước';
+
+  @override
+  String get justNow => 'Vừa xong';
+
+  @override
+  String get calculatingDistance => 'Đang tính khoảng cách...';
+
+  @override
+  String get reportDetails => 'Chi tiết phản ánh';
+
+  @override
+  String get turnOnLocationToViewDistance =>
+      'Bật vị trí để xem khoảng cách từ nơi xảy ra đến vị trí của bạn';
+
+  @override
+  String get openInGoogleMaps => 'Mở trên Google Maps';
+
+  @override
+  String get createdAtLabel => 'Thời gian tạo';
+
+  @override
+  String get statusLabel => 'Trạng thái';
+
+  @override
+  String get severityLabel => 'Mức độ';
+
+  @override
+  String get severityLow => 'Thấp';
+
+  @override
+  String get severityMedium => 'Trung bình';
+
+  @override
+  String get severityHigh => 'Cao';
+
+  @override
+  String get severityCritical => 'Khẩn cấp';
+
+  @override
+  String get locationServiceDisabledError =>
+      'Vui lòng bật dịch vụ vị trí trên thiết bị';
+
+  @override
+  String get locationPermissionDeniedForeverError =>
+      'Quyền vị trí bị từ chối vĩnh viễn, vui lòng vào cài đặt để bật';
+
+  @override
+  String get cannotOpenGoogleMapsError => 'Không thể mở Google Maps';
+
+  @override
+  String errorOccurred(Object error) {
+    return 'Đã xảy ra lỗi:\n$error';
+  }
+
+  @override
+  String get retryButton => 'Thử lại';
+
+  @override
+  String get assignedStaff => 'Nhân viên xử lý';
+
+  @override
+  String get newLabel => 'Mới';
 }

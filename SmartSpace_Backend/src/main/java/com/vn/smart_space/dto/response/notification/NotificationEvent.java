@@ -14,4 +14,5 @@ public class NotificationEvent {
     private String message;
     private String actionData;
     private String imageUrl;
+    private Object data;
 }

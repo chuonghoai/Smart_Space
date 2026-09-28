@@ -63,4 +63,7 @@ public class Report extends AbstractEntity {
     @Transient
     Double distanceInMeters;
 
+    @Column(name = "assigned_at")
+    java.util.Date assignedAt;
+
 }

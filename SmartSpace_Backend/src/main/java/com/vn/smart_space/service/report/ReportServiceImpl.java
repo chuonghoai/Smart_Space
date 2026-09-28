@@ -100,6 +100,8 @@ public class ReportServiceImpl implements IReportService {
                 .status(report.getStatus().name())
                 .createdAt(report.getCreatedAt() != null ? report.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME)
                         : null)
+                .assignedAt(report.getAssignedAt() != null ? report.getAssignedAt().toInstant().atZone(java.time.ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE_TIME)
+                        : null)
                 .build();
     }
 
@@ -170,6 +172,8 @@ public class ReportServiceImpl implements IReportService {
                 .locationDescription(report.getLocationDescription())
                 .createdAt(report.getCreatedAt() != null ? report.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME)
                         : null)
+                .assignedAt(report.getAssignedAt() != null ? report.getAssignedAt().toInstant().atZone(java.time.ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE_TIME)
+                        : null)
                 .build();
 
         // Notify Users
@@ -186,7 +190,7 @@ public class ReportServiceImpl implements IReportService {
                 notificationService.createNotification(userId, title, message, actionData, report.getImageUrl());
 
                 // Send WebSocket Event to the user
-                NotificationEvent event = new NotificationEvent(title, message, actionData, report.getImageUrl());
+                NotificationEvent event = new NotificationEvent(title, message, actionData, report.getImageUrl(), Map.of("shouldRefresh", true));
                 messagingTemplate.convertAndSendToUser(userId, "/queue/notifications", event);
 
                 // Send FCM
@@ -226,7 +230,7 @@ public class ReportServiceImpl implements IReportService {
                                         ? report.getLocationDescription().replace("\"", "\\\"")
                                         : ""));
 
-                NotificationEvent adminEvent = new NotificationEvent(adminTitle, adminMessage, adminActionData, report.getImageUrl());
+                NotificationEvent adminEvent = new NotificationEvent(adminTitle, adminMessage, adminActionData, report.getImageUrl(), Map.of("shouldRefresh", true));
                 Map<String, String> adminFcmData = Map.of(
                         "type", "REPORT_DETAIL",
                         "payload", "{\"reportId\":\"" + report.getId() + "\"}");
@@ -282,6 +286,8 @@ public class ReportServiceImpl implements IReportService {
                 .address(report.getAddress())
                 .locationDescription(report.getLocationDescription())
                 .createdAt(report.getCreatedAt() != null ? report.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME)
+                        : null)
+                .assignedAt(report.getAssignedAt() != null ? report.getAssignedAt().toInstant().atZone(java.time.ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE_TIME)
                         : null)
                 .userName(user != null ? user.getFullName() : null)
                 .userPhone(user != null ? user.getPhone() : null)
@@ -351,6 +357,7 @@ public class ReportServiceImpl implements IReportService {
 
         report.setAssignedStaff(staff);
         report.setStatus(EReportStatus.processing);
+        report.setAssignedAt(new java.util.Date());
         report = reportRepository.save(report);
 
         // Save Activity History
@@ -390,7 +397,7 @@ public class ReportServiceImpl implements IReportService {
                     String message = messageSource.getMessage("notification.report.assigned.admin.message", new Object[]{report.getTitle(), staffN}, String.format("Phản ánh '%s' đã được giao cho %s.", report.getTitle(), staffN), adminLocale);
 
                     notificationService.createNotification(a.getId(), title, message, actionData, report.getImageUrl());
-                    NotificationEvent event = new NotificationEvent(title, message, actionData, report.getImageUrl());
+                    NotificationEvent event = new NotificationEvent(title, message, actionData, report.getImageUrl(), Map.of("shouldRefresh", true));
                     messagingTemplate.convertAndSendToUser(a.getId(), "/queue/notifications", event);
                 } catch (Exception ex) {
                 }
@@ -398,8 +405,31 @@ public class ReportServiceImpl implements IReportService {
         } catch (Exception ignored) {
         }
 
-        // TODO: Gửi thông báo WebSocket / FCM cho Staff khi module Staff App được triển
-        // khai.
+        // Notify Staff via WebSocket & FCM
+        if (staff != null) {
+            try {
+                java.util.Locale staffLocale = new java.util.Locale(staff.getLanguage() != null ? staff.getLanguage() : "vi");
+                String staffTitle = messageSource.getMessage("notification.report.assigned.staff.title", null, "Phân công mới", staffLocale);
+                String staffMessage = messageSource.getMessage("notification.report.assigned.staff.message", new Object[]{report.getTitle()}, String.format("Bạn đã được phân công xử lý phản ánh '%s'.", report.getTitle()), staffLocale);
+                
+                String staffActionData = String
+                        .format("{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}", report.getId());
+
+                notificationService.createNotification(staff.getId(), staffTitle, staffMessage,
+                        staffActionData, report.getImageUrl());
+                Map<String, Object> staffData = new java.util.HashMap<>();
+                staffData.put("shouldRefresh", true);
+                staffData.put("stats", getStaffReportStatistics(staff.getId()));
+                NotificationEvent staffEvent = new NotificationEvent(staffTitle, staffMessage, staffActionData, report.getImageUrl(), staffData);
+                messagingTemplate.convertAndSendToUser(staff.getId(), "/queue/notifications", staffEvent);
+
+                NotificationRequest staffNotif = new NotificationRequest(
+                        staffTitle, staffMessage,
+                        Map.of("type", "REPORT_DETAIL", "payload", "{\"reportId\":\"" + report.getId() + "\"}"));
+                fcmService.sendToUser(staff.getId(), staffNotif);
+            } catch (Exception ignored) {
+            }
+        }
 
         // Notify Client
         if (report.getUser() != null) {
@@ -414,7 +444,7 @@ public class ReportServiceImpl implements IReportService {
 
                 notificationService.createNotification(client.getId(), clientTitle, clientMessage,
                         clientActionData, report.getImageUrl());
-                NotificationEvent clientEvent = new NotificationEvent(clientTitle, clientMessage, clientActionData, report.getImageUrl());
+                NotificationEvent clientEvent = new NotificationEvent(clientTitle, clientMessage, clientActionData, report.getImageUrl(), Map.of("shouldRefresh", true));
                 messagingTemplate.convertAndSendToUser(client.getId(), "/queue/notifications", clientEvent);
 
                 NotificationRequest clientNotif = new NotificationRequest(

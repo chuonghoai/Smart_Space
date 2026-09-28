@@ -449,4 +449,84 @@ class AppLocalizationsEn extends AppLocalizations {
   String distanceAway(String distance) {
     return '$distance away';
   }
+
+  @override
+  String get routeNotifications => 'Notifications';
+
+  @override
+  String get markAllAsRead => 'Mark all as read';
+
+  @override
+  String get emptyNotification => 'You have no notifications.';
+
+  @override
+  String get dayAgo => 'days ago';
+
+  @override
+  String get hourAgo => 'hours ago';
+
+  @override
+  String get minuteAgo => 'minutes ago';
+
+  @override
+  String get justNow => 'Just now';
+
+  @override
+  String get calculatingDistance => 'Calculating distance...';
+
+  @override
+  String get reportDetails => 'Report Details';
+
+  @override
+  String get turnOnLocationToViewDistance =>
+      'Turn on location to view the distance from the incident to your location';
+
+  @override
+  String get openInGoogleMaps => 'Open in Google Maps';
+
+  @override
+  String get createdAtLabel => 'Created at';
+
+  @override
+  String get statusLabel => 'Status';
+
+  @override
+  String get severityLabel => 'Severity';
+
+  @override
+  String get severityLow => 'Low';
+
+  @override
+  String get severityMedium => 'Medium';
+
+  @override
+  String get severityHigh => 'High';
+
+  @override
+  String get severityCritical => 'Critical';
+
+  @override
+  String get locationServiceDisabledError =>
+      'Please enable location services on your device';
+
+  @override
+  String get locationPermissionDeniedForeverError =>
+      'Location permissions are permanently denied, please go to settings to enable';
+
+  @override
+  String get cannotOpenGoogleMapsError => 'Cannot open Google Maps';
+
+  @override
+  String errorOccurred(Object error) {
+    return 'An error occurred:\n$error';
+  }
+
+  @override
+  String get retryButton => 'Retry';
+
+  @override
+  String get assignedStaff => 'Assigned Staff';
+
+  @override
+  String get newLabel => 'New';
 }

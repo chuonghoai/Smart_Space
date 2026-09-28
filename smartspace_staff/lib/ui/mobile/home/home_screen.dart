@@ -362,7 +362,10 @@ class _ReportListItem extends StatelessWidget {
     }
 
     // Format date string simply for UI
-    final dateStr = '${report.createdAt.day.toString().padLeft(2, '0')}/${report.createdAt.month.toString().padLeft(2, '0')}/${report.createdAt.year} ${report.createdAt.hour.toString().padLeft(2, '0')}:${report.createdAt.minute.toString().padLeft(2, '0')}';
+    final displayDate = report.assignedAt ?? report.createdAt;
+    final dateStr = '${displayDate.day.toString().padLeft(2, '0')}/${displayDate.month.toString().padLeft(2, '0')}/${displayDate.year} ${displayDate.hour.toString().padLeft(2, '0')}:${displayDate.minute.toString().padLeft(2, '0')}';
+
+    final isNew = report.assignedAt != null && DateTime.now().difference(report.assignedAt!) < const Duration(hours: 24);
 
     String? distanceStr;
     if (userPosition != null) {
@@ -454,6 +457,19 @@ class _ReportListItem extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
+                      if (isNew)
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          margin: const EdgeInsets.only(right: 6),
+                          decoration: BoxDecoration(
+                            color: Colors.red,
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            l10n.newLabel,
+                            style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                          ),
+                        ),
                       Expanded(
                         child: Text(
                           dateStr,

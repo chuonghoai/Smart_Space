@@ -8,6 +8,7 @@ import 'package:smartspace_staff/features/notifications/services/notification_ro
 import 'package:smartspace_staff/features/notifications/providers/notification_provider.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:smartspace_staff/features/app_services/ws_services_registry.dart';
+import 'package:smartspace_staff/ui/mobile/home/home_controller.dart';
 
 class NotificationWsService implements WsFeatureService {
   StompUnsubscribe? _wsSubscription;
@@ -44,6 +45,17 @@ class NotificationWsService implements WsFeatureService {
                 ProviderScope.containerOf(context)
                     .read(notificationProvider.notifier)
                     .onNotificationReceived();
+                    
+                bool shouldRefresh = false;
+                if (data['data'] != null && data['data'] is Map) {
+                  shouldRefresh = data['data']['shouldRefresh'] == true;
+                }
+                
+                if (shouldRefresh) {
+                   ProviderScope.containerOf(context)
+                       .read(homeControllerProvider.notifier)
+                       .manualRefresh();
+                }
 
                 // Show toast
                 final l10n = AppLocalizations.of(context);
@@ -89,3 +101,4 @@ class NotificationWsService implements WsFeatureService {
     _wsSubscription = null;
   }
 }
+

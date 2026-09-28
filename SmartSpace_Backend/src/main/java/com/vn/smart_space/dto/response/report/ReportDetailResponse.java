@@ -62,4 +62,7 @@ public class ReportDetailResponse {
 
     @JsonProperty("assigned_staff_avatar_url")
     private String assignedStaffAvatarUrl;
+
+    @JsonProperty("assigned_at")
+    private String assignedAt;
 }
