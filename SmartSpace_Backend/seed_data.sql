@@ -6,7 +6,7 @@
 -- Lưu ý: Mật khẩu của các user được mã hoá Bcrypt là 'Ad123456!'
 -- Danh sách tài khoản đăng nhập mẫu:
 -- 1/ Admin: admin@gmail.com (u1) | cudan2@gmail.com (u4) | Mật khẩu: Ad123456!
--- 2/ Staff: staff1@gmail.com (u5) | staff2@gmail.com (u6) | Mật khẩu: Ad123456!
+-- 2/ Staff: staff1@gmail.com (u5) | staff2@gmail.com (u6) | staff3@gmail.com (u8) | staff4@gmail.com (u9) | staff5@gmail.com (u10) | Mật khẩu: Ad123456!
 -- 3/ Client: user@gmail.com (u2) | cudan@gmail.com (u3) | client3@gmail.com (u7) | Mật khẩu: Ad123456!
 
 SET FOREIGN_KEY_CHECKS = 0;
@@ -24,6 +24,21 @@ DELETE FROM notifications;
 DELETE FROM activity_histories;
 DELETE FROM reports;
 DELETE FROM users;
+DELETE FROM positions;
+
+-- --------------------------------------------------------
+-- Table: positions (Chức vụ)
+-- Phụ thuộc: (Không)
+-- Model: Position (AbstractEntity)
+-- Columns: id, created_at, updated_at, code, name, description, is_active
+-- Test: p5 ngừng hoạt động (không hiện ở dropdown gán/lọc), p4 chưa có staff (thử xóa được)
+-- --------------------------------------------------------
+INSERT INTO positions (id, created_at, updated_at, code, name, description, is_active) VALUES
+('p1', NOW(), NOW(), 'ELECTRICIAN', 'Kỹ thuật điện', 'Xử lý sự cố điện, đèn đường, dây điện', TRUE),
+('p2', NOW(), NOW(), 'PLUMBER', 'Kỹ thuật cấp thoát nước', 'Xử lý ống nước vỡ, ngập úng, rò rỉ', TRUE),
+('p3', NOW(), NOW(), 'SANITATION', 'Vệ sinh môi trường', 'Thu gom rác, xử lý ô nhiễm, vệ sinh khu vực công cộng', TRUE),
+('p4', NOW(), NOW(), 'SECURITY', 'An ninh trật tự', 'Xử lý tai nạn, cháy nổ, mất an ninh', TRUE),
+('p5', NOW(), NOW(), 'CONSTRUCTION', 'Xây dựng - Hạ tầng (cũ)', 'Chức vụ đã ngừng hoạt động', FALSE);
 
 -- --------------------------------------------------------
 -- Table: users
@@ -39,6 +54,18 @@ INSERT INTO users (id, created_at, updated_at, full_name, date_of_birth, phone, 
 ('u2', NOW(), NOW(), 'Trần Thị User', '1995-05-15', '0912345678', 'user@gmail.com', '$2a$10$nosRTfjEU6rYa5Ps58DdEuEnns.WJrUKgAWR56/lpphULiTLUrJqy', 'female', 'client', 'active', 'https://ui-avatars.com/api/?name=Tran+Thi+User&background=6366f1&color=fff&size=200&bold=true&font-size=0.4', 'vi'),
 ('u3', NOW(), NOW(), 'Lê Hữu Cư Dân', '1992-10-20', '0923456789', 'cudan@gmail.com', '$2a$10$nosRTfjEU6rYa5Ps58DdEuEnns.WJrUKgAWR56/lpphULiTLUrJqy', 'male', 'client', 'active', 'https://ui-avatars.com/api/?name=Le+Huu+Cu+Dan&background=8b5cf6&color=fff&size=200&bold=true&font-size=0.4', 'vi'),
 ('u7', NOW(), NOW(), 'Phạm Minh Khách Hàng', '1998-02-14', '0967890123', 'client3@gmail.com', '$2a$10$nosRTfjEU6rYa5Ps58DdEuEnns.WJrUKgAWR56/lpphULiTLUrJqy', 'male', 'client', 'active', 'https://ui-avatars.com/api/?name=Pham+Minh+Client&background=10b981&color=fff&size=200&bold=true', 'vi');
+
+-- Staff bổ sung để test chức vụ (u9 chưa có chức vụ, u10 bị khóa)
+INSERT INTO users (id, created_at, updated_at, full_name, date_of_birth, phone, email, password, gender, role, status, avatar_url, language) VALUES
+('u8', NOW(), NOW(), 'Trần Văn Điện', '1991-04-18', '0956789012', 'staff3@gmail.com', '$2a$10$nosRTfjEU6rYa5Ps58DdEuEnns.WJrUKgAWR56/lpphULiTLUrJqy', 'male', 'staff', 'active', 'https://ui-avatars.com/api/?name=Tran+Van+Dien&background=0284c7&color=fff&size=200&bold=true', 'vi'),
+('u9', NOW(), NOW(), 'Võ Thị Môi Trường', '1994-12-02', '0978901234', 'staff4@gmail.com', '$2a$10$nosRTfjEU6rYa5Ps58DdEuEnns.WJrUKgAWR56/lpphULiTLUrJqy', 'female', 'staff', 'active', 'https://ui-avatars.com/api/?name=Vo+Thi+Moi+Truong&background=0284c7&color=fff&size=200&bold=true', 'vi'),
+('u10', NOW(), NOW(), 'Đặng Minh Bảo Vệ', '1989-09-09', '0989012345', 'staff5@gmail.com', '$2a$10$nosRTfjEU6rYa5Ps58DdEuEnns.WJrUKgAWR56/lpphULiTLUrJqy', 'male', 'staff', 'blocked', 'https://ui-avatars.com/api/?name=Dang+Minh+Bao+Ve&background=0284c7&color=fff&size=200&bold=true', 'vi');
+
+-- Gán chức vụ cho staff (cột users.position_id, FK -> positions.id)
+UPDATE users SET position_id = 'p2' WHERE id = 'u5';
+UPDATE users SET position_id = 'p3' WHERE id = 'u6';
+UPDATE users SET position_id = 'p1' WHERE id = 'u8';
+UPDATE users SET position_id = 'p4' WHERE id = 'u10';
 
 -- --------------------------------------------------------
 -- Table: reports

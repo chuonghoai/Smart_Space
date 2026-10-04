@@ -38,11 +38,12 @@ public class StaffController {
                         @RequestParam(defaultValue = "1") int page,
                         @RequestParam(defaultValue = "10") int size,
                         @RequestParam(required = false) String search,
-                        @RequestParam(required = false) String status) {
+                        @RequestParam(required = false) String status,
+                        @RequestParam(required = false) String positionId) {
 
                 return ResponseEntity.ok(
                                 ApiResponse.success("system.success",
-                                                staffService.getStaffsPaged(page, size, search, status)));
+                                                staffService.getStaffsPaged(page, size, search, status, positionId)));
         }
 
         @PreAuthorize("hasRole('admin')")

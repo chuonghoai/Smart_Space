@@ -928,4 +928,87 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get assignedTo => 'Phụ trách';
+
+  @override
+  String get routePositionManagement => 'Quản lý chức vụ';
+
+  @override
+  String get managePositions => 'Quản lý chức vụ';
+
+  @override
+  String get positionLabel => 'Chức vụ';
+
+  @override
+  String get positionName => 'Tên chức vụ';
+
+  @override
+  String get positionCode => 'Mã chức vụ';
+
+  @override
+  String get positionDescription => 'Mô tả';
+
+  @override
+  String get addPosition => 'Thêm chức vụ';
+
+  @override
+  String get editPosition => 'Sửa chức vụ';
+
+  @override
+  String get deletePosition => 'Xóa chức vụ';
+
+  @override
+  String get deletePositionConfirm => 'Bạn có chắc chắn muốn xóa chức vụ này?';
+
+  @override
+  String get positionInactive => 'Ngừng hoạt động';
+
+  @override
+  String get positionActiveLabel => 'Đang hoạt động';
+
+  @override
+  String get noPosition => 'Chưa có chức vụ';
+
+  @override
+  String get selectPosition => 'Chọn chức vụ';
+
+  @override
+  String get filterByPosition => 'Lọc theo chức vụ';
+
+  @override
+  String get allPositions => 'Tất cả chức vụ';
+
+  @override
+  String get emptyPositionList => 'Chưa có chức vụ nào';
+
+  @override
+  String positionStaffCount(int count) {
+    return '$count nhân viên';
+  }
+
+  @override
+  String get positionSaveSuccess => 'Lưu chức vụ thành công';
+
+  @override
+  String get positionDeleteSuccess => 'Xóa chức vụ thành công';
+
+  @override
+  String get positionActionFailed => 'Không thể thực hiện. Vui lòng thử lại';
+
+  @override
+  String get positionNameRequired => 'Vui lòng nhập tên chức vụ';
+
+  @override
+  String get positionCodeRequired => 'Vui lòng nhập mã chức vụ';
+
+  @override
+  String get totalPositions => 'Tổng chức vụ';
+
+  @override
+  String get positionAssignedStaff => 'Nhân viên đã gán';
+
+  @override
+  String get actionsColumn => 'Thao tác';
+
+  @override
+  String get positionCodeHint => 'VD: ELECTRICIAN, PLUMBER';
 }

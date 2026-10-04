@@ -929,4 +929,89 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get assignedTo => 'Assigned to';
+
+  @override
+  String get routePositionManagement => 'Position Management';
+
+  @override
+  String get managePositions => 'Manage Positions';
+
+  @override
+  String get positionLabel => 'Position';
+
+  @override
+  String get positionName => 'Position name';
+
+  @override
+  String get positionCode => 'Position code';
+
+  @override
+  String get positionDescription => 'Description';
+
+  @override
+  String get addPosition => 'Add position';
+
+  @override
+  String get editPosition => 'Edit position';
+
+  @override
+  String get deletePosition => 'Delete position';
+
+  @override
+  String get deletePositionConfirm =>
+      'Are you sure you want to delete this position?';
+
+  @override
+  String get positionInactive => 'Inactive';
+
+  @override
+  String get positionActiveLabel => 'Active';
+
+  @override
+  String get noPosition => 'No position';
+
+  @override
+  String get selectPosition => 'Select position';
+
+  @override
+  String get filterByPosition => 'Filter by position';
+
+  @override
+  String get allPositions => 'All positions';
+
+  @override
+  String get emptyPositionList => 'No positions yet';
+
+  @override
+  String positionStaffCount(int count) {
+    return '$count staff';
+  }
+
+  @override
+  String get positionSaveSuccess => 'Position saved successfully';
+
+  @override
+  String get positionDeleteSuccess => 'Position deleted successfully';
+
+  @override
+  String get positionActionFailed =>
+      'Unable to complete the action. Please try again';
+
+  @override
+  String get positionNameRequired => 'Please enter a position name';
+
+  @override
+  String get positionCodeRequired => 'Please enter a position code';
+
+  @override
+  String get totalPositions => 'Total positions';
+
+  @override
+  String get positionAssignedStaff => 'Assigned staff';
+
+  @override
+  String get actionsColumn => 'Actions';
+
+  @override
+  String get positionCodeHint => 'e.g. ELECTRICIAN, PLUMBER';
 }

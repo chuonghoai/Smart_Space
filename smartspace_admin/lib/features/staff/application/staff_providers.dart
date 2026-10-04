@@ -11,6 +11,7 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
   final int _pageSize = 10;
   String? _search;
   String? _statusFilter;
+  String? _positionFilter;
   Timer? _debounce;
 
   @override
@@ -25,6 +26,7 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
       size: _pageSize,
       search: _search,
       status: _statusFilter,
+      positionId: _positionFilter,
     );
     if (response.success && response.data != null) {
       return response.data!;
@@ -55,6 +57,7 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
     String? dateOfBirth,
     String? gender,
     String? avatarUrl,
+    String? positionId,
   }) async {
     final response = await staffRepository.createStaff(
       fullName: fullName,
@@ -64,6 +67,7 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
       dateOfBirth: dateOfBirth,
       gender: gender,
       avatarUrl: avatarUrl,
+      positionId: positionId,
     );
     if (response.success) {
       ref.invalidateSelf();
@@ -81,6 +85,7 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
     String? dateOfBirth,
     String? gender,
     String? avatarUrl,
+    String? positionId,
   }) async {
     final response = await staffRepository.updateStaff(
       staffId: staffId,
@@ -90,6 +95,7 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
       dateOfBirth: dateOfBirth,
       gender: gender,
       avatarUrl: avatarUrl,
+      positionId: positionId,
     );
     if (response.success) {
       ref.invalidateSelf();
@@ -115,6 +121,13 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
 
   void setStatusFilter(String? status) {
     _statusFilter = (status == null || status == 'all') ? null : status;
+    _currentPage = 1;
+    ref.invalidateSelf();
+  }
+
+  void setPositionFilter(String? positionId) {
+    _positionFilter =
+        (positionId == null || positionId == 'all') ? null : positionId;
     _currentPage = 1;
     ref.invalidateSelf();
   }

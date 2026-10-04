@@ -29,8 +29,10 @@ import com.vn.smart_space.dto.response.admin.StaffSummaryResponse;
 import com.vn.smart_space.exception.BadRequestException;
 import com.vn.smart_space.exception.ResourceNotFoundException;
 import com.vn.smart_space.model.ActivityHistory;
+import com.vn.smart_space.model.Position;
 import com.vn.smart_space.model.User;
 import com.vn.smart_space.repository.ActivityHistoryRepository;
+import com.vn.smart_space.repository.PositionRepository;
 import com.vn.smart_space.repository.ReportRepository;
 import com.vn.smart_space.repository.UserRepository;
 
@@ -46,6 +48,7 @@ public class StaffServiceImpl implements IStaffService {
         UserRepository userRepository;
         ReportRepository reportRepository;
         ActivityHistoryRepository activityHistoryRepository;
+        PositionRepository positionRepository;
         PasswordEncoder passwordEncoder;
 
         @Override
@@ -62,7 +65,8 @@ public class StaffServiceImpl implements IStaffService {
         }
 
         @Override
-        public StaffListResponse getStaffsPaged(int page, int size, String search, String status) {
+        public StaffListResponse getStaffsPaged(int page, int size, String search, String status,
+                        String positionId) {
                 // 1. Parse status filter
                 EUserStatus statusEnum = null;
                 if (status != null && !status.isEmpty() && !status.equalsIgnoreCase("all")) {
@@ -73,12 +77,15 @@ public class StaffServiceImpl implements IStaffService {
                         }
                 }
 
-                // 2. Normalize search
+                // 2. Normalize search + position filter
                 String searchParam = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
+                String positionParam = (positionId != null && !positionId.trim().isEmpty()
+                                && !positionId.equalsIgnoreCase("all")) ? positionId.trim() : null;
 
                 // 3. Query staffs with pagination
                 Pageable pageable = PageRequest.of(page - 1, size);
-                Page<User> staffPage = userRepository.findStaffs(ERole.staff, statusEnum, searchParam, pageable);
+                Page<User> staffPage = userRepository.findStaffs(ERole.staff, statusEnum, positionParam, searchParam,
+                                pageable);
                 List<User> staffUsers = staffPage.getContent();
 
                 // 4. Batch query: count processing reports per staff
@@ -95,15 +102,11 @@ public class StaffServiceImpl implements IStaffService {
 
                 // 5. Map User → StaffResponse
                 final Map<String, Long> countMap = processingCountMap;
-                List<StaffResponse> staffResponses = staffUsers.stream().map(s -> StaffResponse.builder()
-                                .id(s.getId())
-                                .fullName(s.getFullName())
-                                .email(s.getEmail())
-                                .phoneNumber(s.getPhone())
-                                .avatarUrl(s.getAvatarUrl())
-                                .status(s.getStatus() != null ? s.getStatus().name() : null)
-                                .processingCount(countMap.getOrDefault(s.getId(), 0L))
-                                .build()).collect(Collectors.toList());
+                List<StaffResponse> staffResponses = staffUsers.stream().map(s -> {
+                        StaffResponse response = toStaffResponse(s);
+                        response.setProcessingCount(countMap.getOrDefault(s.getId(), 0L));
+                        return response;
+                }).collect(Collectors.toList());
 
                 // 6. Build PageResponse
                 PageResponse<StaffResponse> pageResponse = PageResponse.<StaffResponse>builder()
@@ -205,6 +208,7 @@ public class StaffServiceImpl implements IStaffService {
                                 .status(EUserStatus.active)
                                 .avatarUrl(request.avatarUrl())
                                 .language("vi")
+                                .position(resolvePosition(request.positionId()))
                                 .build();
 
                 staff = userRepository.save(staff);
@@ -224,15 +228,7 @@ public class StaffServiceImpl implements IStaffService {
                 activityHistoryRepository.save(activity);
 
                 // 6. Return response
-                return StaffResponse.builder()
-                                .id(staff.getId())
-                                .fullName(staff.getFullName())
-                                .email(staff.getEmail())
-                                .phoneNumber(staff.getPhone())
-                                .avatarUrl(staff.getAvatarUrl())
-                                .status(staff.getStatus().name())
-                                .processingCount(0)
-                                .build();
+                return toStaffResponse(staff);
         }
 
         @Override
@@ -272,6 +268,13 @@ public class StaffServiceImpl implements IStaffService {
                 if (request.avatarUrl() != null) {
                         staff.setAvatarUrl(request.avatarUrl());
                 }
+                // positionId: null = giữ nguyên, rỗng = bỏ chức vụ, có giá trị = đổi chức vụ
+                if (request.positionId() != null) {
+                        String currentId = staff.getPosition() != null ? staff.getPosition().getId() : "";
+                        if (!request.positionId().trim().equals(currentId)) {
+                                staff.setPosition(resolvePosition(request.positionId()));
+                        }
+                }
 
                 staff = userRepository.save(staff);
 
@@ -290,14 +293,34 @@ public class StaffServiceImpl implements IStaffService {
                 activityHistoryRepository.save(activity);
 
                 // 5. Return response
+                return toStaffResponse(staff);
+        }
+
+        /** Trả về Position hợp lệ (đang active), null nếu chuỗi rỗng. */
+        private Position resolvePosition(String positionId) {
+                if (positionId == null || positionId.trim().isEmpty()) {
+                        return null;
+                }
+                Position position = positionRepository.findById(positionId.trim())
+                                .orElseThrow(() -> new ResourceNotFoundException("position.not_found"));
+                if (!Boolean.TRUE.equals(position.getIsActive())) {
+                        throw new BadRequestException("position.inactive");
+                }
+                return position;
+        }
+
+        private StaffResponse toStaffResponse(User s) {
+                Position position = s.getPosition();
                 return StaffResponse.builder()
-                                .id(staff.getId())
-                                .fullName(staff.getFullName())
-                                .email(staff.getEmail())
-                                .phoneNumber(staff.getPhone())
-                                .avatarUrl(staff.getAvatarUrl())
-                                .status(staff.getStatus().name())
+                                .id(s.getId())
+                                .fullName(s.getFullName())
+                                .email(s.getEmail())
+                                .phoneNumber(s.getPhone())
+                                .avatarUrl(s.getAvatarUrl())
+                                .status(s.getStatus() != null ? s.getStatus().name() : null)
                                 .processingCount(0)
+                                .positionId(position != null ? position.getId() : null)
+                                .positionName(position != null ? position.getName() : null)
                                 .build();
         }
 

@@ -6,6 +6,8 @@ class StaffModel {
   final String? avatarUrl;
   final String? status;
   final int processingCount;
+  final String? positionId;
+  final String? positionName;
 
   const StaffModel({
     required this.id,
@@ -15,6 +17,8 @@ class StaffModel {
     this.avatarUrl,
     this.status,
     this.processingCount = 0,
+    this.positionId,
+    this.positionName,
   });
 
   factory StaffModel.fromJson(Map<String, dynamic> json) {
@@ -26,6 +30,8 @@ class StaffModel {
       avatarUrl: json['avatarUrl'] as String?,
       status: json['status'] as String?,
       processingCount: (json['processingCount'] as num?)?.toInt() ?? 0,
+      positionId: json['positionId'] as String?,
+      positionName: json['positionName'] as String?,
     );
   }
 

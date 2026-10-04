@@ -1903,6 +1903,168 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Assigned to'**
   String get assignedTo;
+
+  /// No description provided for @routePositionManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Position Management'**
+  String get routePositionManagement;
+
+  /// No description provided for @managePositions.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Positions'**
+  String get managePositions;
+
+  /// No description provided for @positionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Position'**
+  String get positionLabel;
+
+  /// No description provided for @positionName.
+  ///
+  /// In en, this message translates to:
+  /// **'Position name'**
+  String get positionName;
+
+  /// No description provided for @positionCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Position code'**
+  String get positionCode;
+
+  /// No description provided for @positionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get positionDescription;
+
+  /// No description provided for @addPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Add position'**
+  String get addPosition;
+
+  /// No description provided for @editPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit position'**
+  String get editPosition;
+
+  /// No description provided for @deletePosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete position'**
+  String get deletePosition;
+
+  /// No description provided for @deletePositionConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this position?'**
+  String get deletePositionConfirm;
+
+  /// No description provided for @positionInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get positionInactive;
+
+  /// No description provided for @positionActiveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get positionActiveLabel;
+
+  /// No description provided for @noPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'No position'**
+  String get noPosition;
+
+  /// No description provided for @selectPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Select position'**
+  String get selectPosition;
+
+  /// No description provided for @filterByPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by position'**
+  String get filterByPosition;
+
+  /// No description provided for @allPositions.
+  ///
+  /// In en, this message translates to:
+  /// **'All positions'**
+  String get allPositions;
+
+  /// No description provided for @emptyPositionList.
+  ///
+  /// In en, this message translates to:
+  /// **'No positions yet'**
+  String get emptyPositionList;
+
+  /// No description provided for @positionStaffCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} staff'**
+  String positionStaffCount(int count);
+
+  /// No description provided for @positionSaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Position saved successfully'**
+  String get positionSaveSuccess;
+
+  /// No description provided for @positionDeleteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Position deleted successfully'**
+  String get positionDeleteSuccess;
+
+  /// No description provided for @positionActionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to complete the action. Please try again'**
+  String get positionActionFailed;
+
+  /// No description provided for @positionNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a position name'**
+  String get positionNameRequired;
+
+  /// No description provided for @positionCodeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a position code'**
+  String get positionCodeRequired;
+
+  /// No description provided for @totalPositions.
+  ///
+  /// In en, this message translates to:
+  /// **'Total positions'**
+  String get totalPositions;
+
+  /// No description provided for @positionAssignedStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned staff'**
+  String get positionAssignedStaff;
+
+  /// No description provided for @actionsColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get actionsColumn;
+
+  /// No description provided for @positionCodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. ELECTRICIAN, PLUMBER'**
+  String get positionCodeHint;
 }
 
 class _AppLocalizationsDelegate

@@ -7,5 +7,6 @@ public record CreateStaffRequest(
         String password,
         String dateOfBirth,
         String gender,
-        String avatarUrl) {
+        String avatarUrl,
+        String positionId) {
 }

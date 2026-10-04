@@ -11,7 +11,7 @@ import java.util.List;
 public interface IStaffService {
     List<StaffResponse> getStaffs();
 
-    StaffListResponse getStaffsPaged(int page, int size, String search, String status);
+    StaffListResponse getStaffsPaged(int page, int size, String search, String status, String positionId);
 
     void updateStaffStatus(String id, UpdateStaffStatusRequest request, String adminId);
 

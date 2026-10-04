@@ -37,6 +37,8 @@ class AppRouteInfo {
         return l10n.routeSpaceMap;
       case 'routeNotifications':
         return l10n.routeNotifications;
+      case 'routePositionManagement':
+        return l10n.routePositionManagement;
       default:
         return nameKey;
     }
@@ -104,6 +106,12 @@ class RouteName {
     icon: Icons.people,
     priority: 2,
   );
+  static const positionManagement = AppRouteInfo(
+    path: '/position-management',
+    nameKey: 'routePositionManagement',
+    icon: Icons.workspace_premium,
+    priority: 2,
+  );
   static const reportDashboard = AppRouteInfo(
     path: '/report-dashboard',
     nameKey: 'routeReportDashboard',
@@ -146,6 +154,7 @@ class RouteName {
     editProfile,
     changePassword,
     staffManagement,
+    positionManagement,
     reportDashboard,
     reportList,
     spaceMap,

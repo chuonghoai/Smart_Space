@@ -28,18 +28,34 @@ public interface UserRepository extends JpaRepository<User, String> {
     List<User> findByRole(ERole role);
 
     // Search and Filter Staff
-    @Query("SELECT u FROM User u WHERE u.role = :role " +
+    @Query(value = "SELECT u FROM User u LEFT JOIN FETCH u.position WHERE u.role = :role " +
             "AND (:status IS NULL OR u.status = :status) " +
+            "AND (:positionId IS NULL OR u.position.id = :positionId) " +
             "AND (:search IS NULL OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%')) " +
             "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) " +
-            "OR u.phone LIKE CONCAT('%', :search, '%'))")
+            "OR u.phone LIKE CONCAT('%', :search, '%'))",
+            countQuery = "SELECT COUNT(u) FROM User u WHERE u.role = :role " +
+                    "AND (:status IS NULL OR u.status = :status) " +
+                    "AND (:positionId IS NULL OR u.position.id = :positionId) " +
+                    "AND (:search IS NULL OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%')) " +
+                    "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) " +
+                    "OR u.phone LIKE CONCAT('%', :search, '%'))")
     Page<User> findStaffs(
             @Param("role") ERole role,
             @Param("status") EUserStatus status,
+            @Param("positionId") String positionId,
             @Param("search") String search,
             Pageable pageable);
 
     // Đếm theo role + status
     long countByRoleAndStatus(ERole role, EUserStatus status);
+
+    // Đếm số nhân viên đang giữ một chức vụ
+    long countByPositionId(String positionId);
+
+    // Đếm nhân viên theo từng chức vụ: [positionId, count]
+    @Query("SELECT u.position.id, COUNT(u) FROM User u " +
+            "WHERE u.role = :role AND u.position IS NOT NULL GROUP BY u.position.id")
+    List<Object[]> countStaffGroupByPosition(@Param("role") ERole role);
 
 }

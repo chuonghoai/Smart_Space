@@ -338,5 +338,39 @@
   "justNow": "Just now",
   "markAllAsRead": "Mark all as read",
   "unassignedStaff": "Unassigned",
-  "assignedTo": "Assigned to"
+  "assignedTo": "Assigned to",
+  "routePositionManagement": "Position Management",
+  "managePositions": "Manage Positions",
+  "positionLabel": "Position",
+  "positionName": "Position name",
+  "positionCode": "Position code",
+  "positionDescription": "Description",
+  "addPosition": "Add position",
+  "editPosition": "Edit position",
+  "deletePosition": "Delete position",
+  "deletePositionConfirm": "Are you sure you want to delete this position?",
+  "positionInactive": "Inactive",
+  "positionActiveLabel": "Active",
+  "noPosition": "No position",
+  "selectPosition": "Select position",
+  "filterByPosition": "Filter by position",
+  "allPositions": "All positions",
+  "emptyPositionList": "No positions yet",
+  "positionStaffCount": "{count} staff",
+  "@positionStaffCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "positionSaveSuccess": "Position saved successfully",
+  "positionDeleteSuccess": "Position deleted successfully",
+  "positionActionFailed": "Unable to complete the action. Please try again",
+  "positionNameRequired": "Please enter a position name",
+  "positionCodeRequired": "Please enter a position code",
+  "totalPositions": "Total positions",
+  "positionAssignedStaff": "Assigned staff",
+  "actionsColumn": "Actions",
+  "positionCodeHint": "e.g. ELECTRICIAN, PLUMBER"
 }

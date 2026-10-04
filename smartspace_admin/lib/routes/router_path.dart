@@ -13,6 +13,7 @@ class RouterPath {
   static String get editProfile => RouteName.editProfile.path;
   static String get changePassword => RouteName.changePassword.path;
   static String get staffManagement => RouteName.staffManagement.path;
+  static String get positionManagement => RouteName.positionManagement.path;
   static String get reportDashboard => RouteName.reportDashboard.path;
   static String get reportList => RouteName.reportList.path;
   static String get spaceMap => RouteName.spaceMap.path;

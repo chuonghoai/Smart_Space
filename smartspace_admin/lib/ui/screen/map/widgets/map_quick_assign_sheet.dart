@@ -6,6 +6,7 @@ import 'package:smartspace_admin/features/reports/application/report_providers.d
 import 'package:smartspace_admin/features/reports/models/staff_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
+import 'package:smartspace_admin/ui/shared/position/position_widgets.dart';
 import 'package:mobile_shared/mobile_shared.dart';
 
 /// Bottom sheet for quick staff assignment directly from the map.
@@ -27,6 +28,7 @@ class MapQuickAssignSheet extends ConsumerStatefulWidget {
 
 class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
   StaffModel? _selectedStaff;
+  String? _positionFilter;
   String _selectedSeverity = 'medium';
 
   static const _severities = ['low', 'medium', 'high', 'critical'];
@@ -99,6 +101,11 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
             ),
           ),
 
+          PositionFilterChips(
+            selectedId: _positionFilter,
+            onChanged: (id) => setState(() => _positionFilter = id),
+          ),
+
           const Divider(height: 20),
 
           // Staff list
@@ -111,7 +118,12 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
                 child: Text('$e',
                     style: TextStyle(color: cs.error, fontSize: 12)),
               ),
-              data: (staffs) {
+              data: (allStaffs) {
+                final staffs = _positionFilter == null
+                    ? allStaffs
+                    : allStaffs
+                        .where((s) => s.positionId == _positionFilter)
+                        .toList();
                 if (staffs.isEmpty) {
                   return Padding(
                     padding: const EdgeInsets.all(24),
@@ -154,12 +166,36 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
                               selected ? FontWeight.bold : FontWeight.normal,
                         ),
                       ),
-                      subtitle: Text(
-                        staff.email,
-                        style: TextStyle(
-                          color: cs.onSurfaceVariant,
-                          fontSize: 12,
-                        ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            staff.email,
+                            style: TextStyle(
+                              color: cs.onSurfaceVariant,
+                              fontSize: 12,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 4,
+                            children: [
+                              PositionChip(
+                                name: staff.positionName ?? l10n.noPosition,
+                              ),
+                              if (staff.processingCount > 0)
+                                Text(
+                                  '${staff.processingCount} ${l10n.processingStatus.toLowerCase()}',
+                                  style: TextStyle(
+                                    color: cs.primary,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
                       ),
                       trailing: selected
                           ? Icon(Icons.check_circle, color: cs.primary)

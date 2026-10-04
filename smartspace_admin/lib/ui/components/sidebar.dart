@@ -156,6 +156,15 @@ class Sidebar extends ConsumerWidget {
                       context.go(RouterPath.staffManagement);
                     },
                   ),
+                  _SidebarItem(
+                    icon: Icons.workspace_premium_outlined,
+                    label: l10n.managePositions,
+                    isSelected: currentPath == RouterPath.positionManagement,
+                    onTap: () {
+                      Navigator.pop(context);
+                      context.go(RouterPath.positionManagement);
+                    },
+                  ),
 
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 8.0),
@@ -391,6 +400,13 @@ class WebSidebar extends ConsumerWidget {
                 isExpanded: isExpanded,
                 isSelected: currentPath == RouterPath.staffManagement,
                 onTap: () => context.go(RouterPath.staffManagement),
+              ),
+              _WebSidebarItem(
+                icon: Icons.workspace_premium_outlined,
+                label: l10n.managePositions,
+                isExpanded: isExpanded,
+                isSelected: currentPath == RouterPath.positionManagement,
+                onTap: () => context.go(RouterPath.positionManagement),
               ),
 
               const Padding(

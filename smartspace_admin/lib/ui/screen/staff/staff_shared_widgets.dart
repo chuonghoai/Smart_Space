@@ -5,8 +5,10 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mobile_shared/util/media_upload.dart';
 import 'package:smartspace_admin/features/staff/application/staff_providers.dart';
 import 'package:smartspace_admin/features/staff/models/staff_list_response.dart';
+import 'package:smartspace_admin/features/position/application/position_providers.dart';
 import 'package:smartspace_admin/features/staff/models/staff_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
+import 'package:smartspace_admin/ui/shared/position/position_widgets.dart';
 
 /// Summary card — hiển thị 1 KPI (icon + value + label)
 class StaffSummaryCard extends StatelessWidget {
@@ -130,6 +132,10 @@ class StaffCard extends StatelessWidget {
                             ),
                           ),
                         ),
+                      ],
+                      if (staff.positionName != null) ...[
+                        const SizedBox(height: 4),
+                        PositionChip(name: staff.positionName!),
                       ],
                       if (staff.processingCount > 0) ...[
                         const SizedBox(height: 4),
@@ -380,6 +386,7 @@ class _StaffFormState extends State<_StaffForm> {
 
   DateTime? _selectedDate;
   String? _selectedGender;
+  String? _selectedPositionId;
   bool _obscurePass = true;
 
   bool _isLoading = false;
@@ -398,6 +405,7 @@ class _StaffFormState extends State<_StaffForm> {
       _emailCtrl.text = staff.email;
       _phoneCtrl.text = staff.phoneNumber ?? '';
       _existingAvatarUrl = staff.avatarUrl;
+      _selectedPositionId = staff.positionId;
     }
   }
 
@@ -486,6 +494,8 @@ class _StaffFormState extends State<_StaffForm> {
           dateOfBirth: dateStr,
           gender: _selectedGender,
           avatarUrl: avatarUrl,
+          // '' = bỏ chức vụ (backend hiểu chuỗi rỗng là xóa)
+          positionId: _selectedPositionId ?? '',
         );
       } else {
         success = await widget.ref.read(staffListProvider.notifier).createStaff(
@@ -496,6 +506,7 @@ class _StaffFormState extends State<_StaffForm> {
           dateOfBirth: dateStr,
           gender: _selectedGender,
           avatarUrl: avatarUrl,
+          positionId: _selectedPositionId,
         );
       }
 
@@ -744,6 +755,16 @@ class _StaffFormState extends State<_StaffForm> {
               const Expanded(child: SizedBox.shrink()),
           ],
         ),
+        const SizedBox(height: 16),
+        // Row 4: Chức vụ
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: _buildPositionField(l10n)),
+            const SizedBox(width: 16),
+            const Expanded(child: SizedBox.shrink()),
+          ],
+        ),
       ],
     );
   }
@@ -761,6 +782,8 @@ class _StaffFormState extends State<_StaffForm> {
         _buildDateField(theme, l10n),
         const SizedBox(height: 12),
         _buildGenderField(l10n),
+        const SizedBox(height: 12),
+        _buildPositionField(l10n),
         if (!widget.isEditMode) ...[
           const SizedBox(height: 12),
           _buildPasswordField(l10n),
@@ -842,6 +865,56 @@ class _StaffFormState extends State<_StaffForm> {
         ],
         onChanged: (v) => setState(() => _selectedGender = v),
       );
+
+  /// Dropdown chọn chức vụ — chỉ liệt kê chức vụ đang hoạt động.
+  Widget _buildPositionField(AppLocalizations l10n) {
+    return Consumer(
+      builder: (context, ref, _) {
+        final async = ref.watch(activePositionsProvider);
+        return async.when(
+          loading: () => const LinearProgressIndicator(),
+          error: (_, _) => const SizedBox.shrink(),
+          data: (positions) {
+            final items = <DropdownMenuItem<String?>>[
+              DropdownMenuItem<String?>(
+                value: null,
+                child: Text(l10n.noPosition),
+              ),
+              ...positions.map(
+                (p) => DropdownMenuItem<String?>(
+                  value: p.id,
+                  child: Text(p.name, overflow: TextOverflow.ellipsis),
+                ),
+              ),
+            ];
+            // Chức vụ hiện tại của staff có thể đã ngừng hoạt động → vẫn phải có trong list
+            final current = _selectedPositionId;
+            if (current != null && !positions.any((p) => p.id == current)) {
+              items.add(DropdownMenuItem<String?>(
+                value: current,
+                child: Text(
+                  widget.editingStaff?.positionName ?? current,
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ));
+            }
+            return DropdownButtonFormField<String?>(
+              initialValue: _selectedPositionId,
+              isExpanded: true,
+              decoration: InputDecoration(
+                labelText: l10n.positionLabel,
+                prefixIcon: const Icon(Icons.workspace_premium_outlined),
+                border: _inputBorder,
+              ),
+              hint: Text(l10n.selectPosition),
+              items: items,
+              onChanged: (v) => setState(() => _selectedPositionId = v),
+            );
+          },
+        );
+      },
+    );
+  }
 
   Widget _buildPasswordField(AppLocalizations l10n) => TextFormField(
     controller: _passCtrl,

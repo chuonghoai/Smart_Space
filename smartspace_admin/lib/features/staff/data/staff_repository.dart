@@ -10,6 +10,7 @@ class StaffRepository {
     int size = 10,
     String? search,
     String? status,
+    String? positionId,
   }) async {
     return apiClient.get(
       '/admin/staffs',
@@ -18,6 +19,7 @@ class StaffRepository {
         'size': size,
         if (search != null && search.isNotEmpty) 'search': search,
         if (status != null && status != 'all') 'status': status,
+        if (positionId != null && positionId != 'all') 'positionId': positionId,
       },
       decoder: (json) =>
           StaffListResponse.fromJson(json as Map<String, dynamic>),
@@ -39,6 +41,7 @@ class StaffRepository {
     String? dateOfBirth,
     String? gender,
     String? avatarUrl,
+    String? positionId,
   }) async {
     return apiClient.post(
       '/admin/staffs',
@@ -50,10 +53,12 @@ class StaffRepository {
         if (dateOfBirth != null) 'dateOfBirth': dateOfBirth,
         if (gender != null) 'gender': gender,
         if (avatarUrl != null) 'avatarUrl': avatarUrl,
+        if (positionId != null) 'positionId': positionId,
       },
     );
   }
 
+  /// [positionId]: null = giữ nguyên, '' = bỏ chức vụ, giá trị = đổi chức vụ.
   Future<ApiResponse> updateStaff({
     required String staffId,
     required String fullName,
@@ -62,6 +67,7 @@ class StaffRepository {
     String? dateOfBirth,
     String? gender,
     String? avatarUrl,
+    String? positionId,
   }) async {
     return apiClient.put(
       '/admin/staffs/$staffId',
@@ -72,6 +78,7 @@ class StaffRepository {
         if (dateOfBirth != null) 'dateOfBirth': dateOfBirth,
         if (gender != null) 'gender': gender,
         if (avatarUrl != null) 'avatarUrl': avatarUrl,
+        if (positionId != null) 'positionId': positionId,
       },
     );
   }

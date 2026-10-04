@@ -6,5 +6,6 @@ public record UpdateStaffRequest(
         String phone,
         String dateOfBirth,
         String gender,
-        String avatarUrl) {
+        String avatarUrl,
+        String positionId) {
 }

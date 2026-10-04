@@ -4,6 +4,9 @@ class StaffModel {
   final String email;
   final String? phoneNumber;
   final String? avatarUrl;
+  final String? positionId;
+  final String? positionName;
+  final int processingCount;
 
   StaffModel({
     required this.id,
@@ -11,6 +14,9 @@ class StaffModel {
     required this.email,
     this.phoneNumber,
     this.avatarUrl,
+    this.positionId,
+    this.positionName,
+    this.processingCount = 0,
   });
 
   factory StaffModel.fromJson(Map<String, dynamic> json) {
@@ -20,6 +26,9 @@ class StaffModel {
       email: json['email'] as String? ?? '',
       phoneNumber: json['phoneNumber'] as String?,
       avatarUrl: json['avatarUrl'] as String?,
+      positionId: json['positionId'] as String?,
+      positionName: json['positionName'] as String?,
+      processingCount: (json['processingCount'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -30,6 +39,8 @@ class StaffModel {
       'email': email,
       'phoneNumber': phoneNumber,
       'avatarUrl': avatarUrl,
+      'positionId': positionId,
+      'positionName': positionName,
     };
   }
 }

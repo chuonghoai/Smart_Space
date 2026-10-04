@@ -7,6 +7,7 @@ import 'package:smartspace_admin/features/reports/models/report_detail_model.dar
 import 'package:smartspace_admin/features/reports/models/staff_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
+import 'package:smartspace_admin/ui/shared/position/position_widgets.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class AdminReportDetailScreen extends ConsumerStatefulWidget {
@@ -982,6 +983,12 @@ class _AdminReportDetailScreenState
                   overflow: TextOverflow.ellipsis,
                 ),
 
+                // Position
+                if (_selectedStaff!.positionName != null) ...[
+                  const SizedBox(height: 4),
+                  PositionChip(name: _selectedStaff!.positionName!),
+                ],
+
                 // Phone
                 if (_selectedStaff!.phoneNumber != null &&
                     _selectedStaff!.phoneNumber!.isNotEmpty) ...[
@@ -1138,85 +1145,150 @@ class _AdminReportDetailScreenState
     AppLocalizations l10n,
     ThemeData theme,
   ) {
+    String? positionFilter;
     showModalBottomSheet(
       context: context,
+      isScrollControlled: true,
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (bottomSheetContext) {
-        return Container(
-          padding: const EdgeInsets.symmetric(vertical: 16),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
-                child: Text(
-                  l10n.selectStaffPrompt,
-                  style: theme.textTheme.titleMedium?.copyWith(
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const Divider(),
-              Expanded(
-                child: ListView.separated(
-                  itemCount: staffs.length,
-                  separatorBuilder: (context, index) => const Divider(height: 1),
-                  itemBuilder: (context, index) {
-                    final staff = staffs[index];
-                    final isSelected = _selectedStaff?.id == staff.id;
+        return StatefulBuilder(
+          builder: (context, setSheetState) {
+            final filtered = positionFilter == null
+                ? staffs
+                : staffs.where((s) => s.positionId == positionFilter).toList();
 
-                    return ListTile(
-                      leading: AppNetworkImage(
-                        url: staff.avatarUrl,
-                        width: 40,
-                        height: 40,
-                        isCircle: true,
-                        errorWidget: CircleAvatar(
-                          radius: 20,
-                          backgroundColor: theme.colorScheme.primaryContainer,
+            return ConstrainedBox(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.75,
+              ),
+              child: Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 20, vertical: 8),
+                      child: Text(
+                        l10n.selectStaffPrompt,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    PositionFilterChips(
+                      selectedId: positionFilter,
+                      onChanged: (id) =>
+                          setSheetState(() => positionFilter = id),
+                    ),
+                    const Divider(),
+                    if (filtered.isEmpty)
+                      Padding(
+                        padding: const EdgeInsets.all(24),
+                        child: Center(
                           child: Text(
-                            staff.fullName.isNotEmpty
-                                ? staff.fullName[0].toUpperCase()
-                                : 'S',
+                            l10n.noStaffAvailable,
                             style: TextStyle(
-                              color: theme.colorScheme.onPrimaryContainer,
-                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
                         ),
-                      ),
-                      title: Text(
-                        staff.fullName,
-                        style: TextStyle(
-                          fontWeight:
-                              isSelected ? FontWeight.bold : FontWeight.normal,
+                      )
+                    else
+                      Flexible(
+                        child: ListView.separated(
+                          shrinkWrap: true,
+                          itemCount: filtered.length,
+                          separatorBuilder: (context, index) =>
+                              const Divider(height: 1),
+                          itemBuilder: (context, index) {
+                            final staff = filtered[index];
+                            final isSelected = _selectedStaff?.id == staff.id;
+
+                            return ListTile(
+                              leading: AppNetworkImage(
+                                url: staff.avatarUrl,
+                                width: 40,
+                                height: 40,
+                                isCircle: true,
+                                errorWidget: CircleAvatar(
+                                  radius: 20,
+                                  backgroundColor:
+                                      theme.colorScheme.primaryContainer,
+                                  child: Text(
+                                    staff.fullName.isNotEmpty
+                                        ? staff.fullName[0].toUpperCase()
+                                        : 'S',
+                                    style: TextStyle(
+                                      color:
+                                          theme.colorScheme.onPrimaryContainer,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                              title: Text(
+                                staff.fullName,
+                                style: TextStyle(
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                ),
+                              ),
+                              subtitle: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    '${staff.email}${staff.phoneNumber != null ? ' • ${staff.phoneNumber}' : ''}',
+                                    style: TextStyle(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Wrap(
+                                    spacing: 6,
+                                    runSpacing: 4,
+                                    children: [
+                                      PositionChip(
+                                        name: staff.positionName ??
+                                            l10n.noPosition,
+                                      ),
+                                      if (staff.processingCount > 0)
+                                        Text(
+                                          '${staff.processingCount} ${l10n.processingStatus.toLowerCase()}',
+                                          style: TextStyle(
+                                            color: theme.colorScheme.primary,
+                                            fontSize: 11,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                ],
+                              ),
+                              trailing: isSelected
+                                  ? Icon(Icons.check_circle,
+                                      color: theme.colorScheme.primary)
+                                  : null,
+                              onTap: () {
+                                setState(() {
+                                  _selectedStaff = staff;
+                                });
+                                Navigator.of(bottomSheetContext).pop();
+                              },
+                            );
+                          },
                         ),
                       ),
-                      subtitle: Text(
-                        '${staff.email}${staff.phoneNumber != null ? ' • ${staff.phoneNumber}' : ''}',
-                        style: TextStyle(
-                          color: theme.colorScheme.onSurfaceVariant,
-                          fontSize: 12,
-                        ),
-                      ),
-                      trailing: isSelected
-                          ? Icon(Icons.check_circle, color: theme.colorScheme.primary)
-                          : null,
-                      onTap: () {
-                        setState(() {
-                          _selectedStaff = staff;
-                        });
-                        Navigator.of(bottomSheetContext).pop();
-                      },
-                    );
-                  },
+                  ],
                 ),
               ),
-            ],
-          ),
+            );
+          },
         );
       },
     );
