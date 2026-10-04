@@ -553,6 +553,9 @@ class AppLocalizationsVi extends AppLocalizations {
       'Phản ánh ẩn danh (Chỉ quản trị viên mới có thể xem thông tin này)';
 
   @override
+  String get anonymousUserNote => 'Người dùng đăng bài viết ẩn danh';
+
+  @override
   String get manageReports => 'Quản lý phản ánh';
 
   @override
@@ -919,4 +922,10 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get markAllAsRead => 'Đánh dấu đã đọc tất cả';
+
+  @override
+  String get unassignedStaff => 'Chưa phân công';
+
+  @override
+  String get assignedTo => 'Phụ trách';
 }

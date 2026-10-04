@@ -5,6 +5,8 @@ class RouterPath {
   static String get login => RouteName.login.path;
   static String get home => RouteName.home.path;
   static String get reportDetail => RouteName.reportDetail.path;
+  static String reportDetailWithId(String id) =>
+      RouteName.reportDetail.path.replaceAll(':id', id);
   static String get completeProfile => RouteName.completeProfile.path;
   static String get forgotPassword => RouteName.forgotPassword.path;
   static String get settings => RouteName.settings.path;

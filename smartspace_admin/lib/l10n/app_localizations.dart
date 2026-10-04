@@ -1166,6 +1166,12 @@ abstract class AppLocalizations {
   /// **'Anonymous report (Visible only to administrators)'**
   String get anonymousAdminNotice;
 
+  /// No description provided for @anonymousUserNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The user posted this report anonymously'**
+  String get anonymousUserNote;
+
   /// No description provided for @manageReports.
   ///
   /// In en, this message translates to:
@@ -1885,6 +1891,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Mark all as read'**
   String get markAllAsRead;
+
+  /// No description provided for @unassignedStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Unassigned'**
+  String get unassignedStaff;
+
+  /// No description provided for @assignedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned to'**
+  String get assignedTo;
 }
 
 class _AppLocalizationsDelegate

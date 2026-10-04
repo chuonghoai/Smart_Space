@@ -1,5 +1,6 @@
 package com.vn.smart_space.dto.response.admin;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vn.smart_space.consts.EReportSeverity;
 import com.vn.smart_space.consts.EReportStatus;
 import lombok.AccessLevel;
@@ -33,4 +34,6 @@ public class RecentReportResponse {
     String userName;
     String userEmail;
 
+    @JsonProperty("is_anonymous")
+    Boolean isAnonymous;
 }

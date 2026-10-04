@@ -320,6 +320,8 @@ public class ReportServiceImpl implements IReportService {
 
         return reports.stream().map(r -> {
             User staff = r.getAssignedStaff();
+            User user = r.getUser();
+            boolean anon = Boolean.TRUE.equals(r.getIsAnonymous());
             return RecentReportResponse.builder()
                     .id(r.getId())
                     .title(r.getTitle())
@@ -331,6 +333,9 @@ public class ReportServiceImpl implements IReportService {
                             : r.getLocationDescription())
                     .assignedStaffName(staff != null ? staff.getFullName() : null)
                     .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
+                    .isAnonymous(anon)
+                    .userName(user != null ? user.getFullName() : null)
+                    .userEmail(user != null ? user.getEmail() : null)
                     .build();
         }).collect(Collectors.toList());
     }
@@ -595,8 +600,9 @@ public class ReportServiceImpl implements IReportService {
                     .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
                     .latitude(r.getLatitude())
                     .longitude(r.getLongitude())
-                    .userName(anon ? null : (user != null ? user.getFullName() : null))
-                    .userEmail(anon ? null : (user != null ? user.getEmail() : null))
+                    .isAnonymous(anon)
+                    .userName(user != null ? user.getFullName() : null)
+                    .userEmail(user != null ? user.getEmail() : null)
                     .build();
         }).collect(Collectors.toList());
 

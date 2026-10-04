@@ -11,6 +11,7 @@ class ReportListItem {
   final String? assignedStaffAvatarUrl;
   final String? userName;
   final String? userEmail;
+  final bool isAnonymous;
 
   const ReportListItem({
     required this.id,
@@ -24,28 +25,44 @@ class ReportListItem {
     this.assignedStaffAvatarUrl,
     this.userName,
     this.userEmail,
+    this.isAnonymous = false,
   });
 
   factory ReportListItem.fromJson(Map<String, dynamic> json) {
     DateTime? createdAt;
     final raw = json['createdAt'] ?? json['created_at'];
     if (raw != null) createdAt = DateTime.tryParse(raw.toString());
+
+    String? imgUrl = json['imageUrl']?.toString() ?? json['image_url']?.toString();
+    if (imgUrl == null || imgUrl.isEmpty) {
+      final imgUrls = json['imageUrls'] ?? json['image_urls'] ?? json['images'];
+      if (imgUrls is List && imgUrls.isNotEmpty) {
+        imgUrl = imgUrls.first?.toString();
+      } else if (imgUrls is String && imgUrls.isNotEmpty) {
+        final cleaned = imgUrls.replaceAll(RegExp(r'[\[\]" ]'), '');
+        if (cleaned.isNotEmpty) {
+          imgUrl = cleaned.split(',').first.trim();
+        }
+      }
+    }
+
     return ReportListItem(
       id: json['id']?.toString() ?? '',
       title: json['title']?.toString() ?? '',
       status: (json['status']?.toString() ?? 'pending').toLowerCase(),
       severity: json['severity']?.toString().toLowerCase(),
       createdAt: createdAt,
-      imageUrl: json['imageUrl']?.toString() ?? json['image_url']?.toString(),
+      imageUrl: imgUrl,
       address: json['address']?.toString(),
       assignedStaffName: (json['assignedStaffName'] ?? json['assigned_staff_name'])?.toString(),
       assignedStaffAvatarUrl: (json['assignedStaffAvatarUrl'] ?? json['assigned_staff_avatar_url'])?.toString(),
       userName: json['userName']?.toString() ?? json['user_name']?.toString(),
       userEmail: json['userEmail']?.toString() ?? json['user_email']?.toString(),
+      isAnonymous: (json['is_anonymous'] ?? json['isAnonymous']) as bool? ?? false,
     );
   }
 
-  ReportListItem copyWith({String? status}) => ReportListItem(
+  ReportListItem copyWith({String? status, bool? isAnonymous}) => ReportListItem(
         id: id,
         title: title,
         status: status ?? this.status,
@@ -57,6 +74,7 @@ class ReportListItem {
         assignedStaffAvatarUrl: assignedStaffAvatarUrl,
         userName: userName,
         userEmail: userEmail,
+        isAnonymous: isAnonymous ?? this.isAnonymous,
       );
 }
 

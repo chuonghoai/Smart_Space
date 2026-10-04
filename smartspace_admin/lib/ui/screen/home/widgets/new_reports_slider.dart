@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:smartspace_admin/features/home/application/home_providers.dart';
 import 'package:smartspace_admin/features/home/models/recent_report_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
+import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
 
 class NewReportsSlider extends ConsumerStatefulWidget {
@@ -118,7 +119,7 @@ class _NewReportsSliderState extends ConsumerState<NewReportsSlider> {
             ),
             const SizedBox(height: 12),
             SizedBox(
-              height: 140,
+              height: 155,
               child: PageView.builder(
                 controller: _pageController,
                 itemCount: newReports.length,
@@ -196,7 +197,7 @@ class _NewReportsSliderState extends ConsumerState<NewReportsSlider> {
         : l10n.noAddress;
 
     return InkWell(
-      onTap: () => context.push('/reports/${report.id}'),
+      onTap: () => context.push(RouterPath.reportDetailWithId(report.id)),
       borderRadius: BorderRadius.circular(16),
       child: Container(
         margin: const EdgeInsets.symmetric(horizontal: 2),
@@ -259,6 +260,38 @@ class _NewReportsSliderState extends ConsumerState<NewReportsSlider> {
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
+                if (report.isAnonymous) ...[
+                  const SizedBox(height: 4),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.errorContainer.withValues(alpha: 0.25),
+                      borderRadius: BorderRadius.circular(4),
+                      border: Border.all(
+                        color: theme.colorScheme.error.withValues(alpha: 0.35),
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(Icons.visibility_off_outlined,
+                            size: 12, color: theme.colorScheme.error),
+                        const SizedBox(width: 4),
+                        Flexible(
+                          child: Text(
+                            l10n.anonymousUserNote,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w600,
+                              color: theme.colorScheme.error,
+                            ),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
                 const SizedBox(height: 6),
                 Row(
                   children: [

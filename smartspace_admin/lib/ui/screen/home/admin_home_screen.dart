@@ -7,6 +7,7 @@ import 'package:smartspace_admin/features/home/application/home_providers.dart';
 import 'package:smartspace_admin/features/home/models/recent_report_model.dart';
 import 'package:smartspace_admin/features/notifications/providers/notification_provider.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
+import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/layout/app_layout.dart';
 import 'package:smartspace_admin/ui/screen/home/widgets/new_reports_slider.dart';
 import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
@@ -306,8 +307,8 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
                   trailing: isReportActivity
                       ? Icon(Icons.arrow_forward_ios_rounded, size: 12, color: theme.hintColor)
                       : null,
-                  onTap: isReportActivity
-                      ? () => context.push('/reports/${activity.targetId}')
+                  onTap: (isReportActivity && activity.targetId != null)
+                      ? () => context.push(RouterPath.reportDetailWithId(activity.targetId!))
                       : null,
                 );
               },
@@ -336,7 +337,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
     final isDark = theme.brightness == Brightness.dark;
 
     return InkWell(
-      onTap: () => context.push('/reports/${report.id}'),
+      onTap: () => context.push(RouterPath.reportDetailWithId(report.id)),
       borderRadius: BorderRadius.circular(12),
       child: Container(
         padding: const EdgeInsets.all(16),
@@ -382,6 +383,38 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
                     maxLines: 1,
                     overflow: TextOverflow.ellipsis,
                   ),
+                  if (report.isAnonymous) ...[
+                    const SizedBox(height: 4),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.errorContainer.withValues(alpha: 0.25),
+                        borderRadius: BorderRadius.circular(4),
+                        border: Border.all(
+                          color: theme.colorScheme.error.withValues(alpha: 0.35),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(Icons.visibility_off_outlined,
+                              size: 12, color: theme.colorScheme.error),
+                          const SizedBox(width: 4),
+                          Flexible(
+                            child: Text(
+                              l10n.anonymousUserNote,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                fontSize: 10,
+                                fontWeight: FontWeight.w600,
+                                color: theme.colorScheme.error,
+                              ),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 4),
                   Text(
                     _formatDateTime(report.createdAt),
@@ -403,9 +436,13 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
                           ),
                         ),
                         const SizedBox(width: 8),
-                        Text(
-                          report.assignedStaffName!,
-                          style: theme.textTheme.bodySmall,
+                        Expanded(
+                          child: Text(
+                            report.assignedStaffName!,
+                            style: theme.textTheme.bodySmall,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
                         ),
                       ],
                     ),

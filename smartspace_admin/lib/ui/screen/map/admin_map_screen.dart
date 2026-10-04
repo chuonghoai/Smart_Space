@@ -5,6 +5,7 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:smartspace_admin/features/map/application/map_providers.dart';
 import 'package:smartspace_admin/features/map/models/map_report_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
+import 'package:smartspace_admin/routes/router_path.dart';
 
 import 'admin_map_controller.dart';
 // Conditional import: web vs mobile
@@ -43,7 +44,7 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
           report: report,
           onViewDetail: () {
             Navigator.of(context).pop();
-            context.push('/reports/${report.id}');
+            context.push(RouterPath.reportDetailWithId(report.id));
           },
           onAssign: report.status == 'pending'
               ? () {

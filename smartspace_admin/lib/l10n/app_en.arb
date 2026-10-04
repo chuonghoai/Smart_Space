@@ -195,6 +195,7 @@
   "changeStaff": "Change staff",
   "noImageAvailable": "No image available",
   "anonymousAdminNotice": "Anonymous report (Visible only to administrators)",
+  "anonymousUserNote": "The user posted this report anonymously",
   "manageReports": "Manage Reports",
   "manageUsers": "Manage Users",
   "manageStaffs": "Manage Staffs",
@@ -335,5 +336,7 @@
   "routeNotifications": "Notifications",
   "emptyNotification": "No notifications",
   "justNow": "Just now",
-  "markAllAsRead": "Mark all as read"
+  "markAllAsRead": "Mark all as read",
+  "unassignedStaff": "Unassigned",
+  "assignedTo": "Assigned to"
 }

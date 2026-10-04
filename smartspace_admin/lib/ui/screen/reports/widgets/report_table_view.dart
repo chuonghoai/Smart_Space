@@ -12,8 +12,8 @@ const _colWidths = <int, TableColumnWidth>{
   1: FlexColumnWidth(2.5),   // Tiêu đề
   2: FixedColumnWidth(100),  // Trạng thái 
   3: FixedColumnWidth(130),  // Mức độ      
-  4: FlexColumnWidth(1.5),   // Người gửi
-  5: FlexColumnWidth(1.5),   // Nhân viên
+  4: FlexColumnWidth(1.8),   // Người gửi
+  5: FlexColumnWidth(1.4),   // Nhân viên
   6: FixedColumnWidth(95),   // Ngày tạo
 };
 
@@ -78,65 +78,122 @@ class ReportTableView extends ConsumerWidget {
                         ],
                       ),
                       // Data rows
-                      ...data.items.map((r) => TableRow(
-                            children: [
-                              _dCell(
-                                GestureDetector(
-                                  onTap: () => context.push(
-                                      '${RouterPath.reportDetail}/${r.id}'),
-                                  child: Text(
-                                    r.id.length > 8
-                                        ? r.id.substring(0, 8)
-                                        : r.id,
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      fontFamily: 'monospace',
-                                      fontSize: 11,
-                                      color: theme.colorScheme.primary,
-                                    ),
-                                  ),
+                      ...data.items.map((r) {
+                        void openDetail() =>
+                            context.push(RouterPath.reportDetailWithId(r.id));
+                        return TableRow(
+                          children: [
+                            _dCell(
+                              Text(
+                                r.id.length > 8 ? r.id.substring(0, 8) : r.id,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  fontFamily: 'monospace',
+                                  fontSize: 11,
+                                  color: theme.colorScheme.primary,
+                                  fontWeight: FontWeight.w600,
                                 ),
                               ),
-                              _dCell(
-                                GestureDetector(
-                                  onTap: () => context.push(
-                                      '${RouterPath.reportDetail}/${r.id}'),
-                                  child: Text(
-                                    r.title,
-                                    overflow: TextOverflow.ellipsis,
-                                    maxLines: 2,
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
+                              onTap: openDetail,
+                            ),
+                            _dCell(
+                              Text(
+                                r.title,
+                                overflow: TextOverflow.ellipsis,
+                                maxLines: 2,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  fontWeight: FontWeight.w500,
                                 ),
                               ),
-                              _dCell(Align(
+                              onTap: openDetail,
+                            ),
+                            _dCell(
+                              Align(
                                 alignment: Alignment.centerLeft,
                                 child: StatusChip(r.status, theme),
-                              )),
-                              _dCell(Align(
+                              ),
+                              onTap: openDetail,
+                            ),
+                            _dCell(
+                              Align(
                                 alignment: Alignment.centerLeft,
                                 child: SeverityChip(r.severity, theme, l10n),
-                              )),
-                              _dCell(Text(
-                                r.userName ?? l10n.anonymousUser,
-                                overflow: TextOverflow.ellipsis,
-                                style: theme.textTheme.bodySmall,
-                              )),
-                              _dCell(Text(
+                              ),
+                              onTap: openDetail,
+                            ),
+                            _dCell(
+                              Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Flexible(
+                                    child: Text(
+                                      r.userName ?? l10n.anonymousUser,
+                                      overflow: TextOverflow.ellipsis,
+                                      style: theme.textTheme.bodySmall,
+                                    ),
+                                  ),
+                                  if (r.isAnonymous) ...[
+                                    const SizedBox(width: 4),
+                                    Tooltip(
+                                      message: l10n.anonymousUserNote,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(
+                                            horizontal: 5, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          color: theme.colorScheme.errorContainer
+                                              .withValues(alpha: 0.35),
+                                          borderRadius: BorderRadius.circular(4),
+                                          border: Border.all(
+                                            color: theme.colorScheme.error
+                                                .withValues(alpha: 0.3),
+                                          ),
+                                        ),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Icon(
+                                              Icons.visibility_off_outlined,
+                                              size: 11,
+                                              color: theme.colorScheme.error,
+                                            ),
+                                            const SizedBox(width: 2),
+                                            Text(
+                                              l10n.anonymousUser,
+                                              style: TextStyle(
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                                color: theme.colorScheme.error,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                              onTap: openDetail,
+                            ),
+                            _dCell(
+                              Text(
                                 r.assignedStaffName ?? '—',
                                 overflow: TextOverflow.ellipsis,
                                 style: theme.textTheme.bodySmall,
-                              )),
-                              _dCell(Text(
+                              ),
+                              onTap: openDetail,
+                            ),
+                            _dCell(
+                              Text(
                                 r.createdAt != null
                                     ? DateFormat('dd/MM/yyyy')
                                         .format(r.createdAt!)
                                     : '—',
                                 style: theme.textTheme.bodySmall,
-                              )),
-                            ],
-                          )),
+                              ),
+                              onTap: openDetail,
+                            ),
+                          ],
+                        );
+                      }),
                     ],
                   ),
                 ),       // SizedBox
@@ -185,9 +242,12 @@ class ReportTableView extends ConsumerWidget {
       );
 
   // Data cell
-  Widget _dCell(Widget child) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        child: child,
+  Widget _dCell(Widget child, {VoidCallback? onTap}) => InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          child: child,
+        ),
       );
 
   Widget _buildEmpty(AppLocalizations l10n, ThemeData theme) => Center(

@@ -195,6 +195,7 @@
   "changeStaff": "Thay đổi nhân viên",
   "noImageAvailable": "Không có hình ảnh",
   "anonymousAdminNotice": "Phản ánh ẩn danh (Chỉ quản trị viên mới có thể xem thông tin này)",
+  "anonymousUserNote": "Người dùng đăng bài viết ẩn danh",
   "manageReports": "Quản lý phản ánh",
   "manageUsers": "Quản lý người dùng",
   "manageStaffs": "Quản lý nhân viên",
@@ -335,5 +336,7 @@
   "routeNotifications": "Thông báo",
   "emptyNotification": "Không có thông báo nào",
   "justNow": "Vừa xong",
-  "markAllAsRead": "Đánh dấu đã đọc tất cả"
+  "markAllAsRead": "Đánh dấu đã đọc tất cả",
+  "unassignedStaff": "Chưa phân công",
+  "assignedTo": "Phụ trách"
 }

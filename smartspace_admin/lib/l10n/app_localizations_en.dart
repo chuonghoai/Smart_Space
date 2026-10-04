@@ -554,6 +554,9 @@ class AppLocalizationsEn extends AppLocalizations {
       'Anonymous report (Visible only to administrators)';
 
   @override
+  String get anonymousUserNote => 'The user posted this report anonymously';
+
+  @override
   String get manageReports => 'Manage Reports';
 
   @override
@@ -920,4 +923,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get markAllAsRead => 'Mark all as read';
+
+  @override
+  String get unassignedStaff => 'Unassigned';
+
+  @override
+  String get assignedTo => 'Assigned to';
 }

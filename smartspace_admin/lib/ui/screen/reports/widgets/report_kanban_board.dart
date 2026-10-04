@@ -312,10 +312,11 @@ class _KanbanCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final severityColor = _severityColor(item.severity);
 
     return GestureDetector(
-      onTap: () => context.push('${RouterPath.reportDetail}/${item.id}'),
+      onTap: () => context.push(RouterPath.reportDetailWithId(item.id)),
       child: Container(
         margin: const EdgeInsets.only(bottom: 8),
         decoration: BoxDecoration(
@@ -357,14 +358,33 @@ class _KanbanCard extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Title
-                      Text(
-                        item.title,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
+                      // Title + Anonymous indicator
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              item.title,
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                          if (item.isAnonymous)
+                            Tooltip(
+                              message: l10n.anonymousUserNote,
+                              child: Padding(
+                                padding: const EdgeInsets.only(left: 4),
+                                child: Icon(
+                                  Icons.visibility_off_outlined,
+                                  size: 13,
+                                  color: theme.colorScheme.error,
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                       const SizedBox(height: 6),
 

@@ -613,30 +613,46 @@ class _AdminReportDetailScreenState
               const SizedBox(height: 12),
               Container(
                 width: double.infinity,
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
                 decoration: BoxDecoration(
-                  color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
-                  borderRadius: BorderRadius.circular(8),
+                  color: theme.colorScheme.errorContainer.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(10),
                   border: Border.all(
-                    color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+                    color: theme.colorScheme.error.withValues(alpha: 0.35),
                   ),
                 ),
                 child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Icon(
-                      Icons.info_outline_rounded,
-                      size: 15,
-                      color: theme.colorScheme.onSurfaceVariant,
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Icon(
+                        Icons.visibility_off_outlined,
+                        size: 18,
+                        color: theme.colorScheme.error,
+                      ),
                     ),
-                    const SizedBox(width: 8),
+                    const SizedBox(width: 10),
                     Expanded(
-                      child: Text(
-                        l10n.anonymousAdminNotice,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontSize: 11.5,
-                          color: theme.colorScheme.onSurfaceVariant,
-                          fontStyle: FontStyle.italic,
-                        ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.anonymousUserNote,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.error,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            l10n.anonymousAdminNotice,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              fontSize: 11.5,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],
