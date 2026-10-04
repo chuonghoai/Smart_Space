@@ -732,4 +732,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get assignedStaff => 'Assigned Staff';
+
+  @override
+  String get routeCommunityFeed => 'Community feed';
+
+  @override
+  String get feedTabLatest => 'Latest';
+
+  @override
+  String get feedTabNearby => 'Near me';
+
+  @override
+  String get feedEmpty => 'No community reports yet';
+
+  @override
+  String get feedAnonymous => 'Anonymous user';
+
+  @override
+  String get feedSeeMore => 'See more';
+
+  @override
+  String get feedTimelineSubmitted => 'Submitted';
+
+  @override
+  String get feedTimelineProcessing => 'Processing';
+
+  @override
+  String get feedTimelineDone => 'Done';
+
+  @override
+  String get feedShare => 'Share';
+
+  @override
+  String get feedViewOnMap => 'View map';
+
+  @override
+  String get feedCopiedLink => 'Report info copied to clipboard';
+
+  @override
+  String feedPhotosCount(int count) {
+    return '$count photos';
+  }
 }

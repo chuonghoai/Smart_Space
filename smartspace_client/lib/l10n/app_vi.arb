@@ -281,5 +281,25 @@
   "markAllAsRead": "Đánh dấu tất cả đã đọc",
   "emptyNotification": "Bạn chưa có thông báo nào.",
   "unread": "Chưa đọc",
-  "assignedStaff": "Nhân viên xử lý"
+  "assignedStaff": "Nhân viên xử lý",
+  "routeCommunityFeed": "Bảng tin",
+  "feedTabLatest": "Mới nhất",
+  "feedTabNearby": "Gần tôi",
+  "feedEmpty": "Chưa có phản ánh nào trong cộng đồng",
+  "feedAnonymous": "Người dùng ẩn danh",
+  "feedSeeMore": "Xem thêm",
+  "feedTimelineSubmitted": "Đã gửi",
+  "feedTimelineProcessing": "Đang xử lý",
+  "feedTimelineDone": "Hoàn thành",
+  "feedShare": "Chia sẻ",
+  "feedViewOnMap": "Xem vị trí",
+  "feedCopiedLink": "Đã sao chép thông tin phản ánh",
+  "feedPhotosCount": "{count} ảnh",
+  "@feedPhotosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -29,6 +29,8 @@ class AppRouteInfo {
         return l10n.routeCreateReport;
       case 'routeMyReports':
         return l10n.routeMyReports;
+      case 'routeCommunityFeed':
+        return l10n.routeCommunityFeed;
       case 'routeEditProfile':
         return l10n.routeEditProfile;
       case 'routeChangePassword':
@@ -152,6 +154,12 @@ class RouteName {
     icon: Icons.notifications,
     priority: 9,
   );
+  static const communityFeed = AppRouteInfo(
+    path: '/community-feed',
+    nameKey: 'routeCommunityFeed',
+    icon: Icons.dynamic_feed,
+    priority: 3,
+  );
 
   static const List<AppRouteInfo> allRoutes = [
     splash,
@@ -172,6 +180,7 @@ class RouteName {
     myReports,
     search,
     notifications,
+    communityFeed,
   ];
 
   static List<AppRouteInfo> get searchableRoutes {

@@ -3,6 +3,7 @@ import 'package:mobile_shared/core/constants/use_mock.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_client/features/reports/models/report_dto.dart';
+import 'package:smartspace_client/features/reports/models/report_feed_model.dart';
 import 'package:smartspace_client/features/reports/repositories/report_repo.dart';
 import 'package:smartspace_client/features/reports/repositories/report_repo_api.dart';
 import 'package:smartspace_client/features/reports/repositories/report_repo_mock.dart';
@@ -30,6 +31,10 @@ class ReportService {
 
   Future<ApiResponse<ReportDetailModel>> getReportDetail(String reportId) async {
     return await reportRepo.getReportDetail(reportId);
+  }
+
+  Future<ApiResponse<ReportFeedPage>> getFeed({String? status, int page = 1, int size = 10, double? lat, double? lng}) {
+    return reportRepo.getFeed(status: status, page: page, size: size, lat: lat, lng: lng);
   }
 }
 

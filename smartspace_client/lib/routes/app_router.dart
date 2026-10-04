@@ -16,6 +16,7 @@ import 'package:smartspace_client/ui/mobile/auth/register/complete_profile_scree
 import 'package:smartspace_client/ui/mobile/reports/create_report_screen.dart';
 import 'package:smartspace_client/ui/mobile/reports/presentation/report_detail_screen.dart';
 import 'package:smartspace_client/ui/mobile/reports/my_reports_screen.dart';
+import 'package:smartspace_client/ui/mobile/reports/feed/report_feed_screen.dart';
 import 'package:mobile_shared/core/toast/toast_service.dart';
 import 'package:smartspace_client/ui/mobile/search/search_screen.dart';
 import 'package:smartspace_client/ui/mobile/notifications/notification_screen.dart';
@@ -96,6 +97,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.myReports,
       builder: (context, state) => const MyReportsScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.communityFeed,
+      builder: (context, state) => const ReportFeedScreen(),
     ),
     GoRoute(
       path: RouterPath.search,

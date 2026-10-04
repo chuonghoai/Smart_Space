@@ -2,6 +2,7 @@ import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_client/features/reports/models/report_dto.dart';
+import 'package:smartspace_client/features/reports/models/report_feed_model.dart';
 
 abstract class ReportRepo {
   Future<ApiResponse<List<ReportModel>>> getDangerousReports();
@@ -9,4 +10,5 @@ abstract class ReportRepo {
   Future<ApiResponse<ReportModel>> createReport(ReportDto reportDto);
   Future<ApiResponse<List<ReportModel>>> getMyReports({String? status, int limit = 50});
   Future<ApiResponse<ReportDetailModel>> getReportDetail(String reportId);
+  Future<ApiResponse<ReportFeedPage>> getFeed({String? status, int page = 1, int size = 10, double? lat, double? lng});
 }

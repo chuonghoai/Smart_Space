@@ -50,9 +50,24 @@ public class ReportController {
         return ResponseEntity.ok(ApiResponse.success("report.create.success", response));
     }
 
+    @GetMapping("/feed")
+    public ResponseEntity<ApiResponse> getFeed(
+            @RequestParam(required = false) String status,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(name = "user_lat", required = false) Double userLat,
+            @RequestParam(name = "user_long", required = false) Double userLong) {
+        return ResponseEntity.ok(ApiResponse.success("system.success",
+                reportService.getFeed(status, page, size, userLat, userLong)));
+    }
+
     @GetMapping("/{id}")
-    public ResponseEntity<ApiResponse> getReportDetail(@PathVariable String id) {
-        ReportDetailResponse report = reportService.getReportDetail(id);
+    public ResponseEntity<ApiResponse> getReportDetail(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String id) {
+        String viewerId = jwt != null && jwt.hasClaim("userId") ? jwt.getClaim("userId").toString() : null;
+        String scope = jwt != null && jwt.hasClaim("scope") ? jwt.getClaim("scope").toString() : null;
+        ReportDetailResponse report = reportService.getReportDetail(id, viewerId, scope);
         return ResponseEntity.ok(ApiResponse.success("system.success", report));
     }
 

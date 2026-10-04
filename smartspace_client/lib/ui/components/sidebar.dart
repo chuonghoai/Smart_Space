@@ -128,6 +128,14 @@ class Sidebar extends ConsumerWidget {
                     },
                   ),
                   _SidebarItem(
+                    icon: Icons.dynamic_feed_outlined,
+                    label: l10n.routeCommunityFeed,
+                    onTap: () {
+                      Navigator.pop(context);
+                      context.push(RouterPath.communityFeed);
+                    },
+                  ),
+                  _SidebarItem(
                     icon: Icons.map_outlined,
                     label: l10n.map,
                     onTap: () {

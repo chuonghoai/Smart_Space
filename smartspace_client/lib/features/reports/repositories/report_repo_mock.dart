@@ -2,6 +2,7 @@ import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_client/features/reports/models/report_dto.dart';
+import 'package:smartspace_client/features/reports/models/report_feed_model.dart';
 import 'package:smartspace_client/features/reports/repositories/report_repo.dart';
 
 class ReportRepoMock implements ReportRepo {
@@ -162,6 +163,19 @@ class ReportRepoMock implements ReportRepo {
         address: 'Mock Address',
         locationDescription: 'Mock Location',
         createdAt: DateTime.now(),
+      ),
+    );
+  }
+
+  @override
+  Future<ApiResponse<ReportFeedPage>> getFeed({String? status, int page = 1, int size = 10, double? lat, double? lng}) async {
+    final detail = (await getReportDetail('f$page')).data!;
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: ReportFeedPage(
+        items: [ReportFeedItem(report: detail, reporterName: 'Mock User')],
+        totalPages: 1,
       ),
     );
   }

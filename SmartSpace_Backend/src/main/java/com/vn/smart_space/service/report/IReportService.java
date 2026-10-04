@@ -2,6 +2,7 @@ package com.vn.smart_space.service.report;
 
 import java.util.List;
 
+import com.vn.smart_space.dto.PageResponse;
 import com.vn.smart_space.dto.request.admin.ReportAssignRequest;
 import com.vn.smart_space.dto.request.report.ReportCreateRequest;
 import com.vn.smart_space.dto.response.admin.MapReportResponse;
@@ -13,37 +14,42 @@ import com.vn.smart_space.dto.response.report.ReportDetailResponse;
 import com.vn.smart_space.dto.response.report.ReportResponse;
 
 public interface IReportService {
-    List<ReportResponse> getDangerousReports();
+        List<ReportResponse> getDangerousReports();
 
-    List<ReportResponse> getRecentReports(String filter, Double userLat, Double userLong);
+        List<ReportResponse> getRecentReports(String filter, Double userLat, Double userLong);
 
-    ReportDetailResponse createReport(ReportCreateRequest request, String userId);
+        ReportDetailResponse createReport(ReportCreateRequest request, String userId);
 
-    ReportDetailResponse getReportDetail(String reportId);
+        ReportDetailResponse getReportDetail(String reportId);
 
-    List<RecentReportResponse> getAdminRecentReports(String tab, int limit);
+        ReportDetailResponse getReportDetail(String reportId, String viewerId, String viewerScope);
 
-    ReportDetailResponse assignReport(String reportId, ReportAssignRequest request, String adminId);
+        PageResponse<ReportDetailResponse> getFeed(String status, int page, int size,
+                        Double userLat, Double userLong);
 
-    List<ReportResponse> getMyReports(String userId, String status, int limit);
+        List<RecentReportResponse> getAdminRecentReports(String tab, int limit);
 
-    // Dashboard statistics
-    ReportStatisticsResponse getReportStatistics();
+        ReportDetailResponse assignReport(String reportId, ReportAssignRequest request, String adminId);
 
-    ReportTrendResponse getReportTrend(String period);
+        List<ReportResponse> getMyReports(String userId, String status, int limit);
 
-    // Admin Get List Report
-    ReportListResponse getAdminReportList(int page, int size, String status, String severity, String assigneeId,
-            String from, String to, String search);
+        // Dashboard statistics
+        ReportStatisticsResponse getReportStatistics();
 
-    // Admin Update Status Report
-    ReportDetailResponse updateReportStatus(String reportId, String newStatus, String adminId);
+        ReportTrendResponse getReportTrend(String period);
 
-    // Admin Map — lightweight list with lat/lng, no pagination
-    List<MapReportResponse> getAdminMapReports(String status, String severity, String assigneeId,
-            String from, String to, int limit);
+        // Admin Get List Report
+        ReportListResponse getAdminReportList(int page, int size, String status, String severity, String assigneeId,
+                        String from, String to, String search);
 
-    List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, int limit);
+        // Admin Update Status Report
+        ReportDetailResponse updateReportStatus(String reportId, String newStatus, String adminId);
 
-    ReportStatisticsResponse getStaffReportStatistics(String staffId);
+        // Admin Map — lightweight list with lat/lng, no pagination
+        List<MapReportResponse> getAdminMapReports(String status, String severity, String assigneeId,
+                        String from, String to, int limit);
+
+        List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, int limit);
+
+        ReportStatisticsResponse getStaffReportStatistics(String staffId);
 }

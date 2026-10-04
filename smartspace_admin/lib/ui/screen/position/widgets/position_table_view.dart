@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:smartspace_admin/features/position/models/position_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 
-/// Web: KPI tổng quan lớn hơn + bảng chức vụ chuẩn design.md, chống tràn 100%.
+/// Web: KPI tổng quan
 class PositionWebView extends StatelessWidget {
   final List<PositionModel> items;
   final void Function(PositionModel) onEdit;
@@ -81,7 +81,7 @@ class PositionWebView extends StatelessWidget {
   }
 }
 
-/// KPI Card phong cách dashboard web (giống WebStaffView, chuẩn design.md)
+/// KPI Card phong cách dashboard web
 class _WebKpiCard extends StatelessWidget {
   final IconData icon;
   final Color iconColor;
@@ -152,7 +152,11 @@ class _Table extends StatelessWidget {
   final List<PositionModel> items;
   final void Function(PositionModel) onEdit;
   final void Function(PositionModel) onDelete;
-  const _Table({required this.items, required this.onEdit, required this.onDelete});
+  const _Table({
+    required this.items,
+    required this.onEdit,
+    required this.onDelete,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -161,20 +165,20 @@ class _Table extends StatelessWidget {
     final cs = theme.colorScheme;
 
     Widget h(String t) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
-          child: Text(
-            t,
-            style: theme.textTheme.bodySmall?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: cs.onSurfaceVariant,
-            ),
-          ),
-        );
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+      child: Text(
+        t,
+        style: theme.textTheme.bodySmall?.copyWith(
+          fontWeight: FontWeight.bold,
+          color: cs.onSurfaceVariant,
+        ),
+      ),
+    );
 
     Widget d(Widget c) => Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-          child: Align(alignment: Alignment.centerLeft, child: c),
-        );
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      child: Align(alignment: Alignment.centerLeft, child: c),
+    );
 
     return Container(
       decoration: BoxDecoration(
@@ -186,7 +190,9 @@ class _Table extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, box) {
           const minTableWidth = 980.0;
-          final tableWidth = box.maxWidth > minTableWidth ? box.maxWidth : minTableWidth;
+          final tableWidth = box.maxWidth > minTableWidth
+              ? box.maxWidth
+              : minTableWidth;
           return SingleChildScrollView(
             scrollDirection: Axis.horizontal,
             child: SizedBox(
@@ -194,15 +200,18 @@ class _Table extends StatelessWidget {
               child: Table(
                 defaultVerticalAlignment: TableCellVerticalAlignment.middle,
                 columnWidths: const {
-                  0: FlexColumnWidth(2.5),  // Tên chức vụ
+                  0: FlexColumnWidth(2.5), // Tên chức vụ
                   1: FixedColumnWidth(160), // Mã chức vụ
-                  2: FlexColumnWidth(3.0),  // Mô tả
+                  2: FlexColumnWidth(3.0), // Mô tả
                   3: FixedColumnWidth(110), // Số nhân viên
-                  4: FixedColumnWidth(190), // Trạng thái (đủ rộng cho pill + chống tràn)
+                  4: FixedColumnWidth(190), // Trạng thái
                   5: FixedColumnWidth(130), // Thao tác
                 },
                 border: TableBorder(
-                  horizontalInside: BorderSide(color: theme.dividerColor, width: 0.5),
+                  horizontalInside: BorderSide(
+                    color: theme.dividerColor,
+                    width: 0.5,
+                  ),
                 ),
                 children: [
                   TableRow(
@@ -217,52 +226,72 @@ class _Table extends StatelessWidget {
                     ],
                   ),
                   for (final p in items)
-                    TableRow(children: [
-                      d(Text(
-                        p.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.w600,
-                        ),
-                      )),
-                      d(Text(
-                        p.code,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          fontFamily: 'monospace',
-                        ),
-                      )),
-                      d(Text(
-                        (p.description?.isNotEmpty ?? false) ? p.description! : '—',
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.bodyMedium?.copyWith(
-                          color: cs.onSurfaceVariant,
-                        ),
-                      )),
-                      d(Text('${p.staffCount}', style: theme.textTheme.bodyMedium)),
-                      d(_Status(active: p.active)),
-                      d(Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          IconButton(
-                            visualDensity: VisualDensity.compact,
-                            tooltip: l10n.editPosition,
-                            icon: const Icon(Icons.edit_outlined),
-                            onPressed: () => onEdit(p),
+                    TableRow(
+                      children: [
+                        d(
+                          Text(
+                            p.name,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
-                          const SizedBox(width: 4),
-                          IconButton(
-                            visualDensity: VisualDensity.compact,
-                            tooltip: l10n.deletePosition,
-                            icon: Icon(Icons.delete_outline, color: cs.error),
-                            onPressed: () => onDelete(p),
+                        ),
+                        d(
+                          Text(
+                            p.code,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontFamily: 'monospace',
+                            ),
                           ),
-                        ],
-                      )),
-                    ]),
+                        ),
+                        d(
+                          Text(
+                            (p.description?.isNotEmpty ?? false)
+                                ? p.description!
+                                : '—',
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              color: cs.onSurfaceVariant,
+                            ),
+                          ),
+                        ),
+                        d(
+                          Text(
+                            '${p.staffCount}',
+                            style: theme.textTheme.bodyMedium,
+                          ),
+                        ),
+                        d(_Status(active: p.active)),
+                        d(
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                visualDensity: VisualDensity.compact,
+                                tooltip: l10n.editPosition,
+                                icon: const Icon(Icons.edit_outlined),
+                                onPressed: () => onEdit(p),
+                              ),
+                              const SizedBox(width: 4),
+                              IconButton(
+                                visualDensity: VisualDensity.compact,
+                                tooltip: l10n.deletePosition,
+                                icon: Icon(
+                                  Icons.delete_outline,
+                                  color: cs.error,
+                                ),
+                                onPressed: () => onDelete(p),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
                 ],
               ),
             ),
@@ -273,7 +302,7 @@ class _Table extends StatelessWidget {
   }
 }
 
-/// Icon + text + defensive Flexible để triệt để chống overflow.
+/// Icon + text + defensive Flexible
 class _Status extends StatelessWidget {
   final bool active;
   const _Status({required this.active});

@@ -120,4 +120,15 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                         @Param("search") String search,
                         Pageable pageable);
 
+        // Client community feed: newest first, excluding one status (rejected)
+        @Query(value = "SELECT r FROM Report r LEFT JOIN FETCH r.user LEFT JOIN FETCH r.assignedStaff " +
+                        "WHERE r.status <> :excluded AND (:status IS NULL OR r.status = :status) " +
+                        "ORDER BY r.createdAt DESC",
+                        countQuery = "SELECT COUNT(r) FROM Report r " +
+                                        "WHERE r.status <> :excluded AND (:status IS NULL OR r.status = :status)")
+        Page<Report> findFeed(
+                        @Param("excluded") EReportStatus excluded,
+                        @Param("status") EReportStatus status,
+                        Pageable pageable);
+
 }

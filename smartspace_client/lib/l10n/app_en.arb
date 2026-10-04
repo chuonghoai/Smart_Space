@@ -281,5 +281,25 @@
   "markAllAsRead": "Mark all as read",
   "emptyNotification": "You have no notifications.",
   "unread": "Unread",
-  "assignedStaff": "Assigned Staff"
+  "assignedStaff": "Assigned Staff",
+  "routeCommunityFeed": "Community feed",
+  "feedTabLatest": "Latest",
+  "feedTabNearby": "Near me",
+  "feedEmpty": "No community reports yet",
+  "feedAnonymous": "Anonymous user",
+  "feedSeeMore": "See more",
+  "feedTimelineSubmitted": "Submitted",
+  "feedTimelineProcessing": "Processing",
+  "feedTimelineDone": "Done",
+  "feedShare": "Share",
+  "feedViewOnMap": "View map",
+  "feedCopiedLink": "Report info copied to clipboard",
+  "feedPhotosCount": "{count} photos",
+  "@feedPhotosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

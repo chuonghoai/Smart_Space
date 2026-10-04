@@ -731,4 +731,45 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get assignedStaff => 'Nhân viên xử lý';
+
+  @override
+  String get routeCommunityFeed => 'Bảng tin';
+
+  @override
+  String get feedTabLatest => 'Mới nhất';
+
+  @override
+  String get feedTabNearby => 'Gần tôi';
+
+  @override
+  String get feedEmpty => 'Chưa có phản ánh nào trong cộng đồng';
+
+  @override
+  String get feedAnonymous => 'Người dùng ẩn danh';
+
+  @override
+  String get feedSeeMore => 'Xem thêm';
+
+  @override
+  String get feedTimelineSubmitted => 'Đã gửi';
+
+  @override
+  String get feedTimelineProcessing => 'Đang xử lý';
+
+  @override
+  String get feedTimelineDone => 'Hoàn thành';
+
+  @override
+  String get feedShare => 'Chia sẻ';
+
+  @override
+  String get feedViewOnMap => 'Xem vị trí';
+
+  @override
+  String get feedCopiedLink => 'Đã sao chép thông tin phản ánh';
+
+  @override
+  String feedPhotosCount(int count) {
+    return '$count ảnh';
+  }
 }

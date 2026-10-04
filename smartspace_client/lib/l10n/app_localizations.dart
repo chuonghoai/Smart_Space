@@ -1489,6 +1489,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Assigned Staff'**
   String get assignedStaff;
+
+  /// No description provided for @routeCommunityFeed.
+  ///
+  /// In en, this message translates to:
+  /// **'Community feed'**
+  String get routeCommunityFeed;
+
+  /// No description provided for @feedTabLatest.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest'**
+  String get feedTabLatest;
+
+  /// No description provided for @feedTabNearby.
+  ///
+  /// In en, this message translates to:
+  /// **'Near me'**
+  String get feedTabNearby;
+
+  /// No description provided for @feedEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No community reports yet'**
+  String get feedEmpty;
+
+  /// No description provided for @feedAnonymous.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous user'**
+  String get feedAnonymous;
+
+  /// No description provided for @feedSeeMore.
+  ///
+  /// In en, this message translates to:
+  /// **'See more'**
+  String get feedSeeMore;
+
+  /// No description provided for @feedTimelineSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted'**
+  String get feedTimelineSubmitted;
+
+  /// No description provided for @feedTimelineProcessing.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing'**
+  String get feedTimelineProcessing;
+
+  /// No description provided for @feedTimelineDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get feedTimelineDone;
+
+  /// No description provided for @feedShare.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get feedShare;
+
+  /// No description provided for @feedViewOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'View map'**
+  String get feedViewOnMap;
+
+  /// No description provided for @feedCopiedLink.
+  ///
+  /// In en, this message translates to:
+  /// **'Report info copied to clipboard'**
+  String get feedCopiedLink;
+
+  /// No description provided for @feedPhotosCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} photos'**
+  String feedPhotosCount(int count);
 }
 
 class _AppLocalizationsDelegate

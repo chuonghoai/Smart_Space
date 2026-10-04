@@ -259,7 +259,71 @@ public class ReportServiceImpl implements IReportService {
     public ReportDetailResponse getReportDetail(String reportId) {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
+        return toDetail(report);
+    }
 
+    @Override
+    @Transactional(readOnly = true)
+    public ReportDetailResponse getReportDetail(String reportId, String viewerId, String viewerScope) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
+        boolean privileged = "ROLE_admin".equals(viewerScope) || "ROLE_staff".equals(viewerScope);
+        boolean owner = viewerId != null && report.getUser() != null && viewerId.equals(report.getUser().getId());
+        if (privileged || owner) {
+            return toDetail(report);
+        }
+        if (report.getStatus() == EReportStatus.rejected) {
+            throw new ResourceNotFoundException("report.not_found");
+        }
+        return toPublic(toDetail(report));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponse<ReportDetailResponse> getFeed(String status, int page, int size, Double userLat, Double userLong) {
+        int safePage = Math.max(1, page);
+        int safeSize = Math.max(1, Math.min(size, 20));
+        EReportStatus filter = null;
+        if (status != null && !status.isBlank() && !"all".equalsIgnoreCase(status)) {
+            try {
+                filter = EReportStatus.valueOf(status.toLowerCase());
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+        if (filter == EReportStatus.rejected) {
+            filter = null;
+        }
+        Page<Report> reportPage = reportRepository.findFeed(EReportStatus.rejected, filter,
+                PageRequest.of(safePage - 1, safeSize));
+        List<ReportDetailResponse> content = reportPage.getContent().stream().map(r -> {
+            ReportDetailResponse res = toPublic(toDetail(r));
+            if (userLat != null && userLong != null && r.getLatitude() != null && r.getLongitude() != null) {
+                res.setDistanceInMeters(calculateHaversineDistance(userLat, userLong, r.getLatitude(), r.getLongitude()));
+            }
+            return res;
+        }).collect(Collectors.toList());
+        return PageResponse.<ReportDetailResponse>builder()
+                .currentPage(safePage)
+                .pageSize(safeSize)
+                .totalPages(reportPage.getTotalPages())
+                .totalElements(reportPage.getTotalElements())
+                .content(content)
+                .build();
+    }
+
+    /** Strips contact info for public viewers; also hides identity of anonymous reports. */
+    private ReportDetailResponse toPublic(ReportDetailResponse res) {
+        res.setUserPhone(null);
+        res.setAssignedStaffPhone(null);
+        res.setAssignedStaffEmail(null);
+        if (Boolean.TRUE.equals(res.getIsAnonymous())) {
+            res.setUserName(null);
+            res.setUserAvatarUrl(null);
+        }
+        return res;
+    }
+
+    private ReportDetailResponse toDetail(Report report) {
         User user = report.getUser();
         User staff = report.getAssignedStaff();
 
