@@ -127,7 +127,14 @@ class MobileHomeScreen extends ConsumerWidget {
                           onPressed: () {
                             // TODO: Navigate to all reports screen
                           },
-                          child: Text(l10n.filterAll),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(l10n.filterAll),
+                              const SizedBox(width: 4),
+                              const Icon(Icons.arrow_forward, size: 16),
+                            ],
+                          ),
                         ),
                       ],
                     ),

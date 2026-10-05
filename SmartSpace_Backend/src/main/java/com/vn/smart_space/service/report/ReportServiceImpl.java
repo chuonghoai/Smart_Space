@@ -425,7 +425,7 @@ public class ReportServiceImpl implements IReportService {
         }
 
         report.setAssignedStaff(staff);
-        report.setStatus(EReportStatus.processing);
+        report.setStatus(EReportStatus.pending);
         report.setAssignedAt(new java.util.Date());
         report = reportRepository.save(report);
 

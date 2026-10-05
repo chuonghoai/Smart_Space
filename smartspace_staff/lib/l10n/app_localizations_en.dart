@@ -529,4 +529,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get newLabel => 'New';
+
+  @override
+  String get staffPortalName => 'SmartSpace Staff Portal';
+
+  @override
+  String get staffLoginSubtitle => 'Internal system for task processing';
+
+  @override
+  String get staffWelcome => 'Employee Sign In';
 }

@@ -191,5 +191,8 @@
   },
   "retryButton": "Retry",
   "assignedStaff": "Assigned Staff",
-  "newLabel": "New"
+  "newLabel": "New",
+  "staffPortalName": "SmartSpace Staff Portal",
+  "staffLoginSubtitle": "Internal system for task processing",
+  "staffWelcome": "Employee Sign In"
 }

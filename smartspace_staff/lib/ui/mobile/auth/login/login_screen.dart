@@ -77,22 +77,37 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                     const SizedBox(height: 36),
 
                     // Logo Placeholder
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    Column(
                       children: [
                         Icon(
-                          Icons.location_on,
-                          size: 64,
+                          Icons.assignment_ind,
+                          size: 72,
                           color: colorScheme.primary,
                         ),
                         const SizedBox(height: 16),
                         Text(
                           l10n.smartSpaceAppName,
-                          style: textTheme.headlineLarge?.copyWith(
+                          style: textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: colorScheme.primary,
                           ),
                           textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(
+                            l10n.staffPortalName.toUpperCase(),
+                            style: textTheme.labelMedium?.copyWith(
+                              color: colorScheme.onPrimaryContainer,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -100,14 +115,14 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                     // Subtitle
                     const SizedBox(height: 48),
                     Text(
-                      l10n.welcomeBack,
+                      l10n.staffWelcome,
                       style: textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      l10n.signInToContinue,
+                      l10n.staffLoginSubtitle,
                       style: textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),

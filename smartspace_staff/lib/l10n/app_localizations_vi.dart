@@ -529,4 +529,13 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get newLabel => 'Mới';
+
+  @override
+  String get staffPortalName => 'Cổng nhân viên SmartSpace';
+
+  @override
+  String get staffLoginSubtitle => 'Hệ thống nội bộ xử lý tác vụ';
+
+  @override
+  String get staffWelcome => 'Đăng nhập nhân viên';
 }

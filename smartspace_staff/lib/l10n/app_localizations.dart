@@ -1117,6 +1117,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'New'**
   String get newLabel;
+
+  /// No description provided for @staffPortalName.
+  ///
+  /// In en, this message translates to:
+  /// **'SmartSpace Staff Portal'**
+  String get staffPortalName;
+
+  /// No description provided for @staffLoginSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Internal system for task processing'**
+  String get staffLoginSubtitle;
+
+  /// No description provided for @staffWelcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Employee Sign In'**
+  String get staffWelcome;
 }
 
 class _AppLocalizationsDelegate

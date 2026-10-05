@@ -191,5 +191,8 @@
   },
   "retryButton": "Thử lại",
   "assignedStaff": "Nhân viên xử lý",
-  "newLabel": "Mới"
+  "newLabel": "Mới",
+  "staffPortalName": "Cổng nhân viên SmartSpace",
+  "staffLoginSubtitle": "Hệ thống nội bộ xử lý tác vụ",
+  "staffWelcome": "Đăng nhập nhân viên"
 }
