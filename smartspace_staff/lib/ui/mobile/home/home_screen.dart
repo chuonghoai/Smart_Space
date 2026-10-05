@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -485,6 +487,7 @@ class _ReportListItem extends StatelessWidget {
     return InkWell(
       onTap: () {
         // TODO: Navigate to detail
+        context.push(RouterPath.reportDetail.replaceFirst(':id', report.id));
       },
       borderRadius: BorderRadius.circular(16),
       child: Ink(

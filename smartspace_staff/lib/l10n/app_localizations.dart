@@ -1082,6 +1082,12 @@ abstract class AppLocalizations {
   /// **'Anonymous'**
   String get anonymousUser;
 
+  /// No description provided for @reporter.
+  ///
+  /// In en, this message translates to:
+  /// **'Reporter'**
+  String get reporter;
+
   /// No description provided for @locationServiceDisabledError.
   ///
   /// In en, this message translates to:

@@ -181,6 +181,7 @@
   "severityHigh": "Cao",
   "severityCritical": "Khẩn cấp",
   "anonymousUser": "Bài đăng ẩn danh",
+  "reporter": "Người báo cáo",
   "locationServiceDisabledError": "Vui lòng bật dịch vụ vị trí trên thiết bị",
   "locationPermissionDeniedForeverError": "Quyền vị trí bị từ chối vĩnh viễn, vui lòng vào cài đặt để bật",
   "cannotOpenGoogleMapsError": "Không thể mở Google Maps",
