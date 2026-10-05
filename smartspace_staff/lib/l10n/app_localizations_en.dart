@@ -506,6 +506,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get severityCritical => 'Critical';
 
   @override
+  String get anonymousUser => 'Anonymous';
+
+  @override
   String get locationServiceDisabledError =>
       'Please enable location services on your device';
 

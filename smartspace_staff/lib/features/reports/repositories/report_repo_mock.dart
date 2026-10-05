@@ -6,7 +6,7 @@ import 'package:smartspace_staff/features/reports/repositories/report_repo.dart'
 
 class ReportRepoMock implements ReportRepo {
   @override
-  Future<ApiResponse<List<ReportModel>>> getStaffAssignedReports({String status = 'all', int limit = 10}) async {
+  Future<ApiResponse<List<ReportModel>>> getStaffAssignedReports({String status = 'all', int page = 0, int limit = 10}) async {
     await Future.delayed(const Duration(seconds: 1));
     return ApiResponse(
       success: true,

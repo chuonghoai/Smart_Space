@@ -64,7 +64,7 @@ public interface ReportRepository extends JpaRepository<Report, String> {
         // Staff Dashboard: find assigned reports
         List<Report> findByAssignedStaffIdOrderByCreatedAtDesc(String staffId, Limit limit);
         List<Report> findByAssignedStaffIdAndStatusOrderByCreatedAtDesc(String staffId, EReportStatus status, Limit limit);
-        List<Report> findByAssignedStaffIdAndStatusInOrderByCreatedAtDesc(String staffId, List<EReportStatus> statuses, Limit limit);
+        List<Report> findByAssignedStaffIdAndStatusInOrderByCreatedAtDesc(String staffId, List<EReportStatus> statuses, org.springframework.data.domain.Pageable pageable);
 
         // Staff Dashboard: group by status for staff
         @Query("SELECT r.status, COUNT(r) FROM Report r WHERE r.assignedStaff.id = :staffId GROUP BY r.status")

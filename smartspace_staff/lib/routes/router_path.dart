@@ -8,4 +8,5 @@ class RouterPath {
   static String get settings => RouteName.settings.path;
   static String get reportDetail => RouteName.reportDetail.path;
   static String get search => RouteName.search.path;
+  static String get allReports => RouteName.allReports.path;
 }

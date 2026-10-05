@@ -1,35 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:smartspace_staff/features/reports/models/report_detail_model.dart';
+import 'package:smartspace_staff/features/reports/models/report_model.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 
-extension ReportSeverityExt on EReportSeverity {
+extension ReportSeverityExt on ReportSeverity {
   Color getColor(BuildContext context) {
     final theme = Theme.of(context);
 
     switch (this) {
-      case EReportSeverity.low:
+      case ReportSeverity.low:
         return theme.colorScheme.primary;
-      case EReportSeverity.medium:
+      case ReportSeverity.medium:
         return theme.brightness == Brightness.light
             ? const Color(0xFFF9A825)
             : const Color(0xFFFFCA28);
-      case EReportSeverity.high:
+      case ReportSeverity.high:
         return theme.colorScheme.error;
-      case EReportSeverity.critical:
+      case ReportSeverity.critical:
         return const Color(0xFFD32F2F);
+      case ReportSeverity.unknown:
+        return theme.dividerColor;
     }
   }
 
   String getLocalizedText(AppLocalizations l10n) {
     switch (this) {
-      case EReportSeverity.low:
+      case ReportSeverity.low:
         return l10n.severityLow;
-      case EReportSeverity.medium:
+      case ReportSeverity.medium:
         return l10n.severityMedium;
-      case EReportSeverity.high:
+      case ReportSeverity.high:
         return l10n.severityHigh;
-      case EReportSeverity.critical:
+      case ReportSeverity.critical:
         return l10n.severityCritical;
+      case ReportSeverity.unknown:
+        return 'Unknown';
     }
   }
 }

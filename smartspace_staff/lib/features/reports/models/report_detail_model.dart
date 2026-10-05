@@ -1,11 +1,7 @@
 import 'package:smartspace_staff/features/reports/models/report_model.dart';
 
-enum EReportSeverity { low, medium, high, critical }
-
 class ReportDetailModel extends ReportModel {
-  final EReportSeverity severity; // Mức độ ưu tiên/nguy hiểm
   final List<String> imageUrls;
-  final bool isAnonymous; // Ẩn danh
   final String? address; // Địa chỉ
   final String? locationDescription; // Mô tả chi tiết địa điểm
   final String? assignedStaffId;
@@ -22,10 +18,12 @@ class ReportDetailModel extends ReportModel {
     required super.createdAt,
     super.distanceInMeters,
     super.assignedAt,
+    super.userName,
+    super.userAvatarUrl,
+    required super.severity,
+    required super.isAnonymous,
 
-    required this.severity,
     required this.imageUrls,
-    required this.isAnonymous,
     this.address,
     this.locationDescription,
     this.assignedStaffId,
@@ -59,9 +57,11 @@ class ReportDetailModel extends ReportModel {
       assignedAt: json['assigned_at'] != null
           ? DateTime.tryParse(json['assigned_at'].toString())
           : null,
-      severity: _mapSeverity(json['severity'] as String?),
+      severity: ReportModel.mapSeverity(json['severity'] as String?),
       imageUrls: parsedImageUrls,
       isAnonymous: json['is_anonymous'] as bool? ?? false,
+      userName: json['user_name'] as String?,
+      userAvatarUrl: json['user_avatar_url'] as String?,
       address: json['address'] as String?,
       locationDescription: json['location_description'] as String?,
       distanceInMeters: (json['distance_in_meters'] as num?)?.toDouble(),
@@ -75,7 +75,7 @@ class ReportDetailModel extends ReportModel {
   Map<String, dynamic> toJson() {
     final map = super.toJson();
     map['image_urls'] = imageUrls;
-    map['severity'] = _severityToString(severity);
+    map['severity'] = severity.name.toUpperCase();
     map['is_anonymous'] = isAnonymous;
     map['address'] = address;
     map['location_description'] = locationDescription;
@@ -83,24 +83,6 @@ class ReportDetailModel extends ReportModel {
     map['assigned_staff_name'] = assignedStaffName;
     map['assigned_staff_avatar_url'] = assignedStaffAvatarUrl;
     return map;
-  }
-
-  static EReportSeverity _mapSeverity(String? severity) {
-    switch (severity?.toLowerCase()) {
-      case 'critical':
-        return EReportSeverity.critical;
-      case 'high':
-        return EReportSeverity.high;
-      case 'medium':
-        return EReportSeverity.medium;
-      case 'low':
-      default:
-        return EReportSeverity.low;
-    }
-  }
-
-  static String _severityToString(EReportSeverity severity) {
-    return severity.name.toUpperCase();
   }
 
   @override
@@ -115,9 +97,11 @@ class ReportDetailModel extends ReportModel {
     ReportStatus? status,
     DateTime? createdAt,
     double? distanceInMeters,
-    EReportSeverity? severity,
+    ReportSeverity? severity,
     List<String>? imageUrls,
     bool? isAnonymous,
+    String? userName,
+    String? userAvatarUrl,
     String? address,
     String? locationDescription,
     String? assignedStaffId,
@@ -136,6 +120,8 @@ class ReportDetailModel extends ReportModel {
       severity: severity ?? this.severity,
       imageUrls: imageUrls ?? this.imageUrls,
       isAnonymous: isAnonymous ?? this.isAnonymous,
+      userName: userName ?? this.userName,
+      userAvatarUrl: userAvatarUrl ?? this.userAvatarUrl,
       address: address ?? this.address,
       locationDescription: locationDescription ?? this.locationDescription,
       assignedStaffId: assignedStaffId ?? this.assignedStaffId,

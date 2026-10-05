@@ -8,6 +8,7 @@ import 'package:smartspace_staff/ui/mobile/search/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_shared/core/toast/toast_service.dart';
 import 'package:smartspace_staff/ui/mobile/reports/presentation/report_detail_screen.dart';
+import 'package:smartspace_staff/ui/mobile/reports/all_reports_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = sharedNavigatorKey;
 
@@ -30,6 +31,13 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.notifications,
       builder: (context, state) => const StaffNotificationScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.allReports,
+      builder: (context, state) {
+        final initialFilter = state.uri.queryParameters['filter'] ?? 'all';
+        return AllReportsScreen(initialFilter: initialFilter);
+      },
     ),
     GoRoute(
       path: RouterPath.reportDetail,

@@ -120,10 +120,10 @@ class Sidebar extends ConsumerWidget {
                   ),
                   _SidebarItem(
                     icon: Icons.report_outlined,
-                    label: l10n.myReports,
+                    label: l10n.myWorkDashboard,
                     onTap: () {
                       Navigator.pop(context);
-                      // TODO: Navigate to My Reports
+                      context.push(Uri(path: RouterPath.allReports, queryParameters: {'filter': 'all'}).toString());
                     },
                   ),
                   _SidebarItem(

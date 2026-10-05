@@ -1076,6 +1076,12 @@ abstract class AppLocalizations {
   /// **'Critical'**
   String get severityCritical;
 
+  /// No description provided for @anonymousUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous'**
+  String get anonymousUser;
+
   /// No description provided for @locationServiceDisabledError.
   ///
   /// In en, this message translates to:

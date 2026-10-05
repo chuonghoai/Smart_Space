@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:smartspace_staff/features/reports/models/report_model.dart';
 import 'package:smartspace_staff/features/reports/models/report_statistics_model.dart';
+import 'package:smartspace_staff/routes/router_path.dart';
 import 'package:smartspace_staff/ui/mobile/home/home_controller.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:smartspace_staff/ui/mobile/layout/app_layout.dart';
@@ -38,7 +40,10 @@ class MobileHomeScreen extends ConsumerWidget {
                         ),
                         child: Row(
                           children: [
-                            Icon(Icons.location_off, color: theme.colorScheme.onErrorContainer),
+                            Icon(
+                              Icons.location_off,
+                              color: theme.colorScheme.onErrorContainer,
+                            ),
                             const SizedBox(width: 8),
                             Expanded(
                               child: Text(
@@ -58,11 +63,13 @@ class MobileHomeScreen extends ConsumerWidget {
                         CircleAvatar(
                           radius: 24,
                           backgroundColor: theme.colorScheme.primaryContainer,
-                          backgroundImage: state.user?.avatarUrl != null &&
+                          backgroundImage:
+                              state.user?.avatarUrl != null &&
                                   state.user!.avatarUrl.isNotEmpty
                               ? NetworkImage(state.user!.avatarUrl)
                               : null,
-                          child: state.user?.avatarUrl == null ||
+                          child:
+                              state.user?.avatarUrl == null ||
                                   state.user!.avatarUrl.isEmpty
                               ? Icon(
                                   Icons.person,
@@ -105,7 +112,7 @@ class MobileHomeScreen extends ConsumerWidget {
                       ),
                     ),
                     const SizedBox(height: 12),
-                    
+
                     if (state.isLoading && state.statistics == null)
                       const Center(child: CircularProgressIndicator())
                     else
@@ -125,7 +132,12 @@ class MobileHomeScreen extends ConsumerWidget {
                         ),
                         TextButton(
                           onPressed: () {
-                            // TODO: Navigate to all reports screen
+                            context.push(
+                              Uri(
+                                path: RouterPath.allReports,
+                                queryParameters: {'filter': 'all'},
+                              ).toString(),
+                            );
                           },
                           child: Row(
                             mainAxisSize: MainAxisSize.min,
@@ -143,13 +155,37 @@ class MobileHomeScreen extends ConsumerWidget {
                       scrollDirection: Axis.horizontal,
                       child: Row(
                         children: [
-                          _buildFilterChip(context, controller, state, 'all', l10n.filterAll),
+                          _buildFilterChip(
+                            context,
+                            controller,
+                            state,
+                            'all',
+                            l10n.filterAll,
+                          ),
                           const SizedBox(width: 8),
-                          _buildFilterChip(context, controller, state, 'pending', l10n.reportStatusPending),
+                          _buildFilterChip(
+                            context,
+                            controller,
+                            state,
+                            'pending',
+                            l10n.reportStatusPending,
+                          ),
                           const SizedBox(width: 8),
-                          _buildFilterChip(context, controller, state, 'processing', l10n.reportStatusProcessing),
+                          _buildFilterChip(
+                            context,
+                            controller,
+                            state,
+                            'processing',
+                            l10n.reportStatusProcessing,
+                          ),
                           const SizedBox(width: 8),
-                          _buildFilterChip(context, controller, state, 'resolved', l10n.reportStatusProcessed),
+                          _buildFilterChip(
+                            context,
+                            controller,
+                            state,
+                            'resolved',
+                            l10n.reportStatusProcessed,
+                          ),
                         ],
                       ),
                     ),
@@ -180,8 +216,12 @@ class MobileHomeScreen extends ConsumerWidget {
                         ),
                       )
                     else
-                      _buildAssignedReportsList(context, state.assignedReports, state.gpsError == null ? state.currentPosition : null),
-                      
+                      _buildAssignedReportsList(
+                        context,
+                        state.assignedReports,
+                        state.gpsError == null ? state.currentPosition : null,
+                      ),
+
                     // Bottom spacing
                     const SizedBox(height: 32),
                   ],
@@ -191,7 +231,13 @@ class MobileHomeScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFilterChip(BuildContext context, HomeController controller, HomeState state, String value, String label) {
+  Widget _buildFilterChip(
+    BuildContext context,
+    HomeController controller,
+    HomeState state,
+    String value,
+    String label,
+  ) {
     final isSelected = state.filterStatus == value;
     final theme = Theme.of(context);
     return ChoiceChip(
@@ -204,13 +250,19 @@ class MobileHomeScreen extends ConsumerWidget {
       },
       selectedColor: theme.colorScheme.primaryContainer,
       labelStyle: TextStyle(
-        color: isSelected ? theme.colorScheme.onPrimaryContainer : theme.colorScheme.onSurface,
+        color: isSelected
+            ? theme.colorScheme.onPrimaryContainer
+            : theme.colorScheme.onSurface,
         fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
       ),
     );
   }
 
-  Widget _buildStatisticsGrid(BuildContext context, ReportStatisticsModel? stats, AppLocalizations l10n) {
+  Widget _buildStatisticsGrid(
+    BuildContext context,
+    ReportStatisticsModel? stats,
+    AppLocalizations l10n,
+  ) {
     if (stats == null) return const SizedBox();
 
     return GridView.count(
@@ -226,30 +278,58 @@ class MobileHomeScreen extends ConsumerWidget {
           count: stats.total,
           icon: Icons.assignment_outlined,
           color: Colors.blue,
+          onTap: () => context.push(
+            Uri(
+              path: RouterPath.allReports,
+              queryParameters: {'filter': 'all'},
+            ).toString(),
+          ),
         ),
         _StatCard(
           title: l10n.reportStatusPending,
           count: stats.pending,
           icon: Icons.hourglass_empty,
           color: Colors.orange,
+          onTap: () => context.push(
+            Uri(
+              path: RouterPath.allReports,
+              queryParameters: {'filter': 'pending'},
+            ).toString(),
+          ),
         ),
         _StatCard(
           title: l10n.reportStatusProcessing,
           count: stats.processing,
           icon: Icons.autorenew,
           color: Colors.purple,
+          onTap: () => context.push(
+            Uri(
+              path: RouterPath.allReports,
+              queryParameters: {'filter': 'processing'},
+            ).toString(),
+          ),
         ),
         _StatCard(
           title: l10n.reportStatusProcessed,
           count: stats.resolved,
           icon: Icons.task_alt,
           color: Colors.green,
+          onTap: () => context.push(
+            Uri(
+              path: RouterPath.allReports,
+              queryParameters: {'filter': 'resolved'},
+            ).toString(),
+          ),
         ),
       ],
     );
   }
 
-  Widget _buildAssignedReportsList(BuildContext context, List<ReportModel> reports, Position? currentPosition) {
+  Widget _buildAssignedReportsList(
+    BuildContext context,
+    List<ReportModel> reports,
+    Position? currentPosition,
+  ) {
     return ListView.separated(
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
@@ -268,63 +348,72 @@ class _StatCard extends StatelessWidget {
   final int count;
   final IconData icon;
   final MaterialColor color;
+  final VoidCallback onTap;
 
   const _StatCard({
     required this.title,
     required this.count,
     required this.icon,
     required this.color,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final isDark = theme.brightness == Brightness.dark;
-    
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: isDark ? color.shade900.withOpacity(0.3) : color.shade50,
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: isDark ? color.shade700 : color.shade200,
-          width: 1,
-        ),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: isDark ? color.shade900.withOpacity(0.3) : color.shade50,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: isDark ? color.shade700 : color.shade200,
+              width: 1,
+            ),
+          ),
+          child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Expanded(
-                child: Text(
-                  title,
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: isDark ? color.shade100 : color.shade900,
-                    fontWeight: FontWeight.w600,
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(
+                    child: Text(
+                      title,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: isDark ? color.shade100 : color.shade900,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
                   ),
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                ),
+                  Icon(
+                    icon,
+                    size: 20,
+                    color: isDark ? color.shade300 : color.shade700,
+                  ),
+                ],
               ),
-              Icon(
-                icon,
-                size: 20,
-                color: isDark ? color.shade300 : color.shade700,
+              Text(
+                count.toString(),
+                style: theme.textTheme.headlineMedium?.copyWith(
+                  color: isDark ? color.shade50 : color.shade900,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),
-          Text(
-            count.toString(),
-            style: theme.textTheme.headlineMedium?.copyWith(
-              color: isDark ? color.shade50 : color.shade900,
-              fontWeight: FontWeight.bold,
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -340,11 +429,11 @@ class _ReportListItem extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    
+
     // Status text mapping
     String statusText = l10n.reportStatusUnknown;
     Color statusColor = Colors.grey;
-    
+
     switch (report.status) {
       case ReportStatus.pending:
         statusText = l10n.reportStatusPending;
@@ -370,9 +459,13 @@ class _ReportListItem extends StatelessWidget {
 
     // Format date string simply for UI
     final displayDate = report.assignedAt ?? report.createdAt;
-    final dateStr = '${displayDate.day.toString().padLeft(2, '0')}/${displayDate.month.toString().padLeft(2, '0')}/${displayDate.year} ${displayDate.hour.toString().padLeft(2, '0')}:${displayDate.minute.toString().padLeft(2, '0')}';
+    final dateStr =
+        '${displayDate.day.toString().padLeft(2, '0')}/${displayDate.month.toString().padLeft(2, '0')}/${displayDate.year} ${displayDate.hour.toString().padLeft(2, '0')}:${displayDate.minute.toString().padLeft(2, '0')}';
 
-    final isNew = report.assignedAt != null && DateTime.now().difference(report.assignedAt!) < const Duration(hours: 24);
+    final isNew =
+        report.assignedAt != null &&
+        DateTime.now().difference(report.assignedAt!) <
+            const Duration(hours: 24);
 
     String? distanceStr;
     if (userPosition != null) {
@@ -425,9 +518,7 @@ class _ReportListItem extends StatelessWidget {
                     : null,
               ),
               clipBehavior: Clip.antiAlias,
-              child: report.imageUrl.isEmpty
-                  ? const Icon(Icons.image)
-                  : null,
+              child: report.imageUrl.isEmpty ? const Icon(Icons.image) : null,
             ),
             const SizedBox(width: 16),
             // Content
@@ -466,7 +557,10 @@ class _ReportListItem extends StatelessWidget {
                       const SizedBox(width: 8),
                       if (isNew)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           margin: const EdgeInsets.only(right: 6),
                           decoration: BoxDecoration(
                             color: Colors.red,
@@ -474,7 +568,11 @@ class _ReportListItem extends StatelessWidget {
                           ),
                           child: Text(
                             l10n.newLabel,
-                            style: const TextStyle(color: Colors.white, fontSize: 10, fontWeight: FontWeight.bold),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 10,
+                              fontWeight: FontWeight.bold,
+                            ),
                           ),
                         ),
                       Expanded(
@@ -493,7 +591,11 @@ class _ReportListItem extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
-                        Icon(Icons.location_on, size: 14, color: theme.colorScheme.primary),
+                        Icon(
+                          Icons.location_on,
+                          size: 14,
+                          color: theme.colorScheme.primary,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           l10n.distanceAway(distanceStr),

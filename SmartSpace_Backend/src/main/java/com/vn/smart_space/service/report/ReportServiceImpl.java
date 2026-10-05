@@ -786,8 +786,9 @@ public class ReportServiceImpl implements IReportService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, int limit) {
+    public List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, int page, int limit) {
         int safeLimit = Math.max(1, Math.min(limit, 100));
+        int safePage = Math.max(0, page);
         List<EReportStatus> statuses;
         if ("resolved".equalsIgnoreCase(status) || "processed".equalsIgnoreCase(status)) {
             statuses = List.of(EReportStatus.processed);
@@ -802,7 +803,8 @@ public class ReportServiceImpl implements IReportService {
             statuses = List.of(EReportStatus.pending, EReportStatus.processing);
         }
 
-        List<Report> reports = reportRepository.findByAssignedStaffIdAndStatusInOrderByCreatedAtDesc(staffId, statuses, Limit.of(safeLimit));
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(safePage, safeLimit);
+        List<Report> reports = reportRepository.findByAssignedStaffIdAndStatusInOrderByCreatedAtDesc(staffId, statuses, pageable);
 
         return reports.stream().map(r -> {
             User staff = r.getAssignedStaff();
@@ -825,6 +827,8 @@ public class ReportServiceImpl implements IReportService {
                     .longitude(r.getLongitude())
                     .userName(anon ? null : (user != null ? user.getFullName() : null))
                     .userEmail(anon ? null : (user != null ? user.getEmail() : null))
+                    .userAvatarUrl(anon ? null : (user != null ? user.getAvatarUrl() : null))
+                    .description(r.getDescription())
                     .build();
         }).collect(Collectors.toList());
     }

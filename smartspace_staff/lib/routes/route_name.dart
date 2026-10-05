@@ -78,6 +78,14 @@ class RouteName {
     priority: 5,
   );
 
+  static const allReports = AppRouteInfo(
+    path: '/reports/all',
+    nameKey: 'myWorkDashboard',
+    icon: Icons.work,
+    isHiddenInSearch: false,
+    priority: 3,
+  );
+
   static const List<AppRouteInfo> allRoutes = [
     splash,
     login,
@@ -86,6 +94,7 @@ class RouteName {
     settings,
     reportDetail,
     search,
+    allReports,
   ];
 
   static List<AppRouteInfo> get searchableRoutes {

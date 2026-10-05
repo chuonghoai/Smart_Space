@@ -33,6 +33,8 @@ public class RecentReportResponse {
 
     String userName;
     String userEmail;
+    String userAvatarUrl;
+    String description;
 
     @JsonProperty("is_anonymous")
     Boolean isAnonymous;

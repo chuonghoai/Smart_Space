@@ -506,6 +506,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get severityCritical => 'Khẩn cấp';
 
   @override
+  String get anonymousUser => 'Bài đăng ẩn danh';
+
+  @override
   String get locationServiceDisabledError =>
       'Vui lòng bật dịch vụ vị trí trên thiết bị';
 

@@ -1,4 +1,5 @@
 enum ReportStatus { processed, processing, pending, rejected, unknown }
+enum ReportSeverity { low, medium, high, critical, unknown }
 
 class ReportModel {
   final String id;
@@ -11,6 +12,10 @@ class ReportModel {
   final DateTime createdAt;
   final double? distanceInMeters;
   final DateTime? assignedAt;
+  final String? userName;
+  final String? userAvatarUrl;
+  final bool isAnonymous;
+  final ReportSeverity severity;
 
   ReportModel({
     required this.id,
@@ -23,6 +28,10 @@ class ReportModel {
     required this.createdAt,
     this.distanceInMeters,
     this.assignedAt,
+    this.userName,
+    this.userAvatarUrl,
+    this.isAnonymous = false,
+    this.severity = ReportSeverity.unknown,
   });
 
   factory ReportModel.fromJson(Map<String, dynamic> json) {
@@ -40,6 +49,10 @@ class ReportModel {
       assignedAt: (json['assigned_at'] ?? json['assignedAt']) != null
           ? DateTime.tryParse((json['assigned_at'] ?? json['assignedAt']).toString())
           : null,
+      userName: json['userName'] as String? ?? json['user_name'] as String?,
+      userAvatarUrl: json['userAvatarUrl'] as String? ?? json['user_avatar_url'] as String?,
+      isAnonymous: json['isAnonymous'] as bool? ?? json['is_anonymous'] as bool? ?? false,
+      severity: mapSeverity(json['severity'] as String?),
     );
   }
 
@@ -104,5 +117,15 @@ class ReportModel {
 
   static String _statusToString(ReportStatus status) {
     return status.name;
+  }
+
+  static ReportSeverity mapSeverity(String? severity) {
+    switch (severity?.toLowerCase()) {
+      case 'low': return ReportSeverity.low;
+      case 'medium': return ReportSeverity.medium;
+      case 'high': return ReportSeverity.high;
+      case 'critical': return ReportSeverity.critical;
+      default: return ReportSeverity.unknown;
+    }
   }
 }

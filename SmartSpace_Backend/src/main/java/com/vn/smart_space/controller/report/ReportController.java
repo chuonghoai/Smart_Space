@@ -85,10 +85,11 @@ public class ReportController {
     public ResponseEntity<ApiResponse> getStaffAssignedReports(
             @AuthenticationPrincipal Jwt jwt,
             @RequestParam(defaultValue = "all") String status,
+            @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int limit) {
         String staffId = jwt.getClaim("userId").toString();
         return ResponseEntity.ok(ApiResponse.success("system.success", 
-                reportService.getStaffAssignedReports(staffId, status, limit)));
+                reportService.getStaffAssignedReports(staffId, status, page, limit)));
     }
 
     @GetMapping("/staff/statistics")

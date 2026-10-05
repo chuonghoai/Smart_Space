@@ -49,7 +49,7 @@ public interface IReportService {
         List<MapReportResponse> getAdminMapReports(String status, String severity, String assigneeId,
                         String from, String to, int limit);
 
-        List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, int limit);
+        List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, int page, int limit);
 
         ReportStatisticsResponse getStaffReportStatistics(String staffId);
 }
