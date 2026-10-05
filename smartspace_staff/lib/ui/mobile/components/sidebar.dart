@@ -128,11 +128,11 @@ class Sidebar extends ConsumerWidget {
                   ),
                   _SidebarItem(
                     icon: Icons.map_outlined,
-                    label: l10n.map,
+                    label: l10n.routeMap,
                     onTap: () {
-                      Navigator.pop(context);
-                      // TODO: Navigate to Map
+                      context.push(RouterPath.map);
                     },
+                    isSelected: false,
                   ),
                   _SidebarItem(
                     icon: Icons.article_outlined,

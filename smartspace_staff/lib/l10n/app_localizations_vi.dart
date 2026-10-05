@@ -544,4 +544,25 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get staffWelcome => 'Đăng nhập nhân viên';
+
+  @override
+  String get quickAccessMap => 'Bản đồ';
+
+  @override
+  String get quickAccessNews => 'Tin tức';
+
+  @override
+  String get quickAccessSettings => 'Cài đặt';
+
+  @override
+  String get quickAccessGuide => 'Hướng dẫn';
+
+  @override
+  String get routeMap => 'Bản đồ';
+
+  @override
+  String get myLocation => 'Vị trí của tôi';
+
+  @override
+  String get refresh => 'Làm mới';
 }

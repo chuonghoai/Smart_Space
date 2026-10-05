@@ -1147,6 +1147,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Employee Sign In'**
   String get staffWelcome;
+
+  /// No description provided for @quickAccessMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get quickAccessMap;
+
+  /// No description provided for @quickAccessNews.
+  ///
+  /// In en, this message translates to:
+  /// **'News'**
+  String get quickAccessNews;
+
+  /// No description provided for @quickAccessSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get quickAccessSettings;
+
+  /// No description provided for @quickAccessGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Guide'**
+  String get quickAccessGuide;
+
+  /// No description provided for @routeMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get routeMap;
+
+  /// No description provided for @myLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'My Location'**
+  String get myLocation;
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
 }
 
 class _AppLocalizationsDelegate

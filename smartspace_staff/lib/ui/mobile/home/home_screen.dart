@@ -106,6 +106,10 @@ class MobileHomeScreen extends ConsumerWidget {
                     ),
                     const SizedBox(height: 24),
 
+                    // Quick Access Section
+                    _buildQuickAccessButtonRow(context, theme, l10n),
+                    const SizedBox(height: 24),
+
                     // Dashboard Section
                     Text(
                       l10n.myWorkDashboard,
@@ -343,6 +347,102 @@ class MobileHomeScreen extends ConsumerWidget {
       },
     );
   }
+
+  Widget _buildQuickAccessButtonRow(
+    BuildContext context,
+    ThemeData theme,
+    AppLocalizations l10n,
+  ) {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _buildQuickAccessItem(
+          context,
+          theme,
+          Icons.map_outlined,
+          l10n.quickAccessMap,
+          () {
+            context.push(RouterPath.map);
+          },
+        ),
+        const SizedBox(width: 8),
+        _buildQuickAccessItem(
+          context,
+          theme,
+          Icons.newspaper_outlined,
+          l10n.quickAccessNews,
+          () {
+            /* TODO */
+          },
+        ),
+        const SizedBox(width: 8),
+        _buildQuickAccessItem(
+          context,
+          theme,
+          Icons.settings_outlined,
+          l10n.quickAccessSettings,
+          () {
+            /* TODO */
+          },
+        ),
+        const SizedBox(width: 8),
+        _buildQuickAccessItem(
+          context,
+          theme,
+          Icons.menu_book_outlined,
+          l10n.quickAccessGuide,
+          () {
+            /* TODO */
+          },
+        ),
+      ],
+    );
+  }
+
+  Widget _buildQuickAccessItem(
+    BuildContext context,
+    ThemeData theme,
+    IconData icon,
+    String label,
+    VoidCallback onTap,
+  ) {
+    return Expanded(
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                padding: const EdgeInsets.all(12),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primaryContainer,
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  color: theme.colorScheme.onPrimaryContainer,
+                  size: 24,
+                ),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                label,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  fontWeight: FontWeight.w600,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
 
 class _StatCard extends StatelessWidget {
@@ -486,7 +586,6 @@ class _ReportListItem extends StatelessWidget {
 
     return InkWell(
       onTap: () {
-        // TODO: Navigate to detail
         context.push(RouterPath.reportDetail.replaceFirst(':id', report.id));
       },
       borderRadius: BorderRadius.circular(16),

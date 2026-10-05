@@ -544,4 +544,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get staffWelcome => 'Employee Sign In';
+
+  @override
+  String get quickAccessMap => 'Map';
+
+  @override
+  String get quickAccessNews => 'News';
+
+  @override
+  String get quickAccessSettings => 'Settings';
+
+  @override
+  String get quickAccessGuide => 'Guide';
+
+  @override
+  String get routeMap => 'Map';
+
+  @override
+  String get myLocation => 'My Location';
+
+  @override
+  String get refresh => 'Refresh';
 }

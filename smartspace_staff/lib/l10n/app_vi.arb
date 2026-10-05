@@ -196,5 +196,12 @@
   "newLabel": "Mới",
   "staffPortalName": "Cổng nhân viên SmartSpace",
   "staffLoginSubtitle": "Hệ thống nội bộ xử lý tác vụ",
-  "staffWelcome": "Đăng nhập nhân viên"
+  "staffWelcome": "Đăng nhập nhân viên",
+  "quickAccessMap": "Bản đồ",
+  "quickAccessNews": "Tin tức",
+  "quickAccessSettings": "Cài đặt",
+  "quickAccessGuide": "Hướng dẫn",
+  "routeMap": "Bản đồ",
+  "myLocation": "Vị trí của tôi",
+  "refresh": "Làm mới"
 }

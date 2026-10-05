@@ -9,4 +9,5 @@ class RouterPath {
   static String get reportDetail => RouteName.reportDetail.path;
   static String get search => RouteName.search.path;
   static String get allReports => RouteName.allReports.path;
+  static String get map => RouteName.map.path;
 }

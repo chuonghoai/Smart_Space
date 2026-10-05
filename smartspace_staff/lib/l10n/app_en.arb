@@ -196,5 +196,12 @@
   "newLabel": "New",
   "staffPortalName": "SmartSpace Staff Portal",
   "staffLoginSubtitle": "Internal system for task processing",
-  "staffWelcome": "Employee Sign In"
+  "staffWelcome": "Employee Sign In",
+  "quickAccessMap": "Map",
+  "quickAccessNews": "News",
+  "quickAccessSettings": "Settings",
+  "quickAccessGuide": "Guide",
+  "routeMap": "Map",
+  "myLocation": "My Location",
+  "refresh": "Refresh"
 }

@@ -23,6 +23,8 @@ class AppRouteInfo {
         return l10n.routeHome;
       case 'routeSettings':
         return l10n.routeSettings;
+      case 'routeMap':
+        return l10n.routeMap;
       // Add more routes here as needed
       default:
         return nameKey;
@@ -86,6 +88,14 @@ class RouteName {
     priority: 3,
   );
 
+  static const map = AppRouteInfo(
+    path: '/map',
+    nameKey: 'routeMap',
+    icon: Icons.map_outlined,
+    isHiddenInSearch: false,
+    priority: 4,
+  );
+
   static const List<AppRouteInfo> allRoutes = [
     splash,
     login,
@@ -95,6 +105,7 @@ class RouteName {
     reportDetail,
     search,
     allReports,
+    map,
   ];
 
   static List<AppRouteInfo> get searchableRoutes {
