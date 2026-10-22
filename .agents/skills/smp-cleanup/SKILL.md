@@ -9,7 +9,7 @@ description: >-
 Mục đích: Kiểm tra workspace sau khi hoàn thành task.
 
 ## Dependencies
-- [Shared Git Rules](../rules/shared-git-rules.md)
+- [Shared Git Rules](../../rules/shared-git-rules.md)
 
 ## Quy trình thực hiện (Workflow)
 

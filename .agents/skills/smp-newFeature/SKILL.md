@@ -10,9 +10,10 @@ description: >-
 Mục đích: Tiếp nhận mô tả chức năng mới và xây dựng Implementation Plan trước khi triển khai.
 
 ## Dependencies (Quy tắc phải tuân thủ)
-- [Shared Workflow](../rules/shared-workflow.md)
-- [Shared Architecture Rules](../rules/shared-architecture-rules.md)
-- [Shared UI & Localization Rules](../rules/shared-ui-l10n-rules.md)
+- [Shared Workflow](../../rules/shared-workflow.md)
+- [Shared Architecture Rules](../../rules/shared-architecture-rules.md)
+- [Shared UI & Localization Rules](../../rules/shared-ui-l10n-rules.md)
+- [Design Taste Skill](../design-taste-frontend/SKILL.md) (Bắt buộc đọc và áp dụng nếu tính năng có giao diện UI/Frontend)
 - Khuyến nghị tham khảo: `app_architecture/architecture/push_notification_rules.md` (nếu liên quan đến Notification).
 
 ## Quy trình thực hiện (Workflow)
@@ -24,7 +25,7 @@ Xác định:
 - User flow, Business flow
 - Input / Output
 - API cần sử dụng/tạo mới
-- Database, UI (Dark/Light mode), State management (nếu liên quan)
+- Database, UI (Dark/Light mode), State management (nếu liên quan). Nếu có UI, đối chiếu tín hiệu với [design-taste-frontend](../design-taste-frontend/SKILL.md) (Page kind, Vibe, Audience, Constraints).
 - Validation, Error handling, Permission/Authentication, Edge cases
 - Các text hiển thị cho người dùng (để chuẩn bị L10n key)
 
@@ -47,7 +48,7 @@ Tạo Implementation Plan chỉ rõ:
   1. `route_name.dart`: Định nghĩa đối tượng `AppRouteInfo` (path, nameKey, icon, isHiddenInSearch, priority) và thêm vào danh sách `allRoutes`.
   2. `router_path.dart`: Tạo getter lấy path tham chiếu từ `RouteName` (vd: `static String get feature => RouteName.feature.path;`).
   3. `app_router.dart`: Khai báo `GoRoute` map với màn hình tương ứng.
-- Phân tích UI: MUST tuân thủ Dark/Light mode, màu sắc/token cần sử dụng.
+- Phân tích UI: MUST tuân thủ Dark/Light mode, màu sắc/token theo `app_architecture/design/design.md`. Nếu tính năng có tạo mới màn hình/UI, MUST áp dụng [design-taste-frontend](../design-taste-frontend/SKILL.md): đưa ra 1 dòng "Design Read", xác lập The Three Dials (`DESIGN_VARIANCE`, `MOTION_INTENSITY`, `VISUAL_DENSITY`), và tuân thủ Anti-Default Discipline (không dùng màu sắc/layout rập khuôn AI-slop).
 - Phân tích L10n: MUST xác định các key L10n cần tạo mới hoặc tái sử dụng cho user-facing text.
 - Test cần thêm, Risk, Dependency, Migration (nếu có)
 

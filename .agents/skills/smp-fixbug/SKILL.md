@@ -10,9 +10,9 @@ description: >-
 Mục đích: Phân tích bug và tạo Implementation Plan để sửa bug.
 
 ## Dependencies
-- [Shared Workflow](../rules/shared-workflow.md)
-- [Shared Architecture Rules](../rules/shared-architecture-rules.md)
-- [Shared UI & Localization Rules](../rules/shared-ui-l10n-rules.md)
+- [Shared Workflow](../../rules/shared-workflow.md)
+- [Shared Architecture Rules](../../rules/shared-architecture-rules.md)
+- [Shared UI & Localization Rules](../../rules/shared-ui-l10n-rules.md)
 
 ## Quy trình thực hiện (Workflow)
 
@@ -38,7 +38,7 @@ Plan phải bao gồm:
 - Root cause
 - Affected files & Affected flow
 - Proposed fix
-- Nếu fix có thay đổi UI/Text: MUST đảm bảo tuân thủ Dark/Light mode và KHÔNG hardcode user-facing strings theo `shared-ui-l10n-rules.md`.
+- Nếu fix có thay đổi UI/Text: MUST đảm bảo tuân thủ Dark/Light mode và KHÔNG hardcode user-facing strings theo `shared-ui-l10n-rules.md`. Áp dụng các nguyên tắc liên quan từ [design-taste-frontend](../design-taste-frontend/SKILL.md) trong phạm vi cục bộ của bug; **TUYỆT ĐỐI KHÔNG** tự ý redesign toàn bộ màn hình hoặc mở rộng phạm vi ngoài yêu cầu sửa lỗi.
 - Side effects & Regression risks
 - Test cases cần kiểm tra
 

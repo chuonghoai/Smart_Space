@@ -12,7 +12,7 @@ Không được nhảy thẳng vào viết code hoặc thực hiện thay đổi
    - Kiểm tra cấu trúc hiện tại của repo, các file liên quan.
 3. **Inspect Architecture (Kiểm tra kiến trúc)**
    - Đọc các tài liệu kiến trúc: `app_architecture/`, `backend_architecture/`.
-   - Đọc tài liệu UI/UX & L10n: `app_architecture/design/design.md` và `shared-ui-l10n-rules.md` (nếu có thay đổi UI/text).
+   - Đọc tài liệu UI/UX & L10n: `app_architecture/design/design.md`, [Shared UI & Localization Rules](shared-ui-l10n-rules.md), và tham chiếu [.agents/skills/design-taste-frontend/SKILL.md](../skills/design-taste-frontend/SKILL.md) (nếu có tạo mới, redesign hoặc thay đổi UI).
 4. **Inspect Existing Implementation (Kiểm tra mã nguồn hiện tại)**
    - Tìm các module/feature liên quan.
    - Đánh giá khả năng tái sử dụng (không tạo code mới nếu có thể dùng lại).

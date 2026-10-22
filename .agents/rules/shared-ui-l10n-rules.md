@@ -16,12 +16,17 @@ Mọi UI được tạo mới hoặc chỉnh sửa MUST hỗ trợ đúng cả h
 - **MUST NOT** dùng trực tiếp một màu cố định (fixed color) thay vì màu/theme token nếu project đã có theme/color token tương ứng.
 - **MUST** kiểm tra theme hiện tại của project trước khi tạo/chỉnh sửa UI.
 - **MUST** ưu tiên sử dụng hệ thống màu/theme/design token (cho Background, text, icon, border, divider, button, input, card...) đã có trong project phù hợp với theme hiện hành.
-- **MUST** phải tuân thủ quy tắc thiết kế UI của taste skill trong global workspace của máy tính, đảm bảo UI được thiết kế không bị AI_SL. Nếu không tìm thấy bộ quy tắc này trong global workspace thì bỏ qua
+- **MUST** tuân thủ quy tắc thiết kế UI trong [.agents/skills/design-taste-frontend/SKILL.md](../skills/design-taste-frontend/SKILL.md) khi thực hiện các tác vụ liên quan đến UI:
+  - **Khi tạo mới UI / màn hình / component / redesign**: Agent MUST đọc và áp dụng trực tiếp các hướng dẫn cốt lõi của skill (thực hiện Brief Inference, xuất 1 dòng "Design Read" trước khi code, thiết lập Three Dials, và tuân thủ nguyên tắc Anti-Default Discipline để chống giao diện khuôn mẫu/AI-slop).
+  - **Khi chỉnh sửa UI hiện có hoặc sửa lỗi (fix bug) liên quan đến UI**: Agent MUST đánh giá hiện trạng giao diện và chỉ áp dụng các quy tắc thiết kế phù hợp trong phạm vi ảnh hưởng; **TUYỆT ĐỐI KHÔNG** tự ý redesign toàn bộ màn hình nếu yêu cầu chỉ là sửa một lỗi nhỏ hoặc thay đổi cục bộ.
+  - **Tác vụ không liên quan đến UI**: Không bắt buộc đọc hoặc áp dụng skill này.
+  - **Thứ tự ưu tiên & Bảo toàn nghiệp vụ**: Thẩm mỹ của Taste Skill KHÔNG ĐƯỢC phép phá vỡ yêu cầu nghiệp vụ, logic tính năng, khả năng tiếp cận (Accessibility), hoặc hệ thống design token/font chữ quy định trong `app_architecture/design/design.md`.
+  - **Minh bạch & Xác minh**: Agent KHÔNG được coi việc chỉ nhắc tên skill là đã áp dụng; phải vận dụng hướng dẫn thực tế từ `SKILL.md`. Nếu không thể đọc/truy cập file skill, Agent MUST báo rõ lỗi và yêu cầu hỗ trợ, không được tuyên bố đã tuân thủ khi chưa có bằng chứng.
 - **MUST** tuân thủ quy tắc thiết kế màu sắc, font chữ trong app_architecture\design\design.md
 - **MUST** đảm bảo khi thêm màu mới, màu đó phù hợp và hiển thị tốt ở cả Light Mode và Dark Mode.
 - **MUST** kiểm tra trực tiếp các trường hợp tương phản giữa foreground và background ở cả 2 mode (không chỉ kiểm tra syntax/compile) trong quá trình thiết kế, code và review.
 - **MUST NOT** thay đổi màu để fix một mode nhưng làm hỏng mode còn lại.
-- **Khi code review / PR review**: Nếu phát hiện UI chỉ đúng ở một theme, hoặc một component bị mất tương phản/khó đọc ở mode còn lại, hoặc hardcode màu sai quy tắc, Agent MUST đánh dấu đó là lỗi và yêu cầu fix.
+- **Khi code review / PR review**: Nếu phát hiện UI chỉ đúng ở một theme, hoặc một component bị mất tương phản/khó đọc ở mode còn lại, hardcode màu sai quy tắc, hoặc vi phạm các nguyên tắc thiết kế chống AI-slop khi xây dựng UI mới, Agent MUST đánh dấu đó là lỗi và yêu cầu fix.
 
 ## 2. LANGUAGE / LOCALIZATION (L10N)
 
