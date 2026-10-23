@@ -1,5 +1,6 @@
 package com.vn.smart_space.repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -57,5 +58,31 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Query("SELECT u.position.id, COUNT(u) FROM User u " +
             "WHERE u.role = :role AND u.position IS NOT NULL GROUP BY u.position.id")
     List<Object[]> countStaffGroupByPosition(@Param("role") ERole role);
+
+    // Admin - User management: tìm kiếm theo role, sắp xếp lấy từ Pageable
+    @Query(value = "SELECT u FROM User u WHERE u.role = :role " +
+            "AND (:search IS NULL OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "OR u.phone LIKE CONCAT('%', :search, '%'))",
+            countQuery = "SELECT COUNT(u) FROM User u WHERE u.role = :role " +
+                    "AND (:search IS NULL OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%')) " +
+                    "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) " +
+                    "OR u.phone LIKE CONCAT('%', :search, '%'))")
+    Page<User> searchByRole(
+            @Param("role") ERole role,
+            @Param("search") String search,
+            Pageable pageable);
+
+    Optional<User> findByIdAndRole(String id, ERole role);
+
+    // Đếm user đăng ký trong khoảng [from, to)
+    long countByRoleAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
+            ERole role, LocalDateTime from, LocalDateTime to);
+
+    // Lấy thời điểm đăng ký từ :from để gom nhóm trend
+    @Query("SELECT u.createdAt FROM User u WHERE u.role = :role AND u.createdAt >= :from")
+    List<LocalDateTime> findCreatedAtByRoleSince(
+            @Param("role") ERole role,
+            @Param("from") LocalDateTime from);
 
 }
