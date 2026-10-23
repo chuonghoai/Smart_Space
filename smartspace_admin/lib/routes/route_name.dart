@@ -39,6 +39,8 @@ class AppRouteInfo {
         return l10n.routeNotifications;
       case 'routePositionManagement':
         return l10n.routePositionManagement;
+      case 'routeManageDevices':
+        return l10n.routeManageDevices;
       default:
         return nameKey;
     }
@@ -142,6 +144,12 @@ class RouteName {
     icon: Icons.notifications,
     priority: 9,
   );
+  static const manageDevices = AppRouteInfo(
+    path: '/manage-devices',
+    nameKey: 'routeManageDevices',
+    icon: Icons.phone_android,
+    isHiddenInSearch: true,
+  );
 
   static const List<AppRouteInfo> allRoutes = [
     splash,
@@ -160,6 +168,7 @@ class RouteName {
     spaceMap,
     search,
     notifications,
+    manageDevices,
   ];
 
   static List<AppRouteInfo> get searchableRoutes {

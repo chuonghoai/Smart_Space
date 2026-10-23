@@ -10,6 +10,7 @@ import 'package:smartspace_admin/ui/screen/reports/report_list_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/change_password_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/edit_profile_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/settings_screen.dart';
+import 'package:smartspace_admin/ui/screen/settings/manage_devices_screen.dart';
 import 'package:smartspace_admin/ui/screen/map/admin_map_screen.dart';
 import 'package:smartspace_admin/ui/screen/staff/staff_management_screen.dart';
 import 'package:smartspace_admin/ui/screen/position/position_management_screen.dart';
@@ -94,6 +95,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.notifications,
       builder: (context, state) => const AdminNotificationScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.manageDevices,
+      builder: (context, state) => const MobileManageDevicesScreen(),
     ),
   ],
 );
