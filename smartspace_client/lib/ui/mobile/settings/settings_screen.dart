@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_shared/core/localization/locale_provider.dart';
+import 'package:mobile_shared/core/theme/theme_provider.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/routes/router_path.dart';
 import 'package:smartspace_client/ui/mobile/settings/settings_controller.dart';
@@ -59,11 +61,6 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
               ),
               _buildItem(
                 theme: theme,
-                icon: Icons.lock_outlined,
-                label: l10n.loginSettings,
-              ),
-              _buildItem(
-                theme: theme,
                 icon: Icons.password,
                 label: l10n.changePassword,
                 onTap: () => context.push(RouterPath.changePassword),
@@ -83,6 +80,48 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
 
               // Nhóm 2: Ứng dụng
               _buildSectionHeader(theme, l10n.appSection),
+              ListenableBuilder(
+                listenable: localeProvider,
+                builder: (context, _) {
+                  final currentLang = localeProvider.locale.languageCode == 'vi'
+                      ? l10n.vietnamese
+                      : l10n.english;
+                  return _buildItem(
+                    theme: theme,
+                    icon: Icons.language_outlined,
+                    label: l10n.language,
+                    trailing: Text(
+                      currentLang,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    onTap: () => _showLanguagePicker(context, l10n, theme),
+                  );
+                },
+              ),
+              ListenableBuilder(
+                listenable: themeProvider,
+                builder: (context, _) {
+                  final label = switch (themeProvider.themeMode) {
+                    ThemeMode.light => l10n.themeLight,
+                    ThemeMode.dark => l10n.themeDark,
+                    ThemeMode.system => l10n.themeSystem,
+                  };
+                  return _buildItem(
+                    theme: theme,
+                    icon: Icons.palette_outlined,
+                    label: l10n.theme,
+                    trailing: Text(
+                      label,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    onTap: () => _showThemePicker(context, l10n, theme),
+                  );
+                },
+              ),
               _buildItem(
                 theme: theme,
                 icon: Icons.description_outlined,
@@ -244,6 +283,112 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
           Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
       onTap: onTap ?? () {},
       contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+    );
+  }
+
+  void _showLanguagePicker(
+    BuildContext context,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Text(
+                  l10n.language,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              RadioListTile<String>(
+                title: Text(l10n.vietnamese),
+                value: 'vi',
+                groupValue: localeProvider.locale.languageCode,
+                onChanged: (v) {
+                  if (v != null) localeProvider.setLocale(Locale(v));
+                  Navigator.pop(ctx);
+                },
+              ),
+              RadioListTile<String>(
+                title: Text(l10n.english),
+                value: 'en',
+                groupValue: localeProvider.locale.languageCode,
+                onChanged: (v) {
+                  if (v != null) localeProvider.setLocale(Locale(v));
+                  Navigator.pop(ctx);
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showThemePicker(
+    BuildContext context,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Text(
+                  l10n.theme,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              RadioListTile<ThemeMode>(
+                title: Text(l10n.themeLight),
+                secondary: const Icon(Icons.light_mode_outlined),
+                value: ThemeMode.light,
+                groupValue: themeProvider.themeMode,
+                onChanged: (v) {
+                  if (v != null) themeProvider.setThemeMode(v);
+                  Navigator.pop(ctx);
+                },
+              ),
+              RadioListTile<ThemeMode>(
+                title: Text(l10n.themeDark),
+                secondary: const Icon(Icons.dark_mode_outlined),
+                value: ThemeMode.dark,
+                groupValue: themeProvider.themeMode,
+                onChanged: (v) {
+                  if (v != null) themeProvider.setThemeMode(v);
+                  Navigator.pop(ctx);
+                },
+              ),
+              RadioListTile<ThemeMode>(
+                title: Text(l10n.themeSystem),
+                secondary: const Icon(Icons.brightness_auto_outlined),
+                value: ThemeMode.system,
+                groupValue: themeProvider.themeMode,
+                onChanged: (v) {
+                  if (v != null) themeProvider.setThemeMode(v);
+                  Navigator.pop(ctx);
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
     );
   }
 
