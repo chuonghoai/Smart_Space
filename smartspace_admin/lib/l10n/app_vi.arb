@@ -365,5 +365,25 @@
   "totalPositions": "Tổng chức vụ",
   "positionAssignedStaff": "Nhân viên đã gán",
   "actionsColumn": "Thao tác",
-  "positionCodeHint": "VD: ELECTRICIAN, PLUMBER"
+  "positionCodeHint": "VD: ELECTRICIAN, PLUMBER",
+  "loggedInDevices": "Thiết bị đã đăng nhập",
+  "thisDevice": "Thiết bị này",
+  "activeNow": "Đang hoạt động",
+  "logoutDevice": "Đăng xuất",
+  "logoutDeviceConfirmTitle": "Đăng xuất khỏi thiết bị?",
+  "logoutDeviceConfirmMessage": "Phiên đăng nhập trên \"{deviceName}\" sẽ bị kết thúc.",
+  "@logoutDeviceConfirmMessage": {
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "logoutAllOtherDevices": "Đăng xuất tất cả thiết bị khác",
+  "logoutAllConfirmTitle": "Đăng xuất tất cả thiết bị khác?",
+  "logoutAllConfirmMessage": "Tất cả phiên ngoại trừ thiết bị này sẽ bị kết thúc.",
+  "noOtherDevices": "Không có thiết bị khác đang đăng nhập.",
+  "deviceLogoutSuccess": "Đã đăng xuất thiết bị.",
+  "allDevicesLogoutSuccess": "Đã đăng xuất tất cả thiết bị khác.",
+  "routeManageDevices": "Quản lý thiết bị"
 }

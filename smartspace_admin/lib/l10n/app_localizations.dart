@@ -2099,7 +2099,7 @@ abstract class AppLocalizations {
   /// No description provided for @logoutDeviceConfirmMessage.
   ///
   /// In en, this message translates to:
-  /// **'The session on "{deviceName}" will be ended.'**
+  /// **'The session on \"{deviceName}\" will be ended.'**
   String logoutDeviceConfirmMessage(String deviceName);
 
   /// No description provided for @logoutAllOtherDevices.
