@@ -21,6 +21,10 @@ $TestRegistry = @{
         TestClass   = "com.vn.smart_space.controller.report.AssignReportTest"
         Description = "Mo phong Client tao report, sau do Admin phan cong cho Staff de test realtime notification cho Client"
     }
+    "HandleReport" = @{
+        TestClass   = "com.vn.smart_space.controller.report.HandleReportTest"
+        Description = "Mo phong luong e2e: Client tao phan anh -> Admin phan cong cho Staff -> Staff hoan tat xu ly phan anh va gui thong bao cho Client"
+    }
 }
 
 # -----------------------------------------------------------------------------

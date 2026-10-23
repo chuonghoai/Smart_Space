@@ -65,4 +65,13 @@ public class ReportDetailResponse {
 
     @JsonProperty("assigned_at")
     private String assignedAt;
+
+    @JsonProperty("resolved_note")
+    private String resolvedNote;
+
+    @JsonProperty("resolved_image_urls")
+    private List<String> resolvedImageUrls;
+
+    @JsonProperty("resolved_at")
+    private String resolvedAt;
 }

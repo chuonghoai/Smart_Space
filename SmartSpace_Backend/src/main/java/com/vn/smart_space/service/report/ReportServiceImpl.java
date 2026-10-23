@@ -20,6 +20,7 @@ import com.vn.smart_space.consts.EReportStatus;
 import com.vn.smart_space.consts.ERole;
 import com.vn.smart_space.dto.request.admin.ReportAssignRequest;
 import com.vn.smart_space.dto.request.notification.NotificationRequest;
+import com.vn.smart_space.dto.request.report.ReportCompleteRequest;
 import com.vn.smart_space.dto.request.report.ReportCreateRequest;
 import com.vn.smart_space.dto.PageResponse;
 import com.vn.smart_space.dto.response.admin.MapReportResponse;
@@ -337,6 +338,14 @@ public class ReportServiceImpl implements IReportService {
             images = List.of(report.getImageUrl().trim());
         }
 
+        List<String> resolvedImages = null;
+        if (report.getResolvedImageUrls() != null && !report.getResolvedImageUrls().trim().isEmpty()) {
+            resolvedImages = Arrays.stream(report.getResolvedImageUrls().split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toList());
+        }
+
         return ReportDetailResponse.builder()
                 .id(report.getId())
                 .title(report.getTitle())
@@ -361,6 +370,9 @@ public class ReportServiceImpl implements IReportService {
                 .assignedStaffPhone(staff != null ? staff.getPhone() : null)
                 .assignedStaffEmail(staff != null ? staff.getEmail() : null)
                 .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
+                .resolvedNote(report.getResolvedNote())
+                .resolvedImageUrls(resolvedImages)
+                .resolvedAt(report.getResolvedAt() != null ? report.getResolvedAt().toInstant().atZone(java.time.ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE_TIME) : null)
                 .build();
     }
 
@@ -425,7 +437,7 @@ public class ReportServiceImpl implements IReportService {
         }
 
         report.setAssignedStaff(staff);
-        report.setStatus(EReportStatus.pending);
+        report.setStatus(EReportStatus.processing);
         report.setAssignedAt(new java.util.Date());
         report = reportRepository.save(report);
 
@@ -521,6 +533,126 @@ public class ReportServiceImpl implements IReportService {
                         Map.of("type", "REPORT_DETAIL", "payload", "{\"reportId\":\"" + report.getId() + "\"}"));
                 fcmService.sendToUser(report.getUser().getId(), clientNotif);
             } catch (Exception ignored) {
+            }
+        }
+
+        return getReportDetail(report.getId());
+    }
+
+    @Override
+    @Transactional
+    public ReportDetailResponse completeReport(
+            String reportId,
+            ReportCompleteRequest request,
+            String staffId) {
+
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
+
+        User staff = staffId != null ? userRepository.findById(staffId).orElse(null) : null;
+        if (staff != null && report.getAssignedStaff() == null) {
+            report.setAssignedStaff(staff);
+        }
+
+        report.setStatus(EReportStatus.processed);
+        if (request.getNote() != null && !request.getNote().trim().isEmpty()) {
+            report.setResolvedNote(request.getNote().trim());
+        }
+        if (request.getImageUrls() != null && !request.getImageUrls().isEmpty()) {
+            report.setResolvedImageUrls(String.join(",", request.getImageUrls()));
+        }
+        report.setResolvedAt(new java.util.Date());
+        report = reportRepository.save(report);
+
+        // Save Activity History
+        String staffName = staff != null && staff.getFullName() != null && !staff.getFullName().trim().isEmpty()
+                ? staff.getFullName().trim()
+                : (staff != null && staff.getEmail() != null ? staff.getEmail().trim() : "Nhân viên");
+        String reportTitle = report.getTitle() != null && !report.getTitle().trim().isEmpty()
+                ? report.getTitle().trim()
+                : "Phản ánh";
+        String i18nKey = "activity.report.completed|" + staffName + "|" + reportTitle;
+
+        ActivityHistory activity = ActivityHistory.builder()
+                .actor(staff)
+                .i18nKey(i18nKey)
+                .targetId(report.getId())
+                .build();
+        activityHistoryRepository.save(activity);
+
+        // Notify Admins via WebSocket only (per requirement: no notification record or FCM push, only realtime event for dashboard refresh)
+        try {
+            List<User> admins = userRepository.findByRole(ERole.admin);
+            String actionData = String.format(
+                    "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\", \"title\": \"%s\", \"status\": \"processed\", \"severity\": \"%s\"}}",
+                    report.getId(),
+                    report.getTitle() != null ? report.getTitle().replace("\"", "\\\"") : "",
+                    report.getSeverity() != null ? report.getSeverity().name() : "low");
+
+            for (User a : admins) {
+                try {
+                    NotificationEvent event = new NotificationEvent(
+                            "Phản ánh hoàn tất",
+                            String.format("Nhân viên %s đã xử lý xong phản ánh '%s'.", staffName, report.getTitle()),
+                            actionData,
+                            report.getImageUrl(),
+                            Map.of("shouldRefresh", true, "status", "processed", "reportId", report.getId()));
+                    messagingTemplate.convertAndSendToUser(a.getId(), "/queue/notifications", event);
+                } catch (Exception ignored) {
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
+        // Notify Client (the creator of the report) via In-App Notification, WebSocket & FCM
+        if (report.getUser() != null) {
+            try {
+                User client = report.getUser();
+                java.util.Locale clientLocale = new java.util.Locale(client.getLanguage() != null ? client.getLanguage() : "vi");
+                String clientTitle = messageSource.getMessage("notification.report.completed.client.title", null, "Phản ánh đã được xử lý", clientLocale);
+                String clientMessage = messageSource.getMessage("notification.report.completed.client.message", new Object[]{report.getTitle()}, String.format("Phản ánh '%s' của bạn đã hoàn tất việc xử lý.", report.getTitle()), clientLocale);
+
+                String clientActionData = String
+                        .format("{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}", report.getId());
+
+                notificationService.createNotification(client.getId(), clientTitle, clientMessage,
+                        clientActionData, report.getImageUrl());
+                NotificationEvent clientEvent = new NotificationEvent(clientTitle, clientMessage, clientActionData, report.getImageUrl(), Map.of("shouldRefresh", true));
+                messagingTemplate.convertAndSendToUser(client.getId(), "/queue/notifications", clientEvent);
+
+                NotificationRequest clientNotif = new NotificationRequest(
+                        clientTitle, clientMessage,
+                        Map.of("type", "REPORT_DETAIL", "payload", "{\"reportId\":\"" + report.getId() + "\"}"));
+                fcmService.sendToUser(report.getUser().getId(), clientNotif);
+            } catch (Exception ignored) {
+            }
+        }
+
+        // Notify Staff via In-App Notification, WebSocket & FCM
+        if (staff != null) {
+            try {
+                java.util.Locale staffLocale = new java.util.Locale(staff.getLanguage() != null ? staff.getLanguage() : "vi");
+                String staffTitle = messageSource.getMessage("notification.report.completed.staff.title", null, "Công việc hoàn tất", staffLocale);
+                String staffMessage = messageSource.getMessage("notification.report.completed.staff.message", new Object[]{report.getTitle()}, String.format("Cảm ơn bạn đã hoàn tất việc xử lý '%s'.", report.getTitle()), staffLocale);
+
+                String staffActionData = String
+                        .format("{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}", report.getId());
+
+                notificationService.createNotification(staff.getId(), staffTitle, staffMessage,
+                        staffActionData, report.getImageUrl());
+
+                Map<String, Object> staffExtra = new java.util.HashMap<>();
+                staffExtra.put("shouldRefresh", true);
+                staffExtra.put("stats", getStaffReportStatistics(staff.getId()));
+                NotificationEvent staffEvent = new NotificationEvent(staffTitle, staffMessage, staffActionData, report.getImageUrl(), staffExtra);
+                messagingTemplate.convertAndSendToUser(staff.getId(), "/queue/notifications", staffEvent);
+
+                NotificationRequest staffNotif = new NotificationRequest(
+                        staffTitle, staffMessage,
+                        Map.of("type", "REPORT_DETAIL", "payload", "{\"reportId\":\"" + report.getId() + "\"}"));
+                fcmService.sendToUser(staff.getId(), staffNotif);
+            } catch (Exception ex) {
+                log.warn("[Notify Staff] Failed to notify staff {}: {}", staff.getId(), ex.getMessage());
             }
         }
 

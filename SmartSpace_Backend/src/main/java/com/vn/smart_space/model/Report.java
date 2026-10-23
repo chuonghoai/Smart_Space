@@ -66,4 +66,12 @@ public class Report extends AbstractEntity {
     @Column(name = "assigned_at")
     java.util.Date assignedAt;
 
+    @Column(name = "resolved_note", columnDefinition = "TEXT")
+    String resolvedNote;
+
+    @Column(name = "resolved_image_urls", columnDefinition = "TEXT")
+    String resolvedImageUrls;
+
+    @Column(name = "resolved_at")
+    java.util.Date resolvedAt;
 }

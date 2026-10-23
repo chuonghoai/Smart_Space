@@ -203,5 +203,38 @@
   "quickAccessGuide": "Guide",
   "routeMap": "Map",
   "myLocation": "My Location",
-  "refresh": "Refresh"
+  "refresh": "Refresh",
+  "handleReport": "Handle Report",
+  "processReportAction": "Process",
+  "routeHandleReport": "Handle Report",
+  "evidencePhotos": "Evidence Photos",
+  "takePhoto": "Take Photo",
+  "chooseFromGallery": "Gallery",
+  "resolutionNote": "Resolution Note",
+  "resolutionNoteHint": "Describe handling results or notes...",
+  "slideToComplete": "Slide to complete",
+  "submittingReport": "Submitting...",
+  "reportProcessedSuccess": "Report resolved successfully!",
+  "provideEvidenceOrNoteWarning": "Please attach at least 1 evidence photo or enter a note",
+  "uploadingEvidence": "Uploading evidence photos...",
+  "submittingReportBackground": "Your report handling info is being submitted, please do not close the app",
+  "submittingReportBackgroundTitle": "Submitting Handling Information",
+  "uploadingEvidenceProgress": "Uploading evidence photos ({current}/{total})...",
+  "@uploadingEvidenceProgress": {
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "almostDoneFinalizing": "Finalizing report resolution ({current}/{total})...",
+  "@almostDoneFinalizing": {
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "handlingCompletedSuccess": "Handling information submitted successfully!",
+  "gotIt": "Got it",
+  "handlingProgressTitle": "Handling Submission Progress",
+  "errorTitle": "An error occurred"
 }

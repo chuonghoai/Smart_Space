@@ -8,11 +8,15 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 
+import 'package:go_router/go_router.dart';
+import 'package:smartspace_staff/features/reports/models/report_model.dart';
 import 'package:smartspace_staff/features/reports/providers/report_detail_provider.dart';
+import 'package:smartspace_staff/features/reports/services/handle_report_background_service.dart';
 import 'package:smartspace_staff/features/reports/utils/report_status_ext.dart';
 import 'package:smartspace_staff/features/reports/utils/report_severity_ext.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:smartspace_staff/ui/mobile/reports/presentation/widgets/fullscreen_image_viewer.dart';
+import 'package:smartspace_staff/ui/mobile/reports/presentation/widgets/handling_progress_dialog.dart';
 
 class ReportDetailScreen extends ConsumerStatefulWidget {
   final String reportId;
@@ -105,12 +109,92 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final reportAsyncValue = ref.watch(reportDetailProvider(widget.reportId));
+    final reportData = reportAsyncValue.asData?.value;
+    final isHandling = handleReportBackgroundService.isHandling(widget.reportId);
+    final canHandle = reportData != null &&
+        reportData.status != ReportStatus.processed &&
+        reportData.status != ReportStatus.rejected &&
+        !isHandling;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.reportDetails),
+        actions: [
+          if (canHandle)
+            Padding(
+              padding: const EdgeInsets.only(right: 8.0),
+              child: FilledButton.tonalIcon(
+                onPressed: () async {
+                  final result = await context.push('/reports/${widget.reportId}/handle');
+                  if (context.mounted && result == true) {
+                    HandlingProgressDialog.show(context, widget.reportId);
+                  }
+                },
+                icon: const Icon(Icons.build_circle_outlined, size: 18),
+                label: Text(l10n.processReportAction),
+                style: FilledButton.styleFrom(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  visualDensity: VisualDensity.compact,
+                ),
+              ),
+            ),
+        ],
       ),
-      body: reportAsyncValue.when(
+      body: Column(
+        children: [
+          ListenableBuilder(
+            listenable: handleReportBackgroundService,
+            builder: (context, _) {
+              final task =
+                  handleReportBackgroundService.getTask(widget.reportId);
+              if (task == null || task.status != HandleTaskStatus.inProgress) {
+                return const SizedBox.shrink();
+              }
+              return Material(
+                color: theme.colorScheme.primaryContainer,
+                child: InkWell(
+                  onTap: () =>
+                      HandlingProgressDialog.show(context, widget.reportId),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                        horizontal: 16, vertical: 10),
+                    child: Row(
+                      children: [
+                        SizedBox(
+                          width: 16,
+                          height: 16,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                            value: task.totalSteps > 0
+                                ? (task.currentStep / task.totalSteps)
+                                : null,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            '${l10n.submittingReportBackgroundTitle} (${task.currentStep}/${task.totalSteps})',
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: theme.colorScheme.onPrimaryContainer,
+                            ),
+                          ),
+                        ),
+                        Icon(
+                          Icons.chevron_right,
+                          color: theme.colorScheme.onPrimaryContainer,
+                          size: 20,
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+          Expanded(
+            child: reportAsyncValue.when(
         data: (report) {
           return RefreshIndicator(
             onRefresh: () => ref.read(reportDetailProvider(widget.reportId).notifier).refresh(),
@@ -593,6 +677,9 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
             ],
           ),
         ),
+      ),
+          ),
+        ],
       ),
     );
   }

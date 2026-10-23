@@ -7,6 +7,9 @@ class ReportDetailModel extends ReportModel {
   final String? assignedStaffId;
   final String? assignedStaffName;
   final String? assignedStaffAvatarUrl;
+  final String? resolvedNote;
+  final List<String>? resolvedImageUrls;
+  final DateTime? resolvedAt;
 
   ReportDetailModel({
     required super.id,
@@ -29,6 +32,9 @@ class ReportDetailModel extends ReportModel {
     this.assignedStaffId,
     this.assignedStaffName,
     this.assignedStaffAvatarUrl,
+    this.resolvedNote,
+    this.resolvedImageUrls,
+    this.resolvedAt,
   }) : super(imageUrl: imageUrls.isNotEmpty ? imageUrls.first : '');
 
   factory ReportDetailModel.fromJson(Map<String, dynamic> json) {
@@ -68,6 +74,15 @@ class ReportDetailModel extends ReportModel {
       assignedStaffId: json['assigned_staff_id'] as String?,
       assignedStaffName: json['assigned_staff_name'] as String?,
       assignedStaffAvatarUrl: json['assigned_staff_avatar_url'] as String?,
+      resolvedNote: json['resolved_note'] as String?,
+      resolvedImageUrls: json['resolved_image_urls'] != null
+          ? (json['resolved_image_urls'] is List
+              ? List<String>.from(json['resolved_image_urls'])
+              : (json['resolved_image_urls'] as String).split(',').where((e) => e.isNotEmpty).toList())
+          : null,
+      resolvedAt: json['resolved_at'] != null
+          ? DateTime.tryParse(json['resolved_at'].toString())
+          : null,
     );
   }
 
@@ -82,6 +97,9 @@ class ReportDetailModel extends ReportModel {
     map['assigned_staff_id'] = assignedStaffId;
     map['assigned_staff_name'] = assignedStaffName;
     map['assigned_staff_avatar_url'] = assignedStaffAvatarUrl;
+    map['resolved_note'] = resolvedNote;
+    map['resolved_image_urls'] = resolvedImageUrls;
+    map['resolved_at'] = resolvedAt?.toIso8601String();
     return map;
   }
 
