@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'app_semantic_colors.dart';
+
 class AppTheme {
   static ThemeData get lightTheme {
     final colorScheme = ColorScheme.fromSeed(
@@ -18,6 +20,7 @@ class AppTheme {
     return ThemeData(
       colorScheme: colorScheme,
       useMaterial3: true,
+      extensions: const [AppSemanticColors.light],
       scaffoldBackgroundColor: const Color(0xFFF5F8F7),
       appBarTheme: AppBarTheme(
         backgroundColor: colorScheme.surface,
@@ -88,6 +91,7 @@ class AppTheme {
     return ThemeData(
       colorScheme: colorScheme,
       useMaterial3: true,
+      extensions: const [AppSemanticColors.dark],
       scaffoldBackgroundColor: const Color(0xFF0F1715),
       appBarTheme: AppBarTheme(
         backgroundColor: colorScheme.surface,

@@ -29,6 +29,8 @@ class AppRouteInfo {
         return l10n.routeChangePassword;
       case 'routeStaffManagement':
         return l10n.routeStaffManagement;
+      case 'routeUserManagement':
+        return l10n.routeUserManagement;
       case 'routeReportDashboard':
         return l10n.routeReportDashboard;
       case 'routeReportList':
@@ -108,6 +110,12 @@ class RouteName {
     icon: Icons.people,
     priority: 2,
   );
+  static const userManagement = AppRouteInfo(
+    path: '/user-management',
+    nameKey: 'routeUserManagement',
+    icon: Icons.people_outline,
+    priority: 2,
+  );
   static const positionManagement = AppRouteInfo(
     path: '/position-management',
     nameKey: 'routePositionManagement',
@@ -162,6 +170,7 @@ class RouteName {
     editProfile,
     changePassword,
     staffManagement,
+    userManagement,
     positionManagement,
     reportDashboard,
     reportList,

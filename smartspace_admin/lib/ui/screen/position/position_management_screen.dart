@@ -9,7 +9,7 @@ import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/layout/app_layout.dart';
 import 'package:smartspace_admin/ui/screen/position/widgets/position_table_view.dart';
 
-/// Quản lý chức vụ: danh sách + thêm/sửa/xóa. Một layout responsive cho Web & Mobile.
+/// Quản lý chức vụ: danh sách
 class PositionManagementScreen extends ConsumerWidget {
   const PositionManagementScreen({super.key});
 
@@ -32,10 +32,11 @@ class PositionManagementScreen extends ConsumerWidget {
                     (kIsWeb && async.valueOrNull != null)
                         ? '${l10n.managePositions} · ${async.valueOrNull!.length}'
                         : l10n.managePositions,
-                    style: (kIsWeb
-                            ? theme.textTheme.headlineSmall
-                            : theme.textTheme.titleLarge)
-                        ?.copyWith(fontWeight: FontWeight.bold),
+                    style:
+                        (kIsWeb
+                                ? theme.textTheme.headlineSmall
+                                : theme.textTheme.titleLarge)
+                            ?.copyWith(fontWeight: FontWeight.bold),
                   ),
                 ),
                 if (kIsWeb)
@@ -68,8 +69,11 @@ class PositionManagementScreen extends ConsumerWidget {
               ),
               error: (e, _) => Column(
                 children: [
-                  Icon(Icons.error_outline,
-                      size: 48, color: theme.colorScheme.error),
+                  Icon(
+                    Icons.error_outline,
+                    size: 48,
+                    color: theme.colorScheme.error,
+                  ),
                   const SizedBox(height: 8),
                   Text(e.toString()),
                   const SizedBox(height: 8),
@@ -95,9 +99,14 @@ class PositionManagementScreen extends ConsumerWidget {
                 }
                 void edit(PositionModel p) =>
                     _showForm(context, ref, l10n, editing: p);
-                void del(PositionModel p) => _confirmDelete(context, ref, l10n, p);
+                void del(PositionModel p) =>
+                    _confirmDelete(context, ref, l10n, p);
                 if (kIsWeb) {
-                  return PositionWebView(items: items, onEdit: edit, onDelete: del);
+                  return PositionWebView(
+                    items: items,
+                    onEdit: edit,
+                    onDelete: del,
+                  );
                 }
                 return Column(
                   children: [
@@ -196,176 +205,115 @@ class _PositionTile extends StatelessWidget {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
 
-    return Card(
-      elevation: 0,
-      margin: const EdgeInsets.only(bottom: 12),
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(14),
-        side: BorderSide(
-          color: theme.dividerColor.withValues(alpha: 0.8),
+    return Opacity(
+      opacity: position.active ? 1 : 0.6,
+      child: Card(
+        elevation: 0,
+        margin: const EdgeInsets.only(bottom: 8),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(12),
+          side: BorderSide(color: theme.dividerColor),
         ),
-      ),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Header: Avatar + Tên & Mã chức vụ + Nút Thao tác
-            Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                CircleAvatar(
-                  radius: 20,
-                  backgroundColor: position.active
-                      ? cs.primaryContainer
-                      : cs.surfaceContainerHighest,
-                  child: Icon(
-                    Icons.workspace_premium_outlined,
-                    size: 20,
-                    color: position.active
-                        ? cs.onPrimaryContainer
-                        : cs.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(width: 12),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        position.name,
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      const SizedBox(height: 2),
-                      Text(
-                        position.code,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          fontFamily: 'monospace',
-                          color: cs.onSurfaceVariant,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                IconButton(
-                  visualDensity: VisualDensity.compact,
-                  tooltip: l10n.editPosition,
-                  icon: const Icon(Icons.edit_outlined, size: 20),
-                  onPressed: onEdit,
-                ),
-                IconButton(
-                  visualDensity: VisualDensity.compact,
-                  tooltip: l10n.deletePosition,
-                  icon: Icon(Icons.delete_outline, size: 20, color: cs.error),
-                  onPressed: onDelete,
-                ),
-              ],
-            ),
-
-            // Mô tả (nếu có)
-            if (position.description != null &&
-                position.description!.trim().isNotEmpty) ...[
-              const SizedBox(height: 10),
-              Text(
-                position.description!.trim(),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: cs.onSurfaceVariant,
+        child: Padding(
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              CircleAvatar(
+                backgroundColor: cs.secondaryContainer,
+                child: Icon(
+                  Icons.workspace_premium_outlined,
+                  color: cs.onSecondaryContainer,
                 ),
               ),
-            ],
-
-            const SizedBox(height: 12),
-            Divider(
-              height: 1,
-              thickness: 0.5,
-              color: theme.dividerColor.withValues(alpha: 0.6),
-            ),
-            const SizedBox(height: 12),
-
-            // Footer: Số nhân viên bên TRÁI, Trạng thái hoạt động bên PHẢI
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                // Số nhân viên (Left metadata)
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: cs.surfaceContainerHighest.withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.groups_outlined,
-                        size: 16,
-                        color: cs.primary,
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      position.name,
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: theme.textTheme.bodyLarge?.copyWith(
+                        fontWeight: FontWeight.w600,
                       ),
-                      const SizedBox(width: 6),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      position.code,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: cs.onSurfaceVariant,
+                      ),
+                    ),
+                    if (position.description != null &&
+                        position.description!.isNotEmpty) ...[
+                      const SizedBox(height: 2),
                       Text(
-                        l10n.positionStaffCount(position.staffCount),
+                        position.description!,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                         style: theme.textTheme.bodySmall?.copyWith(
-                          fontWeight: FontWeight.w600,
-                          color: cs.onSurface,
+                          color: cs.onSurfaceVariant,
                         ),
                       ),
                     ],
-                  ),
-                ),
-
-                // Trạng thái hoạt động (Right status badge)
-                Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                  decoration: BoxDecoration(
-                    color: position.active
-                        ? cs.primaryContainer.withValues(alpha: 0.6)
-                        : cs.errorContainer.withValues(alpha: 0.7),
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        position.active
-                            ? Icons.check_circle_outline
-                            : Icons.block_outlined,
-                        size: 13,
-                        color: position.active
-                            ? cs.onPrimaryContainer
-                            : cs.onErrorContainer,
-                      ),
-                      const SizedBox(width: 4),
-                      Text(
-                        position.active
-                            ? l10n.positionActiveLabel
-                            : l10n.positionInactive,
-                        style: TextStyle(
-                          color: position.active
-                              ? cs.onPrimaryContainer
-                              : cs.onErrorContainer,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w600,
+                    const SizedBox(height: 6),
+                    Wrap(
+                      spacing: 8,
+                      children: [
+                        _Pill(
+                          text: l10n.positionStaffCount(position.staffCount),
+                          bg: cs.primaryContainer,
+                          fg: cs.onPrimaryContainer,
                         ),
-                      ),
-                    ],
-                  ),
+                        if (!position.active)
+                          _Pill(
+                            text: l10n.positionInactive,
+                            bg: cs.errorContainer,
+                            fg: cs.onErrorContainer,
+                          ),
+                      ],
+                    ),
+                  ],
                 ),
-              ],
-            ),
-          ],
+              ),
+              IconButton(
+                tooltip: l10n.editPosition,
+                icon: const Icon(Icons.edit_outlined),
+                onPressed: onEdit,
+              ),
+              IconButton(
+                tooltip: l10n.deletePosition,
+                icon: Icon(Icons.delete_outline, color: cs.error),
+                onPressed: onDelete,
+              ),
+            ],
+          ),
         ),
       ),
     );
   }
+}
+
+class _Pill extends StatelessWidget {
+  final String text;
+  final Color bg;
+  final Color fg;
+
+  const _Pill({required this.text, required this.bg, required this.fg});
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+    decoration: BoxDecoration(
+      color: bg,
+      borderRadius: BorderRadius.circular(8),
+    ),
+    child: Text(
+      text,
+      style: TextStyle(color: fg, fontSize: 11, fontWeight: FontWeight.w600),
+    ),
+  );
 }
 
 class _PositionFormDialog extends StatefulWidget {
@@ -430,233 +378,92 @@ class _PositionFormDialogState extends State<_PositionFormDialog> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final cs = theme.colorScheme;
-    final isEdit = widget.editing != null;
-    final border = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10),
-      borderSide: BorderSide(color: theme.dividerColor),
-    );
-    final focusedBorder = OutlineInputBorder(
-      borderRadius: BorderRadius.circular(10),
-      borderSide: BorderSide(color: cs.primary, width: 1.5),
-    );
+    final border = OutlineInputBorder(borderRadius: BorderRadius.circular(8));
 
-    return Dialog(
+    return AlertDialog(
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-      clipBehavior: Clip.antiAlias,
-      child: ConstrainedBox(
-        constraints: const BoxConstraints(maxWidth: 440),
-        child: SingleChildScrollView(
-          child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
-            child: Form(
-              key: _formKey,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  // ── Header ngắn gọn, có icon điểm nhấn ──────────────
-                  Row(
-                    children: [
-                      Container(
-                        width: 36,
-                        height: 36,
-                        decoration: BoxDecoration(
-                          color: cs.primaryContainer,
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: Icon(
-                          Icons.workspace_premium_rounded,
-                          color: cs.onPrimaryContainer,
-                          size: 20,
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                      Expanded(
-                        child: Text(
-                          isEdit ? l10n.editPosition : l10n.addPosition,
-                          style: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ),
-                      IconButton(
-                        visualDensity: VisualDensity.compact,
-                        icon: const Icon(Icons.close, size: 20),
-                        tooltip: l10n.cancel,
-                        onPressed:
-                            _saving ? null : () => Navigator.pop(context),
-                      ),
-                    ],
+      title: Text(
+        widget.editing == null ? l10n.addPosition : l10n.editPosition,
+      ),
+      content: SizedBox(
+        width: 420,
+        child: Form(
+          key: _formKey,
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextFormField(
+                  controller: _name,
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
+                    labelText: '${l10n.positionName} *',
+                    border: border,
                   ),
-                  const SizedBox(height: 16),
-
-                  // ── Input: Tên chức vụ ──────────────────────────────
-                  TextFormField(
-                    controller: _name,
-                    textInputAction: TextInputAction.next,
-                    decoration: InputDecoration(
-                      labelText: '${l10n.positionName} *',
-                      prefixIcon: Icon(Icons.badge_outlined,
-                          size: 18, color: cs.primary),
-                      border: border,
-                      enabledBorder: border,
-                      focusedBorder: focusedBorder,
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 12),
-                    ),
-                    validator: (v) => (v == null || v.trim().isEmpty)
-                        ? l10n.positionNameRequired
-                        : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? l10n.positionNameRequired
+                      : null,
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _code,
+                  textCapitalization: TextCapitalization.characters,
+                  textInputAction: TextInputAction.next,
+                  decoration: InputDecoration(
+                    labelText: '${l10n.positionCode} *',
+                    border: border,
                   ),
-
-                  const SizedBox(height: 12),
-
-                  // ── Input: Mã chức vụ ────────────────────────────────
-                  TextFormField(
-                    controller: _code,
-                    textCapitalization: TextCapitalization.characters,
-                    textInputAction: TextInputAction.next,
-                    style: const TextStyle(
-                      fontFamily: 'monospace',
-                      fontWeight: FontWeight.w600,
-                    ),
-                    decoration: InputDecoration(
-                      labelText: '${l10n.positionCode} *',
-                      hintText: l10n.positionCodeHint,
-                      prefixIcon: Icon(Icons.fingerprint_rounded,
-                          size: 18, color: cs.primary),
-                      border: border,
-                      enabledBorder: border,
-                      focusedBorder: focusedBorder,
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 12),
-                    ),
-                    validator: (v) => (v == null || v.trim().isEmpty)
-                        ? l10n.positionCodeRequired
-                        : null,
+                  validator: (v) => (v == null || v.trim().isEmpty)
+                      ? l10n.positionCodeRequired
+                      : null,
+                ),
+                const SizedBox(height: 12),
+                TextFormField(
+                  controller: _desc,
+                  maxLines: 3,
+                  decoration: InputDecoration(
+                    labelText: l10n.positionDescription,
+                    border: border,
                   ),
-
-                  const SizedBox(height: 12),
-
-                  // ── Input: Mô tả ────────────────────────────────────
-                  TextFormField(
-                    controller: _desc,
-                    maxLines: 2,
-                    decoration: InputDecoration(
-                      labelText: l10n.positionDescription,
-                      alignLabelWithHint: true,
-                      prefixIcon: Padding(
-                        padding: const EdgeInsets.only(bottom: 24),
-                        child: Icon(Icons.description_outlined,
-                            size: 18, color: cs.primary),
-                      ),
-                      border: border,
-                      enabledBorder: border,
-                      focusedBorder: focusedBorder,
-                      contentPadding: const EdgeInsets.symmetric(
-                          horizontal: 14, vertical: 12),
-                    ),
+                ),
+                if (widget.editing != null)
+                  SwitchListTile(
+                    contentPadding: EdgeInsets.zero,
+                    title: Text(l10n.positionActiveLabel),
+                    value: _active,
+                    onChanged: (v) => setState(() => _active = v),
                   ),
-
-                  // ── Trạng thái (Edit Mode) - Gọn gàng 1 dòng ───────
-                  if (isEdit) ...[
-                    const SizedBox(height: 12),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 4),
-                      decoration: BoxDecoration(
-                        color: cs.surfaceContainerHighest
-                            .withValues(alpha: 0.3),
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(
-                          color: theme.dividerColor.withValues(alpha: 0.5),
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Icon(
-                            _active
-                                ? Icons.check_circle_outline
-                                : Icons.block_outlined,
-                            size: 18,
-                            color: _active ? cs.primary : cs.error,
-                          ),
-                          const SizedBox(width: 8),
-                          Expanded(
-                            child: Text(
-                              _active
-                                  ? l10n.positionActiveLabel
-                                  : l10n.positionInactive,
-                              style: theme.textTheme.bodyMedium?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: _active ? cs.primary : cs.error,
-                              ),
-                            ),
-                          ),
-                          Switch(
-                            value: _active,
-                            onChanged: _saving
-                                ? null
-                                : (v) => setState(() => _active = v),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-
-                  const SizedBox(height: 18),
-                  Divider(
-                    height: 1,
-                    thickness: 0.5,
-                    color: theme.dividerColor.withValues(alpha: 0.6),
-                  ),
-                  const SizedBox(height: 14),
-
-                  // ── Action Buttons ──────────────────────────────────
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      OutlinedButton(
-                        onPressed:
-                            _saving ? null : () => Navigator.pop(context),
-                        style: OutlinedButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                        child: Text(l10n.cancel),
-                      ),
-                      const SizedBox(width: 10),
-                      FilledButton.icon(
-                        onPressed: _saving ? null : () => _submit(l10n),
-                        icon: _saving
-                            ? const SizedBox(
-                                width: 14,
-                                height: 14,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  color: Colors.white,
-                                ),
-                              )
-                            : const Icon(Icons.check_rounded, size: 16),
-                        label: Text(
-                            isEdit ? l10n.saveChanges : l10n.addPosition),
-                        style: FilledButton.styleFrom(
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+              ],
             ),
           ),
         ),
       ),
+      actions: [
+        TextButton(
+          onPressed: _saving ? null : () => Navigator.pop(context),
+          style: TextButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          onPressed: _saving ? null : () => _submit(l10n),
+          style: FilledButton.styleFrom(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+          ),
+          child: _saving
+              ? const SizedBox(
+                  width: 18,
+                  height: 18,
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                )
+              : Text(l10n.confirm),
+        ),
+      ],
     );
   }
 }

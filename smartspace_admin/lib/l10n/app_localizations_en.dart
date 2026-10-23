@@ -1056,4 +1056,120 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get routeManageDevices => 'Manage Devices';
+
+  @override
+  String get routeUserManagement => 'User Management';
+
+  @override
+  String get totalUsers => 'Total users';
+
+  @override
+  String get newUsers30Days => 'New users (30 days)';
+
+  @override
+  String get activeReporters30Days => 'Contributors (30 days)';
+
+  @override
+  String get reports30Days => 'Reports (30 days)';
+
+  @override
+  String percentOfUsers(String percent) {
+    return '$percent% of all users';
+  }
+
+  @override
+  String changeVsPrevious30Days(String change) {
+    return '$change vs previous 30 days';
+  }
+
+  @override
+  String get noPreviousPeriodData => 'No data for previous 30 days';
+
+  @override
+  String get registrationTrend => 'New registrations';
+
+  @override
+  String newUsersCount(int count) {
+    return '$count new users';
+  }
+
+  @override
+  String weekOf(String date) {
+    return 'Week of $date';
+  }
+
+  @override
+  String get topContributors => 'Top contributors';
+
+  @override
+  String get anonymousReportsExcluded => 'Anonymous reports are not counted';
+
+  @override
+  String reportCountLabel(int count) {
+    return '$count reports';
+  }
+
+  @override
+  String get reportsColumn => 'Reports';
+
+  @override
+  String get joinedDate => 'Joined';
+
+  @override
+  String joinedOn(String date) {
+    return 'Joined $date';
+  }
+
+  @override
+  String get sortBy => 'Sort by';
+
+  @override
+  String get sortNewest => 'Newest';
+
+  @override
+  String get sortOldest => 'Oldest';
+
+  @override
+  String get sortByName => 'Name (A–Z)';
+
+  @override
+  String get searchUsersHint => 'Search by name, email or phone';
+
+  @override
+  String get noUsersInSystem => 'No users yet';
+
+  @override
+  String get noUsersFound => 'No users match your search';
+
+  @override
+  String get userDetailTitle => 'User details';
+
+  @override
+  String get reportActivity => 'Report activity';
+
+  @override
+  String get noPublicReports => 'This user has no public reports yet';
+
+  @override
+  String get notProvided => 'Not provided';
+
+  @override
+  String get allUsersLoaded => 'All users loaded';
+
+  @override
+  String get loadMoreFailed => 'Couldn\'t load more users';
+
+  @override
+  String get statistics => 'Statistics';
+
+  @override
+  String get statisticsLoadFailed => 'Couldn\'t load statistics';
+
+  @override
+  String get closeAction => 'Close';
+
+  @override
+  String paginationSummary(int from, int to, int total) {
+    return '$from–$to of $total';
+  }
 }

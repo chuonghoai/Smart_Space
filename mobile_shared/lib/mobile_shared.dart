@@ -18,6 +18,7 @@ export 'core/notification/firebase_service.dart';
 export 'core/storage/secured_storage.dart';
 export 'core/storage/shared_preferences.dart';
 export 'core/theme/app_theme.dart';
+export 'core/theme/app_semantic_colors.dart';
 export 'core/toast/toast_service.dart';
 export 'util/device_info_util.dart';
 export 'core/websocket/websocket_service.dart';

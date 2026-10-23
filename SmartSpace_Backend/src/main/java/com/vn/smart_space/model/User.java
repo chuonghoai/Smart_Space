@@ -12,6 +12,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -32,6 +33,8 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @Table(name = "users", uniqueConstraints = {
         @jakarta.persistence.UniqueConstraint(columnNames = {"email", "role"})
+}, indexes = {
+        @Index(name = "idx_users_role_created_at", columnList = "role, created_at")
 })
 public class User extends AbstractEntity {
 
