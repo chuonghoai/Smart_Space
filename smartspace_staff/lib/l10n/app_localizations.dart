@@ -1315,6 +1315,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'An error occurred'**
   String get errorTitle;
+
+  /// No description provided for @provideEvidencePhotoWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Please attach at least 1 evidence photo before completing'**
+  String get provideEvidencePhotoWarning;
+
+  /// No description provided for @evidencePhotosRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution evidence photos *'**
+  String get evidencePhotosRequired;
 }
 
 class _AppLocalizationsDelegate

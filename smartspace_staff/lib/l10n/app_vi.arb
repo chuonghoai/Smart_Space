@@ -236,5 +236,7 @@
   "handlingCompletedSuccess": "Đã gửi thông tin xử lý thành công!",
   "gotIt": "Đã hiểu",
   "handlingProgressTitle": "Tiến độ gửi thông tin xử lý",
-  "errorTitle": "Đã xảy ra lỗi"
-}
+  "errorTitle": "Đã xảy ra lỗi",
+  "provideEvidencePhotoWarning": "Vui lòng đính kèm ít nhất 1 ảnh minh chứng để hoàn tất xử lý",
+  "evidencePhotosRequired": "Hình ảnh minh chứng xử lý *"
+}

@@ -636,4 +636,11 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get errorTitle => 'An error occurred';
+
+  @override
+  String get provideEvidencePhotoWarning =>
+      'Please attach at least 1 evidence photo before completing';
+
+  @override
+  String get evidencePhotosRequired => 'Resolution evidence photos *';
 }

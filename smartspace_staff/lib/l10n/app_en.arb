@@ -236,5 +236,7 @@
   "handlingCompletedSuccess": "Handling information submitted successfully!",
   "gotIt": "Got it",
   "handlingProgressTitle": "Handling Submission Progress",
-  "errorTitle": "An error occurred"
-}
+  "errorTitle": "An error occurred",
+  "provideEvidencePhotoWarning": "Please attach at least 1 evidence photo before completing",
+  "evidencePhotosRequired": "Resolution evidence photos *"
+}

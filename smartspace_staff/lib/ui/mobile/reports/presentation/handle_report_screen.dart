@@ -74,8 +74,8 @@ class _HandleReportScreenState extends ConsumerState<HandleReportScreen> {
     final l10n = AppLocalizations.of(context)!;
     final note = _noteController.text.trim();
 
-    if (note.isEmpty && _selectedImages.isEmpty) {
-      Toast.show(ToastType.warning, l10n.provideEvidenceOrNoteWarning);
+    if (_selectedImages.isEmpty) {
+      Toast.show(ToastType.warning, l10n.provideEvidencePhotoWarning);
       setState(() {});
       return;
     }
@@ -146,7 +146,7 @@ class _HandleReportScreenState extends ConsumerState<HandleReportScreen> {
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Text(
-                          l10n.evidencePhotos,
+                          l10n.evidencePhotosRequired,
                           style: theme.textTheme.titleMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                           ),
@@ -346,7 +346,7 @@ class _HandleReportScreenState extends ConsumerState<HandleReportScreen> {
                     ? l10n.submittingReport
                     : l10n.slideToComplete,
                 isLoading: _isSubmitting,
-                enabled: !_isSubmitting,
+                enabled: !_isSubmitting && _selectedImages.isNotEmpty,
                 onConfirmed: _handleSubmit,
               ),
             ),

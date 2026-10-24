@@ -635,4 +635,11 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get errorTitle => 'Đã xảy ra lỗi';
+
+  @override
+  String get provideEvidencePhotoWarning =>
+      'Vui lòng đính kèm ít nhất 1 ảnh minh chứng để hoàn tất xử lý';
+
+  @override
+  String get evidencePhotosRequired => 'Hình ảnh minh chứng xử lý *';
 }
