@@ -1076,4 +1076,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get resolvedAtLabel => 'Resolved At';
+
+  @override
+  String get citizenReviewUnresolved => 'Citizen feedback: Not resolved';
+
+  @override
+  String get citizenRating => 'Citizen Rating';
+
+  @override
+  String get citizenReviewReason => 'Reason for unresolved status';
+
+  @override
+  String get citizenReviewPhotos => 'Photos provided by citizen';
+
+  @override
+  String get reopenReportButton => 'Request Re-handling';
+
+  @override
+  String get reopenReportConfirmTitle => 'Request re-handling for this report?';
+
+  @override
+  String get reopenReportConfirmMessage =>
+      'The status will be changed back to \'Processing\' and the assigned staff will be notified to re-handle the issue.';
+
+  @override
+  String get reopenReportSuccess =>
+      'Report reopened to Processing and staff notified!';
+
+  @override
+  String get unsatisfactoryBannerTitle => 'Unsatisfactory Reports';
+
+  @override
+  String unsatisfactoryProcessedCountFormat(int count) {
+    return '$count unsatisfactory';
+  }
+
+  @override
+  String rehandlingProcessingCountFormat(int count) {
+    return '$count in progress';
+  }
+
+  @override
+  String get unsatisfactoryPendingTab => 'Pending Review';
+
+  @override
+  String get unsatisfactoryProcessingTab => 'In Progress';
+
+  @override
+  String get rehandlingBadge => 'Re-handling';
+
+  @override
+  String get routeUnsatisfactoryReports => 'Unsatisfactory Reports';
+
+  @override
+  String get noUnsatisfactoryPending => 'No reports pending review';
+
+  @override
+  String get noUnsatisfactoryProcessing => 'No reports being re-handled';
 }

@@ -74,4 +74,19 @@ public class Report extends AbstractEntity {
 
     @Column(name = "resolved_at")
     java.util.Date resolvedAt;
+
+    @Column(name = "is_review_resolved")
+    Boolean isReviewResolved;
+
+    @Column(name = "rating")
+    Integer rating;
+
+    @Column(name = "review_note", columnDefinition = "TEXT")
+    String reviewNote;
+
+    @Column(name = "review_image_urls", columnDefinition = "TEXT")
+    String reviewImageUrls;
+
+    @Column(name = "reviewed_at")
+    java.util.Date reviewedAt;
 }

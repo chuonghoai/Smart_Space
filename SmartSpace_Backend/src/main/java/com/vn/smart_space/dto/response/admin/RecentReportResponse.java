@@ -38,4 +38,6 @@ public class RecentReportResponse {
 
     @JsonProperty("is_anonymous")
     Boolean isAnonymous;
+
+    Boolean isReviewResolved;
 }

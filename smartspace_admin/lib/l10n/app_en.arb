@@ -405,5 +405,36 @@
       }
     }
   },
-  "resolvedAtLabel": "Resolved At"
+  "resolvedAtLabel": "Resolved At",
+  "citizenReviewUnresolved": "Citizen feedback: Not resolved",
+  "citizenRating": "Citizen Rating",
+  "citizenReviewReason": "Reason for unresolved status",
+  "citizenReviewPhotos": "Photos provided by citizen",
+  "reopenReportButton": "Request Re-handling",
+  "reopenReportConfirmTitle": "Request re-handling for this report?",
+  "reopenReportConfirmMessage": "The status will be changed back to 'Processing' and the assigned staff will be notified to re-handle the issue.",
+  "reopenReportSuccess": "Report reopened to Processing and staff notified!",
+  "unsatisfactoryBannerTitle": "Unsatisfactory Reports",
+  "unsatisfactoryProcessedCountFormat": "{count} unsatisfactory",
+  "@unsatisfactoryProcessedCountFormat": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rehandlingProcessingCountFormat": "{count} in progress",
+  "@rehandlingProcessingCountFormat": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unsatisfactoryPendingTab": "Pending Review",
+  "unsatisfactoryProcessingTab": "In Progress",
+  "rehandlingBadge": "Re-handling",
+  "routeUnsatisfactoryReports": "Unsatisfactory Reports",
+  "noUnsatisfactoryPending": "No reports pending review",
+  "noUnsatisfactoryProcessing": "No reports being re-handled"
 }

@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smartspace_admin/features/home/models/recent_report_model.dart';
 import '../../home/application/home_providers.dart';
 import '../data/report_repository.dart';
 import '../models/report_detail_model.dart';
@@ -100,6 +101,31 @@ class ReportAssignNotifier extends StateNotifier<ReportAssignState> {
     }
   }
 }
+
+final unsatisfactoryReportsProvider = AsyncNotifierProviderFamily<UnsatisfactoryReportsNotifier, List<RecentReportModel>, String>(
+  () => UnsatisfactoryReportsNotifier(),
+);
+
+class UnsatisfactoryReportsNotifier extends FamilyAsyncNotifier<List<RecentReportModel>, String> {
+  @override
+  Future<List<RecentReportModel>> build(String arg) async {
+    return _fetch(arg);
+  }
+
+  Future<List<RecentReportModel>> _fetch(String tab) async {
+    final response = await reportRepository.getUnsatisfactoryReports(tab);
+    if (response.success && response.data != null) {
+      return response.data!;
+    }
+    throw Exception(response.message);
+  }
+
+  Future<void> refresh() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() => _fetch(arg));
+  }
+}
+
 
 final reportAssignProvider = StateNotifierProvider<ReportAssignNotifier, ReportAssignState>((ref) {
       return ReportAssignNotifier(ref);

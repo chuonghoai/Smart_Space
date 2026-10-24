@@ -36,6 +36,22 @@ class ReportService {
   Future<ApiResponse<ReportFeedPage>> getFeed({String? status, int page = 1, int size = 10, double? lat, double? lng}) {
     return reportRepo.getFeed(status: status, page: page, size: size, lat: lat, lng: lng);
   }
+
+  Future<ApiResponse<ReportDetailModel>> submitReview(
+    String reportId, {
+    required bool isResolved,
+    int? rating,
+    String? reason,
+    List<String>? imageUrls,
+  }) {
+    return reportRepo.submitReview(
+      reportId,
+      isResolved: isResolved,
+      rating: rating,
+      reason: reason,
+      imageUrls: imageUrls,
+    );
+  }
 }
 
 final reportService = ReportService(

@@ -147,14 +147,22 @@ class HandleReportBackgroundService extends ChangeNotifier {
 
         // Cancel notification on completion per user requirement
         await _plugin.cancel(id: notifId);
-        onSuccess?.call();
+        try {
+          onSuccess?.call();
+        } catch (e, stackTrace) {
+          debugPrint('[HandleReportService] Error executing onSuccess callback: $e\n$stackTrace');
+        }
       } else {
         task.status = HandleTaskStatus.error;
         task.errorMessage = response.message;
         notifyListeners();
 
         await _plugin.cancel(id: notifId);
-        onError?.call(response.message);
+        try {
+          onError?.call(response.message);
+        } catch (e, stackTrace) {
+          debugPrint('[HandleReportService] Error executing onError callback: $e\n$stackTrace');
+        }
       }
     } catch (e) {
       task.status = HandleTaskStatus.error;
@@ -162,7 +170,11 @@ class HandleReportBackgroundService extends ChangeNotifier {
       notifyListeners();
 
       await _plugin.cancel(id: notifId);
-      onError?.call(e.toString());
+      try {
+        onError?.call(e.toString());
+      } catch (err, stackTrace) {
+        debugPrint('[HandleReportService] Error executing onError callback in catch block: $err\n$stackTrace');
+      }
     }
   }
 }

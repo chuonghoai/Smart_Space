@@ -74,4 +74,19 @@ public class ReportDetailResponse {
 
     @JsonProperty("resolved_at")
     private String resolvedAt;
+
+    @JsonProperty("is_review_resolved")
+    private Boolean isReviewResolved;
+
+    @JsonProperty("rating")
+    private Integer rating;
+
+    @JsonProperty("review_note")
+    private String reviewNote;
+
+    @JsonProperty("review_image_urls")
+    private List<String> reviewImageUrls;
+
+    @JsonProperty("reviewed_at")
+    private String reviewedAt;
 }

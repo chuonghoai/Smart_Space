@@ -1327,6 +1327,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Resolution evidence photos *'**
   String get evidencePhotosRequired;
+
+  /// No description provided for @rehandling.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-handling'**
+  String get rehandling;
+
+  /// No description provided for @rehandlingBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-handling'**
+  String get rehandlingBadge;
+
+  /// No description provided for @rehandlingNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'This report was rated unsatisfactory and is being re-handled'**
+  String get rehandlingNotice;
 }
 
 class _AppLocalizationsDelegate

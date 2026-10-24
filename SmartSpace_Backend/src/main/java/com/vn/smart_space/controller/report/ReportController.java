@@ -2,6 +2,7 @@ package com.vn.smart_space.controller.report;
 
 import com.vn.smart_space.dto.request.report.ReportCompleteRequest;
 import com.vn.smart_space.dto.request.report.ReportCreateRequest;
+import com.vn.smart_space.dto.request.report.ReportReviewRequest;
 import org.springframework.web.bind.annotation.RequestBody;
 
 import com.vn.smart_space.dto.ApiResponse;
@@ -109,5 +110,15 @@ public class ReportController {
         String staffId = jwt != null && jwt.hasClaim("userId") ? jwt.getClaim("userId").toString() : null;
         return ResponseEntity.ok(ApiResponse.success("report.complete.success",
                 reportService.completeReport(id, request, staffId)));
+    }
+
+    @PostMapping("/{id}/review")
+    public ResponseEntity<ApiResponse> reviewReport(
+            @PathVariable String id,
+            @RequestBody ReportReviewRequest request,
+            @AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt != null && jwt.hasClaim("userId") ? jwt.getClaim("userId").toString() : null;
+        return ResponseEntity.ok(ApiResponse.success("report.review.success",
+                reportService.reviewReport(id, request, userId)));
     }
 }

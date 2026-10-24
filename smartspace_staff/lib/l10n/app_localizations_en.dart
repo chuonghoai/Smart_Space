@@ -643,4 +643,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get evidencePhotosRequired => 'Resolution evidence photos *';
+
+  @override
+  String get rehandling => 'Re-handling';
+
+  @override
+  String get rehandlingBadge => 'Re-handling';
+
+  @override
+  String get rehandlingNotice =>
+      'This report was rated unsatisfactory and is being re-handled';
 }

@@ -20,4 +20,5 @@ class RouterPath {
   static String get search => RouteName.search.path;
   static String get notifications => RouteName.notifications.path;
   static String get manageDevices => RouteName.manageDevices.path;
+  static String get unsatisfactoryReports => RouteName.unsatisfactoryReports.path;
 }

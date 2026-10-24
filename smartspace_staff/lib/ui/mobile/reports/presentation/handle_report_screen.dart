@@ -10,6 +10,7 @@ import 'package:mobile_shared/core/toast/toast_service.dart';
 import 'package:smartspace_staff/features/reports/providers/report_detail_provider.dart';
 import 'package:smartspace_staff/features/reports/services/handle_report_background_service.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
+import 'package:smartspace_staff/ui/mobile/home/home_controller.dart';
 import 'package:smartspace_staff/ui/mobile/reports/presentation/widgets/slide_to_confirm_button.dart';
 
 class HandleReportScreen extends ConsumerStatefulWidget {
@@ -98,6 +99,8 @@ class _HandleReportScreenState extends ConsumerState<HandleReportScreen> {
         );
       }
 
+      final container = ProviderScope.containerOf(context);
+
       // 2. Start background upload and report completion
       handleReportBackgroundService.startHandlingReport(
         reportId: widget.reportId,
@@ -105,7 +108,8 @@ class _HandleReportScreenState extends ConsumerState<HandleReportScreen> {
         images: imageBytesList,
         fileNames: fileNames,
         onSuccess: () {
-          ref.invalidate(reportDetailProvider(widget.reportId));
+          container.invalidate(reportDetailProvider(widget.reportId));
+          container.read(homeControllerProvider.notifier).manualRefresh();
         },
       );
 

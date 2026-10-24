@@ -36,11 +36,12 @@ class _HandlingProgressDialogState extends State<HandlingProgressDialog> {
 
         if (isCompleted && !_autoDismissTriggered) {
           _autoDismissTriggered = true;
-          final navigator = Navigator.of(context);
-          Future.delayed(const Duration(milliseconds: 1400), () {
-            if (mounted && navigator.canPop()) {
-              navigator.pop();
-            }
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            Future.delayed(const Duration(milliseconds: 1400), () {
+              if (mounted) {
+                Navigator.of(context).maybePop();
+              }
+            });
           });
         }
 

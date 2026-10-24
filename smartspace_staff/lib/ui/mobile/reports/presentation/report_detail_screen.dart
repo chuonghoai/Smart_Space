@@ -289,6 +289,47 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Rehandling Notice Banner (only when rehandling is requested)
+                        if (report.status == ReportStatus.processing && report.isReviewResolved == false) ...[
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(12),
+                            margin: const EdgeInsets.only(bottom: 16),
+                            decoration: BoxDecoration(
+                              color: Colors.deepOrange.withOpacity(0.12),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.deepOrange.withOpacity(0.35)),
+                            ),
+                            child: Row(
+                              children: [
+                                const Icon(Icons.replay_rounded, color: Colors.deepOrange, size: 24),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        l10n.rehandlingBadge,
+                                        style: theme.textTheme.labelMedium?.copyWith(
+                                          color: Colors.deepOrange,
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        l10n.rehandlingNotice,
+                                        style: theme.textTheme.bodySmall?.copyWith(
+                                          color: theme.colorScheme.onSurface,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+
                         // Status & Severity Dual Cards
                         Row(
                           children: [
@@ -324,39 +365,66 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                                       ],
                                     ),
                                     const SizedBox(height: 8),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                                      decoration: BoxDecoration(
-                                        color: report.status.getColor(context).withOpacity(0.12),
-                                        borderRadius: BorderRadius.circular(20),
-                                        border: Border.all(color: report.status.getColor(context).withOpacity(0.35)),
-                                      ),
-                                      child: Row(
-                                        mainAxisSize: MainAxisSize.min,
-                                        children: [
-                                          Container(
-                                            width: 7,
-                                            height: 7,
-                                            decoration: BoxDecoration(
-                                              color: report.status.getColor(context),
-                                              shape: BoxShape.circle,
-                                            ),
+                                    Wrap(
+                                      spacing: 6,
+                                      runSpacing: 4,
+                                      crossAxisAlignment: WrapCrossAlignment.center,
+                                      children: [
+                                        Container(
+                                          padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                                          decoration: BoxDecoration(
+                                            color: report.status.getColor(context).withOpacity(0.12),
+                                            borderRadius: BorderRadius.circular(20),
+                                            border: Border.all(color: report.status.getColor(context).withOpacity(0.35)),
                                           ),
-                                          const SizedBox(width: 6),
-                                          Flexible(
-                                            child: Text(
-                                              report.status.getLocalizedText(l10n),
-                                              style: TextStyle(
-                                                color: report.status.getColor(context),
-                                                fontWeight: FontWeight.bold,
-                                                fontSize: 12,
+                                          child: Row(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Container(
+                                                width: 7,
+                                                height: 7,
+                                                decoration: BoxDecoration(
+                                                  color: report.status.getColor(context),
+                                                  shape: BoxShape.circle,
+                                                ),
                                               ),
-                                              maxLines: 1,
-                                              overflow: TextOverflow.ellipsis,
+                                              const SizedBox(width: 6),
+                                              Text(
+                                                report.status.getLocalizedText(l10n),
+                                                style: TextStyle(
+                                                  color: report.status.getColor(context),
+                                                  fontWeight: FontWeight.bold,
+                                                  fontSize: 12,
+                                                ),
+                                              ),
+                                            ],
+                                          ),
+                                        ),
+                                        if (report.status == ReportStatus.processing && report.isReviewResolved == false)
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                                            decoration: BoxDecoration(
+                                              color: Colors.deepOrange.withOpacity(0.12),
+                                              borderRadius: BorderRadius.circular(20),
+                                              border: Border.all(color: Colors.deepOrange.withOpacity(0.4)),
+                                            ),
+                                            child: Row(
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                const Icon(Icons.replay_rounded, size: 12, color: Colors.deepOrange),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  l10n.rehandlingBadge,
+                                                  style: const TextStyle(
+                                                    color: Colors.deepOrange,
+                                                    fontWeight: FontWeight.bold,
+                                                    fontSize: 11,
+                                                  ),
+                                                ),
+                                              ],
                                             ),
                                           ),
-                                        ],
-                                      ),
+                                      ],
                                     ),
                                   ],
                                 ),

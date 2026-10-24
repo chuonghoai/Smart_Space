@@ -120,7 +120,7 @@ class MobileHomeScreen extends ConsumerWidget {
                         ),
                         TextButton(
                           onPressed: () {
-                            // // TODO route to all recent reports
+                            context.push(RouterPath.myReports);
                           },
                           child: Text('${l10n.viewAll} \u2192'),
                         ),

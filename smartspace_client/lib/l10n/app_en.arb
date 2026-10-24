@@ -301,5 +301,25 @@
         "type": "int"
       }
     }
-  }
+  },
+  "reviewReport": "Review",
+  "reviewQuestion": "Has your report been resolved?",
+  "reviewResolvedOption": "Resolved",
+  "reviewUnresolvedOption": "Not resolved",
+  "rateStaffTitle": "Rate handling staff",
+  "rateStaffSubtitle": "Please rate the staff member (1 - 5 stars)",
+  "unresolvedReasonLabel": "Reason for unresolved",
+  "unresolvedReasonHint": "Please describe why you feel this report is not resolved...",
+  "attachEvidencePhotos": "Evidence photos (at least 1 photo required)",
+  "attachEvidencePhotoHint": "At least 1 photo and description required to submit",
+  "submitReview": "Submit review",
+  "submittingReview": "Submitting review...",
+  "reviewSuccess": "Review submitted successfully!",
+  "unresolvedReviewTitle": "Unresolved feedback",
+  "reviewRatingLabel": "Citizen rating",
+  "cameraOption": "Camera",
+  "galleryOption": "Gallery",
+  "closeButton": "Close",
+  "rehandling": "Re-handling",
+  "unsatisfactoryBadge": "Unsatisfactory resolution"
 }

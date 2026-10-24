@@ -398,5 +398,36 @@
       }
     }
   },
-  "resolvedAtLabel": "Thời gian hoàn thành"
-}
+  "resolvedAtLabel": "Thời gian hoàn thành",
+  "citizenReviewUnresolved": "Người dân phản hồi: Chưa được xử lý",
+  "citizenRating": "Đánh giá",
+  "citizenReviewReason": "Lý do chưa xử lý thỏa đáng",
+  "citizenReviewPhotos": "Hình ảnh người dân cung cấp",
+  "reopenReportButton": "Yêu cầu xử lý lại",
+  "reopenReportConfirmTitle": "Yêu cầu xử lý lại phản ánh?",
+  "reopenReportConfirmMessage": "Trạng thái phản ánh sẽ được chuyển về 'Đang xử lý' và gửi thông báo yêu cầu nhân viên phụ trách thực hiện xử lý lại.",
+  "reopenReportSuccess": "Đã chuyển trạng thái về Đang xử lý và thông báo cho nhân viên!",
+  "unsatisfactoryBannerTitle": "Phản ánh chưa thỏa đáng",
+  "unsatisfactoryProcessedCountFormat": "{count} chưa thỏa đáng",
+  "@unsatisfactoryProcessedCountFormat": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rehandlingProcessingCountFormat": "{count} đang xử lý",
+  "@rehandlingProcessingCountFormat": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unsatisfactoryPendingTab": "Chờ xử lý",
+  "unsatisfactoryProcessingTab": "Đang xử lý",
+  "rehandlingBadge": "Xử lý lại",
+  "routeUnsatisfactoryReports": "Phản ánh chưa thỏa đáng",
+  "noUnsatisfactoryPending": "Không có phản ánh nào chờ xử lý",
+  "noUnsatisfactoryProcessing": "Không có phản ánh nào đang xử lý lại"
+}

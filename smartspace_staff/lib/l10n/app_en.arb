@@ -238,5 +238,8 @@
   "handlingProgressTitle": "Handling Submission Progress",
   "errorTitle": "An error occurred",
   "provideEvidencePhotoWarning": "Please attach at least 1 evidence photo before completing",
-  "evidencePhotosRequired": "Resolution evidence photos *"
+  "evidencePhotosRequired": "Resolution evidence photos *",
+  "rehandling": "Re-handling",
+  "rehandlingBadge": "Re-handling",
+  "rehandlingNotice": "This report was rated unsatisfactory and is being re-handled"
 }

@@ -2179,6 +2179,108 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Resolved At'**
   String get resolvedAtLabel;
+
+  /// No description provided for @citizenReviewUnresolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Citizen feedback: Not resolved'**
+  String get citizenReviewUnresolved;
+
+  /// No description provided for @citizenRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Citizen Rating'**
+  String get citizenRating;
+
+  /// No description provided for @citizenReviewReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for unresolved status'**
+  String get citizenReviewReason;
+
+  /// No description provided for @citizenReviewPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos provided by citizen'**
+  String get citizenReviewPhotos;
+
+  /// No description provided for @reopenReportButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Re-handling'**
+  String get reopenReportButton;
+
+  /// No description provided for @reopenReportConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request re-handling for this report?'**
+  String get reopenReportConfirmTitle;
+
+  /// No description provided for @reopenReportConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The status will be changed back to \'Processing\' and the assigned staff will be notified to re-handle the issue.'**
+  String get reopenReportConfirmMessage;
+
+  /// No description provided for @reopenReportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Report reopened to Processing and staff notified!'**
+  String get reopenReportSuccess;
+
+  /// No description provided for @unsatisfactoryBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsatisfactory Reports'**
+  String get unsatisfactoryBannerTitle;
+
+  /// No description provided for @unsatisfactoryProcessedCountFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} unsatisfactory'**
+  String unsatisfactoryProcessedCountFormat(int count);
+
+  /// No description provided for @rehandlingProcessingCountFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} in progress'**
+  String rehandlingProcessingCountFormat(int count);
+
+  /// No description provided for @unsatisfactoryPendingTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Review'**
+  String get unsatisfactoryPendingTab;
+
+  /// No description provided for @unsatisfactoryProcessingTab.
+  ///
+  /// In en, this message translates to:
+  /// **'In Progress'**
+  String get unsatisfactoryProcessingTab;
+
+  /// No description provided for @rehandlingBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-handling'**
+  String get rehandlingBadge;
+
+  /// No description provided for @routeUnsatisfactoryReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsatisfactory Reports'**
+  String get routeUnsatisfactoryReports;
+
+  /// No description provided for @noUnsatisfactoryPending.
+  ///
+  /// In en, this message translates to:
+  /// **'No reports pending review'**
+  String get noUnsatisfactoryPending;
+
+  /// No description provided for @noUnsatisfactoryProcessing.
+  ///
+  /// In en, this message translates to:
+  /// **'No reports being re-handled'**
+  String get noUnsatisfactoryProcessing;
 }
 
 class _AppLocalizationsDelegate

@@ -1073,4 +1073,62 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get resolvedAtLabel => 'Thời gian hoàn thành';
+
+  @override
+  String get citizenReviewUnresolved => 'Người dân phản hồi: Chưa được xử lý';
+
+  @override
+  String get citizenRating => 'Đánh giá';
+
+  @override
+  String get citizenReviewReason => 'Lý do chưa xử lý thỏa đáng';
+
+  @override
+  String get citizenReviewPhotos => 'Hình ảnh người dân cung cấp';
+
+  @override
+  String get reopenReportButton => 'Yêu cầu xử lý lại';
+
+  @override
+  String get reopenReportConfirmTitle => 'Yêu cầu xử lý lại phản ánh?';
+
+  @override
+  String get reopenReportConfirmMessage =>
+      'Trạng thái phản ánh sẽ được chuyển về \'Đang xử lý\' và gửi thông báo yêu cầu nhân viên phụ trách thực hiện xử lý lại.';
+
+  @override
+  String get reopenReportSuccess =>
+      'Đã chuyển trạng thái về Đang xử lý và thông báo cho nhân viên!';
+
+  @override
+  String get unsatisfactoryBannerTitle => 'Phản ánh chưa thỏa đáng';
+
+  @override
+  String unsatisfactoryProcessedCountFormat(int count) {
+    return '$count chưa thỏa đáng';
+  }
+
+  @override
+  String rehandlingProcessingCountFormat(int count) {
+    return '$count đang xử lý';
+  }
+
+  @override
+  String get unsatisfactoryPendingTab => 'Chờ xử lý';
+
+  @override
+  String get unsatisfactoryProcessingTab => 'Đang xử lý';
+
+  @override
+  String get rehandlingBadge => 'Xử lý lại';
+
+  @override
+  String get routeUnsatisfactoryReports => 'Phản ánh chưa thỏa đáng';
+
+  @override
+  String get noUnsatisfactoryPending => 'Không có phản ánh nào chờ xử lý';
+
+  @override
+  String get noUnsatisfactoryProcessing =>
+      'Không có phản ánh nào đang xử lý lại';
 }

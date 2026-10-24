@@ -25,6 +25,7 @@ class ReportDetailModel extends ReportModel {
     super.userAvatarUrl,
     required super.severity,
     required super.isAnonymous,
+    super.isReviewResolved,
 
     required this.imageUrls,
     this.address,
@@ -83,6 +84,7 @@ class ReportDetailModel extends ReportModel {
       resolvedAt: json['resolved_at'] != null
           ? DateTime.tryParse(json['resolved_at'].toString())
           : null,
+      isReviewResolved: json['isReviewResolved'] as bool? ?? json['is_review_resolved'] as bool?,
     );
   }
 

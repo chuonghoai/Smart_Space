@@ -173,16 +173,16 @@ class MobileHomeScreen extends ConsumerWidget {
                             context,
                             controller,
                             state,
-                            'pending',
-                            l10n.reportStatusPending,
+                            'processing',
+                            l10n.reportStatusProcessing,
                           ),
                           const SizedBox(width: 8),
                           _buildFilterChip(
                             context,
                             controller,
                             state,
-                            'processing',
-                            l10n.reportStatusProcessing,
+                            'rehandling',
+                            l10n.rehandling,
                           ),
                           const SizedBox(width: 8),
                           _buildFilterChip(
@@ -292,18 +292,6 @@ class MobileHomeScreen extends ConsumerWidget {
           ),
         ),
         _StatCard(
-          title: l10n.reportStatusPending,
-          count: stats.pending,
-          icon: Icons.hourglass_empty,
-          color: Colors.orange,
-          onTap: () => context.push(
-            Uri(
-              path: RouterPath.allReports,
-              queryParameters: {'filter': 'pending'},
-            ).toString(),
-          ),
-        ),
-        _StatCard(
           title: l10n.reportStatusProcessing,
           count: stats.processing,
           icon: Icons.autorenew,
@@ -324,6 +312,18 @@ class MobileHomeScreen extends ConsumerWidget {
             Uri(
               path: RouterPath.allReports,
               queryParameters: {'filter': 'resolved'},
+            ).toString(),
+          ),
+        ),
+        _StatCard(
+          title: l10n.rehandling,
+          count: stats.rehandling,
+          icon: Icons.replay_rounded,
+          color: Colors.deepOrange,
+          onTap: () => context.push(
+            Uri(
+              path: RouterPath.allReports,
+              queryParameters: {'filter': 'rehandling'},
             ).toString(),
           ),
         ),
@@ -657,6 +657,34 @@ class _ReportListItem extends StatelessWidget {
                         ),
                       ),
                       const SizedBox(width: 8),
+                      if (report.status == ReportStatus.processing && report.isReviewResolved == false) ...[
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.deepOrange.withOpacity(0.12),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: Colors.deepOrange.withOpacity(0.35)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              const Icon(Icons.replay_rounded, size: 12, color: Colors.deepOrange),
+                              const SizedBox(width: 4),
+                              Text(
+                                l10n.rehandlingBadge,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: Colors.deepOrange,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                      ],
                       if (isNew)
                         Container(
                           padding: const EdgeInsets.symmetric(

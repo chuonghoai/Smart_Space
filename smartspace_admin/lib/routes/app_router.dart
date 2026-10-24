@@ -7,6 +7,7 @@ import 'package:smartspace_admin/ui/screen/home/admin_home_screen.dart';
 import 'package:smartspace_admin/ui/screen/reports/admin_report_detail_screen.dart';
 import 'package:smartspace_admin/ui/screen/reports/report_dashboard_screen.dart';
 import 'package:smartspace_admin/ui/screen/reports/report_list_screen.dart';
+import 'package:smartspace_admin/ui/screen/reports/unsatisfactory_reports_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/change_password_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/edit_profile_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/settings_screen.dart';
@@ -42,6 +43,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.forgotPassword,
       builder: (context, state) => const AdminForgotPasswordScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.unsatisfactoryReports,
+      builder: (context, state) => const UnsatisfactoryReportsScreen(),
     ),
     GoRoute(
       path: RouterPath.reportDetail,

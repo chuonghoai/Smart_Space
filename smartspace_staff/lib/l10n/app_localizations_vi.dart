@@ -642,4 +642,14 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get evidencePhotosRequired => 'Hình ảnh minh chứng xử lý *';
+
+  @override
+  String get rehandling => 'Xử lý lại';
+
+  @override
+  String get rehandlingBadge => 'Xử lý lại';
+
+  @override
+  String get rehandlingNotice =>
+      'Phản ánh này được đánh giá chưa thỏa đáng và đang được xử lý lại';
 }
