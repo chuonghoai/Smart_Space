@@ -1131,4 +1131,142 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get noUnsatisfactoryProcessing =>
       'Không có phản ánh nào đang xử lý lại';
+
+  @override
+  String get manageNews => 'Quản lý tin tức';
+
+  @override
+  String get quickAccess => 'Truy cập nhanh';
+
+  @override
+  String get emptyNewsTitle => 'Chưa có tin tức nào';
+
+  @override
+  String get emptyNewsDescription =>
+      'Hiện tại chưa có tin tức nào được đăng tải. Hãy tạo tin tức mới để thông báo tới cộng đồng.';
+
+  @override
+  String get createNewNews => 'Tạo tin tức mới';
+
+  @override
+  String get editNews => 'Chỉnh sửa tin tức';
+
+  @override
+  String get newsTitle => 'Tiêu đề tin tức';
+
+  @override
+  String get newsTitleHint => 'Nhập tiêu đề tin tức...';
+
+  @override
+  String get newsTitleRequired => 'Vui lòng nhập tiêu đề tin tức';
+
+  @override
+  String get newsContent => 'Nội dung tin tức';
+
+  @override
+  String get newsContentHint => 'Nhập nội dung bài viết...';
+
+  @override
+  String get newsContentRequired => 'Vui lòng nhập nội dung tin tức';
+
+  @override
+  String get newsImages => 'Hình ảnh đính kèm';
+
+  @override
+  String get addImages => 'Thêm hình ảnh';
+
+  @override
+  String get preview => 'Xem trước';
+
+  @override
+  String get editor => 'Soạn thảo';
+
+  @override
+  String get newsDetail => 'Chi tiết tin tức';
+
+  @override
+  String get deleteNews => 'Xóa tin tức';
+
+  @override
+  String get confirmDeleteNewsTitle => 'Xác nhận xóa tin tức';
+
+  @override
+  String get confirmDeleteNews =>
+      'Bạn có chắc chắn muốn xóa tin tức này không? Thao tác này không thể hoàn tác.';
+
+  @override
+  String get deleteNewsSuccess => 'Xóa tin tức thành công';
+
+  @override
+  String get createNewsSuccess => 'Đăng tin tức thành công';
+
+  @override
+  String get updateNewsSuccess => 'Cập nhật tin tức thành công';
+
+  @override
+  String get newsAuthor => 'Người đăng';
+
+  @override
+  String get newsCreatedDate => 'Ngày đăng';
+
+  @override
+  String get newsCreatedTime => 'Thời gian';
+
+  @override
+  String get routeNewsManagement => 'Quản lý tin tức';
+
+  @override
+  String get routeCreateNews => 'Tạo tin tức';
+
+  @override
+  String get routeNewsDetail => 'Chi tiết tin tức';
+
+  @override
+  String get routeEditNews => 'Chỉnh sửa tin tức';
+
+  @override
+  String get formatBold => 'In đậm';
+
+  @override
+  String get formatItalic => 'In nghiêng';
+
+  @override
+  String get formatHeading => 'Tiêu đề';
+
+  @override
+  String get formatBulletList => 'Danh sách';
+
+  @override
+  String get formatNumberedList => 'Đánh số';
+
+  @override
+  String get formatQuote => 'Trích dẫn';
+
+  @override
+  String get formatCode => 'Mã nguồn';
+
+  @override
+  String get sendNotification => 'Gửi thông báo';
+
+  @override
+  String get sendNotificationSubtitle =>
+      'Phát thông báo đẩy tới người dùng khi tin tức được tạo';
+
+  @override
+  String get notificationTarget => 'Đối tượng nhận thông báo';
+
+  @override
+  String get targetAll => 'Tất cả';
+
+  @override
+  String get targetAdmin => 'Quản trị viên';
+
+  @override
+  String get targetStaff => 'Nhân viên';
+
+  @override
+  String get targetClient => 'Khách hàng';
+
+  @override
+  String get livePreview => 'Bản xem trước trực tiếp';
 }

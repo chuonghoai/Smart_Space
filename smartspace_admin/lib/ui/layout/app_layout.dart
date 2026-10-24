@@ -10,12 +10,14 @@ class AppLayout extends StatefulWidget {
   final Widget child;
   final PreferredSizeWidget? customAppBar;
   final bool showDrawer;
+  final Widget? floatingActionButton;
 
   const AppLayout({
     super.key,
     required this.child,
     this.customAppBar,
     this.showDrawer = true,
+    this.floatingActionButton,
   });
 
   @override
@@ -36,6 +38,7 @@ class _AppLayoutState extends State<AppLayout>
       return Scaffold(
         appBar: widget.customAppBar ?? const TopBar(),
         drawer: widget.showDrawer ? const Sidebar() : null,
+        floatingActionButton: widget.floatingActionButton,
         body: widget.child,
       );
     }
@@ -46,6 +49,7 @@ class _AppLayoutState extends State<AppLayout>
         _sidebarExpanded ? _expandedWidth : _collapsedWidth;
 
     return Scaffold(
+      floatingActionButton: widget.floatingActionButton,
       body: Row(
         children: [
           // Fixed Sidebar

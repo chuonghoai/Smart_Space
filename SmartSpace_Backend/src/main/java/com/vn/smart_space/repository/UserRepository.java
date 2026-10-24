@@ -27,6 +27,8 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     List<User> findByRole(ERole role);
 
+    List<User> findByRoleIn(java.util.Collection<ERole> roles);
+
     // Search and Filter Staff
     @Query(value = "SELECT u FROM User u LEFT JOIN FETCH u.position WHERE u.role = :role " +
             "AND (:status IS NULL OR u.status = :status) " +
