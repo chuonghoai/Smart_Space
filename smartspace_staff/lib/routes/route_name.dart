@@ -96,6 +96,13 @@ class RouteName {
     priority: 4,
   );
 
+  static const handleReport = AppRouteInfo(
+    path: '/reports/:id/handle',
+    nameKey: 'routeHandleReport',
+    icon: Icons.assignment_turned_in_outlined,
+    isHiddenInSearch: true,
+  );
+
   static const List<AppRouteInfo> allRoutes = [
     splash,
     login,
@@ -103,6 +110,7 @@ class RouteName {
     notifications,
     settings,
     reportDetail,
+    handleReport,
     search,
     allReports,
     map,

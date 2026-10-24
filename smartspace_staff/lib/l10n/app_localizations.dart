@@ -1189,6 +1189,132 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Refresh'**
   String get refresh;
+
+  /// No description provided for @handleReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Handle Report'**
+  String get handleReport;
+
+  /// No description provided for @processReportAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Process'**
+  String get processReportAction;
+
+  /// No description provided for @routeHandleReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Handle Report'**
+  String get routeHandleReport;
+
+  /// No description provided for @evidencePhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence Photos'**
+  String get evidencePhotos;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take Photo'**
+  String get takePhoto;
+
+  /// No description provided for @chooseFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get chooseFromGallery;
+
+  /// No description provided for @resolutionNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution Note'**
+  String get resolutionNote;
+
+  /// No description provided for @resolutionNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe handling results or notes...'**
+  String get resolutionNoteHint;
+
+  /// No description provided for @slideToComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Slide to complete'**
+  String get slideToComplete;
+
+  /// No description provided for @submittingReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting...'**
+  String get submittingReport;
+
+  /// No description provided for @reportProcessedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Report resolved successfully!'**
+  String get reportProcessedSuccess;
+
+  /// No description provided for @provideEvidenceOrNoteWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Please attach at least 1 evidence photo or enter a note'**
+  String get provideEvidenceOrNoteWarning;
+
+  /// No description provided for @uploadingEvidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading evidence photos...'**
+  String get uploadingEvidence;
+
+  /// No description provided for @submittingReportBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Your report handling info is being submitted, please do not close the app'**
+  String get submittingReportBackground;
+
+  /// No description provided for @submittingReportBackgroundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting Handling Information'**
+  String get submittingReportBackgroundTitle;
+
+  /// No description provided for @uploadingEvidenceProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading evidence photos ({current}/{total})...'**
+  String uploadingEvidenceProgress(Object current, Object total);
+
+  /// No description provided for @almostDoneFinalizing.
+  ///
+  /// In en, this message translates to:
+  /// **'Finalizing report resolution ({current}/{total})...'**
+  String almostDoneFinalizing(Object current, Object total);
+
+  /// No description provided for @handlingCompletedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Handling information submitted successfully!'**
+  String get handlingCompletedSuccess;
+
+  /// No description provided for @gotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get gotIt;
+
+  /// No description provided for @handlingProgressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Handling Submission Progress'**
+  String get handlingProgressTitle;
+
+  /// No description provided for @errorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred'**
+  String get errorTitle;
 }
 
 class _AppLocalizationsDelegate
