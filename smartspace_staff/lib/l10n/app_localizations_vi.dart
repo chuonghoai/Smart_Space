@@ -652,4 +652,85 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get rehandlingNotice =>
       'Phản ánh này được đánh giá chưa thỏa đáng và đang được xử lý lại';
+
+  @override
+  String get routeChangePassword => 'Đổi mật khẩu';
+
+  @override
+  String get routeEditProfile => 'Chỉnh sửa hồ sơ';
+
+  @override
+  String get routeManageDevices => 'Quản lý thiết bị';
+
+  @override
+  String get editProfile => 'Chỉnh sửa hồ sơ';
+
+  @override
+  String get changeAvatar => 'Đổi ảnh';
+
+  @override
+  String get pickImageFailed => 'Không thể chọn ảnh. Vui lòng thử lại.';
+
+  @override
+  String get dateOfBirth => 'Ngày sinh';
+
+  @override
+  String get gender => 'Giới tính';
+
+  @override
+  String get genderMale => 'Nam';
+
+  @override
+  String get genderFemale => 'Nữ';
+
+  @override
+  String get genderOther => 'Khác';
+
+  @override
+  String get saveChanges => 'Lưu thay đổi';
+
+  @override
+  String get profileUpdateSuccess => 'Cập nhật hồ sơ thành công';
+
+  @override
+  String get profileUpdateFailed => 'Cập nhật hồ sơ thất bại';
+
+  @override
+  String get loggedInDevices => 'Thiết bị đã đăng nhập';
+
+  @override
+  String get thisDevice => 'Thiết bị này';
+
+  @override
+  String get activeNow => 'Đang hoạt động';
+
+  @override
+  String get logoutDevice => 'Đăng xuất';
+
+  @override
+  String get logoutDeviceConfirmTitle => 'Đăng xuất khỏi thiết bị?';
+
+  @override
+  String logoutDeviceConfirmMessage(String deviceName) {
+    return 'Phiên đăng nhập trên \"$deviceName\" sẽ bị kết thúc.';
+  }
+
+  @override
+  String get logoutAllOtherDevices => 'Đăng xuất tất cả thiết bị khác';
+
+  @override
+  String get logoutAllConfirmTitle => 'Đăng xuất tất cả thiết bị khác?';
+
+  @override
+  String get logoutAllConfirmMessage =>
+      'Tất cả phiên ngoại trừ thiết bị này sẽ bị kết thúc.';
+
+  @override
+  String get noOtherDevices => 'Không có thiết bị khác đang đăng nhập.';
+
+  @override
+  String get deviceLogoutSuccess => 'Đã đăng xuất thiết bị.';
+
+  @override
+  String get allDevicesLogoutSuccess => 'Đã đăng xuất tất cả thiết bị khác.';
 }

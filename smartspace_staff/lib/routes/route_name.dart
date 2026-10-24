@@ -25,6 +25,12 @@ class AppRouteInfo {
         return l10n.routeSettings;
       case 'routeMap':
         return l10n.routeMap;
+      case 'routeChangePassword':
+        return l10n.routeChangePassword;
+      case 'routeEditProfile':
+        return l10n.routeEditProfile;
+      case 'routeManageDevices':
+        return l10n.routeManageDevices;
       // Add more routes here as needed
       default:
         return nameKey;
@@ -58,6 +64,24 @@ class RouteName {
     icon: Icons.settings,
     isHiddenInSearch: false,
     priority: 2,
+  );
+  static const changePassword = AppRouteInfo(
+    path: '/change-password',
+    nameKey: 'routeChangePassword',
+    icon: Icons.password,
+    priority: 6,
+  );
+  static const editProfile = AppRouteInfo(
+    path: '/edit-profile',
+    nameKey: 'routeEditProfile',
+    icon: Icons.edit,
+    isHiddenInSearch: true,
+  );
+  static const manageDevices = AppRouteInfo(
+    path: '/manage-devices',
+    nameKey: 'routeManageDevices',
+    icon: Icons.phone_android,
+    isHiddenInSearch: true,
   );
   static const reportDetail = AppRouteInfo(
     path: '/reports/:id',
@@ -109,6 +133,9 @@ class RouteName {
     home,
     notifications,
     settings,
+    changePassword,
+    editProfile,
+    manageDevices,
     reportDetail,
     handleReport,
     search,

@@ -9,6 +9,7 @@ import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:smartspace_staff/routes/app_router.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
+import 'package:smartspace_staff/ui/mobile/home/home_controller.dart';
 import 'package:smartspace_staff/ui/shared/image/app_network_image.dart';
 
 class Sidebar extends ConsumerWidget {
@@ -20,6 +21,10 @@ class Sidebar extends ConsumerWidget {
     final theme = Theme.of(context);
     final notificationState = ref.watch(notificationProvider);
     final unreadCount = notificationState.countModel?.notifNumber ?? 0;
+    // Sidebar is only mounted inside MobileHomeScreen, so the home provider is alive here.
+    final stats = ref.watch(
+      homeControllerProvider.select((state) => state.statistics),
+    );
 
     return Drawer(
       child: SafeArea(
@@ -94,36 +99,10 @@ class Sidebar extends ConsumerWidget {
                   _SidebarItem(
                     icon: Icons.notifications_outlined,
                     label: l10n.notifications,
-                    trailing: unreadCount > 0
-                        ? Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 8,
-                              vertical: 2,
-                            ),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.error,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Text(
-                              unreadCount > 99 ? '99+' : unreadCount.toString(),
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: theme.colorScheme.onError,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          )
-                        : null,
+                    trailing: _CountBadge(count: unreadCount, highlight: true),
                     onTap: () {
                       Navigator.pop(context);
                       context.push(RouterPath.notifications);
-                    },
-                  ),
-                  _SidebarItem(
-                    icon: Icons.report_outlined,
-                    label: l10n.myWorkDashboard,
-                    onTap: () {
-                      Navigator.pop(context);
-                      context.push(Uri(path: RouterPath.allReports, queryParameters: {'filter': 'all'}).toString());
                     },
                   ),
                   _SidebarItem(
@@ -141,6 +120,35 @@ class Sidebar extends ConsumerWidget {
                       Navigator.pop(context);
                       // TODO: Navigate to news
                     },
+                  ),
+
+                  // My Work
+                  _SidebarSectionHeader(label: l10n.myWorkDashboard),
+                  _SidebarItem(
+                    icon: Icons.assignment_outlined,
+                    label: l10n.filterAll,
+                    trailing: _CountBadge(count: stats?.total ?? 0),
+                    onTap: () => _openMyWork(context, 'all'),
+                  ),
+                  _SidebarItem(
+                    icon: Icons.autorenew,
+                    label: l10n.reportStatusProcessing,
+                    trailing: _CountBadge(count: stats?.processing ?? 0),
+                    onTap: () => _openMyWork(context, 'processing'),
+                  ),
+                  _SidebarItem(
+                    icon: Icons.replay_rounded,
+                    label: l10n.rehandling,
+                    trailing: _CountBadge(
+                      count: stats?.rehandling ?? 0,
+                      highlight: true,
+                    ),
+                    onTap: () => _openMyWork(context, 'rehandling'),
+                  ),
+                  _SidebarItem(
+                    icon: Icons.task_alt,
+                    label: l10n.reportStatusProcessed,
+                    onTap: () => _openMyWork(context, 'resolved'),
                   ),
 
                   const Padding(
@@ -194,6 +202,72 @@ class Sidebar extends ConsumerWidget {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+void _openMyWork(BuildContext context, String filter) {
+  Navigator.pop(context);
+  context.push(
+    Uri(
+      path: RouterPath.allReports,
+      queryParameters: {'filter': filter},
+    ).toString(),
+  );
+}
+
+class _SidebarSectionHeader extends StatelessWidget {
+  final String label;
+
+  const _SidebarSectionHeader({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(24, 16, 24, 4),
+      child: Text(
+        label.toUpperCase(),
+        style: theme.textTheme.labelMedium?.copyWith(
+          color: theme.colorScheme.onSurfaceVariant,
+          fontWeight: FontWeight.w600,
+          letterSpacing: 0.8,
+        ),
+      ),
+    );
+  }
+}
+
+class _CountBadge extends StatelessWidget {
+  final int count;
+
+  /// Uses the error color to draw attention (unread notifications, re-handling tasks).
+  final bool highlight;
+
+  const _CountBadge({required this.count, this.highlight = false});
+
+  @override
+  Widget build(BuildContext context) {
+    if (count <= 0) return const SizedBox.shrink();
+
+    final colorScheme = Theme.of(context).colorScheme;
+    final background = highlight ? colorScheme.error : colorScheme.primaryContainer;
+    final foreground = highlight ? colorScheme.onError : colorScheme.onPrimaryContainer;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: background,
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Text(
+        count > 99 ? '99+' : count.toString(),
+        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+          color: foreground,
+          fontWeight: FontWeight.bold,
         ),
       ),
     );

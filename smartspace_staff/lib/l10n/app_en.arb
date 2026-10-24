@@ -241,5 +241,38 @@
   "evidencePhotosRequired": "Resolution evidence photos *",
   "rehandling": "Re-handling",
   "rehandlingBadge": "Re-handling",
-  "rehandlingNotice": "This report was rated unsatisfactory and is being re-handled"
+  "rehandlingNotice": "This report was rated unsatisfactory and is being re-handled",
+  "routeChangePassword": "Change Password",
+  "routeEditProfile": "Edit Profile",
+  "routeManageDevices": "Manage Devices",
+  "editProfile": "Edit Profile",
+  "changeAvatar": "Change Photo",
+  "pickImageFailed": "Could not pick the image. Please try again.",
+  "dateOfBirth": "Date of Birth",
+  "gender": "Gender",
+  "genderMale": "Male",
+  "genderFemale": "Female",
+  "genderOther": "Other",
+  "saveChanges": "Save Changes",
+  "profileUpdateSuccess": "Profile updated successfully",
+  "profileUpdateFailed": "Failed to update profile",
+  "loggedInDevices": "Logged in devices",
+  "thisDevice": "This device",
+  "activeNow": "Active now",
+  "logoutDevice": "Logout",
+  "logoutDeviceConfirmTitle": "Logout from device?",
+  "logoutDeviceConfirmMessage": "The session on \"{deviceName}\" will be ended.",
+  "@logoutDeviceConfirmMessage": {
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "logoutAllOtherDevices": "Logout all other devices",
+  "logoutAllConfirmTitle": "Logout all other devices?",
+  "logoutAllConfirmMessage": "All sessions except this device will be ended.",
+  "noOtherDevices": "No other devices logged in.",
+  "deviceLogoutSuccess": "Device logged out.",
+  "allDevicesLogoutSuccess": "All other devices logged out."
 }
