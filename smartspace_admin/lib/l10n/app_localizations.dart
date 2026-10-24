@@ -2144,6 +2144,209 @@ abstract class AppLocalizations {
   /// **'Manage Devices'**
   String get routeManageDevices;
 
+  /// No description provided for @routeUserManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'User Management'**
+  String get routeUserManagement;
+
+  /// No description provided for @totalUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Total users'**
+  String get totalUsers;
+
+  /// No description provided for @newUsers30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'New users (30 days)'**
+  String get newUsers30Days;
+
+  /// No description provided for @activeReporters30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Contributors (30 days)'**
+  String get activeReporters30Days;
+
+  /// No description provided for @reports30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports (30 days)'**
+  String get reports30Days;
+
+  /// No description provided for @percentOfUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% of all users'**
+  String percentOfUsers(String percent);
+
+  /// No description provided for @changeVsPrevious30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'{change} vs previous 30 days'**
+  String changeVsPrevious30Days(String change);
+
+  /// No description provided for @noPreviousPeriodData.
+  ///
+  /// In en, this message translates to:
+  /// **'No data for previous 30 days'**
+  String get noPreviousPeriodData;
+
+  /// No description provided for @registrationTrend.
+  ///
+  /// In en, this message translates to:
+  /// **'New registrations'**
+  String get registrationTrend;
+
+  /// No description provided for @newUsersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} new users'**
+  String newUsersCount(int count);
+
+  /// No description provided for @weekOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Week of {date}'**
+  String weekOf(String date);
+
+  /// No description provided for @topContributors.
+  ///
+  /// In en, this message translates to:
+  /// **'Top contributors'**
+  String get topContributors;
+
+  /// No description provided for @anonymousReportsExcluded.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous reports are not counted'**
+  String get anonymousReportsExcluded;
+
+  /// No description provided for @reportCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} reports'**
+  String reportCountLabel(int count);
+
+  /// No description provided for @reportsColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get reportsColumn;
+
+  /// No description provided for @joinedDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined'**
+  String get joinedDate;
+
+  /// No description provided for @joinedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined {date}'**
+  String joinedOn(String date);
+
+  /// No description provided for @sortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get sortBy;
+
+  /// No description provided for @sortNewest.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest'**
+  String get sortNewest;
+
+  /// No description provided for @sortOldest.
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest'**
+  String get sortOldest;
+
+  /// No description provided for @sortByName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name (A–Z)'**
+  String get sortByName;
+
+  /// No description provided for @searchUsersHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name, email or phone'**
+  String get searchUsersHint;
+
+  /// No description provided for @noUsersInSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'No users yet'**
+  String get noUsersInSystem;
+
+  /// No description provided for @noUsersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No users match your search'**
+  String get noUsersFound;
+
+  /// No description provided for @userDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'User details'**
+  String get userDetailTitle;
+
+  /// No description provided for @reportActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Report activity'**
+  String get reportActivity;
+
+  /// No description provided for @noPublicReports.
+  ///
+  /// In en, this message translates to:
+  /// **'This user has no public reports yet'**
+  String get noPublicReports;
+
+  /// No description provided for @notProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'Not provided'**
+  String get notProvided;
+
+  /// No description provided for @allUsersLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'All users loaded'**
+  String get allUsersLoaded;
+
+  /// No description provided for @loadMoreFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load more users'**
+  String get loadMoreFailed;
+
+  /// No description provided for @statistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get statistics;
+
+  /// No description provided for @statisticsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load statistics'**
+  String get statisticsLoadFailed;
+
+  /// No description provided for @closeAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get closeAction;
+
+  /// No description provided for @paginationSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{from}–{to} of {total}'**
+  String paginationSummary(int from, int to, int total);
   /// No description provided for @resolutionInfo.
   ///
   /// In en, this message translates to:

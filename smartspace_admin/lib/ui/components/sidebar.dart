@@ -146,10 +146,10 @@ class Sidebar extends ConsumerWidget {
                   _SidebarItem(
                     icon: Icons.people_outline,
                     label: l10n.manageUsers,
-                    isSelected: false,
+                    isSelected: currentPath == RouterPath.userManagement,
                     onTap: () {
                       Navigator.pop(context);
-                      // TODO: Navigate to Manage Users
+                      context.go(RouterPath.userManagement);
                     },
                   ),
                   _SidebarItem(
@@ -409,10 +409,8 @@ class WebSidebar extends ConsumerWidget {
                 icon: Icons.people_outline,
                 label: l10n.manageUsers,
                 isExpanded: isExpanded,
-                isSelected: false,
-                onTap: () {
-                  // TODO: Navigate to Manage Users
-                },
+                isSelected: currentPath == RouterPath.userManagement,
+                onTap: () => context.go(RouterPath.userManagement),
               ),
               _WebSidebarItem(
                 icon: Icons.badge_outlined,

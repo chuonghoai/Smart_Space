@@ -12,6 +12,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.vn.smart_space.consts.EReportSeverity;
 import com.vn.smart_space.consts.EReportStatus;
+import com.vn.smart_space.consts.ERole;
 import com.vn.smart_space.model.Report;
 
 public interface ReportRepository extends JpaRepository<Report, String> {
@@ -131,6 +132,44 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                         @Param("to") LocalDateTime to,
                         @Param("search") String search,
                         Pageable pageable);
+
+        // Admin - User management
+        // Thống kê tổng hợp (aggregate) tính cả báo cáo ẩn danh; số liệu gắn với từng
+        // người dùng thì loại báo cáo ẩn danh để không lộ danh tính người báo cáo.
+
+        @Query("SELECT COUNT(DISTINCT r.user.id) FROM Report r " +
+                        "WHERE r.user.role = :role AND r.createdAt >= :from")
+        long countDistinctReportersSince(
+                        @Param("role") ERole role,
+                        @Param("from") LocalDateTime from);
+
+        @Query("SELECT COUNT(r) FROM Report r " +
+                        "WHERE r.user.role = :role AND r.createdAt >= :from AND r.createdAt < :to")
+        long countByReporterRoleBetween(
+                        @Param("role") ERole role,
+                        @Param("from") LocalDateTime from,
+                        @Param("to") LocalDateTime to);
+
+        @Query("SELECT r.user.id, COUNT(r) FROM Report r " +
+                        "WHERE r.user.id IN :userIds AND (r.isAnonymous IS NULL OR r.isAnonymous = false) " +
+                        "GROUP BY r.user.id")
+        List<Object[]> countPublicReportsByUserIdIn(@Param("userIds") List<String> userIds);
+
+        @Query("SELECT u.id, u.fullName, u.avatarUrl, COUNT(r) FROM Report r JOIN r.user u " +
+                        "WHERE u.role = :role AND (r.isAnonymous IS NULL OR r.isAnonymous = false) " +
+                        "GROUP BY u.id, u.fullName, u.avatarUrl " +
+                        "ORDER BY COUNT(r) DESC")
+        List<Object[]> findTopPublicReporters(@Param("role") ERole role, Limit limit);
+
+        @Query("SELECT r.status, COUNT(r) FROM Report r " +
+                        "WHERE r.user.id = :userId AND (r.isAnonymous IS NULL OR r.isAnonymous = false) " +
+                        "GROUP BY r.status")
+        List<Object[]> countPublicReportsByUserGroupByStatus(@Param("userId") String userId);
+
+        @Query("SELECT r FROM Report r " +
+                        "WHERE r.user.id = :userId AND (r.isAnonymous IS NULL OR r.isAnonymous = false) " +
+                        "ORDER BY r.createdAt DESC")
+        List<Report> findRecentPublicReportsByUser(@Param("userId") String userId, Limit limit);
 
         // Client community feed: newest first, excluding one status (rejected)
         @Query(value = "SELECT r FROM Report r LEFT JOIN FETCH r.user LEFT JOIN FETCH r.assignedStaff " +

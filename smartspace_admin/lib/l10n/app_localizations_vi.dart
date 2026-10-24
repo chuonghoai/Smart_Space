@@ -1055,6 +1055,120 @@ class AppLocalizationsVi extends AppLocalizations {
   String get routeManageDevices => 'Quản lý thiết bị';
 
   @override
+  String get routeUserManagement => 'Quản lý người dùng';
+
+  @override
+  String get totalUsers => 'Tổng người dùng';
+
+  @override
+  String get newUsers30Days => 'Người dùng mới (30 ngày)';
+
+  @override
+  String get activeReporters30Days => 'Người đóng góp (30 ngày)';
+
+  @override
+  String get reports30Days => 'Phản ánh (30 ngày)';
+
+  @override
+  String percentOfUsers(String percent) {
+    return '$percent% tổng người dùng';
+  }
+
+  @override
+  String changeVsPrevious30Days(String change) {
+    return '$change so với 30 ngày trước';
+  }
+
+  @override
+  String get noPreviousPeriodData => 'Chưa có dữ liệu 30 ngày trước';
+
+  @override
+  String get registrationTrend => 'Đăng ký mới';
+
+  @override
+  String newUsersCount(int count) {
+    return '$count người dùng mới';
+  }
+
+  @override
+  String weekOf(String date) {
+    return 'Tuần từ $date';
+  }
+
+  @override
+  String get topContributors => 'Đóng góp nhiều nhất';
+
+  @override
+  String get anonymousReportsExcluded => 'Không tính phản ánh ẩn danh';
+
+  @override
+  String reportCountLabel(int count) {
+    return '$count phản ánh';
+  }
+
+  @override
+  String get reportsColumn => 'Phản ánh';
+
+  @override
+  String get joinedDate => 'Ngày tham gia';
+
+  @override
+  String joinedOn(String date) {
+    return 'Tham gia $date';
+  }
+
+  @override
+  String get sortBy => 'Sắp xếp';
+
+  @override
+  String get sortNewest => 'Mới nhất';
+
+  @override
+  String get sortOldest => 'Cũ nhất';
+
+  @override
+  String get sortByName => 'Tên (A–Z)';
+
+  @override
+  String get searchUsersHint => 'Tìm theo tên, email hoặc số điện thoại';
+
+  @override
+  String get noUsersInSystem => 'Chưa có người dùng nào';
+
+  @override
+  String get noUsersFound => 'Không tìm thấy người dùng phù hợp';
+
+  @override
+  String get userDetailTitle => 'Chi tiết người dùng';
+
+  @override
+  String get reportActivity => 'Hoạt động phản ánh';
+
+  @override
+  String get noPublicReports => 'Người dùng chưa có phản ánh công khai';
+
+  @override
+  String get notProvided => 'Chưa cập nhật';
+
+  @override
+  String get allUsersLoaded => 'Đã hiển thị tất cả người dùng';
+
+  @override
+  String get loadMoreFailed => 'Không tải thêm được người dùng';
+
+  @override
+  String get statistics => 'Thống kê';
+
+  @override
+  String get statisticsLoadFailed => 'Không tải được thống kê';
+
+  @override
+  String get closeAction => 'Đóng';
+
+  @override
+  String paginationSummary(int from, int to, int total) {
+    return '$from–$to / $total';
+  }
   String get resolutionInfo => 'Kết quả xử lý';
 
   @override
