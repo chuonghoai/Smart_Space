@@ -34,4 +34,18 @@ class ReportRepoMock implements ReportRepo {
       data: null,
     );
   }
+
+  @override
+  Future<ApiResponse<ReportDetailModel>> completeReport(
+    String reportId, {
+    required String note,
+    required List<String> imageUrls,
+  }) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: null,
+    );
+  }
 }

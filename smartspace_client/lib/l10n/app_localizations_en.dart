@@ -734,7 +734,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get assignedStaff => 'Assigned Staff';
 
   @override
-  String get routeCommunityFeed => 'Community feed';
+  String get routeCommunityFeed => 'All report';
 
   @override
   String get feedTabLatest => 'Latest';
@@ -773,4 +773,67 @@ class AppLocalizationsEn extends AppLocalizations {
   String feedPhotosCount(int count) {
     return '$count photos';
   }
+
+  @override
+  String get reviewReport => 'Review';
+
+  @override
+  String get reviewQuestion => 'Has your report been resolved?';
+
+  @override
+  String get reviewResolvedOption => 'Resolved';
+
+  @override
+  String get reviewUnresolvedOption => 'Not resolved';
+
+  @override
+  String get rateStaffTitle => 'Rate handling staff';
+
+  @override
+  String get rateStaffSubtitle => 'Please rate the staff member (1 - 5 stars)';
+
+  @override
+  String get unresolvedReasonLabel => 'Reason for unresolved';
+
+  @override
+  String get unresolvedReasonHint =>
+      'Please describe why you feel this report is not resolved...';
+
+  @override
+  String get attachEvidencePhotos =>
+      'Evidence photos (at least 1 photo required)';
+
+  @override
+  String get attachEvidencePhotoHint =>
+      'At least 1 photo and description required to submit';
+
+  @override
+  String get submitReview => 'Submit review';
+
+  @override
+  String get submittingReview => 'Submitting review...';
+
+  @override
+  String get reviewSuccess => 'Review submitted successfully!';
+
+  @override
+  String get unresolvedReviewTitle => 'Unresolved feedback';
+
+  @override
+  String get reviewRatingLabel => 'Citizen rating';
+
+  @override
+  String get cameraOption => 'Camera';
+
+  @override
+  String get galleryOption => 'Gallery';
+
+  @override
+  String get closeButton => 'Close';
+
+  @override
+  String get rehandling => 'Re-handling';
+
+  @override
+  String get unsatisfactoryBadge => 'Unsatisfactory resolution';
 }

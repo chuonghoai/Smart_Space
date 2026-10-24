@@ -106,8 +106,20 @@ class MyReportCard extends StatelessWidget {
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
                           ),
-                          // Status Badge
-                          _MyReportStatusBadge(status: report.status),
+                          // Badges
+                          Flexible(
+                            child: Wrap(
+                              spacing: 6,
+                              runSpacing: 4,
+                              alignment: WrapAlignment.end,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                if (report.isReviewResolved == false)
+                                  const _UnsatisfactoryBadge(),
+                                _MyReportStatusBadge(status: report.status),
+                              ],
+                            ),
+                          ),
                         ],
                       ),
                     ],
@@ -117,6 +129,46 @@ class MyReportCard extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _UnsatisfactoryBadge extends StatelessWidget {
+  const _UnsatisfactoryBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final isDark = theme.brightness == Brightness.dark;
+
+    final badgeBg = isDark ? const Color(0xFF4A2800) : const Color(0xFFFFF3E0);
+    final badgeColor = isDark ? const Color(0xFFFFB74D) : const Color(0xFFD97706);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: badgeBg,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: badgeColor.withValues(alpha: isDark ? 0.5 : 0.3),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.warning_amber_rounded, size: 12, color: badgeColor),
+          const SizedBox(width: 4),
+          Text(
+            l10n.unsatisfactoryBadge,
+            style: TextStyle(
+              color: badgeColor,
+              fontSize: 10.5,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+        ],
       ),
     );
   }

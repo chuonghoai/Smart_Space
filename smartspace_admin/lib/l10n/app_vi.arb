@@ -421,3 +421,93 @@
   "closeAction": "Đóng",
   "paginationSummary": "{from}–{to} / {total}"
 }
+  "resolutionInfo": "Kết quả xử lý",
+  "resolutionImages": "Ảnh kết quả xử lý",
+  "noResolutionImages": "Nhân viên không đính kèm hình ảnh",
+  "resolutionNote": "Ghi chú xử lý",
+  "staffNoAdditionalNote": "{staffName} không có ghi chú gì thêm",
+  "@staffNoAdditionalNote": {
+    "placeholders": {
+      "staffName": {
+        "type": "String"
+      }
+    }
+  },
+  "resolvedAtLabel": "Thời gian hoàn thành",
+  "citizenReviewUnresolved": "Người dân phản hồi: Chưa được xử lý",
+  "citizenRating": "Đánh giá",
+  "citizenReviewReason": "Lý do chưa xử lý thỏa đáng",
+  "citizenReviewPhotos": "Hình ảnh người dân cung cấp",
+  "reopenReportButton": "Yêu cầu xử lý lại",
+  "reopenReportConfirmTitle": "Yêu cầu xử lý lại phản ánh?",
+  "reopenReportConfirmMessage": "Trạng thái phản ánh sẽ được chuyển về 'Đang xử lý' và gửi thông báo yêu cầu nhân viên phụ trách thực hiện xử lý lại.",
+  "reopenReportSuccess": "Đã chuyển trạng thái về Đang xử lý và thông báo cho nhân viên!",
+  "unsatisfactoryBannerTitle": "Phản ánh chưa thỏa đáng",
+  "unsatisfactoryProcessedCountFormat": "{count} chưa thỏa đáng",
+  "@unsatisfactoryProcessedCountFormat": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rehandlingProcessingCountFormat": "{count} đang xử lý",
+  "@rehandlingProcessingCountFormat": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unsatisfactoryPendingTab": "Chờ xử lý",
+  "unsatisfactoryProcessingTab": "Đang xử lý",
+  "rehandlingBadge": "Xử lý lại",
+  "routeUnsatisfactoryReports": "Phản ánh chưa thỏa đáng",
+  "noUnsatisfactoryPending": "Không có phản ánh nào chờ xử lý",
+  "noUnsatisfactoryProcessing": "Không có phản ánh nào đang xử lý lại",
+  "manageNews": "Quản lý tin tức",
+  "quickAccess": "Truy cập nhanh",
+  "emptyNewsTitle": "Chưa có tin tức nào",
+  "emptyNewsDescription": "Hiện tại chưa có tin tức nào được đăng tải. Hãy tạo tin tức mới để thông báo tới cộng đồng.",
+  "createNewNews": "Tạo tin tức mới",
+  "editNews": "Chỉnh sửa tin tức",
+  "newsTitle": "Tiêu đề tin tức",
+  "newsTitleHint": "Nhập tiêu đề tin tức...",
+  "newsTitleRequired": "Vui lòng nhập tiêu đề tin tức",
+  "newsContent": "Nội dung tin tức",
+  "newsContentHint": "Nhập nội dung bài viết...",
+  "newsContentRequired": "Vui lòng nhập nội dung tin tức",
+  "newsImages": "Hình ảnh đính kèm",
+  "addImages": "Thêm hình ảnh",
+  "preview": "Xem trước",
+  "editor": "Soạn thảo",
+  "newsDetail": "Chi tiết tin tức",
+  "deleteNews": "Xóa tin tức",
+  "confirmDeleteNewsTitle": "Xác nhận xóa tin tức",
+  "confirmDeleteNews": "Bạn có chắc chắn muốn xóa tin tức này không? Thao tác này không thể hoàn tác.",
+  "deleteNewsSuccess": "Xóa tin tức thành công",
+  "createNewsSuccess": "Đăng tin tức thành công",
+  "updateNewsSuccess": "Cập nhật tin tức thành công",
+  "newsAuthor": "Người đăng",
+  "newsCreatedDate": "Ngày đăng",
+  "newsCreatedTime": "Thời gian",
+  "routeNewsManagement": "Quản lý tin tức",
+  "routeCreateNews": "Tạo tin tức",
+  "routeNewsDetail": "Chi tiết tin tức",
+  "routeEditNews": "Chỉnh sửa tin tức",
+  "formatBold": "In đậm",
+  "formatItalic": "In nghiêng",
+  "formatHeading": "Tiêu đề",
+  "formatBulletList": "Danh sách",
+  "formatNumberedList": "Đánh số",
+  "formatQuote": "Trích dẫn",
+  "formatCode": "Mã nguồn",
+  "sendNotification": "Gửi thông báo",
+  "sendNotificationSubtitle": "Phát thông báo đẩy tới người dùng khi tin tức được tạo",
+  "notificationTarget": "Đối tượng nhận thông báo",
+  "targetAll": "Tất cả",
+  "targetAdmin": "Quản trị viên",
+  "targetStaff": "Nhân viên",
+  "targetClient": "Khách hàng",
+  "livePreview": "Bản xem trước trực tiếp"
+}

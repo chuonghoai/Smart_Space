@@ -6,6 +6,7 @@ import '../models/report_list_model.dart';
 import '../models/report_statistics_model.dart';
 import '../models/report_trend_model.dart';
 import '../models/staff_model.dart';
+import '../../home/models/recent_report_model.dart';
 
 class ReportRepository {
   Future<ApiResponse<ReportDetailModel>> getReportDetail(String id) async {
@@ -99,6 +100,16 @@ class ReportRepository {
       '/admin/reports/$id/status',
       data: {'status': status},
       decoder: (json) => json as Map<String, dynamic>? ?? {},
+    );
+  }
+
+  Future<ApiResponse<List<RecentReportModel>>> getUnsatisfactoryReports(String tab) async {
+    return apiClient.get(
+      '/admin/reports/unsatisfactory',
+      queryParameters: {'tab': tab},
+      decoder: (json) => (json as List<dynamic>)
+          .map((e) => RecentReportModel.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
   }
 }

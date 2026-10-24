@@ -11,4 +11,11 @@ abstract class ReportRepo {
   Future<ApiResponse<List<ReportModel>>> getMyReports({String? status, int limit = 50});
   Future<ApiResponse<ReportDetailModel>> getReportDetail(String reportId);
   Future<ApiResponse<ReportFeedPage>> getFeed({String? status, int page = 1, int size = 10, double? lat, double? lng});
+  Future<ApiResponse<ReportDetailModel>> submitReview(
+    String reportId, {
+    required bool isResolved,
+    int? rating,
+    String? reason,
+    List<String>? imageUrls,
+  });
 }

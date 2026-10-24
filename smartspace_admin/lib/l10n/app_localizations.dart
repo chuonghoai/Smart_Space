@@ -2347,6 +2347,413 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{from}–{to} of {total}'**
   String paginationSummary(int from, int to, int total);
+  /// No description provided for @resolutionInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution Information'**
+  String get resolutionInfo;
+
+  /// No description provided for @resolutionImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution Photos'**
+  String get resolutionImages;
+
+  /// No description provided for @noResolutionImages.
+  ///
+  /// In en, this message translates to:
+  /// **'No resolution photos provided'**
+  String get noResolutionImages;
+
+  /// No description provided for @resolutionNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution Note'**
+  String get resolutionNote;
+
+  /// No description provided for @staffNoAdditionalNote.
+  ///
+  /// In en, this message translates to:
+  /// **'{staffName} did not provide any additional notes'**
+  String staffNoAdditionalNote(String staffName);
+
+  /// No description provided for @resolvedAtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved At'**
+  String get resolvedAtLabel;
+
+  /// No description provided for @citizenReviewUnresolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Citizen feedback: Not resolved'**
+  String get citizenReviewUnresolved;
+
+  /// No description provided for @citizenRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Citizen Rating'**
+  String get citizenRating;
+
+  /// No description provided for @citizenReviewReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for unresolved status'**
+  String get citizenReviewReason;
+
+  /// No description provided for @citizenReviewPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos provided by citizen'**
+  String get citizenReviewPhotos;
+
+  /// No description provided for @reopenReportButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Re-handling'**
+  String get reopenReportButton;
+
+  /// No description provided for @reopenReportConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request re-handling for this report?'**
+  String get reopenReportConfirmTitle;
+
+  /// No description provided for @reopenReportConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The status will be changed back to \'Processing\' and the assigned staff will be notified to re-handle the issue.'**
+  String get reopenReportConfirmMessage;
+
+  /// No description provided for @reopenReportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Report reopened to Processing and staff notified!'**
+  String get reopenReportSuccess;
+
+  /// No description provided for @unsatisfactoryBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsatisfactory Reports'**
+  String get unsatisfactoryBannerTitle;
+
+  /// No description provided for @unsatisfactoryProcessedCountFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} unsatisfactory'**
+  String unsatisfactoryProcessedCountFormat(int count);
+
+  /// No description provided for @rehandlingProcessingCountFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} in progress'**
+  String rehandlingProcessingCountFormat(int count);
+
+  /// No description provided for @unsatisfactoryPendingTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Review'**
+  String get unsatisfactoryPendingTab;
+
+  /// No description provided for @unsatisfactoryProcessingTab.
+  ///
+  /// In en, this message translates to:
+  /// **'In Progress'**
+  String get unsatisfactoryProcessingTab;
+
+  /// No description provided for @rehandlingBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-handling'**
+  String get rehandlingBadge;
+
+  /// No description provided for @routeUnsatisfactoryReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsatisfactory Reports'**
+  String get routeUnsatisfactoryReports;
+
+  /// No description provided for @noUnsatisfactoryPending.
+  ///
+  /// In en, this message translates to:
+  /// **'No reports pending review'**
+  String get noUnsatisfactoryPending;
+
+  /// No description provided for @noUnsatisfactoryProcessing.
+  ///
+  /// In en, this message translates to:
+  /// **'No reports being re-handled'**
+  String get noUnsatisfactoryProcessing;
+
+  /// No description provided for @manageNews.
+  ///
+  /// In en, this message translates to:
+  /// **'News Management'**
+  String get manageNews;
+
+  /// No description provided for @quickAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Access'**
+  String get quickAccess;
+
+  /// No description provided for @emptyNewsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No news yet'**
+  String get emptyNewsTitle;
+
+  /// No description provided for @emptyNewsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no news articles published yet. Create a new article to notify the community.'**
+  String get emptyNewsDescription;
+
+  /// No description provided for @createNewNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Create New News'**
+  String get createNewNews;
+
+  /// No description provided for @editNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit News'**
+  String get editNews;
+
+  /// No description provided for @newsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'News Title'**
+  String get newsTitle;
+
+  /// No description provided for @newsTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter news title...'**
+  String get newsTitleHint;
+
+  /// No description provided for @newsTitleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter news title'**
+  String get newsTitleRequired;
+
+  /// No description provided for @newsContent.
+  ///
+  /// In en, this message translates to:
+  /// **'News Content'**
+  String get newsContent;
+
+  /// No description provided for @newsContentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter content (Markdown/Readme supported)...'**
+  String get newsContentHint;
+
+  /// No description provided for @newsContentRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter news content'**
+  String get newsContentRequired;
+
+  /// No description provided for @newsImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Attached Images'**
+  String get newsImages;
+
+  /// No description provided for @addImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Images'**
+  String get addImages;
+
+  /// No description provided for @preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get preview;
+
+  /// No description provided for @editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Editor'**
+  String get editor;
+
+  /// No description provided for @newsDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'News Detail'**
+  String get newsDetail;
+
+  /// No description provided for @deleteNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete News'**
+  String get deleteNews;
+
+  /// No description provided for @confirmDeleteNewsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Delete News'**
+  String get confirmDeleteNewsTitle;
+
+  /// No description provided for @confirmDeleteNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this news? This action cannot be undone.'**
+  String get confirmDeleteNews;
+
+  /// No description provided for @deleteNewsSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'News deleted successfully'**
+  String get deleteNewsSuccess;
+
+  /// No description provided for @createNewsSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'News created successfully'**
+  String get createNewsSuccess;
+
+  /// No description provided for @updateNewsSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'News updated successfully'**
+  String get updateNewsSuccess;
+
+  /// No description provided for @newsAuthor.
+  ///
+  /// In en, this message translates to:
+  /// **'Author'**
+  String get newsAuthor;
+
+  /// No description provided for @newsCreatedDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Posted Date'**
+  String get newsCreatedDate;
+
+  /// No description provided for @newsCreatedTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get newsCreatedTime;
+
+  /// No description provided for @routeNewsManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'News Management'**
+  String get routeNewsManagement;
+
+  /// No description provided for @routeCreateNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Create News'**
+  String get routeCreateNews;
+
+  /// No description provided for @routeNewsDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'News Detail'**
+  String get routeNewsDetail;
+
+  /// No description provided for @routeEditNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit News'**
+  String get routeEditNews;
+
+  /// No description provided for @formatBold.
+  ///
+  /// In en, this message translates to:
+  /// **'Bold'**
+  String get formatBold;
+
+  /// No description provided for @formatItalic.
+  ///
+  /// In en, this message translates to:
+  /// **'Italic'**
+  String get formatItalic;
+
+  /// No description provided for @formatHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Heading'**
+  String get formatHeading;
+
+  /// No description provided for @formatBulletList.
+  ///
+  /// In en, this message translates to:
+  /// **'Bullet List'**
+  String get formatBulletList;
+
+  /// No description provided for @formatNumberedList.
+  ///
+  /// In en, this message translates to:
+  /// **'Numbered List'**
+  String get formatNumberedList;
+
+  /// No description provided for @formatQuote.
+  ///
+  /// In en, this message translates to:
+  /// **'Quote'**
+  String get formatQuote;
+
+  /// No description provided for @formatCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get formatCode;
+
+  /// No description provided for @sendNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'Send notification'**
+  String get sendNotification;
+
+  /// No description provided for @sendNotificationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send push notifications to users when this news is created'**
+  String get sendNotificationSubtitle;
+
+  /// No description provided for @notificationTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification Target'**
+  String get notificationTarget;
+
+  /// No description provided for @targetAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get targetAll;
+
+  /// No description provided for @targetAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get targetAdmin;
+
+  /// No description provided for @targetStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get targetStaff;
+
+  /// No description provided for @targetClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Client'**
+  String get targetClient;
+
+  /// No description provided for @livePreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Preview'**
+  String get livePreview;
 }
 
 class _AppLocalizationsDelegate

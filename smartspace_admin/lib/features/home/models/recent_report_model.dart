@@ -9,6 +9,7 @@ class RecentReportModel {
   final String? assignedStaffName;
   final String? assignedStaffAvatarUrl;
   final bool isAnonymous;
+  final bool? isReviewResolved;
 
   const RecentReportModel({
     required this.id,
@@ -21,6 +22,7 @@ class RecentReportModel {
     this.assignedStaffName,
     this.assignedStaffAvatarUrl,
     this.isAnonymous = false,
+    this.isReviewResolved,
   });
 
   factory RecentReportModel.fromJson(Map<String, dynamic> json) {
@@ -46,6 +48,7 @@ class RecentReportModel {
       assignedStaffName: (json['assigned_staff_name'] ?? json['assignedStaffName'])?.toString(),
       assignedStaffAvatarUrl: (json['assigned_staff_avatar_url'] ?? json['assignedStaffAvatarUrl'])?.toString(),
       isAnonymous: (json['is_anonymous'] ?? json['isAnonymous']) as bool? ?? false,
+      isReviewResolved: json['isReviewResolved'] as bool? ?? json['is_review_resolved'] as bool?,
     );
   }
 

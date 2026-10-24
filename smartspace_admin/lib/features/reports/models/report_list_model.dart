@@ -12,6 +12,7 @@ class ReportListItem {
   final String? userName;
   final String? userEmail;
   final bool isAnonymous;
+  final bool? isReviewResolved;
 
   const ReportListItem({
     required this.id,
@@ -26,6 +27,7 @@ class ReportListItem {
     this.userName,
     this.userEmail,
     this.isAnonymous = false,
+    this.isReviewResolved,
   });
 
   factory ReportListItem.fromJson(Map<String, dynamic> json) {
@@ -59,10 +61,11 @@ class ReportListItem {
       userName: json['userName']?.toString() ?? json['user_name']?.toString(),
       userEmail: json['userEmail']?.toString() ?? json['user_email']?.toString(),
       isAnonymous: (json['is_anonymous'] ?? json['isAnonymous']) as bool? ?? false,
+      isReviewResolved: json['isReviewResolved'] as bool? ?? json['is_review_resolved'] as bool?,
     );
   }
 
-  ReportListItem copyWith({String? status, bool? isAnonymous}) => ReportListItem(
+  ReportListItem copyWith({String? status, bool? isAnonymous, bool? isReviewResolved}) => ReportListItem(
         id: id,
         title: title,
         status: status ?? this.status,
@@ -75,6 +78,7 @@ class ReportListItem {
         userName: userName,
         userEmail: userEmail,
         isAnonymous: isAnonymous ?? this.isAnonymous,
+        isReviewResolved: isReviewResolved ?? this.isReviewResolved,
       );
 }
 

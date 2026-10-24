@@ -6,11 +6,13 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 
+import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/providers/report_detail_provider.dart';
 import 'package:smartspace_client/features/reports/utils/report_status_ext.dart';
 import 'package:smartspace_client/features/reports/utils/report_severity_ext.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/ui/mobile/reports/presentation/widgets/fullscreen_image_viewer.dart';
+import 'package:smartspace_client/ui/mobile/reports/presentation/widgets/report_review_dialog.dart';
 
 class ReportDetailScreen extends ConsumerStatefulWidget {
   final String reportId;
@@ -22,6 +24,18 @@ class ReportDetailScreen extends ConsumerStatefulWidget {
 }
 
 class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with WidgetsBindingObserver {
+  DateTime? _lastAutoShownResolvedAt;
+
+  void _openReviewDialog() {
+    ReportReviewDialog.show(
+      context,
+      reportId: widget.reportId,
+      onReviewSubmitted: () {
+        ref.read(reportDetailProvider(widget.reportId).notifier).refresh();
+      },
+    );
+  }
+
   @override
   void initState() {
     super.initState();
@@ -102,9 +116,30 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.reportDetails),
+        actions: [
+          if (reportAsyncValue.valueOrNull != null &&
+              reportAsyncValue.valueOrNull!.status == ReportStatus.processed &&
+              !reportAsyncValue.valueOrNull!.hasReviewed)
+            TextButton.icon(
+              onPressed: _openReviewDialog,
+              icon: const Icon(Icons.star_outline_rounded, size: 20),
+              label: Text(l10n.reviewReport),
+            ),
+        ],
       ),
       body: reportAsyncValue.when(
         data: (report) {
+          if (report.status == ReportStatus.processed &&
+              !report.hasReviewed &&
+              _lastAutoShownResolvedAt != report.resolvedAt) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (mounted && _lastAutoShownResolvedAt != report.resolvedAt) {
+                _lastAutoShownResolvedAt = report.resolvedAt;
+                _openReviewDialog();
+              }
+            });
+          }
+
           return RefreshIndicator(
             onRefresh: () => ref.read(reportDetailProvider(widget.reportId).notifier).refresh(),
             child: SingleChildScrollView(
@@ -157,6 +192,15 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                               ),
                               backgroundColor: report.status.getColor(context),
                             ),
+                            if (report.isReviewResolved == false)
+                              Chip(
+                                avatar: const Icon(Icons.warning_amber_rounded, size: 16, color: Colors.white),
+                                label: Text(
+                                  l10n.unsatisfactoryBadge,
+                                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                                ),
+                                backgroundColor: const Color(0xFFD97706),
+                              ),
                             Chip(
                               label: Text(
                                 report.severity.getLocalizedText(l10n),
@@ -215,13 +259,112 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                                     ),
                                     const SizedBox(width: 12),
                                     Expanded(
-                                      child: Text(
-                                        report.assignedStaffName ?? 'Unknown',
-                                        style: theme.textTheme.titleMedium,
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            report.assignedStaffName ?? 'Unknown',
+                                            style: theme.textTheme.titleMedium,
+                                          ),
+                                          if (report.isReviewResolved == true && report.rating != null) ...[
+                                            const SizedBox(height: 4),
+                                            Row(
+                                              children: [
+                                                ...List.generate(
+                                                  5,
+                                                  (i) => Icon(
+                                                    i < report.rating!
+                                                        ? Icons.star_rounded
+                                                        : Icons.star_outline_rounded,
+                                                    size: 16,
+                                                    color: Colors.amber,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  '${report.rating}/5',
+                                                  style: theme.textTheme.bodySmall?.copyWith(
+                                                    fontWeight: FontWeight.bold,
+                                                    color: theme.colorScheme.onSurfaceVariant,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ],
                                       ),
                                     ),
                                   ],
                                 ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 24),
+                        ],
+
+                        // Unresolved feedback section
+                        if (report.isReviewResolved == false) ...[
+                          Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.errorContainer.withAlpha(50),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: theme.colorScheme.error.withAlpha(100)),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.report_problem_outlined, color: theme.colorScheme.error, size: 20),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      l10n.unresolvedReviewTitle,
+                                      style: theme.textTheme.titleSmall?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: theme.colorScheme.error,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                if (report.reviewNote != null && report.reviewNote!.isNotEmpty) ...[
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    report.reviewNote!,
+                                    style: theme.textTheme.bodyMedium,
+                                  ),
+                                ],
+                                if (report.reviewImageUrls.isNotEmpty) ...[
+                                  const SizedBox(height: 12),
+                                  SizedBox(
+                                    height: 180,
+                                    child: PageView.builder(
+                                      itemCount: report.reviewImageUrls.length,
+                                      itemBuilder: (context, idx) {
+                                        return GestureDetector(
+                                          onTap: () {
+                                            Navigator.of(context).push(
+                                              MaterialPageRoute(
+                                                builder: (_) => FullscreenImageViewer(
+                                                  imageUrls: report.reviewImageUrls,
+                                                  initialIndex: idx,
+                                                ),
+                                              ),
+                                            );
+                                          },
+                                          child: ClipRRect(
+                                            borderRadius: BorderRadius.circular(8),
+                                            child: Image.network(
+                                              report.reviewImageUrls[idx],
+                                              fit: BoxFit.cover,
+                                              errorBuilder: (_, _, _) => const Center(child: Icon(Icons.broken_image)),
+                                            ),
+                                          ),
+                                        );
+                                      },
+                                    ),
+                                  ),
+                                ],
                               ],
                             ),
                           ),

@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_shared/mobile_shared.dart';
+import 'package:smartspace_admin/features/home/application/home_providers.dart';
 import 'package:smartspace_admin/features/reports/application/report_providers.dart';
+import 'package:smartspace_admin/features/reports/data/report_repository.dart';
 import 'package:smartspace_admin/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_admin/features/reports/models/staff_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
@@ -26,6 +28,9 @@ class AdminReportDetailScreen extends ConsumerStatefulWidget {
 class _AdminReportDetailScreenState
     extends ConsumerState<AdminReportDetailScreen> {
   int _currentImageIndex = 0;
+  int _currentResolvedImageIndex = 0;
+  int _currentReviewImageIndex = 0;
+  bool _isReopening = false;
   StaffModel? _selectedStaff;
   String _selectedSeverity = 'low';
 
@@ -104,6 +109,9 @@ class _AdminReportDetailScreenState
     ReportAssignState assignState,
   ) {
     final isPending = report.status.toUpperCase() == 'PENDING';
+    final isDone = report.status.toUpperCase() == 'PROCESSED' ||
+        report.status.toUpperCase() == 'RESOLVED' ||
+        report.status.toUpperCase() == 'DONE';
 
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(
@@ -138,6 +146,18 @@ class _AdminReportDetailScreenState
             _buildAssignStaffTwoColumnSection(context, report, l10n, theme)
           else
             _buildAssignedStaffTwoColumnCard(context, report, l10n, theme),
+
+          // 7. Staff Resolution Section (when status is Done/Processed)
+          if (isDone) ...[
+            const SizedBox(height: 16),
+            _buildResolutionSection(context, report, l10n, theme),
+          ],
+
+          // 8. Citizen Review Section (when report has citizen review)
+          if (report.isReviewResolved != null) ...[
+            const SizedBox(height: 16),
+            _buildCitizenReviewSection(context, report, l10n, theme, isDone),
+          ],
         ],
       ),
     );
@@ -301,39 +321,69 @@ class _AdminReportDetailScreenState
                   ],
                 ),
                 const SizedBox(height: 8),
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  decoration: BoxDecoration(
-                    color: statusColor.withValues(alpha: 0.12),
-                    borderRadius: BorderRadius.circular(20),
-                    border: Border.all(color: statusColor.withValues(alpha: 0.35)),
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Container(
-                        width: 7,
-                        height: 7,
-                        decoration: BoxDecoration(
-                          color: statusColor,
-                          shape: BoxShape.circle,
-                        ),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 4,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: statusColor.withValues(alpha: 0.35)),
                       ),
-                      const SizedBox(width: 6),
-                      Flexible(
-                        child: Text(
-                          statusText,
-                          style: TextStyle(
-                            color: statusColor,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 12,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 7,
+                            height: 7,
+                            decoration: BoxDecoration(
+                              color: statusColor,
+                              shape: BoxShape.circle,
+                            ),
                           ),
-                          maxLines: 1,
-                          overflow: TextOverflow.ellipsis,
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              statusText,
+                              style: TextStyle(
+                                color: statusColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (report.isReviewResolved == false)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: Colors.orange.withValues(alpha: 0.4)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.refresh_rounded, size: 13, color: Colors.orange),
+                            const SizedBox(width: 4),
+                            Text(
+                              l10n.rehandlingBadge,
+                              style: const TextStyle(
+                                color: Colors.orange,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                    ],
-                  ),
+                  ],
                 ),
               ],
             ),
@@ -1395,6 +1445,264 @@ class _AdminReportDetailScreenState
     );
   }
 
+  /// Resolution proof section showing staff photos and notes
+  Widget _buildResolutionSection(
+    BuildContext context,
+    ReportDetailModel report,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    final staffName = report.assignedStaffName?.trim().isNotEmpty == true
+        ? report.assignedStaffName!
+        : l10n.staff;
+    final hasNote =
+        report.resolvedNote != null && report.resolvedNote!.trim().isNotEmpty;
+
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+        ),
+      ),
+      color: theme.colorScheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header: Icon + Title + (Optional Resolved Date)
+            Row(
+              children: [
+                const Icon(
+                  Icons.verified_outlined,
+                  size: 20,
+                  color: Colors.green,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.resolutionInfo,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                    ),
+                  ),
+                ),
+                if (report.resolvedAt != null)
+                  Text(
+                    DateFormat('dd/MM/yyyy HH:mm')
+                        .format(report.resolvedAt!.toLocal()),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontSize: 12,
+                    ),
+                  ),
+              ],
+            ),
+            const Divider(height: 20),
+
+            // Resolution Photos Subheader
+            Row(
+              children: [
+                Icon(
+                  Icons.photo_library_outlined,
+                  size: 16,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  l10n.resolutionImages,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (report.resolvedImages.isNotEmpty) ...[
+                  const SizedBox(width: 6),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primaryContainer
+                          .withValues(alpha: 0.6),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '${report.resolvedImages.length}',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onPrimaryContainer,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            const SizedBox(height: 10),
+
+            // Slider of Resolution Images
+            _buildResolvedImageSlider(
+                context, report.resolvedImages, l10n, theme),
+            const SizedBox(height: 16),
+
+            // Resolution Note Subheader
+            Row(
+              children: [
+                Icon(
+                  Icons.speaker_notes_outlined,
+                  size: 16,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  l10n.resolutionNote,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // Note Box
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHighest
+                    .withValues(alpha: 0.35),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color:
+                      theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+                ),
+              ),
+              child: Text(
+                hasNote
+                    ? report.resolvedNote!.trim()
+                    : l10n.staffNoAdditionalNote(staffName),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: hasNote
+                      ? theme.colorScheme.onSurface
+                      : theme.colorScheme.onSurfaceVariant,
+                  fontStyle: hasNote ? FontStyle.normal : FontStyle.italic,
+                  height: 1.4,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResolvedImageSlider(
+    BuildContext context,
+    List<String> images,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    if (images.isEmpty) {
+      return Container(
+        height: 120,
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest
+              .withValues(alpha: 0.35),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.image_not_supported_outlined,
+                size: 32,
+                color:
+                    theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                l10n.noResolutionImages,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (images.length == 1) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: GestureDetector(
+          onTap: () => _openFullscreenImage(images, 0),
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: AppNetworkImage(
+              url: images.first,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: AspectRatio(
+        aspectRatio: 16 / 9,
+        child: Stack(
+          children: [
+            PageView.builder(
+              itemCount: images.length,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentResolvedImageIndex = index;
+                });
+              },
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () => _openFullscreenImage(images, index),
+                  child: AppNetworkImage(
+                    url: images[index],
+                    fit: BoxFit.cover,
+                  ),
+                );
+              },
+            ),
+            Positioned(
+              bottom: 10,
+              right: 10,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.65),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  '${_currentResolvedImageIndex + 1}/${images.length}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   /// Bottom action button (Xử lý phản ánh):
   /// - Only shown when report is PENDING and _selectedStaff != null (per user requirement to avoid clutter).
   Widget? _buildBottomActionButton(
@@ -1480,7 +1788,9 @@ class _AdminReportDetailScreenState
         return Colors.orange;
       case 'PROCESSING':
         return theme.colorScheme.primary;
+      case 'PROCESSED':
       case 'RESOLVED':
+      case 'DONE':
         return Colors.green;
       case 'REJECTED':
         return Colors.red;
@@ -1495,7 +1805,9 @@ class _AdminReportDetailScreenState
         return l10n.reportStatusPending;
       case 'PROCESSING':
         return l10n.reportStatusProcessing;
+      case 'PROCESSED':
       case 'RESOLVED':
+      case 'DONE':
         return l10n.reportStatusProcessed;
       case 'REJECTED':
         return l10n.reportStatusRejected;
@@ -1532,5 +1844,369 @@ class _AdminReportDetailScreenState
       default:
         return severity;
     }
+  }
+
+  Future<void> _handleReopenReport(
+    ReportDetailModel report,
+    AppLocalizations l10n,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.reopenReportConfirmTitle),
+        content: Text(l10n.reopenReportConfirmMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+              foregroundColor: Theme.of(context).colorScheme.onError,
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.reopenReportButton),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    setState(() => _isReopening = true);
+    try {
+      final res =
+          await reportRepository.updateReportStatus(report.id, 'processing');
+      if (mounted) {
+        if (res.success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.reopenReportSuccess),
+              backgroundColor: Colors.green,
+            ),
+          );
+          ref.read(reportDetailProvider(widget.reportId).notifier).refresh();
+          ref.read(adminOverviewProvider.notifier).refresh();
+          ref.invalidate(recentReportProvider);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(res.message),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isReopening = false);
+      }
+    }
+  }
+
+  Widget _buildCitizenReviewSection(
+    BuildContext context,
+    ReportDetailModel report,
+    AppLocalizations l10n,
+    ThemeData theme,
+    bool isDone,
+  ) {
+    final isUnresolved = report.isReviewResolved == false;
+
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: isUnresolved
+              ? theme.colorScheme.error.withValues(alpha: 0.5)
+              : Colors.amber.withValues(alpha: 0.5),
+        ),
+      ),
+      color: theme.colorScheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Row(
+              children: [
+                Icon(
+                  isUnresolved
+                      ? Icons.report_problem_outlined
+                      : Icons.star_rounded,
+                  size: 20,
+                  color: isUnresolved ? theme.colorScheme.error : Colors.amber,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    isUnresolved
+                        ? l10n.citizenReviewUnresolved
+                        : l10n.citizenRating,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: isUnresolved
+                          ? theme.colorScheme.error
+                          : Colors.amber.shade800,
+                    ),
+                  ),
+                ),
+                if (report.reviewedAt != null)
+                  Text(
+                    DateFormat('dd/MM/yyyy HH:mm')
+                        .format(report.reviewedAt!.toLocal()),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontSize: 12,
+                    ),
+                  ),
+              ],
+            ),
+            const Divider(height: 20),
+
+            if (isUnresolved) ...[
+              // Citizen feedback reason
+              if (report.reviewNote != null &&
+                  report.reviewNote!.trim().isNotEmpty) ...[
+                Row(
+                  children: [
+                    Icon(
+                      Icons.comment_outlined,
+                      size: 16,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      l10n.citizenReviewReason,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.errorContainer
+                        .withValues(alpha: 0.25),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: theme.colorScheme.error.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Text(
+                    report.reviewNote!.trim(),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurface,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+
+              // Citizen photos
+              if (report.reviewImages.isNotEmpty) ...[
+                Row(
+                  children: [
+                    Icon(
+                      Icons.photo_library_outlined,
+                      size: 16,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      l10n.citizenReviewPhotos,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.errorContainer
+                            .withValues(alpha: 0.6),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '${report.reviewImages.length}',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onErrorContainer,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                _buildReviewImageSlider(
+                    context, report.reviewImages, l10n, theme),
+                const SizedBox(height: 16),
+              ],
+
+              // Reopen action button (when report is Done)
+              if (isDone) ...[
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: theme.colorScheme.error,
+                      foregroundColor: theme.colorScheme.onError,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: _isReopening
+                        ? null
+                        : () => _handleReopenReport(report, l10n),
+                    icon: _isReopening
+                        ? SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: theme.colorScheme.onError,
+                            ),
+                          )
+                        : const Icon(Icons.replay_rounded, size: 18),
+                    label: Text(
+                      l10n.reopenReportButton,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ],
+            ] else ...[
+              // Resolved star rating display
+              Row(
+                children: [
+                  ...List.generate(
+                    5,
+                    (i) => Icon(
+                      i < (report.rating ?? 0)
+                          ? Icons.star_rounded
+                          : Icons.star_outline_rounded,
+                      size: 24,
+                      color: Colors.amber,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${report.rating ?? 0}/5',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+              if (report.reviewNote != null &&
+                  report.reviewNote!.trim().isNotEmpty) ...[
+                const SizedBox(height: 10),
+                Text(
+                  report.reviewNote!.trim(),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReviewImageSlider(
+    BuildContext context,
+    List<String> images,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    if (images.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    if (images.length == 1) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: GestureDetector(
+          onTap: () => _openFullscreenImage(images, 0),
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: AppNetworkImage(
+              url: images.first,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: AspectRatio(
+        aspectRatio: 16 / 9,
+        child: Stack(
+          children: [
+            PageView.builder(
+              itemCount: images.length,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentReviewImageIndex = index;
+                });
+              },
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () => _openFullscreenImage(images, index),
+                  child: AppNetworkImage(
+                    url: images[index],
+                    fit: BoxFit.cover,
+                  ),
+                );
+              },
+            ),
+            Positioned(
+              bottom: 8,
+              right: 8,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.65),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  '${_currentReviewImageIndex + 1}/${images.length}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 }

@@ -1172,4 +1172,217 @@ class AppLocalizationsEn extends AppLocalizations {
   String paginationSummary(int from, int to, int total) {
     return '$from–$to of $total';
   }
+  String get resolutionInfo => 'Resolution Information';
+
+  @override
+  String get resolutionImages => 'Resolution Photos';
+
+  @override
+  String get noResolutionImages => 'No resolution photos provided';
+
+  @override
+  String get resolutionNote => 'Resolution Note';
+
+  @override
+  String staffNoAdditionalNote(String staffName) {
+    return '$staffName did not provide any additional notes';
+  }
+
+  @override
+  String get resolvedAtLabel => 'Resolved At';
+
+  @override
+  String get citizenReviewUnresolved => 'Citizen feedback: Not resolved';
+
+  @override
+  String get citizenRating => 'Citizen Rating';
+
+  @override
+  String get citizenReviewReason => 'Reason for unresolved status';
+
+  @override
+  String get citizenReviewPhotos => 'Photos provided by citizen';
+
+  @override
+  String get reopenReportButton => 'Request Re-handling';
+
+  @override
+  String get reopenReportConfirmTitle => 'Request re-handling for this report?';
+
+  @override
+  String get reopenReportConfirmMessage =>
+      'The status will be changed back to \'Processing\' and the assigned staff will be notified to re-handle the issue.';
+
+  @override
+  String get reopenReportSuccess =>
+      'Report reopened to Processing and staff notified!';
+
+  @override
+  String get unsatisfactoryBannerTitle => 'Unsatisfactory Reports';
+
+  @override
+  String unsatisfactoryProcessedCountFormat(int count) {
+    return '$count unsatisfactory';
+  }
+
+  @override
+  String rehandlingProcessingCountFormat(int count) {
+    return '$count in progress';
+  }
+
+  @override
+  String get unsatisfactoryPendingTab => 'Pending Review';
+
+  @override
+  String get unsatisfactoryProcessingTab => 'In Progress';
+
+  @override
+  String get rehandlingBadge => 'Re-handling';
+
+  @override
+  String get routeUnsatisfactoryReports => 'Unsatisfactory Reports';
+
+  @override
+  String get noUnsatisfactoryPending => 'No reports pending review';
+
+  @override
+  String get noUnsatisfactoryProcessing => 'No reports being re-handled';
+
+  @override
+  String get manageNews => 'News Management';
+
+  @override
+  String get quickAccess => 'Quick Access';
+
+  @override
+  String get emptyNewsTitle => 'No news yet';
+
+  @override
+  String get emptyNewsDescription =>
+      'There are no news articles published yet. Create a new article to notify the community.';
+
+  @override
+  String get createNewNews => 'Create New News';
+
+  @override
+  String get editNews => 'Edit News';
+
+  @override
+  String get newsTitle => 'News Title';
+
+  @override
+  String get newsTitleHint => 'Enter news title...';
+
+  @override
+  String get newsTitleRequired => 'Please enter news title';
+
+  @override
+  String get newsContent => 'News Content';
+
+  @override
+  String get newsContentHint => 'Enter content (Markdown/Readme supported)...';
+
+  @override
+  String get newsContentRequired => 'Please enter news content';
+
+  @override
+  String get newsImages => 'Attached Images';
+
+  @override
+  String get addImages => 'Add Images';
+
+  @override
+  String get preview => 'Preview';
+
+  @override
+  String get editor => 'Editor';
+
+  @override
+  String get newsDetail => 'News Detail';
+
+  @override
+  String get deleteNews => 'Delete News';
+
+  @override
+  String get confirmDeleteNewsTitle => 'Confirm Delete News';
+
+  @override
+  String get confirmDeleteNews =>
+      'Are you sure you want to delete this news? This action cannot be undone.';
+
+  @override
+  String get deleteNewsSuccess => 'News deleted successfully';
+
+  @override
+  String get createNewsSuccess => 'News created successfully';
+
+  @override
+  String get updateNewsSuccess => 'News updated successfully';
+
+  @override
+  String get newsAuthor => 'Author';
+
+  @override
+  String get newsCreatedDate => 'Posted Date';
+
+  @override
+  String get newsCreatedTime => 'Time';
+
+  @override
+  String get routeNewsManagement => 'News Management';
+
+  @override
+  String get routeCreateNews => 'Create News';
+
+  @override
+  String get routeNewsDetail => 'News Detail';
+
+  @override
+  String get routeEditNews => 'Edit News';
+
+  @override
+  String get formatBold => 'Bold';
+
+  @override
+  String get formatItalic => 'Italic';
+
+  @override
+  String get formatHeading => 'Heading';
+
+  @override
+  String get formatBulletList => 'Bullet List';
+
+  @override
+  String get formatNumberedList => 'Numbered List';
+
+  @override
+  String get formatQuote => 'Quote';
+
+  @override
+  String get formatCode => 'Code';
+
+  @override
+  String get sendNotification => 'Send notification';
+
+  @override
+  String get sendNotificationSubtitle =>
+      'Send push notifications to users when this news is created';
+
+  @override
+  String get notificationTarget => 'Notification Target';
+
+  @override
+  String get targetAll => 'All';
+
+  @override
+  String get targetAdmin => 'Admin';
+
+  @override
+  String get targetStaff => 'Staff';
+
+  @override
+  String get targetClient => 'Client';
+
+  @override
+  String get livePreview => 'Live Preview';
 }

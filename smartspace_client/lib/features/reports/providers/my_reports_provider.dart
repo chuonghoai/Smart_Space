@@ -11,7 +11,7 @@ class MyReportsState {
 
   final bool isLoading;
   final String? error;
-  final ReportStatus? currentFilter; // null for 'All'
+  final String? currentFilter; // null for 'All'
 
   MyReportsState({
     this.summaryReports = const [],
@@ -26,7 +26,7 @@ class MyReportsState {
     List<ReportModel>? displayReports,
     bool? isLoading,
     String? error,
-    ReportStatus? currentFilter,
+    String? currentFilter,
     bool clearError = false,
   }) {
     return MyReportsState(
@@ -55,6 +55,8 @@ class MyReportsState {
       summaryReports.where((r) => r.status == ReportStatus.processing).length;
   int get processedCount =>
       summaryReports.where((r) => r.status == ReportStatus.processed).length;
+  int get rehandlingCount =>
+      summaryReports.where((r) => r.isReviewResolved == false).length;
 
   //  Phân nhóm theo thời gian (dùng displayReports - ĐỔI khi filter)
   Map<String, List<ReportModel>> get groupedReports {
@@ -121,7 +123,7 @@ class MyReportsNotifier extends StateNotifier<MyReportsState> {
   }
 
   /// Khi user đổi filter → chỉ load lại danh sách hiển thị, KHÔNG đụng Summary
-  void setFilter(ReportStatus? status) {
+  void setFilter(String? status) {
     if (status == null) {
       state = state.clearFilter();
       _fetchDisplayReports();
@@ -132,11 +134,10 @@ class MyReportsNotifier extends StateNotifier<MyReportsState> {
   }
 
   /// Fetch chỉ dùng cho danh sách hiển thị (không ghi đè summaryReports)
-  Future<void> _fetchDisplayReports({ReportStatus? statusFilter}) async {
+  Future<void> _fetchDisplayReports({String? statusFilter}) async {
     state = state.copyWith(isLoading: true, clearError: true);
     try {
-      final statusParam = statusFilter?.name;
-      final response = await _service.getMyReports(status: statusParam);
+      final response = await _service.getMyReports(status: statusFilter);
       if (response.success && response.data != null) {
         state = state.copyWith(
           displayReports: response.data!,
