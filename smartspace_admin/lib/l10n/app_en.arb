@@ -392,5 +392,18 @@
   "noOtherDevices": "No other devices logged in.",
   "deviceLogoutSuccess": "Device logged out.",
   "allDevicesLogoutSuccess": "All other devices logged out.",
-  "routeManageDevices": "Manage Devices"
+  "routeManageDevices": "Manage Devices",
+  "resolutionInfo": "Resolution Information",
+  "resolutionImages": "Resolution Photos",
+  "noResolutionImages": "No resolution photos provided",
+  "resolutionNote": "Resolution Note",
+  "staffNoAdditionalNote": "{staffName} did not provide any additional notes",
+  "@staffNoAdditionalNote": {
+    "placeholders": {
+      "staffName": {
+        "type": "String"
+      }
+    }
+  },
+  "resolvedAtLabel": "Resolved At"
 }

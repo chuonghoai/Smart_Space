@@ -1053,4 +1053,24 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get routeManageDevices => 'Quản lý thiết bị';
+
+  @override
+  String get resolutionInfo => 'Kết quả xử lý';
+
+  @override
+  String get resolutionImages => 'Ảnh kết quả xử lý';
+
+  @override
+  String get noResolutionImages => 'Nhân viên không đính kèm hình ảnh';
+
+  @override
+  String get resolutionNote => 'Ghi chú xử lý';
+
+  @override
+  String staffNoAdditionalNote(String staffName) {
+    return '$staffName không có ghi chú gì thêm';
+  }
+
+  @override
+  String get resolvedAtLabel => 'Thời gian hoàn thành';
 }

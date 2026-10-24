@@ -230,10 +230,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
                 const SizedBox(height: 12),
                 Center(
                   child: TextButton.icon(
-                    onPressed: () {
-                      // TODO: Navigate to all reports list screen
-                      debugPrint('[AdminHome] View all reports clicked');
-                    },
+                    onPressed: () => context.go(RouterPath.reportDashboard),
                     icon: const Icon(Icons.arrow_forward, size: 16),
                     label: Text(l10n.viewAllReports),
                   ),

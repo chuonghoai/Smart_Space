@@ -2099,7 +2099,7 @@ abstract class AppLocalizations {
   /// No description provided for @logoutDeviceConfirmMessage.
   ///
   /// In en, this message translates to:
-  /// **'The session on "{deviceName}" will be ended.'**
+  /// **'The session on \"{deviceName}\" will be ended.'**
   String logoutDeviceConfirmMessage(String deviceName);
 
   /// No description provided for @logoutAllOtherDevices.
@@ -2143,6 +2143,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Manage Devices'**
   String get routeManageDevices;
+
+  /// No description provided for @resolutionInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution Information'**
+  String get resolutionInfo;
+
+  /// No description provided for @resolutionImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution Photos'**
+  String get resolutionImages;
+
+  /// No description provided for @noResolutionImages.
+  ///
+  /// In en, this message translates to:
+  /// **'No resolution photos provided'**
+  String get noResolutionImages;
+
+  /// No description provided for @resolutionNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution Note'**
+  String get resolutionNote;
+
+  /// No description provided for @staffNoAdditionalNote.
+  ///
+  /// In en, this message translates to:
+  /// **'{staffName} did not provide any additional notes'**
+  String staffNoAdditionalNote(String staffName);
+
+  /// No description provided for @resolvedAtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved At'**
+  String get resolvedAtLabel;
 }
 
 class _AppLocalizationsDelegate

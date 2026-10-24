@@ -26,6 +26,7 @@ class AdminReportDetailScreen extends ConsumerStatefulWidget {
 class _AdminReportDetailScreenState
     extends ConsumerState<AdminReportDetailScreen> {
   int _currentImageIndex = 0;
+  int _currentResolvedImageIndex = 0;
   StaffModel? _selectedStaff;
   String _selectedSeverity = 'low';
 
@@ -104,6 +105,9 @@ class _AdminReportDetailScreenState
     ReportAssignState assignState,
   ) {
     final isPending = report.status.toUpperCase() == 'PENDING';
+    final isDone = report.status.toUpperCase() == 'PROCESSED' ||
+        report.status.toUpperCase() == 'RESOLVED' ||
+        report.status.toUpperCase() == 'DONE';
 
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(
@@ -138,6 +142,12 @@ class _AdminReportDetailScreenState
             _buildAssignStaffTwoColumnSection(context, report, l10n, theme)
           else
             _buildAssignedStaffTwoColumnCard(context, report, l10n, theme),
+
+          // 7. Staff Resolution Section (when status is Done/Processed)
+          if (isDone) ...[
+            const SizedBox(height: 16),
+            _buildResolutionSection(context, report, l10n, theme),
+          ],
         ],
       ),
     );
@@ -1395,6 +1405,264 @@ class _AdminReportDetailScreenState
     );
   }
 
+  /// Resolution proof section showing staff photos and notes
+  Widget _buildResolutionSection(
+    BuildContext context,
+    ReportDetailModel report,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    final staffName = report.assignedStaffName?.trim().isNotEmpty == true
+        ? report.assignedStaffName!
+        : l10n.staff;
+    final hasNote =
+        report.resolvedNote != null && report.resolvedNote!.trim().isNotEmpty;
+
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+        ),
+      ),
+      color: theme.colorScheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header: Icon + Title + (Optional Resolved Date)
+            Row(
+              children: [
+                const Icon(
+                  Icons.verified_outlined,
+                  size: 20,
+                  color: Colors.green,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.resolutionInfo,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                    ),
+                  ),
+                ),
+                if (report.resolvedAt != null)
+                  Text(
+                    DateFormat('dd/MM/yyyy HH:mm')
+                        .format(report.resolvedAt!.toLocal()),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontSize: 12,
+                    ),
+                  ),
+              ],
+            ),
+            const Divider(height: 20),
+
+            // Resolution Photos Subheader
+            Row(
+              children: [
+                Icon(
+                  Icons.photo_library_outlined,
+                  size: 16,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  l10n.resolutionImages,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (report.resolvedImages.isNotEmpty) ...[
+                  const SizedBox(width: 6),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primaryContainer
+                          .withValues(alpha: 0.6),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '${report.resolvedImages.length}',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onPrimaryContainer,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            const SizedBox(height: 10),
+
+            // Slider of Resolution Images
+            _buildResolvedImageSlider(
+                context, report.resolvedImages, l10n, theme),
+            const SizedBox(height: 16),
+
+            // Resolution Note Subheader
+            Row(
+              children: [
+                Icon(
+                  Icons.speaker_notes_outlined,
+                  size: 16,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  l10n.resolutionNote,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // Note Box
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHighest
+                    .withValues(alpha: 0.35),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color:
+                      theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+                ),
+              ),
+              child: Text(
+                hasNote
+                    ? report.resolvedNote!.trim()
+                    : l10n.staffNoAdditionalNote(staffName),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: hasNote
+                      ? theme.colorScheme.onSurface
+                      : theme.colorScheme.onSurfaceVariant,
+                  fontStyle: hasNote ? FontStyle.normal : FontStyle.italic,
+                  height: 1.4,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResolvedImageSlider(
+    BuildContext context,
+    List<String> images,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    if (images.isEmpty) {
+      return Container(
+        height: 120,
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest
+              .withValues(alpha: 0.35),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.image_not_supported_outlined,
+                size: 32,
+                color:
+                    theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                l10n.noResolutionImages,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (images.length == 1) {
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: GestureDetector(
+          onTap: () => _openFullscreenImage(images, 0),
+          child: AspectRatio(
+            aspectRatio: 16 / 9,
+            child: AppNetworkImage(
+              url: images.first,
+              fit: BoxFit.cover,
+            ),
+          ),
+        ),
+      );
+    }
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: AspectRatio(
+        aspectRatio: 16 / 9,
+        child: Stack(
+          children: [
+            PageView.builder(
+              itemCount: images.length,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentResolvedImageIndex = index;
+                });
+              },
+              itemBuilder: (context, index) {
+                return GestureDetector(
+                  onTap: () => _openFullscreenImage(images, index),
+                  child: AppNetworkImage(
+                    url: images[index],
+                    fit: BoxFit.cover,
+                  ),
+                );
+              },
+            ),
+            Positioned(
+              bottom: 10,
+              right: 10,
+              child: Container(
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: Colors.black.withValues(alpha: 0.65),
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                child: Text(
+                  '${_currentResolvedImageIndex + 1}/${images.length}',
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
   /// Bottom action button (Xử lý phản ánh):
   /// - Only shown when report is PENDING and _selectedStaff != null (per user requirement to avoid clutter).
   Widget? _buildBottomActionButton(
@@ -1480,7 +1748,9 @@ class _AdminReportDetailScreenState
         return Colors.orange;
       case 'PROCESSING':
         return theme.colorScheme.primary;
+      case 'PROCESSED':
       case 'RESOLVED':
+      case 'DONE':
         return Colors.green;
       case 'REJECTED':
         return Colors.red;
@@ -1495,7 +1765,9 @@ class _AdminReportDetailScreenState
         return l10n.reportStatusPending;
       case 'PROCESSING':
         return l10n.reportStatusProcessing;
+      case 'PROCESSED':
       case 'RESOLVED':
+      case 'DONE':
         return l10n.reportStatusProcessed;
       case 'REJECTED':
         return l10n.reportStatusRejected;

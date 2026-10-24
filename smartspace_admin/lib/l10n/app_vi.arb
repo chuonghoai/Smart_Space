@@ -385,5 +385,18 @@
   "noOtherDevices": "Không có thiết bị khác đang đăng nhập.",
   "deviceLogoutSuccess": "Đã đăng xuất thiết bị.",
   "allDevicesLogoutSuccess": "Đã đăng xuất tất cả thiết bị khác.",
-  "routeManageDevices": "Quản lý thiết bị"
+  "routeManageDevices": "Quản lý thiết bị",
+  "resolutionInfo": "Kết quả xử lý",
+  "resolutionImages": "Ảnh kết quả xử lý",
+  "noResolutionImages": "Nhân viên không đính kèm hình ảnh",
+  "resolutionNote": "Ghi chú xử lý",
+  "staffNoAdditionalNote": "{staffName} không có ghi chú gì thêm",
+  "@staffNoAdditionalNote": {
+    "placeholders": {
+      "staffName": {
+        "type": "String"
+      }
+    }
+  },
+  "resolvedAtLabel": "Thời gian hoàn thành"
 }

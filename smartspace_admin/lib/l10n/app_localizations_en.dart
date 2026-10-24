@@ -1056,4 +1056,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get routeManageDevices => 'Manage Devices';
+
+  @override
+  String get resolutionInfo => 'Resolution Information';
+
+  @override
+  String get resolutionImages => 'Resolution Photos';
+
+  @override
+  String get noResolutionImages => 'No resolution photos provided';
+
+  @override
+  String get resolutionNote => 'Resolution Note';
+
+  @override
+  String staffNoAdditionalNote(String staffName) {
+    return '$staffName did not provide any additional notes';
+  }
+
+  @override
+  String get resolvedAtLabel => 'Resolved At';
 }
