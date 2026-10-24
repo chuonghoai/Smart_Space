@@ -41,6 +41,8 @@ class AppRouteInfo {
         return l10n.routePositionManagement;
       case 'routeManageDevices':
         return l10n.routeManageDevices;
+      case 'routeUnsatisfactoryReports':
+        return l10n.routeUnsatisfactoryReports;
       default:
         return nameKey;
     }
@@ -150,6 +152,12 @@ class RouteName {
     icon: Icons.phone_android,
     isHiddenInSearch: true,
   );
+  static const unsatisfactoryReports = AppRouteInfo(
+    path: '/reports/unsatisfactory',
+    nameKey: 'routeUnsatisfactoryReports',
+    icon: Icons.report_problem_outlined,
+    priority: 4,
+  );
 
   static const List<AppRouteInfo> allRoutes = [
     splash,
@@ -165,6 +173,7 @@ class RouteName {
     positionManagement,
     reportDashboard,
     reportList,
+    unsatisfactoryReports,
     spaceMap,
     search,
     notifications,

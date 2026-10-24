@@ -62,6 +62,15 @@ class _AllReportsScreenState extends State<AllReportsScreen> {
       appBar: AppBar(
         title: Text(l10n.myWorkDashboard),
         centerTitle: true,
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh),
+            onPressed: () async {
+              await _getLocation();
+              await _controller.fetchInitial();
+            },
+          ),
+        ],
       ),
       body: ListenableBuilder(
         listenable: _controller,
@@ -78,9 +87,9 @@ class _AllReportsScreenState extends State<AllReportsScreen> {
                   children: [
                     _buildFilterChip(state, 'all', l10n.filterAll),
                     const SizedBox(width: 8),
-                    _buildFilterChip(state, 'pending', l10n.reportStatusPending),
-                    const SizedBox(width: 8),
                     _buildFilterChip(state, 'processing', l10n.reportStatusProcessing),
+                    const SizedBox(width: 8),
+                    _buildFilterChip(state, 'rehandling', l10n.rehandling),
                     const SizedBox(width: 8),
                     _buildFilterChip(state, 'resolved', l10n.reportStatusProcessed),
                   ],
@@ -106,40 +115,56 @@ class _AllReportsScreenState extends State<AllReportsScreen> {
                               ],
                             ),
                           )
-                        : state.reports.isEmpty
-                            ? Center(child: Text(l10n.noReportsYet))
-                            : RefreshIndicator(
-                                onRefresh: () async {
-                                  await _getLocation();
-                                  await _controller.fetchInitial();
-                                },
-                                child: ListView.builder(
-                                  controller: _scrollController,
-                                  padding: const EdgeInsets.all(16),
-                                  itemCount: state.reports.length + (state.hasMore ? 1 : 0),
-                                  itemBuilder: (context, index) {
-                                    if (index == state.reports.length) {
-                                      return const Center(
-                                        child: Padding(
-                                          padding: EdgeInsets.all(16.0),
-                                          child: CircularProgressIndicator(),
+                        : RefreshIndicator(
+                            onRefresh: () async {
+                              await _getLocation();
+                              await _controller.fetchInitial();
+                            },
+                            child: state.reports.isEmpty
+                                ? LayoutBuilder(
+                                    builder: (context, constraints) => SingleChildScrollView(
+                                      physics: const AlwaysScrollableScrollPhysics(),
+                                      child: ConstrainedBox(
+                                        constraints: BoxConstraints(minHeight: constraints.maxHeight),
+                                        child: Center(
+                                          child: Text(
+                                            l10n.noReportsYet,
+                                            style: theme.textTheme.bodyMedium?.copyWith(
+                                              color: theme.colorScheme.onSurfaceVariant,
+                                            ),
+                                          ),
                                         ),
-                                      );
-                                    }
-
-                                    final report = state.reports[index];
-                                    return ReportFeedItem(
-                                      report: report,
-                                      userPosition: _currentPosition,
-                                      onTap: () {
-                                        context.push(
-                                          RouterPath.reportDetail.replaceFirst(':id', report.id),
+                                      ),
+                                    ),
+                                  )
+                                : ListView.builder(
+                                    controller: _scrollController,
+                                    physics: const AlwaysScrollableScrollPhysics(),
+                                    padding: const EdgeInsets.all(16),
+                                    itemCount: state.reports.length + (state.hasMore ? 1 : 0),
+                                    itemBuilder: (context, index) {
+                                      if (index == state.reports.length) {
+                                        return const Center(
+                                          child: Padding(
+                                            padding: EdgeInsets.all(16.0),
+                                            child: CircularProgressIndicator(),
+                                          ),
                                         );
-                                      },
-                                    );
-                                  },
-                                ),
-                              ),
+                                      }
+
+                                      final report = state.reports[index];
+                                      return ReportFeedItem(
+                                        report: report,
+                                        userPosition: _currentPosition,
+                                        onTap: () {
+                                          context.push(
+                                            RouterPath.reportDetail.replaceFirst(':id', report.id),
+                                          );
+                                        },
+                                      );
+                                    },
+                                  ),
+                          ),
               ),
             ],
           );
@@ -155,11 +180,11 @@ class _AllReportsScreenState extends State<AllReportsScreen> {
     if (state.stats != null) {
       int count = 0;
       if (filterValue == 'all') {
-        count = state.stats!.pending + state.stats!.processing;
-      } else if (filterValue == 'pending') {
-        count = state.stats!.pending;
+        count = state.stats!.total;
       } else if (filterValue == 'processing') {
         count = state.stats!.processing;
+      } else if (filterValue == 'rehandling') {
+        count = state.stats!.rehandling;
       } else if (filterValue == 'resolved') {
         count = state.stats!.resolved;
       }

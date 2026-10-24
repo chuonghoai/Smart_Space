@@ -203,5 +203,43 @@
   "quickAccessGuide": "Hướng dẫn",
   "routeMap": "Bản đồ",
   "myLocation": "Vị trí của tôi",
-  "refresh": "Làm mới"
-}
+  "refresh": "Làm mới",
+  "handleReport": "Xử lý phản ánh",
+  "processReportAction": "Xử lý",
+  "routeHandleReport": "Xử lý phản ánh",
+  "evidencePhotos": "Hình ảnh minh chứng xử lý",
+  "takePhoto": "Chụp ảnh",
+  "chooseFromGallery": "Thư viện",
+  "resolutionNote": "Ghi chú xử lý",
+  "resolutionNoteHint": "Mô tả kết quả công việc hoặc ghi chú xử lý...",
+  "slideToComplete": "Trượt để hoàn tất xử lý",
+  "submittingReport": "Đang gửi kết quả xử lý...",
+  "reportProcessedSuccess": "Đã hoàn tất xử lý phản ánh thành công!",
+  "provideEvidenceOrNoteWarning": "Vui lòng đính kèm ít nhất 1 ảnh minh chứng hoặc nhập ghi chú",
+  "uploadingEvidence": "Đang tải ảnh minh chứng lên...",
+  "submittingReportBackground": "Thông tin xử lý của bạn đang được gửi, vui lòng không tắt ứng dụng",
+  "submittingReportBackgroundTitle": "Đang gửi thông tin xử lý",
+  "uploadingEvidenceProgress": "Đang tải ảnh minh chứng ({current}/{total})...",
+  "@uploadingEvidenceProgress": {
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "almostDoneFinalizing": "Đang hoàn tất xử lý phản ánh ({current}/{total})...",
+  "@almostDoneFinalizing": {
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "handlingCompletedSuccess": "Đã gửi thông tin xử lý thành công!",
+  "gotIt": "Đã hiểu",
+  "handlingProgressTitle": "Tiến độ gửi thông tin xử lý",
+  "errorTitle": "Đã xảy ra lỗi",
+  "provideEvidencePhotoWarning": "Vui lòng đính kèm ít nhất 1 ảnh minh chứng để hoàn tất xử lý",
+  "evidencePhotosRequired": "Hình ảnh minh chứng xử lý *",
+  "rehandling": "Xử lý lại",
+  "rehandlingBadge": "Xử lý lại",
+  "rehandlingNotice": "Phản ánh này được đánh giá chưa thỏa đáng và đang được xử lý lại"
+}

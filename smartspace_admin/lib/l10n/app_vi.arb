@@ -365,5 +365,69 @@
   "totalPositions": "Tổng chức vụ",
   "positionAssignedStaff": "Nhân viên đã gán",
   "actionsColumn": "Thao tác",
-  "positionCodeHint": "VD: ELECTRICIAN, PLUMBER"
+  "positionCodeHint": "VD: ELECTRICIAN, PLUMBER",
+  "loggedInDevices": "Thiết bị đã đăng nhập",
+  "thisDevice": "Thiết bị này",
+  "activeNow": "Đang hoạt động",
+  "logoutDevice": "Đăng xuất",
+  "logoutDeviceConfirmTitle": "Đăng xuất khỏi thiết bị?",
+  "logoutDeviceConfirmMessage": "Phiên đăng nhập trên \"{deviceName}\" sẽ bị kết thúc.",
+  "@logoutDeviceConfirmMessage": {
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "logoutAllOtherDevices": "Đăng xuất tất cả thiết bị khác",
+  "logoutAllConfirmTitle": "Đăng xuất tất cả thiết bị khác?",
+  "logoutAllConfirmMessage": "Tất cả phiên ngoại trừ thiết bị này sẽ bị kết thúc.",
+  "noOtherDevices": "Không có thiết bị khác đang đăng nhập.",
+  "deviceLogoutSuccess": "Đã đăng xuất thiết bị.",
+  "allDevicesLogoutSuccess": "Đã đăng xuất tất cả thiết bị khác.",
+  "routeManageDevices": "Quản lý thiết bị",
+  "resolutionInfo": "Kết quả xử lý",
+  "resolutionImages": "Ảnh kết quả xử lý",
+  "noResolutionImages": "Nhân viên không đính kèm hình ảnh",
+  "resolutionNote": "Ghi chú xử lý",
+  "staffNoAdditionalNote": "{staffName} không có ghi chú gì thêm",
+  "@staffNoAdditionalNote": {
+    "placeholders": {
+      "staffName": {
+        "type": "String"
+      }
+    }
+  },
+  "resolvedAtLabel": "Thời gian hoàn thành",
+  "citizenReviewUnresolved": "Người dân phản hồi: Chưa được xử lý",
+  "citizenRating": "Đánh giá",
+  "citizenReviewReason": "Lý do chưa xử lý thỏa đáng",
+  "citizenReviewPhotos": "Hình ảnh người dân cung cấp",
+  "reopenReportButton": "Yêu cầu xử lý lại",
+  "reopenReportConfirmTitle": "Yêu cầu xử lý lại phản ánh?",
+  "reopenReportConfirmMessage": "Trạng thái phản ánh sẽ được chuyển về 'Đang xử lý' và gửi thông báo yêu cầu nhân viên phụ trách thực hiện xử lý lại.",
+  "reopenReportSuccess": "Đã chuyển trạng thái về Đang xử lý và thông báo cho nhân viên!",
+  "unsatisfactoryBannerTitle": "Phản ánh chưa thỏa đáng",
+  "unsatisfactoryProcessedCountFormat": "{count} chưa thỏa đáng",
+  "@unsatisfactoryProcessedCountFormat": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rehandlingProcessingCountFormat": "{count} đang xử lý",
+  "@rehandlingProcessingCountFormat": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unsatisfactoryPendingTab": "Chờ xử lý",
+  "unsatisfactoryProcessingTab": "Đang xử lý",
+  "rehandlingBadge": "Xử lý lại",
+  "routeUnsatisfactoryReports": "Phản ánh chưa thỏa đáng",
+  "noUnsatisfactoryPending": "Không có phản ánh nào chờ xử lý",
+  "noUnsatisfactoryProcessing": "Không có phản ánh nào đang xử lý lại"
 }

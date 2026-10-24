@@ -109,7 +109,16 @@ class ReportTableView extends ConsumerWidget {
                             _dCell(
                               Align(
                                 alignment: Alignment.centerLeft,
-                                child: StatusChip(r.status, theme),
+                                child: Wrap(
+                                  spacing: 4,
+                                  runSpacing: 4,
+                                  crossAxisAlignment: WrapCrossAlignment.center,
+                                  children: [
+                                    StatusChip(r.status, theme),
+                                    if (r.isReviewResolved == false)
+                                      _RehandlingChip(theme, l10n),
+                                  ],
+                                ),
                               ),
                               onTap: openDetail,
                             ),
@@ -307,6 +316,46 @@ class _StatusChip extends StatelessWidget {
         overflow: TextOverflow.ellipsis,
         style: theme.textTheme.labelSmall
             ?.copyWith(color: color, fontWeight: FontWeight.w700),
+      ),
+    );
+  }
+}
+
+class _RehandlingChip extends StatelessWidget {
+  final ThemeData theme;
+  final AppLocalizations l10n;
+
+  const _RehandlingChip(this.theme, this.l10n);
+
+  @override
+  Widget build(BuildContext context) {
+    const color = Color(0xFFE65100);
+    final isDark = theme.brightness == Brightness.dark;
+    final badgeColor = isDark ? const Color(0xFFFFB74D) : color;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        color: badgeColor.withValues(alpha: 0.15),
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(color: badgeColor.withValues(alpha: 0.4), width: 0.8),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.refresh_rounded, size: 10, color: badgeColor),
+          const SizedBox(width: 3),
+          Text(
+            l10n.rehandlingBadge,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: badgeColor,
+              fontWeight: FontWeight.w700,
+              fontSize: 10,
+            ),
+          ),
+        ],
       ),
     );
   }

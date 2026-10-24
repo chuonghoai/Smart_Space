@@ -565,4 +565,92 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get refresh => 'Refresh';
+
+  @override
+  String get handleReport => 'Handle Report';
+
+  @override
+  String get processReportAction => 'Process';
+
+  @override
+  String get routeHandleReport => 'Handle Report';
+
+  @override
+  String get evidencePhotos => 'Evidence Photos';
+
+  @override
+  String get takePhoto => 'Take Photo';
+
+  @override
+  String get chooseFromGallery => 'Gallery';
+
+  @override
+  String get resolutionNote => 'Resolution Note';
+
+  @override
+  String get resolutionNoteHint => 'Describe handling results or notes...';
+
+  @override
+  String get slideToComplete => 'Slide to complete';
+
+  @override
+  String get submittingReport => 'Submitting...';
+
+  @override
+  String get reportProcessedSuccess => 'Report resolved successfully!';
+
+  @override
+  String get provideEvidenceOrNoteWarning =>
+      'Please attach at least 1 evidence photo or enter a note';
+
+  @override
+  String get uploadingEvidence => 'Uploading evidence photos...';
+
+  @override
+  String get submittingReportBackground =>
+      'Your report handling info is being submitted, please do not close the app';
+
+  @override
+  String get submittingReportBackgroundTitle =>
+      'Submitting Handling Information';
+
+  @override
+  String uploadingEvidenceProgress(Object current, Object total) {
+    return 'Uploading evidence photos ($current/$total)...';
+  }
+
+  @override
+  String almostDoneFinalizing(Object current, Object total) {
+    return 'Finalizing report resolution ($current/$total)...';
+  }
+
+  @override
+  String get handlingCompletedSuccess =>
+      'Handling information submitted successfully!';
+
+  @override
+  String get gotIt => 'Got it';
+
+  @override
+  String get handlingProgressTitle => 'Handling Submission Progress';
+
+  @override
+  String get errorTitle => 'An error occurred';
+
+  @override
+  String get provideEvidencePhotoWarning =>
+      'Please attach at least 1 evidence photo before completing';
+
+  @override
+  String get evidencePhotosRequired => 'Resolution evidence photos *';
+
+  @override
+  String get rehandling => 'Re-handling';
+
+  @override
+  String get rehandlingBadge => 'Re-handling';
+
+  @override
+  String get rehandlingNotice =>
+      'This report was rated unsatisfactory and is being re-handled';
 }

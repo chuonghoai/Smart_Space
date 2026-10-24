@@ -26,4 +26,7 @@ public class ReportResponse {
 
     @JsonProperty("assigned_at")
     private String assignedAt;
+
+    @JsonProperty("is_review_resolved")
+    private Boolean isReviewResolved;
 }

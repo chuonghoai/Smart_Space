@@ -47,4 +47,25 @@ class ReportRepoApi implements ReportRepo {
       },
     );
   }
+
+  @override
+  Future<ApiResponse<ReportDetailModel>> completeReport(
+    String reportId, {
+    required String note,
+    required List<String> imageUrls,
+  }) async {
+    return await apiClient.post<ReportDetailModel>(
+      '/reports/$reportId/complete',
+      data: {
+        'note': note,
+        'image_urls': imageUrls,
+      },
+      decoder: (json) {
+        if (json is Map<String, dynamic>) {
+          return ReportDetailModel.fromJson(json);
+        }
+        throw Exception('Invalid response format');
+      },
+    );
+  }
 }

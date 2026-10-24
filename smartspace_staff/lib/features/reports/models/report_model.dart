@@ -16,6 +16,7 @@ class ReportModel {
   final String? userAvatarUrl;
   final bool isAnonymous;
   final ReportSeverity severity;
+  final bool? isReviewResolved;
 
   ReportModel({
     required this.id,
@@ -32,6 +33,7 @@ class ReportModel {
     this.userAvatarUrl,
     this.isAnonymous = false,
     this.severity = ReportSeverity.unknown,
+    this.isReviewResolved,
   });
 
   factory ReportModel.fromJson(Map<String, dynamic> json) {
@@ -53,6 +55,7 @@ class ReportModel {
       userAvatarUrl: json['userAvatarUrl'] as String? ?? json['user_avatar_url'] as String?,
       isAnonymous: json['isAnonymous'] as bool? ?? json['is_anonymous'] as bool? ?? false,
       severity: mapSeverity(json['severity'] as String?),
+      isReviewResolved: json['isReviewResolved'] as bool? ?? json['is_review_resolved'] as bool?,
     );
   }
 
@@ -66,6 +69,12 @@ class ReportModel {
       'longitude': longitude,
       'status': _statusToString(status),
       'created_at': createdAt.toIso8601String(),
+      'assigned_at': assignedAt?.toIso8601String(),
+      'userName': userName,
+      'userAvatarUrl': userAvatarUrl,
+      'is_anonymous': isAnonymous,
+      'severity': severity.name,
+      'isReviewResolved': isReviewResolved,
     };
   }
 

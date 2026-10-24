@@ -19,4 +19,6 @@ public class AdminOverviewResponse {
     long issueCount;
     long pendingCount;
     long processingCount;
+    long unsatisfactoryProcessedCount;
+    long rehandlingProcessingCount;
 }

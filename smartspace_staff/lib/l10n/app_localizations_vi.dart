@@ -565,4 +565,91 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get refresh => 'Làm mới';
+
+  @override
+  String get handleReport => 'Xử lý phản ánh';
+
+  @override
+  String get processReportAction => 'Xử lý';
+
+  @override
+  String get routeHandleReport => 'Xử lý phản ánh';
+
+  @override
+  String get evidencePhotos => 'Hình ảnh minh chứng xử lý';
+
+  @override
+  String get takePhoto => 'Chụp ảnh';
+
+  @override
+  String get chooseFromGallery => 'Thư viện';
+
+  @override
+  String get resolutionNote => 'Ghi chú xử lý';
+
+  @override
+  String get resolutionNoteHint =>
+      'Mô tả kết quả công việc hoặc ghi chú xử lý...';
+
+  @override
+  String get slideToComplete => 'Trượt để hoàn tất xử lý';
+
+  @override
+  String get submittingReport => 'Đang gửi kết quả xử lý...';
+
+  @override
+  String get reportProcessedSuccess => 'Đã hoàn tất xử lý phản ánh thành công!';
+
+  @override
+  String get provideEvidenceOrNoteWarning =>
+      'Vui lòng đính kèm ít nhất 1 ảnh minh chứng hoặc nhập ghi chú';
+
+  @override
+  String get uploadingEvidence => 'Đang tải ảnh minh chứng lên...';
+
+  @override
+  String get submittingReportBackground =>
+      'Thông tin xử lý của bạn đang được gửi, vui lòng không tắt ứng dụng';
+
+  @override
+  String get submittingReportBackgroundTitle => 'Đang gửi thông tin xử lý';
+
+  @override
+  String uploadingEvidenceProgress(Object current, Object total) {
+    return 'Đang tải ảnh minh chứng ($current/$total)...';
+  }
+
+  @override
+  String almostDoneFinalizing(Object current, Object total) {
+    return 'Đang hoàn tất xử lý phản ánh ($current/$total)...';
+  }
+
+  @override
+  String get handlingCompletedSuccess => 'Đã gửi thông tin xử lý thành công!';
+
+  @override
+  String get gotIt => 'Đã hiểu';
+
+  @override
+  String get handlingProgressTitle => 'Tiến độ gửi thông tin xử lý';
+
+  @override
+  String get errorTitle => 'Đã xảy ra lỗi';
+
+  @override
+  String get provideEvidencePhotoWarning =>
+      'Vui lòng đính kèm ít nhất 1 ảnh minh chứng để hoàn tất xử lý';
+
+  @override
+  String get evidencePhotosRequired => 'Hình ảnh minh chứng xử lý *';
+
+  @override
+  String get rehandling => 'Xử lý lại';
+
+  @override
+  String get rehandlingBadge => 'Xử lý lại';
+
+  @override
+  String get rehandlingNotice =>
+      'Phản ánh này được đánh giá chưa thỏa đáng và đang được xử lý lại';
 }

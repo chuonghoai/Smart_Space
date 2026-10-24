@@ -179,4 +179,26 @@ class ReportRepoMock implements ReportRepo {
       ),
     );
   }
+
+  @override
+  Future<ApiResponse<ReportDetailModel>> submitReview(
+    String reportId, {
+    required bool isResolved,
+    int? rating,
+    String? reason,
+    List<String>? imageUrls,
+  }) async {
+    final detail = (await getReportDetail(reportId)).data!;
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: detail.copyWith(
+        isReviewResolved: isResolved,
+        rating: rating,
+        reviewNote: reason,
+        reviewImageUrls: imageUrls,
+        reviewedAt: DateTime.now(),
+      ),
+    );
+  }
 }

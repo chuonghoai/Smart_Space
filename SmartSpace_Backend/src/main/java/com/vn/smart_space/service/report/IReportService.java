@@ -4,6 +4,7 @@ import java.util.List;
 
 import com.vn.smart_space.dto.PageResponse;
 import com.vn.smart_space.dto.request.admin.ReportAssignRequest;
+import com.vn.smart_space.dto.request.report.ReportCompleteRequest;
 import com.vn.smart_space.dto.request.report.ReportCreateRequest;
 import com.vn.smart_space.dto.response.admin.MapReportResponse;
 import com.vn.smart_space.dto.response.admin.RecentReportResponse;
@@ -31,6 +32,8 @@ public interface IReportService {
 
         ReportDetailResponse assignReport(String reportId, ReportAssignRequest request, String adminId);
 
+        ReportDetailResponse completeReport(String reportId, ReportCompleteRequest request, String staffId);
+
         List<ReportResponse> getMyReports(String userId, String status, int limit);
 
         // Dashboard statistics
@@ -52,4 +55,9 @@ public interface IReportService {
         List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, int page, int limit);
 
         ReportStatisticsResponse getStaffReportStatistics(String staffId);
+
+        ReportDetailResponse reviewReport(String reportId, com.vn.smart_space.dto.request.report.ReportReviewRequest request, String userId);
+
+        List<RecentReportResponse> getUnsatisfactoryReports(String tab);
 }
+
