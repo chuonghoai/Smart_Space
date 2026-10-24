@@ -7,6 +7,7 @@ import 'package:smartspace_admin/features/users/models/user_detail_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/screen/users/user_shared_widgets.dart';
+import 'package:smartspace_admin/ui/shared/image/person_avatar.dart';
 
 /// Mở chi tiết người dùng: Dialog (màn rộng) hoặc bottom sheet (màn hẹp).
 void showUserDetail(BuildContext context, String userId) {
@@ -149,7 +150,7 @@ class _UserDetailBody extends StatelessWidget {
         // Header
         Row(
           children: [
-            UserAvatar(
+            PersonAvatar(
               avatarUrl: user.avatarUrl,
               name: user.fullName,
               radius: 32,

@@ -6,63 +6,18 @@ import 'package:smartspace_admin/features/users/application/user_providers.dart'
 import 'package:smartspace_admin/features/users/models/admin_user_model.dart';
 import 'package:smartspace_admin/features/users/models/user_statistics_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
-import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
+import 'package:smartspace_admin/ui/shared/dashboard/kpi_card.dart';
+import 'package:smartspace_admin/ui/shared/image/person_avatar.dart';
 
 /// Định dạng ngày dùng chung cho màn Quản lý người dùng.
 String formatUserDate(DateTime? date) =>
     date == null ? '—' : DateFormat('dd/MM/yyyy').format(date);
-
-String formatUserCount(BuildContext context, int value) =>
-    NumberFormat.decimalPattern(
-      Localizations.localeOf(context).toLanguageTag(),
-    ).format(value);
 
 String sortLabel(AppLocalizations l10n, UserSort sort) => switch (sort) {
   UserSort.newest => l10n.sortNewest,
   UserSort.oldest => l10n.sortOldest,
   UserSort.name => l10n.sortByName,
 };
-
-/// Avatar người dùng — ảnh mạng qua [AppNetworkImage], fallback chữ cái đầu.
-class UserAvatar extends StatelessWidget {
-  final String? avatarUrl;
-  final String name;
-  final double radius;
-
-  const UserAvatar({
-    super.key,
-    required this.avatarUrl,
-    required this.name,
-    required this.radius,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final initials = Container(
-      width: radius * 2,
-      height: radius * 2,
-      alignment: Alignment.center,
-      color: theme.colorScheme.primary.withValues(alpha: 0.1),
-      child: Text(
-        name.trim().isNotEmpty ? name.trim()[0].toUpperCase() : '?',
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          fontSize: radius * 0.8,
-          color: theme.colorScheme.primary,
-        ),
-      ),
-    );
-
-    return AppNetworkImage(
-      url: avatarUrl,
-      width: radius * 2,
-      height: radius * 2,
-      isCircle: true,
-      errorWidget: initials,
-    );
-  }
-}
 
 /// Chip "Đã khoá" — chỉ hiển thị khi tài khoản bị khoá.
 class UserBlockedChip extends StatelessWidget {
@@ -88,114 +43,7 @@ class UserBlockedChip extends StatelessWidget {
   }
 }
 
-/// KPI card: label + icon, giá trị lớn, dòng chú thích (so sánh kỳ trước / tỉ lệ).
-class UserKpiCard extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final String label;
-  final String value;
-  final String? footnote;
-  final Color? footnoteColor;
-  final IconData? footnoteIcon;
-  final bool compact;
-
-  const UserKpiCard({
-    super.key,
-    required this.icon,
-    required this.iconColor,
-    required this.label,
-    required this.value,
-    this.footnote,
-    this.footnoteColor,
-    this.footnoteIcon,
-    this.compact = false,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final mutedColor = theme.colorScheme.onSurfaceVariant;
-
-    return Container(
-      padding: EdgeInsets.all(compact ? 12 : 20),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.dividerColor),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Text(
-                  label,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style:
-                      (compact
-                              ? theme.textTheme.bodySmall
-                              : theme.textTheme.bodyMedium)
-                          ?.copyWith(color: mutedColor),
-                ),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding: EdgeInsets.all(compact ? 6 : 8),
-                decoration: BoxDecoration(
-                  color: iconColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, size: compact ? 16 : 20, color: iconColor),
-              ),
-            ],
-          ),
-          SizedBox(height: compact ? 8 : 12),
-          Text(
-            value,
-            style:
-                (compact
-                        ? theme.textTheme.titleLarge
-                        : theme.textTheme.headlineMedium)
-                    ?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: theme.colorScheme.onSurface,
-                    ),
-          ),
-          if (footnote != null) ...[
-            const SizedBox(height: 4),
-            Row(
-              children: [
-                if (footnoteIcon != null) ...[
-                  Icon(
-                    footnoteIcon,
-                    size: 14,
-                    color: footnoteColor ?? mutedColor,
-                  ),
-                  const SizedBox(width: 2),
-                ],
-                Expanded(
-                  child: Text(
-                    footnote!,
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: footnoteColor ?? mutedColor,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ],
-      ),
-    );
-  }
-}
-
-/// 4 KPI của màn Quản lý người dùng. Rộng >= 900 → 1 hàng 4 cột, còn lại 2x2.
+/// 4 KPI của màn Quản lý người dùng.
 class UserKpiGrid extends ConsumerWidget {
   final bool compact;
   const UserKpiGrid({super.key, this.compact = false});
@@ -203,12 +51,11 @@ class UserKpiGrid extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
     final statsAsync = ref.watch(userStatisticsProvider);
 
     return statsAsync.when(
-      data: (stats) => _buildGrid(context, l10n, theme, stats),
-      loading: () => _buildGrid(context, l10n, theme, null),
+      data: (stats) => _buildGrid(context, l10n, stats),
+      loading: () => _buildGrid(context, l10n, null),
       error: (_, _) => InlineErrorBanner(
         message: l10n.statisticsLoadFailed,
         onRetry: () => ref.invalidate(userStatisticsProvider),
@@ -219,134 +66,64 @@ class UserKpiGrid extends ConsumerWidget {
   Widget _buildGrid(
     BuildContext context,
     AppLocalizations l10n,
-    ThemeData theme,
     UserStatisticsModel? stats,
   ) {
-    final semantic = AppSemanticColors.of(context);
-    final placeholder = stats == null ? '—' : null;
-
-    final cards = <Widget>[
-      UserKpiCard(
-        compact: compact,
-        icon: Icons.people_outline,
-        iconColor: theme.colorScheme.primary,
-        label: l10n.totalUsers,
-        value: placeholder ?? formatUserCount(context, stats!.totalUsers),
-      ),
-      _changeCard(
-        context,
-        l10n,
-        icon: Icons.person_add_alt_outlined,
-        iconColor: semantic.info,
-        label: l10n.newUsers30Days,
-        current: stats?.newUsers,
-        previous: stats?.newUsersPrevious,
-        // Tăng người dùng mới là tín hiệu tốt → có màu semantic
-        colorizeChange: true,
-      ),
-      UserKpiCard(
-        compact: compact,
-        icon: Icons.campaign_outlined,
-        iconColor: semantic.success,
-        label: l10n.activeReporters30Days,
-        value: placeholder ?? formatUserCount(context, stats!.activeReporters),
-        footnote: stats?.activeReporterRatio == null
-            ? null
-            : l10n.percentOfUsers(
-                (stats!.activeReporterRatio! * 100).toStringAsFixed(1),
-              ),
-      ),
-      _changeCard(
-        context,
-        l10n,
-        icon: Icons.description_outlined,
-        iconColor: theme.colorScheme.secondary,
-        label: l10n.reports30Days,
-        current: stats?.reports,
-        previous: stats?.reportsPrevious,
-        // Số phản ánh tăng/giảm không mang nghĩa tốt/xấu → giữ màu trung tính
-        colorizeChange: false,
-      ),
-    ];
-
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final columns = constraints.maxWidth >= 900 ? 4 : 2;
-        final gap = compact ? 8.0 : 16.0;
-        final rows = <Widget>[];
-        for (var i = 0; i < cards.length; i += columns) {
-          final rowCards = cards.sublist(i, i + columns);
-          rows.add(
-            IntrinsicHeight(
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  for (var j = 0; j < rowCards.length; j++) ...[
-                    if (j > 0) SizedBox(width: gap),
-                    Expanded(child: rowCards[j]),
-                  ],
-                ],
-              ),
-            ),
-          );
-        }
-        return Column(
-          children: [
-            for (var i = 0; i < rows.length; i++) ...[
-              if (i > 0) SizedBox(height: gap),
-              rows[i],
-            ],
-          ],
-        );
-      },
-    );
-  }
-
-  Widget _changeCard(
-    BuildContext context,
-    AppLocalizations l10n, {
-    required IconData icon,
-    required Color iconColor,
-    required String label,
-    required int? current,
-    required int? previous,
-    required bool colorizeChange,
-  }) {
     final theme = Theme.of(context);
     final semantic = AppSemanticColors.of(context);
+    String value(int? v) => v == null ? '—' : formatCount(context, v);
 
-    String? footnote;
-    IconData? footnoteIcon;
-    Color? footnoteColor;
-
-    if (current != null && previous != null) {
-      final change = percentChange(current, previous);
-      if (change == null) {
-        footnote = l10n.noPreviousPeriodData;
-      } else {
-        final rounded = change.round();
-        final sign = rounded > 0 ? '+' : (rounded < 0 ? '−' : '');
-        footnote = l10n.changeVsPrevious30Days('$sign${rounded.abs()}%');
-        footnoteIcon = rounded > 0
-            ? Icons.trending_up
-            : (rounded < 0 ? Icons.trending_down : Icons.trending_flat);
-        if (colorizeChange && rounded != 0) {
-          footnoteColor = rounded > 0
-              ? semantic.success
-              : theme.colorScheme.error;
-        }
-      }
-    }
-
-    return UserKpiCard(
+    return KpiGrid(
       compact: compact,
-      icon: icon,
-      iconColor: iconColor,
-      label: label,
-      value: current == null ? '—' : formatUserCount(context, current),
-      footnote: footnote,
-      footnoteIcon: footnoteIcon,
-      footnoteColor: footnoteColor,
+      cards: [
+        KpiCard(
+          compact: compact,
+          icon: Icons.people_outline,
+          iconColor: theme.colorScheme.primary,
+          label: l10n.totalUsers,
+          value: value(stats?.totalUsers),
+        ),
+        KpiCard(
+          compact: compact,
+          icon: Icons.person_add_alt_outlined,
+          iconColor: semantic.info,
+          label: l10n.newUsers30Days,
+          value: value(stats?.newUsers),
+          footnote: KpiFootnote.change(
+            context,
+            current: stats?.newUsers,
+            previous: stats?.newUsersPrevious,
+            // Tăng người dùng mới là tín hiệu tốt → có màu semantic
+            tone: ChangeTone.higherIsBetter,
+          ),
+        ),
+        KpiCard(
+          compact: compact,
+          icon: Icons.campaign_outlined,
+          iconColor: semantic.success,
+          label: l10n.activeReporters30Days,
+          value: value(stats?.activeReporters),
+          footnote: stats?.activeReporterRatio == null
+              ? null
+              : KpiFootnote(
+                  l10n.percentOfUsers(
+                    (stats!.activeReporterRatio! * 100).toStringAsFixed(1),
+                  ),
+                ),
+        ),
+        KpiCard(
+          compact: compact,
+          icon: Icons.description_outlined,
+          iconColor: theme.colorScheme.secondary,
+          label: l10n.reports30Days,
+          value: value(stats?.reports),
+          // Số phản ánh tăng/giảm không mang nghĩa tốt/xấu → giữ màu trung tính
+          footnote: KpiFootnote.change(
+            context,
+            current: stats?.reports,
+            previous: stats?.reportsPrevious,
+          ),
+        ),
+      ],
     );
   }
 }
@@ -379,7 +156,7 @@ class UserCard extends StatelessWidget {
           padding: const EdgeInsets.all(12),
           child: Row(
             children: [
-              UserAvatar(
+              PersonAvatar(
                 avatarUrl: user.avatarUrl,
                 name: user.fullName,
                 radius: 22,
@@ -671,40 +448,6 @@ class UserErrorState extends StatelessWidget {
           ),
           const SizedBox(height: 12),
           OutlinedButton(onPressed: onRetry, child: Text(l10n.retry)),
-        ],
-      ),
-    );
-  }
-}
-
-/// Banner lỗi gọn trong một dòng (dùng cho khối thống kê).
-class InlineErrorBanner extends StatelessWidget {
-  final String message;
-  final VoidCallback onRetry;
-  const InlineErrorBanner({
-    super.key,
-    required this.message,
-    required this.onRetry,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.error.withValues(alpha: 0.08),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Row(
-        children: [
-          Icon(Icons.error_outline, size: 20, color: theme.colorScheme.error),
-          const SizedBox(width: 8),
-          Expanded(child: Text(message, style: theme.textTheme.bodyMedium)),
-          TextButton(
-            onPressed: onRetry,
-            child: Text(AppLocalizations.of(context)!.retry),
-          ),
         ],
       ),
     );

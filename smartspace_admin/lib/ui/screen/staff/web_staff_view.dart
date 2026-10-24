@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartspace_admin/features/staff/application/staff_providers.dart';
 import 'package:smartspace_admin/features/staff/models/staff_list_response.dart';
-import 'package:smartspace_admin/features/staff/models/staff_summary_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
-import 'package:smartspace_admin/ui/screen/staff/staff_charts.dart';
+import 'package:smartspace_admin/ui/screen/staff/staff_dashboard_widgets.dart';
 import 'package:smartspace_admin/ui/screen/staff/staff_shared_widgets.dart';
+import 'package:smartspace_admin/ui/shared/dashboard/kpi_card.dart';
 
 class WebStaffView extends ConsumerStatefulWidget {
   const WebStaffView({super.key});
@@ -38,42 +38,31 @@ class _WebStaffViewState extends ConsumerState<WebStaffView> {
           _buildHeader(l10n, theme, staffAsync),
           const SizedBox(height: 20),
 
-          // Summary Cards
-          staffAsync.when(
-            data: (data) => _buildWebSummaryCards(theme, data.summary, l10n),
-            loading: () => const SizedBox(height: 90),
-            error: (_, _) => const SizedBox.shrink(),
-          ),
+          // KPI
+          const StaffKpiGrid(),
           const SizedBox(height: 20),
 
-          // Charts Row
-          ref.watch(staffChartProvider).when(
-            data: (chartData) => Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Expanded(
-                  flex: 1,
-                  child: StaffStatusDonutChart(
-                    activeCount: chartData.activeStaff,
-                    blockedCount: chartData.blockedStaff,
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  flex: 2,
-                  child: StaffWorkloadBarChart(
-                    topWorkload: chartData.topWorkload,
-                  ),
-                ),
-              ],
-            ),
-            loading: () => const SizedBox(
-              height: 220,
-              child: Center(child: CircularProgressIndicator()),
-            ),
-            error: (_, _) => const SizedBox.shrink(),
+          // Charts — 2/3 luồng xử lý + 1/3 khối lượng công việc, xếp dọc khi hẹp
+          LayoutBuilder(
+            builder: (context, constraints) {
+              const flow = StaffFlowChart();
+              const workload = StaffWorkloadChart();
+              if (constraints.maxWidth < 900) {
+                return const Column(
+                  children: [flow, SizedBox(height: 16), workload],
+                );
+              }
+              return const Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Expanded(flex: 2, child: flow),
+                  SizedBox(width: 16),
+                  Expanded(child: workload),
+                ],
+              );
+            },
           ),
-          const SizedBox(height: 20),
+          const SizedBox(height: 24),
 
           // Search + Filter
           _buildWebSearchBar(l10n, theme),
@@ -90,16 +79,26 @@ class _WebStaffViewState extends ConsumerState<WebStaffView> {
     );
   }
 
-  Widget _buildHeader(AppLocalizations l10n, ThemeData theme,
-      AsyncValue<StaffListResponse> staffAsync) {
-    final total = staffAsync.valueOrNull?.summary.total ?? 0;
+  Widget _buildHeader(
+    AppLocalizations l10n,
+    ThemeData theme,
+    AsyncValue<StaffListResponse> staffAsync,
+  ) {
+    final total =
+        ref.watch(
+          staffStatisticsProvider.select((s) => s.valueOrNull?.totalStaff),
+        ) ??
+        staffAsync.valueOrNull?.summary.total;
     return Row(
       children: [
         Expanded(
           child: Text(
-            '${l10n.manageStaffs} · $total',
-            style: theme.textTheme.headlineSmall
-                ?.copyWith(fontWeight: FontWeight.bold),
+            total == null
+                ? l10n.manageStaffs
+                : '${l10n.manageStaffs} · ${formatCount(context, total)}',
+            style: theme.textTheme.headlineSmall?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
           ),
         ),
         FilledButton.icon(
@@ -116,59 +115,13 @@ class _WebStaffViewState extends ConsumerState<WebStaffView> {
     );
   }
 
-  Widget _buildWebSummaryCards(ThemeData theme, StaffSummaryModel summary, AppLocalizations l10n) {
-    final successColor = theme.brightness == Brightness.light ? const Color(0xFF2E7D32) : const Color(0xFF66BB6A);
-    final warningColor = theme.brightness == Brightness.light ? const Color(0xFFF9A825) : const Color(0xFFFFCA28);
-    
-    return Row(
-      children: [
-        Expanded(
-          child: _WebKpiCard(
-            icon: Icons.people_outline,
-            iconColor: theme.colorScheme.primary,
-            value: '${summary.total}',
-            label: l10n.totalStaff,
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: _WebKpiCard(
-            icon: Icons.check_circle_outline,
-            iconColor: successColor,
-            value: '${summary.active}',
-            label: l10n.activeStatus,
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: _WebKpiCard(
-            icon: Icons.lock_outline,
-            iconColor: theme.colorScheme.error,
-            value: '${summary.blocked}',
-            label: l10n.blockedStatus,
-          ),
-        ),
-        const SizedBox(width: 16),
-        Expanded(
-          child: _WebKpiCard(
-            icon: Icons.assignment_outlined,
-            iconColor: warningColor,
-            value: '${summary.totalProcessing}',
-            label: l10n.processingStatus,
-          ),
-        ),
-      ],
-    );
-  }
-
   Widget _buildWebSearchBar(AppLocalizations l10n, ThemeData theme) {
     return Row(
       children: [
         Expanded(
           child: TextField(
             controller: _searchController,
-            onChanged: (v) =>
-                ref.read(staffListProvider.notifier).setSearch(v),
+            onChanged: (v) => ref.read(staffListProvider.notifier).setSearch(v),
             decoration: InputDecoration(
               hintText: l10n.searchPlaceholder,
               prefixIcon: const Icon(Icons.search),
@@ -180,8 +133,10 @@ class _WebStaffViewState extends ConsumerState<WebStaffView> {
                 borderRadius: BorderRadius.circular(8),
                 borderSide: BorderSide(color: theme.dividerColor),
               ),
-              contentPadding:
-                  const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              contentPadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 12,
+              ),
               filled: true,
               fillColor: theme.colorScheme.surface,
             ),
@@ -201,9 +156,13 @@ class _WebStaffViewState extends ConsumerState<WebStaffView> {
               items: [
                 DropdownMenuItem(value: 'all', child: Text(l10n.all)),
                 DropdownMenuItem(
-                    value: 'active', child: Text(l10n.activeStatus)),
+                  value: 'active',
+                  child: Text(l10n.activeStatus),
+                ),
                 DropdownMenuItem(
-                    value: 'blocked', child: Text(l10n.blockedStatus)),
+                  value: 'blocked',
+                  child: Text(l10n.blockedStatus),
+                ),
               ],
               onChanged: (v) =>
                   ref.read(staffListProvider.notifier).setStatusFilter(v),
@@ -215,7 +174,10 @@ class _WebStaffViewState extends ConsumerState<WebStaffView> {
   }
 
   Widget _buildWebDataTable(
-      AppLocalizations l10n, ThemeData theme, StaffListResponse data) {
+    AppLocalizations l10n,
+    ThemeData theme,
+    StaffListResponse data,
+  ) {
     if (data.staffs.isEmpty) {
       return _buildEmptyState(theme, l10n, data.totalElements == 0);
     }
@@ -231,7 +193,8 @@ class _WebStaffViewState extends ConsumerState<WebStaffView> {
           ),
           child: DataTable(
             headingRowColor: WidgetStateProperty.all(
-                theme.colorScheme.surfaceContainerLow),
+              theme.colorScheme.surfaceContainerLow,
+            ),
             headingTextStyle: theme.textTheme.labelMedium?.copyWith(
               color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
               fontWeight: FontWeight.w600,
@@ -251,54 +214,68 @@ class _WebStaffViewState extends ConsumerState<WebStaffView> {
               return DataRow(
                 color: staff.isBlocked
                     ? WidgetStateProperty.all(
-                        theme.colorScheme.onSurface.withValues(alpha: 0.04))
+                        theme.colorScheme.onSurface.withValues(alpha: 0.04),
+                      )
                     : null,
                 cells: [
-                  DataCell(Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      StaffAvatar(staff: staff, radius: 16),
-                      const SizedBox(width: 10),
-                      Flexible(
-                        child: Text(
-                          staff.fullName,
-                          overflow: TextOverflow.ellipsis,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            color: staff.isBlocked
-                                ? theme.colorScheme.onSurface
-                                    .withValues(alpha: 0.5)
-                                : null,
+                  DataCell(
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        StaffAvatar(staff: staff, radius: 16),
+                        const SizedBox(width: 10),
+                        Flexible(
+                          child: Text(
+                            staff.fullName,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(
+                              fontWeight: FontWeight.w500,
+                              color: staff.isBlocked
+                                  ? theme.colorScheme.onSurface.withValues(
+                                      alpha: 0.5,
+                                    )
+                                  : null,
+                            ),
                           ),
                         ),
+                      ],
+                    ),
+                  ),
+                  DataCell(
+                    Text(
+                      staff.email,
+                      style: TextStyle(
+                        color: staff.isBlocked
+                            ? theme.colorScheme.onSurface.withValues(alpha: 0.5)
+                            : theme.colorScheme.onSurface.withValues(
+                                alpha: 0.7,
+                              ),
                       ),
-                    ],
-                  )),
-                  DataCell(Text(
-                    staff.email,
-                    style: TextStyle(
-                      color: staff.isBlocked
-                          ? theme.colorScheme.onSurface.withValues(alpha: 0.5)
-                          : theme.colorScheme.onSurface.withValues(alpha: 0.7),
                     ),
-                  )),
-                  DataCell(Text(
-                    staff.phoneNumber ?? '—',
-                    style: TextStyle(
-                      color:
-                          theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                  ),
+                  DataCell(
+                    Text(
+                      staff.phoneNumber ?? '—',
+                      style: TextStyle(
+                        color: theme.colorScheme.onSurface.withValues(
+                          alpha: 0.7,
+                        ),
+                      ),
                     ),
-                  )),
-                  DataCell(Text(
-                    '${staff.processingCount}',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      color: staff.processingCount > 0
-                          ? theme.colorScheme.primary
-                          : theme.colorScheme.onSurface
-                              .withValues(alpha: 0.4),
+                  ),
+                  DataCell(
+                    Text(
+                      '${staff.processingCount}',
+                      style: TextStyle(
+                        fontWeight: FontWeight.w600,
+                        color: staff.processingCount > 0
+                            ? theme.colorScheme.primary
+                            : theme.colorScheme.onSurface.withValues(
+                                alpha: 0.4,
+                              ),
+                      ),
                     ),
-                  )),
+                  ),
                   DataCell(StaffStatusChip(isActive: staff.isActive)),
                   DataCell(
                     Row(
@@ -307,9 +284,17 @@ class _WebStaffViewState extends ConsumerState<WebStaffView> {
                         Tooltip(
                           message: l10n.viewDetails,
                           child: IconButton(
-                            icon: const Icon(Icons.visibility_outlined, size: 20),
+                            icon: const Icon(
+                              Icons.visibility_outlined,
+                              size: 20,
+                            ),
                             onPressed: () => showStaffDetailSheet(
-                                context, l10n, theme, staff, ref),
+                              context,
+                              l10n,
+                              theme,
+                              staff,
+                              ref,
+                            ),
                           ),
                         ),
                         Tooltip(
@@ -317,8 +302,12 @@ class _WebStaffViewState extends ConsumerState<WebStaffView> {
                           child: IconButton(
                             icon: const Icon(Icons.edit_outlined, size: 20),
                             onPressed: () => showStaffFormDialog(
-                                context, l10n, theme, ref,
-                                editingStaff: staff),
+                              context,
+                              l10n,
+                              theme,
+                              ref,
+                              editingStaff: staff,
+                            ),
                           ),
                         ),
                         Tooltip(
@@ -336,7 +325,12 @@ class _WebStaffViewState extends ConsumerState<WebStaffView> {
                                   : theme.colorScheme.primary,
                             ),
                             onPressed: () => confirmToggleStaffStatus(
-                                context, l10n, theme, staff, ref),
+                              context,
+                              l10n,
+                              theme,
+                              staff,
+                              ref,
+                            ),
                           ),
                         ),
                       ],
@@ -354,20 +348,23 @@ class _WebStaffViewState extends ConsumerState<WebStaffView> {
   }
 
   Widget _buildEmptyState(
-      ThemeData theme, AppLocalizations l10n, bool isEmpty) {
+    ThemeData theme,
+    AppLocalizations l10n,
+    bool isEmpty,
+  ) {
     return Center(
       child: Padding(
         padding: const EdgeInsets.symmetric(vertical: 48),
         child: Column(
           children: [
-            Icon(isEmpty ? Icons.people_outline : Icons.search_off,
-                size: 64,
-                color: theme.colorScheme.onSurface.withValues(alpha: 0.3)),
+            Icon(
+              isEmpty ? Icons.people_outline : Icons.search_off,
+              size: 64,
+              color: theme.colorScheme.onSurface.withValues(alpha: 0.3),
+            ),
             const SizedBox(height: 16),
             Text(
-              isEmpty
-                  ? l10n.noStaffInSystem
-                  : l10n.noStaffFound,
+              isEmpty ? l10n.noStaffInSystem : l10n.noStaffFound,
               style: theme.textTheme.bodyLarge?.copyWith(
                 color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
               ),
@@ -381,18 +378,20 @@ class _WebStaffViewState extends ConsumerState<WebStaffView> {
   Widget _buildShimmer(ThemeData theme, int count) {
     return Column(
       children: List.generate(
-          count,
-          (_) => Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Container(
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest
-                        .withValues(alpha: 0.3),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                ),
-              )),
+        count,
+        (_) => Padding(
+          padding: const EdgeInsets.only(bottom: 8),
+          child: Container(
+            height: 56,
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainerHighest.withValues(
+                alpha: 0.3,
+              ),
+              borderRadius: BorderRadius.circular(12),
+            ),
+          ),
+        ),
+      ),
     );
   }
 
@@ -412,66 +411,6 @@ class _WebStaffViewState extends ConsumerState<WebStaffView> {
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// Dashboard-style KPI card — full-width, large value, label + icon
-class _WebKpiCard extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final String value;
-  final String label;
-
-  const _WebKpiCard({
-    required this.icon,
-    required this.iconColor,
-    required this.value,
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      padding: const EdgeInsets.all(20),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.dividerColor),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(
-                label,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-                ),
-              ),
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: iconColor.withValues(alpha: 0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Icon(icon, size: 20, color: iconColor),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12),
-          Text(
-            value,
-            style: theme.textTheme.headlineMedium?.copyWith(
-              fontWeight: FontWeight.bold,
-              color: theme.colorScheme.onSurface,
-            ),
-          ),
-        ],
       ),
     );
   }

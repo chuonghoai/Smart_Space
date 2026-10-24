@@ -1,6 +1,7 @@
 import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
-import 'package:smartspace_admin/features/staff/models/staff_chart_model.dart';
+import 'package:smartspace_admin/features/staff/models/staff_statistics_model.dart';
+import 'package:smartspace_admin/features/staff/models/staff_trend_model.dart';
 
 import '../models/staff_list_response.dart';
 
@@ -83,13 +84,32 @@ class StaffRepository {
     );
   }
 
-  Future<StaffChartModel> getChartData() async {
-    final response = await apiClient.get<Map<String, dynamic>>(
-      '/admin/staffs/chart-data',
-      decoder: (json) => json as Map<String, dynamic>,
+  Future<StaffStatisticsModel> getStatistics() async {
+    final response = await apiClient.get<StaffStatisticsModel>(
+      '/admin/staffs/statistics',
+      decoder: (json) =>
+          StaffStatisticsModel.fromJson(json as Map<String, dynamic>),
     );
     if (response.success && response.data != null) {
-      return StaffChartModel.fromJson(response.data!);
+      return response.data!;
+    }
+    throw Exception(response.message);
+  }
+
+  /// period: 'daily' | 'weekly' | 'monthly'
+  Future<List<StaffTrendItem>> getTrend(String period) async {
+    final response = await apiClient.get<List<StaffTrendItem>>(
+      '/admin/staffs/trend',
+      queryParameters: {'period': period},
+      decoder: (json) {
+        final items = (json as Map<String, dynamic>)['items'] as List? ?? [];
+        return items
+            .map((e) => StaffTrendItem.fromJson(e as Map<String, dynamic>))
+            .toList();
+      },
+    );
+    if (response.success && response.data != null) {
+      return response.data!;
     }
     throw Exception(response.message);
   }

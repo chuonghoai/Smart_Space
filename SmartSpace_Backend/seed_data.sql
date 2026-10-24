@@ -93,6 +93,12 @@ INSERT INTO reports (id, created_at, updated_at, title, description, image_url, 
 ('r15', DATE_SUB(NOW(), INTERVAL 13 HOUR), DATE_SUB(NOW(), INTERVAL 13 HOUR), 'Xe tải đổ dầu ra đường', 'Dầu nhớt tràn ra mặt đường, rất trơn trượt tại Q4', 'https://picsum.photos/400/300?random=15', 10.7580, 106.7010, 'high', 'pending', 'u2', NULL, 'https://picsum.photos/400/300?random=15', 'Quận 4, TP.HCM', 'Cầu Kênh Tẻ', TRUE),
 ('r16', DATE_SUB(NOW(), INTERVAL 14 HOUR), DATE_SUB(NOW(), INTERVAL 6 HOUR), 'Biển báo giao thông hỏng', 'Biển báo cấm rẽ trái bị xoay ngược hướng, gây nhầm lẫn', 'https://picsum.photos/400/300?random=16', 10.8200, 106.6920, 'low', 'processing', 'u3', 'u5', 'https://picsum.photos/400/300?random=16', 'Gò Vấp, TP.HCM', 'Giao lộ lớn', FALSE);
 
+-- Thời điểm phân công cho báo cáo đã có nhân viên phụ trách (dùng cho thống kê "thời gian xử lý"):
+-- đặt ở 1/3 khoảng created_at → updated_at để luôn nằm giữa hai mốc.
+UPDATE reports
+SET assigned_at = DATE_ADD(created_at, INTERVAL TIMESTAMPDIFF(SECOND, created_at, updated_at) DIV 3 SECOND)
+WHERE assigned_staff_id IS NOT NULL AND assigned_at IS NULL;
+
 -- --------------------------------------------------------
 -- Table: activity_histories
 -- Phụ thuộc: users

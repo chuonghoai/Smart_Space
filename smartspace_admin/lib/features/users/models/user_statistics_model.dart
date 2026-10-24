@@ -59,9 +59,3 @@ class TopReporterItem {
     );
   }
 }
-
-/// % thay đổi so với kỳ trước. Null khi kỳ trước = 0 (không so sánh được).
-double? percentChange(int current, int previous) {
-  if (previous == 0) return null;
-  return (current - previous) / previous * 100;
-}

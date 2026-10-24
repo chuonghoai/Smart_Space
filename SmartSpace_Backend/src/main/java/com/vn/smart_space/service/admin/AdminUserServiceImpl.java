@@ -1,14 +1,10 @@
 package com.vn.smart_space.service.admin;
 
-import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
-import java.time.temporal.TemporalAdjusters;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.EnumMap;
-import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -32,6 +28,7 @@ import com.vn.smart_space.exception.ResourceNotFoundException;
 import com.vn.smart_space.model.User;
 import com.vn.smart_space.repository.ReportRepository;
 import com.vn.smart_space.repository.UserRepository;
+import com.vn.smart_space.utils.TrendBucketHelper;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -46,11 +43,6 @@ public class AdminUserServiceImpl implements IAdminUserService {
         static final int STATS_WINDOW_DAYS = 30;
         static final int TOP_REPORTER_LIMIT = 5;
         static final int RECENT_REPORT_LIMIT = 5;
-
-        // Số bucket cho từng period của trend
-        static final int DAILY_BUCKETS = 30;
-        static final int WEEKLY_BUCKETS = 12;
-        static final int MONTHLY_BUCKETS = 12;
 
         UserRepository userRepository;
         ReportRepository reportRepository;
@@ -143,49 +135,20 @@ public class AdminUserServiceImpl implements IAdminUserService {
         @Override
         @Transactional(readOnly = true)
         public AdminUserTrendResponse getRegistrationTrend(String period) {
-                String normalized = normalizePeriod(period);
-                LocalDate today = LocalDate.now();
+                String normalized = TrendBucketHelper.normalizePeriod(period);
+                List<LocalDate> bucketDates = TrendBucketHelper.buckets(normalized, LocalDate.now());
+                Map<LocalDate, Long> buckets = TrendBucketHelper.emptyCounts(bucketDates);
 
-                // 1. Xác định bucket đầu tiên + danh sách bucket rỗng (zero-fill)
-                LocalDate firstBucket;
-                int bucketCount;
-                ChronoUnit unit;
-                switch (normalized) {
-                        case "weekly" -> {
-                                firstBucket = today.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-                                                .minusWeeks(WEEKLY_BUCKETS - 1L);
-                                bucketCount = WEEKLY_BUCKETS;
-                                unit = ChronoUnit.WEEKS;
-                        }
-                        case "monthly" -> {
-                                firstBucket = today.withDayOfMonth(1).minusMonths(MONTHLY_BUCKETS - 1L);
-                                bucketCount = MONTHLY_BUCKETS;
-                                unit = ChronoUnit.MONTHS;
-                        }
-                        default -> {
-                                firstBucket = today.minusDays(DAILY_BUCKETS - 1L);
-                                bucketCount = DAILY_BUCKETS;
-                                unit = ChronoUnit.DAYS;
-                        }
-                }
-
-                Map<LocalDate, Long> buckets = new LinkedHashMap<>();
-                for (int i = 0; i < bucketCount; i++) {
-                        buckets.put(firstBucket.plus(i, unit), 0L);
-                }
-
-                // 2. Gom nhóm thời điểm đăng ký vào bucket
+                // Gom nhóm thời điểm đăng ký vào bucket
                 List<LocalDateTime> createdAts = userRepository.findCreatedAtByRoleSince(
-                                ERole.client, firstBucket.atStartOfDay());
+                                ERole.client, bucketDates.get(0).atStartOfDay());
                 for (LocalDateTime createdAt : createdAts) {
-                        if (createdAt == null) {
-                                continue;
+                        if (createdAt != null) {
+                                TrendBucketHelper.increment(buckets, createdAt.toLocalDate(), normalized);
                         }
-                        LocalDate key = toBucket(createdAt.toLocalDate(), normalized);
-                        buckets.computeIfPresent(key, (k, v) -> v + 1);
                 }
 
-                List<AdminUserTrendResponse.TrendItem> items = new ArrayList<>(bucketCount);
+                List<AdminUserTrendResponse.TrendItem> items = new ArrayList<>(bucketDates.size());
                 buckets.forEach((date, count) -> items.add(AdminUserTrendResponse.TrendItem.builder()
                                 .date(date)
                                 .count(count)
@@ -256,23 +219,5 @@ public class AdminUserServiceImpl implements IAdminUserService {
                         return Sort.by(Sort.Direction.ASC, "fullName").and(Sort.by(Sort.Direction.DESC, "createdAt"));
                 }
                 return Sort.by(Sort.Direction.DESC, "createdAt");
-        }
-
-        private String normalizePeriod(String period) {
-                if ("weekly".equalsIgnoreCase(period)) {
-                        return "weekly";
-                }
-                if ("monthly".equalsIgnoreCase(period)) {
-                        return "monthly";
-                }
-                return "daily";
-        }
-
-        private LocalDate toBucket(LocalDate date, String period) {
-                return switch (period) {
-                        case "weekly" -> date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-                        case "monthly" -> date.withDayOfMonth(1);
-                        default -> date;
-                };
         }
 }

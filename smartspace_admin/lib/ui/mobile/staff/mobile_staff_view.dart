@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:smartspace_admin/features/staff/application/staff_providers.dart';
-import 'package:smartspace_admin/features/staff/models/staff_summary_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
-import 'package:smartspace_admin/ui/screen/staff/staff_charts.dart';
+import 'package:smartspace_admin/ui/screen/staff/staff_dashboard_widgets.dart';
 import 'package:smartspace_admin/ui/screen/staff/staff_shared_widgets.dart';
 
 class MobileStaffView extends ConsumerStatefulWidget {
@@ -15,11 +15,52 @@ class MobileStaffView extends ConsumerStatefulWidget {
 
 class _MobileStaffViewState extends ConsumerState<MobileStaffView> {
   final _searchController = TextEditingController();
+  bool _showStatistics = false;
 
   @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
+  }
+
+  Future<void> _refresh() async {
+    ref.invalidate(staffStatisticsProvider);
+    ref.invalidate(staffTrendProvider);
+    await ref.read(staffListProvider.notifier).refresh();
+  }
+
+  Widget _buildStatisticsToggle(ThemeData theme, AppLocalizations l10n) {
+    return InkWell(
+      onTap: () => setState(() => _showStatistics = !_showStatistics),
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8),
+        child: Row(
+          children: [
+            Icon(
+              Icons.insights_outlined,
+              size: 18,
+              color: theme.colorScheme.primary,
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l10n.statistics,
+                style: theme.textTheme.labelLarge?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            AnimatedRotation(
+              turns: _showStatistics ? 0.5 : 0,
+              duration: const Duration(milliseconds: 200),
+              child: Icon(Icons.expand_more, color: theme.colorScheme.primary),
+            ),
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -29,7 +70,7 @@ class _MobileStaffViewState extends ConsumerState<MobileStaffView> {
     final staffAsync = ref.watch(staffListProvider);
 
     return RefreshIndicator(
-      onRefresh: () => ref.read(staffListProvider.notifier).refresh(),
+      onRefresh: _refresh,
       child: CustomScrollView(
         slivers: [
           SliverToBoxAdapter(
@@ -61,34 +102,26 @@ class _MobileStaffViewState extends ConsumerState<MobileStaffView> {
                   ),
                   const SizedBox(height: 12),
 
-                  // Summary Cards — horizontal scroll
-                  staffAsync.when(
-                    data: (data) =>
-                        _buildMobileSummaryCards(theme, data.summary, l10n),
-                    loading: () => const SizedBox(height: 80),
-                    error: (_, _) => const SizedBox.shrink(),
-                  ),
-                  const SizedBox(height: 12),
+                  // KPI 2x2
+                  const StaffKpiGrid(compact: true),
+                  const SizedBox(height: 8),
 
-                  // Charts — xếp dọc
-                  ref.watch(staffChartProvider).when(
-                    data: (chartData) => Column(
-                      children: [
-                        StaffStatusDonutChart(
-                          activeCount: chartData.activeStaff,
-                          blockedCount: chartData.blockedStaff,
-                        ),
-                        const SizedBox(height: 12),
-                        StaffWorkloadBarChart(
-                          topWorkload: chartData.topWorkload,
-                        ),
-                      ],
-                    ),
-                    loading: () => const SizedBox(
-                      height: 120,
-                      child: Center(child: CircularProgressIndicator()),
-                    ),
-                    error: (_, _) => const SizedBox.shrink(),
+                  // Thống kê chi tiết — thu gọn mặc định để danh sách lên sớm
+                  _buildStatisticsToggle(theme, l10n),
+                  AnimatedSize(
+                    duration: const Duration(milliseconds: 200),
+                    curve: Curves.easeOut,
+                    alignment: Alignment.topCenter,
+                    child: _showStatistics
+                        ? const Column(
+                            children: [
+                              StaffFlowChart(chartHeight: 200),
+                              SizedBox(height: 12),
+                              StaffWorkloadChart(),
+                              SizedBox(height: 4),
+                            ],
+                          )
+                        : const SizedBox(width: double.infinity),
                   ),
                   const SizedBox(height: 12),
 
@@ -223,46 +256,8 @@ class _MobileStaffViewState extends ConsumerState<MobileStaffView> {
     );
   }
 
-  Widget _buildMobileSummaryCards(
-      ThemeData theme, StaffSummaryModel summary, AppLocalizations l10n) {
-    final successColor = theme.brightness == Brightness.light ? const Color(0xFF2E7D32) : const Color(0xFF66BB6A);
-    final warningColor = theme.brightness == Brightness.light ? const Color(0xFFF9A825) : const Color(0xFFFFCA28);
-
-    return SizedBox(
-      height: 80,
-      child: ListView(
-        scrollDirection: Axis.horizontal,
-        children: [
-          StaffSummaryCard(
-              icon: Icons.people_outline,
-              iconColor: theme.colorScheme.primary,
-              value: '${summary.total}',
-              label: l10n.totalStaff),
-          const SizedBox(width: 8),
-          StaffSummaryCard(
-              icon: Icons.check_circle_outline,
-              iconColor: successColor,
-              value: '${summary.active}',
-              label: l10n.activeStatus),
-          const SizedBox(width: 8),
-          StaffSummaryCard(
-              icon: Icons.lock_outline,
-              iconColor: theme.colorScheme.error,
-              value: '${summary.blocked}',
-              label: l10n.blockedStatus),
-          const SizedBox(width: 8),
-          StaffSummaryCard(
-              icon: Icons.assignment_outlined,
-              iconColor: warningColor,
-              value: '${summary.totalProcessing}',
-              label: l10n.processingStatus),
-        ],
-      ),
-    );
-  }
-
   void _showFilterBottomSheet(BuildContext context, ThemeData theme, AppLocalizations l10n) {
-    final successColor = theme.brightness == Brightness.light ? const Color(0xFF2E7D32) : const Color(0xFF66BB6A);
+    final successColor = AppSemanticColors.of(context).success;
     showModalBottomSheet(
       context: context,
       shape: const RoundedRectangleBorder(
