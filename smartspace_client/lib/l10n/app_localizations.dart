@@ -1493,7 +1493,7 @@ abstract class AppLocalizations {
   /// No description provided for @routeCommunityFeed.
   ///
   /// In en, this message translates to:
-  /// **'Community feed'**
+  /// **'All report'**
   String get routeCommunityFeed;
 
   /// No description provided for @feedTabLatest.
@@ -1567,6 +1567,126 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} photos'**
   String feedPhotosCount(int count);
+
+  /// No description provided for @reviewReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Review'**
+  String get reviewReport;
+
+  /// No description provided for @reviewQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Has your report been resolved?'**
+  String get reviewQuestion;
+
+  /// No description provided for @reviewResolvedOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get reviewResolvedOption;
+
+  /// No description provided for @reviewUnresolvedOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Not resolved'**
+  String get reviewUnresolvedOption;
+
+  /// No description provided for @rateStaffTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate handling staff'**
+  String get rateStaffTitle;
+
+  /// No description provided for @rateStaffSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Please rate the staff member (1 - 5 stars)'**
+  String get rateStaffSubtitle;
+
+  /// No description provided for @unresolvedReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for unresolved'**
+  String get unresolvedReasonLabel;
+
+  /// No description provided for @unresolvedReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Please describe why you feel this report is not resolved...'**
+  String get unresolvedReasonHint;
+
+  /// No description provided for @attachEvidencePhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence photos (at least 1 photo required)'**
+  String get attachEvidencePhotos;
+
+  /// No description provided for @attachEvidencePhotoHint.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 1 photo and description required to submit'**
+  String get attachEvidencePhotoHint;
+
+  /// No description provided for @submitReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit review'**
+  String get submitReview;
+
+  /// No description provided for @submittingReview.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting review...'**
+  String get submittingReview;
+
+  /// No description provided for @reviewSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Review submitted successfully!'**
+  String get reviewSuccess;
+
+  /// No description provided for @unresolvedReviewTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unresolved feedback'**
+  String get unresolvedReviewTitle;
+
+  /// No description provided for @reviewRatingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Citizen rating'**
+  String get reviewRatingLabel;
+
+  /// No description provided for @cameraOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get cameraOption;
+
+  /// No description provided for @galleryOption.
+  ///
+  /// In en, this message translates to:
+  /// **'Gallery'**
+  String get galleryOption;
+
+  /// No description provided for @closeButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get closeButton;
+
+  /// No description provided for @rehandling.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-handling'**
+  String get rehandling;
+
+  /// No description provided for @unsatisfactoryBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsatisfactory resolution'**
+  String get unsatisfactoryBadge;
 }
 
 class _AppLocalizationsDelegate

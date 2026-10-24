@@ -10,6 +10,7 @@ class ReportModel {
   final ReportStatus status;
   final DateTime createdAt;
   final double? distanceInMeters;
+  final bool? isReviewResolved;
 
   ReportModel({
     required this.id,
@@ -21,6 +22,7 @@ class ReportModel {
     required this.status,
     required this.createdAt,
     this.distanceInMeters,
+    this.isReviewResolved,
   });
 
   factory ReportModel.fromJson(Map<String, dynamic> json) {
@@ -35,6 +37,8 @@ class ReportModel {
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now()
           : DateTime.now(),
+      distanceInMeters: (json['distance_in_meters'] as num?)?.toDouble(),
+      isReviewResolved: json['is_review_resolved'] as bool? ?? json['isReviewResolved'] as bool?,
     );
   }
 
@@ -48,6 +52,7 @@ class ReportModel {
       'longitude': longitude,
       'status': _statusToString(status),
       'created_at': createdAt.toIso8601String(),
+      'is_review_resolved': isReviewResolved,
     };
   }
 
@@ -61,6 +66,7 @@ class ReportModel {
     ReportStatus? status,
     DateTime? createdAt,
     double? distanceInMeters,
+    bool? isReviewResolved,
   }) {
     return ReportModel(
       id: id ?? this.id,
@@ -72,6 +78,7 @@ class ReportModel {
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
       distanceInMeters: distanceInMeters ?? this.distanceInMeters,
+      isReviewResolved: isReviewResolved ?? this.isReviewResolved,
     );
   }
 

@@ -48,7 +48,7 @@ class TopBar extends ConsumerWidget implements PreferredSizeWidget {
                     shape: BoxShape.circle,
                   ),
                   child: Text(
-                    unreadCount > 9 ? '9+' : unreadCount.toString(),
+                    unreadCount > 99 ? '99+' : unreadCount.toString(),
                     style: theme.textTheme.labelSmall?.copyWith(
                       color: theme.colorScheme.onError,
                       fontSize: 10,

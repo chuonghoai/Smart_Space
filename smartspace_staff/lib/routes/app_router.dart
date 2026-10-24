@@ -8,6 +8,7 @@ import 'package:smartspace_staff/ui/mobile/search/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_shared/core/toast/toast_service.dart';
 import 'package:smartspace_staff/ui/mobile/reports/presentation/report_detail_screen.dart';
+import 'package:smartspace_staff/ui/mobile/reports/presentation/handle_report_screen.dart';
 import 'package:smartspace_staff/ui/mobile/reports/all_reports_screen.dart';
 import 'package:smartspace_staff/ui/mobile/map/map_screen.dart';
 
@@ -44,6 +45,11 @@ final appRouter = GoRouter(
       path: RouterPath.reportDetail,
       builder: (context, state) =>
           ReportDetailScreen(reportId: state.pathParameters['id']!),
+    ),
+    GoRoute(
+      path: RouterPath.handleReport,
+      builder: (context, state) =>
+          HandleReportScreen(reportId: state.pathParameters['id']!),
     ),
     GoRoute(
       path: RouterPath.search,

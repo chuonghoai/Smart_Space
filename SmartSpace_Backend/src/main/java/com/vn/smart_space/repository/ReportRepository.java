@@ -41,6 +41,7 @@ public interface ReportRepository extends JpaRepository<Report, String> {
         // Get My Reports For Client
         List<Report> findByUserIdOrderByCreatedAtDesc(String userId, Limit limit);
         List<Report> findByUserIdAndStatusOrderByCreatedAtDesc(String userId, EReportStatus status, Limit limit);
+        List<Report> findByUserIdAndIsReviewResolvedFalseOrderByCreatedAtDesc(String userId, Limit limit);
 
         // Count Report Processing For Staff
         @Query("SELECT r.assignedStaff.id, COUNT(r) FROM Report r " +
@@ -62,6 +63,17 @@ public interface ReportRepository extends JpaRepository<Report, String> {
         // Staff Dashboard: group by status for staff
         @Query("SELECT r.status, COUNT(r) FROM Report r WHERE r.assignedStaff.id = :staffId GROUP BY r.status")
         List<Object[]> countStaffReportsGroupByStatus(@Param("staffId") String staffId);
+
+        long countByStatusAndIsReviewResolved(EReportStatus status, Boolean isReviewResolved);
+
+        @Query("SELECT COUNT(r) FROM Report r WHERE r.assignedStaff.id = :staffId AND r.status = :status AND r.isReviewResolved = :isReviewResolved")
+        long countStaffReportsByStatusAndIsReviewResolved(@Param("staffId") String staffId, @Param("status") EReportStatus status, @Param("isReviewResolved") Boolean isReviewResolved);
+
+        @Query("SELECT r FROM Report r WHERE r.status = :status AND r.isReviewResolved = :isReviewResolved ORDER BY r.updatedAt DESC")
+        List<Report> findReportsByStatusAndIsReviewResolved(@Param("status") EReportStatus status, @Param("isReviewResolved") Boolean isReviewResolved);
+
+        @Query("SELECT r FROM Report r WHERE r.assignedStaff.id = :staffId AND r.status = :status AND r.isReviewResolved = :isReviewResolved ORDER BY r.updatedAt DESC")
+        List<Report> findStaffReportsByStatusAndIsReviewResolved(@Param("staffId") String staffId, @Param("status") EReportStatus status, @Param("isReviewResolved") Boolean isReviewResolved, org.springframework.data.domain.Pageable pageable);
 
         // Dashboard: group by severity (exclude null)
         @Query("SELECT r.severity, COUNT(r) FROM Report r WHERE r.severity IS NOT NULL GROUP BY r.severity")

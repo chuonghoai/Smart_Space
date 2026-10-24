@@ -23,6 +23,18 @@ class ReportService {
   Future<ApiResponse<ReportDetailModel>> getReportDetail(String reportId) async {
     return await reportRepo.getReportDetail(reportId);
   }
+
+  Future<ApiResponse<ReportDetailModel>> completeReport(
+    String reportId, {
+    required String note,
+    required List<String> imageUrls,
+  }) async {
+    return await reportRepo.completeReport(
+      reportId,
+      note: note,
+      imageUrls: imageUrls,
+    );
+  }
 }
 
 final reportService = ReportService(

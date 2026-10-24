@@ -44,6 +44,7 @@ public class SecurityConfig {
         // 1. Cấu hình các đường dẫn được public và bị khóa
         httpSecurity.authorizeHttpRequests(request -> request
                 .requestMatchers(HttpMethod.POST, PUBLIC_ENDPOINTS).permitAll()
+                .requestMatchers(HttpMethod.GET, "/news", "/news/**").permitAll()
                 .requestMatchers("/ws/**", "/ws-socketjs/**").permitAll()
                 .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
                 .anyRequest().authenticated());

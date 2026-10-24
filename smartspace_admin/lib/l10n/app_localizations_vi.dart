@@ -1233,4 +1233,218 @@ class AppLocalizationsVi extends AppLocalizations {
   String resolvedLast30Days(int count) {
     return '$count đã xử lý trong 30 ngày';
   }
+  String get resolutionInfo => 'Kết quả xử lý';
+
+  @override
+  String get resolutionImages => 'Ảnh kết quả xử lý';
+
+  @override
+  String get noResolutionImages => 'Nhân viên không đính kèm hình ảnh';
+
+  @override
+  String get resolutionNote => 'Ghi chú xử lý';
+
+  @override
+  String staffNoAdditionalNote(String staffName) {
+    return '$staffName không có ghi chú gì thêm';
+  }
+
+  @override
+  String get resolvedAtLabel => 'Thời gian hoàn thành';
+
+  @override
+  String get citizenReviewUnresolved => 'Người dân phản hồi: Chưa được xử lý';
+
+  @override
+  String get citizenRating => 'Đánh giá';
+
+  @override
+  String get citizenReviewReason => 'Lý do chưa xử lý thỏa đáng';
+
+  @override
+  String get citizenReviewPhotos => 'Hình ảnh người dân cung cấp';
+
+  @override
+  String get reopenReportButton => 'Yêu cầu xử lý lại';
+
+  @override
+  String get reopenReportConfirmTitle => 'Yêu cầu xử lý lại phản ánh?';
+
+  @override
+  String get reopenReportConfirmMessage =>
+      'Trạng thái phản ánh sẽ được chuyển về \'Đang xử lý\' và gửi thông báo yêu cầu nhân viên phụ trách thực hiện xử lý lại.';
+
+  @override
+  String get reopenReportSuccess =>
+      'Đã chuyển trạng thái về Đang xử lý và thông báo cho nhân viên!';
+
+  @override
+  String get unsatisfactoryBannerTitle => 'Phản ánh chưa thỏa đáng';
+
+  @override
+  String unsatisfactoryProcessedCountFormat(int count) {
+    return '$count chưa thỏa đáng';
+  }
+
+  @override
+  String rehandlingProcessingCountFormat(int count) {
+    return '$count đang xử lý';
+  }
+
+  @override
+  String get unsatisfactoryPendingTab => 'Chờ xử lý';
+
+  @override
+  String get unsatisfactoryProcessingTab => 'Đang xử lý';
+
+  @override
+  String get rehandlingBadge => 'Xử lý lại';
+
+  @override
+  String get routeUnsatisfactoryReports => 'Phản ánh chưa thỏa đáng';
+
+  @override
+  String get noUnsatisfactoryPending => 'Không có phản ánh nào chờ xử lý';
+
+  @override
+  String get noUnsatisfactoryProcessing =>
+      'Không có phản ánh nào đang xử lý lại';
+
+  @override
+  String get manageNews => 'Quản lý tin tức';
+
+  @override
+  String get quickAccess => 'Truy cập nhanh';
+
+  @override
+  String get emptyNewsTitle => 'Chưa có tin tức nào';
+
+  @override
+  String get emptyNewsDescription =>
+      'Hiện tại chưa có tin tức nào được đăng tải. Hãy tạo tin tức mới để thông báo tới cộng đồng.';
+
+  @override
+  String get createNewNews => 'Tạo tin tức mới';
+
+  @override
+  String get editNews => 'Chỉnh sửa tin tức';
+
+  @override
+  String get newsTitle => 'Tiêu đề tin tức';
+
+  @override
+  String get newsTitleHint => 'Nhập tiêu đề tin tức...';
+
+  @override
+  String get newsTitleRequired => 'Vui lòng nhập tiêu đề tin tức';
+
+  @override
+  String get newsContent => 'Nội dung tin tức';
+
+  @override
+  String get newsContentHint => 'Nhập nội dung bài viết...';
+
+  @override
+  String get newsContentRequired => 'Vui lòng nhập nội dung tin tức';
+
+  @override
+  String get newsImages => 'Hình ảnh đính kèm';
+
+  @override
+  String get addImages => 'Thêm hình ảnh';
+
+  @override
+  String get preview => 'Xem trước';
+
+  @override
+  String get editor => 'Soạn thảo';
+
+  @override
+  String get newsDetail => 'Chi tiết tin tức';
+
+  @override
+  String get deleteNews => 'Xóa tin tức';
+
+  @override
+  String get confirmDeleteNewsTitle => 'Xác nhận xóa tin tức';
+
+  @override
+  String get confirmDeleteNews =>
+      'Bạn có chắc chắn muốn xóa tin tức này không? Thao tác này không thể hoàn tác.';
+
+  @override
+  String get deleteNewsSuccess => 'Xóa tin tức thành công';
+
+  @override
+  String get createNewsSuccess => 'Đăng tin tức thành công';
+
+  @override
+  String get updateNewsSuccess => 'Cập nhật tin tức thành công';
+
+  @override
+  String get newsAuthor => 'Người đăng';
+
+  @override
+  String get newsCreatedDate => 'Ngày đăng';
+
+  @override
+  String get newsCreatedTime => 'Thời gian';
+
+  @override
+  String get routeNewsManagement => 'Quản lý tin tức';
+
+  @override
+  String get routeCreateNews => 'Tạo tin tức';
+
+  @override
+  String get routeNewsDetail => 'Chi tiết tin tức';
+
+  @override
+  String get routeEditNews => 'Chỉnh sửa tin tức';
+
+  @override
+  String get formatBold => 'In đậm';
+
+  @override
+  String get formatItalic => 'In nghiêng';
+
+  @override
+  String get formatHeading => 'Tiêu đề';
+
+  @override
+  String get formatBulletList => 'Danh sách';
+
+  @override
+  String get formatNumberedList => 'Đánh số';
+
+  @override
+  String get formatQuote => 'Trích dẫn';
+
+  @override
+  String get formatCode => 'Mã nguồn';
+
+  @override
+  String get sendNotification => 'Gửi thông báo';
+
+  @override
+  String get sendNotificationSubtitle =>
+      'Phát thông báo đẩy tới người dùng khi tin tức được tạo';
+
+  @override
+  String get notificationTarget => 'Đối tượng nhận thông báo';
+
+  @override
+  String get targetAll => 'Tất cả';
+
+  @override
+  String get targetAdmin => 'Quản trị viên';
+
+  @override
+  String get targetStaff => 'Nhân viên';
+
+  @override
+  String get targetClient => 'Khách hàng';
+
+  @override
+  String get livePreview => 'Bản xem trước trực tiếp';
 }

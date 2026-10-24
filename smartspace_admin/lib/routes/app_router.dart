@@ -7,6 +7,7 @@ import 'package:smartspace_admin/ui/screen/home/admin_home_screen.dart';
 import 'package:smartspace_admin/ui/screen/reports/admin_report_detail_screen.dart';
 import 'package:smartspace_admin/ui/screen/reports/report_dashboard_screen.dart';
 import 'package:smartspace_admin/ui/screen/reports/report_list_screen.dart';
+import 'package:smartspace_admin/ui/screen/reports/unsatisfactory_reports_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/change_password_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/edit_profile_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/settings_screen.dart';
@@ -20,6 +21,9 @@ import 'package:flutter/material.dart';
 import 'package:mobile_shared/mobile_shared.dart';
 
 import 'package:smartspace_admin/ui/screen/search/search_screen.dart';
+import 'package:smartspace_admin/ui/screen/news/admin_news_list_screen.dart';
+import 'package:smartspace_admin/ui/screen/news/admin_create_edit_news_screen.dart';
+import 'package:smartspace_admin/ui/screen/news/admin_news_detail_screen.dart';
 
 /// Re-export for convenience so existing callers of navigatorKey still compile.
 final GlobalKey<NavigatorState> navigatorKey = sharedNavigatorKey;
@@ -43,6 +47,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.forgotPassword,
       builder: (context, state) => const AdminForgotPasswordScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.unsatisfactoryReports,
+      builder: (context, state) => const UnsatisfactoryReportsScreen(),
     ),
     GoRoute(
       path: RouterPath.reportDetail,
@@ -104,6 +112,28 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.manageDevices,
       builder: (context, state) => const MobileManageDevicesScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.newsManagement,
+      builder: (context, state) => const AdminNewsListScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.createNews,
+      builder: (context, state) => const AdminCreateEditNewsScreen(),
+    ),
+    GoRoute(
+      path: '/news/:id',
+      builder: (context, state) {
+        final id = state.pathParameters['id'] ?? '';
+        return AdminNewsDetailScreen(newsId: id);
+      },
+    ),
+    GoRoute(
+      path: '/news/edit/:id',
+      builder: (context, state) {
+        final id = state.pathParameters['id'] ?? '';
+        return AdminCreateEditNewsScreen(newsId: id);
+      },
     ),
   ],
 );

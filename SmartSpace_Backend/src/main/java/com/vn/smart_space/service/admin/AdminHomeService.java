@@ -30,6 +30,9 @@ public class AdminHomeService {
     MessageSource messageSource;
 
     public AdminOverviewResponse getOverview() {
+        long unsatisfactoryProcessedCount = reportRepository.countByStatusAndIsReviewResolved(EReportStatus.processed, false);
+        long rehandlingProcessingCount = reportRepository.countByStatusAndIsReviewResolved(EReportStatus.processing, false);
+
         return AdminOverviewResponse.builder()
                 .userCount(userRepository.countByRole(ERole.client))
                 .staffCount(userRepository.countByRole(ERole.staff))
@@ -37,6 +40,8 @@ public class AdminHomeService {
                 .issueCount(reportRepository.countByStatusIn(List.of(EReportStatus.pending, EReportStatus.processing)))
                 .pendingCount(reportRepository.countByStatus(EReportStatus.pending))
                 .processingCount(reportRepository.countByStatus(EReportStatus.processing))
+                .unsatisfactoryProcessedCount(unsatisfactoryProcessedCount)
+                .rehandlingProcessingCount(rehandlingProcessingCount)
                 .build();
     }
 

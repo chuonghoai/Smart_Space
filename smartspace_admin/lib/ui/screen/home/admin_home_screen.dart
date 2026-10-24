@@ -10,6 +10,7 @@ import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/layout/app_layout.dart';
 import 'package:smartspace_admin/ui/screen/home/widgets/new_reports_slider.dart';
+import 'package:smartspace_admin/ui/screen/home/widgets/admin_quick_access_bar.dart';
 import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
 
 class AdminHomeScreen extends ConsumerStatefulWidget {
@@ -76,6 +77,10 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
               const NewReportsSlider(),
               const SizedBox(height: 20),
 
+              // Quick access buttons: Quản lý phản ánh, Bản đồ, Quản lý nhân viên, Quản lý người dùng, Tin tức
+              const AdminQuickAccessBar(),
+              const SizedBox(height: 24),
+
               // 2. Tổng quan
               _buildOverviewSection(context, l10n, theme),
               const SizedBox(height: 24),
@@ -107,20 +112,31 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
         overviewAsync.when(
           data: (data) {
             if (data == null) return const SizedBox();
-            return GridView.count(
-              crossAxisCount: 2,
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              mainAxisSpacing: 12,
-              crossAxisSpacing: 12,
-              childAspectRatio: 2.3,
+            final hasUnsatisfactory = (data.unsatisfactoryProcessedCount > 0 || data.rehandlingProcessingCount > 0);
+
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildStatCard(l10n.users, data.userCount.toString(), Icons.people_outline, theme, Colors.blue),
-                _buildStatCard(l10n.staff, data.staffCount.toString(), Icons.badge_outlined, theme, Colors.indigo),
-                _buildStatCard(l10n.admins, data.adminCount.toString(), Icons.admin_panel_settings_outlined, theme, Colors.purple),
-                _buildStatCard(l10n.issues, data.issueCount.toString(), Icons.warning_amber_rounded, theme, Colors.red),
-                _buildStatCard(l10n.pendingIssues, data.pendingCount.toString(), Icons.hourglass_top_outlined, theme, Colors.orange),
-                _buildStatCard(l10n.processingIssues, data.processingCount.toString(), Icons.autorenew_rounded, theme, Colors.teal),
+                if (hasUnsatisfactory) ...[
+                  _buildUnsatisfactoryBanner(context, data, theme, l10n),
+                  const SizedBox(height: 16),
+                ],
+                GridView.count(
+                  crossAxisCount: 2,
+                  shrinkWrap: true,
+                  physics: const NeverScrollableScrollPhysics(),
+                  mainAxisSpacing: 12,
+                  crossAxisSpacing: 12,
+                  childAspectRatio: 2.3,
+                  children: [
+                    _buildStatCard(l10n.users, data.userCount.toString(), Icons.people_outline, theme, Colors.blue),
+                    _buildStatCard(l10n.staff, data.staffCount.toString(), Icons.badge_outlined, theme, Colors.indigo),
+                    _buildStatCard(l10n.admins, data.adminCount.toString(), Icons.admin_panel_settings_outlined, theme, Colors.purple),
+                    _buildStatCard(l10n.issues, data.issueCount.toString(), Icons.warning_amber_rounded, theme, Colors.red),
+                    _buildStatCard(l10n.pendingIssues, data.pendingCount.toString(), Icons.hourglass_top_outlined, theme, Colors.orange),
+                    _buildStatCard(l10n.processingIssues, data.processingCount.toString(), Icons.autorenew_rounded, theme, Colors.teal),
+                  ],
+                ),
               ],
             );
           },
@@ -128,6 +144,118 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
           error: (error, stack) => Text('Error: $error', style: TextStyle(color: theme.colorScheme.error)),
         ),
       ],
+    );
+  }
+
+  Widget _buildUnsatisfactoryBanner(
+    BuildContext context,
+    dynamic data,
+    ThemeData theme,
+    AppLocalizations l10n,
+  ) {
+    final isDark = theme.brightness == Brightness.dark;
+    final bg = isDark ? const Color(0xFF2E1704) : const Color(0xFFFFF7ED);
+    final border = isDark ? const Color(0xFF7C2D12) : const Color(0xFFFED7AA);
+    final titleColor = isDark ? const Color(0xFFFFEDD5) : const Color(0xFF9A3412);
+    final chipBg = isDark ? const Color(0xFF431407) : const Color(0xFFFFEDD5);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () => context.push(RouterPath.unsatisfactoryReports),
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: border, width: 1.2),
+            boxShadow: [
+              BoxShadow(
+                color: (isDark ? Colors.black : const Color(0xFFF97316)).withValues(alpha: isDark ? 0.3 : 0.08),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF7C2D12) : const Color(0xFFFFEDD5),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.report_problem_rounded,
+                  color: isDark ? const Color(0xFFFB923C) : const Color(0xFFEA580C),
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.unsatisfactoryBannerTitle,
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: titleColor,
+                        fontSize: 15,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: [
+                        if (data.unsatisfactoryProcessedCount > 0)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: chipBg,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              l10n.unsatisfactoryProcessedCountFormat(data.unsatisfactoryProcessedCount),
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: isDark ? const Color(0xFFFDBA74) : const Color(0xFFC2410C),
+                              ),
+                            ),
+                          ),
+                        if (data.rehandlingProcessingCount > 0)
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: chipBg,
+                              borderRadius: BorderRadius.circular(6),
+                            ),
+                            child: Text(
+                              l10n.rehandlingProcessingCountFormat(data.rehandlingProcessingCount),
+                              style: TextStyle(
+                                fontSize: 12,
+                                fontWeight: FontWeight.w600,
+                                color: isDark ? const Color(0xFFFDBA74) : const Color(0xFFC2410C),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 16,
+                color: isDark ? const Color(0xFFFDBA74) : const Color(0xFFEA580C),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -230,10 +358,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
                 const SizedBox(height: 12),
                 Center(
                   child: TextButton.icon(
-                    onPressed: () {
-                      // TODO: Navigate to all reports list screen
-                      debugPrint('[AdminHome] View all reports clicked');
-                    },
+                    onPressed: () => context.go(RouterPath.reportDashboard),
                     icon: const Icon(Icons.arrow_forward, size: 16),
                     label: Text(l10n.viewAllReports),
                   ),
@@ -458,12 +583,48 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
                 _buildNewBadge(theme, isDark, l10n),
                 const SizedBox(height: 6),
               ],
+              if (report.isReviewResolved == false) ...[
+                _buildRehandlingBadge(theme, isDark, l10n),
+                const SizedBox(height: 6),
+              ],
               _buildReportStatusBadge(report.status, theme, l10n),
             ],
           ),
         ],
       ),
     ),
+    );
+  }
+
+  Widget _buildRehandlingBadge(ThemeData theme, bool isDark, AppLocalizations l10n) {
+    final badgeBg = isDark ? const Color(0xFF4A2800) : const Color(0xFFFFF3E0);
+    final badgeColor = isDark ? const Color(0xFFFFB74D) : const Color(0xFFE65100);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+      decoration: BoxDecoration(
+        color: badgeBg,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: badgeColor.withValues(alpha: isDark ? 0.5 : 0.3),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.refresh_rounded, size: 10, color: badgeColor),
+          const SizedBox(width: 3),
+          Text(
+            l10n.rehandlingBadge,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: badgeColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 10,
+            ),
+          ),
+        ],
+      ),
     );
   }
 

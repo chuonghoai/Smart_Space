@@ -138,10 +138,11 @@ class MyReportsScreen extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final filters = [
       {'label': l10n.viewAll, 'value': null},
-      {'label': l10n.reportStatusPending, 'value': ReportStatus.pending},
-      {'label': l10n.reportStatusProcessing, 'value': ReportStatus.processing},
-      {'label': l10n.reportStatusProcessed, 'value': ReportStatus.processed},
-      {'label': l10n.reportStatusRejected, 'value': ReportStatus.rejected},
+      {'label': l10n.reportStatusPending, 'value': 'pending'},
+      {'label': l10n.reportStatusProcessing, 'value': 'processing'},
+      {'label': l10n.reportStatusProcessed, 'value': 'processed'},
+      {'label': l10n.rehandling, 'value': 'rehandling'},
+      {'label': l10n.reportStatusRejected, 'value': 'rejected'},
     ];
 
     return SingleChildScrollView(
@@ -154,7 +155,7 @@ class MyReportsScreen extends ConsumerWidget {
             child: FilterChip(
               label: Text(f['label'] as String),
               selected: isSelected,
-              onSelected: (_) => notifier.setFilter(f['value'] as ReportStatus?),
+              onSelected: (_) => notifier.setFilter(f['value']),
               showCheckmark: false,
               selectedColor: Theme.of(context).colorScheme.primary,
               labelStyle: TextStyle(

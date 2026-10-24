@@ -5,6 +5,8 @@ class AdminOverviewModel {
   final int issueCount;
   final int pendingCount;
   final int processingCount;
+  final int unsatisfactoryProcessedCount;
+  final int rehandlingProcessingCount;
 
   const AdminOverviewModel({
     required this.userCount,
@@ -13,6 +15,8 @@ class AdminOverviewModel {
     required this.issueCount,
     this.pendingCount = 0,
     this.processingCount = 0,
+    this.unsatisfactoryProcessedCount = 0,
+    this.rehandlingProcessingCount = 0,
   });
 
   factory AdminOverviewModel.fromJson(Map<String, dynamic> json) {
@@ -23,6 +27,8 @@ class AdminOverviewModel {
       issueCount: (json['issueCount'] as num?)?.toInt() ?? 0,
       pendingCount: (json['pendingCount'] as num?)?.toInt() ?? 0,
       processingCount: (json['processingCount'] as num?)?.toInt() ?? 0,
+      unsatisfactoryProcessedCount: (json['unsatisfactoryProcessedCount'] as num?)?.toInt() ?? 0,
+      rehandlingProcessingCount: (json['rehandlingProcessingCount'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -34,6 +40,8 @@ class AdminOverviewModel {
       'issueCount': issueCount,
       'pendingCount': pendingCount,
       'processingCount': processingCount,
+      'unsatisfactoryProcessedCount': unsatisfactoryProcessedCount,
+      'rehandlingProcessingCount': rehandlingProcessingCount,
     };
   }
 
@@ -44,6 +52,8 @@ class AdminOverviewModel {
     int? issueCount,
     int? pendingCount,
     int? processingCount,
+    int? unsatisfactoryProcessedCount,
+    int? rehandlingProcessingCount,
   }) {
     return AdminOverviewModel(
       userCount: userCount ?? this.userCount,
@@ -52,6 +62,8 @@ class AdminOverviewModel {
       issueCount: issueCount ?? this.issueCount,
       pendingCount: pendingCount ?? this.pendingCount,
       processingCount: processingCount ?? this.processingCount,
+      unsatisfactoryProcessedCount: unsatisfactoryProcessedCount ?? this.unsatisfactoryProcessedCount,
+      rehandlingProcessingCount: rehandlingProcessingCount ?? this.rehandlingProcessingCount,
     );
   }
 }

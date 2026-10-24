@@ -733,7 +733,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get assignedStaff => 'Nhân viên xử lý';
 
   @override
-  String get routeCommunityFeed => 'Bảng tin';
+  String get routeCommunityFeed => 'Tất cả phản ánh';
 
   @override
   String get feedTabLatest => 'Mới nhất';
@@ -772,4 +772,68 @@ class AppLocalizationsVi extends AppLocalizations {
   String feedPhotosCount(int count) {
     return '$count ảnh';
   }
+
+  @override
+  String get reviewReport => 'Đánh giá';
+
+  @override
+  String get reviewQuestion => 'Phản ánh của bạn đã được xử lý hay chưa?';
+
+  @override
+  String get reviewResolvedOption => 'Đã xử lý';
+
+  @override
+  String get reviewUnresolvedOption => 'Chưa được xử lý';
+
+  @override
+  String get rateStaffTitle => 'Đánh giá nhân viên xử lý';
+
+  @override
+  String get rateStaffSubtitle =>
+      'Vui lòng chọn số sao để đánh giá nhân viên (1 - 5 sao)';
+
+  @override
+  String get unresolvedReasonLabel => 'Lý do chưa được xử lý';
+
+  @override
+  String get unresolvedReasonHint =>
+      'Vui lòng mô tả chi tiết lý do phản ánh chưa được xử lý...';
+
+  @override
+  String get attachEvidencePhotos =>
+      'Ảnh chụp thực tế (bắt buộc ít nhất 1 ảnh)';
+
+  @override
+  String get attachEvidencePhotoHint =>
+      'Cần ít nhất 1 ảnh chụp và ghi rõ lý do để gửi';
+
+  @override
+  String get submitReview => 'Gửi đánh giá';
+
+  @override
+  String get submittingReview => 'Đang gửi đánh giá...';
+
+  @override
+  String get reviewSuccess => 'Gửi đánh giá thành công!';
+
+  @override
+  String get unresolvedReviewTitle => 'Phản hồi chưa được xử lý thỏa đáng';
+
+  @override
+  String get reviewRatingLabel => 'Đánh giá người dân';
+
+  @override
+  String get cameraOption => 'Máy ảnh';
+
+  @override
+  String get galleryOption => 'Bộ sưu tập';
+
+  @override
+  String get closeButton => 'Đóng';
+
+  @override
+  String get rehandling => 'Xử lý lại';
+
+  @override
+  String get unsatisfactoryBadge => 'Xử lý chưa thỏa đáng';
 }

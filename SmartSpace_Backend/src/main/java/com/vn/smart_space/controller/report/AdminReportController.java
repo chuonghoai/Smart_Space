@@ -40,6 +40,14 @@ public class AdminReportController {
                 .ok(ApiResponse.success("system.success", reportService.getAdminRecentReports(tab, limit)));
     }
 
+    @GetMapping("/unsatisfactory")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<ApiResponse> getUnsatisfactoryReports(
+            @RequestParam(defaultValue = "pending") String tab) {
+        return ResponseEntity
+                .ok(ApiResponse.success("system.success", reportService.getUnsatisfactoryReports(tab)));
+    }
+
     @PostMapping("/{id}/assign")
     @PreAuthorize("hasRole('admin')")
     public ResponseEntity<ApiResponse> assignReport(

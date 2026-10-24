@@ -163,6 +163,10 @@ class _ReportCard extends StatelessWidget {
                               onImage: true,
                             ),
                           const Spacer(),
+                          if (report.isReviewResolved == false) ...[
+                            _buildRehandlingBadge(theme, isDark, l10n, onImage: true),
+                            const SizedBox(width: 6),
+                          ],
                           _buildStatusBadge(
                             report.status,
                             theme,
@@ -203,6 +207,10 @@ class _ReportCard extends StatelessWidget {
                             l10n,
                             onImage: false,
                           ),
+                          if (report.isReviewResolved == false) ...[
+                            const SizedBox(width: 8),
+                            _buildRehandlingBadge(theme, isDark, l10n, onImage: false),
+                          ],
                           const Spacer(),
                           if (report.createdAt != null)
                             _buildDateWidget(report.createdAt!, theme),
@@ -607,6 +615,74 @@ class _ReportCard extends StatelessWidget {
             label,
             style: theme.textTheme.labelSmall?.copyWith(
               color: color,
+              fontWeight: FontWeight.bold,
+              fontSize: 11,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRehandlingBadge(
+    ThemeData theme,
+    bool isDark,
+    AppLocalizations l10n, {
+    bool onImage = false,
+  }) {
+    if (onImage) {
+      return Container(
+        padding: const EdgeInsets.symmetric(horizontal: 9, vertical: 5),
+        decoration: BoxDecoration(
+          color: const Color(0xFFE65100),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.35),
+              blurRadius: 6,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Icon(Icons.refresh_rounded, size: 12, color: Colors.white),
+            const SizedBox(width: 4),
+            Text(
+              l10n.rehandlingBadge,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+                fontSize: 11.5,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    final badgeBg = isDark ? const Color(0xFF4A2800) : const Color(0xFFFFF3E0);
+    final badgeColor = isDark ? const Color(0xFFFFB74D) : const Color(0xFFE65100);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+      decoration: BoxDecoration(
+        color: badgeBg,
+        borderRadius: BorderRadius.circular(20),
+        border: Border.all(
+          color: badgeColor.withValues(alpha: isDark ? 0.5 : 0.3),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.refresh_rounded, size: 11, color: badgeColor),
+          const SizedBox(width: 4),
+          Text(
+            l10n.rehandlingBadge,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: badgeColor,
               fontWeight: FontWeight.bold,
               fontSize: 11,
             ),

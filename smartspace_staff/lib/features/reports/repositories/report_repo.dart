@@ -7,4 +7,9 @@ abstract class ReportRepo {
   Future<ApiResponse<List<ReportModel>>> getStaffAssignedReports({String status = 'all', int page = 0, int limit = 10});
   Future<ApiResponse<ReportStatisticsModel>> getStaffStatistics();
   Future<ApiResponse<ReportDetailModel>> getReportDetail(String reportId);
+  Future<ApiResponse<ReportDetailModel>> completeReport(
+    String reportId, {
+    required String note,
+    required List<String> imageUrls,
+  });
 }

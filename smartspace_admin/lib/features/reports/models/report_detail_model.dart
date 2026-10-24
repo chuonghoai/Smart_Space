@@ -19,6 +19,14 @@ class ReportDetailModel {
   final String? assignedStaffPhone;
   final String? assignedStaffEmail;
   final String? assignedStaffAvatarUrl;
+  final String? resolvedNote;
+  final List<String> resolvedImages;
+  final DateTime? resolvedAt;
+  final bool? isReviewResolved;
+  final int? rating;
+  final String? reviewNote;
+  final List<String> reviewImages;
+  final DateTime? reviewedAt;
 
   ReportDetailModel({
     required this.id,
@@ -41,6 +49,14 @@ class ReportDetailModel {
     this.assignedStaffPhone,
     this.assignedStaffEmail,
     this.assignedStaffAvatarUrl,
+    this.resolvedNote,
+    this.resolvedImages = const [],
+    this.resolvedAt,
+    this.isReviewResolved,
+    this.rating,
+    this.reviewNote,
+    this.reviewImages = const [],
+    this.reviewedAt,
   });
 
   factory ReportDetailModel.fromJson(Map<String, dynamic> json) {
@@ -65,6 +81,38 @@ class ReportDetailModel {
       if (singleImage != null && singleImage.toString().trim().isNotEmpty) {
         parsedImages.add(singleImage.toString().trim());
       }
+    }
+
+    // Parse resolved images list from resolved_image_urls or resolvedImages or resolvedImageUrls
+    final rawResolvedImages = json['resolved_image_urls'] ?? json['resolvedImages'] ?? json['resolvedImageUrls'];
+    List<String> parsedResolvedImages = [];
+    if (rawResolvedImages is List) {
+      parsedResolvedImages = rawResolvedImages
+          .map((e) => e.toString().trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+    } else if (rawResolvedImages is String && rawResolvedImages.isNotEmpty) {
+      parsedResolvedImages = rawResolvedImages
+          .split(',')
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+    }
+
+    // Parse review images
+    final rawReviewImages = json['review_image_urls'] ?? json['reviewImages'] ?? json['reviewImageUrls'];
+    List<String> parsedReviewImages = [];
+    if (rawReviewImages is List) {
+      parsedReviewImages = rawReviewImages
+          .map((e) => e.toString().trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
+    } else if (rawReviewImages is String && rawReviewImages.isNotEmpty) {
+      parsedReviewImages = rawReviewImages
+          .split(',')
+          .map((e) => e.trim())
+          .where((e) => e.isNotEmpty)
+          .toList();
     }
 
     return ReportDetailModel(
@@ -92,6 +140,18 @@ class ReportDetailModel {
       assignedStaffPhone: (json['assigned_staff_phone'] ?? json['assignedStaffPhone']) as String?,
       assignedStaffEmail: (json['assigned_staff_email'] ?? json['assignedStaffEmail']) as String?,
       assignedStaffAvatarUrl: (json['assigned_staff_avatar_url'] ?? json['assignedStaffAvatarUrl']) as String?,
+      resolvedNote: (json['resolved_note'] ?? json['resolvedNote']) as String?,
+      resolvedImages: parsedResolvedImages,
+      resolvedAt: json['resolved_at'] != null || json['resolvedAt'] != null
+          ? DateTime.tryParse((json['resolved_at'] ?? json['resolvedAt']).toString())
+          : null,
+      isReviewResolved: (json['is_review_resolved'] ?? json['isReviewResolved']) as bool?,
+      rating: (json['rating']) as int?,
+      reviewNote: (json['review_note'] ?? json['reviewNote']) as String?,
+      reviewImages: parsedReviewImages,
+      reviewedAt: json['reviewed_at'] != null || json['reviewedAt'] != null
+          ? DateTime.tryParse((json['reviewed_at'] ?? json['reviewedAt']).toString())
+          : null,
     );
   }
 
@@ -116,6 +176,14 @@ class ReportDetailModel {
     String? assignedStaffPhone,
     String? assignedStaffEmail,
     String? assignedStaffAvatarUrl,
+    String? resolvedNote,
+    List<String>? resolvedImages,
+    DateTime? resolvedAt,
+    bool? isReviewResolved,
+    int? rating,
+    String? reviewNote,
+    List<String>? reviewImages,
+    DateTime? reviewedAt,
   }) {
     return ReportDetailModel(
       id: id ?? this.id,
@@ -138,6 +206,14 @@ class ReportDetailModel {
       assignedStaffPhone: assignedStaffPhone ?? this.assignedStaffPhone,
       assignedStaffEmail: assignedStaffEmail ?? this.assignedStaffEmail,
       assignedStaffAvatarUrl: assignedStaffAvatarUrl ?? this.assignedStaffAvatarUrl,
+      resolvedNote: resolvedNote ?? this.resolvedNote,
+      resolvedImages: resolvedImages ?? this.resolvedImages,
+      resolvedAt: resolvedAt ?? this.resolvedAt,
+      isReviewResolved: isReviewResolved ?? this.isReviewResolved,
+      rating: rating ?? this.rating,
+      reviewNote: reviewNote ?? this.reviewNote,
+      reviewImages: reviewImages ?? this.reviewImages,
+      reviewedAt: reviewedAt ?? this.reviewedAt,
     );
   }
 }

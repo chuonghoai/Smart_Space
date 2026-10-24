@@ -282,7 +282,7 @@
   "emptyNotification": "Bạn chưa có thông báo nào.",
   "unread": "Chưa đọc",
   "assignedStaff": "Nhân viên xử lý",
-  "routeCommunityFeed": "Bảng tin",
+  "routeCommunityFeed": "Tất cả phản ánh",
   "feedTabLatest": "Mới nhất",
   "feedTabNearby": "Gần tôi",
   "feedEmpty": "Chưa có phản ánh nào trong cộng đồng",
@@ -301,5 +301,25 @@
         "type": "int"
       }
     }
-  }
+  },
+  "reviewReport": "Đánh giá",
+  "reviewQuestion": "Phản ánh của bạn đã được xử lý hay chưa?",
+  "reviewResolvedOption": "Đã xử lý",
+  "reviewUnresolvedOption": "Chưa được xử lý",
+  "rateStaffTitle": "Đánh giá nhân viên xử lý",
+  "rateStaffSubtitle": "Vui lòng chọn số sao để đánh giá nhân viên (1 - 5 sao)",
+  "unresolvedReasonLabel": "Lý do chưa được xử lý",
+  "unresolvedReasonHint": "Vui lòng mô tả chi tiết lý do phản ánh chưa được xử lý...",
+  "attachEvidencePhotos": "Ảnh chụp thực tế (bắt buộc ít nhất 1 ảnh)",
+  "attachEvidencePhotoHint": "Cần ít nhất 1 ảnh chụp và ghi rõ lý do để gửi",
+  "submitReview": "Gửi đánh giá",
+  "submittingReview": "Đang gửi đánh giá...",
+  "reviewSuccess": "Gửi đánh giá thành công!",
+  "unresolvedReviewTitle": "Phản hồi chưa được xử lý thỏa đáng",
+  "reviewRatingLabel": "Đánh giá người dân",
+  "cameraOption": "Máy ảnh",
+  "galleryOption": "Bộ sưu tập",
+  "closeButton": "Đóng",
+  "rehandling": "Xử lý lại",
+  "unsatisfactoryBadge": "Xử lý chưa thỏa đáng"
 }

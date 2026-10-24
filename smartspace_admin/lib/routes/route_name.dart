@@ -43,6 +43,16 @@ class AppRouteInfo {
         return l10n.routePositionManagement;
       case 'routeManageDevices':
         return l10n.routeManageDevices;
+      case 'routeUnsatisfactoryReports':
+        return l10n.routeUnsatisfactoryReports;
+      case 'routeNewsManagement':
+        return l10n.routeNewsManagement;
+      case 'routeCreateNews':
+        return l10n.routeCreateNews;
+      case 'routeNewsDetail':
+        return l10n.routeNewsDetail;
+      case 'routeEditNews':
+        return l10n.routeEditNews;
       default:
         return nameKey;
     }
@@ -158,6 +168,36 @@ class RouteName {
     icon: Icons.phone_android,
     isHiddenInSearch: true,
   );
+  static const unsatisfactoryReports = AppRouteInfo(
+    path: '/reports/unsatisfactory',
+    nameKey: 'routeUnsatisfactoryReports',
+    icon: Icons.report_problem_outlined,
+    priority: 4,
+  );
+  static const newsManagement = AppRouteInfo(
+    path: '/news',
+    nameKey: 'routeNewsManagement',
+    icon: Icons.newspaper_outlined,
+    priority: 5,
+  );
+  static const createNews = AppRouteInfo(
+    path: '/news/create',
+    nameKey: 'routeCreateNews',
+    icon: Icons.post_add,
+    isHiddenInSearch: true,
+  );
+  static const newsDetail = AppRouteInfo(
+    path: '/news/:id',
+    nameKey: 'routeNewsDetail',
+    icon: Icons.article_outlined,
+    isHiddenInSearch: true,
+  );
+  static const editNews = AppRouteInfo(
+    path: '/news/edit/:id',
+    nameKey: 'routeEditNews',
+    icon: Icons.edit_note,
+    isHiddenInSearch: true,
+  );
 
   static const List<AppRouteInfo> allRoutes = [
     splash,
@@ -174,10 +214,15 @@ class RouteName {
     positionManagement,
     reportDashboard,
     reportList,
+    unsatisfactoryReports,
     spaceMap,
     search,
     notifications,
     manageDevices,
+    newsManagement,
+    createNews,
+    newsDetail,
+    editNews,
   ];
 
   static List<AppRouteInfo> get searchableRoutes {

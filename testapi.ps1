@@ -32,6 +32,25 @@ $TestRegistry = @{
     "StaffDashboard" = @{
         TestClass   = "com.vn.smart_space.controller.staff.StaffDashboardTest"
         Description = "Dashboard nhan vien: KPI, trend assigned/resolved, quyen truy cap, khoa gia dinh processed la trang thai cuoi"
+    "HandleReport" = @{
+        TestClass   = "com.vn.smart_space.controller.report.HandleReportTest"
+        Description = "Mo phong luong e2e: Client tao phan anh -> Admin phan cong cho Staff -> Staff hoan tat xu ly phan anh va gui thong bao cho Client"
+    }
+    "ReviewReportResolved" = @{
+        TestClass   = "com.vn.smart_space.controller.report.ReviewReportResolvedTest"
+        Description = "Mo phong Client danh gia phan anh la 'Da xu ly' (Resolved) kem danh gia 5 sao cho nhan vien"
+    }
+    "ReviewReportUnresolved" = @{
+        TestClass   = "com.vn.smart_space.controller.report.ReviewReportUnresolvedTest"
+        Description = "Mo phong Client danh gia phan anh la 'Chua duoc xu ly' (Unresolved) kem ly do, anh chup va thong bao cho Admin"
+    }
+    "ReviewReportRehandled" = @{
+        TestClass   = "com.vn.smart_space.controller.report.ReviewReportRehandledTest"
+        Description = "Mo phong quy trinh xu ly lai: Unresolved -> Admin Reopen -> Staff xu ly lai -> Client danh gia lai ghi de"
+    }
+    "NewsIntegration" = @{
+        TestClass   = "com.vn.smart_space.controller.news.NewsIntegrationTest"
+        Description = "Kiem tra toan bo luong CRUD tin tuc (News) va kiem tra phan quyen role ADMIN vs CLIENT"
     }
 }
 
@@ -114,15 +133,16 @@ if (-not (Get-Command mvn -ErrorAction SilentlyContinue)) {
     }
 }
 
-# Thiet lap moi truong UTF-8 cho JVM va Console
-$env:JAVA_TOOL_OPTIONS = "-Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8"
+# Thiet lap moi truong UTF-8 va Heap size cho JVM va Console
+$env:JAVA_TOOL_OPTIONS = "-Xms64m -Xmx256m -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8"
+$env:MAVEN_OPTS = "-Xms64m -Xmx256m"
 
 # Thuc thi lenh maven test
 $mvnArgs = @(
     "test",
     "-Dtest=$testClass",
     "-Dfile.encoding=UTF-8",
-    "-DargLine=-Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8",
+    "-DargLine=-Xmx256m -Dfile.encoding=UTF-8 -Dsun.stdout.encoding=UTF-8 -Dsun.stderr.encoding=UTF-8 -Dstdout.encoding=UTF-8 -Dstderr.encoding=UTF-8",
     "-f",
     "$PomPath"
 )
