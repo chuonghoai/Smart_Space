@@ -37,6 +37,10 @@ $TestRegistry = @{
         TestClass   = "com.vn.smart_space.controller.report.ReviewReportRehandledTest"
         Description = "Mo phong quy trinh xu ly lai: Unresolved -> Admin Reopen -> Staff xu ly lai -> Client danh gia lai ghi de"
     }
+    "NewsIntegration" = @{
+        TestClass   = "com.vn.smart_space.controller.news.NewsIntegrationTest"
+        Description = "Kiem tra toan bo luong CRUD tin tuc (News) va kiem tra phan quyen role ADMIN vs CLIENT"
+    }
 }
 
 # -----------------------------------------------------------------------------

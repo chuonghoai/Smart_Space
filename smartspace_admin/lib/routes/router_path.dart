@@ -21,4 +21,10 @@ class RouterPath {
   static String get notifications => RouteName.notifications.path;
   static String get manageDevices => RouteName.manageDevices.path;
   static String get unsatisfactoryReports => RouteName.unsatisfactoryReports.path;
+  static String get newsManagement => RouteName.newsManagement.path;
+  static String get createNews => RouteName.createNews.path;
+  static String newsDetailWithId(String id) =>
+      RouteName.newsDetail.path.replaceAll(':id', id);
+  static String editNewsWithId(String id) =>
+      RouteName.editNews.path.replaceAll(':id', id);
 }

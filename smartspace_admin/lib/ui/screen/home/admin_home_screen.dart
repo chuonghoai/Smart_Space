@@ -10,6 +10,7 @@ import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/layout/app_layout.dart';
 import 'package:smartspace_admin/ui/screen/home/widgets/new_reports_slider.dart';
+import 'package:smartspace_admin/ui/screen/home/widgets/admin_quick_access_bar.dart';
 import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
 
 class AdminHomeScreen extends ConsumerStatefulWidget {
@@ -75,6 +76,10 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
               // 1. Slider Report vừa được tạo
               const NewReportsSlider(),
               const SizedBox(height: 20),
+
+              // Quick access buttons: Quản lý phản ánh, Bản đồ, Quản lý nhân viên, Quản lý người dùng, Tin tức
+              const AdminQuickAccessBar(),
+              const SizedBox(height: 24),
 
               // 2. Tổng quan
               _buildOverviewSection(context, l10n, theme),
