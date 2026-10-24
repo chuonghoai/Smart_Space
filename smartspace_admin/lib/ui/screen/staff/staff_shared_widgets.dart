@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:mobile_shared/util/media_upload.dart';
 import 'package:smartspace_admin/features/staff/application/staff_providers.dart';
 import 'package:smartspace_admin/features/staff/models/staff_list_response.dart';
@@ -9,69 +10,6 @@ import 'package:smartspace_admin/features/position/application/position_provider
 import 'package:smartspace_admin/features/staff/models/staff_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/shared/position/position_widgets.dart';
-
-/// Summary card — hiển thị 1 KPI (icon + value + label)
-class StaffSummaryCard extends StatelessWidget {
-  final IconData icon;
-  final Color iconColor;
-  final String value;
-  final String label;
-
-  const StaffSummaryCard({
-    super.key,
-    required this.icon,
-    required this.iconColor,
-    required this.value,
-    required this.label,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Container(
-      width: 120,
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: theme.dividerColor),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(6),
-                decoration: BoxDecoration(
-                  color: iconColor.withValues(alpha: 0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(icon, size: 16, color: iconColor),
-              ),
-              const SizedBox(width: 8),
-              Text(
-                value,
-                style: theme.textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 4),
-          Text(
-            label,
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.6),
-            ),
-            overflow: TextOverflow.ellipsis,
-          ),
-        ],
-      ),
-    );
-  }
-}
 
 /// Card nhân viên — hiển thị avatar, tên, email, trạng thái
 class StaffCard extends StatelessWidget {
@@ -199,9 +137,7 @@ class StaffStatusChip extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    final successColor = theme.brightness == Brightness.light
-        ? const Color(0xFF2E7D32)
-        : const Color(0xFF66BB6A);
+    final successColor = AppSemanticColors.of(context).success;
 
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
@@ -950,61 +886,70 @@ void showStaffDetailSheet(
   StaffModel staff,
   WidgetRef ref,
 ) {
+  // Sheet cao vừa nội dung; phần thông tin cuộn được khi màn hình thấp,
+  // còn hàng nút luôn ghim ở đáy để không phải kéo sheet lên mới thấy.
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
+    useSafeArea: true,
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
     ),
-    builder: (sheetContext) => DraggableScrollableSheet(
-      initialChildSize: 0.5,
-      minChildSize: 0.3,
-      maxChildSize: 0.85,
-      expand: false,
-      builder: (sheetContext, scrollController) => SingleChildScrollView(
-        controller: scrollController,
-        padding: const EdgeInsets.all(24),
-        child: Column(
-          children: [
-            Container(
-              width: 40,
-              height: 4,
-              margin: const EdgeInsets.only(bottom: 24),
-              decoration: BoxDecoration(
-                color: theme.dividerColor,
-                borderRadius: BorderRadius.circular(2),
+    builder: (sheetContext) => SafeArea(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Flexible(
+            child: SingleChildScrollView(
+              padding: const EdgeInsets.fromLTRB(24, 24, 24, 0),
+              child: Column(
+                children: [
+                  Container(
+                    width: 40,
+                    height: 4,
+                    margin: const EdgeInsets.only(bottom: 24),
+                    decoration: BoxDecoration(
+                      color: theme.dividerColor,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                  StaffAvatar(staff: staff, radius: 36),
+                  const SizedBox(height: 12),
+                  Text(
+                    staff.fullName,
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 8),
+                  StaffStatusChip(isActive: staff.isActive),
+                  const SizedBox(height: 20),
+                  const Divider(),
+                  const SizedBox(height: 12),
+                  StaffDetailRow(icon: Icons.email_outlined, text: staff.email),
+                  const SizedBox(height: 12),
+                  StaffDetailRow(
+                    icon: Icons.phone_outlined,
+                    text: staff.phoneNumber ?? '—',
+                  ),
+                  if (staff.processingCount > 0) ...[
+                    const SizedBox(height: 12),
+                    StaffDetailRow(
+                      icon: Icons.assignment_outlined,
+                      text: l10n.processingReports(
+                        staff.processingCount.toInt(),
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: 20),
+                ],
               ),
             ),
-            StaffAvatar(staff: staff, radius: 36),
-            const SizedBox(height: 12),
-            Text(
-              staff.fullName,
-              style: theme.textTheme.titleMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 8),
-            StaffStatusChip(isActive: staff.isActive),
-            const SizedBox(height: 20),
-            const Divider(),
-            const SizedBox(height: 12),
-            StaffDetailRow(icon: Icons.email_outlined, text: staff.email),
-            const SizedBox(height: 12),
-            StaffDetailRow(
-              icon: Icons.phone_outlined,
-              text: staff.phoneNumber ?? '—',
-            ),
-            if (staff.processingCount > 0) ...[
-              const SizedBox(height: 12),
-              StaffDetailRow(
-                icon: Icons.assignment_outlined,
-                text: l10n.processingReports(staff.processingCount.toInt()),
-              ),
-            ],
-            const SizedBox(height: 20),
-            const Divider(),
-            const SizedBox(height: 16),
-            Row(
+          ),
+          const Divider(height: 1),
+          Padding(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+            child: Row(
               children: [
                 // Nút Chỉnh sửa
                 Expanded(
@@ -1058,8 +1003,8 @@ void showStaffDetailSheet(
                 ),
               ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     ),
   );

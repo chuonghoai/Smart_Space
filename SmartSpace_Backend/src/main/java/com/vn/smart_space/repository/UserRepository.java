@@ -85,4 +85,8 @@ public interface UserRepository extends JpaRepository<User, String> {
             @Param("role") ERole role,
             @Param("from") LocalDateTime from);
 
+    // Lấy user kèm chức vụ (tránh N+1 khi map sang StaffResponse)
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.position WHERE u.id IN :ids")
+    List<User> findWithPositionByIdIn(@Param("ids") List<String> ids);
+
 }

@@ -1169,4 +1169,68 @@ class AppLocalizationsVi extends AppLocalizations {
   String paginationSummary(int from, int to, int total) {
     return '$from–$to / $total';
   }
+
+  @override
+  String staffActiveBlocked(int active, int blocked) {
+    return '$active hoạt động · $blocked đã khoá';
+  }
+
+  @override
+  String get reportsInProgress => 'Phản ánh đang xử lý';
+
+  @override
+  String avgPerActiveStaff(String value) {
+    return 'TB $value / nhân viên hoạt động';
+  }
+
+  @override
+  String get resolved30Days => 'Đã xử lý (30 ngày)';
+
+  @override
+  String get avgResolutionTime30Days => 'Thời gian xử lý TB (30 ngày)';
+
+  @override
+  String get notEnoughData => 'Chưa đủ dữ liệu';
+
+  @override
+  String durationMinutes(String value) {
+    return '$value phút';
+  }
+
+  @override
+  String durationHours(String value) {
+    return '$value giờ';
+  }
+
+  @override
+  String durationDays(String value) {
+    return '$value ngày';
+  }
+
+  @override
+  String get processingFlow => 'Luồng xử lý';
+
+  @override
+  String get assignedSeries => 'Được phân công';
+
+  @override
+  String get resolvedSeries => 'Đã xử lý';
+
+  @override
+  String assignedReportsCount(int count) {
+    return '$count được phân công';
+  }
+
+  @override
+  String resolvedReportsCount(int count) {
+    return '$count đã xử lý';
+  }
+
+  @override
+  String get workloadSubtitle => 'Số phản ánh đang xử lý theo nhân viên';
+
+  @override
+  String resolvedLast30Days(int count) {
+    return '$count đã xử lý trong 30 ngày';
+  }
 }

@@ -21,6 +21,18 @@ $TestRegistry = @{
         TestClass   = "com.vn.smart_space.controller.report.AssignReportTest"
         Description = "Mo phong Client tao report, sau do Admin phan cong cho Staff de test realtime notification cho Client"
     }
+    "ReportFeed" = @{
+        TestClass   = "com.vn.smart_space.controller.report.ReportFeedTest"
+        Description = "Client xem Bang tin: khong co phan anh bi tu choi, khong lo SDT/email, an danh khong lo ten"
+    }
+    "AdminUsers" = @{
+        TestClass   = "com.vn.smart_space.controller.admin.AdminUserManagementTest"
+        Description = "Admin quan ly nguoi dung: danh sach chi client, thong ke, trend zero-fill, chi tiet khong lo phan anh an danh"
+    }
+    "StaffDashboard" = @{
+        TestClass   = "com.vn.smart_space.controller.staff.StaffDashboardTest"
+        Description = "Dashboard nhan vien: KPI, trend assigned/resolved, quyen truy cap, khoa gia dinh processed la trang thai cuoi"
+    }
 }
 
 # -----------------------------------------------------------------------------

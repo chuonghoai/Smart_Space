@@ -28,15 +28,17 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class AdminUserManagementTest {
 
-    private static final String BASE_URL = "http://localhost:8989";
+    // Ghi đè bằng -Dsmartspace.baseUrl=http://localhost:<port> khi backend chạy cổng khác
+    private static final String BASE_URL = System.getProperty("smartspace.baseUrl", "http://localhost:8989");
     private static final String SIGNER_KEY = "ZpWmdK3rFAkBja/qcNOKJrmWFfhRJPLs5FbFr1xMgJVqk7BbHDYPz5blC3CueakgaikoP4vGkHQqXNqkDd63Yw==";
 
     private static final HttpClient HTTP = HttpClient.newHttpClient();
 
     @BeforeAll
     static void checkBackendRunning() {
+        URI base = URI.create(BASE_URL);
         try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress("localhost", 8989), 1500);
+            socket.connect(new InetSocketAddress(base.getHost(), base.getPort()), 1500);
         } catch (Exception e) {
             fail("[LOI] Backend chua chay tai " + BASE_URL + "! Bat backend truoc khi chay test.");
         }

@@ -2347,6 +2347,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{from}–{to} of {total}'**
   String paginationSummary(int from, int to, int total);
+
+  /// No description provided for @staffActiveBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'{active} active · {blocked} blocked'**
+  String staffActiveBlocked(int active, int blocked);
+
+  /// No description provided for @reportsInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports in progress'**
+  String get reportsInProgress;
+
+  /// No description provided for @avgPerActiveStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg. {value} per active staff'**
+  String avgPerActiveStaff(String value);
+
+  /// No description provided for @resolved30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved (30 days)'**
+  String get resolved30Days;
+
+  /// No description provided for @avgResolutionTime30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg. resolution time (30 days)'**
+  String get avgResolutionTime30Days;
+
+  /// No description provided for @notEnoughData.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough data yet'**
+  String get notEnoughData;
+
+  /// No description provided for @durationMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} min'**
+  String durationMinutes(String value);
+
+  /// No description provided for @durationHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} h'**
+  String durationHours(String value);
+
+  /// No description provided for @durationDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} days'**
+  String durationDays(String value);
+
+  /// No description provided for @processingFlow.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing flow'**
+  String get processingFlow;
+
+  /// No description provided for @assignedSeries.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned'**
+  String get assignedSeries;
+
+  /// No description provided for @resolvedSeries.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get resolvedSeries;
+
+  /// No description provided for @assignedReportsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} assigned'**
+  String assignedReportsCount(int count);
+
+  /// No description provided for @resolvedReportsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} resolved'**
+  String resolvedReportsCount(int count);
+
+  /// No description provided for @workloadSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports in progress per staff'**
+  String get workloadSubtitle;
+
+  /// No description provided for @resolvedLast30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} resolved in the last 30 days'**
+  String resolvedLast30Days(int count);
 }
 
 class _AppLocalizationsDelegate

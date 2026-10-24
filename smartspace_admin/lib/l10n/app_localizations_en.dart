@@ -1172,4 +1172,68 @@ class AppLocalizationsEn extends AppLocalizations {
   String paginationSummary(int from, int to, int total) {
     return '$from–$to of $total';
   }
+
+  @override
+  String staffActiveBlocked(int active, int blocked) {
+    return '$active active · $blocked blocked';
+  }
+
+  @override
+  String get reportsInProgress => 'Reports in progress';
+
+  @override
+  String avgPerActiveStaff(String value) {
+    return 'Avg. $value per active staff';
+  }
+
+  @override
+  String get resolved30Days => 'Resolved (30 days)';
+
+  @override
+  String get avgResolutionTime30Days => 'Avg. resolution time (30 days)';
+
+  @override
+  String get notEnoughData => 'Not enough data yet';
+
+  @override
+  String durationMinutes(String value) {
+    return '$value min';
+  }
+
+  @override
+  String durationHours(String value) {
+    return '$value h';
+  }
+
+  @override
+  String durationDays(String value) {
+    return '$value days';
+  }
+
+  @override
+  String get processingFlow => 'Processing flow';
+
+  @override
+  String get assignedSeries => 'Assigned';
+
+  @override
+  String get resolvedSeries => 'Resolved';
+
+  @override
+  String assignedReportsCount(int count) {
+    return '$count assigned';
+  }
+
+  @override
+  String resolvedReportsCount(int count) {
+    return '$count resolved';
+  }
+
+  @override
+  String get workloadSubtitle => 'Reports in progress per staff';
+
+  @override
+  String resolvedLast30Days(int count) {
+    return '$count resolved in the last 30 days';
+  }
 }

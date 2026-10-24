@@ -5,6 +5,8 @@ import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/screen/users/user_charts.dart';
 import 'package:smartspace_admin/ui/screen/users/user_detail_view.dart';
 import 'package:smartspace_admin/ui/screen/users/user_shared_widgets.dart';
+import 'package:smartspace_admin/ui/shared/dashboard/kpi_card.dart';
+import 'package:smartspace_admin/ui/shared/image/person_avatar.dart';
 
 class WebUserView extends ConsumerStatefulWidget {
   const WebUserView({super.key});
@@ -40,7 +42,7 @@ class _WebUserViewState extends ConsumerState<WebUserView> {
           Text(
             totalUsers == null
                 ? l10n.manageUsers
-                : '${l10n.manageUsers} · ${formatUserCount(context, totalUsers)}',
+                : '${l10n.manageUsers} · ${formatCount(context, totalUsers)}',
             style: theme.textTheme.headlineSmall?.copyWith(
               fontWeight: FontWeight.bold,
             ),
@@ -197,7 +199,7 @@ class _WebUserViewState extends ConsumerState<WebUserView> {
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              UserAvatar(
+                              PersonAvatar(
                                 avatarUrl: user.avatarUrl,
                                 name: user.fullName,
                                 radius: 18,
