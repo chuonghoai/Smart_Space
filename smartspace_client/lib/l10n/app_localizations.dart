@@ -1493,7 +1493,7 @@ abstract class AppLocalizations {
   /// No description provided for @routeCommunityFeed.
   ///
   /// In en, this message translates to:
-  /// **'Community feed'**
+  /// **'All report'**
   String get routeCommunityFeed;
 
   /// No description provided for @feedTabLatest.

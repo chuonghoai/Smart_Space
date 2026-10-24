@@ -734,7 +734,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get assignedStaff => 'Assigned Staff';
 
   @override
-  String get routeCommunityFeed => 'Community feed';
+  String get routeCommunityFeed => 'All report';
 
   @override
   String get feedTabLatest => 'Latest';

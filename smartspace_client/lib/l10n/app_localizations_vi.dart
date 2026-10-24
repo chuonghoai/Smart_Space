@@ -733,7 +733,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get assignedStaff => 'Nhân viên xử lý';
 
   @override
-  String get routeCommunityFeed => 'Bảng tin';
+  String get routeCommunityFeed => 'Tất cả phản ánh';
 
   @override
   String get feedTabLatest => 'Mới nhất';

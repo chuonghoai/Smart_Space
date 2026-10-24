@@ -530,7 +530,7 @@ class _WebSidebarItem extends StatelessWidget {
                         shape: BoxShape.circle,
                       ),
                       child: Text(
-                        badge! > 9 ? '9+' : '$badge',
+                        badge! > 99 ? '99+' : '$badge',
                         style: TextStyle(
                           color: theme.colorScheme.onError,
                           fontSize: 9,
