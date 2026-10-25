@@ -1364,6 +1364,162 @@ abstract class AppLocalizations {
   /// **'This report was rated unsatisfactory and is being re-handled'**
   String get rehandlingNotice;
 
+  /// No description provided for @routeChangePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get routeChangePassword;
+
+  /// No description provided for @routeEditProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get routeEditProfile;
+
+  /// No description provided for @routeManageDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Devices'**
+  String get routeManageDevices;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editProfile;
+
+  /// No description provided for @changeAvatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Photo'**
+  String get changeAvatar;
+
+  /// No description provided for @pickImageFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not pick the image. Please try again.'**
+  String get pickImageFailed;
+
+  /// No description provided for @dateOfBirth.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of Birth'**
+  String get dateOfBirth;
+
+  /// No description provided for @gender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get gender;
+
+  /// No description provided for @genderMale.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get genderMale;
+
+  /// No description provided for @genderFemale.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get genderFemale;
+
+  /// No description provided for @genderOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get genderOther;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChanges;
+
+  /// No description provided for @profileUpdateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully'**
+  String get profileUpdateSuccess;
+
+  /// No description provided for @profileUpdateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update profile'**
+  String get profileUpdateFailed;
+
+  /// No description provided for @loggedInDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged in devices'**
+  String get loggedInDevices;
+
+  /// No description provided for @thisDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'This device'**
+  String get thisDevice;
+
+  /// No description provided for @activeNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Active now'**
+  String get activeNow;
+
+  /// No description provided for @logoutDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logoutDevice;
+
+  /// No description provided for @logoutDeviceConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout from device?'**
+  String get logoutDeviceConfirmTitle;
+
+  /// No description provided for @logoutDeviceConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The session on \"{deviceName}\" will be ended.'**
+  String logoutDeviceConfirmMessage(String deviceName);
+
+  /// No description provided for @logoutAllOtherDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout all other devices'**
+  String get logoutAllOtherDevices;
+
+  /// No description provided for @logoutAllConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout all other devices?'**
+  String get logoutAllConfirmTitle;
+
+  /// No description provided for @logoutAllConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'All sessions except this device will be ended.'**
+  String get logoutAllConfirmMessage;
+
+  /// No description provided for @noOtherDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'No other devices logged in.'**
+  String get noOtherDevices;
+
+  /// No description provided for @deviceLogoutSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Device logged out.'**
+  String get deviceLogoutSuccess;
+
+  /// No description provided for @allDevicesLogoutSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'All other devices logged out.'**
+  String get allDevicesLogoutSuccess;
+
   /// No description provided for @latestNews.
   ///
   /// In en, this message translates to:

@@ -13,6 +13,10 @@ import 'package:smartspace_staff/ui/mobile/reports/all_reports_screen.dart';
 import 'package:smartspace_staff/ui/mobile/map/map_screen.dart';
 import 'package:smartspace_staff/ui/mobile/news/staff_news_detail_screen.dart';
 import 'package:smartspace_staff/ui/mobile/news/staff_news_list_screen.dart';
+import 'package:smartspace_staff/ui/mobile/settings/change_password_screen.dart';
+import 'package:smartspace_staff/ui/mobile/settings/edit_profile_screen.dart';
+import 'package:smartspace_staff/ui/mobile/settings/manage_devices_screen.dart';
+import 'package:smartspace_staff/ui/mobile/settings/settings_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = sharedNavigatorKey;
 
@@ -77,6 +81,22 @@ final appRouter = GoRouter(
         final newsId = state.pathParameters['id'] ?? '';
         return StaffNewsDetailScreen(newsId: newsId);
       },
+    ),
+    GoRoute(
+      path: RouterPath.settings,
+      builder: (context, state) => const MobileSettingsScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.changePassword,
+      builder: (context, state) => const MobileChangePasswordScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.editProfile,
+      builder: (context, state) => const MobileEditProfileScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.manageDevices,
+      builder: (context, state) => const MobileManageDevicesScreen(),
     ),
   ],
 );

@@ -1,6 +1,7 @@
 package com.vn.smart_space.repository;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Limit;
@@ -12,6 +13,7 @@ import org.springframework.data.repository.query.Param;
 
 import com.vn.smart_space.consts.EReportSeverity;
 import com.vn.smart_space.consts.EReportStatus;
+import com.vn.smart_space.consts.ERole;
 import com.vn.smart_space.model.Report;
 
 public interface ReportRepository extends JpaRepository<Report, String> {
@@ -48,15 +50,6 @@ public interface ReportRepository extends JpaRepository<Report, String> {
         List<Object[]> countByAssignedStaffIdInAndStatus(
                         @Param("staffIds") List<String> staffIds,
                         @Param("status") EReportStatus status);
-
-        // Find Top N Staff with most processing reports
-
-        @Query("SELECT r.assignedStaff.id, r.assignedStaff.fullName, COUNT(r) " +
-                        "FROM Report r " +
-                        "WHERE r.status = :status AND r.assignedStaff IS NOT NULL " +
-                        "GROUP BY r.assignedStaff.id, r.assignedStaff.fullName " +
-                        "ORDER BY COUNT(r) DESC")
-        List<Object[]> findTopStaffByProcessingCount(@Param("status") EReportStatus status, Limit limit);
 
         // Dashboard: group by status
         @Query("SELECT r.status, COUNT(r) FROM Report r GROUP BY r.status")
@@ -131,6 +124,90 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                         @Param("to") LocalDateTime to,
                         @Param("search") String search,
                         Pageable pageable);
+
+        // Admin - User management
+        // Thống kê tổng hợp (aggregate) tính cả báo cáo ẩn danh; số liệu gắn với từng
+        // người dùng thì loại báo cáo ẩn danh để không lộ danh tính người báo cáo.
+
+        @Query("SELECT COUNT(DISTINCT r.user.id) FROM Report r " +
+                        "WHERE r.user.role = :role AND r.createdAt >= :from")
+        long countDistinctReportersSince(
+                        @Param("role") ERole role,
+                        @Param("from") LocalDateTime from);
+
+        @Query("SELECT COUNT(r) FROM Report r " +
+                        "WHERE r.user.role = :role AND r.createdAt >= :from AND r.createdAt < :to")
+        long countByReporterRoleBetween(
+                        @Param("role") ERole role,
+                        @Param("from") LocalDateTime from,
+                        @Param("to") LocalDateTime to);
+
+        @Query("SELECT r.user.id, COUNT(r) FROM Report r " +
+                        "WHERE r.user.id IN :userIds AND (r.isAnonymous IS NULL OR r.isAnonymous = false) " +
+                        "GROUP BY r.user.id")
+        List<Object[]> countPublicReportsByUserIdIn(@Param("userIds") List<String> userIds);
+
+        @Query("SELECT u.id, u.fullName, u.avatarUrl, COUNT(r) FROM Report r JOIN r.user u " +
+                        "WHERE u.role = :role AND (r.isAnonymous IS NULL OR r.isAnonymous = false) " +
+                        "GROUP BY u.id, u.fullName, u.avatarUrl " +
+                        "ORDER BY COUNT(r) DESC")
+        List<Object[]> findTopPublicReporters(@Param("role") ERole role, Limit limit);
+
+        @Query("SELECT r.status, COUNT(r) FROM Report r " +
+                        "WHERE r.user.id = :userId AND (r.isAnonymous IS NULL OR r.isAnonymous = false) " +
+                        "GROUP BY r.status")
+        List<Object[]> countPublicReportsByUserGroupByStatus(@Param("userId") String userId);
+
+        @Query("SELECT r FROM Report r " +
+                        "WHERE r.user.id = :userId AND (r.isAnonymous IS NULL OR r.isAnonymous = false) " +
+                        "ORDER BY r.createdAt DESC")
+        List<Report> findRecentPublicReportsByUser(@Param("userId") String userId, Limit limit);
+
+        // Admin - Staff dashboard
+        // "Đã xử lý" = status processed + có nhân viên phụ trách. Thời điểm xử lý lấy theo
+        // updatedAt: processed là trạng thái cuối (updateReportStatus không cho chuyển tiếp)
+        // nên updatedAt không đổi sau khi xử lý xong.
+
+        @Query("SELECT COUNT(r) FROM Report r " +
+                        "WHERE r.status = :status AND r.assignedStaff IS NOT NULL " +
+                        "AND r.updatedAt >= :from AND r.updatedAt < :to")
+        long countAssignedByStatusUpdatedBetween(
+                        @Param("status") EReportStatus status,
+                        @Param("from") LocalDateTime from,
+                        @Param("to") LocalDateTime to);
+
+        // [assignedAt, updatedAt] để tính thời gian xử lý trung bình
+        @Query("SELECT r.assignedAt, r.updatedAt FROM Report r " +
+                        "WHERE r.status = :status AND r.assignedStaff IS NOT NULL AND r.assignedAt IS NOT NULL " +
+                        "AND r.updatedAt >= :from AND r.updatedAt < :to")
+        List<Object[]> findAssignedAndUpdatedAtByStatusBetween(
+                        @Param("status") EReportStatus status,
+                        @Param("from") LocalDateTime from,
+                        @Param("to") LocalDateTime to);
+
+        @Query("SELECT r.assignedAt FROM Report r WHERE r.assignedAt >= :from")
+        List<Date> findAssignedAtSince(@Param("from") Date from);
+
+        @Query("SELECT r.updatedAt FROM Report r " +
+                        "WHERE r.status = :status AND r.assignedStaff IS NOT NULL AND r.updatedAt >= :from")
+        List<LocalDateTime> findAssignedUpdatedAtByStatusSince(
+                        @Param("status") EReportStatus status,
+                        @Param("from") LocalDateTime from);
+
+        // [staffId, count] — nhân viên có nhiều báo cáo ở :status nhất
+        @Query("SELECT r.assignedStaff.id, COUNT(r) FROM Report r " +
+                        "WHERE r.status = :status AND r.assignedStaff IS NOT NULL " +
+                        "GROUP BY r.assignedStaff.id ORDER BY COUNT(r) DESC")
+        List<Object[]> findTopAssigneesByStatus(@Param("status") EReportStatus status, Limit limit);
+
+        // [staffId, count] — số báo cáo ở :status của từng nhân viên, cập nhật từ :from
+        @Query("SELECT r.assignedStaff.id, COUNT(r) FROM Report r " +
+                        "WHERE r.assignedStaff.id IN :staffIds AND r.status = :status AND r.updatedAt >= :from " +
+                        "GROUP BY r.assignedStaff.id")
+        List<Object[]> countByAssignedStaffIdInAndStatusUpdatedSince(
+                        @Param("staffIds") List<String> staffIds,
+                        @Param("status") EReportStatus status,
+                        @Param("from") LocalDateTime from);
 
         // Client community feed: newest first, excluding one status (rejected)
         @Query(value = "SELECT r FROM Report r LEFT JOIN FETCH r.user LEFT JOIN FETCH r.assignedStaff " +

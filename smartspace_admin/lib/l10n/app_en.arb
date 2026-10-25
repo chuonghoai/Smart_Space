@@ -393,6 +393,170 @@
   "deviceLogoutSuccess": "Device logged out.",
   "allDevicesLogoutSuccess": "All other devices logged out.",
   "routeManageDevices": "Manage Devices",
+  "routeUserManagement": "User Management",
+  "totalUsers": "Total users",
+  "newUsers30Days": "New users (30 days)",
+  "activeReporters30Days": "Contributors (30 days)",
+  "reports30Days": "Reports (30 days)",
+  "percentOfUsers": "{percent}% of all users",
+  "@percentOfUsers": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "changeVsPrevious30Days": "{change} vs previous 30 days",
+  "@changeVsPrevious30Days": {
+    "placeholders": {
+      "change": {
+        "type": "String"
+      }
+    }
+  },
+  "noPreviousPeriodData": "No data for previous 30 days",
+  "registrationTrend": "New registrations",
+  "newUsersCount": "{count} new users",
+  "@newUsersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weekOf": "Week of {date}",
+  "@weekOf": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "topContributors": "Top contributors",
+  "anonymousReportsExcluded": "Anonymous reports are not counted",
+  "reportCountLabel": "{count} reports",
+  "@reportCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportsColumn": "Reports",
+  "joinedDate": "Joined",
+  "joinedOn": "Joined {date}",
+  "@joinedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "sortBy": "Sort by",
+  "sortNewest": "Newest",
+  "sortOldest": "Oldest",
+  "sortByName": "Name (A–Z)",
+  "searchUsersHint": "Search by name, email or phone",
+  "noUsersInSystem": "No users yet",
+  "noUsersFound": "No users match your search",
+  "userDetailTitle": "User details",
+  "reportActivity": "Report activity",
+  "noPublicReports": "This user has no public reports yet",
+  "notProvided": "Not provided",
+  "allUsersLoaded": "All users loaded",
+  "loadMoreFailed": "Couldn't load more users",
+  "statistics": "Statistics",
+  "statisticsLoadFailed": "Couldn't load statistics",
+  "closeAction": "Close",
+  "paginationSummary": "{from}–{to} of {total}",
+  "@paginationSummary": {
+    "placeholders": {
+      "from": {
+        "type": "int"
+      },
+      "to": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "staffActiveBlocked": "{active} active · {blocked} blocked",
+  "@staffActiveBlocked": {
+    "placeholders": {
+      "active": {
+        "type": "int"
+      },
+      "blocked": {
+        "type": "int"
+      }
+    }
+  },
+  "reportsInProgress": "Reports in progress",
+  "avgPerActiveStaff": "Avg. {value} per active staff",
+  "@avgPerActiveStaff": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "resolved30Days": "Resolved (30 days)",
+  "avgResolutionTime30Days": "Avg. resolution time (30 days)",
+  "notEnoughData": "Not enough data yet",
+  "durationMinutes": "{value} min",
+  "@durationMinutes": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "durationHours": "{value} h",
+  "@durationHours": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "durationDays": "{value} days",
+  "@durationDays": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "processingFlow": "Processing flow",
+  "assignedSeries": "Assigned",
+  "resolvedSeries": "Resolved",
+  "assignedReportsCount": "{count} assigned",
+  "@assignedReportsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "resolvedReportsCount": "{count} resolved",
+  "@resolvedReportsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "workloadSubtitle": "Reports in progress per staff",
+  "resolvedLast30Days": "{count} resolved in the last 30 days",
+  "@resolvedLast30Days": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
   "resolutionInfo": "Resolution Information",
   "resolutionImages": "Resolution Photos",
   "noResolutionImages": "No resolution photos provided",
@@ -497,4 +661,4 @@
   "topicReportProcess": "Process Report",
   "noActivitiesFound": "No activities found",
   "routeAllActivities": "All Recent Activities"
-}
+}

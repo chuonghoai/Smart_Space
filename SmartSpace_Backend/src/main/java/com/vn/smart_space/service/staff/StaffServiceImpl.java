@@ -1,7 +1,12 @@
 package com.vn.smart_space.service.staff;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -22,10 +27,11 @@ import com.vn.smart_space.dto.PageResponse;
 import com.vn.smart_space.dto.request.admin.CreateStaffRequest;
 import com.vn.smart_space.dto.request.admin.UpdateStaffRequest;
 import com.vn.smart_space.dto.request.admin.UpdateStaffStatusRequest;
-import com.vn.smart_space.dto.response.admin.StaffChartResponse;
 import com.vn.smart_space.dto.response.admin.StaffListResponse;
 import com.vn.smart_space.dto.response.admin.StaffResponse;
+import com.vn.smart_space.dto.response.admin.StaffStatisticsResponse;
 import com.vn.smart_space.dto.response.admin.StaffSummaryResponse;
+import com.vn.smart_space.dto.response.admin.StaffTrendResponse;
 import com.vn.smart_space.exception.BadRequestException;
 import com.vn.smart_space.exception.ResourceNotFoundException;
 import com.vn.smart_space.model.ActivityHistory;
@@ -35,6 +41,7 @@ import com.vn.smart_space.repository.ActivityHistoryRepository;
 import com.vn.smart_space.repository.PositionRepository;
 import com.vn.smart_space.repository.ReportRepository;
 import com.vn.smart_space.repository.UserRepository;
+import com.vn.smart_space.utils.TrendBucketHelper;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +51,9 @@ import lombok.experimental.FieldDefaults;
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StaffServiceImpl implements IStaffService {
+
+        static final int STATS_WINDOW_DAYS = 30;
+        static final int WORKLOAD_LIMIT = 5;
 
         UserRepository userRepository;
         ReportRepository reportRepository;
@@ -343,25 +353,133 @@ public class StaffServiceImpl implements IStaffService {
 
         @Override
         @Transactional(readOnly = true)
-        public StaffChartResponse getChartData() {
+        public StaffStatisticsResponse getStatistics() {
+                LocalDateTime now = LocalDateTime.now();
+                LocalDateTime currentFrom = now.minusDays(STATS_WINDOW_DAYS);
+                LocalDateTime previousFrom = currentFrom.minusDays(STATS_WINDOW_DAYS);
+
+                // 1. Nhân sự + tải hiện tại
                 long total = userRepository.countByRole(ERole.staff);
                 long active = userRepository.countByRoleAndStatus(ERole.staff, EUserStatus.active);
                 long blocked = userRepository.countByRoleAndStatus(ERole.staff, EUserStatus.blocked);
+                long processing = reportRepository.countByStatus(EReportStatus.processing);
 
-                List<Object[]> topRows = reportRepository.findTopStaffByProcessingCount(
-                                EReportStatus.processing, Limit.of(7));
-                List<StaffChartResponse.WorkloadItem> topWorkload = topRows.stream()
-                                .map(row -> StaffChartResponse.WorkloadItem.builder()
-                                                .staffId((String) row[0])
-                                                .staffName((String) row[1])
-                                                .processingCount((Long) row[2])
-                                                .build())
-                                .collect(Collectors.toList());
-                return StaffChartResponse.builder()
+                // 2. Hiệu suất 30 ngày so với 30 ngày trước
+                long resolved = reportRepository.countAssignedByStatusUpdatedBetween(
+                                EReportStatus.processed, currentFrom, now);
+                long resolvedPrevious = reportRepository.countAssignedByStatusUpdatedBetween(
+                                EReportStatus.processed, previousFrom, currentFrom);
+                Long avgMinutes = averageResolutionMinutes(currentFrom, now);
+                Long avgMinutesPrevious = averageResolutionMinutes(previousFrom, currentFrom);
+
+                return StaffStatisticsResponse.builder()
                                 .totalStaff(total)
                                 .activeStaff(active)
                                 .blockedStaff(blocked)
-                                .topWorkload(topWorkload)
+                                .processingReports(processing)
+                                .resolved(resolved)
+                                .resolvedPrevious(resolvedPrevious)
+                                .avgResolutionMinutes(avgMinutes)
+                                .avgResolutionMinutesPrevious(avgMinutesPrevious)
+                                .workload(buildWorkload(currentFrom))
                                 .build();
+        }
+
+        @Override
+        @Transactional(readOnly = true)
+        public StaffTrendResponse getTrend(String period) {
+                String normalized = TrendBucketHelper.normalizePeriod(period);
+                List<LocalDate> bucketDates = TrendBucketHelper.buckets(normalized, LocalDate.now());
+                LocalDateTime from = bucketDates.get(0).atStartOfDay();
+
+                // Vào: thời điểm được phân công
+                Map<LocalDate, Long> assigned = TrendBucketHelper.emptyCounts(bucketDates);
+                for (Date assignedAt : reportRepository.findAssignedAtSince(toDate(from))) {
+                        LocalDateTime time = toLocalDateTime(assignedAt);
+                        if (time != null) {
+                                TrendBucketHelper.increment(assigned, time.toLocalDate(), normalized);
+                        }
+                }
+
+                // Ra: thời điểm xử lý xong
+                Map<LocalDate, Long> resolved = TrendBucketHelper.emptyCounts(bucketDates);
+                for (LocalDateTime updatedAt : reportRepository.findAssignedUpdatedAtByStatusSince(
+                                EReportStatus.processed, from)) {
+                        if (updatedAt != null) {
+                                TrendBucketHelper.increment(resolved, updatedAt.toLocalDate(), normalized);
+                        }
+                }
+
+                List<StaffTrendResponse.TrendItem> items = bucketDates.stream()
+                                .map(date -> StaffTrendResponse.TrendItem.builder()
+                                                .date(date)
+                                                .assigned(assigned.get(date))
+                                                .resolved(resolved.get(date))
+                                                .build())
+                                .collect(Collectors.toList());
+
+                return StaffTrendResponse.builder()
+                                .period(normalized)
+                                .items(items)
+                                .build();
+        }
+
+        /** Trung bình (phút) từ lúc phân công đến lúc xử lý xong; null nếu không có mẫu hợp lệ. */
+        private Long averageResolutionMinutes(LocalDateTime from, LocalDateTime to) {
+                List<Object[]> rows = reportRepository.findAssignedAndUpdatedAtByStatusBetween(
+                                EReportStatus.processed, from, to);
+                long totalMinutes = 0;
+                int samples = 0;
+                for (Object[] row : rows) {
+                        LocalDateTime assignedAt = toLocalDateTime((Date) row[0]);
+                        LocalDateTime resolvedAt = (LocalDateTime) row[1];
+                        if (assignedAt == null || resolvedAt == null || resolvedAt.isBefore(assignedAt)) {
+                                continue; // Dữ liệu bất thường → bỏ qua thay vì làm lệch trung bình
+                        }
+                        totalMinutes += Duration.between(assignedAt, resolvedAt).toMinutes();
+                        samples++;
+                }
+                return samples == 0 ? null : Math.round((double) totalMinutes / samples);
+        }
+
+        /** Top nhân viên theo số báo cáo đang xử lý, kèm số đã xử lý trong 30 ngày. */
+        private List<StaffStatisticsResponse.WorkloadItem> buildWorkload(LocalDateTime resolvedFrom) {
+                List<Object[]> topRows = reportRepository.findTopAssigneesByStatus(
+                                EReportStatus.processing, Limit.of(WORKLOAD_LIMIT));
+                if (topRows.isEmpty()) {
+                        return Collections.emptyList();
+                }
+
+                List<String> staffIds = topRows.stream().map(row -> (String) row[0]).collect(Collectors.toList());
+                Map<String, User> staffById = userRepository.findWithPositionByIdIn(staffIds).stream()
+                                .collect(Collectors.toMap(User::getId, u -> u));
+                Map<String, Long> resolvedById = reportRepository
+                                .countByAssignedStaffIdInAndStatusUpdatedSince(
+                                                staffIds, EReportStatus.processed, resolvedFrom)
+                                .stream()
+                                .collect(Collectors.toMap(row -> (String) row[0], row -> (Long) row[1]));
+
+                return topRows.stream()
+                                .filter(row -> staffById.containsKey((String) row[0]))
+                                .map(row -> {
+                                        String staffId = (String) row[0];
+                                        StaffResponse staff = toStaffResponse(staffById.get(staffId));
+                                        staff.setProcessingCount((Long) row[1]);
+                                        return StaffStatisticsResponse.WorkloadItem.builder()
+                                                        .staff(staff)
+                                                        .resolvedCount(resolvedById.getOrDefault(staffId, 0L))
+                                                        .build();
+                                })
+                                .collect(Collectors.toList());
+        }
+
+        private static LocalDateTime toLocalDateTime(Date date) {
+                return date == null
+                                ? null
+                                : LocalDateTime.ofInstant(Instant.ofEpochMilli(date.getTime()), ZoneId.systemDefault());
+        }
+
+        private static Date toDate(LocalDateTime time) {
+                return Date.from(time.atZone(ZoneId.systemDefault()).toInstant());
         }
 }

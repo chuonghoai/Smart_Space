@@ -245,8 +245,41 @@
   "rehandling": "Xử lý lại",
   "rehandlingBadge": "Xử lý lại",
   "rehandlingNotice": "Phản ánh này được đánh giá chưa thỏa đáng và đang được xử lý lại",
+  "routeChangePassword": "Đổi mật khẩu",
+  "routeEditProfile": "Chỉnh sửa hồ sơ",
+  "routeManageDevices": "Quản lý thiết bị",
+  "editProfile": "Chỉnh sửa hồ sơ",
+  "changeAvatar": "Đổi ảnh",
+  "pickImageFailed": "Không thể chọn ảnh. Vui lòng thử lại.",
+  "dateOfBirth": "Ngày sinh",
+  "gender": "Giới tính",
+  "genderMale": "Nam",
+  "genderFemale": "Nữ",
+  "genderOther": "Khác",
+  "saveChanges": "Lưu thay đổi",
+  "profileUpdateSuccess": "Cập nhật hồ sơ thành công",
+  "profileUpdateFailed": "Cập nhật hồ sơ thất bại",
+  "loggedInDevices": "Thiết bị đã đăng nhập",
+  "thisDevice": "Thiết bị này",
+  "activeNow": "Đang hoạt động",
+  "logoutDevice": "Đăng xuất",
+  "logoutDeviceConfirmTitle": "Đăng xuất khỏi thiết bị?",
+  "logoutDeviceConfirmMessage": "Phiên đăng nhập trên \"{deviceName}\" sẽ bị kết thúc.",
+  "@logoutDeviceConfirmMessage": {
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "logoutAllOtherDevices": "Đăng xuất tất cả thiết bị khác",
+  "logoutAllConfirmTitle": "Đăng xuất tất cả thiết bị khác?",
+  "logoutAllConfirmMessage": "Tất cả phiên ngoại trừ thiết bị này sẽ bị kết thúc.",
+  "noOtherDevices": "Không có thiết bị khác đang đăng nhập.",
+  "deviceLogoutSuccess": "Đã đăng xuất thiết bị.",
+  "allDevicesLogoutSuccess": "Đã đăng xuất tất cả thiết bị khác.",
   "latestNews": "Tin tức mới nhất",
   "routeNewsList": "Tin tức",
   "emptyNewsTitle": "Chưa có tin tức nào",
   "emptyNewsDescription": "Hiện tại chưa có tin tức hoặc thông báo mới nào."
-}
+}

@@ -3,8 +3,9 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/staff_repository.dart';
-import '../models/staff_chart_model.dart';
 import '../models/staff_list_response.dart';
+import '../models/staff_statistics_model.dart';
+import '../models/staff_trend_model.dart';
 
 class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
   int _currentPage = 1;
@@ -43,6 +44,7 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
     );
     if (response.success) {
       ref.invalidateSelf();
+      _invalidateStatistics();
       return true;
     }
     return false;
@@ -71,6 +73,7 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
     );
     if (response.success) {
       ref.invalidateSelf();
+      _invalidateStatistics();
       return true;
     }
     return false;
@@ -99,6 +102,7 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
     );
     if (response.success) {
       ref.invalidateSelf();
+      _invalidateStatistics();
       return true;
     }
     return false;
@@ -149,6 +153,12 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
       goToPage(_currentPage - 1);
     }
   }
+
+  /// Tạo/sửa/khoá nhân viên làm thay đổi KPI và bảng khối lượng công việc.
+  void _invalidateStatistics() {
+    ref.invalidate(staffStatisticsProvider);
+    ref.invalidate(staffTrendProvider);
+  }
 }
 
 final staffListProvider =
@@ -156,8 +166,13 @@ final staffListProvider =
       () => StaffListNotifier(),
     );
 
-final staffChartProvider = FutureProvider.autoDispose<StaffChartModel>((
-  ref,
-) async {
-  return staffRepository.getChartData();
-});
+final staffStatisticsProvider =
+    FutureProvider.autoDispose<StaffStatisticsModel>((ref) {
+      return staffRepository.getStatistics();
+    });
+
+/// period: 'daily' | 'weekly' | 'monthly'
+final staffTrendProvider = FutureProvider.autoDispose
+    .family<List<StaffTrendItem>, String>((ref, period) {
+      return staffRepository.getTrend(period);
+    });
