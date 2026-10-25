@@ -1269,4 +1269,49 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get livePreview => 'Bản xem trước trực tiếp';
+
+  @override
+  String get latestNews => 'Tin tức mới nhất';
+
+  @override
+  String get viewAllNews => 'Xem tất cả';
+
+  @override
+  String get allActivities => 'Tất cả hoạt động gần đây';
+
+  @override
+  String get filterActor => 'Người thực hiện';
+
+  @override
+  String get filterTopic => 'Chủ đề';
+
+  @override
+  String get actorAll => 'Tất cả';
+
+  @override
+  String get actorAdmin => 'Admin';
+
+  @override
+  String get actorStaff => 'Nhân viên';
+
+  @override
+  String get topicAll => 'Tất cả';
+
+  @override
+  String get topicNews => 'Tin tức';
+
+  @override
+  String get topicReportCreate => 'Tạo phản ánh';
+
+  @override
+  String get topicReportAssign => 'Phân công phản ánh';
+
+  @override
+  String get topicReportProcess => 'Xử lý phản ánh';
+
+  @override
+  String get noActivitiesFound => 'Không tìm thấy hoạt động nào';
+
+  @override
+  String get routeAllActivities => 'Tất cả hoạt động gần đây';
 }

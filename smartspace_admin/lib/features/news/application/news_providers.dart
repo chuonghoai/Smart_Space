@@ -1,6 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../data/news_repository.dart';
-import '../models/news_model.dart';
+import 'package:mobile_shared/mobile_shared.dart';
 
 final newsListProvider =
     FutureProvider.autoDispose<List<NewsModel>>((ref) async {
@@ -19,3 +18,10 @@ final newsDetailProvider =
   }
   throw Exception(res.message);
 });
+
+final latestNewsProvider =
+    FutureProvider.autoDispose<List<NewsModel>>((ref) async {
+  final newsList = await ref.watch(newsListProvider.future);
+  return newsList.take(2).toList();
+});
+

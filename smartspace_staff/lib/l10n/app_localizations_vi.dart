@@ -271,6 +271,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get news => 'Tin tức';
 
   @override
+  String get newsDetail => 'Chi tiết tin tức';
+
+  @override
+  String get newsNotFound => 'Không tìm thấy tin tức';
+
+  @override
+  String get targetAdmin => 'Admin';
+
+  @override
   String get instructions => 'Hướng dẫn';
 
   @override

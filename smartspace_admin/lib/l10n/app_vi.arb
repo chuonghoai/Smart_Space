@@ -474,5 +474,20 @@
   "targetAdmin": "Quản trị viên",
   "targetStaff": "Nhân viên",
   "targetClient": "Khách hàng",
-  "livePreview": "Bản xem trước trực tiếp"
+  "livePreview": "Bản xem trước trực tiếp",
+  "latestNews": "Tin tức mới nhất",
+  "viewAllNews": "Xem tất cả",
+  "allActivities": "Tất cả hoạt động gần đây",
+  "filterActor": "Người thực hiện",
+  "filterTopic": "Chủ đề",
+  "actorAll": "Tất cả",
+  "actorAdmin": "Admin",
+  "actorStaff": "Nhân viên",
+  "topicAll": "Tất cả",
+  "topicNews": "Tin tức",
+  "topicReportCreate": "Tạo phản ánh",
+  "topicReportAssign": "Phân công phản ánh",
+  "topicReportProcess": "Xử lý phản ánh",
+  "noActivitiesFound": "Không tìm thấy hoạt động nào",
+  "routeAllActivities": "Tất cả hoạt động gần đây"
 }

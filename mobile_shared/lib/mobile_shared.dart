@@ -27,6 +27,8 @@ export 'core/widgets/fullscreen_image_viewer.dart';
 export 'util/distance_updater_provider.dart';
 export 'util/location_service.dart';
 export 'util/media_upload.dart';
+export 'features/news/models/news_model.dart';
+export 'features/news/data/news_repository.dart';
 
 export 'l10n/generated/shared_localizations.dart';
 export 'util/distance_formatter.dart';

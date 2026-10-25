@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:smartspace_admin/l10n/app_localizations.dart';
 
 class NewsMetadataBar extends StatelessWidget {
   final String authorName;
@@ -17,7 +18,7 @@ class NewsMetadataBar extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
+    final l10n = AppLocalizations.of(context);
 
     final dateStr = createdAt != null
         ? DateFormat('dd/MM/yyyy').format(createdAt!)
@@ -26,89 +27,89 @@ class NewsMetadataBar extends StatelessWidget {
         ? DateFormat('HH:mm').format(createdAt!)
         : '--:--';
 
-    final containerColor = isDark
-        ? colorScheme.surfaceVariant.withOpacity(0.4)
-        : colorScheme.surfaceVariant.withOpacity(0.5);
-    final borderColor = colorScheme.outlineVariant.withOpacity(0.4);
-    final iconColor = colorScheme.primary;
-    final textColor = colorScheme.onSurfaceVariant;
+    final effectiveAuthor = authorName.trim().isNotEmpty
+        ? authorName.trim()
+        : (l10n?.targetAdmin ?? 'Admin');
 
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: compact ? 10 : 12,
-        vertical: compact ? 6 : 8,
-      ),
-      decoration: BoxDecoration(
-        color: containerColor,
-        borderRadius: BorderRadius.circular(8),
-        border: Border.all(color: borderColor, width: 1),
-      ),
-      child: Wrap(
-        spacing: compact ? 12 : 16,
-        runSpacing: 6,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        children: [
-          // 1. Icon người tạo
-          _buildItem(
-            icon: Icons.person_outline,
-            label: authorName.isNotEmpty ? authorName : 'Admin',
-            iconColor: iconColor,
-            textColor: textColor,
-            theme: theme,
-            compact: compact,
-          ),
-          // 2. Icon ngày tạo
-          _buildItem(
-            icon: Icons.calendar_today_outlined,
-            label: dateStr,
-            iconColor: iconColor,
-            textColor: textColor,
-            theme: theme,
-            compact: compact,
-          ),
-          // 3. Icon thời gian tạo
-          _buildItem(
-            icon: Icons.access_time_outlined,
-            label: timeStr,
-            iconColor: iconColor,
-            textColor: textColor,
-            theme: theme,
-            compact: compact,
-          ),
-        ],
-      ),
-    );
-  }
+    final double fontSize = compact ? 12.0 : 13.0;
+    final double iconSize = compact ? 14.0 : 15.0;
+    final Color iconColor = colorScheme.primary;
+    final Color authorColor = colorScheme.onSurface;
+    final Color secondaryColor = colorScheme.onSurfaceVariant;
 
-  Widget _buildItem({
-    required IconData icon,
-    required String label,
-    required Color iconColor,
-    required Color textColor,
-    required ThemeData theme,
-    required bool compact,
-  }) {
-    return Row(
-      mainAxisSize: MainAxisSize.min,
+    return Wrap(
+      spacing: compact ? 12 : 16,
+      runSpacing: 6,
+      crossAxisAlignment: WrapCrossAlignment.center,
       children: [
-        Icon(
-          icon,
-          size: compact ? 14 : 16,
-          color: iconColor,
+        // 1. Tên người tạo: In đậm
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.person_outline_rounded,
+              size: iconSize,
+              color: iconColor,
+            ),
+            const SizedBox(width: 5),
+            Text(
+              effectiveAuthor,
+              style: TextStyle(
+                fontSize: fontSize,
+                fontWeight: FontWeight.bold,
+                fontStyle: FontStyle.normal,
+                color: authorColor,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ),
-        const SizedBox(width: 5),
-        Text(
-          label,
-          style: (compact
-                  ? theme.textTheme.labelSmall
-                  : theme.textTheme.bodySmall)
-              ?.copyWith(
-            color: textColor,
-            fontWeight: FontWeight.w500,
-          ),
-          overflow: TextOverflow.ellipsis,
+        // 2. Ngày tạo: In nghiêng
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.calendar_today_outlined,
+              size: iconSize,
+              color: iconColor,
+            ),
+            const SizedBox(width: 5),
+            Text(
+              dateStr,
+              style: TextStyle(
+                fontSize: fontSize,
+                fontWeight: FontWeight.normal,
+                fontStyle: FontStyle.italic,
+                color: secondaryColor,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
+        ),
+        // 3. Thời gian tạo: In nghiêng
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(
+              Icons.access_time_rounded,
+              size: iconSize,
+              color: iconColor,
+            ),
+            const SizedBox(width: 5),
+            Text(
+              timeStr,
+              style: TextStyle(
+                fontSize: fontSize,
+                fontWeight: FontWeight.normal,
+                fontStyle: FontStyle.italic,
+                color: secondaryColor,
+              ),
+              overflow: TextOverflow.ellipsis,
+            ),
+          ],
         ),
       ],
     );
   }
 }
+

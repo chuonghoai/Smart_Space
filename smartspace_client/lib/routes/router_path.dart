@@ -20,4 +20,6 @@ class RouterPath {
   static String get communityFeed => RouteName.communityFeed.path;
   static String get search => RouteName.search.path;
   static String get notifications => RouteName.notifications.path;
+  static String newsDetailWithId(String id) =>
+      RouteName.newsDetail.path.replaceAll(':id', id);
 }

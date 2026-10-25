@@ -5,6 +5,7 @@ import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/features/notifications/models/notification_model.dart';
+import 'package:smartspace_admin/features/notifications/services/notification_router.dart';
 
 class AdminNotificationScreen extends ConsumerStatefulWidget {
   const AdminNotificationScreen({super.key});
@@ -42,13 +43,9 @@ class _AdminNotificationScreenState extends ConsumerState<AdminNotificationScree
     if (!notification.isRead) {
       ref.read(notificationProvider.notifier).markAsRead(notification.id);
     }
-    
+
     if (notification.actionData != null) {
-       final type = notification.actionData!.type;
-       final id = notification.actionData!.payload['id'] ?? notification.actionData!.payload['reportId'];
-       if ((type == 'REPORT' || type == 'REPORT_DETAIL') && id != null) {
-          context.push(RouterPath.reportDetail.replaceAll(':id', id.toString()));
-       }
+      NotificationRouter.handleAction(notification.actionData!);
     }
   }
 

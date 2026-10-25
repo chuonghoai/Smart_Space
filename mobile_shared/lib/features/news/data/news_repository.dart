@@ -61,7 +61,7 @@ class NewsRepository {
     );
   }
 
-  Future<ApiResponse> deleteNews(String id) {
+  Future<ApiResponse<void>> deleteNews(String id) {
     return apiClient.delete('/news/$id');
   }
 }

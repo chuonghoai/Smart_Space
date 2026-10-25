@@ -481,5 +481,20 @@
   "targetAdmin": "Admin",
   "targetStaff": "Staff",
   "targetClient": "Client",
-  "livePreview": "Live Preview"
+  "livePreview": "Live Preview",
+  "latestNews": "Latest News",
+  "viewAllNews": "View all",
+  "allActivities": "All Recent Activities",
+  "filterActor": "Actor",
+  "filterTopic": "Topic",
+  "actorAll": "All",
+  "actorAdmin": "Admin",
+  "actorStaff": "Staff",
+  "topicAll": "All",
+  "topicNews": "News",
+  "topicReportCreate": "Create Report",
+  "topicReportAssign": "Assign Report",
+  "topicReportProcess": "Process Report",
+  "noActivitiesFound": "No activities found",
+  "routeAllActivities": "All Recent Activities"
 }

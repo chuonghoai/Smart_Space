@@ -2551,6 +2551,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Live Preview'**
   String get livePreview;
+
+  /// No description provided for @latestNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest News'**
+  String get latestNews;
+
+  /// No description provided for @viewAllNews.
+  ///
+  /// In en, this message translates to:
+  /// **'View all'**
+  String get viewAllNews;
+
+  /// No description provided for @allActivities.
+  ///
+  /// In en, this message translates to:
+  /// **'All Recent Activities'**
+  String get allActivities;
+
+  /// No description provided for @filterActor.
+  ///
+  /// In en, this message translates to:
+  /// **'Actor'**
+  String get filterActor;
+
+  /// No description provided for @filterTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'Topic'**
+  String get filterTopic;
+
+  /// No description provided for @actorAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get actorAll;
+
+  /// No description provided for @actorAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get actorAdmin;
+
+  /// No description provided for @actorStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get actorStaff;
+
+  /// No description provided for @topicAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get topicAll;
+
+  /// No description provided for @topicNews.
+  ///
+  /// In en, this message translates to:
+  /// **'News'**
+  String get topicNews;
+
+  /// No description provided for @topicReportCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Report'**
+  String get topicReportCreate;
+
+  /// No description provided for @topicReportAssign.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign Report'**
+  String get topicReportAssign;
+
+  /// No description provided for @topicReportProcess.
+  ///
+  /// In en, this message translates to:
+  /// **'Process Report'**
+  String get topicReportProcess;
+
+  /// No description provided for @noActivitiesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No activities found'**
+  String get noActivitiesFound;
+
+  /// No description provided for @routeAllActivities.
+  ///
+  /// In en, this message translates to:
+  /// **'All Recent Activities'**
+  String get routeAllActivities;
 }
 
 class _AppLocalizationsDelegate

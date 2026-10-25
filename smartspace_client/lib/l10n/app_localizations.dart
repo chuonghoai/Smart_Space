@@ -650,6 +650,24 @@ abstract class AppLocalizations {
   /// **'News'**
   String get news;
 
+  /// No description provided for @newsDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'News Detail'**
+  String get newsDetail;
+
+  /// No description provided for @newsNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'News not found'**
+  String get newsNotFound;
+
+  /// No description provided for @targetAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get targetAdmin;
+
   /// No description provided for @instructions.
   ///
   /// In en, this message translates to:

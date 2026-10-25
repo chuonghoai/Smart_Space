@@ -51,6 +51,8 @@ class AppRouteInfo {
         return l10n.routeNewsDetail;
       case 'routeEditNews':
         return l10n.routeEditNews;
+      case 'routeAllActivities':
+        return l10n.routeAllActivities;
       default:
         return nameKey;
     }
@@ -190,6 +192,12 @@ class RouteName {
     icon: Icons.edit_note,
     isHiddenInSearch: true,
   );
+  static const allActivities = AppRouteInfo(
+    path: '/activities',
+    nameKey: 'routeAllActivities',
+    icon: Icons.history,
+    priority: 8,
+  );
 
   static const List<AppRouteInfo> allRoutes = [
     splash,
@@ -214,6 +222,7 @@ class RouteName {
     createNews,
     newsDetail,
     editNews,
+    allActivities,
   ];
 
   static List<AppRouteInfo> get searchableRoutes {

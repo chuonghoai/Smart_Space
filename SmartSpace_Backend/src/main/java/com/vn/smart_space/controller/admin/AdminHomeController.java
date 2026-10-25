@@ -31,8 +31,18 @@ public class AdminHomeController {
     @GetMapping("/activities")
     @PreAuthorize("hasRole('admin')")
     public ResponseEntity<ApiResponse> getRecentActivities(
+            @RequestParam(required = false) Integer page,
+            @RequestParam(required = false) Integer size,
             @RequestParam(defaultValue = "4") int limit,
+            @RequestParam(required = false) String role,
+            @RequestParam(required = false) String topic,
             Locale locale) {
+        if (page != null) {
+            int pageSize = size != null ? size : 10;
+            return ResponseEntity.ok(ApiResponse.success("system.success",
+                    adminHomeService.getPaginatedActivities(page, pageSize, role, topic, locale)));
+        }
         return ResponseEntity.ok(ApiResponse.success("system.success", adminHomeService.getRecentActivities(limit, locale)));
     }
 }
+

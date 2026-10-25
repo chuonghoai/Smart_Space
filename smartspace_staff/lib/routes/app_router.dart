@@ -11,6 +11,7 @@ import 'package:smartspace_staff/ui/mobile/reports/presentation/report_detail_sc
 import 'package:smartspace_staff/ui/mobile/reports/presentation/handle_report_screen.dart';
 import 'package:smartspace_staff/ui/mobile/reports/all_reports_screen.dart';
 import 'package:smartspace_staff/ui/mobile/map/map_screen.dart';
+import 'package:smartspace_staff/ui/mobile/news/staff_news_detail_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = sharedNavigatorKey;
 
@@ -64,6 +65,13 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.map,
       builder: (context, state) => const MapScreen(),
+    ),
+    GoRoute(
+      path: '/news/:id',
+      builder: (context, state) {
+        final newsId = state.pathParameters['id'] ?? '';
+        return StaffNewsDetailScreen(newsId: newsId);
+      },
     ),
   ],
 );

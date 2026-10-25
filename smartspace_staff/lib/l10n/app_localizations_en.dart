@@ -271,6 +271,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get news => 'News';
 
   @override
+  String get newsDetail => 'News Detail';
+
+  @override
+  String get newsNotFound => 'News not found';
+
+  @override
+  String get targetAdmin => 'Admin';
+
+  @override
   String get instructions => 'Instructions';
 
   @override

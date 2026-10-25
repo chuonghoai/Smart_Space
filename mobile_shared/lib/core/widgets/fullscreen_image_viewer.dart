@@ -74,6 +74,51 @@ class _FullscreenImageViewerState extends State<FullscreenImageViewer> {
               );
             },
           ),
+          // Left & Right navigation buttons for slider
+          if (widget.imageUrls.length > 1) ...[
+            if (_currentIndex > 0)
+              Positioned(
+                left: 16,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: IconButton.filled(
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.black54,
+                      foregroundColor: Colors.white,
+                    ),
+                    icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                    onPressed: () {
+                      _pageController.previousPage(
+                        duration: const Duration(milliseconds: 250),
+                        curve: Curves.easeInOut,
+                      );
+                    },
+                  ),
+                ),
+              ),
+            if (_currentIndex < widget.imageUrls.length - 1)
+              Positioned(
+                right: 16,
+                top: 0,
+                bottom: 0,
+                child: Center(
+                  child: IconButton.filled(
+                    style: IconButton.styleFrom(
+                      backgroundColor: Colors.black54,
+                      foregroundColor: Colors.white,
+                    ),
+                    icon: const Icon(Icons.arrow_forward_ios, size: 20),
+                    onPressed: () {
+                      _pageController.nextPage(
+                        duration: const Duration(milliseconds: 250),
+                        curve: Curves.easeInOut,
+                      );
+                    },
+                  ),
+                ),
+              ),
+          ],
           // Top bar: Counter & Close button
           Positioned(
             top: MediaQuery.of(context).padding.top + 10,
@@ -82,7 +127,7 @@ class _FullscreenImageViewerState extends State<FullscreenImageViewer> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (widget.imageUrls.length > 1)
+                if (widget.imageUrls.isNotEmpty)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                     decoration: BoxDecoration(

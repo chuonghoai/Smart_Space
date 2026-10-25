@@ -1,6 +1,7 @@
 import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import '../models/admin_overview_model.dart';
+import '../models/paginated_activities_model.dart';
 import '../models/recent_activity_model.dart';
 import '../models/recent_report_model.dart';
 
@@ -19,6 +20,30 @@ class HomeRepository {
       decoder: (json) => (json as List<dynamic>)
           .map((e) => RecentActivityModel.fromJson(e as Map<String, dynamic>))
           .toList(),
+    );
+  }
+
+  Future<ApiResponse<PaginatedActivitiesModel>> getPaginatedActivities({
+    int page = 1,
+    int size = 15,
+    String? role,
+    String? topic,
+  }) async {
+    final Map<String, dynamic> params = {
+      'page': page,
+      'size': size,
+    };
+    if (role != null && role.isNotEmpty && role != 'all') {
+      params['role'] = role;
+    }
+    if (topic != null && topic.isNotEmpty && topic != 'all') {
+      params['topic'] = topic;
+    }
+
+    return apiClient.get(
+      '/admin/activities',
+      queryParameters: params,
+      decoder: (json) => PaginatedActivitiesModel.fromJson(json as Map<String, dynamic>),
     );
   }
 

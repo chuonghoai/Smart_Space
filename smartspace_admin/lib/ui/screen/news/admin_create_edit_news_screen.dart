@@ -6,7 +6,6 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_admin/features/news/application/news_providers.dart';
-import 'package:smartspace_admin/features/news/data/news_repository.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/layout/app_layout.dart';
 import 'package:smartspace_admin/ui/screen/news/utils/markdown_helpers.dart';

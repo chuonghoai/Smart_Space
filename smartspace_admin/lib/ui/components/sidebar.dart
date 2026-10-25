@@ -91,9 +91,7 @@ class Sidebar extends ConsumerWidget {
                     onTap: () {
                       Navigator.pop(context);
                       if (currentPath != RouterPath.home && currentPath != '/') {
-                        while (context.canPop()) {
-                          context.pop();
-                        }
+                        context.go(RouterPath.home);
                       }
                     },
                   ),
@@ -131,7 +129,7 @@ class Sidebar extends ConsumerWidget {
                     isSelected: currentPath == RouterPath.reportDashboard,
                     onTap: () {
                       Navigator.pop(context);
-                      context.push(RouterPath.reportDashboard);
+                      context.go(RouterPath.reportDashboard);
                     },
                   ),
                   _SidebarItem(
@@ -140,7 +138,7 @@ class Sidebar extends ConsumerWidget {
                     isSelected: currentPath == RouterPath.spaceMap,
                     onTap: () {
                       Navigator.pop(context);
-                      context.push(RouterPath.spaceMap);
+                      context.go(RouterPath.spaceMap);
                     },
                   ),
                   _SidebarItem(
@@ -158,7 +156,7 @@ class Sidebar extends ConsumerWidget {
                     isSelected: currentPath == RouterPath.staffManagement,
                     onTap: () {
                       Navigator.pop(context);
-                      context.push(RouterPath.staffManagement);
+                      context.go(RouterPath.staffManagement);
                     },
                   ),
                   _SidebarItem(
@@ -167,7 +165,7 @@ class Sidebar extends ConsumerWidget {
                     isSelected: currentPath == RouterPath.positionManagement,
                     onTap: () {
                       Navigator.pop(context);
-                      context.push(RouterPath.positionManagement);
+                      context.go(RouterPath.positionManagement);
                     },
                   ),
                   _SidebarItem(
@@ -176,7 +174,7 @@ class Sidebar extends ConsumerWidget {
                     isSelected: currentPath == RouterPath.newsManagement || currentPath.startsWith('/news'),
                     onTap: () {
                       Navigator.pop(context);
-                      context.push(RouterPath.newsManagement);
+                      context.go(RouterPath.newsManagement);
                     },
                   ),
 
@@ -192,7 +190,7 @@ class Sidebar extends ConsumerWidget {
                     isSelected: currentPath == RouterPath.settings,
                     onTap: () {
                       Navigator.pop(context);
-                      context.push(RouterPath.settings);
+                      context.go(RouterPath.settings);
                     },
                   ),
                   _SidebarItem(
@@ -300,7 +298,7 @@ class WebSidebar extends ConsumerWidget {
     final theme = Theme.of(context);
     final notificationState = ref.watch(notificationProvider);
     final unreadCount = notificationState.countModel?.notifNumber ?? 0;
-    final currentPath = GoRouterState.of(context).uri.toString();
+    final currentPath = GoRouterState.of(context).uri.path;
 
     return Column(
       children: [
@@ -373,9 +371,7 @@ class WebSidebar extends ConsumerWidget {
                 isSelected: currentPath == RouterPath.home || currentPath == '/',
                 onTap: () {
                   if (currentPath != RouterPath.home && currentPath != '/') {
-                    while (context.canPop()) {
-                      context.pop();
-                    }
+                    context.go(RouterPath.home);
                   }
                 },
               ),
@@ -395,7 +391,7 @@ class WebSidebar extends ConsumerWidget {
                 isExpanded: isExpanded,
                 isSelected: currentPath == RouterPath.reportDashboard,
                 onTap: () {
-                  context.push(RouterPath.reportDashboard);
+                  context.go(RouterPath.reportDashboard);
                 },
               ),
               _WebSidebarItem(
@@ -403,7 +399,7 @@ class WebSidebar extends ConsumerWidget {
                 label: l10n.spaceMap,
                 isExpanded: isExpanded,
                 isSelected: currentPath == RouterPath.spaceMap,
-                onTap: () => context.push(RouterPath.spaceMap),
+                onTap: () => context.go(RouterPath.spaceMap),
               ),
               _WebSidebarItem(
                 icon: Icons.people_outline,
@@ -419,21 +415,21 @@ class WebSidebar extends ConsumerWidget {
                 label: l10n.manageStaffs,
                 isExpanded: isExpanded,
                 isSelected: currentPath == RouterPath.staffManagement,
-                onTap: () => context.push(RouterPath.staffManagement),
+                onTap: () => context.go(RouterPath.staffManagement),
               ),
               _WebSidebarItem(
                 icon: Icons.workspace_premium_outlined,
                 label: l10n.managePositions,
                 isExpanded: isExpanded,
                 isSelected: currentPath == RouterPath.positionManagement,
-                onTap: () => context.push(RouterPath.positionManagement),
+                onTap: () => context.go(RouterPath.positionManagement),
               ),
               _WebSidebarItem(
                 icon: Icons.newspaper_outlined,
                 label: l10n.manageNews,
                 isExpanded: isExpanded,
                 isSelected: currentPath == RouterPath.newsManagement || currentPath.startsWith('/news'),
-                onTap: () => context.push(RouterPath.newsManagement),
+                onTap: () => context.go(RouterPath.newsManagement),
               ),
 
               const Padding(
@@ -446,7 +442,7 @@ class WebSidebar extends ConsumerWidget {
                 label: l10n.settings,
                 isExpanded: isExpanded,
                 isSelected: currentPath == RouterPath.settings,
-                onTap: () => context.push(RouterPath.settings),
+                onTap: () => context.go(RouterPath.settings),
               ),
               _WebSidebarItem(
                 icon: Icons.help_outline,

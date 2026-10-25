@@ -160,6 +160,12 @@ class RouteName {
     icon: Icons.dynamic_feed,
     priority: 3,
   );
+  static const newsDetail = AppRouteInfo(
+    path: '/news/:id',
+    nameKey: 'newsDetail',
+    icon: Icons.newspaper,
+    isHiddenInSearch: true,
+  );
 
   static const List<AppRouteInfo> allRoutes = [
     splash,
@@ -181,6 +187,7 @@ class RouteName {
     search,
     notifications,
     communityFeed,
+    newsDetail,
   ];
 
   static List<AppRouteInfo> get searchableRoutes {
