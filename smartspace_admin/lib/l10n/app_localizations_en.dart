@@ -1496,4 +1496,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get routeAllActivities => 'All Recent Activities';
+
+  @override
+  String mapClusterReportsTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reports in this area',
+      one: '1 report in this area',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get mapClusterSortHint => 'Pending first, then newest';
+
+  @override
+  String get mapZoomInForMore => 'Zoom in to see more reports';
+
+  @override
+  String get mapLoadReportsFailed => 'Couldn\'t load reports on the map';
 }

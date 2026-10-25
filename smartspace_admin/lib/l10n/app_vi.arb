@@ -660,5 +660,16 @@
   "topicReportAssign": "Phân công phản ánh",
   "topicReportProcess": "Xử lý phản ánh",
   "noActivitiesFound": "Không tìm thấy hoạt động nào",
-  "routeAllActivities": "Tất cả hoạt động gần đây"
+  "routeAllActivities": "Tất cả hoạt động gần đây",
+  "mapClusterReportsTitle": "Khu vực này có {count} phản ánh",
+  "@mapClusterReportsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapClusterSortHint": "Chờ xử lý trước, mới nhất trước",
+  "mapZoomInForMore": "Phóng to để xem thêm phản ánh",
+  "mapLoadReportsFailed": "Không tải được phản ánh trên bản đồ"
 }

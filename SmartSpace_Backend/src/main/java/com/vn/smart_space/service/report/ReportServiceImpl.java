@@ -9,9 +9,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,6 +25,7 @@ import com.vn.smart_space.dto.request.notification.NotificationRequest;
 import com.vn.smart_space.dto.request.report.ReportCompleteRequest;
 import com.vn.smart_space.dto.request.report.ReportCreateRequest;
 import com.vn.smart_space.dto.PageResponse;
+import com.vn.smart_space.dto.response.admin.AdminMapReportsResponse;
 import com.vn.smart_space.dto.response.admin.MapReportResponse;
 import com.vn.smart_space.dto.response.admin.RecentReportResponse;
 import com.vn.smart_space.dto.response.admin.ReportListResponse;
@@ -54,11 +57,11 @@ public class ReportServiceImpl implements IReportService {
 
     private final ReportRepository reportRepository;
     private final UserRepository userRepository;
-    private final org.springframework.messaging.simp.SimpMessagingTemplate messagingTemplate;
+    private final SimpMessagingTemplate messagingTemplate;
     private final IFCMService fcmService;
     private final INotificationService notificationService;
     private final ActivityHistoryRepository activityHistoryRepository;
-    private final org.springframework.context.MessageSource messageSource;
+    private final MessageSource messageSource;
 
     private static final int MAP_DEFAULT_LIMIT = 300;
     private static final int MAP_MAX_LIMIT = 500;
@@ -333,12 +336,8 @@ public class ReportServiceImpl implements IReportService {
     @Transactional(readOnly = true)
     public MapReportsResponse getReportsInBounds(Double minLat, Double maxLat, Double minLng, Double maxLng,
             int limit) {
-        if (!isValidLatitude(minLat) || !isValidLatitude(maxLat)
-                || !isValidLongitude(minLng) || !isValidLongitude(maxLng)
-                || minLat > maxLat || minLng > maxLng) {
-            throw new BadRequestException("report.map.invalid_bounds");
-        }
-        int safeLimit = limit <= 0 ? MAP_DEFAULT_LIMIT : Math.min(limit, MAP_MAX_LIMIT);
+        validateMapBounds(minLat, maxLat, minLng, maxLng);
+        int safeLimit = safeMapLimit(limit, MAP_DEFAULT_LIMIT);
 
         // Fetch one extra row to know whether the viewport holds more than safeLimit
         // reports
@@ -357,6 +356,19 @@ public class ReportServiceImpl implements IReportService {
                 .reports(content)
                 .truncated(truncated)
                 .build();
+    }
+
+    /** Shared by client & admin map: every bound present, in range, and min <= max. */
+    private void validateMapBounds(Double minLat, Double maxLat, Double minLng, Double maxLng) {
+        if (!isValidLatitude(minLat) || !isValidLatitude(maxLat)
+                || !isValidLongitude(minLng) || !isValidLongitude(maxLng)
+                || minLat > maxLat || minLng > maxLng) {
+            throw new BadRequestException("report.map.invalid_bounds");
+        }
+    }
+
+    private int safeMapLimit(int limit, int defaultLimit) {
+        return limit <= 0 ? defaultLimit : Math.min(limit, MAP_MAX_LIMIT);
     }
 
     private boolean isValidLatitude(Double value) {
@@ -1021,8 +1033,14 @@ public class ReportServiceImpl implements IReportService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<MapReportResponse> getAdminMapReports(String status, String severity, String assigneeId,
-            String from, String to, int limit) {
+    public AdminMapReportsResponse getAdminMapReports(String status, String severity, String assigneeId,
+            String from, String to, Double minLat, Double maxLat, Double minLng, Double maxLng, int limit) {
+        // Bounds are optional, but all-or-nothing
+        boolean anyBound = minLat != null || maxLat != null || minLng != null || maxLng != null;
+        if (anyBound) {
+            validateMapBounds(minLat, maxLat, minLng, maxLng);
+        }
+
         // Parse enums
         EReportStatus statusEnum = null;
         if (status != null && !status.trim().isEmpty() && !"all".equalsIgnoreCase(status)) {
@@ -1052,14 +1070,16 @@ public class ReportServiceImpl implements IReportService {
         }
 
         String assigneeParam = (assigneeId != null && !assigneeId.trim().isEmpty()) ? assigneeId.trim() : null;
-        int safeLimit = Math.max(1, Math.min(limit, 500));
+        int safeLimit = safeMapLimit(limit, MAP_MAX_LIMIT);
 
-        Page<Report> reportPage = reportRepository.findAllFiltered(
-                statusEnum, severityEnum, assigneeParam, fromDt, toDt, null,
-                PageRequest.of(0, safeLimit));
+        // Fetch one extra row to know whether more reports match than safeLimit
+        List<Report> reports = reportRepository.findAdminMapReports(
+                statusEnum, severityEnum, assigneeParam, fromDt, toDt,
+                minLat, maxLat, minLng, maxLng,
+                Limit.of(safeLimit + 1));
 
-        return reportPage.getContent().stream()
-                .filter(r -> r.getLatitude() != null && r.getLongitude() != null)
+        List<MapReportResponse> content = reports.stream()
+                .limit(safeLimit)
                 .map(r -> MapReportResponse.builder()
                         .id(r.getId())
                         .title(r.getTitle())
@@ -1074,6 +1094,11 @@ public class ReportServiceImpl implements IReportService {
                         .createdAt(r.getCreatedAt())
                         .build())
                 .collect(Collectors.toList());
+
+        return AdminMapReportsResponse.builder()
+                .reports(content)
+                .truncated(reports.size() > safeLimit)
+                .build();
     }
 
     @Override

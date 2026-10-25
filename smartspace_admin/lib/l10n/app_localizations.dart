@@ -2941,6 +2941,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All Recent Activities'**
   String get routeAllActivities;
+
+  /// No description provided for @mapClusterReportsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 report in this area} other{{count} reports in this area}}'**
+  String mapClusterReportsTitle(int count);
+
+  /// No description provided for @mapClusterSortHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending first, then newest'**
+  String get mapClusterSortHint;
+
+  /// No description provided for @mapZoomInForMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom in to see more reports'**
+  String get mapZoomInForMore;
+
+  /// No description provided for @mapLoadReportsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load reports on the map'**
+  String get mapLoadReportsFailed;
 }
 
 class _AppLocalizationsDelegate

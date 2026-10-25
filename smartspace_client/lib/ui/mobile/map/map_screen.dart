@@ -1,10 +1,12 @@
+import 'dart:typed_data';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
+import 'package:mobile_shared/features/map/cluster/cluster_map_layer.dart';
 import 'package:mobile_shared/util/location_service.dart';
-import 'package:smartspace_client/features/reports/models/map_bounds.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/providers/map_reports_provider.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
@@ -14,7 +16,6 @@ import 'package:smartspace_client/ui/components/map_controls.dart';
 import 'package:smartspace_client/ui/components/marker_image_generator.dart';
 import 'package:smartspace_client/ui/components/report_info_sheet.dart';
 import 'package:smartspace_client/ui/mobile/map/map_controller.dart';
-import 'package:smartspace_client/ui/mobile/map/report_cluster_layer.dart';
 
 /// Mobile Map Screen — report theo khung nhìn, gom cụm (cluster).
 ///
@@ -29,10 +30,10 @@ class MobileMapScreen extends ConsumerStatefulWidget {
 
 class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
   MapboxMap? _mapboxMap;
-  ReportClusterLayer? _clusterLayer;
+  ClusterMapLayer? _clusterLayer;
   final MarkerImageGenerator _markerGenerator = MarkerImageGenerator();
 
-  ReportClusterColors? _colors;
+  ClusterLayerColors? _colors;
   double _pixelRatio = 1;
 
   /// Report đang vẽ trên bản đồ (đã áp filter).
@@ -45,11 +46,32 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     _pixelRatio = MediaQuery.of(context).devicePixelRatio;
-    final colors = ReportClusterColors.fromTheme(Theme.of(context));
+    final colors = ClusterLayerColors.fromTheme(Theme.of(context));
     if (colors != _colors) {
       _colors = colors;
-      _clusterLayer?.updateColors(colors, _visibleReports);
+      _clusterLayer?.updateColors(colors);
     }
+  }
+
+  static ClusterMarker _toMarker(ReportModel report) => ClusterMarker(
+        id: report.id,
+        latitude: report.latitude,
+        longitude: report.longitude,
+        imageUrl: report.imageUrl,
+        isAlert: report.isDangerous,
+        isEmphasized: report.isDangerous,
+        styleKey: report.isDangerous ? 'd' : 'n',
+      );
+
+  /// Viền đỏ (error) cho report nguy hiểm, primary cho report thường.
+  Future<Uint8List> _buildMarkerImage(ClusterMarker marker, {required bool withPhoto}) {
+    final colors = _colors ?? ClusterLayerColors.fromTheme(Theme.of(context));
+    return _markerGenerator.generateMarkerImage(
+      imageUrl: withPhoto ? marker.imageUrl : '',
+      borderColor: marker.isAlert ? colors.alert : colors.normal,
+      cacheKey: withPhoto ? marker.id : 'fallback-${marker.styleKey}',
+      isDangerous: marker.isAlert,
+    );
   }
 
   @override
@@ -60,16 +82,17 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
 
   void _onMapCreated(MapboxMap mapboxMap) async {
     _mapboxMap = mapboxMap;
-    _clusterLayer = ReportClusterLayer(
+    _clusterLayer = ClusterMapLayer(
       map: mapboxMap,
-      markerGenerator: _markerGenerator,
-      colors: _colors ?? ReportClusterColors.fromTheme(Theme.of(context)),
+      imageBuilder: _buildMarkerImage,
+      colors: _colors ?? ClusterLayerColors.fromTheme(Theme.of(context)),
       pixelRatio: _pixelRatio,
+      imageWidth: MarkerImageGenerator.markerWidth,
+      imageHeight: MarkerImageGenerator.markerHeight,
     );
 
-    // Bắt tap ở mức bản đồ rồi tự query feature: không phụ thuộc việc layer
-    // cluster đã tồn tại lúc đăng ký, và lấy được feature gốc từ source
-    // (đúng dạng mà getGeoJsonCluster* yêu cầu).
+    // Bắt tap ở mức bản đồ, layer tự query feature gốc từ source
+    // (không phụ thuộc việc layer cluster đã tồn tại lúc đăng ký).
     mapboxMap.addInteraction(
       TapInteraction.onMap(_onMapTap, stopPropagation: false),
     );
@@ -93,7 +116,7 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
 
   /// Style load xong (kể cả reload) → thêm lại source/layer rồi tải report.
   void _onStyleLoaded(StyleLoadedEventData _) async {
-    await _clusterLayer?.install(_visibleReports);
+    await _clusterLayer?.install(_visibleReports.map(_toMarker).toList());
     _emitViewport();
   }
 
@@ -108,23 +131,9 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
     final map = _mapboxMap;
     if (map == null || !mounted) return;
     try {
-      final camera = await map.getCameraState();
-      final bounds = await map.coordinateBoundsForCamera(camera.toCameraOptions());
-      if (!mounted || bounds.infiniteBounds) return;
-
-      final sw = bounds.southwest.coordinates;
-      final ne = bounds.northeast.coordinates;
-      // Khung vắt qua kinh tuyến 180° không xảy ra trong phạm vi app → bỏ qua
-      if (sw.lng > ne.lng) return;
-
-      ref.read(mapControllerProvider.notifier).onViewportChanged(
-            MapBounds(
-              minLat: sw.lat.toDouble(),
-              maxLat: ne.lat.toDouble(),
-              minLng: sw.lng.toDouble(),
-              maxLng: ne.lng.toDouble(),
-            ),
-          );
+      final bounds = await ClusterMapLayer.readViewport(map);
+      if (!mounted || bounds == null) return;
+      ref.read(mapControllerProvider.notifier).onViewportChanged(bounds);
     } catch (e) {
       debugPrint('[MapScreen] Failed to read viewport — $e');
     }
@@ -135,135 +144,31 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
         .read(mapControllerProvider)
         .getFilteredReports(ref.read(mapReportsProvider).reports);
     _visibleReports = filtered;
-    _clusterLayer?.setReports(filtered);
+    _clusterLayer?.setMarkers(filtered.map(_toMarker).toList());
   }
 
-  /// Vùng chạm quanh ngón tay (logical px) để bấm marker nhỏ không bị trượt.
-  static const double _tapTolerance = 10;
-
+  /// Điểm lẻ → thẻ thông tin; cluster tách được → layer đã zoom vào;
+  /// cluster không tách được nữa → danh sách report trong cluster.
   Future<void> _onMapTap(MapContentGestureContext gestureContext) async {
-    final map = _mapboxMap;
-    if (map == null) return;
+    final layer = _clusterLayer;
+    if (layer == null || !mounted) return;
 
-    final touch = gestureContext.touchPosition;
-    try {
-      final hits = await map.queryRenderedFeatures(
-        RenderedQueryGeometry.fromScreenBox(
-          ScreenBox(
-            min: ScreenCoordinate(x: touch.x - _tapTolerance, y: touch.y - _tapTolerance),
-            max: ScreenCoordinate(x: touch.x + _tapTolerance, y: touch.y + _tapTolerance),
-          ),
-        ),
-        RenderedQueryOptions(layerIds: [
-          ReportClusterLayer.clusterLayerId,
-          ReportClusterLayer.pointLayerId,
-        ]),
-      );
-
-      final features = [
-        for (final hit in hits)
-          if (hit != null) hit.queriedFeature.feature,
-      ];
-      if (features.isEmpty) return;
-
-      // Ưu tiên cluster nếu vùng chạm trúng cả cluster lẫn điểm lẻ
-      final cluster = features.where(_isCluster).firstOrNull;
-      if (cluster != null) {
-        await _onClusterTap(cluster, gestureContext);
-      } else {
-        _onPointTap(features.first);
-      }
-    } catch (e) {
-      debugPrint('[MapScreen] Map tap query failed — $e');
-    }
-  }
-
-  static Map<Object?, Object?> _propertiesOf(Map<String?, Object?> feature) =>
-      (feature['properties'] as Map?) ?? const {};
-
-  static bool _isCluster(Map<String?, Object?> feature) =>
-      _propertiesOf(feature).containsKey('point_count');
-
-  Future<void> _onClusterTap(
-    Map<String?, Object?> cluster,
-    MapContentGestureContext gestureContext,
-  ) async {
-    final map = _mapboxMap;
-    if (map == null) return;
-
-    final properties = _propertiesOf(cluster);
-    final center = _pointOf(cluster['geometry']) ?? gestureContext.point;
-
-    try {
-      final expansion = await map.getGeoJsonClusterExpansionZoom(
-        ReportClusterLayer.sourceId,
-        cluster,
-      );
-      final expansionZoom = double.tryParse(expansion.value ?? '');
-
-      // Tầng 1: zoom vào được → bay tới mức zoom mà cluster tách ra
-      if (expansionZoom != null &&
-          expansionZoom <= ReportClusterLayer.clusterMaxZoom) {
-        await _easeTo(center, expansionZoom);
-        return;
-      }
-
-      // Tầng 2: không tách được nữa → mở danh sách report trong cluster
-      final pointCount = (properties['point_count'] as num?)?.toInt() ?? 0;
-      final leaves = await map.getGeoJsonClusterLeaves(
-        ReportClusterLayer.sourceId,
-        cluster,
-        pointCount,
-        0,
-      );
-      final ids = <String>{
-        for (final leaf in leaves.featureCollection ?? const [])
-          if ((leaf?['properties'] as Map?)?['id'] case final String id) id,
-      };
-      final reports = _visibleReports.where((r) => ids.contains(r.id)).toList();
-      if (reports.isNotEmpty && mounted) _showClusterSheet(reports);
-    } catch (e) {
-      // Không đọc được thông tin cluster → vẫn phản hồi bằng cách zoom vào thêm
-      debugPrint('[MapScreen] Cluster tap failed — $e');
-      final camera = await map.getCameraState();
-      await _easeTo(
-        center,
-        (camera.zoom + 2).clamp(0, ReportClusterLayer.clusterMaxZoom + 1).toDouble(),
-      );
-    }
-  }
-
-  Future<void> _easeTo(Point center, double zoom) async {
-    final map = _mapboxMap;
-    if (map == null || !mounted) return;
-    final reduceMotion = MediaQuery.of(context).disableAnimations;
-    await map.easeTo(
-      CameraOptions(center: center, zoom: zoom),
-      MapAnimationOptions(duration: reduceMotion ? 0 : 500),
+    final result = await layer.handleTap(
+      gestureContext,
+      reduceMotion: MediaQuery.of(context).disableAnimations,
     );
-  }
+    if (!mounted) return;
 
-  void _onPointTap(Map<String?, Object?> feature) {
-    final id = _propertiesOf(feature)['id'];
-    for (final report in _visibleReports) {
-      if (report.id == id) {
-        _showReportInfo(report);
-        return;
-      }
+    switch (result) {
+      case ClusterPointTapped(:final id):
+        final report = _visibleReports.where((r) => r.id == id).firstOrNull;
+        if (report != null) _showReportInfo(report);
+      case ClusterLeavesTapped(:final ids):
+        final reports = _visibleReports.where((r) => ids.contains(r.id)).toList();
+        if (reports.isNotEmpty) _showClusterSheet(reports);
+      case ClusterZoomedIn() || null:
+        break;
     }
-  }
-
-  Point? _pointOf(Object? geometry) {
-    if (geometry is! Map) return null;
-    final coordinates = geometry['coordinates'];
-    if (coordinates is List && coordinates.length >= 2) {
-      final lng = coordinates[0];
-      final lat = coordinates[1];
-      if (lng is num && lat is num) {
-        return Point(coordinates: Position(lng, lat));
-      }
-    }
-    return null;
   }
 
   void _openReportDetail(ReportModel report) {

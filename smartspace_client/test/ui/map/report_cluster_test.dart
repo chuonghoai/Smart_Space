@@ -1,10 +1,9 @@
-import 'dart:convert';
-
 import 'package:flutter_test/flutter_test.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/ui/components/map_cluster_sheet.dart';
 import 'package:smartspace_client/ui/mobile/map/map_controller.dart';
-import 'package:smartspace_client/ui/mobile/map/report_cluster_layer.dart';
+
+// GeoJSON mapper của lớp cluster được test trong mobile_shared/test/features/map/
 
 ReportModel _report(
   String id, {
@@ -26,38 +25,6 @@ ReportModel _report(
     );
 
 void main() {
-  group('ReportClusterLayer.toFeatureCollection', () {
-    test('tạo Point [lng, lat] kèm id, isDangerous, imageKey, fallbackKey', () {
-      final json = jsonDecode(ReportClusterLayer.toFeatureCollection(
-        [_report('a', severity: EReportSeverity.critical, lat: 10.5, lng: 106.5)],
-        (r) => 'img-${r.id}',
-        (r) => r.isDangerous ? 'fallback-d' : 'fallback-n',
-      )) as Map<String, dynamic>;
-
-      expect(json['type'], 'FeatureCollection');
-      final feature = (json['features'] as List).single as Map<String, dynamic>;
-      expect(feature['geometry'], {
-        'type': 'Point',
-        'coordinates': [106.5, 10.5],
-      });
-      expect(feature['properties'], {
-        'id': 'a',
-        'isDangerous': true,
-        'imageKey': 'img-a',
-        'fallbackKey': 'fallback-d',
-      });
-    });
-
-    test('bỏ report có toạ độ (0,0)', () {
-      final json = jsonDecode(ReportClusterLayer.toFeatureCollection(
-        [_report('a'), _report('zero', lat: 0, lng: 0)],
-        (r) => r.id,
-        (r) => 'fallback',
-      )) as Map<String, dynamic>;
-      expect((json['features'] as List), hasLength(1));
-    });
-  });
-
   test('MapClusterSheet.sortForCluster: nguy hiểm nhất trước, rồi mới nhất trước', () {
     final sorted = MapClusterSheet.sortForCluster([
       _report('low', severity: EReportSeverity.low),

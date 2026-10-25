@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:smartspace_admin/features/users/application/user_providers.dart';
 import 'package:smartspace_admin/features/users/models/user_detail_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/screen/users/user_shared_widgets.dart';
 import 'package:smartspace_admin/ui/shared/image/person_avatar.dart';
+import 'package:smartspace_admin/ui/shared/report_status/report_status_style.dart';
 
 /// Mở chi tiết người dùng: Dialog (màn rộng) hoặc bottom sheet (màn hẹp).
 void showUserDetail(BuildContext context, String userId) {
@@ -330,23 +330,6 @@ class _InfoRow extends StatelessWidget {
       ),
     );
   }
-}
-
-/// Màu + nhãn trạng thái phản ánh theo semantic token.
-(Color, String) reportStatusStyle(
-  BuildContext context,
-  AppLocalizations l10n,
-  String? status,
-) {
-  final theme = Theme.of(context);
-  final semantic = AppSemanticColors.of(context);
-  return switch (status) {
-    'pending' => (semantic.warning, l10n.reportStatusPending),
-    'processing' => (theme.colorScheme.primary, l10n.reportStatusProcessing),
-    'processed' => (semantic.success, l10n.reportStatusProcessed),
-    'rejected' => (theme.colorScheme.error, l10n.reportStatusRejected),
-    _ => (theme.colorScheme.onSurfaceVariant, l10n.reportStatusUnknown),
-  };
 }
 
 class _ReportStatsRow extends StatelessWidget {

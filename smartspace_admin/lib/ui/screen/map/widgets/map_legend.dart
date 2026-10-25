@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 
+import 'package:smartspace_admin/ui/shared/report_status/report_status_style.dart';
+
 /// Color legend overlay for the map — shows status→color mapping.
 class MapLegend extends StatelessWidget {
   const MapLegend({super.key});
@@ -10,13 +12,12 @@ class MapLegend extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
 
     final items = [
-      (isDark ? const Color(0xFFEF5350) : cs.error, l10n.reportStatusPending),
-      (isDark ? const Color(0xFFFFCA28) : const Color(0xFFF9A825), l10n.reportStatusProcessing),
-      (isDark ? const Color(0xFF66BB6A) : const Color(0xFF2E7D32), l10n.reportStatusProcessed),
-      (cs.outline, l10n.reportStatusRejected),
+      (reportStatusColor(context, 'pending'), l10n.reportStatusPending),
+      (reportStatusColor(context, 'processing'), l10n.reportStatusProcessing),
+      (reportStatusColor(context, 'processed'), l10n.reportStatusProcessed),
+      (reportStatusColor(context, 'rejected'), l10n.reportStatusRejected),
     ];
 
     return Positioned(

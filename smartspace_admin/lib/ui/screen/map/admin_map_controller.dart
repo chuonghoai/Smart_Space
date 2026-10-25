@@ -1,4 +1,8 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile_shared/features/map/models/map_bounds.dart';
+import 'package:smartspace_admin/features/map/application/map_providers.dart';
 import 'package:smartspace_admin/features/map/models/map_report_model.dart';
 
 class AdminMapState {
@@ -33,7 +37,32 @@ class AdminMapState {
 }
 
 class AdminMapController extends StateNotifier<AdminMapState> {
-  AdminMapController() : super(const AdminMapState());
+  static const Duration viewportDebounce = Duration(milliseconds: 400);
+
+  final Ref _ref;
+  Timer? _viewportDebounce;
+
+  AdminMapController(this._ref) : super(const AdminMapState());
+
+  /// Gọi khi camera dừng (mobile: map idle, web: moveend);
+  /// chỉ tải sau khi người dùng ngừng kéo/zoom.
+  void onViewportChanged(MapBounds bounds) {
+    _viewportDebounce?.cancel();
+    _viewportDebounce = Timer(viewportDebounce, () {
+      _ref.read(mapReportsProvider.notifier).loadForViewport(bounds);
+    });
+  }
+
+  void refresh() {
+    _viewportDebounce?.cancel();
+    _ref.read(mapReportsProvider.notifier).refresh();
+  }
+
+  @override
+  void dispose() {
+    _viewportDebounce?.cancel();
+    super.dispose();
+  }
 
   void selectReport(MapReportModel report) =>
       state = state.copyWith(selectedReport: report);
@@ -52,5 +81,5 @@ class AdminMapController extends StateNotifier<AdminMapState> {
 
 final adminMapControllerProvider =
     StateNotifierProvider<AdminMapController, AdminMapState>(
-  (ref) => AdminMapController(),
+  (ref) => AdminMapController(ref),
 );
