@@ -1543,6 +1543,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'There are currently no news or announcements.'**
   String get emptyNewsDescription;
+
+  /// No description provided for @viewDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'View details'**
+  String get viewDetail;
+
+  /// No description provided for @mapNormalReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get mapNormalReports;
+
+  /// No description provided for @mapShowAllTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all my tasks'**
+  String get mapShowAllTasks;
+
+  /// No description provided for @mapNoActiveTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no tasks in progress'**
+  String get mapNoActiveTasks;
+
+  /// No description provided for @mapClusterReportsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 report in this area} other{{count} reports in this area}}'**
+  String mapClusterReportsTitle(int count);
+
+  /// No description provided for @mapClusterSortNearest.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearest to you first'**
+  String get mapClusterSortNearest;
+
+  /// No description provided for @mapClusterSortHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Most dangerous first, then newest'**
+  String get mapClusterSortHint;
+
+  /// No description provided for @mapShowingFirstTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Showing the first task} other{Showing the first {count} tasks}}'**
+  String mapShowingFirstTasks(int count);
+
+  /// No description provided for @mapLoadReportsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load tasks on the map'**
+  String get mapLoadReportsFailed;
 }
 
 class _AppLocalizationsDelegate

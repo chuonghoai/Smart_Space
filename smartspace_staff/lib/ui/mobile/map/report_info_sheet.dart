@@ -1,16 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:smartspace_staff/features/reports/models/report_model.dart';
+import 'package:smartspace_staff/features/reports/utils/report_status_ext.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 
 /// Bottom sheet hiển thị thông tin report khi tap marker
 class ReportInfoSheet extends StatelessWidget {
   final ReportModel report;
   final VoidCallback? onViewDetail;
+  final VoidCallback? onOpenInMaps;
 
   const ReportInfoSheet({
     super.key,
     required this.report,
     this.onViewDetail,
+    this.onOpenInMaps,
   });
 
   @override
@@ -65,10 +69,18 @@ class ReportInfoSheet extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Status chip
-                      _StatusChip(
-                        status: report.status,
-                        colorScheme: colorScheme,
+                      // Status chip (+ huy hiệu xử lý lại)
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
+                        children: [
+                          _StatusChip(status: report.status),
+                          if (report.needsRehandling)
+                            _Badge(
+                              label: l10n.rehandlingBadge,
+                              color: AppSemanticColors.of(context).warning,
+                            ),
+                        ],
                       ),
                       const SizedBox(height: 6),
 
@@ -141,6 +153,39 @@ class ReportInfoSheet extends StatelessWidget {
               ],
             ),
           ),
+
+          // Hành động: tìm đường tới hiện trường / mở chi tiết để xử lý
+          if (onOpenInMaps != null || onViewDetail != null)
+            Padding(
+              padding: EdgeInsets.fromLTRB(
+                16,
+                0,
+                16,
+                16 + MediaQuery.of(context).padding.bottom,
+              ),
+              child: Row(
+                children: [
+                  if (onOpenInMaps != null)
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: onOpenInMaps,
+                        icon: const Icon(Icons.directions_outlined, size: 20),
+                        label: Text(l10n.openInGoogleMaps, maxLines: 1, overflow: TextOverflow.ellipsis),
+                        style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+                      ),
+                    ),
+                  if (onOpenInMaps != null && onViewDetail != null) const SizedBox(width: 12),
+                  if (onViewDetail != null)
+                    Expanded(
+                      child: FilledButton(
+                        onPressed: onViewDetail,
+                        style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
+                        child: Text(l10n.viewDetail, maxLines: 1, overflow: TextOverflow.ellipsis),
+                      ),
+                    ),
+                ],
+              ),
+            ),
         ],
       ),
     );
@@ -227,47 +272,41 @@ class _ReportThumbnail extends StatelessWidget {
   }
 }
 
-/// Status chip với màu sắc phù hợp theme
+/// Status chip — màu/nhãn dùng chung [ReportStatusExt] như các màn khác của app Staff.
 class _StatusChip extends StatelessWidget {
   final ReportStatus status;
-  final ColorScheme colorScheme;
 
-  const _StatusChip({required this.status, required this.colorScheme});
+  const _StatusChip({required this.status});
 
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final (Color chipColor, String label) = _getStatusInfo(l10n);
+    return _Badge(label: status.getLocalizedText(l10n), color: status.getColor(context));
+  }
+}
 
+class _Badge extends StatelessWidget {
+  final String label;
+  final Color color;
+
+  const _Badge({required this.label, required this.color});
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
       decoration: BoxDecoration(
-        color: chipColor.withValues(alpha: 0.12),
+        color: color.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(6),
       ),
       child: Text(
         label,
         style: TextStyle(
-          color: chipColor,
+          color: color,
           fontSize: 11,
           fontWeight: FontWeight.w600,
         ),
       ),
     );
-  }
-
-  (Color, String) _getStatusInfo(AppLocalizations l10n) {
-    switch (status) {
-      case ReportStatus.processed:
-        return (Colors.green, l10n.reportStatusProcessed);
-      case ReportStatus.processing:
-        return (Colors.orange, l10n.reportStatusProcessing);
-      case ReportStatus.pending:
-        return (Colors.blue, l10n.reportStatusPending);
-      case ReportStatus.rejected:
-        return (Colors.red, l10n.reportStatusRejected);
-      case ReportStatus.unknown:
-        return (Colors.grey, l10n.reportStatusUnknown);
-    }
   }
 }

@@ -755,4 +755,35 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get emptyNewsDescription =>
       'Hiện tại chưa có tin tức hoặc thông báo mới nào.';
+
+  @override
+  String get viewDetail => 'Xem chi tiết';
+
+  @override
+  String get mapNormalReports => 'Thông thường';
+
+  @override
+  String get mapShowAllTasks => 'Xem tất cả việc';
+
+  @override
+  String get mapNoActiveTasks => 'Bạn không có việc nào đang xử lý';
+
+  @override
+  String mapClusterReportsTitle(int count) {
+    return 'Khu vực này có $count phản ánh';
+  }
+
+  @override
+  String get mapClusterSortNearest => 'Gần bạn nhất trước';
+
+  @override
+  String get mapClusterSortHint => 'Nguy hiểm trước, mới nhất trước';
+
+  @override
+  String mapShowingFirstTasks(int count) {
+    return 'Đang hiện $count việc đầu tiên';
+  }
+
+  @override
+  String get mapLoadReportsFailed => 'Không tải được việc trên bản đồ';
 }
