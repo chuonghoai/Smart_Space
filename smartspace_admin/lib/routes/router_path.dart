@@ -28,4 +28,5 @@ class RouterPath {
       RouteName.newsDetail.path.replaceAll(':id', id);
   static String editNewsWithId(String id) =>
       RouteName.editNews.path.replaceAll(':id', id);
+  static String get allActivities => RouteName.allActivities.path;
 }

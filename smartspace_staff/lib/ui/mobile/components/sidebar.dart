@@ -118,7 +118,7 @@ class Sidebar extends ConsumerWidget {
                     label: l10n.news,
                     onTap: () {
                       Navigator.pop(context);
-                      // TODO: Navigate to news
+                      context.push(RouterPath.news);
                     },
                   ),
 

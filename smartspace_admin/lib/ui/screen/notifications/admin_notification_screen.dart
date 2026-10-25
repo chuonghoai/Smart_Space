@@ -2,9 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartspace_admin/features/notifications/providers/notification_provider.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
-import 'package:go_router/go_router.dart';
-import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/features/notifications/models/notification_model.dart';
+import 'package:smartspace_admin/features/notifications/services/notification_router.dart';
 
 class AdminNotificationScreen extends ConsumerStatefulWidget {
   const AdminNotificationScreen({super.key});
@@ -42,13 +41,9 @@ class _AdminNotificationScreenState extends ConsumerState<AdminNotificationScree
     if (!notification.isRead) {
       ref.read(notificationProvider.notifier).markAsRead(notification.id);
     }
-    
+
     if (notification.actionData != null) {
-       final type = notification.actionData!.type;
-       final id = notification.actionData!.payload['id'] ?? notification.actionData!.payload['reportId'];
-       if ((type == 'REPORT' || type == 'REPORT_DETAIL') && id != null) {
-          context.push(RouterPath.reportDetail.replaceAll(':id', id.toString()));
-       }
+      NotificationRouter.handleAction(notification.actionData!);
     }
   }
 
@@ -100,7 +95,7 @@ class _AdminNotificationScreenState extends ConsumerState<AdminNotificationScree
                           }
                           final item = state.notifications[index];
                           return ListTile(
-                            tileColor: item.isRead ? Colors.transparent : theme.colorScheme.primary.withOpacity(0.08),
+                            tileColor: item.isRead ? Colors.transparent : theme.colorScheme.primary.withValues(alpha: 0.08),
                             onTap: () => _handleNotificationTap(item),
                             leading: CircleAvatar(
                               backgroundColor: theme.colorScheme.surfaceContainerHighest,
@@ -115,7 +110,7 @@ class _AdminNotificationScreenState extends ConsumerState<AdminNotificationScree
                               item.title,
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: item.isRead ? FontWeight.normal : FontWeight.bold,
-                                color: item.isRead ? theme.colorScheme.onSurface.withOpacity(0.7) : theme.colorScheme.onSurface,
+                                color: item.isRead ? theme.colorScheme.onSurface.withValues(alpha: 0.7) : theme.colorScheme.onSurface,
                               ),
                             ),
                             subtitle: Column(

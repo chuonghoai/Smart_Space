@@ -620,6 +620,24 @@ abstract class AppLocalizations {
   /// **'News'**
   String get news;
 
+  /// No description provided for @newsDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'News Detail'**
+  String get newsDetail;
+
+  /// No description provided for @newsNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'News not found'**
+  String get newsNotFound;
+
+  /// No description provided for @targetAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get targetAdmin;
+
   /// No description provided for @instructions.
   ///
   /// In en, this message translates to:
@@ -1501,6 +1519,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All other devices logged out.'**
   String get allDevicesLogoutSuccess;
+
+  /// No description provided for @latestNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest News'**
+  String get latestNews;
+
+  /// No description provided for @routeNewsList.
+  ///
+  /// In en, this message translates to:
+  /// **'News'**
+  String get routeNewsList;
+
+  /// No description provided for @emptyNewsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No news yet'**
+  String get emptyNewsTitle;
+
+  /// No description provided for @emptyNewsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'There are currently no news or announcements.'**
+  String get emptyNewsDescription;
 }
 
 class _AppLocalizationsDelegate

@@ -11,6 +11,8 @@ import 'package:smartspace_staff/ui/mobile/reports/presentation/report_detail_sc
 import 'package:smartspace_staff/ui/mobile/reports/presentation/handle_report_screen.dart';
 import 'package:smartspace_staff/ui/mobile/reports/all_reports_screen.dart';
 import 'package:smartspace_staff/ui/mobile/map/map_screen.dart';
+import 'package:smartspace_staff/ui/mobile/news/staff_news_detail_screen.dart';
+import 'package:smartspace_staff/ui/mobile/news/staff_news_list_screen.dart';
 import 'package:smartspace_staff/ui/mobile/settings/change_password_screen.dart';
 import 'package:smartspace_staff/ui/mobile/settings/edit_profile_screen.dart';
 import 'package:smartspace_staff/ui/mobile/settings/manage_devices_screen.dart';
@@ -68,6 +70,17 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.map,
       builder: (context, state) => const MapScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.news,
+      builder: (context, state) => const StaffNewsListScreen(),
+    ),
+    GoRoute(
+      path: '/news/:id',
+      builder: (context, state) {
+        final newsId = state.pathParameters['id'] ?? '';
+        return StaffNewsDetailScreen(newsId: newsId);
+      },
     ),
     GoRoute(
       path: RouterPath.settings,

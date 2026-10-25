@@ -24,6 +24,7 @@ import 'package:smartspace_admin/ui/screen/search/search_screen.dart';
 import 'package:smartspace_admin/ui/screen/news/admin_news_list_screen.dart';
 import 'package:smartspace_admin/ui/screen/news/admin_create_edit_news_screen.dart';
 import 'package:smartspace_admin/ui/screen/news/admin_news_detail_screen.dart';
+import 'package:smartspace_admin/ui/screen/home/admin_all_activities_screen.dart';
 
 /// Re-export for convenience so existing callers of navigatorKey still compile.
 final GlobalKey<NavigatorState> navigatorKey = sharedNavigatorKey;
@@ -134,6 +135,10 @@ final appRouter = GoRouter(
         final id = state.pathParameters['id'] ?? '';
         return AdminCreateEditNewsScreen(newsId: id);
       },
+    ),
+    GoRoute(
+      path: RouterPath.allActivities,
+      builder: (context, state) => const AdminAllActivitiesScreen(),
     ),
   ],
 );

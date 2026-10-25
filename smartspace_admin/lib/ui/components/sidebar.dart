@@ -91,9 +91,7 @@ class Sidebar extends ConsumerWidget {
                     onTap: () {
                       Navigator.pop(context);
                       if (currentPath != RouterPath.home && currentPath != '/') {
-                        while (context.canPop()) {
-                          context.pop();
-                        }
+                        context.go(RouterPath.home);
                       }
                     },
                   ),
@@ -300,7 +298,7 @@ class WebSidebar extends ConsumerWidget {
     final theme = Theme.of(context);
     final notificationState = ref.watch(notificationProvider);
     final unreadCount = notificationState.countModel?.notifNumber ?? 0;
-    final currentPath = GoRouterState.of(context).uri.toString();
+    final currentPath = GoRouterState.of(context).uri.path;
 
     return Column(
       children: [
@@ -373,9 +371,7 @@ class WebSidebar extends ConsumerWidget {
                 isSelected: currentPath == RouterPath.home || currentPath == '/',
                 onTap: () {
                   if (currentPath != RouterPath.home && currentPath != '/') {
-                    while (context.canPop()) {
-                      context.pop();
-                    }
+                    context.go(RouterPath.home);
                   }
                 },
               ),

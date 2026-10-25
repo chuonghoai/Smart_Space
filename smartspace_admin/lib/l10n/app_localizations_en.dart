@@ -1236,6 +1236,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String resolvedLast30Days(int count) {
     return '$count resolved in the last 30 days';
   }
+
+  @override
   String get resolutionInfo => 'Resolution Information';
 
   @override
@@ -1326,7 +1328,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'There are no news articles published yet. Create a new article to notify the community.';
 
   @override
-  String get createNewNews => 'Create New News';
+  String get createNewNews => 'Create News';
 
   @override
   String get editNews => 'Edit News';
@@ -1449,4 +1451,49 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get livePreview => 'Live Preview';
+
+  @override
+  String get latestNews => 'Latest News';
+
+  @override
+  String get viewAllNews => 'View all';
+
+  @override
+  String get allActivities => 'All Recent Activities';
+
+  @override
+  String get filterActor => 'Actor';
+
+  @override
+  String get filterTopic => 'Topic';
+
+  @override
+  String get actorAll => 'All';
+
+  @override
+  String get actorAdmin => 'Admin';
+
+  @override
+  String get actorStaff => 'Staff';
+
+  @override
+  String get topicAll => 'All';
+
+  @override
+  String get topicNews => 'News';
+
+  @override
+  String get topicReportCreate => 'Create Report';
+
+  @override
+  String get topicReportAssign => 'Assign Report';
+
+  @override
+  String get topicReportProcess => 'Process Report';
+
+  @override
+  String get noActivitiesFound => 'No activities found';
+
+  @override
+  String get routeAllActivities => 'All Recent Activities';
 }

@@ -13,14 +13,26 @@ class NotificationRouter {
     }
 
     switch (action.type) {
+      case 'REPORT':
       case 'REPORT_DETAIL':
-        final reportId = action.payload['reportId'] as String?;
+        final reportId = (action.payload['reportId'] ?? action.payload['id']) as String?;
         if (reportId != null && reportId.isNotEmpty) {
           final path = RouterPath.reportDetail.replaceAll(':id', reportId);
           debugPrint('[NotificationRouter] Navigating to $path');
           GoRouter.of(ctx).push(path);
         } else {
           debugPrint('[NotificationRouter] Missing reportId in payload');
+        }
+        break;
+      case 'NEWS':
+      case 'NEWS_DETAIL':
+        final newsId = (action.payload['newsId'] ?? action.payload['id']) as String?;
+        if (newsId != null && newsId.isNotEmpty) {
+          final path = RouterPath.newsDetailWithId(newsId);
+          debugPrint('[NotificationRouter] Navigating to $path');
+          GoRouter.of(ctx).push(path);
+        } else {
+          debugPrint('[NotificationRouter] Missing newsId in payload');
         }
         break;
       // Add other feature cases here, e.g. INVOICE_DETAIL, CHAT_MESSAGE

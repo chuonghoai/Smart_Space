@@ -87,6 +87,9 @@
   "dangerousReports": "Cảnh báo nguy hiểm",
   "map": "Bản đồ",
   "news": "Tin tức",
+  "newsDetail": "Chi tiết tin tức",
+  "newsNotFound": "Không tìm thấy tin tức",
+  "targetAdmin": "Admin",
   "instructions": "Hướng dẫn",
   "viewAll": "Tất cả",
   "dangerous": "NGUY HIỂM",
@@ -274,5 +277,9 @@
   "logoutAllConfirmMessage": "Tất cả phiên ngoại trừ thiết bị này sẽ bị kết thúc.",
   "noOtherDevices": "Không có thiết bị khác đang đăng nhập.",
   "deviceLogoutSuccess": "Đã đăng xuất thiết bị.",
-  "allDevicesLogoutSuccess": "Đã đăng xuất tất cả thiết bị khác."
-}
+  "allDevicesLogoutSuccess": "Đã đăng xuất tất cả thiết bị khác.",
+  "latestNews": "Tin tức mới nhất",
+  "routeNewsList": "Tin tức",
+  "emptyNewsTitle": "Chưa có tin tức nào",
+  "emptyNewsDescription": "Hiện tại chưa có tin tức hoặc thông báo mới nào."
+}

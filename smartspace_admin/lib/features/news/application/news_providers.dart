@@ -1,21 +1,2 @@
-import 'package:flutter_riverpod/flutter_riverpod.dart';
-import '../data/news_repository.dart';
-import '../models/news_model.dart';
+export 'package:mobile_shared/features/news/application/news_providers.dart';
 
-final newsListProvider =
-    FutureProvider.autoDispose<List<NewsModel>>((ref) async {
-  final res = await newsRepository.getAllNews();
-  if (res.success && res.data != null) {
-    return res.data!;
-  }
-  throw Exception(res.message);
-});
-
-final newsDetailProvider =
-    FutureProvider.autoDispose.family<NewsModel, String>((ref, id) async {
-  final res = await newsRepository.getNewsDetail(id);
-  if (res.success && res.data != null) {
-    return res.data!;
-  }
-  throw Exception(res.message);
-});

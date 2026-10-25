@@ -127,6 +127,20 @@ class RouteName {
     isHiddenInSearch: true,
   );
 
+  static const news = AppRouteInfo(
+    path: '/news',
+    nameKey: 'routeNewsList',
+    icon: Icons.newspaper,
+    priority: 5,
+  );
+
+  static const newsDetail = AppRouteInfo(
+    path: '/news/:id',
+    nameKey: 'newsDetail',
+    icon: Icons.newspaper,
+    isHiddenInSearch: true,
+  );
+
   static const List<AppRouteInfo> allRoutes = [
     splash,
     login,
@@ -141,6 +155,8 @@ class RouteName {
     search,
     allReports,
     map,
+    news,
+    newsDetail,
   ];
 
   static List<AppRouteInfo> get searchableRoutes {

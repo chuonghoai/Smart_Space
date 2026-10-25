@@ -92,6 +92,9 @@
   "dangerousReports": "Dangerous",
   "map": "Map",
   "news": "News",
+  "newsDetail": "News Detail",
+  "newsNotFound": "News not found",
+  "targetAdmin": "Admin",
   "instructions": "Instructions",
   "viewAll": "View all",
   "dangerous": "DANGEROUS",
@@ -321,5 +324,9 @@
   "galleryOption": "Gallery",
   "closeButton": "Close",
   "rehandling": "Re-handling",
-  "unsatisfactoryBadge": "Unsatisfactory resolution"
+  "unsatisfactoryBadge": "Unsatisfactory resolution",
+  "latestNews": "Latest News",
+  "routeNewsList": "News",
+  "emptyNewsTitle": "No news yet",
+  "emptyNewsDescription": "There are currently no news or announcements."
 }

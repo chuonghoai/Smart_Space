@@ -87,6 +87,9 @@
   "dangerousReports": "Dangerous warnings",
   "map": "Map",
   "news": "News",
+  "newsDetail": "News Detail",
+  "newsNotFound": "News not found",
+  "targetAdmin": "Admin",
   "instructions": "Instructions",
   "viewAll": "View all",
   "dangerous": "DANGEROUS",
@@ -274,5 +277,9 @@
   "logoutAllConfirmMessage": "All sessions except this device will be ended.",
   "noOtherDevices": "No other devices logged in.",
   "deviceLogoutSuccess": "Device logged out.",
-  "allDevicesLogoutSuccess": "All other devices logged out."
-}
+  "allDevicesLogoutSuccess": "All other devices logged out.",
+  "latestNews": "Latest News",
+  "routeNewsList": "News",
+  "emptyNewsTitle": "No news yet",
+  "emptyNewsDescription": "There are currently no news or announcements."
+}

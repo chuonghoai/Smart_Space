@@ -14,4 +14,7 @@ class RouterPath {
   static String get allReports => RouteName.allReports.path;
   static String get map => RouteName.map.path;
   static String get handleReport => RouteName.handleReport.path;
+  static String get news => RouteName.news.path;
+  static String newsDetailWithId(String id) =>
+      RouteName.newsDetail.path.replaceAll(':id', id);
 }

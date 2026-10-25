@@ -11,6 +11,7 @@ import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/layout/app_layout.dart';
 import 'package:smartspace_admin/ui/screen/home/widgets/new_reports_slider.dart';
 import 'package:smartspace_admin/ui/screen/home/widgets/admin_quick_access_bar.dart';
+import 'package:smartspace_admin/ui/screen/news/widgets/news_card.dart';
 import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
 
 class AdminHomeScreen extends ConsumerStatefulWidget {
@@ -43,6 +44,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
 
   Future<void> _onRefresh() async {
     final currentTab = _tabs[_tabController.index];
+    ref.invalidate(newsListProvider);
     final futures = <Future<void>>[
       userStorageService.getUser(),
       ref.read(adminOverviewProvider.notifier).refresh(),
@@ -89,7 +91,11 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
               _buildRecentReportSection(context, l10n, theme),
               const SizedBox(height: 24),
 
-              // 4. Hoạt động gần đây
+              // 4. Tin tức mới nhất
+              _buildLatestNewsSection(context, l10n, theme),
+              const SizedBox(height: 24),
+
+              // 5. Hoạt động gần đây
               _buildRecentActivitySection(context, l10n, theme),
             ],
           ),
@@ -358,7 +364,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
                 const SizedBox(height: 12),
                 Center(
                   child: TextButton.icon(
-                    onPressed: () => context.go(RouterPath.reportDashboard),
+                    onPressed: () => context.push(RouterPath.reportDashboard),
                     icon: const Icon(Icons.arrow_forward, size: 16),
                     label: Text(l10n.viewAllReports),
                   ),
@@ -373,17 +379,79 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
     );
   }
 
+  Widget _buildLatestNewsSection(BuildContext context, AppLocalizations l10n, ThemeData theme) {
+    final latestNewsAsync = ref.watch(latestNewsProvider);
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              l10n.latestNews,
+              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            TextButton.icon(
+              onPressed: () => context.push(RouterPath.newsManagement),
+              icon: const Icon(Icons.arrow_forward, size: 16),
+              label: Text(l10n.viewAllNews),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        latestNewsAsync.when(
+          data: (newsList) {
+            if (newsList.isEmpty) {
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 16.0),
+                child: Text(
+                  l10n.emptyNewsTitle,
+                  style: theme.textTheme.bodyMedium?.copyWith(color: theme.hintColor),
+                ),
+              );
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: newsList.map((news) => NewsCard(news: news)).toList(),
+            );
+          },
+          loading: () => const Padding(
+            padding: EdgeInsets.all(24.0),
+            child: Center(child: CircularProgressIndicator()),
+          ),
+          error: (error, stack) => Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Text(
+              error.toString(),
+              style: TextStyle(color: theme.colorScheme.error),
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
   Widget _buildRecentActivitySection(BuildContext context, AppLocalizations l10n, ThemeData theme) {
     final activityAsync = ref.watch(recentActivityProvider);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          l10n.recentActivity,
-          style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            Text(
+              l10n.recentActivity,
+              style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
+            ),
+            TextButton(
+              onPressed: () => context.push(RouterPath.allActivities),
+              child: Text(l10n.viewAll),
+            ),
+          ],
         ),
-        const SizedBox(height: 16),
+        const SizedBox(height: 12),
         activityAsync.when(
           data: (activities) {
             if (activities.isEmpty) {
@@ -400,11 +468,19 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
               ),
               itemBuilder: (context, index) {
                 final activity = activities[index];
+                final isNewsActivity = activity.targetId != null &&
+                    (activity.targetType == 'NEWS' ||
+                        (activity.targetType == null &&
+                            (activity.message.toLowerCase().contains('tin tức') ||
+                                activity.message.toLowerCase().contains('news'))));
+
                 final isReportActivity = activity.targetId != null &&
                     (activity.targetType == 'REPORT' ||
                         (activity.targetType == null &&
                             (activity.message.toLowerCase().contains('phản ánh') ||
                                 activity.message.toLowerCase().contains('report'))));
+
+                final isClickable = (isNewsActivity || isReportActivity) && activity.targetId != null;
 
                 return ListTile(
                   dense: true,
@@ -412,7 +488,12 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
                   leading: CircleAvatar(
                     radius: 15,
                     backgroundImage: activity.actorAvatarUrl != null ? NetworkImage(activity.actorAvatarUrl!) : null,
-                    child: activity.actorAvatarUrl == null ? const Icon(Icons.person, size: 15) : null,
+                    child: activity.actorAvatarUrl == null
+                        ? Icon(
+                            isNewsActivity ? Icons.newspaper : Icons.person,
+                            size: 15,
+                          )
+                        : null,
                   ),
                   title: Text(
                     activity.message,
@@ -429,12 +510,14 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                   ),
-                  trailing: isReportActivity
+                  trailing: isClickable
                       ? Icon(Icons.arrow_forward_ios_rounded, size: 12, color: theme.hintColor)
                       : null,
-                  onTap: (isReportActivity && activity.targetId != null)
-                      ? () => context.push(RouterPath.reportDetailWithId(activity.targetId!))
-                      : null,
+                  onTap: isNewsActivity
+                      ? () => context.push(RouterPath.newsDetailWithId(activity.targetId!))
+                      : (isReportActivity && activity.targetId != null)
+                          ? () => context.push(RouterPath.reportDetailWithId(activity.targetId!))
+                          : null,
                 );
               },
             );

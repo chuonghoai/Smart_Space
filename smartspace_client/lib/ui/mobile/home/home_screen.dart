@@ -9,6 +9,7 @@ import 'package:smartspace_client/features/reports/utils/report_status_ext.dart'
 import 'package:smartspace_client/ui/components/dangerous_reports_slider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smartspace_client/routes/router_path.dart';
+import 'package:smartspace_client/ui/mobile/news/widgets/news_card.dart';
 
 class MobileHomeScreen extends ConsumerWidget {
   const MobileHomeScreen({super.key});
@@ -90,7 +91,7 @@ class MobileHomeScreen extends ConsumerWidget {
                             title: l10n.news,
                             icon: Icons.article_outlined,
                             onTap: () {
-                              // TODO: Navigate to news
+                              context.push(RouterPath.news);
                             },
                           ),
                         ),
@@ -165,6 +166,62 @@ class MobileHomeScreen extends ConsumerWidget {
                           return _ReportCard(report: report);
                         },
                       ),
+
+                    const SizedBox(height: 32),
+
+                    // Latest News Section
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          l10n.latestNews,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            context.push(RouterPath.news);
+                          },
+                          child: Text('${l10n.viewAll} \u2192'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+
+                    ref.watch(latestNewsProvider).when(
+                          data: (newsList) {
+                            if (newsList.isEmpty) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 24),
+                                child: Center(
+                                  child: Text(
+                                    l10n.emptyNewsTitle,
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+                            return ListView.separated(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: newsList.length,
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(height: 4),
+                              itemBuilder: (context, index) {
+                                final news = newsList[index];
+                                return NewsCard(news: news);
+                              },
+                            );
+                          },
+                          loading: () => const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 24),
+                            child: Center(child: CircularProgressIndicator()),
+                          ),
+                          error: (e, s) => const SizedBox.shrink(),
+                        ),
                   ],
                 ),
               ),

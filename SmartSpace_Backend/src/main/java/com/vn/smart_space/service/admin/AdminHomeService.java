@@ -2,6 +2,7 @@ package com.vn.smart_space.service.admin;
 
 import com.vn.smart_space.consts.EReportStatus;
 import com.vn.smart_space.consts.ERole;
+import com.vn.smart_space.dto.PageResponse;
 import com.vn.smart_space.dto.response.admin.ActivityHistoryResponse;
 import com.vn.smart_space.dto.response.admin.AdminOverviewResponse;
 import com.vn.smart_space.model.ActivityHistory;
@@ -12,7 +13,9 @@ import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import org.springframework.context.MessageSource;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -47,68 +50,128 @@ public class AdminHomeService {
 
     public List<ActivityHistoryResponse> getRecentActivities(int limit, Locale locale) {
         List<ActivityHistory> activities = activityHistoryRepository.findRecentActivities(PageRequest.of(0, limit));
-        
-        return activities.stream().map(a -> {
-            String message = "";
-            if (a.getI18nKey() != null && !a.getI18nKey().trim().isEmpty()) {
-                String raw = a.getI18nKey().trim();
-                Locale activeLocale = locale != null ? locale : Locale.getDefault();
-                if (raw.contains("|")) {
-                    String[] parts = raw.split("\\|", -1);
-                    String key = parts[0];
-                    Object[] args = java.util.Arrays.copyOfRange(parts, 1, parts.length);
-                    message = messageSource.getMessage(key, args, key, activeLocale);
-                } else {
-                    int lastSpaceIndex = raw.lastIndexOf(' ');
-                    if (lastSpaceIndex != -1) {
-                        String prefix = raw.substring(0, lastSpaceIndex).trim();
-                        String key = raw.substring(lastSpaceIndex + 1).trim();
-                        
-                        Object[] args;
-                        if ("activity.report.assigned".equals(key)) {
-                            String reportTitle = messageSource.getMessage("report.default_title", null, "Phản ánh", activeLocale);
-                            String staffName = messageSource.getMessage("staff.default_name", null, "nhân viên", activeLocale);
-                            if (a.getTargetId() != null) {
-                                var optReport = reportRepository.findById(a.getTargetId());
-                                if (optReport.isPresent()) {
-                                    var rep = optReport.get();
-                                    if (rep.getTitle() != null && !rep.getTitle().trim().isEmpty()) {
-                                        reportTitle = rep.getTitle().trim();
-                                    }
-                                    if (rep.getAssignedStaff() != null && rep.getAssignedStaff().getFullName() != null) {
-                                        staffName = rep.getAssignedStaff().getFullName().trim();
-                                    }
+        return activities.stream().map(a -> mapToResponse(a, locale)).collect(Collectors.toList());
+    }
+
+    public PageResponse<ActivityHistoryResponse> getPaginatedActivities(
+            int page, int size, String roleParam, String topicParam, Locale locale) {
+        ERole role = null;
+        if (roleParam != null && !roleParam.trim().isEmpty() && !"all".equalsIgnoreCase(roleParam.trim())) {
+            try {
+                role = ERole.valueOf(roleParam.trim().toLowerCase());
+            } catch (Exception ignored) {
+            }
+        }
+
+        String topicPrefix = null;
+        if (topicParam != null && !topicParam.trim().isEmpty() && !"all".equalsIgnoreCase(topicParam.trim())) {
+            String t = topicParam.trim().toLowerCase();
+            switch (t) {
+                case "news":
+                    topicPrefix = "activity.news.";
+                    break;
+                case "report_create":
+                    topicPrefix = "activity.report.created";
+                    break;
+                case "report_assign":
+                    topicPrefix = "activity.report.assigned";
+                    break;
+                case "report_process":
+                    topicPrefix = "activity.report.completed";
+                    break;
+                default:
+                    topicPrefix = null;
+            }
+        }
+
+        int pageIndex = Math.max(0, page - 1);
+        Pageable pageable = PageRequest.of(pageIndex, size);
+        Page<ActivityHistory> activityPage = activityHistoryRepository.findActivitiesWithFilter(role, topicPrefix, pageable);
+
+        List<ActivityHistoryResponse> content = activityPage.getContent().stream()
+                .map(a -> mapToResponse(a, locale))
+                .collect(Collectors.toList());
+
+        return PageResponse.<ActivityHistoryResponse>builder()
+                .currentPage(page)
+                .pageSize(size)
+                .totalPages(activityPage.getTotalPages())
+                .totalElements(activityPage.getTotalElements())
+                .content(content)
+                .build();
+    }
+
+    private ActivityHistoryResponse mapToResponse(ActivityHistory a, Locale locale) {
+        String message = "";
+        if (a.getI18nKey() != null && !a.getI18nKey().trim().isEmpty()) {
+            String raw = a.getI18nKey().trim();
+            Locale activeLocale = locale != null ? locale : Locale.getDefault();
+            if (raw.contains("|")) {
+                String[] parts = raw.split("\\|", -1);
+                String key = parts[0];
+                Object[] args = java.util.Arrays.copyOfRange(parts, 1, parts.length);
+                message = messageSource.getMessage(key, args, key, activeLocale);
+            } else {
+                int lastSpaceIndex = raw.lastIndexOf(' ');
+                if (lastSpaceIndex != -1) {
+                    String prefix = raw.substring(0, lastSpaceIndex).trim();
+                    String key = raw.substring(lastSpaceIndex + 1).trim();
+
+                    Object[] args;
+                    if ("activity.report.assigned".equals(key)) {
+                        String reportTitle = messageSource.getMessage("report.default_title", null, "Phản ánh", activeLocale);
+                        String staffName = messageSource.getMessage("staff.default_name", null, "nhân viên", activeLocale);
+                        if (a.getTargetId() != null) {
+                            var optReport = reportRepository.findById(a.getTargetId());
+                            if (optReport.isPresent()) {
+                                var rep = optReport.get();
+                                if (rep.getTitle() != null && !rep.getTitle().trim().isEmpty()) {
+                                    reportTitle = rep.getTitle().trim();
+                                }
+                                if (rep.getAssignedStaff() != null && rep.getAssignedStaff().getFullName() != null) {
+                                    staffName = rep.getAssignedStaff().getFullName().trim();
                                 }
                             }
-                            args = new Object[]{prefix, reportTitle, staffName};
-                        } else {
-                            args = new Object[]{prefix};
                         }
-                        
-                        String translated = messageSource.getMessage(key, args, key, activeLocale);
-                        message = prefix.isEmpty() ? translated : (translated.contains(prefix) ? translated : prefix + " " + translated);
+                        args = new Object[]{prefix, reportTitle, staffName};
                     } else {
-                        message = messageSource.getMessage(raw, null, raw, activeLocale);
+                        args = new Object[]{prefix};
                     }
-                }
-                if (message != null) {
-                    message = message.replaceAll("\\s*\"?\\{\\d+\\}\"?\\s*", " ").replaceAll("\\s+", " ").trim();
+
+                    String translated = messageSource.getMessage(key, args, key, activeLocale);
+                    message = prefix.isEmpty() ? translated : (translated.contains(prefix) ? translated : prefix + " " + translated);
+                } else {
+                    message = messageSource.getMessage(raw, null, raw, activeLocale);
                 }
             }
-            String actorName = a.getActor() != null ? a.getActor().getFullName() : null;
-            String actorAvatar = a.getActor() != null ? a.getActor().getAvatarUrl() : null;
-            
-            String targetType = (a.getI18nKey() != null && a.getI18nKey().contains("report")) ? "REPORT" : "USER";
-            
-            return ActivityHistoryResponse.builder()
-                    .id(a.getId())
-                    .actorName(actorName)
-                    .actorAvatarUrl(actorAvatar)
-                    .targetId(a.getTargetId())
-                    .targetType(targetType)
-                    .message(message)
-                    .createdAt(a.getCreatedAt())
-                    .build();
-        }).collect(Collectors.toList());
+            if (message != null) {
+                message = message.replaceAll("\\s*\"?\\{\\d+\\}\"?\\s*", " ").replaceAll("\\s+", " ").trim();
+            }
+        }
+        String actorName = a.getActor() != null ? a.getActor().getFullName() : null;
+        String actorAvatar = a.getActor() != null ? a.getActor().getAvatarUrl() : null;
+
+        String targetType = "OTHER";
+        if (a.getI18nKey() != null) {
+            String lowerKey = a.getI18nKey().toLowerCase();
+            if (lowerKey.contains("news")) {
+                targetType = "NEWS";
+            } else if (lowerKey.contains("report")) {
+                targetType = "REPORT";
+            } else if (lowerKey.contains("staff") || lowerKey.contains("user") || lowerKey.contains("position")) {
+                targetType = "USER";
+            }
+        }
+
+        return ActivityHistoryResponse.builder()
+                .id(a.getId())
+                .actorName(actorName)
+                .actorAvatarUrl(actorAvatar)
+                .targetId(a.getTargetId())
+                .targetType(targetType)
+                .message(message)
+                .createdAt(a.getCreatedAt())
+                .build();
     }
 }
+

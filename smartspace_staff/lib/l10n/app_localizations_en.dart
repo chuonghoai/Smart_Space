@@ -271,6 +271,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get news => 'News';
 
   @override
+  String get newsDetail => 'News Detail';
+
+  @override
+  String get newsNotFound => 'News not found';
+
+  @override
+  String get targetAdmin => 'Admin';
+
+  @override
   String get instructions => 'Instructions';
 
   @override
@@ -734,4 +743,17 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allDevicesLogoutSuccess => 'All other devices logged out.';
+
+  @override
+  String get latestNews => 'Latest News';
+
+  @override
+  String get routeNewsList => 'News';
+
+  @override
+  String get emptyNewsTitle => 'No news yet';
+
+  @override
+  String get emptyNewsDescription =>
+      'There are currently no news or announcements.';
 }

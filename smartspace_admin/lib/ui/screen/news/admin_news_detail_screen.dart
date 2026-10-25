@@ -2,9 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:smartspace_admin/features/news/application/news_providers.dart';
-import 'package:smartspace_admin/features/news/data/news_repository.dart';
-import 'package:smartspace_admin/features/news/models/news_model.dart';
+import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/layout/app_layout.dart';
@@ -31,6 +29,18 @@ class _AdminNewsDetailScreenState extends ConsumerState<AdminNewsDetailScreen> {
   void dispose() {
     _pageController.dispose();
     super.dispose();
+  }
+
+  void _openFullscreenImage(List<String> images, int initialIndex) {
+    if (images.isEmpty) return;
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => FullscreenImageViewer(
+          imageUrls: images,
+          initialIndex: initialIndex,
+        ),
+      ),
+    );
   }
 
   Future<void> _confirmAndDeleteNews(NewsModel news) async {
@@ -89,7 +99,6 @@ class _AdminNewsDetailScreenState extends ConsumerState<AdminNewsDetailScreen> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final isDark = theme.brightness == Brightness.dark;
     final newsAsync = ref.watch(newsDetailProvider(widget.newsId));
 
     return AppLayout(
@@ -98,86 +107,94 @@ class _AdminNewsDetailScreenState extends ConsumerState<AdminNewsDetailScreen> {
           final images = news.imageUrls;
 
           return SingleChildScrollView(
-            padding: const EdgeInsets.all(16.0),
+            padding: const EdgeInsets.fromLTRB(16.0, 6.0, 16.0, 24.0),
             child: Center(
               child: ConstrainedBox(
                 constraints: const BoxConstraints(maxWidth: 860),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Navigation & Actions Header
-                    Row(
-                      children: [
-                        IconButton(
-                          onPressed: () => context.pop(),
-                          icon: const Icon(Icons.arrow_back),
-                        ),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Text(
-                            l10n.newsDetail,
-                            style: theme.textTheme.titleMedium?.copyWith(
-                              fontWeight: FontWeight.bold,
+                    // Navigation & Actions Header (thu nhỏ padding trên dưới app bar)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2.0),
+                      child: Row(
+                        children: [
+                          IconButton(
+                            visualDensity: VisualDensity.compact,
+                            padding: EdgeInsets.zero,
+                            constraints: const BoxConstraints(),
+                            onPressed: () => context.pop(),
+                            icon: const Icon(Icons.arrow_back),
+                          ),
+                          const SizedBox(width: 10),
+                          Expanded(
+                            child: Text(
+                              l10n.newsDetail,
+                              style: theme.textTheme.titleMedium?.copyWith(
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
-                        ),
-                        if (_isDeleting)
-                          const Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12.0),
-                            child: SizedBox(
-                              width: 20,
-                              height: 20,
-                              child: CircularProgressIndicator(strokeWidth: 2),
+                          if (_isDeleting)
+                            const Padding(
+                              padding: EdgeInsets.symmetric(horizontal: 12.0),
+                              child: SizedBox(
+                                width: 20,
+                                height: 20,
+                                child: CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                            )
+                          else
+                            PopupMenuButton<String>(
+                              padding: EdgeInsets.zero,
+                              constraints: const BoxConstraints(),
+                              icon: const Icon(Icons.more_vert),
+                              tooltip: l10n.editNews,
+                              onSelected: (value) {
+                                if (value == 'edit') {
+                                  context.push(RouterPath.editNewsWithId(news.id));
+                                } else if (value == 'delete') {
+                                  _confirmAndDeleteNews(news);
+                                }
+                              },
+                              itemBuilder: (BuildContext context) => [
+                                PopupMenuItem<String>(
+                                  value: 'edit',
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.edit_outlined,
+                                        size: 20,
+                                        color: colorScheme.onSurface,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Text(l10n.editNews),
+                                    ],
+                                  ),
+                                ),
+                                PopupMenuItem<String>(
+                                  value: 'delete',
+                                  child: Row(
+                                    children: [
+                                      Icon(
+                                        Icons.delete_outline,
+                                        size: 20,
+                                        color: colorScheme.error,
+                                      ),
+                                      const SizedBox(width: 12),
+                                      Text(
+                                        l10n.deleteNews,
+                                        style: TextStyle(color: colorScheme.error),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
                             ),
-                          )
-                        else
-                          PopupMenuButton<String>(
-                            icon: const Icon(Icons.more_vert),
-                            tooltip: l10n.editNews,
-                            onSelected: (value) {
-                              if (value == 'edit') {
-                                context.push(RouterPath.editNewsWithId(news.id));
-                              } else if (value == 'delete') {
-                                _confirmAndDeleteNews(news);
-                              }
-                            },
-                            itemBuilder: (BuildContext context) => [
-                              PopupMenuItem<String>(
-                                value: 'edit',
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.edit_outlined,
-                                      size: 20,
-                                      color: colorScheme.onSurface,
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Text(l10n.editNews),
-                                  ],
-                                ),
-                              ),
-                              PopupMenuItem<String>(
-                                value: 'delete',
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.delete_outline,
-                                      size: 20,
-                                      color: colorScheme.error,
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Text(
-                                      l10n.deleteNews,
-                                      style: TextStyle(color: colorScheme.error),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
-                          ),
-                      ],
+                        ],
+                      ),
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 14),
 
                     // QUY TẮC HIỂN THỊ:
                     // 1. TIÊU ĐỀ
@@ -188,17 +205,17 @@ class _AdminNewsDetailScreenState extends ConsumerState<AdminNewsDetailScreen> {
                         color: colorScheme.onSurface,
                       ),
                     ),
-                    const SizedBox(height: 14),
+                    const SizedBox(height: 10),
 
-                    // 2. METADATA (người tạo, ngày tạo, giờ tạo với 3 icon riêng biệt)
+                    // 2. METADATA (người tạo in đậm, ngày & giờ tạo in nghiêng, không background)
                     NewsMetadataBar(
-                      authorName: news.authorName ?? 'Admin',
+                      authorName: news.authorName ?? '',
                       createdAt: news.createdAt,
                       compact: false,
                     ),
-                    const SizedBox(height: 20),
+                    const SizedBox(height: 18),
 
-                    // 3. HÌNH ẢNH (Slider / Viewer)
+                    // 3. HÌNH ẢNH (Slider / Viewer, click để xem full màn hình)
                     if (images.isNotEmpty) ...[
                       Container(
                         height: 380,
@@ -206,7 +223,7 @@ class _AdminNewsDetailScreenState extends ConsumerState<AdminNewsDetailScreen> {
                         decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(16),
                           border: Border.all(
-                            color: colorScheme.outlineVariant.withOpacity(0.5),
+                            color: colorScheme.outlineVariant.withValues(alpha: 0.5),
                           ),
                         ),
                         clipBehavior: Clip.antiAlias,
@@ -221,13 +238,42 @@ class _AdminNewsDetailScreenState extends ConsumerState<AdminNewsDetailScreen> {
                                 });
                               },
                               itemBuilder: (context, idx) {
-                                return AppNetworkImage(
-                                  url: images[idx],
-                                  width: double.infinity,
-                                  height: 380,
-                                  fit: BoxFit.cover,
+                                return GestureDetector(
+                                  onTap: () => _openFullscreenImage(images, idx),
+                                  child: MouseRegion(
+                                    cursor: SystemMouseCursors.click,
+                                    child: AppNetworkImage(
+                                      url: images[idx],
+                                      width: double.infinity,
+                                      height: 380,
+                                      fit: BoxFit.cover,
+                                    ),
+                                  ),
                                 );
                               },
+                            ),
+                            // Index/total count badge
+                            Positioned(
+                              top: 12,
+                              right: 12,
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.black54,
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Text(
+                                  '${_currentImageIndex + 1} / ${images.length}',
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
                             ),
                             if (images.length > 1)
                               Positioned(
@@ -239,16 +285,14 @@ class _AdminNewsDetailScreenState extends ConsumerState<AdminNewsDetailScreen> {
                                   children: List.generate(images.length, (idx) {
                                     final isCurrent = idx == _currentImageIndex;
                                     return AnimatedContainer(
-                                      duration:
-                                          const Duration(milliseconds: 200),
-                                      margin: const EdgeInsets.symmetric(
-                                          horizontal: 4),
+                                      duration: const Duration(milliseconds: 200),
+                                      margin: const EdgeInsets.symmetric(horizontal: 4),
                                       width: isCurrent ? 22 : 8,
                                       height: 8,
                                       decoration: BoxDecoration(
                                         color: isCurrent
                                             ? colorScheme.primary
-                                            : Colors.white.withOpacity(0.6),
+                                            : Colors.white.withValues(alpha: 0.6),
                                         borderRadius: BorderRadius.circular(4),
                                       ),
                                     );
@@ -258,57 +302,64 @@ class _AdminNewsDetailScreenState extends ConsumerState<AdminNewsDetailScreen> {
                           ],
                         ),
                       ),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 20),
                     ],
 
-                    // 4. CONTENT (Readme view / Markdown view)
-                    Container(
-                      width: double.infinity,
-                      padding: const EdgeInsets.all(20),
-                      decoration: BoxDecoration(
-                        color: isDark
-                            ? colorScheme.surface
-                            : theme.cardColor,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: colorScheme.outlineVariant.withOpacity(0.4),
-                        ),
-                      ),
-                      child: MarkdownBody(
-                        data: formatMarkdownPreservingNewlines(news.content),
-                        selectable: true,
-                        styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
-                          p: theme.textTheme.bodyLarge?.copyWith(
-                            height: 1.6,
-                            color: colorScheme.onSurface,
-                          ),
-                          h1: theme.textTheme.headlineMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.onSurface,
-                          ),
-                          h2: theme.textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.onSurface,
-                          ),
-                          h3: theme.textTheme.titleMedium?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.onSurface,
-                          ),
-                          blockquoteDecoration: BoxDecoration(
-                            color: colorScheme.surfaceVariant.withOpacity(0.4),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border(
-                              left: BorderSide(
-                                color: colorScheme.primary,
-                                width: 4,
+                    // 4. CONTENT (Readme view / Markdown view - hiển thị thẳng vào background mặc định, không nền bubble)
+                    MarkdownBody(
+                      data: formatMarkdownPreservingNewlines(news.content),
+                      selectable: true,
+                      sizedImageBuilder: (config) {
+                        return GestureDetector(
+                          onTap: () => _openFullscreenImage([config.uri.toString()], 0),
+                          child: MouseRegion(
+                            cursor: SystemMouseCursors.click,
+                            child: Padding(
+                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(8),
+                                child: AppNetworkImage(
+                                  url: config.uri.toString(),
+                                  width: config.width,
+                                  height: config.height,
+                                  fit: BoxFit.contain,
+                                ),
                               ),
                             ),
                           ),
-                          code: theme.textTheme.bodyMedium?.copyWith(
-                            fontFamily: 'monospace',
-                            backgroundColor:
-                                colorScheme.surfaceVariant.withOpacity(0.5),
+                        );
+                      },
+                      styleSheet: MarkdownStyleSheet.fromTheme(theme).copyWith(
+                        p: theme.textTheme.bodyLarge?.copyWith(
+                          height: 1.6,
+                          color: colorScheme.onSurface,
+                        ),
+                        h1: theme.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
+                        ),
+                        h2: theme.textTheme.titleLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
+                        ),
+                        h3: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: colorScheme.onSurface,
+                        ),
+                        blockquoteDecoration: BoxDecoration(
+                          color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border(
+                            left: BorderSide(
+                              color: colorScheme.primary,
+                              width: 4,
+                            ),
                           ),
+                        ),
+                        code: theme.textTheme.bodyMedium?.copyWith(
+                          fontFamily: 'monospace',
+                          backgroundColor:
+                              colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
                         ),
                       ),
                     ),

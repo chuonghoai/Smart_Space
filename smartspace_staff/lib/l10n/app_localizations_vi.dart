@@ -271,6 +271,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get news => 'Tin tức';
 
   @override
+  String get newsDetail => 'Chi tiết tin tức';
+
+  @override
+  String get newsNotFound => 'Không tìm thấy tin tức';
+
+  @override
+  String get targetAdmin => 'Admin';
+
+  @override
   String get instructions => 'Hướng dẫn';
 
   @override
@@ -733,4 +742,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get allDevicesLogoutSuccess => 'Đã đăng xuất tất cả thiết bị khác.';
+
+  @override
+  String get latestNews => 'Tin tức mới nhất';
+
+  @override
+  String get routeNewsList => 'Tin tức';
+
+  @override
+  String get emptyNewsTitle => 'Chưa có tin tức nào';
+
+  @override
+  String get emptyNewsDescription =>
+      'Hiện tại chưa có tin tức hoặc thông báo mới nào.';
 }
