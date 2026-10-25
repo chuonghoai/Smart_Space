@@ -660,5 +660,16 @@
   "topicReportAssign": "Assign Report",
   "topicReportProcess": "Process Report",
   "noActivitiesFound": "No activities found",
-  "routeAllActivities": "All Recent Activities"
+  "routeAllActivities": "All Recent Activities",
+  "mapClusterReportsTitle": "{count, plural, =1{1 report in this area} other{{count} reports in this area}}",
+  "@mapClusterReportsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapClusterSortHint": "Pending first, then newest",
+  "mapZoomInForMore": "Zoom in to see more reports",
+  "mapLoadReportsFailed": "Couldn't load reports on the map"
 }

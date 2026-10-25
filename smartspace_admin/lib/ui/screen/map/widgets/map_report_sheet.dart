@@ -3,6 +3,8 @@ import 'package:smartspace_admin/features/map/models/map_report_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
 
+import 'package:smartspace_admin/ui/shared/report_status/report_status_style.dart';
+
 /// Bottom sheet hiển thị thông tin report khi tap marker trên map.
 /// Tham khảo thiết kế từ client ReportInfoSheet.
 class MapReportSheet extends StatelessWidget {
@@ -22,8 +24,7 @@ class MapReportSheet extends StatelessWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
-    final brightness = theme.brightness;
-    final statusColor = report.statusColorAdaptive(cs, brightness);
+    final statusColor = reportStatusColor(context, report.status);
 
     return Container(
       decoration: BoxDecoration(

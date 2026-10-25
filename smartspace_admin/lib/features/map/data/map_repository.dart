@@ -1,15 +1,17 @@
 import 'package:intl/intl.dart';
 import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
-import '../models/map_report_model.dart';
+import 'package:mobile_shared/features/map/models/map_bounds.dart';
+import '../models/admin_map_reports_result.dart';
 
 class MapRepository {
-  Future<ApiResponse<List<MapReportModel>>> getMapReports({
+  Future<ApiResponse<AdminMapReportsResult>> getMapReports({
     String? status,
     String? severity,
     String? assigneeId,
     DateTime? from,
     DateTime? to,
+    MapBounds? bounds,
     int limit = 500,
   }) async {
     final fmt = DateFormat('yyyy-MM-dd');
@@ -21,11 +23,18 @@ class MapRepository {
         if (assigneeId != null && assigneeId.isNotEmpty) 'assigneeId': assigneeId,
         if (from != null) 'from': fmt.format(from),
         if (to != null) 'to': fmt.format(to),
+        // Endpoint admin dùng camelCase cho mọi param
+        if (bounds != null) ...{
+          'minLat': bounds.minLat,
+          'maxLat': bounds.maxLat,
+          'minLng': bounds.minLng,
+          'maxLng': bounds.maxLng,
+        },
         'limit': limit,
       },
-      decoder: (json) => (json as List<dynamic>)
-          .map((e) => MapReportModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      decoder: (json) => json is Map<String, dynamic>
+          ? AdminMapReportsResult.fromJson(json)
+          : AdminMapReportsResult.empty,
     );
   }
 }

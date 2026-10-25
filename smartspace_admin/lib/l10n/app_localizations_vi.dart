@@ -1494,4 +1494,18 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get routeAllActivities => 'Tất cả hoạt động gần đây';
+
+  @override
+  String mapClusterReportsTitle(int count) {
+    return 'Khu vực này có $count phản ánh';
+  }
+
+  @override
+  String get mapClusterSortHint => 'Chờ xử lý trước, mới nhất trước';
+
+  @override
+  String get mapZoomInForMore => 'Phóng to để xem thêm phản ánh';
+
+  @override
+  String get mapLoadReportsFailed => 'Không tải được phản ánh trên bản đồ';
 }

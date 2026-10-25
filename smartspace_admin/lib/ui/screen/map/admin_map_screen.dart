@@ -12,6 +12,7 @@ import 'admin_map_controller.dart';
 import 'admin_map_screen_mobile.dart'
     if (dart.library.html) 'admin_map_screen_web.dart'
     as platform_map;
+import 'widgets/map_cluster_sheet.dart';
 import 'widgets/map_filter_panel.dart';
 import 'widgets/map_legend.dart';
 import 'widgets/map_report_sheet.dart';
@@ -66,10 +67,34 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
       builder: (_) => PointerInterceptor(
         child: MapQuickAssignSheet(
           report: report,
-          onAssigned: () => ref.read(mapReportsProvider.notifier).refresh(),
+          onAssigned: () => ref.read(adminMapControllerProvider.notifier).refresh(),
         ),
       ),
     );
+  }
+
+  /// Cluster không tách được nữa → danh sách; bấm một dòng → sheet chi tiết (có phân công).
+  void _showClusterSheet(List<MapReportModel> reports) {
+    if (_sheetOpen) {
+      Navigator.of(context).pop();
+    }
+
+    _sheetOpen = true;
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) => PointerInterceptor(
+        child: MapClusterSheet(
+          reports: reports,
+          onReportTap: (report) {
+            Navigator.of(sheetContext).pop();
+            _sheetOpen = false;
+            _onReportTap(report);
+          },
+        ),
+      ),
+    ).whenComplete(() => _sheetOpen = false);
   }
 
   @override
@@ -78,7 +103,22 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
 
-    final reportsAsync = ref.watch(mapReportsProvider);
+    final reportsState = ref.watch(mapReportsProvider);
+
+    ref.listen(mapReportsProvider.select((s) => s.error), (previous, next) {
+      if (next == null || previous != null) return;
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(l10n.mapLoadReportsFailed),
+            action: SnackBarAction(
+              label: l10n.retry,
+              onPressed: () => ref.read(adminMapControllerProvider.notifier).refresh(),
+            ),
+          ),
+        );
+    });
 
     return Scaffold(
       appBar: AppBar(
@@ -99,31 +139,48 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.refresh),
-            tooltip: l10n.map,
-            onPressed: () => ref.read(mapReportsProvider.notifier).refresh(),
+            tooltip: l10n.mapRefresh,
+            onPressed: () => ref.read(adminMapControllerProvider.notifier).refresh(),
           ),
         ],
       ),
       body: Stack(
         children: [
-          // Map (platform-adaptive) — needs Positioned.fill for proper sizing
+          // Map luôn được giữ (không thay bằng spinner) → camera không bị reset khi tải lại
           Positioned.fill(
-            child: reportsAsync.when(
-              loading: () => const Center(child: CircularProgressIndicator()),
-              error: (e, _) => Center(child: Text('$e')),
-              data: (reports) => platform_map.buildPlatformMap(
-                context: context,
-                reports: reports,
-                onMarkerTap: _onReportTap,
-                onMapTap: () {
-                  // Only pop if there's a dialog/sheet open (canPop true)
-                  if (Navigator.of(context).canPop()) {
-                    Navigator.of(context).pop();
-                  }
-                },
-              ),
+            child: platform_map.buildPlatformMap(
+              context: context,
+              reports: reportsState.reports,
+              onMarkerTap: _onReportTap,
+              onClusterTap: _showClusterSheet,
+              onViewportChanged: (bounds) =>
+                  ref.read(adminMapControllerProvider.notifier).onViewportChanged(bounds),
+              onMapTap: () {
+                // Only pop if there's a dialog/sheet open (canPop true)
+                if (Navigator.of(context).canPop()) {
+                  Navigator.of(context).pop();
+                }
+              },
             ),
           ),
+
+          if (reportsState.isLoading)
+            const Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: LinearProgressIndicator(minHeight: 2),
+            ),
+
+          if (reportsState.truncated)
+            Positioned(
+              bottom: 16,
+              left: 0,
+              right: 0,
+              child: Center(
+                child: PointerInterceptor(child: _ZoomInHint(label: l10n.mapZoomInForMore)),
+              ),
+            ),
 
           // Legend
           const MapLegend(),
@@ -139,6 +196,43 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
             ),
           ),
         ],
+      ),
+    );
+  }
+}
+
+/// Gợi ý phóng to khi có nhiều report khớp bộ lọc hơn giới hạn tải.
+class _ZoomInHint extends StatelessWidget {
+  final String label;
+
+  const _ZoomInHint({required this.label});
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
+    return Material(
+      color: cs.surfaceContainerHigh,
+      elevation: 2,
+      shape: const StadiumBorder(),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 8),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(Icons.zoom_in_rounded, size: 18, color: cs.onSurfaceVariant),
+            const SizedBox(width: 6),
+            Flexible(
+              child: Text(
+                label,
+                maxLines: 2,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.labelMedium?.copyWith(color: cs.onSurface),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
