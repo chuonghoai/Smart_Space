@@ -29,6 +29,10 @@ $TestRegistry = @{
         TestClass   = "com.vn.smart_space.controller.report.MapReportsTest"
         Description = "Ban do Client theo khung nhin: 401/400, chi tra report trong khung, loai rejected, limit + truncated"
     }
+    "StaffAssignedMap" = @{
+        TestClass   = "com.vn.smart_space.controller.staff.StaffAssignedMapTest"
+        Description = "Ban do Staff: /reports/staff/assigned?status=processing tra du truong (lat/lng, severity, isReviewResolved), ton trong limit"
+    }
     "AdminMapReports" = @{
         TestClass   = "com.vn.smart_space.controller.report.AdminMapReportsTest"
         Description = "Ban do Admin: 401/403, bounds tuy chon (thieu/sai → 400), loc theo khung, van thay rejected, limit + truncated"
