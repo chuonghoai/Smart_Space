@@ -26,6 +26,8 @@ dependencies:
   device_info_plus: ^13.2.0
   uuid: ^4.4.0
   flutter_local_notifications: ^22.3.0
+  # Chỉ dùng trong lib/features/map/cluster (không export qua mobile_shared.dart)
+  mapbox_maps_flutter: ^2.30.0
 
 dev_dependencies:
   flutter_test:

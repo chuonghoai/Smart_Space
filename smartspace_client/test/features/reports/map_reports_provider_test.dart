@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
-import 'package:smartspace_client/features/reports/models/map_bounds.dart';
+import 'package:mobile_shared/features/map/models/map_bounds.dart';
 import 'package:smartspace_client/features/reports/models/map_reports_result.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/providers/map_reports_provider.dart';

@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:smartspace_client/features/reports/models/map_bounds.dart';
+import 'package:mobile_shared/features/map/models/map_bounds.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/providers/map_reports_provider.dart';
 

@@ -1,6 +1,6 @@
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/core/constants/use_mock.dart';
-import 'package:smartspace_client/features/reports/models/map_bounds.dart';
+import 'package:mobile_shared/features/map/models/map_bounds.dart';
 import 'package:smartspace_client/features/reports/models/map_reports_result.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
