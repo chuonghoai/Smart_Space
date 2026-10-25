@@ -109,8 +109,13 @@ public class AdminReportController {
             @RequestParam(required = false) String assigneeId,
             @RequestParam(required = false) String from,
             @RequestParam(required = false) String to,
+            @RequestParam(required = false) Double minLat,
+            @RequestParam(required = false) Double maxLat,
+            @RequestParam(required = false) Double minLng,
+            @RequestParam(required = false) Double maxLng,
             @RequestParam(defaultValue = "500") int limit) {
         return ResponseEntity.ok(ApiResponse.success("system.success",
-                reportService.getAdminMapReports(status, severity, assigneeId, from, to, limit)));
+                reportService.getAdminMapReports(status, severity, assigneeId, from, to,
+                        minLat, maxLat, minLng, maxLng, limit)));
     }
 }

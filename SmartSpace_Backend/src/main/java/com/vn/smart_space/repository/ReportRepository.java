@@ -220,6 +220,33 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                         @Param("status") EReportStatus status,
                         Pageable pageable);
 
+        // Admin map: same filters as the report list, optional lat/lng box (all bounds null = whole map),
+        // most severe first then newest. Reports without coordinates are excluded before the limit.
+        @Query("SELECT r FROM Report r " +
+                        "WHERE r.latitude IS NOT NULL AND r.longitude IS NOT NULL " +
+                        "AND (:status IS NULL OR r.status = :status) " +
+                        "AND (:severity IS NULL OR r.severity = :severity) " +
+                        "AND (:assigneeId IS NULL OR r.assignedStaff.id = :assigneeId) " +
+                        "AND (:from IS NULL OR r.createdAt >= :from) " +
+                        "AND (:to IS NULL OR r.createdAt <= :to) " +
+                        "AND (:minLat IS NULL OR r.latitude BETWEEN :minLat AND :maxLat) " +
+                        "AND (:minLng IS NULL OR r.longitude BETWEEN :minLng AND :maxLng) " +
+                        "ORDER BY CASE r.severity " +
+                        "WHEN com.vn.smart_space.consts.EReportSeverity.critical THEN 0 " +
+                        "WHEN com.vn.smart_space.consts.EReportSeverity.high THEN 1 " +
+                        "ELSE 2 END, r.createdAt DESC")
+        List<Report> findAdminMapReports(
+                        @Param("status") EReportStatus status,
+                        @Param("severity") EReportSeverity severity,
+                        @Param("assigneeId") String assigneeId,
+                        @Param("from") LocalDateTime from,
+                        @Param("to") LocalDateTime to,
+                        @Param("minLat") Double minLat,
+                        @Param("maxLat") Double maxLat,
+                        @Param("minLng") Double minLng,
+                        @Param("maxLng") Double maxLng,
+                        Limit limit);
+
         // Client map viewport: reports inside a lat/lng box, most severe first then newest.
         // Processed reports are kept only while updatedAt >= processedSince.
         @Query("SELECT r FROM Report r " +

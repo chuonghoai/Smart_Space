@@ -6,7 +6,7 @@ import com.vn.smart_space.dto.PageResponse;
 import com.vn.smart_space.dto.request.admin.ReportAssignRequest;
 import com.vn.smart_space.dto.request.report.ReportCompleteRequest;
 import com.vn.smart_space.dto.request.report.ReportCreateRequest;
-import com.vn.smart_space.dto.response.admin.MapReportResponse;
+import com.vn.smart_space.dto.response.admin.AdminMapReportsResponse;
 import com.vn.smart_space.dto.response.admin.RecentReportResponse;
 import com.vn.smart_space.dto.response.admin.ReportListResponse;
 import com.vn.smart_space.dto.response.admin.ReportStatisticsResponse;
@@ -53,9 +53,10 @@ public interface IReportService {
         // Admin Update Status Report
         ReportDetailResponse updateReportStatus(String reportId, String newStatus, String adminId);
 
-        // Admin Map — lightweight list with lat/lng, no pagination
-        List<MapReportResponse> getAdminMapReports(String status, String severity, String assigneeId,
-                        String from, String to, int limit);
+        // Admin Map — lightweight list with lat/lng, optional viewport (all bounds null = whole map)
+        AdminMapReportsResponse getAdminMapReports(String status, String severity, String assigneeId,
+                        String from, String to, Double minLat, Double maxLat, Double minLng, Double maxLng,
+                        int limit);
 
         List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, int page, int limit);
 
