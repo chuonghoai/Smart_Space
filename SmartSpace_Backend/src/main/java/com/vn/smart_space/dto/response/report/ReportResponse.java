@@ -18,6 +18,8 @@ public class ReportResponse {
     private Double longitude;
     private String status;
 
+    private String severity;
+
     @JsonProperty("created_at")
     private String createdAt;
 

@@ -328,5 +328,17 @@
   "latestNews": "Tin tức mới nhất",
   "routeNewsList": "Tin tức",
   "emptyNewsTitle": "Chưa có tin tức nào",
-  "emptyNewsDescription": "Hiện tại chưa có tin tức hoặc thông báo mới nào."
+  "emptyNewsDescription": "Hiện tại chưa có tin tức hoặc thông báo mới nào.",
+  "mapNormalReports": "Thông thường",
+  "mapClusterReportsTitle": "Khu vực này có {count} phản ánh",
+  "@mapClusterReportsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapClusterSortHint": "Nguy hiểm trước, mới nhất trước",
+  "mapZoomInForMore": "Phóng to để xem thêm phản ánh",
+  "mapLoadReportsFailed": "Không tải được phản ánh trên bản đồ"
 }

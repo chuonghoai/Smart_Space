@@ -1,5 +1,7 @@
 enum ReportStatus { processed, processing, pending, rejected, unknown }
 
+enum EReportSeverity { low, medium, high, critical }
+
 class ReportModel {
   final String id;
   final String title;
@@ -11,6 +13,10 @@ class ReportModel {
   final DateTime createdAt;
   final double? distanceInMeters;
   final bool? isReviewResolved;
+  final EReportSeverity? severity;
+
+  bool get isDangerous =>
+      severity == EReportSeverity.high || severity == EReportSeverity.critical;
 
   ReportModel({
     required this.id,
@@ -23,6 +29,7 @@ class ReportModel {
     required this.createdAt,
     this.distanceInMeters,
     this.isReviewResolved,
+    this.severity,
   });
 
   factory ReportModel.fromJson(Map<String, dynamic> json) {
@@ -39,6 +46,7 @@ class ReportModel {
           : DateTime.now(),
       distanceInMeters: (json['distance_in_meters'] as num?)?.toDouble(),
       isReviewResolved: json['is_review_resolved'] as bool? ?? json['isReviewResolved'] as bool?,
+      severity: mapSeverity(json['severity'] as String?),
     );
   }
 
@@ -53,6 +61,7 @@ class ReportModel {
       'status': _statusToString(status),
       'created_at': createdAt.toIso8601String(),
       'is_review_resolved': isReviewResolved,
+      'severity': severity?.name,
     };
   }
 
@@ -67,6 +76,7 @@ class ReportModel {
     DateTime? createdAt,
     double? distanceInMeters,
     bool? isReviewResolved,
+    EReportSeverity? severity,
   }) {
     return ReportModel(
       id: id ?? this.id,
@@ -79,7 +89,24 @@ class ReportModel {
       createdAt: createdAt ?? this.createdAt,
       distanceInMeters: distanceInMeters ?? this.distanceInMeters,
       isReviewResolved: isReviewResolved ?? this.isReviewResolved,
+      severity: severity ?? this.severity,
     );
+  }
+
+  /// Severity từ backend (`low|medium|high|critical`); null nếu chưa được đánh giá.
+  static EReportSeverity? mapSeverity(String? severity) {
+    switch (severity?.toLowerCase()) {
+      case 'critical':
+        return EReportSeverity.critical;
+      case 'high':
+        return EReportSeverity.high;
+      case 'medium':
+        return EReportSeverity.medium;
+      case 'low':
+        return EReportSeverity.low;
+      default:
+        return null;
+    }
   }
 
   static ReportStatus mapStatus(String? status) {

@@ -4,15 +4,15 @@ import 'package:smartspace_client/l10n/app_localizations.dart';
 /// Map control buttons — filter, my location, refresh
 class MapControls extends StatelessWidget {
   final bool showDangerous;
-  final bool showRecent;
+  final bool showNormal;
   final VoidCallback onMyLocationPressed;
   final VoidCallback onRefreshPressed;
-  final void Function({bool? showDangerous, bool? showRecent}) onFilterChanged;
+  final void Function({bool? showDangerous, bool? showNormal}) onFilterChanged;
 
   const MapControls({
     super.key,
     required this.showDangerous,
-    required this.showRecent,
+    required this.showNormal,
     required this.onMyLocationPressed,
     required this.onFilterChanged,
     required this.onRefreshPressed,
@@ -49,12 +49,12 @@ class MapControls extends StatelessWidget {
           ),
           const SizedBox(height: 8),
 
-          // Filter Recent
+          // Filter Normal (không nguy hiểm)
           _ControlButton(
-            icon: Icons.access_time_rounded,
-            tooltip: l10n.recentReports,
-            onPressed: () => onFilterChanged(showRecent: !showRecent),
-            isActive: showRecent,
+            icon: Icons.place_outlined,
+            tooltip: l10n.mapNormalReports,
+            onPressed: () => onFilterChanged(showNormal: !showNormal),
+            isActive: showNormal,
             activeColor: colorScheme.primary,
             colorScheme: colorScheme,
           ),

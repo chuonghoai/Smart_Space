@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
+import 'package:smartspace_client/features/reports/utils/report_time_format.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 
 /// Bottom sheet hiển thị thông tin report khi tap marker
@@ -126,7 +127,7 @@ class ReportInfoSheet extends StatelessWidget {
                           ),
                           const SizedBox(width: 3),
                           Text(
-                            _formatTime(report.createdAt, l10n),
+                            formatReportTimeAgo(report.createdAt, l10n),
                             style: theme.textTheme.labelSmall?.copyWith(
                               color: colorScheme.onSurfaceVariant.withValues(
                                 alpha: 0.7,
@@ -153,18 +154,6 @@ class ReportInfoSheet extends StatelessWidget {
     return '${(meters / 1000).toStringAsFixed(1)} km';
   }
 
-  String _formatTime(DateTime createdAt, AppLocalizations l10n) {
-    final now = DateTime.now();
-    final diff = now.difference(createdAt);
-
-    if (diff.inMinutes < 60) {
-      return '${diff.inMinutes} ${l10n.minuteAgo}';
-    } else if (diff.inHours < 24) {
-      return '${diff.inHours} ${l10n.hourAgo}';
-    } else {
-      return '${diff.inDays} ${l10n.dayAgo}';
-    }
-  }
 }
 
 /// Thumbnail ảnh report với fallback icon
@@ -188,7 +177,7 @@ class _ReportThumbnail extends StatelessWidget {
             ? Image.network(
                 imageUrl,
                 fit: BoxFit.cover,
-                errorBuilder: (_, __, ___) => _buildPlaceholder(),
+                errorBuilder: (_, _, _) => _buildPlaceholder(),
                 loadingBuilder: (_, child, loadingProgress) {
                   if (loadingProgress == null) return child;
                   return _buildLoading();

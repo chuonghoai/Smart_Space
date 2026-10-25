@@ -220,4 +220,25 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                         @Param("status") EReportStatus status,
                         Pageable pageable);
 
+        // Client map viewport: reports inside a lat/lng box, most severe first then newest.
+        // Processed reports are kept only while updatedAt >= processedSince.
+        @Query("SELECT r FROM Report r " +
+                        "WHERE r.latitude BETWEEN :minLat AND :maxLat " +
+                        "AND r.longitude BETWEEN :minLng AND :maxLng " +
+                        "AND r.status <> :excluded " +
+                        "AND (r.status <> :processed OR r.updatedAt >= :processedSince) " +
+                        "ORDER BY CASE r.severity " +
+                        "WHEN com.vn.smart_space.consts.EReportSeverity.critical THEN 0 " +
+                        "WHEN com.vn.smart_space.consts.EReportSeverity.high THEN 1 " +
+                        "ELSE 2 END, r.createdAt DESC")
+        List<Report> findInBounds(
+                        @Param("minLat") Double minLat,
+                        @Param("maxLat") Double maxLat,
+                        @Param("minLng") Double minLng,
+                        @Param("maxLng") Double maxLng,
+                        @Param("excluded") EReportStatus excluded,
+                        @Param("processed") EReportStatus processed,
+                        @Param("processedSince") LocalDateTime processedSince,
+                        Limit limit);
+
 }

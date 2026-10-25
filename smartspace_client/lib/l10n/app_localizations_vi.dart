@@ -858,4 +858,21 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get emptyNewsDescription =>
       'Hiện tại chưa có tin tức hoặc thông báo mới nào.';
+
+  @override
+  String get mapNormalReports => 'Thông thường';
+
+  @override
+  String mapClusterReportsTitle(int count) {
+    return 'Khu vực này có $count phản ánh';
+  }
+
+  @override
+  String get mapClusterSortHint => 'Nguy hiểm trước, mới nhất trước';
+
+  @override
+  String get mapZoomInForMore => 'Phóng to để xem thêm phản ánh';
+
+  @override
+  String get mapLoadReportsFailed => 'Không tải được phản ánh trên bản đồ';
 }

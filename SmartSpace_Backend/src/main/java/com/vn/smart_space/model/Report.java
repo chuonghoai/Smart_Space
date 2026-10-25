@@ -14,7 +14,9 @@ import lombok.experimental.FieldDefaults;
 @Entity
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "reports")
+@Table(name = "reports", indexes = {
+        @Index(name = "idx_reports_lat_lng", columnList = "latitude, longitude")
+})
 public class Report extends AbstractEntity {
 
     @Column(name = "title", nullable = false)

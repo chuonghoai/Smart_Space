@@ -1,4 +1,6 @@
 import 'package:mobile_shared/core/api/api_response.dart';
+import 'package:smartspace_client/features/reports/models/map_bounds.dart';
+import 'package:smartspace_client/features/reports/models/map_reports_result.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_client/features/reports/models/report_dto.dart';
@@ -75,6 +77,56 @@ class ReportRepoMock implements ReportRepo {
           createdAt: DateTime.now().subtract(const Duration(minutes: 30)),
         ),
       ],
+    );
+  }
+
+  @override
+  Future<ApiResponse<MapReportsResult>> getReportsInBounds(MapBounds bounds, {int limit = 300}) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final now = DateTime.now();
+    // Nhóm 4 report cùng toạ độ để kiểm tra luồng "không tách được → mở danh sách"
+    final mockData = [
+      for (var i = 0; i < 4; i++)
+        ReportModel(
+          id: 'map-same-$i',
+          title: 'Ngập nước giao lộ #${i + 1}',
+          description: 'Nước ngập sau mưa lớn',
+          imageUrl: 'https://ui-avatars.com/api/?name=Flood&background=random',
+          latitude: 10.8504,
+          longitude: 106.7571,
+          status: ReportStatus.pending,
+          severity: i == 0 ? EReportSeverity.high : EReportSeverity.medium,
+          createdAt: now.subtract(Duration(minutes: 15 * (i + 1))),
+        ),
+      for (var i = 0; i < 12; i++)
+        ReportModel(
+          id: 'map-spread-$i',
+          title: 'Phản ánh khu vực trung tâm #${i + 1}',
+          description: 'Dữ liệu mock cho bản đồ',
+          imageUrl: 'https://ui-avatars.com/api/?name=R$i&background=random',
+          latitude: 10.7700 + (i % 4) * 0.004,
+          longitude: 106.6900 + (i ~/ 4) * 0.004,
+          status: i.isEven ? ReportStatus.processing : ReportStatus.processed,
+          severity: i % 5 == 0 ? EReportSeverity.critical : EReportSeverity.low,
+          createdAt: now.subtract(Duration(hours: i + 1)),
+        ),
+    ];
+
+    final inBounds = mockData
+        .where((r) =>
+            r.latitude >= bounds.minLat &&
+            r.latitude <= bounds.maxLat &&
+            r.longitude >= bounds.minLng &&
+            r.longitude <= bounds.maxLng)
+        .toList();
+
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: MapReportsResult(
+        reports: inBounds.take(limit).toList(),
+        truncated: inBounds.length > limit,
+      ),
     );
   }
 

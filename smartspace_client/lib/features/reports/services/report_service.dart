@@ -1,5 +1,7 @@
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/core/constants/use_mock.dart';
+import 'package:smartspace_client/features/reports/models/map_bounds.dart';
+import 'package:smartspace_client/features/reports/models/map_reports_result.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_client/features/reports/models/report_dto.dart';
@@ -35,6 +37,10 @@ class ReportService {
 
   Future<ApiResponse<ReportFeedPage>> getFeed({String? status, int page = 1, int size = 10, double? lat, double? lng}) {
     return reportRepo.getFeed(status: status, page: page, size: size, lat: lat, lng: lng);
+  }
+
+  Future<ApiResponse<MapReportsResult>> getReportsInBounds(MapBounds bounds, {int limit = 300}) {
+    return reportRepo.getReportsInBounds(bounds, limit: limit);
   }
 
   Future<ApiResponse<ReportDetailModel>> submitReview(

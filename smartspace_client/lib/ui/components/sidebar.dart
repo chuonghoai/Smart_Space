@@ -140,7 +140,7 @@ class Sidebar extends ConsumerWidget {
                     label: l10n.map,
                     onTap: () {
                       Navigator.pop(context);
-                      // TODO: Navigate to Map
+                      context.push(RouterPath.map);
                     },
                   ),
                   _SidebarItem(

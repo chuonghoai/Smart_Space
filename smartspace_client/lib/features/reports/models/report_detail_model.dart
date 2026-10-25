@@ -1,9 +1,13 @@
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 
-enum EReportSeverity { low, medium, high, critical }
+export 'package:smartspace_client/features/reports/models/report_model.dart'
+    show EReportSeverity;
 
 class ReportDetailModel extends ReportModel {
-  final EReportSeverity severity; // Mức độ ưu tiên/nguy hiểm
+  /// Chi tiết luôn có severity (mặc định `low`), nên thu hẹp về non-null.
+  @override
+  EReportSeverity get severity => super.severity!;
+
   final List<String> imageUrls;
   final bool isAnonymous; // Ẩn danh
   final String? address; // Địa chỉ
@@ -32,7 +36,7 @@ class ReportDetailModel extends ReportModel {
     super.distanceInMeters,
     super.isReviewResolved,
 
-    required this.severity,
+    required EReportSeverity super.severity,
     required this.imageUrls,
     required this.isAnonymous,
     this.address,
