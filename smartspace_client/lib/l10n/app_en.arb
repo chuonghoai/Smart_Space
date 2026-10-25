@@ -328,5 +328,17 @@
   "latestNews": "Latest News",
   "routeNewsList": "News",
   "emptyNewsTitle": "No news yet",
-  "emptyNewsDescription": "There are currently no news or announcements."
+  "emptyNewsDescription": "There are currently no news or announcements.",
+  "mapNormalReports": "Normal",
+  "mapClusterReportsTitle": "{count, plural, =1{1 report in this area} other{{count} reports in this area}}",
+  "@mapClusterReportsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapClusterSortHint": "Most dangerous first, then newest",
+  "mapZoomInForMore": "Zoom in to see more reports",
+  "mapLoadReportsFailed": "Couldn't load reports on the map"
 }

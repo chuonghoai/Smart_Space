@@ -1,5 +1,7 @@
 import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
+import 'package:smartspace_client/features/reports/models/map_bounds.dart';
+import 'package:smartspace_client/features/reports/models/map_reports_result.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_client/features/reports/models/report_dto.dart';
@@ -33,6 +35,20 @@ class ReportRepoApi implements ReportRepo {
               .toList();
         }
         return [];
+      },
+    );
+  }
+
+  @override
+  Future<ApiResponse<MapReportsResult>> getReportsInBounds(MapBounds bounds, {int limit = 300}) async {
+    return await apiClient.get<MapReportsResult>(
+      '/reports/map',
+      queryParameters: {...bounds.toQueryParameters(), 'limit': limit},
+      decoder: (json) {
+        if (json is Map<String, dynamic>) {
+          return MapReportsResult.fromJson(json);
+        }
+        return const MapReportsResult(reports: [], truncated: false);
       },
     );
   }
