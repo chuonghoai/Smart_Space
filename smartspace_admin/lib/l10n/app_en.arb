@@ -605,7 +605,7 @@
   "quickAccess": "Quick Access",
   "emptyNewsTitle": "No news yet",
   "emptyNewsDescription": "There are no news articles published yet. Create a new article to notify the community.",
-  "createNewNews": "Create New News",
+  "createNewNews": "Create News",
   "editNews": "Edit News",
   "newsTitle": "News Title",
   "newsTitleHint": "Enter news title...",

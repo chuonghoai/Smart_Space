@@ -1328,7 +1328,7 @@ class AppLocalizationsEn extends AppLocalizations {
       'There are no news articles published yet. Create a new article to notify the community.';
 
   @override
-  String get createNewNews => 'Create New News';
+  String get createNewNews => 'Create News';
 
   @override
   String get editNews => 'Edit News';

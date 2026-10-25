@@ -2609,7 +2609,7 @@ abstract class AppLocalizations {
   /// No description provided for @createNewNews.
   ///
   /// In en, this message translates to:
-  /// **'Create New News'**
+  /// **'Create News'**
   String get createNewNews;
 
   /// No description provided for @editNews.
