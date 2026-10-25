@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
-import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 
@@ -17,6 +16,7 @@ import 'package:smartspace_staff/features/reports/utils/report_severity_ext.dart
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:smartspace_staff/ui/mobile/reports/presentation/widgets/fullscreen_image_viewer.dart';
 import 'package:smartspace_staff/ui/mobile/reports/presentation/widgets/handling_progress_dialog.dart';
+import 'package:smartspace_staff/ui/shared/utils/open_in_google_maps.dart';
 
 class ReportDetailScreen extends ConsumerStatefulWidget {
   final String reportId;
@@ -93,16 +93,7 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
     ref.invalidate(reportDistanceProvider(widget.reportId));
   }
 
-  Future<void> _openGoogleMaps(double lat, double lng) async {
-    final Uri url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
-    if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(AppLocalizations.of(context)!.cannotOpenGoogleMapsError)),
-        );
-      }
-    }
-  }
+  Future<void> _openGoogleMaps(double lat, double lng) => openInGoogleMaps(context, lat, lng);
 
   @override
   Widget build(BuildContext context) {

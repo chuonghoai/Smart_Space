@@ -281,5 +281,28 @@
   "latestNews": "Tin tức mới nhất",
   "routeNewsList": "Tin tức",
   "emptyNewsTitle": "Chưa có tin tức nào",
-  "emptyNewsDescription": "Hiện tại chưa có tin tức hoặc thông báo mới nào."
+  "emptyNewsDescription": "Hiện tại chưa có tin tức hoặc thông báo mới nào.",
+  "viewDetail": "Xem chi tiết",
+  "mapNormalReports": "Thông thường",
+  "mapShowAllTasks": "Xem tất cả việc",
+  "mapNoActiveTasks": "Bạn không có việc nào đang xử lý",
+  "mapClusterReportsTitle": "Khu vực này có {count} phản ánh",
+  "@mapClusterReportsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapClusterSortNearest": "Gần bạn nhất trước",
+  "mapClusterSortHint": "Nguy hiểm trước, mới nhất trước",
+  "mapShowingFirstTasks": "Đang hiện {count} việc đầu tiên",
+  "@mapShowingFirstTasks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapLoadReportsFailed": "Không tải được việc trên bản đồ"
 }

@@ -281,5 +281,28 @@
   "latestNews": "Latest News",
   "routeNewsList": "News",
   "emptyNewsTitle": "No news yet",
-  "emptyNewsDescription": "There are currently no news or announcements."
+  "emptyNewsDescription": "There are currently no news or announcements.",
+  "viewDetail": "View details",
+  "mapNormalReports": "Normal",
+  "mapShowAllTasks": "Show all my tasks",
+  "mapNoActiveTasks": "You have no tasks in progress",
+  "mapClusterReportsTitle": "{count, plural, =1{1 report in this area} other{{count} reports in this area}}",
+  "@mapClusterReportsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapClusterSortNearest": "Nearest to you first",
+  "mapClusterSortHint": "Most dangerous first, then newest",
+  "mapShowingFirstTasks": "{count, plural, =1{Showing the first task} other{Showing the first {count} tasks}}",
+  "@mapShowingFirstTasks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapLoadReportsFailed": "Couldn't load tasks on the map"
 }

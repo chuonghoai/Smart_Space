@@ -7,6 +7,7 @@ import java.util.List;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -58,6 +59,8 @@ public interface ReportRepository extends JpaRepository<Report, String> {
         // Staff Dashboard: find assigned reports
         List<Report> findByAssignedStaffIdOrderByCreatedAtDesc(String staffId, Limit limit);
         List<Report> findByAssignedStaffIdAndStatusOrderByCreatedAtDesc(String staffId, EReportStatus status, Limit limit);
+        // Fetch user + assignedStaff (to-one) cùng lúc để tránh N+1 khi map sang RecentReportResponse
+        @EntityGraph(attributePaths = { "user", "assignedStaff" })
         List<Report> findByAssignedStaffIdAndStatusInOrderByCreatedAtDesc(String staffId, List<EReportStatus> statuses, org.springframework.data.domain.Pageable pageable);
 
         // Staff Dashboard: group by status for staff
@@ -72,6 +75,7 @@ public interface ReportRepository extends JpaRepository<Report, String> {
         @Query("SELECT r FROM Report r WHERE r.status = :status AND r.isReviewResolved = :isReviewResolved ORDER BY r.updatedAt DESC")
         List<Report> findReportsByStatusAndIsReviewResolved(@Param("status") EReportStatus status, @Param("isReviewResolved") Boolean isReviewResolved);
 
+        @EntityGraph(attributePaths = { "user", "assignedStaff" })
         @Query("SELECT r FROM Report r WHERE r.assignedStaff.id = :staffId AND r.status = :status AND r.isReviewResolved = :isReviewResolved ORDER BY r.updatedAt DESC")
         List<Report> findStaffReportsByStatusAndIsReviewResolved(@Param("staffId") String staffId, @Param("status") EReportStatus status, @Param("isReviewResolved") Boolean isReviewResolved, org.springframework.data.domain.Pageable pageable);
 

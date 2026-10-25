@@ -13,6 +13,10 @@ class MarkerImageGenerator {
   /// Kích thước mặc định của marker (pixel)
   static const double _markerWidth = 240;
   static const double _markerHeight = 300;
+
+  /// Kích thước (pixel) của PNG do [generateMarkerImage] tạo ra.
+  static const int markerWidth = 240;
+  static const int markerHeight = 300;
   static const double _borderWidth = 8;
   static const double _shadowBlur = 10;
 

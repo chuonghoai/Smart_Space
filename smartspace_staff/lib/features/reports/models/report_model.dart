@@ -36,6 +36,13 @@ class ReportModel {
     this.isReviewResolved,
   });
 
+  bool get isDangerous =>
+      severity == ReportSeverity.high || severity == ReportSeverity.critical;
+
+  /// Người dân đánh giá chưa thoả đáng → admin mở lại, staff phải xử lý lại.
+  bool get needsRehandling =>
+      status == ReportStatus.processing && isReviewResolved == false;
+
   factory ReportModel.fromJson(Map<String, dynamic> json) {
     return ReportModel(
       id: json['id']?.toString() ?? '',

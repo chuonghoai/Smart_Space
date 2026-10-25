@@ -756,4 +756,47 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get emptyNewsDescription =>
       'There are currently no news or announcements.';
+
+  @override
+  String get viewDetail => 'View details';
+
+  @override
+  String get mapNormalReports => 'Normal';
+
+  @override
+  String get mapShowAllTasks => 'Show all my tasks';
+
+  @override
+  String get mapNoActiveTasks => 'You have no tasks in progress';
+
+  @override
+  String mapClusterReportsTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reports in this area',
+      one: '1 report in this area',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get mapClusterSortNearest => 'Nearest to you first';
+
+  @override
+  String get mapClusterSortHint => 'Most dangerous first, then newest';
+
+  @override
+  String mapShowingFirstTasks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Showing the first $count tasks',
+      one: 'Showing the first task',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get mapLoadReportsFailed => 'Couldn\'t load tasks on the map';
 }
