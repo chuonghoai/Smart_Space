@@ -3,7 +3,6 @@ import 'package:flutter_markdown/flutter_markdown.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_shared/mobile_shared.dart';
-import 'package:smartspace_admin/features/news/application/news_providers.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/layout/app_layout.dart';
