@@ -47,6 +47,7 @@ class _NewsCardState extends State<NewsCard> {
     final images = widget.news.imageUrls;
 
     return Container(
+      width: double.infinity,
       margin: const EdgeInsets.only(bottom: 16),
       decoration: BoxDecoration(
         color: isDark ? colorScheme.surface : theme.cardColor,

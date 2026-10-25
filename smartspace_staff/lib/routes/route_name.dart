@@ -103,6 +103,13 @@ class RouteName {
     isHiddenInSearch: true,
   );
 
+  static const news = AppRouteInfo(
+    path: '/news',
+    nameKey: 'routeNewsList',
+    icon: Icons.newspaper,
+    priority: 5,
+  );
+
   static const newsDetail = AppRouteInfo(
     path: '/news/:id',
     nameKey: 'newsDetail',
@@ -121,6 +128,7 @@ class RouteName {
     search,
     allReports,
     map,
+    news,
     newsDetail,
   ];
 

@@ -244,5 +244,9 @@
   "evidencePhotosRequired": "Resolution evidence photos *",
   "rehandling": "Re-handling",
   "rehandlingBadge": "Re-handling",
-  "rehandlingNotice": "This report was rated unsatisfactory and is being re-handled"
+  "rehandlingNotice": "This report was rated unsatisfactory and is being re-handled",
+  "latestNews": "Latest News",
+  "routeNewsList": "News",
+  "emptyNewsTitle": "No news yet",
+  "emptyNewsDescription": "There are currently no news or announcements."
 }

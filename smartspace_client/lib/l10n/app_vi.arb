@@ -324,5 +324,9 @@
   "galleryOption": "Bộ sưu tập",
   "closeButton": "Đóng",
   "rehandling": "Xử lý lại",
-  "unsatisfactoryBadge": "Xử lý chưa thỏa đáng"
+  "unsatisfactoryBadge": "Xử lý chưa thỏa đáng",
+  "latestNews": "Tin tức mới nhất",
+  "routeNewsList": "Tin tức",
+  "emptyNewsTitle": "Chưa có tin tức nào",
+  "emptyNewsDescription": "Hiện tại chưa có tin tức hoặc thông báo mới nào."
 }

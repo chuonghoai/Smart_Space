@@ -129,7 +129,7 @@ class Sidebar extends ConsumerWidget {
                     isSelected: currentPath == RouterPath.reportDashboard,
                     onTap: () {
                       Navigator.pop(context);
-                      context.go(RouterPath.reportDashboard);
+                      context.push(RouterPath.reportDashboard);
                     },
                   ),
                   _SidebarItem(
@@ -138,7 +138,7 @@ class Sidebar extends ConsumerWidget {
                     isSelected: currentPath == RouterPath.spaceMap,
                     onTap: () {
                       Navigator.pop(context);
-                      context.go(RouterPath.spaceMap);
+                      context.push(RouterPath.spaceMap);
                     },
                   ),
                   _SidebarItem(
@@ -156,7 +156,7 @@ class Sidebar extends ConsumerWidget {
                     isSelected: currentPath == RouterPath.staffManagement,
                     onTap: () {
                       Navigator.pop(context);
-                      context.go(RouterPath.staffManagement);
+                      context.push(RouterPath.staffManagement);
                     },
                   ),
                   _SidebarItem(
@@ -165,7 +165,7 @@ class Sidebar extends ConsumerWidget {
                     isSelected: currentPath == RouterPath.positionManagement,
                     onTap: () {
                       Navigator.pop(context);
-                      context.go(RouterPath.positionManagement);
+                      context.push(RouterPath.positionManagement);
                     },
                   ),
                   _SidebarItem(
@@ -174,7 +174,7 @@ class Sidebar extends ConsumerWidget {
                     isSelected: currentPath == RouterPath.newsManagement || currentPath.startsWith('/news'),
                     onTap: () {
                       Navigator.pop(context);
-                      context.go(RouterPath.newsManagement);
+                      context.push(RouterPath.newsManagement);
                     },
                   ),
 
@@ -190,7 +190,7 @@ class Sidebar extends ConsumerWidget {
                     isSelected: currentPath == RouterPath.settings,
                     onTap: () {
                       Navigator.pop(context);
-                      context.go(RouterPath.settings);
+                      context.push(RouterPath.settings);
                     },
                   ),
                   _SidebarItem(
@@ -391,7 +391,7 @@ class WebSidebar extends ConsumerWidget {
                 isExpanded: isExpanded,
                 isSelected: currentPath == RouterPath.reportDashboard,
                 onTap: () {
-                  context.go(RouterPath.reportDashboard);
+                  context.push(RouterPath.reportDashboard);
                 },
               ),
               _WebSidebarItem(
@@ -399,7 +399,7 @@ class WebSidebar extends ConsumerWidget {
                 label: l10n.spaceMap,
                 isExpanded: isExpanded,
                 isSelected: currentPath == RouterPath.spaceMap,
-                onTap: () => context.go(RouterPath.spaceMap),
+                onTap: () => context.push(RouterPath.spaceMap),
               ),
               _WebSidebarItem(
                 icon: Icons.people_outline,
@@ -415,21 +415,21 @@ class WebSidebar extends ConsumerWidget {
                 label: l10n.manageStaffs,
                 isExpanded: isExpanded,
                 isSelected: currentPath == RouterPath.staffManagement,
-                onTap: () => context.go(RouterPath.staffManagement),
+                onTap: () => context.push(RouterPath.staffManagement),
               ),
               _WebSidebarItem(
                 icon: Icons.workspace_premium_outlined,
                 label: l10n.managePositions,
                 isExpanded: isExpanded,
                 isSelected: currentPath == RouterPath.positionManagement,
-                onTap: () => context.go(RouterPath.positionManagement),
+                onTap: () => context.push(RouterPath.positionManagement),
               ),
               _WebSidebarItem(
                 icon: Icons.newspaper_outlined,
                 label: l10n.manageNews,
                 isExpanded: isExpanded,
                 isSelected: currentPath == RouterPath.newsManagement || currentPath.startsWith('/news'),
-                onTap: () => context.go(RouterPath.newsManagement),
+                onTap: () => context.push(RouterPath.newsManagement),
               ),
 
               const Padding(
@@ -442,7 +442,7 @@ class WebSidebar extends ConsumerWidget {
                 label: l10n.settings,
                 isExpanded: isExpanded,
                 isSelected: currentPath == RouterPath.settings,
-                onTap: () => context.go(RouterPath.settings),
+                onTap: () => context.push(RouterPath.settings),
               ),
               _WebSidebarItem(
                 icon: Icons.help_outline,

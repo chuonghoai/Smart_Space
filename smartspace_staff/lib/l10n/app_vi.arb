@@ -244,5 +244,9 @@
   "evidencePhotosRequired": "Hình ảnh minh chứng xử lý *",
   "rehandling": "Xử lý lại",
   "rehandlingBadge": "Xử lý lại",
-  "rehandlingNotice": "Phản ánh này được đánh giá chưa thỏa đáng và đang được xử lý lại"
+  "rehandlingNotice": "Phản ánh này được đánh giá chưa thỏa đáng và đang được xử lý lại",
+  "latestNews": "Tin tức mới nhất",
+  "routeNewsList": "Tin tức",
+  "emptyNewsTitle": "Chưa có tin tức nào",
+  "emptyNewsDescription": "Hiện tại chưa có tin tức hoặc thông báo mới nào."
 }

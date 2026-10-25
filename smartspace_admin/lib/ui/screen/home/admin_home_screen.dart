@@ -7,7 +7,6 @@ import 'package:smartspace_admin/features/home/application/home_providers.dart';
 import 'package:smartspace_admin/features/home/models/recent_report_model.dart';
 import 'package:smartspace_admin/features/notifications/providers/notification_provider.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
-import 'package:smartspace_admin/features/news/application/news_providers.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/layout/app_layout.dart';
 import 'package:smartspace_admin/ui/screen/home/widgets/new_reports_slider.dart';
@@ -365,7 +364,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
                 const SizedBox(height: 12),
                 Center(
                   child: TextButton.icon(
-                    onPressed: () => context.go(RouterPath.reportDashboard),
+                    onPressed: () => context.push(RouterPath.reportDashboard),
                     icon: const Icon(Icons.arrow_forward, size: 16),
                     label: Text(l10n.viewAllReports),
                   ),
@@ -394,7 +393,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
               style: theme.textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
             ),
             TextButton.icon(
-              onPressed: () => context.go(RouterPath.newsManagement),
+              onPressed: () => context.push(RouterPath.newsManagement),
               icon: const Icon(Icons.arrow_forward, size: 16),
               label: Text(l10n.viewAllNews),
             ),
@@ -413,6 +412,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
               );
             }
             return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: newsList.map((news) => NewsCard(news: news)).toList(),
             );
           },

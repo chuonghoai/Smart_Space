@@ -324,5 +324,9 @@
   "galleryOption": "Gallery",
   "closeButton": "Close",
   "rehandling": "Re-handling",
-  "unsatisfactoryBadge": "Unsatisfactory resolution"
+  "unsatisfactoryBadge": "Unsatisfactory resolution",
+  "latestNews": "Latest News",
+  "routeNewsList": "News",
+  "emptyNewsTitle": "No news yet",
+  "emptyNewsDescription": "There are currently no news or announcements."
 }

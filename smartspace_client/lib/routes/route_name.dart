@@ -160,6 +160,12 @@ class RouteName {
     icon: Icons.dynamic_feed,
     priority: 3,
   );
+  static const news = AppRouteInfo(
+    path: '/news',
+    nameKey: 'routeNewsList',
+    icon: Icons.newspaper,
+    priority: 7,
+  );
   static const newsDetail = AppRouteInfo(
     path: '/news/:id',
     nameKey: 'newsDetail',
@@ -187,6 +193,7 @@ class RouteName {
     search,
     notifications,
     communityFeed,
+    news,
     newsDetail,
   ];
 

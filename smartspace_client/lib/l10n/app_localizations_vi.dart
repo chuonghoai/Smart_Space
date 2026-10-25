@@ -845,4 +845,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get unsatisfactoryBadge => 'Xử lý chưa thỏa đáng';
+
+  @override
+  String get latestNews => 'Tin tức mới nhất';
+
+  @override
+  String get routeNewsList => 'Tin tức';
+
+  @override
+  String get emptyNewsTitle => 'Chưa có tin tức nào';
+
+  @override
+  String get emptyNewsDescription =>
+      'Hiện tại chưa có tin tức hoặc thông báo mới nào.';
 }

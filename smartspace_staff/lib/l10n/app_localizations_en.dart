@@ -662,4 +662,17 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get rehandlingNotice =>
       'This report was rated unsatisfactory and is being re-handled';
+
+  @override
+  String get latestNews => 'Latest News';
+
+  @override
+  String get routeNewsList => 'News';
+
+  @override
+  String get emptyNewsTitle => 'No news yet';
+
+  @override
+  String get emptyNewsDescription =>
+      'There are currently no news or announcements.';
 }

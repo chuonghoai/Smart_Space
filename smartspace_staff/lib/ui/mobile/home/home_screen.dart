@@ -10,6 +10,8 @@ import 'package:smartspace_staff/ui/mobile/home/home_controller.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:smartspace_staff/ui/mobile/layout/app_layout.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:mobile_shared/mobile_shared.dart';
+import 'package:smartspace_staff/ui/mobile/news/widgets/news_card.dart';
 
 class MobileHomeScreen extends ConsumerWidget {
   const MobileHomeScreen({super.key});
@@ -228,6 +230,62 @@ class MobileHomeScreen extends ConsumerWidget {
                         state.gpsError == null ? state.currentPosition : null,
                       ),
 
+                    const SizedBox(height: 32),
+
+                    // Latest News Section
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          l10n.latestNews,
+                          style: theme.textTheme.titleLarge?.copyWith(
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            context.push(RouterPath.news);
+                          },
+                          child: Text('${l10n.viewAll} \u2192'),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 12),
+
+                    ref.watch(latestNewsProvider).when(
+                          data: (newsList) {
+                            if (newsList.isEmpty) {
+                              return Padding(
+                                padding: const EdgeInsets.symmetric(vertical: 24),
+                                child: Center(
+                                  child: Text(
+                                    l10n.emptyNewsTitle,
+                                    style: theme.textTheme.bodyMedium?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                  ),
+                                ),
+                              );
+                            }
+                            return ListView.separated(
+                              shrinkWrap: true,
+                              physics: const NeverScrollableScrollPhysics(),
+                              itemCount: newsList.length,
+                              separatorBuilder: (context, index) =>
+                                  const SizedBox(height: 4),
+                              itemBuilder: (context, index) {
+                                final news = newsList[index];
+                                return NewsCard(news: news);
+                              },
+                            );
+                          },
+                          loading: () => const Padding(
+                            padding: EdgeInsets.symmetric(vertical: 24),
+                            child: Center(child: CircularProgressIndicator()),
+                          ),
+                          error: (e, s) => const SizedBox.shrink(),
+                        ),
+
                     // Bottom spacing
                     const SizedBox(height: 32),
                   ],
@@ -372,7 +430,7 @@ class MobileHomeScreen extends ConsumerWidget {
           Icons.newspaper_outlined,
           l10n.quickAccessNews,
           () {
-            /* TODO */
+            context.push(RouterPath.news);
           },
         ),
         const SizedBox(width: 8),

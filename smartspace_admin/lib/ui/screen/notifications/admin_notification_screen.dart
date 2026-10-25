@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartspace_admin/features/notifications/providers/notification_provider.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
-import 'package:go_router/go_router.dart';
-import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/features/notifications/models/notification_model.dart';
 import 'package:smartspace_admin/features/notifications/services/notification_router.dart';
 
@@ -97,7 +95,7 @@ class _AdminNotificationScreenState extends ConsumerState<AdminNotificationScree
                           }
                           final item = state.notifications[index];
                           return ListTile(
-                            tileColor: item.isRead ? Colors.transparent : theme.colorScheme.primary.withOpacity(0.08),
+                            tileColor: item.isRead ? Colors.transparent : theme.colorScheme.primary.withValues(alpha: 0.08),
                             onTap: () => _handleNotificationTap(item),
                             leading: CircleAvatar(
                               backgroundColor: theme.colorScheme.surfaceContainerHighest,
@@ -112,7 +110,7 @@ class _AdminNotificationScreenState extends ConsumerState<AdminNotificationScree
                               item.title,
                               style: theme.textTheme.titleMedium?.copyWith(
                                 fontWeight: item.isRead ? FontWeight.normal : FontWeight.bold,
-                                color: item.isRead ? theme.colorScheme.onSurface.withOpacity(0.7) : theme.colorScheme.onSurface,
+                                color: item.isRead ? theme.colorScheme.onSurface.withValues(alpha: 0.7) : theme.colorScheme.onSurface,
                               ),
                             ),
                             subtitle: Column(

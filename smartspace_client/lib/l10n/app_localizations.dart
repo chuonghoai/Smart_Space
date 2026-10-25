@@ -1705,6 +1705,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unsatisfactory resolution'**
   String get unsatisfactoryBadge;
+
+  /// No description provided for @latestNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest News'**
+  String get latestNews;
+
+  /// No description provided for @routeNewsList.
+  ///
+  /// In en, this message translates to:
+  /// **'News'**
+  String get routeNewsList;
+
+  /// No description provided for @emptyNewsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No news yet'**
+  String get emptyNewsTitle;
+
+  /// No description provided for @emptyNewsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'There are currently no news or announcements.'**
+  String get emptyNewsDescription;
 }
 
 class _AppLocalizationsDelegate

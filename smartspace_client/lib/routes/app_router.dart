@@ -21,6 +21,7 @@ import 'package:mobile_shared/core/toast/toast_service.dart';
 import 'package:smartspace_client/ui/mobile/search/search_screen.dart';
 import 'package:smartspace_client/ui/mobile/notifications/notification_screen.dart';
 import 'package:smartspace_client/ui/mobile/news/client_news_detail_screen.dart';
+import 'package:smartspace_client/ui/mobile/news/client_news_list_screen.dart';
 import 'package:flutter/material.dart';
 
 /// Re-export for convenience so existing callers of navigatorKey still compile.
@@ -112,6 +113,10 @@ final appRouter = GoRouter(
           return FadeTransition(opacity: animation, child: child);
         },
       ),
+    ),
+    GoRoute(
+      path: RouterPath.news,
+      builder: (context, state) => const ClientNewsListScreen(),
     ),
     GoRoute(
       path: '/news/:id',

@@ -17,17 +17,17 @@ class AdminQuickAccessBar extends StatelessWidget {
       _QuickAccessItemData(
         title: l10n.manageReports,
         icon: Icons.report_outlined,
-        onTap: () => context.go(RouterPath.reportDashboard),
+        onTap: () => context.push(RouterPath.reportDashboard),
       ),
       _QuickAccessItemData(
         title: l10n.spaceMap,
         icon: Icons.map_outlined,
-        onTap: () => context.go(RouterPath.spaceMap),
+        onTap: () => context.push(RouterPath.spaceMap),
       ),
       _QuickAccessItemData(
         title: l10n.manageStaffs,
         icon: Icons.badge_outlined,
-        onTap: () => context.go(RouterPath.staffManagement),
+        onTap: () => context.push(RouterPath.staffManagement),
       ),
       _QuickAccessItemData(
         title: l10n.manageUsers,
@@ -44,7 +44,7 @@ class AdminQuickAccessBar extends StatelessWidget {
       _QuickAccessItemData(
         title: l10n.manageNews,
         icon: Icons.newspaper_outlined,
-        onTap: () => context.go(RouterPath.newsManagement),
+        onTap: () => context.push(RouterPath.newsManagement),
       ),
     ];
 
