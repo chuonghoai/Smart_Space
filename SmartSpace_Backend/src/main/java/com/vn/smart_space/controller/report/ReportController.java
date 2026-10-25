@@ -63,6 +63,17 @@ public class ReportController {
                 reportService.getFeed(status, page, size, userLat, userLong)));
     }
 
+    @GetMapping("/map")
+    public ResponseEntity<ApiResponse> getMapReports(
+            @RequestParam(name = "min_lat") Double minLat,
+            @RequestParam(name = "max_lat") Double maxLat,
+            @RequestParam(name = "min_lng") Double minLng,
+            @RequestParam(name = "max_lng") Double maxLng,
+            @RequestParam(defaultValue = "300") int limit) {
+        return ResponseEntity.ok(ApiResponse.success("system.success",
+                reportService.getReportsInBounds(minLat, maxLat, minLng, maxLng, limit)));
+    }
+
     @GetMapping("/{id}")
     public ResponseEntity<ApiResponse> getReportDetail(
             @AuthenticationPrincipal Jwt jwt,

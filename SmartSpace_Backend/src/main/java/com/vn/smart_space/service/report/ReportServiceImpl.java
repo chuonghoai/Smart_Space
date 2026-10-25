@@ -29,6 +29,7 @@ import com.vn.smart_space.dto.response.admin.ReportListResponse;
 import com.vn.smart_space.dto.response.admin.ReportStatisticsResponse;
 import com.vn.smart_space.dto.response.admin.ReportTrendResponse;
 import com.vn.smart_space.dto.response.notification.NotificationEvent;
+import com.vn.smart_space.dto.response.report.MapReportsResponse;
 import com.vn.smart_space.dto.response.report.ReportDetailResponse;
 import com.vn.smart_space.dto.response.report.ReportResponse;
 import com.vn.smart_space.exception.BadRequestException;
@@ -58,6 +59,10 @@ public class ReportServiceImpl implements IReportService {
     private final INotificationService notificationService;
     private final ActivityHistoryRepository activityHistoryRepository;
     private final org.springframework.context.MessageSource messageSource;
+
+    private static final int MAP_DEFAULT_LIMIT = 300;
+    private static final int MAP_MAX_LIMIT = 500;
+    private static final int MAP_PROCESSED_VISIBLE_DAYS = 30;
 
     @Override
     @Transactional(readOnly = true)
@@ -101,9 +106,12 @@ public class ReportServiceImpl implements IReportService {
                 .latitude(report.getLatitude())
                 .longitude(report.getLongitude())
                 .status(report.getStatus().name())
+                .severity(report.getSeverity() != null ? report.getSeverity().name() : null)
                 .createdAt(report.getCreatedAt() != null ? report.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME)
                         : null)
-                .assignedAt(report.getAssignedAt() != null ? report.getAssignedAt().toInstant().atZone(java.time.ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE_TIME)
+                .assignedAt(report.getAssignedAt() != null
+                        ? report.getAssignedAt().toInstant().atZone(java.time.ZoneId.systemDefault())
+                                .format(DateTimeFormatter.ISO_DATE_TIME)
                         : null)
                 .isReviewResolved(report.getIsReviewResolved())
                 .build();
@@ -176,7 +184,9 @@ public class ReportServiceImpl implements IReportService {
                 .locationDescription(report.getLocationDescription())
                 .createdAt(report.getCreatedAt() != null ? report.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME)
                         : null)
-                .assignedAt(report.getAssignedAt() != null ? report.getAssignedAt().toInstant().atZone(java.time.ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE_TIME)
+                .assignedAt(report.getAssignedAt() != null
+                        ? report.getAssignedAt().toInstant().atZone(java.time.ZoneId.systemDefault())
+                                .format(DateTimeFormatter.ISO_DATE_TIME)
                         : null)
                 .build();
 
@@ -194,7 +204,8 @@ public class ReportServiceImpl implements IReportService {
                 notificationService.createNotification(userId, title, message, actionData, report.getImageUrl());
 
                 // Send WebSocket Event to the user
-                NotificationEvent event = new NotificationEvent(title, message, actionData, report.getImageUrl(), Map.of("shouldRefresh", true));
+                NotificationEvent event = new NotificationEvent(title, message, actionData, report.getImageUrl(),
+                        Map.of("shouldRefresh", true));
                 messagingTemplate.convertAndSendToUser(userId, "/queue/notifications", event);
 
                 // Send FCM
@@ -234,7 +245,8 @@ public class ReportServiceImpl implements IReportService {
                                         ? report.getLocationDescription().replace("\"", "\\\"")
                                         : ""));
 
-                NotificationEvent adminEvent = new NotificationEvent(adminTitle, adminMessage, adminActionData, report.getImageUrl(), Map.of("shouldRefresh", true));
+                NotificationEvent adminEvent = new NotificationEvent(adminTitle, adminMessage, adminActionData,
+                        report.getImageUrl(), Map.of("shouldRefresh", true));
                 Map<String, String> adminFcmData = Map.of(
                         "type", "REPORT_DETAIL",
                         "payload", "{\"reportId\":\"" + report.getId() + "\"}");
@@ -284,7 +296,8 @@ public class ReportServiceImpl implements IReportService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<ReportDetailResponse> getFeed(String status, int page, int size, Double userLat, Double userLong) {
+    public PageResponse<ReportDetailResponse> getFeed(String status, int page, int size, Double userLat,
+            Double userLong) {
         int safePage = Math.max(1, page);
         int safeSize = Math.max(1, Math.min(size, 20));
         EReportStatus filter = null;
@@ -302,7 +315,8 @@ public class ReportServiceImpl implements IReportService {
         List<ReportDetailResponse> content = reportPage.getContent().stream().map(r -> {
             ReportDetailResponse res = toPublic(toDetail(r));
             if (userLat != null && userLong != null && r.getLatitude() != null && r.getLongitude() != null) {
-                res.setDistanceInMeters(calculateHaversineDistance(userLat, userLong, r.getLatitude(), r.getLongitude()));
+                res.setDistanceInMeters(
+                        calculateHaversineDistance(userLat, userLong, r.getLatitude(), r.getLongitude()));
             }
             return res;
         }).collect(Collectors.toList());
@@ -315,7 +329,48 @@ public class ReportServiceImpl implements IReportService {
                 .build();
     }
 
-    /** Strips contact info for public viewers; also hides identity of anonymous reports. */
+    @Override
+    @Transactional(readOnly = true)
+    public MapReportsResponse getReportsInBounds(Double minLat, Double maxLat, Double minLng, Double maxLng,
+            int limit) {
+        if (!isValidLatitude(minLat) || !isValidLatitude(maxLat)
+                || !isValidLongitude(minLng) || !isValidLongitude(maxLng)
+                || minLat > maxLat || minLng > maxLng) {
+            throw new BadRequestException("report.map.invalid_bounds");
+        }
+        int safeLimit = limit <= 0 ? MAP_DEFAULT_LIMIT : Math.min(limit, MAP_MAX_LIMIT);
+
+        // Fetch one extra row to know whether the viewport holds more than safeLimit
+        // reports
+        List<Report> reports = reportRepository.findInBounds(minLat, maxLat, minLng, maxLng,
+                EReportStatus.rejected, EReportStatus.processed,
+                LocalDateTime.now().minusDays(MAP_PROCESSED_VISIBLE_DAYS),
+                Limit.of(safeLimit + 1));
+
+        boolean truncated = reports.size() > safeLimit;
+        List<ReportResponse> content = reports.stream()
+                .limit(safeLimit)
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+
+        return MapReportsResponse.builder()
+                .reports(content)
+                .truncated(truncated)
+                .build();
+    }
+
+    private boolean isValidLatitude(Double value) {
+        return value != null && value >= -90 && value <= 90;
+    }
+
+    private boolean isValidLongitude(Double value) {
+        return value != null && value >= -180 && value <= 180;
+    }
+
+    /**
+     * Strips contact info for public viewers; also hides identity of anonymous
+     * reports.
+     */
     private ReportDetailResponse toPublic(ReportDetailResponse res) {
         res.setUserPhone(null);
         res.setAssignedStaffPhone(null);
@@ -371,7 +426,9 @@ public class ReportServiceImpl implements IReportService {
                 .locationDescription(report.getLocationDescription())
                 .createdAt(report.getCreatedAt() != null ? report.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME)
                         : null)
-                .assignedAt(report.getAssignedAt() != null ? report.getAssignedAt().toInstant().atZone(java.time.ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE_TIME)
+                .assignedAt(report.getAssignedAt() != null
+                        ? report.getAssignedAt().toInstant().atZone(java.time.ZoneId.systemDefault())
+                                .format(DateTimeFormatter.ISO_DATE_TIME)
                         : null)
                 .userName(user != null ? user.getFullName() : null)
                 .userPhone(user != null ? user.getPhone() : null)
@@ -383,12 +440,14 @@ public class ReportServiceImpl implements IReportService {
                 .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
                 .resolvedNote(report.getResolvedNote())
                 .resolvedImageUrls(resolvedImages)
-                .resolvedAt(report.getResolvedAt() != null ? report.getResolvedAt().toInstant().atZone(java.time.ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE_TIME) : null)
+                .resolvedAt(report.getResolvedAt() != null ? report.getResolvedAt().toInstant()
+                        .atZone(java.time.ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE_TIME) : null)
                 .isReviewResolved(report.getIsReviewResolved())
                 .rating(report.getRating())
                 .reviewNote(report.getReviewNote())
                 .reviewImageUrls(reviewImages)
-                .reviewedAt(report.getReviewedAt() != null ? report.getReviewedAt().toInstant().atZone(java.time.ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE_TIME) : null)
+                .reviewedAt(report.getReviewedAt() != null ? report.getReviewedAt().toInstant()
+                        .atZone(java.time.ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE_TIME) : null)
                 .build();
     }
 
@@ -420,7 +479,9 @@ public class ReportServiceImpl implements IReportService {
                     .status(r.getStatus())
                     .severity(r.getSeverity())
                     .createdAt(r.getCreatedAt())
-                    .imageUrl((r.getImageUrls() != null && !r.getImageUrls().trim().isEmpty()) ? r.getImageUrls().split(",")[0].trim() : r.getImageUrl())
+                    .imageUrl((r.getImageUrls() != null && !r.getImageUrls().trim().isEmpty())
+                            ? r.getImageUrls().split(",")[0].trim()
+                            : r.getImageUrl())
                     .address(r.getAddress() != null && !r.getAddress().trim().isEmpty() ? r.getAddress()
                             : r.getLocationDescription())
                     .assignedStaffName(staff != null ? staff.getFullName() : null)
@@ -489,13 +550,21 @@ public class ReportServiceImpl implements IReportService {
 
             for (User a : admins) {
                 try {
-                    java.util.Locale adminLocale = new java.util.Locale(a.getLanguage() != null ? a.getLanguage() : "vi");
-                    String title = messageSource.getMessage("notification.report.assigned.admin.title", null, "Phân công phản ánh thành công", adminLocale);
-                    String staffN = staff.getFullName() != null && !staff.getFullName().trim().isEmpty() ? staff.getFullName().trim() : (staff.getEmail() != null ? staff.getEmail().trim() : "Nhân viên");
-                    String message = messageSource.getMessage("notification.report.assigned.admin.message", new Object[]{report.getTitle(), staffN}, String.format("Phản ánh '%s' đã được giao cho %s.", report.getTitle(), staffN), adminLocale);
+                    java.util.Locale adminLocale = new java.util.Locale(
+                            a.getLanguage() != null ? a.getLanguage() : "vi");
+                    String title = messageSource.getMessage("notification.report.assigned.admin.title", null,
+                            "Phân công phản ánh thành công", adminLocale);
+                    String staffN = staff.getFullName() != null && !staff.getFullName().trim().isEmpty()
+                            ? staff.getFullName().trim()
+                            : (staff.getEmail() != null ? staff.getEmail().trim() : "Nhân viên");
+                    String message = messageSource.getMessage("notification.report.assigned.admin.message",
+                            new Object[] { report.getTitle(), staffN },
+                            String.format("Phản ánh '%s' đã được giao cho %s.", report.getTitle(), staffN),
+                            adminLocale);
 
                     notificationService.createNotification(a.getId(), title, message, actionData, report.getImageUrl());
-                    NotificationEvent event = new NotificationEvent(title, message, actionData, report.getImageUrl(), Map.of("shouldRefresh", true));
+                    NotificationEvent event = new NotificationEvent(title, message, actionData, report.getImageUrl(),
+                            Map.of("shouldRefresh", true));
                     messagingTemplate.convertAndSendToUser(a.getId(), "/queue/notifications", event);
                 } catch (Exception ex) {
                 }
@@ -506,10 +575,14 @@ public class ReportServiceImpl implements IReportService {
         // Notify Staff via WebSocket & FCM
         if (staff != null) {
             try {
-                java.util.Locale staffLocale = new java.util.Locale(staff.getLanguage() != null ? staff.getLanguage() : "vi");
-                String staffTitle = messageSource.getMessage("notification.report.assigned.staff.title", null, "Phân công mới", staffLocale);
-                String staffMessage = messageSource.getMessage("notification.report.assigned.staff.message", new Object[]{report.getTitle()}, String.format("Bạn đã được phân công xử lý phản ánh '%s'.", report.getTitle()), staffLocale);
-                
+                java.util.Locale staffLocale = new java.util.Locale(
+                        staff.getLanguage() != null ? staff.getLanguage() : "vi");
+                String staffTitle = messageSource.getMessage("notification.report.assigned.staff.title", null,
+                        "Phân công mới", staffLocale);
+                String staffMessage = messageSource.getMessage("notification.report.assigned.staff.message",
+                        new Object[] { report.getTitle() },
+                        String.format("Bạn đã được phân công xử lý phản ánh '%s'.", report.getTitle()), staffLocale);
+
                 String staffActionData = String
                         .format("{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}", report.getId());
 
@@ -518,7 +591,8 @@ public class ReportServiceImpl implements IReportService {
                 Map<String, Object> staffData = new java.util.HashMap<>();
                 staffData.put("shouldRefresh", true);
                 staffData.put("stats", getStaffReportStatistics(staff.getId()));
-                NotificationEvent staffEvent = new NotificationEvent(staffTitle, staffMessage, staffActionData, report.getImageUrl(), staffData);
+                NotificationEvent staffEvent = new NotificationEvent(staffTitle, staffMessage, staffActionData,
+                        report.getImageUrl(), staffData);
                 messagingTemplate.convertAndSendToUser(staff.getId(), "/queue/notifications", staffEvent);
 
                 NotificationRequest staffNotif = new NotificationRequest(
@@ -533,16 +607,22 @@ public class ReportServiceImpl implements IReportService {
         if (report.getUser() != null) {
             try {
                 User client = report.getUser();
-                java.util.Locale clientLocale = new java.util.Locale(client.getLanguage() != null ? client.getLanguage() : "vi");
-                String clientTitle = messageSource.getMessage("notification.report.assigned.client.title", null, "Phản ánh đang được xử lý", clientLocale);
-                String clientMessage = messageSource.getMessage("notification.report.assigned.client.message", new Object[]{report.getTitle()}, String.format("Phản ánh '%s' của bạn đã được phân công xử lý.", report.getTitle()), clientLocale);
-                
+                java.util.Locale clientLocale = new java.util.Locale(
+                        client.getLanguage() != null ? client.getLanguage() : "vi");
+                String clientTitle = messageSource.getMessage("notification.report.assigned.client.title", null,
+                        "Phản ánh đang được xử lý", clientLocale);
+                String clientMessage = messageSource.getMessage("notification.report.assigned.client.message",
+                        new Object[] { report.getTitle() },
+                        String.format("Phản ánh '%s' của bạn đã được phân công xử lý.", report.getTitle()),
+                        clientLocale);
+
                 String clientActionData = String
                         .format("{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}", report.getId());
 
                 notificationService.createNotification(client.getId(), clientTitle, clientMessage,
                         clientActionData, report.getImageUrl());
-                NotificationEvent clientEvent = new NotificationEvent(clientTitle, clientMessage, clientActionData, report.getImageUrl(), Map.of("shouldRefresh", true));
+                NotificationEvent clientEvent = new NotificationEvent(clientTitle, clientMessage, clientActionData,
+                        report.getImageUrl(), Map.of("shouldRefresh", true));
                 messagingTemplate.convertAndSendToUser(client.getId(), "/queue/notifications", clientEvent);
 
                 NotificationRequest clientNotif = new NotificationRequest(
@@ -580,7 +660,8 @@ public class ReportServiceImpl implements IReportService {
         }
         report.setResolvedAt(new java.util.Date());
 
-        // Reset previous citizen review when report is completed or re-handled so client can submit a new review
+        // Reset previous citizen review when report is completed or re-handled so
+        // client can submit a new review
         report.setIsReviewResolved(null);
         report.setRating(null);
         report.setReviewNote(null);
@@ -605,7 +686,8 @@ public class ReportServiceImpl implements IReportService {
                 .build();
         activityHistoryRepository.save(activity);
 
-        // Notify Admins via WebSocket only (per requirement: no notification record or FCM push, only realtime event for dashboard refresh)
+        // Notify Admins via WebSocket only (per requirement: no notification record or
+        // FCM push, only realtime event for dashboard refresh)
         try {
             List<User> admins = userRepository.findByRole(ERole.admin);
             String actionData = String.format(
@@ -629,20 +711,27 @@ public class ReportServiceImpl implements IReportService {
         } catch (Exception ignored) {
         }
 
-        // Notify Client (the creator of the report) via In-App Notification, WebSocket & FCM
+        // Notify Client (the creator of the report) via In-App Notification, WebSocket
+        // & FCM
         if (report.getUser() != null) {
             try {
                 User client = report.getUser();
-                java.util.Locale clientLocale = new java.util.Locale(client.getLanguage() != null ? client.getLanguage() : "vi");
-                String clientTitle = messageSource.getMessage("notification.report.completed.client.title", null, "Phản ánh đã được xử lý", clientLocale);
-                String clientMessage = messageSource.getMessage("notification.report.completed.client.message", new Object[]{report.getTitle()}, String.format("Phản ánh '%s' của bạn đã hoàn tất việc xử lý.", report.getTitle()), clientLocale);
+                java.util.Locale clientLocale = new java.util.Locale(
+                        client.getLanguage() != null ? client.getLanguage() : "vi");
+                String clientTitle = messageSource.getMessage("notification.report.completed.client.title", null,
+                        "Phản ánh đã được xử lý", clientLocale);
+                String clientMessage = messageSource.getMessage("notification.report.completed.client.message",
+                        new Object[] { report.getTitle() },
+                        String.format("Phản ánh '%s' của bạn đã hoàn tất việc xử lý.", report.getTitle()),
+                        clientLocale);
 
                 String clientActionData = String
                         .format("{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}", report.getId());
 
                 notificationService.createNotification(client.getId(), clientTitle, clientMessage,
                         clientActionData, report.getImageUrl());
-                NotificationEvent clientEvent = new NotificationEvent(clientTitle, clientMessage, clientActionData, report.getImageUrl(), Map.of("shouldRefresh", true));
+                NotificationEvent clientEvent = new NotificationEvent(clientTitle, clientMessage, clientActionData,
+                        report.getImageUrl(), Map.of("shouldRefresh", true));
                 messagingTemplate.convertAndSendToUser(client.getId(), "/queue/notifications", clientEvent);
 
                 NotificationRequest clientNotif = new NotificationRequest(
@@ -656,9 +745,13 @@ public class ReportServiceImpl implements IReportService {
         // Notify Staff via In-App Notification, WebSocket & FCM
         if (staff != null) {
             try {
-                java.util.Locale staffLocale = new java.util.Locale(staff.getLanguage() != null ? staff.getLanguage() : "vi");
-                String staffTitle = messageSource.getMessage("notification.report.completed.staff.title", null, "Công việc hoàn tất", staffLocale);
-                String staffMessage = messageSource.getMessage("notification.report.completed.staff.message", new Object[]{report.getTitle()}, String.format("Cảm ơn bạn đã hoàn tất việc xử lý '%s'.", report.getTitle()), staffLocale);
+                java.util.Locale staffLocale = new java.util.Locale(
+                        staff.getLanguage() != null ? staff.getLanguage() : "vi");
+                String staffTitle = messageSource.getMessage("notification.report.completed.staff.title", null,
+                        "Công việc hoàn tất", staffLocale);
+                String staffMessage = messageSource.getMessage("notification.report.completed.staff.message",
+                        new Object[] { report.getTitle() },
+                        String.format("Cảm ơn bạn đã hoàn tất việc xử lý '%s'.", report.getTitle()), staffLocale);
 
                 String staffActionData = String
                         .format("{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}", report.getId());
@@ -669,7 +762,8 @@ public class ReportServiceImpl implements IReportService {
                 Map<String, Object> staffExtra = new java.util.HashMap<>();
                 staffExtra.put("shouldRefresh", true);
                 staffExtra.put("stats", getStaffReportStatistics(staff.getId()));
-                NotificationEvent staffEvent = new NotificationEvent(staffTitle, staffMessage, staffActionData, report.getImageUrl(), staffExtra);
+                NotificationEvent staffEvent = new NotificationEvent(staffTitle, staffMessage, staffActionData,
+                        report.getImageUrl(), staffExtra);
                 messagingTemplate.convertAndSendToUser(staff.getId(), "/queue/notifications", staffEvent);
 
                 NotificationRequest staffNotif = new NotificationRequest(
@@ -700,11 +794,13 @@ public class ReportServiceImpl implements IReportService {
 
         List<Report> reports;
         if ("rehandling".equalsIgnoreCase(status)) {
-            reports = reportRepository.findByUserIdAndIsReviewResolvedFalseOrderByCreatedAtDesc(userId, Limit.of(safeLimit));
+            reports = reportRepository.findByUserIdAndIsReviewResolvedFalseOrderByCreatedAtDesc(userId,
+                    Limit.of(safeLimit));
         } else if (reportStatus == null) {
             reports = reportRepository.findByUserIdOrderByCreatedAtDesc(userId, Limit.of(safeLimit));
         } else {
-            reports = reportRepository.findByUserIdAndStatusOrderByCreatedAtDesc(userId, reportStatus, Limit.of(safeLimit));
+            reports = reportRepository.findByUserIdAndStatusOrderByCreatedAtDesc(userId, reportStatus,
+                    Limit.of(safeLimit));
         }
         return reports.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
@@ -777,19 +873,27 @@ public class ReportServiceImpl implements IReportService {
         // 1. Parse enums (null = no filter)
         EReportStatus statusEnum = null;
         if (status != null && !status.trim().isEmpty() && !"all".equalsIgnoreCase(status)) {
-            try { statusEnum = EReportStatus.valueOf(status.toLowerCase()); } catch (Exception ignored) {}
+            try {
+                statusEnum = EReportStatus.valueOf(status.toLowerCase());
+            } catch (Exception ignored) {
+            }
         }
         EReportSeverity severityEnum = null;
         if (severity != null && !severity.trim().isEmpty() && !"all".equalsIgnoreCase(severity)) {
-            try { severityEnum = EReportSeverity.valueOf(severity.toLowerCase()); } catch (Exception ignored) {}
+            try {
+                severityEnum = EReportSeverity.valueOf(severity.toLowerCase());
+            } catch (Exception ignored) {
+            }
         }
 
         // 2. Parse dates
         LocalDateTime fromDt = null;
         LocalDateTime toDt = null;
         try {
-            if (from != null && !from.trim().isEmpty()) fromDt = LocalDate.parse(from.trim()).atStartOfDay();
-            if (to   != null && !to.trim().isEmpty())   toDt   = LocalDate.parse(to.trim()).atTime(23, 59, 59);
+            if (from != null && !from.trim().isEmpty())
+                fromDt = LocalDate.parse(from.trim()).atStartOfDay();
+            if (to != null && !to.trim().isEmpty())
+                toDt = LocalDate.parse(to.trim()).atTime(23, 59, 59);
         } catch (Exception e) {
             log.warn("[ReportList] Invalid date filter from={} to={}", from, to);
         }
@@ -808,7 +912,7 @@ public class ReportServiceImpl implements IReportService {
         // 5. Map Report -> RecentReportResponse (bổ sung userName, userEmail)
         List<RecentReportResponse> content = reportPage.getContent().stream().map(r -> {
             User staff = r.getAssignedStaff();
-            User user  = r.getUser();
+            User user = r.getUser();
             boolean anon = Boolean.TRUE.equals(r.getIsAnonymous());
             return RecentReportResponse.builder()
                     .id(r.getId())
@@ -818,7 +922,8 @@ public class ReportServiceImpl implements IReportService {
                     .createdAt(r.getCreatedAt())
                     .imageUrl(r.getImageUrl())
                     .address(r.getAddress() != null && !r.getAddress().trim().isEmpty()
-                            ? r.getAddress() : r.getLocationDescription())
+                            ? r.getAddress()
+                            : r.getLocationDescription())
                     .assignedStaffName(staff != null ? staff.getFullName() : null)
                     .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
                     .latitude(r.getLatitude())
@@ -849,14 +954,16 @@ public class ReportServiceImpl implements IReportService {
                 .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
         EReportStatus current = report.getStatus();
         EReportStatus next = EReportStatus.valueOf(newStatus.toLowerCase());
-        // Validate flow: pending -> processing -> processed, rejected from pending/processing, and processed -> processing (re-open)
+        // Validate flow: pending -> processing -> processed, rejected from
+        // pending/processing, and processed -> processing (re-open)
         boolean valid = switch (current) {
-            case pending    -> next == EReportStatus.processing || next == EReportStatus.rejected;
-            case processing -> next == EReportStatus.processed  || next == EReportStatus.rejected;
-            case processed  -> next == EReportStatus.processing;
+            case pending -> next == EReportStatus.processing || next == EReportStatus.rejected;
+            case processing -> next == EReportStatus.processed || next == EReportStatus.rejected;
+            case processed -> next == EReportStatus.processing;
             default -> false;
         };
-        if (!valid) throw new BadRequestException("report.invalid.status.transition");
+        if (!valid)
+            throw new BadRequestException("report.invalid.status.transition");
         report.setStatus(next);
         if (next == EReportStatus.processed) {
             report.setIsReviewResolved(null);
@@ -872,7 +979,8 @@ public class ReportServiceImpl implements IReportService {
             User staff = saved.getAssignedStaff();
             if (staff != null) {
                 try {
-                    java.util.Locale staffLocale = new java.util.Locale(staff.getLanguage() != null ? staff.getLanguage() : "vi");
+                    java.util.Locale staffLocale = new java.util.Locale(
+                            staff.getLanguage() != null ? staff.getLanguage() : "vi");
                     String title = messageSource.getMessage(
                             "notification.report.reopened.staff.title",
                             null,
@@ -880,17 +988,22 @@ public class ReportServiceImpl implements IReportService {
                             staffLocale);
                     String message = messageSource.getMessage(
                             "notification.report.reopened.staff.message",
-                            new Object[]{saved.getTitle()},
-                            String.format("Phản ánh '%s' được đánh giá là chưa được xử lý thỏa đáng và cần được xử lý lại.", saved.getTitle()),
+                            new Object[] { saved.getTitle() },
+                            String.format(
+                                    "Phản ánh '%s' được đánh giá là chưa được xử lý thỏa đáng và cần được xử lý lại.",
+                                    saved.getTitle()),
                             staffLocale);
-                    String actionData = String.format("{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}", saved.getId());
+                    String actionData = String.format(
+                            "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}", saved.getId());
 
-                    notificationService.createNotification(staff.getId(), title, message, actionData, saved.getImageUrl());
+                    notificationService.createNotification(staff.getId(), title, message, actionData,
+                            saved.getImageUrl());
 
                     Map<String, Object> staffExtra = new java.util.HashMap<>();
                     staffExtra.put("shouldRefresh", true);
                     staffExtra.put("stats", getStaffReportStatistics(staff.getId()));
-                    NotificationEvent staffEvent = new NotificationEvent(title, message, actionData, saved.getImageUrl(), staffExtra);
+                    NotificationEvent staffEvent = new NotificationEvent(title, message, actionData,
+                            saved.getImageUrl(), staffExtra);
                     messagingTemplate.convertAndSendToUser(staff.getId(), "/queue/notifications", staffEvent);
 
                     NotificationRequest staffNotif = new NotificationRequest(
@@ -913,19 +1026,27 @@ public class ReportServiceImpl implements IReportService {
         // Parse enums
         EReportStatus statusEnum = null;
         if (status != null && !status.trim().isEmpty() && !"all".equalsIgnoreCase(status)) {
-            try { statusEnum = EReportStatus.valueOf(status.toLowerCase()); } catch (Exception ignored) {}
+            try {
+                statusEnum = EReportStatus.valueOf(status.toLowerCase());
+            } catch (Exception ignored) {
+            }
         }
         EReportSeverity severityEnum = null;
         if (severity != null && !severity.trim().isEmpty() && !"all".equalsIgnoreCase(severity)) {
-            try { severityEnum = EReportSeverity.valueOf(severity.toLowerCase()); } catch (Exception ignored) {}
+            try {
+                severityEnum = EReportSeverity.valueOf(severity.toLowerCase());
+            } catch (Exception ignored) {
+            }
         }
 
         // Parse dates
         LocalDateTime fromDt = null;
         LocalDateTime toDt = null;
         try {
-            if (from != null && !from.trim().isEmpty()) fromDt = LocalDate.parse(from.trim()).atStartOfDay();
-            if (to   != null && !to.trim().isEmpty())   toDt   = LocalDate.parse(to.trim()).atTime(23, 59, 59);
+            if (from != null && !from.trim().isEmpty())
+                fromDt = LocalDate.parse(from.trim()).atStartOfDay();
+            if (to != null && !to.trim().isEmpty())
+                toDt = LocalDate.parse(to.trim()).atTime(23, 59, 59);
         } catch (Exception e) {
             log.warn("[MapReports] Invalid date filter from={} to={}", from, to);
         }
@@ -948,7 +1069,8 @@ public class ReportServiceImpl implements IReportService {
                         .longitude(r.getLongitude())
                         .imageUrl(r.getImageUrl())
                         .address(r.getAddress() != null && !r.getAddress().trim().isEmpty()
-                                ? r.getAddress() : r.getLocationDescription())
+                                ? r.getAddress()
+                                : r.getLocationDescription())
                         .createdAt(r.getCreatedAt())
                         .build())
                 .collect(Collectors.toList());
@@ -961,8 +1083,10 @@ public class ReportServiceImpl implements IReportService {
         int safePage = Math.max(0, page);
 
         if ("rehandling".equalsIgnoreCase(status)) {
-            org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(safePage, safeLimit);
-            List<Report> reports = reportRepository.findStaffReportsByStatusAndIsReviewResolved(staffId, EReportStatus.processing, false, pageable);
+            org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(safePage,
+                    safeLimit);
+            List<Report> reports = reportRepository.findStaffReportsByStatusAndIsReviewResolved(staffId,
+                    EReportStatus.processing, false, pageable);
             return reports.stream().map(r -> {
                 User staff = r.getAssignedStaff();
                 User user = r.getUser();
@@ -973,9 +1097,10 @@ public class ReportServiceImpl implements IReportService {
                         .status(r.getStatus())
                         .severity(r.getSeverity())
                         .createdAt(r.getCreatedAt())
-                        .imageUrl(r.getImageUrls() != null && !r.getImageUrls().trim().isEmpty() ? 
-                            r.getImageUrls().trim().replaceAll("^\\[|\\]$", "").replaceAll("\"", "").split(",")[0].trim() : 
-                            r.getImageUrl())
+                        .imageUrl(r.getImageUrls() != null && !r.getImageUrls().trim().isEmpty()
+                                ? r.getImageUrls().trim().replaceAll("^\\[|\\]$", "").replaceAll("\"", "").split(",")[0]
+                                        .trim()
+                                : r.getImageUrl())
                         .address(r.getAddress() != null && !r.getAddress().trim().isEmpty() ? r.getAddress()
                                 : r.getLocationDescription())
                         .assignedStaffName(staff != null ? staff.getFullName() : null)
@@ -999,12 +1124,15 @@ public class ReportServiceImpl implements IReportService {
         } else if ("rejected".equalsIgnoreCase(status)) {
             statuses = List.of(EReportStatus.rejected);
         } else {
-            // "all" or invalid or null defaults to processing + processed for staff (pending removed)
+            // "all" or invalid or null defaults to processing + processed for staff
+            // (pending removed)
             statuses = List.of(EReportStatus.processing, EReportStatus.processed);
         }
 
-        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(safePage, safeLimit);
-        List<Report> reports = reportRepository.findByAssignedStaffIdAndStatusInOrderByCreatedAtDesc(staffId, statuses, pageable);
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(safePage,
+                safeLimit);
+        List<Report> reports = reportRepository.findByAssignedStaffIdAndStatusInOrderByCreatedAtDesc(staffId, statuses,
+                pageable);
 
         return reports.stream().map(r -> {
             User staff = r.getAssignedStaff();
@@ -1016,9 +1144,10 @@ public class ReportServiceImpl implements IReportService {
                     .status(r.getStatus())
                     .severity(r.getSeverity())
                     .createdAt(r.getCreatedAt())
-                    .imageUrl(r.getImageUrls() != null && !r.getImageUrls().trim().isEmpty() ? 
-                        r.getImageUrls().trim().replaceAll("^\\[|\\]$", "").replaceAll("\"", "").split(",")[0].trim() : 
-                        r.getImageUrl())
+                    .imageUrl(r.getImageUrls() != null && !r.getImageUrls().trim().isEmpty()
+                            ? r.getImageUrls().trim().replaceAll("^\\[|\\]$", "").replaceAll("\"", "").split(",")[0]
+                                    .trim()
+                            : r.getImageUrl())
                     .address(r.getAddress() != null && !r.getAddress().trim().isEmpty() ? r.getAddress()
                             : r.getLocationDescription())
                     .assignedStaffName(staff != null ? staff.getFullName() : null)
@@ -1051,7 +1180,8 @@ public class ReportServiceImpl implements IReportService {
                 byStatus.put(key, count);
             }
         }
-        long rehandlingCount = reportRepository.countStaffReportsByStatusAndIsReviewResolved(staffId, EReportStatus.processing, false);
+        long rehandlingCount = reportRepository.countStaffReportsByStatusAndIsReviewResolved(staffId,
+                EReportStatus.processing, false);
         byStatus.put("rehandling", (int) rehandlingCount);
 
         int total = byStatus.getOrDefault("processing", 0) + byStatus.getOrDefault("resolved", 0);
@@ -1080,9 +1210,10 @@ public class ReportServiceImpl implements IReportService {
                     .status(r.getStatus())
                     .severity(r.getSeverity())
                     .createdAt(r.getCreatedAt())
-                    .imageUrl(r.getImageUrls() != null && !r.getImageUrls().trim().isEmpty() ? 
-                        r.getImageUrls().trim().replaceAll("^\\[|\\]$", "").replaceAll("\"", "").split(",")[0].trim() : 
-                        r.getImageUrl())
+                    .imageUrl(r.getImageUrls() != null && !r.getImageUrls().trim().isEmpty()
+                            ? r.getImageUrls().trim().replaceAll("^\\[|\\]$", "").replaceAll("\"", "").split(",")[0]
+                                    .trim()
+                            : r.getImageUrl())
                     .address(r.getAddress() != null && !r.getAddress().trim().isEmpty() ? r.getAddress()
                             : r.getLocationDescription())
                     .assignedStaffName(staff != null ? staff.getFullName() : null)
@@ -1100,7 +1231,8 @@ public class ReportServiceImpl implements IReportService {
 
     @Override
     @Transactional
-    public ReportDetailResponse reviewReport(String reportId, com.vn.smart_space.dto.request.report.ReportReviewRequest request, String userId) {
+    public ReportDetailResponse reviewReport(String reportId,
+            com.vn.smart_space.dto.request.report.ReportReviewRequest request, String userId) {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
 
@@ -1127,7 +1259,9 @@ public class ReportServiceImpl implements IReportService {
             }
             report.setIsReviewResolved(true);
             report.setRating(rating);
-            report.setReviewNote(request.getReason() != null && !request.getReason().trim().isEmpty() ? request.getReason().trim() : null);
+            report.setReviewNote(
+                    request.getReason() != null && !request.getReason().trim().isEmpty() ? request.getReason().trim()
+                            : null);
             report.setReviewImageUrls(null);
         } else {
             if (request.getReason() == null || request.getReason().trim().isEmpty()) {
@@ -1145,7 +1279,8 @@ public class ReportServiceImpl implements IReportService {
         report.setReviewedAt(new java.util.Date());
         Report saved = reportRepository.save(report);
 
-        // When client submits unresolved review, notify all Admins via WebSocket + DB notification + FCM
+        // When client submits unresolved review, notify all Admins via WebSocket + DB
+        // notification + FCM
         if (Boolean.FALSE.equals(saved.getIsReviewResolved())) {
             try {
                 List<User> admins = userRepository.findByRole(ERole.admin);
@@ -1156,7 +1291,8 @@ public class ReportServiceImpl implements IReportService {
 
                     for (User admin : admins) {
                         try {
-                            java.util.Locale adminLocale = new java.util.Locale(admin.getLanguage() != null ? admin.getLanguage() : "vi");
+                            java.util.Locale adminLocale = new java.util.Locale(
+                                    admin.getLanguage() != null ? admin.getLanguage() : "vi");
                             String adminTitle = messageSource.getMessage(
                                     "notification.report.review.unresolved.admin.title",
                                     null,
@@ -1164,19 +1300,24 @@ public class ReportServiceImpl implements IReportService {
                                     adminLocale);
                             String adminMessage = messageSource.getMessage(
                                     "notification.report.review.unresolved.admin.message",
-                                    new Object[]{saved.getTitle()},
-                                    String.format("Phản ánh '%s' được đánh giá là chưa được xử lý thỏa đáng.", saved.getTitle()),
+                                    new Object[] { saved.getTitle() },
+                                    String.format("Phản ánh '%s' được đánh giá là chưa được xử lý thỏa đáng.",
+                                            saved.getTitle()),
                                     adminLocale);
 
-                            NotificationEvent adminEvent = new NotificationEvent(adminTitle, adminMessage, adminActionData, saved.getImageUrl(), Map.of("shouldRefresh", true));
+                            NotificationEvent adminEvent = new NotificationEvent(adminTitle, adminMessage,
+                                    adminActionData, saved.getImageUrl(), Map.of("shouldRefresh", true));
                             NotificationRequest adminNotif = new NotificationRequest(adminTitle, adminMessage,
-                                    Map.of("type", "REPORT_DETAIL", "payload", "{\"reportId\":\"" + saved.getId() + "\"}"));
+                                    Map.of("type", "REPORT_DETAIL", "payload",
+                                            "{\"reportId\":\"" + saved.getId() + "\"}"));
 
-                            notificationService.createNotification(admin.getId(), adminTitle, adminMessage, adminActionData, saved.getImageUrl());
+                            notificationService.createNotification(admin.getId(), adminTitle, adminMessage,
+                                    adminActionData, saved.getImageUrl());
                             messagingTemplate.convertAndSendToUser(admin.getId(), "/queue/notifications", adminEvent);
                             fcmService.sendToUser(admin.getId(), adminNotif);
                         } catch (Exception ex) {
-                            log.warn("[Notify Admin] Failed to notify admin {} about unresolved review: {}", admin.getId(), ex.getMessage());
+                            log.warn("[Notify Admin] Failed to notify admin {} about unresolved review: {}",
+                                    admin.getId(), ex.getMessage());
                         }
                     }
                 }

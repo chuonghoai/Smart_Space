@@ -11,6 +11,7 @@ import com.vn.smart_space.dto.response.admin.RecentReportResponse;
 import com.vn.smart_space.dto.response.admin.ReportListResponse;
 import com.vn.smart_space.dto.response.admin.ReportStatisticsResponse;
 import com.vn.smart_space.dto.response.admin.ReportTrendResponse;
+import com.vn.smart_space.dto.response.report.MapReportsResponse;
 import com.vn.smart_space.dto.response.report.ReportDetailResponse;
 import com.vn.smart_space.dto.response.report.ReportResponse;
 
@@ -27,6 +28,10 @@ public interface IReportService {
 
         PageResponse<ReportDetailResponse> getFeed(String status, int page, int size,
                         Double userLat, Double userLong);
+
+        // Client Map — reports inside a viewport (bounding box)
+        MapReportsResponse getReportsInBounds(Double minLat, Double maxLat, Double minLng, Double maxLng,
+                        int limit);
 
         List<RecentReportResponse> getAdminRecentReports(String tab, int limit);
 

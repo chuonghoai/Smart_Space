@@ -25,6 +25,10 @@ $TestRegistry = @{
         TestClass   = "com.vn.smart_space.controller.report.ReportFeedTest"
         Description = "Client xem Bang tin: khong co phan anh bi tu choi, khong lo SDT/email, an danh khong lo ten"
     }
+    "MapReports" = @{
+        TestClass   = "com.vn.smart_space.controller.report.MapReportsTest"
+        Description = "Ban do Client theo khung nhin: 401/400, chi tra report trong khung, loai rejected, limit + truncated"
+    }
     "AdminUsers" = @{
         TestClass   = "com.vn.smart_space.controller.admin.AdminUserManagementTest"
         Description = "Admin quan ly nguoi dung: danh sach chi client, thong ke, trend zero-fill, chi tiet khong lo phan anh an danh"
