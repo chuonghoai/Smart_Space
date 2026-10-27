@@ -65,5 +65,11 @@ public interface IReportService {
         ReportDetailResponse reviewReport(String reportId, com.vn.smart_space.dto.request.report.ReportReviewRequest request, String userId);
 
         List<RecentReportResponse> getUnsatisfactoryReports(String tab);
+
+        default com.vn.smart_space.dto.response.report.ReportNearbyAlertResponse checkNearbyReportsAndAlert(Double lat, Double lng, Double radius, String userId) {
+                return checkNearbyReportsAndAlert(lat, lng, radius, userId, true);
+        }
+
+        com.vn.smart_space.dto.response.report.ReportNearbyAlertResponse checkNearbyReportsAndAlert(Double lat, Double lng, Double radius, String userId, Boolean notify);
 }
 

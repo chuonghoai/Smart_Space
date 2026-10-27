@@ -343,5 +343,26 @@
   "mapLoadReportsFailed": "Không tải được phản ánh trên bản đồ",
   "locationSection": "Vị trí sự cố",
   "noAddress": "Chưa cập nhật địa chỉ",
-  "locationDescriptionLabel": "Mô tả vị trí"
+  "locationDescriptionLabel": "Mô tả vị trí",
+  "nearbyReportsAlertTitle": "Gần bạn có {count} phản ánh",
+  "@nearbyReportsAlertTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nearbyDistanceInMeters": "Cách bạn {distance}m",
+  "@nearbyDistanceInMeters": {
+    "placeholders": {
+      "distance": {
+        "type": "int"
+      }
+    }
+  },
+  "actionUnderstood": "Đã hiểu",
+  "actionViewDetail": "Xem chi tiết",
+  "noImages": "Không có hình ảnh",
+  "actionPrevious": "Trước",
+  "actionNext": "Tiếp theo"
 }

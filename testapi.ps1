@@ -44,6 +44,7 @@ $TestRegistry = @{
     "StaffDashboard" = @{
         TestClass   = "com.vn.smart_space.controller.staff.StaffDashboardTest"
         Description = "Dashboard nhan vien: KPI, trend assigned/resolved, quyen truy cap, khoa gia dinh processed la trang thai cuoi"
+    }
     "HandleReport" = @{
         TestClass   = "com.vn.smart_space.controller.report.HandleReportTest"
         Description = "Mo phong luong e2e: Client tao phan anh -> Admin phan cong cho Staff -> Staff hoan tat xu ly phan anh va gui thong bao cho Client"
@@ -63,6 +64,10 @@ $TestRegistry = @{
     "NewsIntegration" = @{
         TestClass   = "com.vn.smart_space.controller.news.NewsIntegrationTest"
         Description = "Kiem tra toan bo luong CRUD tin tuc (News) va kiem tra phan quyen role ADMIN vs CLIENT"
+    }
+    "NearbyReportsAlert" = @{
+        TestClass   = "com.vn.smart_space.controller.report.NearbyReportsAlertTest"
+        Description = "Mo phong Client kiem tra phan anh trong ban kinh 200m de kich hoat canh bao realtime/FCM/Modal"
     }
 }
 

@@ -168,6 +168,11 @@ class _TopNotificationWidgetState extends State<_TopNotificationWidget> with Sin
         child: Material(
           color: Colors.transparent,
           child: GestureDetector(
+            behavior: HitTestBehavior.opaque,
+            onTap: () {
+              _dismiss();
+              widget.onAction?.call();
+            },
             onVerticalDragUpdate: (details) {
               if (details.primaryDelta! < -2) {
                 _dismiss();

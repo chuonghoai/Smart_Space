@@ -5,6 +5,7 @@ import 'package:smartspace_client/features/reports/models/map_reports_result.dar
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_client/features/reports/models/report_dto.dart';
+import 'package:smartspace_client/features/reports/models/nearby_reports_alert_model.dart';
 import 'package:smartspace_client/features/reports/models/report_feed_model.dart';
 import 'package:smartspace_client/features/reports/repositories/report_repo.dart';
 import 'package:smartspace_client/features/reports/repositories/report_repo_api.dart';
@@ -56,6 +57,20 @@ class ReportService {
       rating: rating,
       reason: reason,
       imageUrls: imageUrls,
+    );
+  }
+
+  Future<ApiResponse<NearbyReportsAlertResponse>> getNearbyAlerts({
+    required double lat,
+    required double lng,
+    double radius = 200.0,
+    bool notify = true,
+  }) {
+    return reportRepo.getNearbyAlerts(
+      lat: lat,
+      lng: lng,
+      radius: radius,
+      notify: notify,
     );
   }
 }

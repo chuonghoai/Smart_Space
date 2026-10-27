@@ -24,6 +24,18 @@ class NotificationRouter {
           debugPrint('[NotificationRouter] Missing reportId in payload');
         }
         break;
+      case 'NEARBY_REPORTS_ALERT':
+        final reportId = (action.payload['nearestReportId'] ??
+            action.payload['reportId'] ??
+            action.payload['id']) as String?;
+        if (reportId != null && reportId.isNotEmpty) {
+          final path = RouterPath.reportDetail.replaceAll(':id', reportId);
+          debugPrint('[NotificationRouter] Navigating to nearest report: $path');
+          GoRouter.of(ctx).push(path);
+        } else {
+          debugPrint('[NotificationRouter] Missing reportId in NEARBY_REPORTS_ALERT payload');
+        }
+        break;
       case 'NEWS':
       case 'NEWS_DETAIL':
         final newsId = (action.payload['newsId'] ?? action.payload['id']) as String?;

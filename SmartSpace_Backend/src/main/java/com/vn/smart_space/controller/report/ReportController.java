@@ -40,6 +40,22 @@ public class ReportController {
         return ResponseEntity.ok(ApiResponse.success("system.success", reports));
     }
 
+    @GetMapping("/nearby-alerts")
+    public ResponseEntity<ApiResponse> checkNearbyAlerts(
+            @RequestParam(name = "lat") Double lat,
+            @RequestParam(name = "lng") Double lng,
+            @RequestParam(name = "radius", defaultValue = "200") Double radius,
+            @RequestParam(name = "notify", required = false, defaultValue = "true") Boolean notify,
+            @AuthenticationPrincipal Jwt jwt) {
+        String userId = null;
+        if (jwt != null && jwt.hasClaim("userId")) {
+            userId = jwt.getClaim("userId").toString();
+        }
+        com.vn.smart_space.dto.response.report.ReportNearbyAlertResponse response = 
+                reportService.checkNearbyReportsAndAlert(lat, lng, radius, userId, notify);
+        return ResponseEntity.ok(ApiResponse.success("system.success", response));
+    }
+
     @PostMapping
     public ResponseEntity<ApiResponse> createReport(
             @org.springframework.security.core.annotation.AuthenticationPrincipal org.springframework.security.oauth2.jwt.Jwt jwt,

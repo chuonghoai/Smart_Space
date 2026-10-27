@@ -3,9 +3,11 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_shared/mobile_shared.dart';
 import 'package:stomp_dart_client/stomp_dart_client.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:smartspace_client/features/notifications/models/notification_action.dart';
 import 'package:smartspace_client/features/notifications/services/notification_router.dart';
 import 'package:smartspace_client/features/notifications/providers/notification_provider.dart';
+import 'package:smartspace_client/features/reports/providers/nearby_reports_alert_provider.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/features/app_services/ws_services_registry.dart';
 
@@ -44,6 +46,34 @@ class NotificationWsService implements WsFeatureService {
                 ProviderScope.containerOf(context)
                     .read(notificationProvider.notifier)
                     .onNotificationReceived();
+
+                // Trigger nearby reports modal immediately if alert received
+                if (action != null && action.type == 'NEARBY_REPORTS_ALERT') {
+                  final lat = (action.payload['lat'] as num?)?.toDouble();
+                  final lng = (action.payload['lng'] as num?)?.toDouble();
+                  Position? pos;
+                  if (lat != null && lng != null) {
+                    pos = Position(
+                      latitude: lat,
+                      longitude: lng,
+                      timestamp: DateTime.now(),
+                      accuracy: 0.0,
+                      altitude: 0.0,
+                      altitudeAccuracy: 0.0,
+                      heading: 0.0,
+                      headingAccuracy: 0.0,
+                      speed: 0.0,
+                      speedAccuracy: 0.0,
+                    );
+                  }
+                  ProviderScope.containerOf(context)
+                      .read(nearbyReportsAlertProvider.notifier)
+                      .checkNearbyReportsAlert(
+                        customPosition: pos,
+                        forceShow: false,
+                        notify: false,
+                      );
+                }
 
                 // Show toast
                 final l10n = AppLocalizations.of(context);

@@ -890,4 +890,35 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get locationDescriptionLabel => 'Location description';
+
+  @override
+  String nearbyReportsAlertTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reports near you',
+      one: '1 report near you',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nearbyDistanceInMeters(int distance) {
+    return '${distance}m away';
+  }
+
+  @override
+  String get actionUnderstood => 'Got it';
+
+  @override
+  String get actionViewDetail => 'View details';
+
+  @override
+  String get noImages => 'No images available';
+
+  @override
+  String get actionPrevious => 'Previous';
+
+  @override
+  String get actionNext => 'Next';
 }

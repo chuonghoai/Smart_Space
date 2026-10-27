@@ -6,6 +6,8 @@ import 'package:smartspace_client/features/reports/models/report_detail_model.da
 import 'package:smartspace_client/features/reports/models/report_dto.dart';
 import 'package:smartspace_client/features/reports/models/report_feed_model.dart';
 
+import 'package:smartspace_client/features/reports/models/nearby_reports_alert_model.dart';
+
 abstract class ReportRepo {
   Future<ApiResponse<List<ReportModel>>> getDangerousReports();
   Future<ApiResponse<List<ReportModel>>> getRecentReports();
@@ -21,4 +23,11 @@ abstract class ReportRepo {
     String? reason,
     List<String>? imageUrls,
   });
+  Future<ApiResponse<NearbyReportsAlertResponse>> getNearbyAlerts({
+    required double lat,
+    required double lng,
+    double radius = 200.0,
+    bool notify = true,
+  });
 }
+

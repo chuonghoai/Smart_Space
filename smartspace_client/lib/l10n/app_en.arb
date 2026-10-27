@@ -343,5 +343,26 @@
   "mapLoadReportsFailed": "Couldn't load reports on the map",
   "locationSection": "Incident Location",
   "noAddress": "No address provided",
-  "locationDescriptionLabel": "Location description"
+  "locationDescriptionLabel": "Location description",
+  "nearbyReportsAlertTitle": "{count, plural, =1{1 report near you} other{{count} reports near you}}",
+  "@nearbyReportsAlertTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nearbyDistanceInMeters": "{distance}m away",
+  "@nearbyDistanceInMeters": {
+    "placeholders": {
+      "distance": {
+        "type": "int"
+      }
+    }
+  },
+  "actionUnderstood": "Got it",
+  "actionViewDetail": "View details",
+  "noImages": "No images available",
+  "actionPrevious": "Previous",
+  "actionNext": "Next"
 }

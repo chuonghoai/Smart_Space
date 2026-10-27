@@ -6,6 +6,7 @@ import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_client/features/reports/models/report_dto.dart';
 import 'package:smartspace_client/features/reports/models/report_feed_model.dart';
+import 'package:smartspace_client/features/reports/models/nearby_reports_alert_model.dart';
 import 'package:smartspace_client/features/reports/repositories/report_repo.dart';
 
 class ReportRepoApi implements ReportRepo {
@@ -138,6 +139,30 @@ class ReportRepoApi implements ReportRepo {
           return ReportDetailModel.fromJson(json);
         }
         throw Exception('Invalid response format');
+      },
+    );
+  }
+
+  @override
+  Future<ApiResponse<NearbyReportsAlertResponse>> getNearbyAlerts({
+    required double lat,
+    required double lng,
+    double radius = 200.0,
+    bool notify = true,
+  }) async {
+    return await apiClient.get<NearbyReportsAlertResponse>(
+      '/reports/nearby-alerts',
+      queryParameters: {
+        'lat': lat,
+        'lng': lng,
+        'radius': radius,
+        'notify': notify,
+      },
+      decoder: (json) {
+        if (json is Map<String, dynamic>) {
+          return NearbyReportsAlertResponse.fromJson(json);
+        }
+        return NearbyReportsAlertResponse(count: 0, reports: []);
       },
     );
   }

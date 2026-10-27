@@ -6,6 +6,7 @@ import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_client/features/notifications/services/notification_router.dart';
 import 'package:smartspace_client/features/notifications/models/notification_action.dart';
 import 'package:smartspace_client/features/app_services/ws_services_registry.dart';
+import 'package:smartspace_client/features/reports/providers/nearby_reports_alert_provider.dart';
 
 /// Global widget that initializes app-level services once and keeps them alive
 /// for the entire lifecycle of the app, regardless of which screen is visible.
@@ -78,6 +79,8 @@ class _AppServicesInitializerState
 
   @override
   Widget build(BuildContext context) {
+    // Keep 15-minute nearby reports alert provider alive across the app lifecycle
+    ref.watch(nearbyReportsAlertProvider);
     return widget.child;
   }
 }

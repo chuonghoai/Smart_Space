@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.context.MessageSource;
@@ -33,7 +34,9 @@ import com.vn.smart_space.dto.response.admin.ReportStatisticsResponse;
 import com.vn.smart_space.dto.response.admin.ReportTrendResponse;
 import com.vn.smart_space.dto.response.notification.NotificationEvent;
 import com.vn.smart_space.dto.response.report.MapReportsResponse;
+import com.vn.smart_space.dto.response.report.NearbyReportItemResponse;
 import com.vn.smart_space.dto.response.report.ReportDetailResponse;
+import com.vn.smart_space.dto.response.report.ReportNearbyAlertResponse;
 import com.vn.smart_space.dto.response.report.ReportResponse;
 import com.vn.smart_space.exception.BadRequestException;
 import com.vn.smart_space.exception.ResourceNotFoundException;
@@ -1352,5 +1355,157 @@ public class ReportServiceImpl implements IReportService {
         }
 
         return toDetail(saved);
+    }
+
+    private List<String> extractImageUrls(Report r) {
+        if (r.getImageUrls() != null && !r.getImageUrls().trim().isEmpty()) {
+            String cleaned = r.getImageUrls().trim().replaceAll("^\\[|\\]$", "");
+            if (!cleaned.isEmpty()) {
+                return Arrays.stream(cleaned.split(","))
+                        .map(s -> s.replace("\"", "").trim())
+                        .filter(s -> !s.isEmpty())
+                        .collect(Collectors.toList());
+            }
+        }
+        if (r.getImageUrl() != null && !r.getImageUrl().trim().isEmpty()) {
+            return List.of(r.getImageUrl().trim());
+        }
+        return List.of();
+    }
+
+    private static class UserNearbyAlertRecord {
+        private final Set<String> reportIds;
+        private final java.time.Instant lastAlertTime;
+
+        public UserNearbyAlertRecord(Set<String> reportIds, java.time.Instant lastAlertTime) {
+            this.reportIds = reportIds;
+            this.lastAlertTime = lastAlertTime;
+        }
+
+        public Set<String> getReportIds() {
+            return reportIds;
+        }
+
+        public java.time.Instant getLastAlertTime() {
+            return lastAlertTime;
+        }
+    }
+
+    private final Map<String, UserNearbyAlertRecord> userLastAlertCache = new java.util.concurrent.ConcurrentHashMap<>();
+
+    @Override
+    @Transactional
+    public ReportNearbyAlertResponse checkNearbyReportsAndAlert(Double lat, Double lng, Double radius, String userId) {
+        return checkNearbyReportsAndAlert(lat, lng, radius, userId, true);
+    }
+
+    @Override
+    @Transactional
+    public ReportNearbyAlertResponse checkNearbyReportsAndAlert(Double lat, Double lng, Double radius, String userId, Boolean notify) {
+        if (lat == null || lng == null) {
+            throw new BadRequestException("report.nearby.coordinates_required");
+        }
+        double searchRadius = radius != null && radius > 0 ? radius : 200.0;
+
+        List<Report> reports = reportRepository.findNearbyActiveReportsWithinRadius(lat, lng, searchRadius, Limit.of(20));
+
+        if (reports.isEmpty()) {
+            return ReportNearbyAlertResponse.builder()
+                    .count(0)
+                    .nearestDistance(null)
+                    .reports(List.of())
+                    .build();
+        }
+
+        List<NearbyReportItemResponse> items = reports.stream().map(r -> {
+            double dist = calculateHaversineDistance(lat, lng, r.getLatitude(), r.getLongitude());
+            List<String> imgUrls = extractImageUrls(r);
+            String primaryImg = !imgUrls.isEmpty() ? imgUrls.get(0) : r.getImageUrl();
+            return NearbyReportItemResponse.builder()
+                    .id(r.getId())
+                    .title(r.getTitle())
+                    .description(r.getDescription())
+                    .imageUrls(imgUrls)
+                    .imageUrl(primaryImg)
+                    .latitude(r.getLatitude())
+                    .longitude(r.getLongitude())
+                    .status(r.getStatus() != null ? r.getStatus().name() : null)
+                    .severity(r.getSeverity() != null ? r.getSeverity().name() : null)
+                    .distanceInMeters(dist)
+                    .createdAt(r.getCreatedAt() != null ? r.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME) : null)
+                    .build();
+        }).collect(Collectors.toList());
+
+        double nearestDistance = items.get(0).getDistanceInMeters() != null ? items.get(0).getDistanceInMeters() : 0.0;
+        int count = items.size();
+        String nearestReportId = !items.isEmpty() ? items.get(0).getId() : "";
+        Set<String> currentReportIds = items.stream().map(NearbyReportItemResponse::getId).collect(Collectors.toSet());
+
+        // Check deduplication cache (10-minute cooldown for identical report set)
+        boolean shouldNotify = (notify == null || notify) && userId != null && !userId.isBlank();
+        if (shouldNotify) {
+            UserNearbyAlertRecord lastAlert = userLastAlertCache.get(userId);
+            if (lastAlert != null && lastAlert.getReportIds().equals(currentReportIds)) {
+                long minutesSinceLastAlert = java.time.Duration.between(lastAlert.getLastAlertTime(), java.time.Instant.now()).toMinutes();
+                if (minutesSinceLastAlert < 10) {
+                    shouldNotify = false;
+                }
+            }
+        }
+
+        // If allowed, trigger notifications (WebSocket & FCM) and DB notification
+        if (shouldNotify) {
+            userLastAlertCache.put(userId, new UserNearbyAlertRecord(currentReportIds, java.time.Instant.now()));
+            try {
+                User user = userRepository.findById(userId).orElse(null);
+                java.util.Locale userLocale = (user != null && user.getLanguage() != null && !user.getLanguage().isBlank())
+                        ? new java.util.Locale(user.getLanguage())
+                        : (org.springframework.context.i18n.LocaleContextHolder.getLocale() != null
+                                ? org.springframework.context.i18n.LocaleContextHolder.getLocale()
+                                : new java.util.Locale("vi"));
+
+                String title = messageSource.getMessage(
+                        "notification.report.nearby.title",
+                        null,
+                        userLocale);
+
+                String message = messageSource.getMessage(
+                        "notification.report.nearby.message",
+                        new Object[] { count, Math.round(nearestDistance) },
+                        userLocale);
+
+                String actionData = String.format(
+                        "{\"type\": \"NEARBY_REPORTS_ALERT\", \"payload\": {\"count\": %d, \"nearestDistance\": %.1f, \"reportId\": \"%s\", \"nearestReportId\": \"%s\", \"lat\": %s, \"lng\": %s, \"radius\": %s}}",
+                        count, nearestDistance, nearestReportId, nearestReportId,
+                        lat != null ? lat.toString() : "null",
+                        lng != null ? lng.toString() : "null",
+                        radius != null ? radius.toString() : "200.0");
+
+                String firstImage = !items.isEmpty() ? items.get(0).getImageUrl() : null;
+
+                // Create DB Notification
+                notificationService.createNotification(userId, title, message, actionData, firstImage);
+
+                // Send WebSocket Event
+                NotificationEvent event = new NotificationEvent(title, message, actionData, firstImage,
+                        Map.of("type", "NEARBY_REPORTS_ALERT", "count", count, "nearestDistance", nearestDistance, "reportId", nearestReportId));
+                messagingTemplate.convertAndSendToUser(userId, "/queue/notifications", event);
+
+                // Send FCM
+                Map<String, String> fcmData = Map.of(
+                        "type", "NEARBY_REPORTS_ALERT",
+                        "payload", actionData);
+                NotificationRequest notif = new NotificationRequest(title, message, fcmData);
+                fcmService.sendToUser(userId, notif);
+            } catch (Exception e) {
+                log.warn("[NearbyAlert] Failed to send notification for user {}: {}", userId, e.getMessage());
+            }
+        }
+
+        return ReportNearbyAlertResponse.builder()
+                .count(count)
+                .nearestDistance(nearestDistance)
+                .reports(items)
+                .build();
     }
 }

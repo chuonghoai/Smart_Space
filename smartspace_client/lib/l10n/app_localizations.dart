@@ -1777,6 +1777,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Location description'**
   String get locationDescriptionLabel;
+
+  /// No description provided for @nearbyReportsAlertTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 report near you} other{{count} reports near you}}'**
+  String nearbyReportsAlertTitle(int count);
+
+  /// No description provided for @nearbyDistanceInMeters.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance}m away'**
+  String nearbyDistanceInMeters(int distance);
+
+  /// No description provided for @actionUnderstood.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get actionUnderstood;
+
+  /// No description provided for @actionViewDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'View details'**
+  String get actionViewDetail;
+
+  /// No description provided for @noImages.
+  ///
+  /// In en, this message translates to:
+  /// **'No images available'**
+  String get noImages;
+
+  /// No description provided for @actionPrevious.
+  ///
+  /// In en, this message translates to:
+  /// **'Previous'**
+  String get actionPrevious;
+
+  /// No description provided for @actionNext.
+  ///
+  /// In en, this message translates to:
+  /// **'Next'**
+  String get actionNext;
 }
 
 class _AppLocalizationsDelegate

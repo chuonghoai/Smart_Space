@@ -30,6 +30,12 @@ public interface ReportRepository extends JpaRepository<Report, String> {
         List<Report> findNearestReports(@Param("userLat") Double userLat, @Param("userLong") Double userLong,
                         Limit limit);
 
+        @Query(value = "SELECT * FROM reports r WHERE r.status NOT IN ('REJECTED', 'PROCESSED') " +
+                        "AND (6371000 * acos(least(1.0, greatest(-1.0, cos(radians(:userLat)) * cos(radians(r.latitude)) * cos(radians(r.longitude) - radians(:userLong)) + sin(radians(:userLat)) * sin(radians(r.latitude)))))) <= :radius " +
+                        "ORDER BY (6371000 * acos(least(1.0, greatest(-1.0, cos(radians(:userLat)) * cos(radians(r.latitude)) * cos(radians(r.longitude) - radians(:userLong)) + sin(radians(:userLat)) * sin(radians(r.latitude)))))) ASC", nativeQuery = true)
+        List<Report> findNearbyActiveReportsWithinRadius(@Param("userLat") Double userLat, @Param("userLong") Double userLong,
+                        @Param("radius") Double radius, Limit limit);
+
         @Query("SELECT r FROM Report r WHERE r.status IN :statuses ORDER BY r.createdAt DESC")
         List<Report> findByStatusInOrderByCreatedAtDesc(
                         @Param("statuses") List<EReportStatus> statuses,

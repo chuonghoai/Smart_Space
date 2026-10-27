@@ -884,4 +884,29 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get locationDescriptionLabel => 'Mô tả vị trí';
+
+  @override
+  String nearbyReportsAlertTitle(int count) {
+    return 'Gần bạn có $count phản ánh';
+  }
+
+  @override
+  String nearbyDistanceInMeters(int distance) {
+    return 'Cách bạn ${distance}m';
+  }
+
+  @override
+  String get actionUnderstood => 'Đã hiểu';
+
+  @override
+  String get actionViewDetail => 'Xem chi tiết';
+
+  @override
+  String get noImages => 'Không có hình ảnh';
+
+  @override
+  String get actionPrevious => 'Trước';
+
+  @override
+  String get actionNext => 'Tiếp theo';
 }

@@ -4,6 +4,7 @@ import 'package:smartspace_client/features/reports/models/map_reports_result.dar
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_client/features/reports/models/report_dto.dart';
+import 'package:smartspace_client/features/reports/models/nearby_reports_alert_model.dart';
 import 'package:smartspace_client/features/reports/models/report_feed_model.dart';
 import 'package:smartspace_client/features/reports/repositories/report_repo.dart';
 
@@ -251,6 +252,20 @@ class ReportRepoMock implements ReportRepo {
         reviewImageUrls: imageUrls,
         reviewedAt: DateTime.now(),
       ),
+    );
+  }
+
+  @override
+  Future<ApiResponse<NearbyReportsAlertResponse>> getNearbyAlerts({
+    required double lat,
+    required double lng,
+    double radius = 200.0,
+    bool notify = true,
+  }) async {
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: NearbyReportsAlertResponse(count: 0, reports: []),
     );
   }
 }
