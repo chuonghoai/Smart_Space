@@ -909,4 +909,43 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get actionNext => 'Tiếp theo';
+
+  @override
+  String get editReport => 'Chỉnh sửa';
+
+  @override
+  String get cancelReport => 'Hủy yêu cầu';
+
+  @override
+  String get cancelReportConfirmTitle => 'Hủy yêu cầu phản ánh';
+
+  @override
+  String get cancelReportConfirmMessage =>
+      'Bạn có chắc chắn muốn hủy yêu cầu phản ánh này không? Phản ánh sẽ được chuyển vào danh sách từ chối.';
+
+  @override
+  String get cancelReportSuccess => 'Đã hủy yêu cầu phản ánh thành công';
+
+  @override
+  String get updateReportSuccess => 'Cập nhật phản ánh thành công';
+
+  @override
+  String get youCreatedThisReport => 'Bạn là người tạo phản ánh này';
+
+  @override
+  String get myReportBadge => 'Của bạn';
+
+  @override
+  String get editReportTitle => 'Chỉnh sửa phản ánh';
+
+  @override
+  String get editReportOnlyPending =>
+      'Chỉ có thể chỉnh sửa phản ánh đang ở trạng thái chờ xử lý';
+
+  @override
+  String get cancelReportOnlyPending =>
+      'Chỉ có thể hủy yêu cầu phản ánh đang ở trạng thái chờ xử lý';
+
+  @override
+  String get genericError => 'Đã có lỗi xảy ra, vui lòng thử lại sau';
 }

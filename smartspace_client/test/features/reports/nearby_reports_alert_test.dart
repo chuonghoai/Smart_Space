@@ -114,6 +114,38 @@ void main() {
       expect(notifier.state.lastAlert, isNotNull);
       expect(notifier.state.lastAlertedReportIds, containsAll(['rep-1', 'rep-2']));
     });
+
+    test('checkNearbyReportsAlert with forceShow=true succeeds and returns alert even when report IDs are identical', () async {
+      final fakeRepo = _FakeReportRepo(responseToReturn: alertData);
+      final service = ReportService(reportRepo: fakeRepo);
+      final notifier = NearbyReportsAlertNotifier(service);
+
+      final customPos = Position(
+        latitude: 10.8500,
+        longitude: 106.7720,
+        timestamp: DateTime.now(),
+        accuracy: 5.0,
+        altitude: 10.0,
+        altitudeAccuracy: 1.0,
+        heading: 0.0,
+        headingAccuracy: 1.0,
+        speed: 0.0,
+        speedAccuracy: 1.0,
+      );
+
+      // First run: sets lastAlertedReportIds
+      await notifier.checkNearbyReportsAlert(customPosition: customPos, forceShow: true);
+      expect(notifier.state.lastAlertedReportIds, containsAll(['rep-1', 'rep-2']));
+
+      // Second run (simulating periodic schedule interval): forceShow=true must still alert successfully
+      final secondResult = await notifier.checkNearbyReportsAlert(
+        customPosition: customPos,
+        forceShow: true,
+      );
+
+      expect(secondResult, isNotNull);
+      expect(secondResult!.count, 2);
+    });
   });
 
   group('NearbyReportsAlertModal Widget Tests', () {
@@ -240,6 +272,69 @@ void main() {
 
       // Modal dismissed
       expect(find.byIcon(Icons.close_rounded), findsNothing);
+    });
+
+    testWidgets('Preemption: calling NearbyReportsAlertModal.show replaces old modal with new alertData', (tester) async {
+      final secondAlertData = NearbyReportsAlertResponse(
+        count: 1,
+        nearestDistance: 20.0,
+        reports: [
+          NearbyReportItemModel(
+            id: 'rep-new',
+            title: 'Sự cố mới khẩn cấp',
+            description: 'Mô tả khẩn cấp',
+            latitude: 10.8505,
+            longitude: 106.7723,
+            status: 'pending',
+            severity: 'high',
+            distanceInMeters: 20.0,
+            createdAt: DateTime.now(),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: const [
+            AppLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [Locale('vi')],
+          home: Scaffold(
+            body: Builder(
+              builder: (context) {
+                return Column(
+                  children: [
+                    ElevatedButton(
+                      onPressed: () => NearbyReportsAlertModal.show(context, alertData),
+                      child: const Text('Open First Modal'),
+                    ),
+                    ElevatedButton(
+                      onPressed: () => NearbyReportsAlertModal.show(context, secondAlertData),
+                      child: const Text('Open Second Modal'),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ),
+      );
+
+      // Open first modal
+      await tester.tap(find.text('Open First Modal'));
+      await tester.pumpAndSettle();
+      expect(find.text('Hố ga mất nắp nguy hiểm'), findsOneWidget);
+
+      // Trigger second modal directly (simulating timer or push notification arrival)
+      final BuildContext scaffoldContext = tester.element(find.byType(Scaffold));
+      NearbyReportsAlertModal.show(scaffoldContext, secondAlertData);
+      await tester.pumpAndSettle();
+
+      // Second modal is now displayed with updated alert data
+      expect(find.text('Sự cố mới khẩn cấp'), findsOneWidget);
     });
   });
 

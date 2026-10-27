@@ -364,5 +364,18 @@
   "actionViewDetail": "View details",
   "noImages": "No images available",
   "actionPrevious": "Previous",
-  "actionNext": "Next"
+  "actionNext": "Next",
+  "editReport": "Edit",
+  "cancelReport": "Cancel Request",
+  "cancelReportConfirmTitle": "Cancel Report Request",
+  "cancelReportConfirmMessage": "Are you sure you want to cancel this report request? It will be moved to the rejected list.",
+  "cancelReportSuccess": "Report request cancelled successfully",
+  "updateReportSuccess": "Report updated successfully",
+  "youCreatedThisReport": "You created this report",
+  "myReportBadge": "Your report",
+  "saveChanges": "Save Changes",
+  "editReportTitle": "Edit Report",
+  "editReportOnlyPending": "Only pending reports can be edited",
+  "cancelReportOnlyPending": "Only pending reports can be cancelled",
+  "genericError": "An error occurred, please try again later"
 }

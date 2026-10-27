@@ -15,18 +15,33 @@ class NearbyReportsAlertModal extends StatefulWidget {
   });
 
   static bool _isShowing = false;
+  static BuildContext? _activeDialogContext;
 
-  static Future<void> show(BuildContext context, NearbyReportsAlertResponse alertData) async {
-    if (_isShowing) return;
+  static Future<void> show(
+    BuildContext context,
+    NearbyReportsAlertResponse alertData,
+  ) async {
+    // If an alert modal is already showing, dismiss it to show the newest high-priority alert
+    if (_isShowing && _activeDialogContext != null && _activeDialogContext!.mounted) {
+      try {
+        Navigator.of(_activeDialogContext!, rootNavigator: true).pop();
+      } catch (_) {}
+    }
+
     _isShowing = true;
     try {
       await showDialog<void>(
         context: context,
+        useRootNavigator: true,
         barrierDismissible: true,
-        builder: (modalContext) => NearbyReportsAlertModal(alertData: alertData),
+        builder: (modalContext) {
+          _activeDialogContext = modalContext;
+          return NearbyReportsAlertModal(alertData: alertData);
+        },
       );
     } finally {
       _isShowing = false;
+      _activeDialogContext = null;
     }
   }
 
@@ -68,10 +83,11 @@ class _NearbyReportsAlertModalState extends State<NearbyReportsAlertModal> {
         constraints: const BoxConstraints(maxWidth: 420),
         child: Padding(
           padding: const EdgeInsets.fromLTRB(20, 16, 20, 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
               // Top Bar: Title & "X" Close Button
               Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -240,7 +256,8 @@ class _NearbyReportsAlertModalState extends State<NearbyReportsAlertModal> {
           ),
         ),
       ),
-    );
+    ),
+  );
   }
 }
 

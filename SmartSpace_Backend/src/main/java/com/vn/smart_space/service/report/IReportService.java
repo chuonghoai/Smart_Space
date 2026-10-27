@@ -71,5 +71,9 @@ public interface IReportService {
         }
 
         com.vn.smart_space.dto.response.report.ReportNearbyAlertResponse checkNearbyReportsAndAlert(Double lat, Double lng, Double radius, String userId, Boolean notify);
+
+        ReportDetailResponse updateReport(String reportId, ReportCreateRequest request, String userId);
+
+        ReportDetailResponse cancelReport(String reportId, String userId);
 }
 

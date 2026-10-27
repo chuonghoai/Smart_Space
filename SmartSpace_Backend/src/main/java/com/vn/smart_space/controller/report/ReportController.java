@@ -148,4 +148,23 @@ public class ReportController {
         return ResponseEntity.ok(ApiResponse.success("report.review.success",
                 reportService.reviewReport(id, request, userId)));
     }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse> updateReport(
+            @PathVariable String id,
+            @RequestBody ReportCreateRequest request,
+            @AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt != null && jwt.hasClaim("userId") ? jwt.getClaim("userId").toString() : null;
+        return ResponseEntity.ok(ApiResponse.success("report.update.success",
+                reportService.updateReport(id, request, userId)));
+    }
+
+    @PostMapping("/{id}/cancel")
+    public ResponseEntity<ApiResponse> cancelReport(
+            @PathVariable String id,
+            @AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt != null && jwt.hasClaim("userId") ? jwt.getClaim("userId").toString() : null;
+        return ResponseEntity.ok(ApiResponse.success("report.cancel.success",
+                reportService.cancelReport(id, userId)));
+    }
 }

@@ -8,11 +8,16 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
 
+import 'package:go_router/go_router.dart';
+import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
+import 'package:smartspace_client/features/reports/providers/current_user_provider.dart';
 import 'package:smartspace_client/features/reports/providers/report_detail_provider.dart';
+import 'package:smartspace_client/features/reports/services/report_service.dart';
 import 'package:smartspace_client/features/reports/utils/report_status_ext.dart';
 import 'package:smartspace_client/features/reports/utils/report_severity_ext.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
+import 'package:smartspace_client/routes/router_path.dart';
 import 'package:smartspace_client/ui/mobile/reports/presentation/widgets/fullscreen_image_viewer.dart';
 import 'package:smartspace_client/ui/mobile/reports/presentation/widgets/report_review_dialog.dart';
 
@@ -38,6 +43,90 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
         ref.read(reportDetailProvider(widget.reportId).notifier).refresh();
       },
     );
+  }
+
+  Future<void> _handleEditReport(ReportDetailModel report) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    // Strict constraint: only pending reports can be edited
+    if (report.status != ReportStatus.pending) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.editReportOnlyPending)),
+      );
+      return;
+    }
+
+    final updated = await context.push<bool>(
+      RouterPath.createReport,
+      extra: report,
+    );
+    if (updated == true && mounted) {
+      ref.read(reportDetailProvider(widget.reportId).notifier).refresh();
+    }
+  }
+
+  Future<void> _handleCancelReport(ReportDetailModel report) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    // Strict constraint: only pending reports can be cancelled
+    if (report.status != ReportStatus.pending) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.cancelReportOnlyPending)),
+      );
+      return;
+    }
+
+    final theme = Theme.of(context);
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.cancelReportConfirmTitle),
+        content: Text(l10n.cancelReportConfirmMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.closeButton),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: theme.colorScheme.error,
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.cancelReport),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const Center(child: CircularProgressIndicator()),
+      );
+
+      final res = await reportService.cancelReport(report.id);
+      if (!mounted) return;
+      Navigator.of(context).pop(); // pop loading
+
+      if (res.success) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.cancelReportSuccess),
+            backgroundColor: Colors.green,
+          ),
+        );
+        ref.read(reportDetailProvider(widget.reportId).notifier).refresh();
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(res.message.isNotEmpty ? res.message : l10n.genericError),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 
   @override
@@ -130,6 +219,16 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final reportAsyncValue = ref.watch(reportDetailProvider(widget.reportId));
+    final currentUserAsync = ref.watch(currentUserProvider);
+    final currentUserId = currentUserAsync.valueOrNull?.id;
+    final detailReport = reportAsyncValue.valueOrNull;
+    final isMyReport = currentUserId != null &&
+        detailReport != null &&
+        detailReport.userId != null &&
+        currentUserId == detailReport.userId;
+    final canEdit = isMyReport && detailReport.status == ReportStatus.pending;
+    final canCancel = isMyReport && detailReport.status == ReportStatus.pending;
+    final hasMyReportActions = canEdit || canCancel;
 
     return Scaffold(
       appBar: AppBar(
@@ -140,9 +239,9 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
           ),
         ),
         actions: [
-          if (reportAsyncValue.valueOrNull != null &&
-              reportAsyncValue.valueOrNull!.status == ReportStatus.processed &&
-              !reportAsyncValue.valueOrNull!.hasReviewed)
+          if (detailReport != null &&
+              detailReport.status == ReportStatus.processed &&
+              !detailReport.hasReviewed)
             Padding(
               padding: const EdgeInsets.only(right: 8.0),
               child: FilledButton.tonalIcon(
@@ -154,6 +253,52 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
                   padding: const EdgeInsets.symmetric(horizontal: 12),
                 ),
               ),
+            ),
+          if (hasMyReportActions)
+            PopupMenuButton<String>(
+              icon: const Icon(Icons.more_vert_rounded),
+              onSelected: (val) {
+                if (val == 'edit') {
+                  _handleEditReport(detailReport);
+                } else if (val == 'cancel') {
+                  _handleCancelReport(detailReport);
+                }
+              },
+              itemBuilder: (ctx) => [
+                if (canEdit)
+                  PopupMenuItem(
+                    value: 'edit',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.edit_outlined,
+                          size: 18,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(l10n.editReport),
+                      ],
+                    ),
+                  ),
+                if (canCancel)
+                  PopupMenuItem(
+                    value: 'cancel',
+                    child: Row(
+                      children: [
+                        Icon(
+                          Icons.cancel_outlined,
+                          size: 18,
+                          color: theme.colorScheme.error,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          l10n.cancelReport,
+                          style: TextStyle(color: theme.colorScheme.error),
+                        ),
+                      ],
+                    ),
+                  ),
+              ],
             ),
         ],
       ),
@@ -388,6 +533,40 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
                                 ),
                               ),
                             ),
+
+                            // My Report Badge ("Bạn là người tạo phản ánh này")
+                            if (isMyReport)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: theme.colorScheme.primary.withValues(alpha: 0.35),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.person_pin_circle_outlined,
+                                      size: 14,
+                                      color: theme.colorScheme.primary,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      l10n.youCreatedThisReport,
+                                      style: theme.textTheme.labelSmall?.copyWith(
+                                        color: theme.colorScheme.primary,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                           ],
                         ),
                         const SizedBox(height: 10),

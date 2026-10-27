@@ -921,4 +921,41 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get actionNext => 'Next';
+
+  @override
+  String get editReport => 'Edit';
+
+  @override
+  String get cancelReport => 'Cancel Request';
+
+  @override
+  String get cancelReportConfirmTitle => 'Cancel Report Request';
+
+  @override
+  String get cancelReportConfirmMessage =>
+      'Are you sure you want to cancel this report request? It will be moved to the rejected list.';
+
+  @override
+  String get cancelReportSuccess => 'Report request cancelled successfully';
+
+  @override
+  String get updateReportSuccess => 'Report updated successfully';
+
+  @override
+  String get youCreatedThisReport => 'You created this report';
+
+  @override
+  String get myReportBadge => 'Your report';
+
+  @override
+  String get editReportTitle => 'Edit Report';
+
+  @override
+  String get editReportOnlyPending => 'Only pending reports can be edited';
+
+  @override
+  String get cancelReportOnlyPending => 'Only pending reports can be cancelled';
+
+  @override
+  String get genericError => 'An error occurred, please try again later';
 }

@@ -29,5 +29,7 @@ abstract class ReportRepo {
     double radius = 200.0,
     bool notify = true,
   });
+  Future<ApiResponse<ReportDetailModel>> updateReport(String reportId, ReportDto reportDto);
+  Future<ApiResponse<ReportDetailModel>> cancelReport(String reportId);
 }
 

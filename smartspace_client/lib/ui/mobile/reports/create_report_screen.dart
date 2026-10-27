@@ -3,34 +3,55 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_client/features/reports/providers/report_providers.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/ui/mobile/reports/create_report_controller.dart';
 
-class CreateReportScreen extends ConsumerWidget {
-  const CreateReportScreen({super.key});
+class CreateReportScreen extends ConsumerStatefulWidget {
+  final ReportDetailModel? reportToEdit;
+
+  const CreateReportScreen({super.key, this.reportToEdit});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
+  ConsumerState<CreateReportScreen> createState() => _CreateReportScreenState();
+}
+
+class _CreateReportScreenState extends ConsumerState<CreateReportScreen> {
+  @override
+  void initState() {
+    super.initState();
+    if (widget.reportToEdit != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(createReportControllerProvider).initForEdit(widget.reportToEdit!);
+      });
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+    final isEditing = widget.reportToEdit != null;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          l10n.createReportTitle,
+          isEditing ? l10n.editReportTitle : l10n.createReportTitle,
           style: theme.textTheme.titleMedium?.copyWith(
             fontWeight: FontWeight.bold,
           ),
         ),
       ),
-      body: const _CreateReportForm(),
+      body: _CreateReportForm(reportToEdit: widget.reportToEdit),
     );
   }
 }
 
 class _CreateReportForm extends ConsumerWidget {
-  const _CreateReportForm();
+  final ReportDetailModel? reportToEdit;
+
+  const _CreateReportForm({this.reportToEdit});
 
   void _showImageSourceActionSheet(
     BuildContext context,
@@ -388,7 +409,7 @@ class _CreateReportForm extends ConsumerWidget {
                         borderRadius: BorderRadius.circular(12),
                       ),
                       child: Text(
-                        '${controller.images.length}/10',
+                        '${controller.totalImagesCount}/10',
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: theme.colorScheme.primary,
                           fontWeight: FontWeight.bold,
@@ -403,6 +424,48 @@ class _CreateReportForm extends ConsumerWidget {
                   spacing: 10,
                   runSpacing: 10,
                   children: [
+                    // Existing images (from backend)
+                    for (int i = 0; i < controller.existingImageUrls.length; i++)
+                      Stack(
+                        children: [
+                          Container(
+                            width: 90,
+                            height: 90,
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: theme.colorScheme.outlineVariant
+                                    .withValues(alpha: 0.5),
+                              ),
+                              image: DecorationImage(
+                                image: NetworkImage(controller.existingImageUrls[i]),
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          Positioned(
+                            top: 4,
+                            right: 4,
+                            child: GestureDetector(
+                              onTap: () => controller.removeExistingImage(i),
+                              child: Container(
+                                padding: const EdgeInsets.all(3),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withValues(alpha: 0.65),
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Icon(
+                                  Icons.close_rounded,
+                                  color: Colors.white,
+                                  size: 14,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+
+                    // Newly picked local images
                     for (int i = 0; i < controller.images.length; i++)
                       Stack(
                         children: [
@@ -442,7 +505,7 @@ class _CreateReportForm extends ConsumerWidget {
                           ),
                         ],
                       ),
-                    if (controller.images.length < 10)
+                    if (controller.totalImagesCount < 10)
                       InkWell(
                         onTap: () =>
                             _showImageSourceActionSheet(context, controller),
@@ -470,7 +533,7 @@ class _CreateReportForm extends ConsumerWidget {
                               ),
                               const SizedBox(height: 4),
                               Text(
-                                '${controller.images.length}/10',
+                                '${controller.totalImagesCount}/10',
                                 style: theme.textTheme.labelSmall?.copyWith(
                                   color: theme.colorScheme.primary,
                                   fontSize: 10,
@@ -527,52 +590,101 @@ class _CreateReportForm extends ConsumerWidget {
           const SizedBox(height: 24),
 
           // Submit button
-          FilledButton.icon(
-            onPressed: () {
-              // Show dialog
-              showDialog(
-                context: context,
-                barrierDismissible: false,
-                builder: (ctx) => AlertDialog(
-                  content: Row(
-                    children: [
-                      const CircularProgressIndicator(),
-                      const SizedBox(width: 16),
-                      Expanded(child: Text(l10n.uploadingReport)),
-                    ],
-                  ),
+          if (controller.isEditing)
+            FilledButton.icon(
+              onPressed: controller.isSubmittingEdit
+                  ? null
+                  : () async {
+                      showDialog(
+                        context: context,
+                        barrierDismissible: false,
+                        builder: (ctx) => AlertDialog(
+                          content: Row(
+                            children: [
+                              const CircularProgressIndicator(),
+                              const SizedBox(width: 16),
+                              Expanded(child: Text(l10n.uploadingReport)),
+                            ],
+                          ),
+                        ),
+                      );
+
+                      final success = await controller.submitEdit(
+                        context,
+                        onSuccess: (updatedReport) {
+                          ref.read(reportsProvider.notifier).refreshAll();
+                        },
+                      );
+
+                      if (context.mounted) {
+                        Navigator.of(context).pop(); // pop dialog
+                        if (success) {
+                          Navigator.of(context).pop(true); // pop screen returning true
+                        }
+                      }
+                    },
+              icon: const Icon(Icons.save_rounded, size: 18),
+              label: Text(
+                l10n.saveChanges,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
                 ),
-              );
-
-              final reportsNotifier = ref.read(reportsProvider.notifier);
-
-              // Allow UI to render the dialog before submitting and popping to home
-              Future.delayed(const Duration(milliseconds: 500), () {
-                if (!context.mounted) return;
-                Navigator.of(context).pop();
-                controller.submit(
-                  context,
-                  onSuccess: (report) {
-                    reportsNotifier.addNewReport(report);
-                  },
+              ),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(52),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
+              ),
+            )
+          else
+            FilledButton.icon(
+              onPressed: () {
+                // Show dialog
+                showDialog(
+                  context: context,
+                  barrierDismissible: false,
+                  builder: (ctx) => AlertDialog(
+                    content: Row(
+                      children: [
+                        const CircularProgressIndicator(),
+                        const SizedBox(width: 16),
+                        Expanded(child: Text(l10n.uploadingReport)),
+                      ],
+                    ),
+                  ),
                 );
-              });
-            },
-            icon: const Icon(Icons.send_rounded, size: 18),
-            label: Text(
-              l10n.submitReport,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
+
+                final reportsNotifier = ref.read(reportsProvider.notifier);
+
+                // Allow UI to render the dialog before submitting and popping to home
+                Future.delayed(const Duration(milliseconds: 500), () {
+                  if (!context.mounted) return;
+                  Navigator.of(context).pop();
+                  controller.submit(
+                    context,
+                    onSuccess: (report) {
+                      reportsNotifier.addNewReport(report);
+                    },
+                  );
+                });
+              },
+              icon: const Icon(Icons.send_rounded, size: 18),
+              label: Text(
+                l10n.submitReport,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              style: FilledButton.styleFrom(
+                minimumSize: const Size.fromHeight(52),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
               ),
             ),
-            style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(52),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
-          ),
           const SizedBox(height: 24),
         ],
       ),

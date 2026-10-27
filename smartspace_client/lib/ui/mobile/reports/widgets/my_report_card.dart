@@ -6,17 +6,25 @@ import 'package:intl/intl.dart';
 class MyReportCard extends StatelessWidget {
   final ReportModel report;
   final VoidCallback? onTap;
+  final VoidCallback? onEdit;
+  final VoidCallback? onCancel;
 
   const MyReportCard({
     super.key,
     required this.report,
     this.onTap,
+    this.onEdit,
+    this.onCancel,
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
     final isRejected = report.status == ReportStatus.rejected;
+    final canEdit = report.status == ReportStatus.pending;
+    final canCancel = report.status == ReportStatus.pending;
+    final hasActions = canEdit || canCancel;
 
     return Opacity(
       opacity: isRejected ? 0.6 : 1.0,
@@ -40,8 +48,8 @@ class MyReportCard extends StatelessWidget {
               children: [
                 // Thumbnail
                 Container(
-                  width: 60,
-                  height: 60,
+                  width: 64,
+                  height: 64,
                   decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(8),
                     color: theme.colorScheme.surfaceContainerHighest,
@@ -57,32 +65,125 @@ class MyReportCard extends StatelessWidget {
                       : Icon(Icons.image, color: theme.colorScheme.outline),
                 ),
                 const SizedBox(width: 12),
-                
+
                 // Content
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Title
-                      Text(
-                        report.title,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.onSurface,
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
+                      // Title row with "My report" badge and 3-dots action button
+                      Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Row(
+                              children: [
+                                Flexible(
+                                  child: Text(
+                                    report.title,
+                                    style: theme.textTheme.titleMedium?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: theme.colorScheme.onSurface,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 6,
+                                    vertical: 2,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                                    borderRadius: BorderRadius.circular(6),
+                                    border: Border.all(
+                                      color: theme.colorScheme.primary.withValues(alpha: 0.25),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    l10n.myReportBadge,
+                                    style: TextStyle(
+                                      color: theme.colorScheme.primary,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          if (hasActions)
+                            SizedBox(
+                              width: 24,
+                              height: 24,
+                              child: PopupMenuButton<String>(
+                                padding: EdgeInsets.zero,
+                                icon: Icon(
+                                  Icons.more_vert_rounded,
+                                  size: 18,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                                onSelected: (val) {
+                                  if (val == 'edit') onEdit?.call();
+                                  if (val == 'cancel') onCancel?.call();
+                                },
+                                itemBuilder: (ctx) => [
+                                  if (canEdit)
+                                    PopupMenuItem(
+                                      value: 'edit',
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.edit_outlined,
+                                            size: 18,
+                                            color: theme.colorScheme.onSurface,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(l10n.editReport),
+                                        ],
+                                      ),
+                                    ),
+                                  if (canCancel)
+                                    PopupMenuItem(
+                                      value: 'cancel',
+                                      child: Row(
+                                        children: [
+                                          Icon(
+                                            Icons.cancel_outlined,
+                                            size: 18,
+                                            color: theme.colorScheme.error,
+                                          ),
+                                          const SizedBox(width: 8),
+                                          Text(
+                                            l10n.cancelReport,
+                                            style: TextStyle(
+                                              color: theme.colorScheme.error,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                ],
+                              ),
+                            ),
+                        ],
                       ),
                       const SizedBox(height: 4),
-                      
+
                       // Address/Description mapping
                       Row(
                         children: [
-                          Icon(Icons.location_on, size: 14, color: theme.colorScheme.onSurfaceVariant),
+                          Icon(
+                            Icons.location_on,
+                            size: 14,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
                           const SizedBox(width: 4),
                           Expanded(
                             child: Text(
-                              report.description, // using description as proxy for address if address is not available in basic model
+                              report.description,
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
                               ),
@@ -93,7 +194,7 @@ class MyReportCard extends StatelessWidget {
                         ],
                       ),
                       const SizedBox(height: 8),
-                      
+
                       // Date and Status (Bottom Row)
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -182,7 +283,7 @@ class _MyReportStatusBadge extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    
+
     Color chipColor;
     String label;
 

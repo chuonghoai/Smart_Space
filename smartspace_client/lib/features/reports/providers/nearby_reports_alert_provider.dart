@@ -63,7 +63,7 @@ class NearbyReportsAlertNotifier extends StateNotifier<NearbyAlertsState> {
     // Listen to the 15-minute periodic timer if ref is provided
     _ref?.listen<AsyncValue<DateTime>>(nearbyAlertTimerProvider, (previous, next) {
       if (next.hasValue) {
-        checkNearbyReportsAlert();
+        checkNearbyReportsAlert(forceShow: true);
       }
     });
   }
@@ -126,10 +126,12 @@ class NearbyReportsAlertNotifier extends StateNotifier<NearbyAlertsState> {
         );
 
         if (hasNewReports || forceShow) {
-          final context = sharedNavigatorKey.currentContext;
-          if (context != null && context.mounted) {
-            NearbyReportsAlertModal.show(context, alertData);
-          }
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            final context = sharedNavigatorKey.currentContext;
+            if (context != null && context.mounted) {
+              NearbyReportsAlertModal.show(context, alertData);
+            }
+          });
         }
 
         return alertData;

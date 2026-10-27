@@ -35,6 +35,7 @@ class ReportDetailModel extends ReportModel {
     required super.createdAt,
     super.distanceInMeters,
     super.isReviewResolved,
+    super.userId,
 
     required EReportSeverity super.severity,
     required this.imageUrls,
@@ -121,6 +122,7 @@ class ReportDetailModel extends ReportModel {
       reviewedAt: json['reviewed_at'] != null
           ? DateTime.tryParse(json['reviewed_at'].toString())
           : null,
+      userId: json['user_id'] as String?,
     );
   }
 
@@ -191,6 +193,7 @@ class ReportDetailModel extends ReportModel {
     String? reviewNote,
     List<String>? reviewImageUrls,
     DateTime? reviewedAt,
+    String? userId,
   }) {
     return ReportDetailModel(
       id: id ?? this.id,
@@ -201,6 +204,7 @@ class ReportDetailModel extends ReportModel {
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
       distanceInMeters: distanceInMeters ?? this.distanceInMeters,
+      userId: userId ?? this.userId,
       severity: severity ?? this.severity,
       imageUrls: imageUrls ?? this.imageUrls,
       isAnonymous: isAnonymous ?? this.isAnonymous,

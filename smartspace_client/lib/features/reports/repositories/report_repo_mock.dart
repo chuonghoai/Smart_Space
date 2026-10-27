@@ -268,4 +268,46 @@ class ReportRepoMock implements ReportRepo {
       data: NearbyReportsAlertResponse(count: 0, reports: []),
     );
   }
+
+  @override
+  Future<ApiResponse<ReportDetailModel>> updateReport(String reportId, ReportDto reportDto) async {
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: ReportDetailModel(
+        id: reportId,
+        title: reportDto.title,
+        description: reportDto.description,
+        latitude: reportDto.latitude,
+        longitude: reportDto.longitude,
+        status: ReportStatus.pending,
+        createdAt: DateTime.now(),
+        severity: EReportSeverity.low,
+        imageUrls: reportDto.imageUrls,
+        isAnonymous: reportDto.isAnonymous,
+        address: reportDto.address,
+        locationDescription: reportDto.locationDescription,
+      ),
+    );
+  }
+
+  @override
+  Future<ApiResponse<ReportDetailModel>> cancelReport(String reportId) async {
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: ReportDetailModel(
+        id: reportId,
+        title: 'Báo cáo',
+        description: 'Mô tả',
+        latitude: 0,
+        longitude: 0,
+        status: ReportStatus.rejected,
+        createdAt: DateTime.now(),
+        severity: EReportSeverity.low,
+        imageUrls: [],
+        isAnonymous: false,
+      ),
+    );
+  }
 }

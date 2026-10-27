@@ -89,4 +89,7 @@ public class ReportDetailResponse {
 
     @JsonProperty("reviewed_at")
     private String reviewedAt;
+
+    @JsonProperty("user_id")
+    private String userId;
 }

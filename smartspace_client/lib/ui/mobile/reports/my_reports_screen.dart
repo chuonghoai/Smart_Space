@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/providers/my_reports_provider.dart';
+import 'package:smartspace_client/features/reports/services/report_service.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/ui/mobile/reports/widgets/my_report_card.dart';
 import 'package:go_router/go_router.dart';
@@ -47,7 +48,7 @@ class MyReportsScreen extends ConsumerWidget {
                       const SizedBox(height: 16),
                       _buildFilterChips(context, state, notifier),
                       const SizedBox(height: 16),
-                      ..._buildGroupedList(context, state),
+                      ..._buildGroupedList(context, state, ref),
                     ],
                   ),
                 ),
@@ -179,7 +180,7 @@ class MyReportsScreen extends ConsumerWidget {
     );
   }
 
-  List<Widget> _buildGroupedList(BuildContext context, MyReportsState state) {
+  List<Widget> _buildGroupedList(BuildContext context, MyReportsState state, WidgetRef ref) {
     final groups = state.groupedReports;
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
@@ -221,6 +222,8 @@ class MyReportsScreen extends ConsumerWidget {
                 final String path = RouterPath.reportDetail.replaceAll(':id', report.id);
                 context.push(path);
               },
+              onEdit: () => _handleEdit(context, ref, report),
+              onCancel: () => _handleCancel(context, ref, report),
             )),
       );
     }
@@ -230,5 +233,110 @@ class MyReportsScreen extends ConsumerWidget {
     addGroup(l10n.older, groups['older']!);
 
     return widgets;
+  }
+
+  Future<void> _handleEdit(BuildContext context, WidgetRef ref, ReportModel report) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    // Strict constraint: Only pending reports can be edited
+    if (report.status != ReportStatus.pending) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.editReportOnlyPending)),
+      );
+      return;
+    }
+
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (_) => const Center(child: CircularProgressIndicator()),
+    );
+
+    final res = await reportService.getReportDetail(report.id);
+    if (context.mounted) {
+      Navigator.of(context).pop(); // pop loading
+    }
+
+    if (res.success && res.data != null && context.mounted) {
+      final updated = await context.push<bool>(
+        RouterPath.createReport,
+        extra: res.data,
+      );
+      if (updated == true) {
+        ref.read(myReportsProvider.notifier).refresh();
+      }
+    } else if (context.mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(res.message.isNotEmpty ? res.message : l10n.genericError),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
+  Future<void> _handleCancel(BuildContext context, WidgetRef ref, ReportModel report) async {
+    final l10n = AppLocalizations.of(context)!;
+
+    // Strict constraint: Only pending reports can be cancelled
+    if (report.status != ReportStatus.pending) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.cancelReportOnlyPending)),
+      );
+      return;
+    }
+
+    final theme = Theme.of(context);
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.cancelReportConfirmTitle),
+        content: Text(l10n.cancelReportConfirmMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(ctx).pop(false),
+            child: Text(l10n.closeButton),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: theme.colorScheme.error,
+            ),
+            onPressed: () => Navigator.of(ctx).pop(true),
+            child: Text(l10n.cancelReport),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed == true && context.mounted) {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const Center(child: CircularProgressIndicator()),
+      );
+
+      final res = await reportService.cancelReport(report.id);
+      if (context.mounted) {
+        Navigator.of(context).pop(); // pop loading
+      }
+
+      if (res.success && context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(l10n.cancelReportSuccess),
+            backgroundColor: Colors.green,
+          ),
+        );
+        ref.read(myReportsProvider.notifier).refresh();
+      } else if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(res.message.isNotEmpty ? res.message : l10n.genericError),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
   }
 }

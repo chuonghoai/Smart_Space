@@ -13,6 +13,7 @@ import 'package:smartspace_client/ui/mobile/settings/manage_devices_screen.dart'
 import 'package:smartspace_client/ui/mobile/settings/settings_screen.dart';
 import 'package:smartspace_client/ui/shared/splash/splash_screen.dart';
 import 'package:smartspace_client/ui/mobile/auth/register/complete_profile_screen.dart';
+import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_client/ui/mobile/reports/create_report_screen.dart';
 import 'package:smartspace_client/ui/mobile/reports/presentation/report_detail_screen.dart';
 import 'package:smartspace_client/ui/mobile/reports/my_reports_screen.dart';
@@ -81,7 +82,9 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: RouterPath.createReport,
-      builder: (context, state) => const CreateReportScreen(),
+      builder: (context, state) => CreateReportScreen(
+        reportToEdit: state.extra as ReportDetailModel?,
+      ),
     ),
     GoRoute(
       path: RouterPath.map,

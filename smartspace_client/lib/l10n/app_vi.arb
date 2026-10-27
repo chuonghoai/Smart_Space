@@ -364,5 +364,18 @@
   "actionViewDetail": "Xem chi tiết",
   "noImages": "Không có hình ảnh",
   "actionPrevious": "Trước",
-  "actionNext": "Tiếp theo"
+  "actionNext": "Tiếp theo",
+  "editReport": "Chỉnh sửa",
+  "cancelReport": "Hủy yêu cầu",
+  "cancelReportConfirmTitle": "Hủy yêu cầu phản ánh",
+  "cancelReportConfirmMessage": "Bạn có chắc chắn muốn hủy yêu cầu phản ánh này không? Phản ánh sẽ được chuyển vào danh sách từ chối.",
+  "cancelReportSuccess": "Đã hủy yêu cầu phản ánh thành công",
+  "updateReportSuccess": "Cập nhật phản ánh thành công",
+  "youCreatedThisReport": "Bạn là người tạo phản ánh này",
+  "myReportBadge": "Của bạn",
+  "saveChanges": "Lưu thay đổi",
+  "editReportTitle": "Chỉnh sửa phản ánh",
+  "editReportOnlyPending": "Chỉ có thể chỉnh sửa phản ánh đang ở trạng thái chờ xử lý",
+  "cancelReportOnlyPending": "Chỉ có thể hủy yêu cầu phản ánh đang ở trạng thái chờ xử lý",
+  "genericError": "Đã có lỗi xảy ra, vui lòng thử lại sau"
 }

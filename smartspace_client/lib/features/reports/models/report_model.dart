@@ -14,6 +14,7 @@ class ReportModel {
   final double? distanceInMeters;
   final bool? isReviewResolved;
   final EReportSeverity? severity;
+  final String? userId;
 
   bool get isDangerous =>
       severity == EReportSeverity.high || severity == EReportSeverity.critical;
@@ -30,6 +31,7 @@ class ReportModel {
     this.distanceInMeters,
     this.isReviewResolved,
     this.severity,
+    this.userId,
   });
 
   factory ReportModel.fromJson(Map<String, dynamic> json) {
@@ -47,6 +49,7 @@ class ReportModel {
       distanceInMeters: (json['distance_in_meters'] as num?)?.toDouble(),
       isReviewResolved: json['is_review_resolved'] as bool? ?? json['isReviewResolved'] as bool?,
       severity: mapSeverity(json['severity'] as String?),
+      userId: json['user_id'] as String?,
     );
   }
 
@@ -62,6 +65,7 @@ class ReportModel {
       'created_at': createdAt.toIso8601String(),
       'is_review_resolved': isReviewResolved,
       'severity': severity?.name,
+      'user_id': userId,
     };
   }
 
@@ -77,6 +81,7 @@ class ReportModel {
     double? distanceInMeters,
     bool? isReviewResolved,
     EReportSeverity? severity,
+    String? userId,
   }) {
     return ReportModel(
       id: id ?? this.id,
@@ -90,6 +95,7 @@ class ReportModel {
       distanceInMeters: distanceInMeters ?? this.distanceInMeters,
       isReviewResolved: isReviewResolved ?? this.isReviewResolved,
       severity: severity ?? this.severity,
+      userId: userId ?? this.userId,
     );
   }
 

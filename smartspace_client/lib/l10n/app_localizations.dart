@@ -1819,6 +1819,78 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Next'**
   String get actionNext;
+
+  /// No description provided for @editReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editReport;
+
+  /// No description provided for @cancelReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Request'**
+  String get cancelReport;
+
+  /// No description provided for @cancelReportConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel Report Request'**
+  String get cancelReportConfirmTitle;
+
+  /// No description provided for @cancelReportConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to cancel this report request? It will be moved to the rejected list.'**
+  String get cancelReportConfirmMessage;
+
+  /// No description provided for @cancelReportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Report request cancelled successfully'**
+  String get cancelReportSuccess;
+
+  /// No description provided for @updateReportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Report updated successfully'**
+  String get updateReportSuccess;
+
+  /// No description provided for @youCreatedThisReport.
+  ///
+  /// In en, this message translates to:
+  /// **'You created this report'**
+  String get youCreatedThisReport;
+
+  /// No description provided for @myReportBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Your report'**
+  String get myReportBadge;
+
+  /// No description provided for @editReportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Report'**
+  String get editReportTitle;
+
+  /// No description provided for @editReportOnlyPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Only pending reports can be edited'**
+  String get editReportOnlyPending;
+
+  /// No description provided for @cancelReportOnlyPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Only pending reports can be cancelled'**
+  String get cancelReportOnlyPending;
+
+  /// No description provided for @genericError.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred, please try again later'**
+  String get genericError;
 }
 
 class _AppLocalizationsDelegate

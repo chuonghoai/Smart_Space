@@ -120,6 +120,7 @@ public class ReportServiceImpl implements IReportService {
                                 .format(DateTimeFormatter.ISO_DATE_TIME)
                         : null)
                 .isReviewResolved(report.getIsReviewResolved())
+                .userId(report.getUser() != null ? report.getUser().getId() : null)
                 .build();
     }
 
@@ -194,6 +195,7 @@ public class ReportServiceImpl implements IReportService {
                         ? report.getAssignedAt().toInstant().atZone(java.time.ZoneId.systemDefault())
                                 .format(DateTimeFormatter.ISO_DATE_TIME)
                         : null)
+                .userId(userId)
                 .build();
 
         // Notify Users
@@ -463,6 +465,7 @@ public class ReportServiceImpl implements IReportService {
                 .reviewImageUrls(reviewImages)
                 .reviewedAt(report.getReviewedAt() != null ? report.getReviewedAt().toInstant()
                         .atZone(java.time.ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE_TIME) : null)
+                .userId(user != null ? user.getId() : null)
                 .build();
     }
 
@@ -1507,5 +1510,107 @@ public class ReportServiceImpl implements IReportService {
                 .nearestDistance(nearestDistance)
                 .reports(items)
                 .build();
+    }
+
+    @Override
+    @Transactional
+    public ReportDetailResponse updateReport(String reportId, ReportCreateRequest request, String userId) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
+
+        if (userId != null && report.getUser() != null && !userId.equals(report.getUser().getId())) {
+            throw new UnauthorizedException("report.unauthorized");
+        }
+
+        // Business rule: Only pending reports can be edited
+        if (report.getStatus() != EReportStatus.pending) {
+            throw new BadRequestException("report.edit.only_pending");
+        }
+
+        if (request.getTitle() != null && !request.getTitle().trim().isEmpty()) {
+            report.setTitle(request.getTitle().trim());
+        }
+        if (request.getDescription() != null && !request.getDescription().trim().isEmpty()) {
+            report.setDescription(request.getDescription().trim());
+        }
+        if (request.getLatitude() != null) {
+            report.setLatitude(request.getLatitude());
+        }
+        if (request.getLongitude() != null) {
+            report.setLongitude(request.getLongitude());
+        }
+        if (request.getAddress() != null) {
+            report.setAddress(request.getAddress().trim());
+        }
+        if (request.getLocationDescription() != null) {
+            report.setLocationDescription(request.getLocationDescription().trim());
+        }
+        if (request.getIsAnonymous() != null) {
+            report.setIsAnonymous(request.getIsAnonymous());
+        }
+        if (request.getImageUrls() != null) {
+            if (!request.getImageUrls().isEmpty()) {
+                report.setImageUrls(String.join(",", request.getImageUrls()));
+                report.setImageUrl(request.getImageUrls().get(0));
+            } else {
+                report.setImageUrls(null);
+                report.setImageUrl(null);
+            }
+        }
+
+        report = reportRepository.save(report);
+
+        if (userId != null && report.getUser() != null) {
+            User actor = report.getUser();
+            String actorName = (actor.getFullName() != null && !actor.getFullName().trim().isEmpty())
+                    ? actor.getFullName().trim()
+                    : (actor.getEmail() != null ? actor.getEmail().trim() : "Người dùng");
+            String i18nKey = "activity.report.updated|" + actorName;
+
+            ActivityHistory activity = ActivityHistory.builder()
+                    .actor(actor)
+                    .i18nKey(i18nKey)
+                    .targetId(report.getId())
+                    .build();
+            activityHistoryRepository.save(activity);
+        }
+
+        return toDetail(report);
+    }
+
+    @Override
+    @Transactional
+    public ReportDetailResponse cancelReport(String reportId, String userId) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
+
+        if (userId != null && report.getUser() != null && !userId.equals(report.getUser().getId())) {
+            throw new UnauthorizedException("report.unauthorized");
+        }
+
+        // Business rule: Only pending reports can be cancelled
+        if (report.getStatus() != EReportStatus.pending) {
+            throw new BadRequestException("report.cancel.only_pending");
+        }
+
+        report.setStatus(EReportStatus.rejected);
+        report = reportRepository.save(report);
+
+        if (userId != null && report.getUser() != null) {
+            User actor = report.getUser();
+            String actorName = (actor.getFullName() != null && !actor.getFullName().trim().isEmpty())
+                    ? actor.getFullName().trim()
+                    : (actor.getEmail() != null ? actor.getEmail().trim() : "Người dùng");
+            String i18nKey = "activity.report.cancelled|" + actorName;
+
+            ActivityHistory activity = ActivityHistory.builder()
+                    .actor(actor)
+                    .i18nKey(i18nKey)
+                    .targetId(report.getId())
+                    .build();
+            activityHistoryRepository.save(activity);
+        }
+
+        return toDetail(report);
     }
 }

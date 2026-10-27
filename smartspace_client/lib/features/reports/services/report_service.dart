@@ -73,6 +73,14 @@ class ReportService {
       notify: notify,
     );
   }
+
+  Future<ApiResponse<ReportDetailModel>> updateReport(String reportId, ReportDto reportDto) async {
+    return await reportRepo.updateReport(reportId, reportDto);
+  }
+
+  Future<ApiResponse<ReportDetailModel>> cancelReport(String reportId) async {
+    return await reportRepo.cancelReport(reportId);
+  }
 }
 
 final reportService = ReportService(
