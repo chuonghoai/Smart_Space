@@ -23,7 +23,6 @@ class _DangerousReportsSliderState extends State<DangerousReportsSlider> {
   @override
   void initState() {
     super.initState();
-    // Start at a large number to allow infinite backward scrolling
     _currentPage = widget.reports.isNotEmpty ? widget.reports.length * 100 : 0;
     _pageController = PageController(initialPage: _currentPage);
     _startAutoPlay();
@@ -61,20 +60,23 @@ class _DangerousReportsSliderState extends State<DangerousReportsSlider> {
       onEnter: (_) => _timer?.cancel(),
       onExit: (_) => _startAutoPlay(),
       child: Container(
-        height: 180,
+        height: 185,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(16),
-          border: Border.all(color: theme.colorScheme.error, width: 2),
+          border: Border.all(
+            color: theme.colorScheme.error.withValues(alpha: 0.4),
+            width: 1.2,
+          ),
           boxShadow: [
             BoxShadow(
-              color: theme.colorScheme.error.withValues(alpha: 0.2),
+              color: theme.colorScheme.error.withValues(alpha: 0.1),
               blurRadius: 12,
-              spreadRadius: 2,
+              offset: const Offset(0, 4),
             ),
           ],
         ),
         child: ClipRRect(
-          borderRadius: BorderRadius.circular(14),
+          borderRadius: BorderRadius.circular(15),
           child: Stack(
             children: [
               PageView.builder(
@@ -91,7 +93,7 @@ class _DangerousReportsSliderState extends State<DangerousReportsSlider> {
               // Pagination Dots
               if (widget.reports.length > 1)
                 Positioned(
-                  bottom: 8,
+                  bottom: 10,
                   left: 0,
                   right: 0,
                   child: Row(
@@ -100,12 +102,14 @@ class _DangerousReportsSliderState extends State<DangerousReportsSlider> {
                       final isActive =
                           index == (_currentPage % widget.reports.length);
                       return AnimatedContainer(
-                        duration: const Duration(milliseconds: 200),
-                        margin: const EdgeInsets.symmetric(horizontal: 4),
-                        width: isActive ? 16 : 8,
-                        height: 8,
+                        duration: const Duration(milliseconds: 250),
+                        margin: const EdgeInsets.symmetric(horizontal: 3),
+                        width: isActive ? 20 : 6,
+                        height: 5,
                         decoration: BoxDecoration(
-                          color: isActive ? Colors.white : Colors.white54,
+                          color: isActive
+                              ? Colors.white
+                              : Colors.white.withValues(alpha: 0.4),
                           borderRadius: BorderRadius.circular(4),
                         ),
                       );
@@ -118,24 +122,34 @@ class _DangerousReportsSliderState extends State<DangerousReportsSlider> {
                 top: 12,
                 left: 12,
                 child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
                   decoration: BoxDecoration(
-                    color: theme.colorScheme.error,
-                    borderRadius: BorderRadius.circular(4),
+                    color: theme.colorScheme.error.withValues(alpha: 0.92),
+                    borderRadius: BorderRadius.circular(8),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.25),
+                        blurRadius: 6,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
                   ),
                   child: Row(
+                    mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(
                         Icons.warning_amber_rounded,
-                        size: 16,
+                        size: 15,
                         color: theme.colorScheme.onError,
                       ),
-                      const SizedBox(width: 4),
+                      const SizedBox(width: 5),
                       Text(
                         l10n.dangerous,
                         style: theme.textTheme.labelSmall?.copyWith(
                           color: theme.colorScheme.onError,
                           fontWeight: FontWeight.bold,
+                          letterSpacing: 0.4,
                         ),
                       ),
                     ],
@@ -159,6 +173,7 @@ class _DangerousReportSlide extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+    final statusColor = report.status.getColor(context);
 
     return GestureDetector(
       onTap: () {
@@ -166,68 +181,89 @@ class _DangerousReportSlide extends StatelessWidget {
       },
       child: Container(
         decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest,
           image: DecorationImage(
             image: NetworkImage(report.imageUrl),
             fit: BoxFit.cover,
           ),
         ),
         child: Container(
-          decoration: const BoxDecoration(
-          gradient: LinearGradient(
-            begin: Alignment.topCenter,
-            end: Alignment.bottomCenter,
-            colors: [Colors.black26, Colors.black87],
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+              stops: const [0.0, 0.35, 1.0],
+              colors: [
+                Colors.black.withValues(alpha: 0.25),
+                Colors.black.withValues(alpha: 0.4),
+                Colors.black.withValues(alpha: 0.88),
+              ],
+            ),
           ),
-        ),
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisAlignment: MainAxisAlignment.end,
-          children: [
-            Container(
-              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-              decoration: BoxDecoration(
-                color: report.status.getColor(context),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child: Text(
-                report.status.getLocalizedText(l10n),
-                style: theme.textTheme.labelSmall?.copyWith(
-                  color: theme.colorScheme.onError,
-                  fontWeight: FontWeight.bold,
+          padding: const EdgeInsets.symmetric(horizontal: 14.0, vertical: 14.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.end,
+            children: [
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                decoration: BoxDecoration(
+                  color: statusColor.withValues(alpha: 0.9),
+                  borderRadius: BorderRadius.circular(6),
+                ),
+                child: Text(
+                  report.status.getLocalizedText(l10n),
+                  style: theme.textTheme.labelSmall?.copyWith(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              report.title,
-              style: theme.textTheme.titleMedium?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.bold,
+              const SizedBox(height: 6),
+              Text(
+                report.title,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  shadows: const [
+                    Shadow(
+                      color: Colors.black54,
+                      blurRadius: 4,
+                      offset: Offset(0, 1),
+                    ),
+                  ],
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
               ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            if (report.distanceInMeters != null) ...[
-              const SizedBox(height: 4),
-              Row(
-                children: [
-                  const Icon(Icons.location_on, size: 14, color: Colors.white70),
-                  const SizedBox(width: 4),
-                  Text(
-                    DistanceFormatter.format(report.distanceInMeters!, SharedLocalizations.of(context)!),
-                    style: theme.textTheme.bodySmall?.copyWith(
+              if (report.distanceInMeters != null) ...[
+                const SizedBox(height: 4),
+                Row(
+                  children: [
+                    const Icon(
+                      Icons.near_me_outlined,
+                      size: 13,
                       color: Colors.white70,
                     ),
-                  ),
-                ],
-              ),
+                    const SizedBox(width: 4),
+                    Text(
+                      DistanceFormatter.format(
+                        report.distanceInMeters!,
+                        SharedLocalizations.of(context)!,
+                      ),
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: Colors.white70,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+              const SizedBox(height: 14), // Leave space for pagination dots
             ],
-            const SizedBox(height: 12), // Leave space for pagination
-          ],
+          ),
         ),
       ),
-    ),
     );
   }
 }
