@@ -1597,6 +1597,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t load tasks on the map'**
   String get mapLoadReportsFailed;
+
+  /// No description provided for @locationSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Incident Location'**
+  String get locationSection;
+
+  /// No description provided for @noAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'No address provided'**
+  String get noAddress;
+
+  /// No description provided for @locationDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Location description'**
+  String get locationDescriptionLabel;
+
+  /// No description provided for @userPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get userPhone;
+
+  /// No description provided for @resolutionInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution Details'**
+  String get resolutionInfo;
+
+  /// No description provided for @resolutionImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution Photos'**
+  String get resolutionImages;
+
+  /// No description provided for @resolvedAtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Completion Time'**
+  String get resolvedAtLabel;
+
+  /// No description provided for @citizenReviewUnresolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Citizen Feedback: Unresolved'**
+  String get citizenReviewUnresolved;
+
+  /// No description provided for @citizenRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Citizen Rating'**
+  String get citizenRating;
+
+  /// No description provided for @citizenReviewReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for Unsatisfactory'**
+  String get citizenReviewReason;
+
+  /// No description provided for @citizenReviewPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Citizen Photos'**
+  String get citizenReviewPhotos;
 }
 
 class _AppLocalizationsDelegate

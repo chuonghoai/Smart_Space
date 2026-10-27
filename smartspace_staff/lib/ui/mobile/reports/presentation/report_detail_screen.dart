@@ -599,11 +599,25 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                                       ),
                                       const SizedBox(width: 12),
                                       Expanded(
-                                        child: Text(
-                                          report.userName?.isNotEmpty == true ? report.userName! : 'Unknown',
-                                          style: theme.textTheme.bodyLarge?.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                          ),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          children: [
+                                            Text(
+                                              report.userName?.isNotEmpty == true ? report.userName! : 'Unknown',
+                                              style: theme.textTheme.bodyLarge?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                            if (report.userPhone != null && report.userPhone!.isNotEmpty) ...[
+                                              const SizedBox(height: 2),
+                                              Text(
+                                                report.userPhone!,
+                                                style: theme.textTheme.bodySmall?.copyWith(
+                                                  color: theme.colorScheme.onSurfaceVariant,
+                                                ),
+                                              ),
+                                            ],
+                                          ],
                                         ),
                                       ),
                                     ],
@@ -613,90 +627,207 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                             ),
                           ),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 16),
 
-                        // Map & Distance
-                        Consumer(
-                          builder: (context, ref, child) {
-                            final distanceAsync = ref.watch(reportDistanceProvider(widget.reportId));
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: distanceAsync.when(
-                                data: (distance) => Text(
-                                  l10n.distanceFromYou((distance / 1000).toStringAsFixed(1), 'km'),
-                                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                                ),
-                                loading: () => Row(
+                        // Location Card
+                        Card(
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            side: BorderSide(
+                              color: theme.colorScheme.outlineVariant.withOpacity(0.5),
+                            ),
+                          ),
+                          color: theme.colorScheme.surface,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
                                   children: [
-                                    const SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                    Icon(
+                                      Icons.location_on_outlined,
+                                      size: 20,
+                                      color: theme.colorScheme.primary,
                                     ),
                                     const SizedBox(width: 8),
-                                    Text(l10n.calculatingDistance),
+                                    Text(
+                                      l10n.locationSection,
+                                      style: theme.textTheme.titleSmall?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: theme.colorScheme.primary,
+                                      ),
+                                    ),
                                   ],
                                 ),
-                                error: (err, stack) {
-                                  String errorMsg = l10n.turnOnLocationToViewDistance;
-                                  if (err == 'LOCATION_DISABLED') {
-                                    errorMsg = l10n.locationServiceDisabledError;
-                                  } else if (err == 'PERMISSION_DENIED') {
-                                    errorMsg = l10n.locationPermissionDeniedForeverError;
-                                  }
-                                  
-                                  return InkWell(
-                                    onTap: _requestLocationPermission,
-                                    child: Text(
-                                      errorMsg,
-                                      style: TextStyle(color: theme.colorScheme.primary, decoration: TextDecoration.underline),
+                                const Divider(height: 20),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Icon(
+                                      Icons.place_rounded,
+                                      size: 20,
+                                      color: theme.colorScheme.error,
                                     ),
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                        ),
-
-                        // Map View
-                        Container(
-                          height: 200,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: theme.dividerColor),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Stack(
-                              children: [
-                                FlutterMap(
-                                  options: MapOptions(
-                                    initialCenter: LatLng(report.latitude, report.longitude),
-                                    initialZoom: 15.0,
-                                    interactionOptions: const InteractionOptions(
-                                      flags: InteractiveFlag.none,
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            report.address?.isNotEmpty == true
+                                                ? report.address!
+                                                : l10n.noAddress,
+                                            style: theme.textTheme.bodyMedium?.copyWith(
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          if (report.locationDescription?.isNotEmpty == true) ...[
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              '${l10n.locationDescriptionLabel}: ${report.locationDescription!}',
+                                              style: theme.textTheme.bodySmall?.copyWith(
+                                                color: theme.colorScheme.onSurfaceVariant,
+                                              ),
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 28.0),
+                                  child: Text(
+                                    '${report.latitude.toStringAsFixed(6)}, ${report.longitude.toStringAsFixed(6)}',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
                                     ),
                                   ),
-                                  children: [
-                                    TileLayer(urlTemplate: 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}'),
-                                    MarkerLayer(
-                                      markers: [
-                                        Marker(
-                                          point: LatLng(report.latitude, report.longitude),
-                                          width: 40,
-                                          height: 40,
-                                          child: Icon(Icons.location_on, color: theme.colorScheme.error, size: 40),
+                                ),
+                                const SizedBox(height: 12),
+                                // Distance indicator
+                                Consumer(
+                                  builder: (context, ref, child) {
+                                    final distanceAsync = ref.watch(reportDistanceProvider(widget.reportId));
+                                    return Padding(
+                                      padding: const EdgeInsets.only(bottom: 12.0),
+                                      child: distanceAsync.when(
+                                        data: (distance) => Row(
+                                          children: [
+                                            Icon(
+                                              Icons.near_me_outlined,
+                                              size: 16,
+                                              color: theme.colorScheme.primary,
+                                            ),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              l10n.distanceFromYou((distance / 1000).toStringAsFixed(1), 'km'),
+                                              style: theme.textTheme.bodyMedium?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color: theme.colorScheme.primary,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        loading: () => Row(
+                                          children: [
+                                            const SizedBox(
+                                              width: 14,
+                                              height: 14,
+                                              child: CircularProgressIndicator(strokeWidth: 2),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              l10n.calculatingDistance,
+                                              style: theme.textTheme.bodySmall,
+                                            ),
+                                          ],
+                                        ),
+                                        error: (err, stack) {
+                                          String errorMsg = l10n.turnOnLocationToViewDistance;
+                                          if (err == 'LOCATION_DISABLED') {
+                                            errorMsg = l10n.locationServiceDisabledError;
+                                          } else if (err == 'PERMISSION_DENIED') {
+                                            errorMsg = l10n.locationPermissionDeniedForeverError;
+                                          }
+
+                                          return InkWell(
+                                            onTap: _requestLocationPermission,
+                                            child: Text(
+                                              errorMsg,
+                                              style: TextStyle(
+                                                color: theme.colorScheme.primary,
+                                                decoration: TextDecoration.underline,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                                // Map View
+                                Container(
+                                  height: 180,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: theme.colorScheme.outlineVariant.withOpacity(0.5),
+                                    ),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Stack(
+                                      children: [
+                                        FlutterMap(
+                                          options: MapOptions(
+                                            initialCenter: LatLng(report.latitude, report.longitude),
+                                            initialZoom: 15.0,
+                                            interactionOptions: const InteractionOptions(
+                                              flags: InteractiveFlag.none,
+                                            ),
+                                          ),
+                                          children: [
+                                            TileLayer(urlTemplate: 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}'),
+                                            MarkerLayer(
+                                              markers: [
+                                                Marker(
+                                                  point: LatLng(report.latitude, report.longitude),
+                                                  width: 40,
+                                                  height: 40,
+                                                  child: Icon(Icons.location_on, color: theme.colorScheme.error, size: 40),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        Positioned.fill(
+                                          child: Material(
+                                            color: Colors.transparent,
+                                            child: InkWell(
+                                              onTap: () => _openGoogleMaps(report.latitude, report.longitude),
+                                            ),
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  ],
+                                  ),
                                 ),
-                                // Cover the map to intercept taps if we want them to open google maps on tap directly
-                                Positioned.fill(
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: InkWell(
-                                      onTap: () => _openGoogleMaps(report.latitude, report.longitude),
+                                const SizedBox(height: 12),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: OutlinedButton.icon(
+                                    onPressed: () => _openGoogleMaps(report.latitude, report.longitude),
+                                    icon: const Icon(Icons.map_outlined, size: 18),
+                                    label: Text(l10n.openInGoogleMaps),
+                                    style: OutlinedButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -704,16 +835,258 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                             ),
                           ),
                         ),
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton.icon(
-                            onPressed: () => _openGoogleMaps(report.latitude, report.longitude),
-                            icon: const Icon(Icons.map),
-                            label: Text(l10n.openInGoogleMaps),
+
+                        // Resolution Section (when processed or has resolution info)
+                        if (report.status == ReportStatus.processed ||
+                            report.resolvedNote != null ||
+                            (report.resolvedImageUrls != null && report.resolvedImageUrls!.isNotEmpty)) ...[
+                          const SizedBox(height: 16),
+                          Card(
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              side: BorderSide(
+                                color: Colors.green.withOpacity(0.4),
+                              ),
+                            ),
+                            color: theme.colorScheme.surface,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      const Icon(
+                                        Icons.check_circle_outline_rounded,
+                                        size: 20,
+                                        color: Colors.green,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          l10n.resolutionInfo,
+                                          style: theme.textTheme.titleSmall?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: Colors.green,
+                                          ),
+                                        ),
+                                      ),
+                                      if (report.resolvedAt != null)
+                                        Text(
+                                          DateFormat('dd/MM/yyyy HH:mm').format(report.resolvedAt!),
+                                          style: theme.textTheme.bodySmall?.copyWith(
+                                            color: theme.colorScheme.onSurfaceVariant,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                  const Divider(height: 20),
+                                  if (report.resolvedNote != null && report.resolvedNote!.isNotEmpty) ...[
+                                    Text(
+                                      l10n.resolutionNote,
+                                      style: theme.textTheme.labelMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: theme.colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      report.resolvedNote!,
+                                      style: theme.textTheme.bodyMedium,
+                                    ),
+                                    const SizedBox(height: 12),
+                                  ],
+                                  if (report.resolvedImageUrls != null && report.resolvedImageUrls!.isNotEmpty) ...[
+                                    Text(
+                                      l10n.resolutionImages,
+                                      style: theme.textTheme.labelMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: theme.colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    SizedBox(
+                                      height: 100,
+                                      child: ListView.separated(
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: report.resolvedImageUrls!.length,
+                                        separatorBuilder: (context, index) => const SizedBox(width: 8),
+                                        itemBuilder: (context, idx) {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (_) => FullscreenImageViewer(
+                                                    imageUrls: report.resolvedImageUrls!,
+                                                    initialIndex: idx,
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(10),
+                                              child: Image.network(
+                                                report.resolvedImageUrls![idx],
+                                                width: 100,
+                                                height: 100,
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (context, error, stackTrace) => Container(
+                                                  width: 100,
+                                                  height: 100,
+                                                  color: theme.colorScheme.surfaceContainerHighest,
+                                                  child: const Icon(Icons.broken_image),
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
                           ),
-                        ),
-                        const SizedBox(height: 24),
+                        ],
+
+                        // Citizen Review Section (when citizen review exists)
+                        if (report.isReviewResolved != null) ...[
+                          const SizedBox(height: 16),
+                          Card(
+                            elevation: 0,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(16),
+                              side: BorderSide(
+                                color: report.isReviewResolved == false
+                                    ? theme.colorScheme.error.withOpacity(0.5)
+                                    : Colors.amber.withOpacity(0.5),
+                              ),
+                            ),
+                            color: theme.colorScheme.surface,
+                            child: Padding(
+                              padding: const EdgeInsets.all(16.0),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Row(
+                                    children: [
+                                      Icon(
+                                        report.isReviewResolved == false
+                                            ? Icons.report_problem_outlined
+                                            : Icons.star_rounded,
+                                        size: 20,
+                                        color: report.isReviewResolved == false
+                                            ? theme.colorScheme.error
+                                            : Colors.amber,
+                                      ),
+                                      const SizedBox(width: 8),
+                                      Expanded(
+                                        child: Text(
+                                          report.isReviewResolved == false
+                                              ? l10n.citizenReviewUnresolved
+                                              : l10n.citizenRating,
+                                          style: theme.textTheme.titleSmall?.copyWith(
+                                            fontWeight: FontWeight.bold,
+                                            color: report.isReviewResolved == false
+                                                ? theme.colorScheme.error
+                                                : Colors.amber.shade800,
+                                          ),
+                                        ),
+                                      ),
+                                      if (report.reviewedAt != null)
+                                        Text(
+                                          DateFormat('dd/MM/yyyy HH:mm').format(report.reviewedAt!),
+                                          style: theme.textTheme.bodySmall?.copyWith(
+                                            color: theme.colorScheme.onSurfaceVariant,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                    ],
+                                  ),
+                                  const Divider(height: 20),
+                                  if (report.rating != null && report.rating! > 0) ...[
+                                    Row(
+                                      children: List.generate(5, (index) {
+                                        return Icon(
+                                          index < report.rating! ? Icons.star_rounded : Icons.star_outline_rounded,
+                                          color: Colors.amber,
+                                          size: 20,
+                                        );
+                                      }),
+                                    ),
+                                    const SizedBox(height: 8),
+                                  ],
+                                  if (report.reviewNote != null && report.reviewNote!.isNotEmpty) ...[
+                                    Text(
+                                      report.isReviewResolved == false
+                                          ? l10n.citizenReviewReason
+                                          : l10n.resolutionNote,
+                                      style: theme.textTheme.labelMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: theme.colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 4),
+                                    Text(
+                                      report.reviewNote!,
+                                      style: theme.textTheme.bodyMedium,
+                                    ),
+                                    const SizedBox(height: 12),
+                                  ],
+                                  if (report.reviewImageUrls != null && report.reviewImageUrls!.isNotEmpty) ...[
+                                    Text(
+                                      l10n.citizenReviewPhotos,
+                                      style: theme.textTheme.labelMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: theme.colorScheme.onSurfaceVariant,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 8),
+                                    SizedBox(
+                                      height: 100,
+                                      child: ListView.separated(
+                                        scrollDirection: Axis.horizontal,
+                                        itemCount: report.reviewImageUrls!.length,
+                                        separatorBuilder: (context, index) => const SizedBox(width: 8),
+                                        itemBuilder: (context, idx) {
+                                          return GestureDetector(
+                                            onTap: () {
+                                              Navigator.of(context).push(
+                                                MaterialPageRoute(
+                                                  builder: (_) => FullscreenImageViewer(
+                                                    imageUrls: report.reviewImageUrls!,
+                                                    initialIndex: idx,
+                                                  ),
+                                                ),
+                                              );
+                                            },
+                                            child: ClipRRect(
+                                              borderRadius: BorderRadius.circular(10),
+                                              child: Image.network(
+                                                report.reviewImageUrls![idx],
+                                                width: 100,
+                                                height: 100,
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (context, error, stackTrace) => Container(
+                                                  width: 100,
+                                                  height: 100,
+                                                  color: theme.colorScheme.surfaceContainerHighest,
+                                                  child: const Icon(Icons.broken_image),
+                                                ),
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              ),
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),

@@ -799,4 +799,37 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mapLoadReportsFailed => 'Couldn\'t load tasks on the map';
+
+  @override
+  String get locationSection => 'Incident Location';
+
+  @override
+  String get noAddress => 'No address provided';
+
+  @override
+  String get locationDescriptionLabel => 'Location description';
+
+  @override
+  String get userPhone => 'Phone number';
+
+  @override
+  String get resolutionInfo => 'Resolution Details';
+
+  @override
+  String get resolutionImages => 'Resolution Photos';
+
+  @override
+  String get resolvedAtLabel => 'Completion Time';
+
+  @override
+  String get citizenReviewUnresolved => 'Citizen Feedback: Unresolved';
+
+  @override
+  String get citizenRating => 'Citizen Rating';
+
+  @override
+  String get citizenReviewReason => 'Reason for Unsatisfactory';
+
+  @override
+  String get citizenReviewPhotos => 'Citizen Photos';
 }

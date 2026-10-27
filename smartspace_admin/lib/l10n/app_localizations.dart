@@ -2965,6 +2965,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t load reports on the map'**
   String get mapLoadReportsFailed;
+
+  /// No description provided for @locationDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Location description'**
+  String get locationDescriptionLabel;
 }
 
 class _AppLocalizationsDelegate

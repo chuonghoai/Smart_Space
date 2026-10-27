@@ -7,6 +7,7 @@ class ReportDetailModel {
   final double? latitude;
   final double? longitude;
   final String? address;
+  final String? locationDescription;
   final List<String> images;
   final bool isAnonymous;
   final DateTime createdAt;
@@ -37,6 +38,7 @@ class ReportDetailModel {
     this.latitude,
     this.longitude,
     this.address,
+    this.locationDescription,
     required this.images,
     required this.isAnonymous,
     required this.createdAt,
@@ -124,6 +126,7 @@ class ReportDetailModel {
       latitude: (json['latitude'] as num?)?.toDouble(),
       longitude: (json['longitude'] as num?)?.toDouble(),
       address: json['address'] as String?,
+      locationDescription: (json['location_description'] ?? json['locationDescription']) as String?,
       images: parsedImages,
       isAnonymous: (json['is_anonymous'] ?? json['isAnonymous']) as bool? ?? false,
       createdAt: json['created_at'] != null || json['createdAt'] != null
@@ -164,6 +167,7 @@ class ReportDetailModel {
     double? latitude,
     double? longitude,
     String? address,
+    String? locationDescription,
     List<String>? images,
     bool? isAnonymous,
     DateTime? createdAt,
@@ -194,6 +198,7 @@ class ReportDetailModel {
       latitude: latitude ?? this.latitude,
       longitude: longitude ?? this.longitude,
       address: address ?? this.address,
+      locationDescription: locationDescription ?? this.locationDescription,
       images: images ?? this.images,
       isAnonymous: isAnonymous ?? this.isAnonymous,
       createdAt: createdAt ?? this.createdAt,

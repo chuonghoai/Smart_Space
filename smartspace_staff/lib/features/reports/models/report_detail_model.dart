@@ -4,12 +4,17 @@ class ReportDetailModel extends ReportModel {
   final List<String> imageUrls;
   final String? address; // Địa chỉ
   final String? locationDescription; // Mô tả chi tiết địa điểm
+  final String? userPhone;
   final String? assignedStaffId;
   final String? assignedStaffName;
   final String? assignedStaffAvatarUrl;
   final String? resolvedNote;
   final List<String>? resolvedImageUrls;
   final DateTime? resolvedAt;
+  final int? rating;
+  final String? reviewNote;
+  final List<String>? reviewImageUrls;
+  final DateTime? reviewedAt;
 
   ReportDetailModel({
     required super.id,
@@ -30,12 +35,17 @@ class ReportDetailModel extends ReportModel {
     required this.imageUrls,
     this.address,
     this.locationDescription,
+    this.userPhone,
     this.assignedStaffId,
     this.assignedStaffName,
     this.assignedStaffAvatarUrl,
     this.resolvedNote,
     this.resolvedImageUrls,
     this.resolvedAt,
+    this.rating,
+    this.reviewNote,
+    this.reviewImageUrls,
+    this.reviewedAt,
   }) : super(imageUrl: imageUrls.isNotEmpty ? imageUrls.first : '');
 
   factory ReportDetailModel.fromJson(Map<String, dynamic> json) {
@@ -45,6 +55,19 @@ class ReportDetailModel extends ReportModel {
         parsedImageUrls = List<String>.from(json['image_urls']);
       } else if (json['image_urls'] is String) {
         parsedImageUrls = (json['image_urls'] as String)
+            .split(',')
+            .where((e) => e.isNotEmpty)
+            .toList();
+      }
+    }
+
+    List<String>? parsedReviewImages;
+    final rawReviewImages = json['review_image_urls'] ?? json['reviewImages'] ?? json['reviewImageUrls'];
+    if (rawReviewImages != null) {
+      if (rawReviewImages is List) {
+        parsedReviewImages = List<String>.from(rawReviewImages);
+      } else if (rawReviewImages is String) {
+        parsedReviewImages = rawReviewImages
             .split(',')
             .where((e) => e.isNotEmpty)
             .toList();
@@ -69,6 +92,7 @@ class ReportDetailModel extends ReportModel {
       isAnonymous: json['is_anonymous'] as bool? ?? false,
       userName: json['user_name'] as String?,
       userAvatarUrl: json['user_avatar_url'] as String?,
+      userPhone: (json['user_phone'] ?? json['userPhone']) as String?,
       address: json['address'] as String?,
       locationDescription: json['location_description'] as String?,
       distanceInMeters: (json['distance_in_meters'] as num?)?.toDouble(),
@@ -85,6 +109,12 @@ class ReportDetailModel extends ReportModel {
           ? DateTime.tryParse(json['resolved_at'].toString())
           : null,
       isReviewResolved: json['isReviewResolved'] as bool? ?? json['is_review_resolved'] as bool?,
+      rating: (json['rating'] as num?)?.toInt(),
+      reviewNote: (json['review_note'] ?? json['reviewNote']) as String?,
+      reviewImageUrls: parsedReviewImages,
+      reviewedAt: json['reviewed_at'] != null || json['reviewedAt'] != null
+          ? DateTime.tryParse((json['reviewed_at'] ?? json['reviewedAt']).toString())
+          : null,
     );
   }
 
@@ -94,6 +124,7 @@ class ReportDetailModel extends ReportModel {
     map['image_urls'] = imageUrls;
     map['severity'] = severity.name.toUpperCase();
     map['is_anonymous'] = isAnonymous;
+    map['user_phone'] = userPhone;
     map['address'] = address;
     map['location_description'] = locationDescription;
     map['assigned_staff_id'] = assignedStaffId;
@@ -102,6 +133,10 @@ class ReportDetailModel extends ReportModel {
     map['resolved_note'] = resolvedNote;
     map['resolved_image_urls'] = resolvedImageUrls;
     map['resolved_at'] = resolvedAt?.toIso8601String();
+    map['rating'] = rating;
+    map['review_note'] = reviewNote;
+    map['review_image_urls'] = reviewImageUrls;
+    map['reviewed_at'] = reviewedAt?.toIso8601String();
     return map;
   }
 
@@ -110,8 +145,7 @@ class ReportDetailModel extends ReportModel {
     String? id,
     String? title,
     String? description,
-    String?
-    imageUrl, // Note: not used but required for override signature match if any
+    String? imageUrl,
     double? latitude,
     double? longitude,
     ReportStatus? status,
@@ -122,11 +156,20 @@ class ReportDetailModel extends ReportModel {
     bool? isAnonymous,
     String? userName,
     String? userAvatarUrl,
+    String? userPhone,
     String? address,
     String? locationDescription,
     String? assignedStaffId,
     String? assignedStaffName,
     String? assignedStaffAvatarUrl,
+    String? resolvedNote,
+    List<String>? resolvedImageUrls,
+    DateTime? resolvedAt,
+    bool? isReviewResolved,
+    int? rating,
+    String? reviewNote,
+    List<String>? reviewImageUrls,
+    DateTime? reviewedAt,
   }) {
     return ReportDetailModel(
       id: id ?? this.id,
@@ -142,11 +185,20 @@ class ReportDetailModel extends ReportModel {
       isAnonymous: isAnonymous ?? this.isAnonymous,
       userName: userName ?? this.userName,
       userAvatarUrl: userAvatarUrl ?? this.userAvatarUrl,
+      userPhone: userPhone ?? this.userPhone,
       address: address ?? this.address,
       locationDescription: locationDescription ?? this.locationDescription,
       assignedStaffId: assignedStaffId ?? this.assignedStaffId,
       assignedStaffName: assignedStaffName ?? this.assignedStaffName,
       assignedStaffAvatarUrl: assignedStaffAvatarUrl ?? this.assignedStaffAvatarUrl,
+      resolvedNote: resolvedNote ?? this.resolvedNote,
+      resolvedImageUrls: resolvedImageUrls ?? this.resolvedImageUrls,
+      resolvedAt: resolvedAt ?? this.resolvedAt,
+      isReviewResolved: isReviewResolved ?? this.isReviewResolved,
+      rating: rating ?? this.rating,
+      reviewNote: reviewNote ?? this.reviewNote,
+      reviewImageUrls: reviewImageUrls ?? this.reviewImageUrls,
+      reviewedAt: reviewedAt ?? this.reviewedAt,
     );
   }
 }

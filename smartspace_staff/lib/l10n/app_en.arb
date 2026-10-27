@@ -304,5 +304,17 @@
       }
     }
   },
-  "mapLoadReportsFailed": "Couldn't load tasks on the map"
+  "mapLoadReportsFailed": "Couldn't load tasks on the map",
+  "locationSection": "Incident Location",
+  "noAddress": "No address provided",
+  "locationDescriptionLabel": "Location description",
+  "userPhone": "Phone number",
+  "resolutionInfo": "Resolution Details",
+  "resolutionNote": "Resolution Note",
+  "resolutionImages": "Resolution Photos",
+  "resolvedAtLabel": "Completion Time",
+  "citizenReviewUnresolved": "Citizen Feedback: Unresolved",
+  "citizenRating": "Citizen Rating",
+  "citizenReviewReason": "Reason for Unsatisfactory",
+  "citizenReviewPhotos": "Citizen Photos"
 }

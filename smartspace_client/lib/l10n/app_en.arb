@@ -340,5 +340,8 @@
   },
   "mapClusterSortHint": "Most dangerous first, then newest",
   "mapZoomInForMore": "Zoom in to see more reports",
-  "mapLoadReportsFailed": "Couldn't load reports on the map"
+  "mapLoadReportsFailed": "Couldn't load reports on the map",
+  "locationSection": "Incident Location",
+  "noAddress": "No address provided",
+  "locationDescriptionLabel": "Location description"
 }

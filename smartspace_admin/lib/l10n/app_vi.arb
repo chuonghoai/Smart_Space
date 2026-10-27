@@ -671,5 +671,6 @@
   },
   "mapClusterSortHint": "Chờ xử lý trước, mới nhất trước",
   "mapZoomInForMore": "Phóng to để xem thêm phản ánh",
-  "mapLoadReportsFailed": "Không tải được phản ánh trên bản đồ"
+  "mapLoadReportsFailed": "Không tải được phản ánh trên bản đồ",
+  "locationDescriptionLabel": "Mô tả vị trí"
 }

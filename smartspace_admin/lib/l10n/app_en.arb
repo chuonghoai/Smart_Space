@@ -671,5 +671,6 @@
   },
   "mapClusterSortHint": "Pending first, then newest",
   "mapZoomInForMore": "Zoom in to see more reports",
-  "mapLoadReportsFailed": "Couldn't load reports on the map"
+  "mapLoadReportsFailed": "Couldn't load reports on the map",
+  "locationDescriptionLabel": "Location description"
 }

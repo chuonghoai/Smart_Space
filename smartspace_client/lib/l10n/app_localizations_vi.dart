@@ -875,4 +875,13 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get mapLoadReportsFailed => 'Không tải được phản ánh trên bản đồ';
+
+  @override
+  String get locationSection => 'Vị trí sự cố';
+
+  @override
+  String get noAddress => 'Chưa cập nhật địa chỉ';
+
+  @override
+  String get locationDescriptionLabel => 'Mô tả vị trí';
 }

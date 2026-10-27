@@ -1,3 +1,5 @@
+// ignore_for_file: deprecated_member_use
+
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_map/flutter_map.dart';
@@ -371,102 +373,210 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                           const SizedBox(height: 24),
                         ],
 
-                        // Map & Distance
-                        Consumer(
-                          builder: (context, ref, child) {
-                            final distanceAsync = ref.watch(reportDistanceProvider(widget.reportId));
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 8.0),
-                              child: distanceAsync.when(
-                                data: (distance) => Text(
-                                  l10n.distanceFromYou((distance / 1000).toStringAsFixed(1)),
-                                  style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.bold),
-                                ),
-                                loading: () => Row(
+                        // Location Card
+                        Card(
+                          elevation: 0,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(16),
+                            side: BorderSide(
+                              color: theme.colorScheme.outlineVariant.withOpacity(0.5),
+                            ),
+                          ),
+                          color: theme.colorScheme.surface,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
                                   children: [
-                                    const SizedBox(
-                                      width: 16,
-                                      height: 16,
-                                      child: CircularProgressIndicator(strokeWidth: 2),
+                                    Icon(
+                                      Icons.location_on_outlined,
+                                      size: 20,
+                                      color: theme.colorScheme.primary,
                                     ),
                                     const SizedBox(width: 8),
-                                    Text(l10n.calculatingDistance),
+                                    Text(
+                                      l10n.locationSection,
+                                      style: theme.textTheme.titleSmall?.copyWith(
+                                        fontWeight: FontWeight.bold,
+                                        color: theme.colorScheme.primary,
+                                      ),
+                                    ),
                                   ],
                                 ),
-                                error: (err, stack) {
-                                  String errorMsg = l10n.turnOnLocationToViewDistance;
-                                  if (err == 'LOCATION_DISABLED') {
-                                    errorMsg = l10n.locationServiceDisabledError;
-                                  } else if (err == 'PERMISSION_DENIED') {
-                                    errorMsg = l10n.locationPermissionDeniedForeverError;
-                                  }
-                                  
-                                  return InkWell(
-                                    onTap: _requestLocationPermission,
-                                    child: Text(
-                                      errorMsg,
-                                      style: TextStyle(color: theme.colorScheme.primary, decoration: TextDecoration.underline),
+                                const Divider(height: 20),
+                                Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Icon(
+                                      Icons.place_rounded,
+                                      size: 20,
+                                      color: theme.colorScheme.error,
                                     ),
-                                  );
-                                },
-                              ),
-                            );
-                          },
-                        ),
-
-                        // Map View
-                        Container(
-                          height: 200,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: theme.dividerColor),
-                          ),
-                          child: ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Stack(
-                              children: [
-                                FlutterMap(
-                                  options: MapOptions(
-                                    initialCenter: LatLng(report.latitude, report.longitude),
-                                    initialZoom: 15.0,
-                                    interactionOptions: const InteractionOptions(
-                                      flags: InteractiveFlag.none,
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            report.address?.isNotEmpty == true
+                                                ? report.address!
+                                                : l10n.noAddress,
+                                            style: theme.textTheme.bodyMedium?.copyWith(
+                                              fontWeight: FontWeight.w500,
+                                            ),
+                                          ),
+                                          if (report.locationDescription?.isNotEmpty == true) ...[
+                                            const SizedBox(height: 4),
+                                            Text(
+                                              '${l10n.locationDescriptionLabel}: ${report.locationDescription!}',
+                                              style: theme.textTheme.bodySmall?.copyWith(
+                                                color: theme.colorScheme.onSurfaceVariant,
+                                              ),
+                                            ),
+                                          ],
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 10),
+                                Padding(
+                                  padding: const EdgeInsets.only(left: 28.0),
+                                  child: Text(
+                                    '${report.latitude.toStringAsFixed(6)}, ${report.longitude.toStringAsFixed(6)}',
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: theme.colorScheme.onSurfaceVariant,
                                     ),
                                   ),
-                                  children: [
-                                    TileLayer(urlTemplate: 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}'),
-                                    MarkerLayer(
-                                      markers: [
-                                        Marker(
-                                          point: LatLng(report.latitude, report.longitude),
-                                          width: 40,
-                                          height: 40,
-                                          child: Icon(Icons.location_on, color: theme.colorScheme.error, size: 40),
+                                ),
+                                const SizedBox(height: 12),
+                                // Distance indicator
+                                Consumer(
+                                  builder: (context, ref, child) {
+                                    final distanceAsync = ref.watch(reportDistanceProvider(widget.reportId));
+                                    return Padding(
+                                      padding: const EdgeInsets.only(bottom: 12.0),
+                                      child: distanceAsync.when(
+                                        data: (distance) => Row(
+                                          children: [
+                                            Icon(
+                                              Icons.near_me_outlined,
+                                              size: 16,
+                                              color: theme.colorScheme.primary,
+                                            ),
+                                            const SizedBox(width: 6),
+                                            Text(
+                                              l10n.distanceFromYou((distance / 1000).toStringAsFixed(1)),
+                                              style: theme.textTheme.bodyMedium?.copyWith(
+                                                fontWeight: FontWeight.bold,
+                                                color: theme.colorScheme.primary,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                        loading: () => Row(
+                                          children: [
+                                            const SizedBox(
+                                              width: 14,
+                                              height: 14,
+                                              child: CircularProgressIndicator(strokeWidth: 2),
+                                            ),
+                                            const SizedBox(width: 8),
+                                            Text(
+                                              l10n.calculatingDistance,
+                                              style: theme.textTheme.bodySmall,
+                                            ),
+                                          ],
+                                        ),
+                                        error: (err, stack) {
+                                          String errorMsg = l10n.turnOnLocationToViewDistance;
+                                          if (err == 'LOCATION_DISABLED') {
+                                            errorMsg = l10n.locationServiceDisabledError;
+                                          } else if (err == 'PERMISSION_DENIED') {
+                                            errorMsg = l10n.locationPermissionDeniedForeverError;
+                                          }
+
+                                          return InkWell(
+                                            onTap: _requestLocationPermission,
+                                            child: Text(
+                                              errorMsg,
+                                              style: TextStyle(
+                                                color: theme.colorScheme.primary,
+                                                decoration: TextDecoration.underline,
+                                                fontSize: 12,
+                                              ),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                    );
+                                  },
+                                ),
+                                // Map View
+                                Container(
+                                  height: 180,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(12),
+                                    border: Border.all(
+                                      color: theme.colorScheme.outlineVariant.withOpacity(0.5),
+                                    ),
+                                  ),
+                                  child: ClipRRect(
+                                    borderRadius: BorderRadius.circular(12),
+                                    child: Stack(
+                                      children: [
+                                        FlutterMap(
+                                          options: MapOptions(
+                                            initialCenter: LatLng(report.latitude, report.longitude),
+                                            initialZoom: 15.0,
+                                            interactionOptions: const InteractionOptions(
+                                              flags: InteractiveFlag.none,
+                                            ),
+                                          ),
+                                          children: [
+                                            TileLayer(urlTemplate: 'https://mt1.google.com/vt/lyrs=m&x={x}&y={y}&z={z}'),
+                                            MarkerLayer(
+                                              markers: [
+                                                Marker(
+                                                  point: LatLng(report.latitude, report.longitude),
+                                                  width: 40,
+                                                  height: 40,
+                                                  child: Icon(Icons.location_on, color: theme.colorScheme.error, size: 40),
+                                                ),
+                                              ],
+                                            ),
+                                          ],
+                                        ),
+                                        Positioned.fill(
+                                          child: Material(
+                                            color: Colors.transparent,
+                                            child: InkWell(
+                                              onTap: () => _openGoogleMaps(report.latitude, report.longitude),
+                                            ),
+                                          ),
                                         ),
                                       ],
                                     ),
-                                  ],
+                                  ),
                                 ),
-                                // Cover the map to intercept taps if we want them to open google maps on tap directly
-                                Positioned.fill(
-                                  child: Material(
-                                    color: Colors.transparent,
-                                    child: InkWell(
-                                      onTap: () => _openGoogleMaps(report.latitude, report.longitude),
+                                const SizedBox(height: 12),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: OutlinedButton.icon(
+                                    onPressed: () => _openGoogleMaps(report.latitude, report.longitude),
+                                    icon: const Icon(Icons.map_outlined, size: 18),
+                                    label: Text(l10n.openInGoogleMaps),
+                                    style: OutlinedButton.styleFrom(
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
                                     ),
                                   ),
                                 ),
                               ],
                             ),
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        SizedBox(
-                          width: double.infinity,
-                          child: ElevatedButton.icon(
-                            onPressed: () => _openGoogleMaps(report.latitude, report.longitude),
-                            icon: const Icon(Icons.map),
-                            label: Text(l10n.openInGoogleMaps),
                           ),
                         ),
                         const SizedBox(height: 24),

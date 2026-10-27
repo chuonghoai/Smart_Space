@@ -786,4 +786,37 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get mapLoadReportsFailed => 'Không tải được việc trên bản đồ';
+
+  @override
+  String get locationSection => 'Vị trí sự cố';
+
+  @override
+  String get noAddress => 'Chưa cập nhật địa chỉ';
+
+  @override
+  String get locationDescriptionLabel => 'Mô tả vị trí';
+
+  @override
+  String get userPhone => 'Số điện thoại';
+
+  @override
+  String get resolutionInfo => 'Kết quả xử lý';
+
+  @override
+  String get resolutionImages => 'Ảnh kết quả xử lý';
+
+  @override
+  String get resolvedAtLabel => 'Thời gian hoàn thành';
+
+  @override
+  String get citizenReviewUnresolved => 'Người dân phản hồi: Chưa được xử lý';
+
+  @override
+  String get citizenRating => 'Đánh giá của người dân';
+
+  @override
+  String get citizenReviewReason => 'Lý do chưa xử lý thỏa đáng';
+
+  @override
+  String get citizenReviewPhotos => 'Hình ảnh người dân cung cấp';
 }

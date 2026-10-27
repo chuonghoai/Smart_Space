@@ -1516,4 +1516,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mapLoadReportsFailed => 'Couldn\'t load reports on the map';
+
+  @override
+  String get locationDescriptionLabel => 'Location description';
 }

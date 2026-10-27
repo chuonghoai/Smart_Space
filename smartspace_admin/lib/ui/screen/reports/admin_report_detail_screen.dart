@@ -766,11 +766,25 @@ class _AdminReportDetailScreenState
                 ),
                 const SizedBox(width: 8),
                 Expanded(
-                  child: Text(
-                    report.address?.isNotEmpty == true
-                        ? report.address!
-                        : l10n.noAddress,
-                    style: theme.textTheme.bodyMedium,
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        report.address?.isNotEmpty == true
+                            ? report.address!
+                            : l10n.noAddress,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                      if (report.locationDescription?.isNotEmpty == true) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          '${l10n.locationDescriptionLabel}: ${report.locationDescription!}',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ],
                   ),
                 ),
               ],

@@ -340,5 +340,8 @@
   },
   "mapClusterSortHint": "Nguy hiểm trước, mới nhất trước",
   "mapZoomInForMore": "Phóng to để xem thêm phản ánh",
-  "mapLoadReportsFailed": "Không tải được phản ánh trên bản đồ"
+  "mapLoadReportsFailed": "Không tải được phản ánh trên bản đồ",
+  "locationSection": "Vị trí sự cố",
+  "noAddress": "Chưa cập nhật địa chỉ",
+  "locationDescriptionLabel": "Mô tả vị trí"
 }

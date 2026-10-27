@@ -881,4 +881,13 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mapLoadReportsFailed => 'Couldn\'t load reports on the map';
+
+  @override
+  String get locationSection => 'Incident Location';
+
+  @override
+  String get noAddress => 'No address provided';
+
+  @override
+  String get locationDescriptionLabel => 'Location description';
 }

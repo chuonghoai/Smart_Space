@@ -304,5 +304,17 @@
       }
     }
   },
-  "mapLoadReportsFailed": "Không tải được việc trên bản đồ"
+  "mapLoadReportsFailed": "Không tải được việc trên bản đồ",
+  "locationSection": "Vị trí sự cố",
+  "noAddress": "Chưa cập nhật địa chỉ",
+  "locationDescriptionLabel": "Mô tả vị trí",
+  "userPhone": "Số điện thoại",
+  "resolutionInfo": "Kết quả xử lý",
+  "resolutionNote": "Ghi chú xử lý",
+  "resolutionImages": "Ảnh kết quả xử lý",
+  "resolvedAtLabel": "Thời gian hoàn thành",
+  "citizenReviewUnresolved": "Người dân phản hồi: Chưa được xử lý",
+  "citizenRating": "Đánh giá của người dân",
+  "citizenReviewReason": "Lý do chưa xử lý thỏa đáng",
+  "citizenReviewPhotos": "Hình ảnh người dân cung cấp"
 }
