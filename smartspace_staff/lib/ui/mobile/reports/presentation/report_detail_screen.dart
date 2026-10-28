@@ -403,7 +403,19 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                                       l10n.commissionReceived(NumberFormat('#,###', 'vi_VN').format(report.baseCommission!)),
                                       style: theme.textTheme.bodySmall,
                                     ),
-                                  if (report.deductedCommission != null && report.deductedCommission! > 0)
+                                  if (report.resolvedPenaltyDeductions.isNotEmpty) ...[
+                                    for (final item in report.resolvedPenaltyDeductions) ...[
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        l10n.commissionPenaltyDeductionTurn(item.turn, NumberFormat('#,###', 'vi_VN').format(item.amount)),
+                                        style: theme.textTheme.bodySmall?.copyWith(
+                                          color: isDark ? const Color(0xFFEF5350) : const Color(0xFFC62828),
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ],
+                                  ] else if (report.deductedCommission != null && report.deductedCommission! > 0) ...[
+                                    const SizedBox(height: 2),
                                     Text(
                                       l10n.commissionPenaltyDeducted(NumberFormat('#,###', 'vi_VN').format(report.deductedCommission!)),
                                       style: theme.textTheme.bodySmall?.copyWith(
@@ -411,7 +423,9 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
-                                  if (report.finalCommission != null)
+                                  ],
+                                  if (report.finalCommission != null) ...[
+                                    const SizedBox(height: 4),
                                     Text(
                                       l10n.finalCommissionReceived(NumberFormat('#,###', 'vi_VN').format(report.finalCommission!)),
                                       style: theme.textTheme.bodySmall?.copyWith(
@@ -419,6 +433,7 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                                         color: isDark ? const Color(0xFF81C784) : const Color(0xFF2E7D32),
                                       ),
                                     ),
+                                  ],
                                   const SizedBox(height: 4),
                                   Text(
                                     l10n.rehandlingNoExtraCommission,
@@ -1083,14 +1098,27 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                                           color: theme.colorScheme.onSurface,
                                         ),
                                       ),
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        l10n.commissionPenaltyDeducted(NumberFormat('#,###', 'vi_VN').format(report.deductedCommission!)),
-                                        style: theme.textTheme.bodySmall?.copyWith(
-                                          color: isDark ? const Color(0xFFEF5350) : const Color(0xFFC62828),
-                                          fontWeight: FontWeight.w600,
+                                      if (report.resolvedPenaltyDeductions.isNotEmpty) ...[
+                                        for (final item in report.resolvedPenaltyDeductions) ...[
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            l10n.commissionPenaltyDeductionTurn(item.turn, NumberFormat('#,###', 'vi_VN').format(item.amount)),
+                                            style: theme.textTheme.bodySmall?.copyWith(
+                                              color: isDark ? const Color(0xFFEF5350) : const Color(0xFFC62828),
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ] else ...[
+                                        const SizedBox(height: 2),
+                                        Text(
+                                          l10n.commissionPenaltyDeducted(NumberFormat('#,###', 'vi_VN').format(report.deductedCommission!)),
+                                          style: theme.textTheme.bodySmall?.copyWith(
+                                            color: isDark ? const Color(0xFFEF5350) : const Color(0xFFC62828),
+                                            fontWeight: FontWeight.w600,
+                                          ),
                                         ),
-                                      ),
+                                      ],
                                       const SizedBox(height: 4),
                                       Text(
                                         l10n.finalCommissionReceived(NumberFormat('#,###', 'vi_VN').format(report.finalCommission ?? 0)),

@@ -310,6 +310,50 @@ public class StaffWalletServiceImpl implements IStaffWalletService {
         }
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public List<com.vn.smart_space.dto.response.report.ReportDetailResponse.PenaltyDeductionItem> getPenaltyDeductionsForReport(Report report) {
+        if (report == null || report.getId() == null) {
+            return java.util.Collections.emptyList();
+        }
+
+        List<StaffWalletTransaction> transactions = staffWalletTransactionRepository
+                .findByReportIdAndType(report.getId(), EWalletTransactionType.PENALTY_DEDUCTION);
+
+        if (transactions != null && !transactions.isEmpty()) {
+            List<com.vn.smart_space.dto.response.report.ReportDetailResponse.PenaltyDeductionItem> items = new java.util.ArrayList<>();
+            for (int i = 0; i < transactions.size(); i++) {
+                items.add(com.vn.smart_space.dto.response.report.ReportDetailResponse.PenaltyDeductionItem.builder()
+                        .turn(i + 1)
+                        .amount(transactions.get(i).getAmount())
+                        .build());
+            }
+            return items;
+        }
+
+        int count = report.getRehandlingPenaltyCount() != null ? report.getRehandlingPenaltyCount() : 0;
+        if (count > 0 && report.getBaseCommission() != null) {
+            WalletConfig config = walletConfigService.getOrCreateDefaultConfig();
+            double base = report.getBaseCommission();
+            List<com.vn.smart_space.dto.response.report.ReportDetailResponse.PenaltyDeductionItem> items = new java.util.ArrayList<>();
+            for (int i = 0; i < Math.min(count, 3); i++) {
+                double rate = switch (i) {
+                    case 0 -> config.getPenaltyRate1() != null ? config.getPenaltyRate1() : 20.0;
+                    case 1 -> config.getPenaltyRate2() != null ? config.getPenaltyRate2() : 20.0;
+                    case 2 -> config.getPenaltyRate3() != null ? config.getPenaltyRate3() : 60.0;
+                    default -> 0.0;
+                };
+                items.add(com.vn.smart_space.dto.response.report.ReportDetailResponse.PenaltyDeductionItem.builder()
+                        .turn(i + 1)
+                        .amount(base * (rate / 100.0))
+                        .build());
+            }
+            return items;
+        }
+
+        return java.util.Collections.emptyList();
+    }
+
     private double getCommissionAmountBySeverity(EReportSeverity severity, WalletConfig config) {
         if (severity == null) {
             return config.getCommissionLow();

@@ -848,17 +848,22 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String commissionReceived(String amount) {
-    return 'Bạn đã nhận được $amount đ';
+    return 'Bạn đã nhận được $amountđ';
   }
 
   @override
   String commissionPenaltyDeducted(String amount) {
-    return 'Bị đánh giá xấu: -$amount đ';
+    return 'Bị đánh giá xấu: -$amountđ';
+  }
+
+  @override
+  String commissionPenaltyDeductionTurn(int turn, String amount) {
+    return 'Bị đánh giá xấu lần $turn: -$amountđ';
   }
 
   @override
   String finalCommissionReceived(String amount) {
-    return 'Số tiền cuối cùng nhận được: $amount đ';
+    return 'Số tiền cuối cùng nhận được: $amountđ';
   }
 
   @override

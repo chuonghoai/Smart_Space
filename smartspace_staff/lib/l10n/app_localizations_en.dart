@@ -870,6 +870,11 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String commissionPenaltyDeductionTurn(int turn, String amount) {
+    return 'Bad review deduction turn $turn: -$amount VND';
+  }
+
+  @override
   String finalCommissionReceived(String amount) {
     return 'Final amount received: $amount VND';
   }

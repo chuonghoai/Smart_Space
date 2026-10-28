@@ -14,5 +14,6 @@ public interface IStaffWalletService {
     PageResponse<StaffWalletTransactionResponse> getTransactions(String userId, int page, int size, Locale locale);
     void processReportCompletedCommission(Report report);
     void processReportReopenPenalty(Report report);
+    java.util.List<com.vn.smart_space.dto.response.report.ReportDetailResponse.PenaltyDeductionItem> getPenaltyDeductionsForReport(Report report);
 }
 

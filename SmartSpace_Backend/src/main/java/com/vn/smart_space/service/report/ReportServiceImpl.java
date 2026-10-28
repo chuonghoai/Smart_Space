@@ -495,6 +495,7 @@ public class ReportServiceImpl implements IReportService {
                 .expectedCommission(expectedCommission)
                 .commissionAwarded(report.getCommissionAwarded())
                 .rehandlingPenaltyCount(report.getRehandlingPenaltyCount())
+                .penaltyDeductions(staffWalletService.getPenaltyDeductionsForReport(report))
                 .build();
     }
 

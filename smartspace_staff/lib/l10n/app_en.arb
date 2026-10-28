@@ -348,6 +348,17 @@
       }
     }
   },
+  "commissionPenaltyDeductionTurn": "Bad review deduction turn {turn}: -{amount} VND",
+  "@commissionPenaltyDeductionTurn": {
+    "placeholders": {
+      "turn": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
   "finalCommissionReceived": "Final amount received: {amount} VND",
   "@finalCommissionReceived": {
     "placeholders": {

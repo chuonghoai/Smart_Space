@@ -110,4 +110,19 @@ public class ReportDetailResponse {
 
     @JsonProperty("rehandling_penalty_count")
     private Integer rehandlingPenaltyCount;
+
+    @JsonProperty("penalty_deductions")
+    private List<PenaltyDeductionItem> penaltyDeductions;
+
+    @Data
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
+    public static class PenaltyDeductionItem {
+        @JsonProperty("turn")
+        private Integer turn;
+
+        @JsonProperty("amount")
+        private Double amount;
+    }
 }

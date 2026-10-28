@@ -332,7 +332,7 @@
       }
     }
   },
-  "commissionReceived": "Bạn đã nhận được {amount} đ",
+  "commissionReceived": "Bạn đã nhận được {amount}đ",
   "@commissionReceived": {
     "placeholders": {
       "amount": {
@@ -340,7 +340,7 @@
       }
     }
   },
-  "commissionPenaltyDeducted": "Bị đánh giá xấu: -{amount} đ",
+  "commissionPenaltyDeducted": "Bị đánh giá xấu: -{amount}đ",
   "@commissionPenaltyDeducted": {
     "placeholders": {
       "amount": {
@@ -348,7 +348,18 @@
       }
     }
   },
-  "finalCommissionReceived": "Số tiền cuối cùng nhận được: {amount} đ",
+  "commissionPenaltyDeductionTurn": "Bị đánh giá xấu lần {turn}: -{amount}đ",
+  "@commissionPenaltyDeductionTurn": {
+    "placeholders": {
+      "turn": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "finalCommissionReceived": "Số tiền cuối cùng nhận được: {amount}đ",
   "@finalCommissionReceived": {
     "placeholders": {
       "amount": {

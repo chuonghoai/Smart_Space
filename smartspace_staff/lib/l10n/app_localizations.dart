@@ -1724,6 +1724,12 @@ abstract class AppLocalizations {
   /// **'Rated poorly: -{amount} VND'**
   String commissionPenaltyDeducted(String amount);
 
+  /// No description provided for @commissionPenaltyDeductionTurn.
+  ///
+  /// In en, this message translates to:
+  /// **'Bad review deduction turn {turn}: -{amount} VND'**
+  String commissionPenaltyDeductionTurn(int turn, String amount);
+
   /// No description provided for @finalCommissionReceived.
   ///
   /// In en, this message translates to:
