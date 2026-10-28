@@ -283,7 +283,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get instructions => 'Hướng dẫn';
 
   @override
-  String get viewAll => 'Tất cả';
+  String get viewAll => 'Xem tất cả';
 
   @override
   String get dangerous => 'NGUY HIỂM';

@@ -91,7 +91,7 @@
   "newsNotFound": "Không tìm thấy tin tức",
   "targetAdmin": "Admin",
   "instructions": "Hướng dẫn",
-  "viewAll": "Tất cả",
+  "viewAll": "Xem tất cả",
   "dangerous": "NGUY HIỂM",
   "distanceFromYou": "Cách bạn {value} {unit}",
   "@distanceFromYou": {
