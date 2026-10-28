@@ -322,118 +322,76 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                           ),
                         ],
 
-                        // Processing Commission Notice
-                        if (report.status == ReportStatus.processing) ...[
-                          if (report.commissionAwarded != true && report.expectedCommission != null && report.expectedCommission! > 0) ...[
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(12),
-                              margin: const EdgeInsets.only(bottom: 16),
-                              decoration: BoxDecoration(
-                                color: isDark
-                                    ? const Color(0xFF2E7D32).withOpacity(0.18)
-                                    : const Color(0xFFE8F5E9),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: isDark
-                                      ? const Color(0xFF66BB6A).withOpacity(0.4)
-                                      : const Color(0xFFA5D6A7),
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.monetization_on_outlined,
-                                    color: isDark
-                                        ? const Color(0xFF81C784)
-                                        : const Color(0xFF2E7D32),
-                                    size: 22,
-                                  ),
-                                  const SizedBox(width: 10),
-                                  Expanded(
-                                    child: Text(
-                                      l10n.commissionExpectedNotice(
-                                        NumberFormat('#,###', 'vi_VN').format(report.expectedCommission!),
-                                      ),
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: isDark
-                                            ? const Color(0xFFC8E6C9)
-                                            : const Color(0xFF1B5E20),
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                ],
+                        // Commission Details Banner / Card (Always at the top)
+                        if (report.commissionAwarded == true || (report.baseCommission != null && report.baseCommission! > 0)) ...[
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(12),
+                            margin: const EdgeInsets.only(bottom: 16),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.35),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: theme.colorScheme.outlineVariant.withOpacity(0.4),
                               ),
                             ),
-                          ] else if (report.commissionAwarded == true) ...[
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(12),
-                              margin: const EdgeInsets.only(bottom: 16),
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.35),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: theme.colorScheme.outlineVariant.withOpacity(0.4),
-                                ),
-                              ),
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Row(
-                                    children: [
-                                      Icon(
-                                        Icons.monetization_on_outlined,
-                                        size: 18,
-                                        color: isDark ? const Color(0xFF81C784) : const Color(0xFF2E7D32),
-                                      ),
-                                      const SizedBox(width: 8),
-                                      Text(
-                                        l10n.commissionBreakdown,
-                                        style: theme.textTheme.labelMedium?.copyWith(
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                  const SizedBox(height: 6),
-                                  if (report.baseCommission != null)
-                                    Text(
-                                      l10n.commissionReceived(NumberFormat('#,###', 'vi_VN').format(report.baseCommission!)),
-                                      style: theme.textTheme.bodySmall,
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.monetization_on_outlined,
+                                      size: 18,
+                                      color: isDark ? const Color(0xFF81C784) : const Color(0xFF2E7D32),
                                     ),
-                                  if (report.resolvedPenaltyDeductions.isNotEmpty) ...[
-                                    for (final item in report.resolvedPenaltyDeductions) ...[
-                                      const SizedBox(height: 2),
-                                      Text(
-                                        l10n.commissionPenaltyDeductionTurn(item.turn, NumberFormat('#,###', 'vi_VN').format(item.amount)),
-                                        style: theme.textTheme.bodySmall?.copyWith(
-                                          color: isDark ? const Color(0xFFEF5350) : const Color(0xFFC62828),
-                                          fontWeight: FontWeight.w600,
-                                        ),
+                                    const SizedBox(width: 8),
+                                    Text(
+                                      l10n.commissionBreakdown,
+                                      style: theme.textTheme.labelMedium?.copyWith(
+                                        fontWeight: FontWeight.bold,
                                       ),
-                                    ],
-                                  ] else if (report.deductedCommission != null && report.deductedCommission! > 0) ...[
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 6),
+                                if (report.baseCommission != null)
+                                  Text(
+                                    l10n.commissionReceived(NumberFormat('#,###', 'vi_VN').format(report.baseCommission!)),
+                                    style: theme.textTheme.bodySmall,
+                                  ),
+                                if (report.resolvedPenaltyDeductions.isNotEmpty) ...[
+                                  for (final item in report.resolvedPenaltyDeductions) ...[
                                     const SizedBox(height: 2),
                                     Text(
-                                      l10n.commissionPenaltyDeducted(NumberFormat('#,###', 'vi_VN').format(report.deductedCommission!)),
+                                      l10n.commissionPenaltyDeductionTurn(item.turn, NumberFormat('#,###', 'vi_VN').format(item.amount)),
                                       style: theme.textTheme.bodySmall?.copyWith(
                                         color: isDark ? const Color(0xFFEF5350) : const Color(0xFFC62828),
                                         fontWeight: FontWeight.w600,
                                       ),
                                     ),
                                   ],
-                                  if (report.finalCommission != null) ...[
-                                    const SizedBox(height: 4),
-                                    Text(
-                                      l10n.finalCommissionReceived(NumberFormat('#,###', 'vi_VN').format(report.finalCommission!)),
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                        color: isDark ? const Color(0xFF81C784) : const Color(0xFF2E7D32),
-                                      ),
+                                ] else if (report.deductedCommission != null && report.deductedCommission! > 0) ...[
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    l10n.commissionPenaltyDeducted(NumberFormat('#,###', 'vi_VN').format(report.deductedCommission!)),
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: isDark ? const Color(0xFFEF5350) : const Color(0xFFC62828),
+                                      fontWeight: FontWeight.w600,
                                     ),
-                                  ],
+                                  ),
+                                ],
+                                if (report.finalCommission != null) ...[
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    l10n.finalCommissionReceived(NumberFormat('#,###', 'vi_VN').format(report.finalCommission!)),
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      fontWeight: FontWeight.bold,
+                                      color: isDark ? const Color(0xFF81C784) : const Color(0xFF2E7D32),
+                                    ),
+                                  ),
+                                ],
+                                if (report.status == ReportStatus.processing) ...[
                                   const SizedBox(height: 4),
                                   Text(
                                     l10n.rehandlingNoExtraCommission,
@@ -442,9 +400,53 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                                     ),
                                   ),
                                 ],
+                              ],
+                            ),
+                          ),
+                        ] else if (report.status == ReportStatus.processing &&
+                            report.expectedCommission != null &&
+                            report.expectedCommission! > 0) ...[
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(12),
+                            margin: const EdgeInsets.only(bottom: 16),
+                            decoration: BoxDecoration(
+                              color: isDark
+                                  ? const Color(0xFF2E7D32).withOpacity(0.18)
+                                  : const Color(0xFFE8F5E9),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(
+                                color: isDark
+                                    ? const Color(0xFF66BB6A).withOpacity(0.4)
+                                    : const Color(0xFFA5D6A7),
                               ),
                             ),
-                          ],
+                            child: Row(
+                              children: [
+                                Icon(
+                                  Icons.monetization_on_outlined,
+                                  color: isDark
+                                      ? const Color(0xFF81C784)
+                                      : const Color(0xFF2E7D32),
+                                  size: 22,
+                                ),
+                                const SizedBox(width: 10),
+                                Expanded(
+                                  child: Text(
+                                    l10n.commissionExpectedNotice(
+                                      NumberFormat('#,###', 'vi_VN').format(report.expectedCommission!),
+                                    ),
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: isDark
+                                          ? const Color(0xFFC8E6C9)
+                                          : const Color(0xFF1B5E20),
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
                         ],
 
                         // Status & Severity Dual Cards
@@ -1070,72 +1072,6 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                                         },
                                       ),
                                     ),
-                                  ],
-                                  if (report.baseCommission != null && report.baseCommission! > 0) ...[
-                                    const Divider(height: 24),
-                                    Row(
-                                      children: [
-                                        Icon(
-                                          Icons.monetization_on_outlined,
-                                          size: 18,
-                                          color: isDark ? const Color(0xFF81C784) : const Color(0xFF2E7D32),
-                                        ),
-                                        const SizedBox(width: 8),
-                                        Text(
-                                          l10n.commissionBreakdown,
-                                          style: theme.textTheme.labelMedium?.copyWith(
-                                            fontWeight: FontWeight.bold,
-                                            color: theme.colorScheme.onSurfaceVariant,
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                    const SizedBox(height: 8),
-                                    if (report.deductedCommission != null && report.deductedCommission! > 0) ...[
-                                      Text(
-                                        l10n.commissionReceived(NumberFormat('#,###', 'vi_VN').format(report.baseCommission!)),
-                                        style: theme.textTheme.bodySmall?.copyWith(
-                                          color: theme.colorScheme.onSurface,
-                                        ),
-                                      ),
-                                      if (report.resolvedPenaltyDeductions.isNotEmpty) ...[
-                                        for (final item in report.resolvedPenaltyDeductions) ...[
-                                          const SizedBox(height: 2),
-                                          Text(
-                                            l10n.commissionPenaltyDeductionTurn(item.turn, NumberFormat('#,###', 'vi_VN').format(item.amount)),
-                                            style: theme.textTheme.bodySmall?.copyWith(
-                                              color: isDark ? const Color(0xFFEF5350) : const Color(0xFFC62828),
-                                              fontWeight: FontWeight.w600,
-                                            ),
-                                          ),
-                                        ],
-                                      ] else ...[
-                                        const SizedBox(height: 2),
-                                        Text(
-                                          l10n.commissionPenaltyDeducted(NumberFormat('#,###', 'vi_VN').format(report.deductedCommission!)),
-                                          style: theme.textTheme.bodySmall?.copyWith(
-                                            color: isDark ? const Color(0xFFEF5350) : const Color(0xFFC62828),
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                      ],
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        l10n.finalCommissionReceived(NumberFormat('#,###', 'vi_VN').format(report.finalCommission ?? 0)),
-                                        style: theme.textTheme.bodyMedium?.copyWith(
-                                          color: isDark ? const Color(0xFF81C784) : const Color(0xFF2E7D32),
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ] else ...[
-                                      Text(
-                                        l10n.commissionReceived(NumberFormat('#,###', 'vi_VN').format(report.baseCommission!)),
-                                        style: theme.textTheme.bodyMedium?.copyWith(
-                                          color: isDark ? const Color(0xFF81C784) : const Color(0xFF2E7D32),
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                    ],
                                   ],
                                 ],
                               ),
