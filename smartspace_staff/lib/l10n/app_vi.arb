@@ -91,7 +91,7 @@
   "newsNotFound": "Không tìm thấy tin tức",
   "targetAdmin": "Admin",
   "instructions": "Hướng dẫn",
-  "viewAll": "Tất cả",
+  "viewAll": "Xem tất cả",
   "dangerous": "NGUY HIỂM",
   "distanceFromYou": "Cách bạn {value} {unit}",
   "@distanceFromYou": {
@@ -316,5 +316,60 @@
   "citizenReviewUnresolved": "Người dân phản hồi: Chưa được xử lý",
   "citizenRating": "Đánh giá của người dân",
   "citizenReviewReason": "Lý do chưa xử lý thỏa đáng",
-  "citizenReviewPhotos": "Hình ảnh người dân cung cấp"
+  "citizenReviewPhotos": "Hình ảnh người dân cung cấp",
+  "staffWallet": "Ví nhân viên",
+  "walletBalance": "Số dư ví",
+  "withdrawMoney": "Rút tiền",
+  "transactionHistory": "Lịch sử giao dịch",
+  "featureUnderDevelopment": "Tính năng đang được phát triển",
+  "recentTransactions": "Giao dịch gần đây",
+  "noTransactions": "Chưa có giao dịch nào",
+  "commissionExpectedNotice": "Bạn sẽ nhận được {amount} đ sau khi hoàn tất xử lý phản ánh này.",
+  "@commissionExpectedNotice": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "commissionReceived": "Bạn đã nhận được {amount}đ",
+  "@commissionReceived": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "commissionPenaltyDeducted": "Bị đánh giá xấu: -{amount}đ",
+  "@commissionPenaltyDeducted": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "commissionPenaltyDeductionTurn": "Bị đánh giá xấu lần {turn}: -{amount}đ",
+  "@commissionPenaltyDeductionTurn": {
+    "placeholders": {
+      "turn": {
+        "type": "int"
+      },
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "finalCommissionReceived": "Số tiền cuối cùng nhận được: {amount}đ",
+  "@finalCommissionReceived": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "rehandlingNoExtraCommission": "Xử lý lại sẽ không nhận thêm hoa hồng.",
+  "routeStaffWallet": "Ví nhân viên",
+  "routeStaffWalletTransactions": "Lịch sử giao dịch",
+  "commissionBreakdown": "Chi tiết hoa hồng",
+  "allTransactions": "Tất cả giao dịch"
 }

@@ -35,6 +35,12 @@ class NotificationRouter {
           debugPrint('[NotificationRouter] Missing newsId in payload');
         }
         break;
+      case 'STAFF_WALLET':
+      case 'WALLET':
+        final path = RouterPath.staffWallet;
+        debugPrint('[NotificationRouter] Navigating to $path');
+        GoRouter.of(ctx).push(path);
+        break;
       // Add other feature cases here, e.g. INVOICE_DETAIL, CHAT_MESSAGE
       default:
         debugPrint('[NotificationRouter] Unhandled action type: ${action.type}');

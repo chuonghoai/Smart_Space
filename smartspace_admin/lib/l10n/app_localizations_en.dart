@@ -1519,4 +1519,65 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get locationDescriptionLabel => 'Location description';
+
+  @override
+  String get routeWalletConfig => 'Wallet Commission Config';
+
+  @override
+  String get walletConfigTitle => 'Wallet Commission Config';
+
+  @override
+  String get walletConfigDescription =>
+      'Configure staff commission rates by severity and penalty deduction rates for re-handled reports.';
+
+  @override
+  String get commissionBySeverity => 'Commission by Severity';
+
+  @override
+  String get commissionLow => 'Low Severity (VND)';
+
+  @override
+  String get commissionMedium => 'Medium Severity (VND)';
+
+  @override
+  String get commissionHigh => 'High Severity (VND)';
+
+  @override
+  String get commissionCritical => 'Critical Severity (VND)';
+
+  @override
+  String get penaltyRateSettings => 'Re-handling Penalty Rates';
+
+  @override
+  String get penaltyRate1 => '1st Re-handling Penalty (%)';
+
+  @override
+  String get penaltyRate2 => '2nd Re-handling Penalty (%)';
+
+  @override
+  String get penaltyRate3 => '3rd Re-handling Penalty (%)';
+
+  @override
+  String get penaltyRateNote =>
+      'From the 3rd re-handling onwards, up to 100% of the commission is deducted. Subsequent attempts will have no further changes.';
+
+  @override
+  String get saveWalletConfig => 'Save Configuration';
+
+  @override
+  String get saveWalletConfigSuccess =>
+      'Wallet commission configuration updated successfully!';
+
+  @override
+  String get saveWalletConfigFailed =>
+      'Failed to save configuration, please try again.';
+
+  @override
+  String get invalidNumber => 'Invalid value';
+
+  @override
+  String get systemSettingsSection => 'System';
+
+  @override
+  String get manageWalletConfig => 'Wallet and Commission Config';
 }

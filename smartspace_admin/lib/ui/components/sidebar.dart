@@ -177,6 +177,15 @@ class Sidebar extends ConsumerWidget {
                       context.push(RouterPath.newsManagement);
                     },
                   ),
+                  _SidebarItem(
+                    icon: Icons.account_balance_wallet_outlined,
+                    label: l10n.walletConfigTitle,
+                    isSelected: currentPath == RouterPath.walletConfig,
+                    onTap: () {
+                      Navigator.pop(context);
+                      context.push(RouterPath.walletConfig);
+                    },
+                  ),
 
                   const Padding(
                     padding: EdgeInsets.symmetric(vertical: 8.0),
@@ -428,6 +437,13 @@ class WebSidebar extends ConsumerWidget {
                 isExpanded: isExpanded,
                 isSelected: currentPath == RouterPath.newsManagement || currentPath.startsWith('/news'),
                 onTap: () => context.push(RouterPath.newsManagement),
+              ),
+              _WebSidebarItem(
+                icon: Icons.account_balance_wallet_outlined,
+                label: l10n.walletConfigTitle,
+                isExpanded: isExpanded,
+                isSelected: currentPath == RouterPath.walletConfig,
+                onTap: () => context.push(RouterPath.walletConfig),
               ),
 
               const Padding(

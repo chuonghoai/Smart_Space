@@ -11,6 +11,7 @@ import 'package:smartspace_staff/features/reports/providers/report_detail_provid
 import 'package:smartspace_staff/features/reports/services/handle_report_background_service.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:smartspace_staff/ui/mobile/home/home_controller.dart';
+import 'package:intl/intl.dart';
 import 'package:smartspace_staff/ui/mobile/reports/presentation/widgets/slide_to_confirm_button.dart';
 
 class HandleReportScreen extends ConsumerStatefulWidget {
@@ -145,6 +146,93 @@ class _HandleReportScreenState extends ConsumerState<HandleReportScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Commission Notice Banner
+                    () {
+                      final report = ref.watch(reportDetailProvider(widget.reportId)).value;
+                      if (report == null) return const SizedBox.shrink();
+
+                      final formatter = NumberFormat('#,###', 'vi_VN');
+                      final isDark = theme.brightness == Brightness.dark;
+
+                      if (report.commissionAwarded == true) {
+                        return Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(12),
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.35),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: theme.colorScheme.outlineVariant.withOpacity(0.4),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.info_outline_rounded,
+                                color: theme.colorScheme.onSurfaceVariant,
+                                size: 20,
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  l10n.rehandlingNoExtraCommission,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+
+                      if (report.expectedCommission != null && report.expectedCommission! > 0) {
+                        final formattedAmount = formatter.format(report.expectedCommission!);
+                        return Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.all(12),
+                          margin: const EdgeInsets.only(bottom: 16),
+                          decoration: BoxDecoration(
+                            color: isDark
+                                ? const Color(0xFF2E7D32).withOpacity(0.2)
+                                : const Color(0xFFE8F5E9),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isDark
+                                  ? const Color(0xFF66BB6A).withOpacity(0.4)
+                                  : const Color(0xFFA5D6A7),
+                            ),
+                          ),
+                          child: Row(
+                            children: [
+                              Icon(
+                                Icons.monetization_on_outlined,
+                                color: isDark
+                                    ? const Color(0xFF81C784)
+                                    : const Color(0xFF2E7D32),
+                                size: 22,
+                              ),
+                              const SizedBox(width: 10),
+                              Expanded(
+                                child: Text(
+                                  l10n.commissionExpectedNotice(formattedAmount),
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: isDark
+                                        ? const Color(0xFFC8E6C9)
+                                        : const Color(0xFF1B5E20),
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      }
+                      return const SizedBox.shrink();
+                    }(),
+
                     // Section 1: Evidence Photos
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

@@ -29,4 +29,5 @@ class RouterPath {
   static String editNewsWithId(String id) =>
       RouteName.editNews.path.replaceAll(':id', id);
   static String get allActivities => RouteName.allActivities.path;
+  static String get walletConfig => RouteName.walletConfig.path;
 }

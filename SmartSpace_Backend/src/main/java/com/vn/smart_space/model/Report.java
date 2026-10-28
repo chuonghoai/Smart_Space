@@ -91,4 +91,19 @@ public class Report extends AbstractEntity {
 
     @Column(name = "reviewed_at")
     java.util.Date reviewedAt;
+
+    @Column(name = "base_commission")
+    Double baseCommission;
+
+    @Builder.Default
+    @Column(name = "total_commission_deducted")
+    Double totalCommissionDeducted = 0.0;
+
+    @Builder.Default
+    @Column(name = "rehandling_penalty_count")
+    Integer rehandlingPenaltyCount = 0;
+
+    @Builder.Default
+    @Column(name = "commission_awarded")
+    Boolean commissionAwarded = false;
 }

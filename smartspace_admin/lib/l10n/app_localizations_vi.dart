@@ -1511,4 +1511,65 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get locationDescriptionLabel => 'Mô tả vị trí';
+
+  @override
+  String get routeWalletConfig => 'Cấu hình hoa hồng ví';
+
+  @override
+  String get walletConfigTitle => 'Cấu hình hoa hồng ví';
+
+  @override
+  String get walletConfigDescription =>
+      'Thiết lập định mức hoa hồng cho nhân viên theo mức độ nghiêm trọng và tỷ lệ trừ tiền khi bị đánh giá chưa thỏa đáng.';
+
+  @override
+  String get commissionBySeverity => 'Định mức hoa hồng theo mức độ';
+
+  @override
+  String get commissionLow => 'Mức độ thấp (VNĐ)';
+
+  @override
+  String get commissionMedium => 'Mức độ trung bình (VNĐ)';
+
+  @override
+  String get commissionHigh => 'Mức độ cao (VNĐ)';
+
+  @override
+  String get commissionCritical => 'Mức độ nghiêm trọng (VNĐ)';
+
+  @override
+  String get penaltyRateSettings => 'Tỷ lệ trừ hoa hồng khi xử lý lại';
+
+  @override
+  String get penaltyRate1 => 'Lần xử lý lại thứ 1 (%)';
+
+  @override
+  String get penaltyRate2 => 'Lần xử lý lại thứ 2 (%)';
+
+  @override
+  String get penaltyRate3 => 'Lần xử lý lại thứ 3 (%)';
+
+  @override
+  String get penaltyRateNote =>
+      'Từ lần xử lý lại thứ 3 trở đi, nhân viên sẽ bị trừ tối đa 100% hoa hồng. Các lần tiếp theo không tính thêm.';
+
+  @override
+  String get saveWalletConfig => 'Lưu cấu hình';
+
+  @override
+  String get saveWalletConfigSuccess =>
+      'Cập nhật cấu hình hoa hồng ví thành công!';
+
+  @override
+  String get saveWalletConfigFailed =>
+      'Không thể lưu cấu hình, vui lòng thử lại.';
+
+  @override
+  String get invalidNumber => 'Giá trị không hợp lệ';
+
+  @override
+  String get systemSettingsSection => 'Hệ thống';
+
+  @override
+  String get manageWalletConfig => 'Cấu hình ví và hoa hồng';
 }

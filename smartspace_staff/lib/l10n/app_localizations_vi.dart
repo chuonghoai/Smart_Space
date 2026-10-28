@@ -283,7 +283,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get instructions => 'Hướng dẫn';
 
   @override
-  String get viewAll => 'Tất cả';
+  String get viewAll => 'Xem tất cả';
 
   @override
   String get dangerous => 'NGUY HIỂM';
@@ -819,4 +819,66 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get citizenReviewPhotos => 'Hình ảnh người dân cung cấp';
+
+  @override
+  String get staffWallet => 'Ví nhân viên';
+
+  @override
+  String get walletBalance => 'Số dư ví';
+
+  @override
+  String get withdrawMoney => 'Rút tiền';
+
+  @override
+  String get transactionHistory => 'Lịch sử giao dịch';
+
+  @override
+  String get featureUnderDevelopment => 'Tính năng đang được phát triển';
+
+  @override
+  String get recentTransactions => 'Giao dịch gần đây';
+
+  @override
+  String get noTransactions => 'Chưa có giao dịch nào';
+
+  @override
+  String commissionExpectedNotice(String amount) {
+    return 'Bạn sẽ nhận được $amount đ sau khi hoàn tất xử lý phản ánh này.';
+  }
+
+  @override
+  String commissionReceived(String amount) {
+    return 'Bạn đã nhận được $amountđ';
+  }
+
+  @override
+  String commissionPenaltyDeducted(String amount) {
+    return 'Bị đánh giá xấu: -$amountđ';
+  }
+
+  @override
+  String commissionPenaltyDeductionTurn(int turn, String amount) {
+    return 'Bị đánh giá xấu lần $turn: -$amountđ';
+  }
+
+  @override
+  String finalCommissionReceived(String amount) {
+    return 'Số tiền cuối cùng nhận được: $amountđ';
+  }
+
+  @override
+  String get rehandlingNoExtraCommission =>
+      'Xử lý lại sẽ không nhận thêm hoa hồng.';
+
+  @override
+  String get routeStaffWallet => 'Ví nhân viên';
+
+  @override
+  String get routeStaffWalletTransactions => 'Lịch sử giao dịch';
+
+  @override
+  String get commissionBreakdown => 'Chi tiết hoa hồng';
+
+  @override
+  String get allTransactions => 'Tất cả giao dịch';
 }
