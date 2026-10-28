@@ -316,5 +316,49 @@
   "citizenReviewUnresolved": "Citizen Feedback: Unresolved",
   "citizenRating": "Citizen Rating",
   "citizenReviewReason": "Reason for Unsatisfactory",
-  "citizenReviewPhotos": "Citizen Photos"
+  "citizenReviewPhotos": "Citizen Photos",
+  "staffWallet": "Staff Wallet",
+  "walletBalance": "Wallet Balance",
+  "withdrawMoney": "Withdraw",
+  "transactionHistory": "Transaction History",
+  "featureUnderDevelopment": "Feature under development",
+  "recentTransactions": "Recent Transactions",
+  "noTransactions": "No transactions yet",
+  "commissionExpectedNotice": "You will receive {amount} VND after completing this report.",
+  "@commissionExpectedNotice": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "commissionReceived": "You received {amount} VND",
+  "@commissionReceived": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "commissionPenaltyDeducted": "Rated poorly: -{amount} VND",
+  "@commissionPenaltyDeducted": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "finalCommissionReceived": "Final amount received: {amount} VND",
+  "@finalCommissionReceived": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "rehandlingNoExtraCommission": "Re-handling will not receive additional commission.",
+  "routeStaffWallet": "Staff Wallet",
+  "routeStaffWalletTransactions": "Transaction History",
+  "commissionBreakdown": "Commission Breakdown",
+  "allTransactions": "All Transactions"
 }

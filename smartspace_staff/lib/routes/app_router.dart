@@ -17,6 +17,8 @@ import 'package:smartspace_staff/ui/mobile/settings/change_password_screen.dart'
 import 'package:smartspace_staff/ui/mobile/settings/edit_profile_screen.dart';
 import 'package:smartspace_staff/ui/mobile/settings/manage_devices_screen.dart';
 import 'package:smartspace_staff/ui/mobile/settings/settings_screen.dart';
+import 'package:smartspace_staff/ui/mobile/wallet/staff_wallet_screen.dart';
+import 'package:smartspace_staff/ui/mobile/wallet/staff_wallet_transactions_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = sharedNavigatorKey;
 
@@ -97,6 +99,14 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.manageDevices,
       builder: (context, state) => const MobileManageDevicesScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.staffWallet,
+      builder: (context, state) => const StaffWalletScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.staffWalletTransactions,
+      builder: (context, state) => const StaffWalletTransactionsScreen(),
     ),
   ],
 );

@@ -1663,6 +1663,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Citizen Photos'**
   String get citizenReviewPhotos;
+
+  /// No description provided for @staffWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Wallet'**
+  String get staffWallet;
+
+  /// No description provided for @walletBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet Balance'**
+  String get walletBalance;
+
+  /// No description provided for @withdrawMoney.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw'**
+  String get withdrawMoney;
+
+  /// No description provided for @transactionHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction History'**
+  String get transactionHistory;
+
+  /// No description provided for @featureUnderDevelopment.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature under development'**
+  String get featureUnderDevelopment;
+
+  /// No description provided for @recentTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Transactions'**
+  String get recentTransactions;
+
+  /// No description provided for @noTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions yet'**
+  String get noTransactions;
+
+  /// No description provided for @commissionExpectedNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'You will receive {amount} VND after completing this report.'**
+  String commissionExpectedNotice(String amount);
+
+  /// No description provided for @commissionReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'You received {amount} VND'**
+  String commissionReceived(String amount);
+
+  /// No description provided for @commissionPenaltyDeducted.
+  ///
+  /// In en, this message translates to:
+  /// **'Rated poorly: -{amount} VND'**
+  String commissionPenaltyDeducted(String amount);
+
+  /// No description provided for @finalCommissionReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Final amount received: {amount} VND'**
+  String finalCommissionReceived(String amount);
+
+  /// No description provided for @rehandlingNoExtraCommission.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-handling will not receive additional commission.'**
+  String get rehandlingNoExtraCommission;
+
+  /// No description provided for @routeStaffWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Wallet'**
+  String get routeStaffWallet;
+
+  /// No description provided for @routeStaffWalletTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction History'**
+  String get routeStaffWalletTransactions;
+
+  /// No description provided for @commissionBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission Breakdown'**
+  String get commissionBreakdown;
+
+  /// No description provided for @allTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'All Transactions'**
+  String get allTransactions;
 }
 
 class _AppLocalizationsDelegate

@@ -55,6 +55,8 @@ class AppRouteInfo {
         return l10n.routeEditNews;
       case 'routeAllActivities':
         return l10n.routeAllActivities;
+      case 'routeWalletConfig':
+        return l10n.routeWalletConfig;
       default:
         return nameKey;
     }
@@ -206,6 +208,12 @@ class RouteName {
     icon: Icons.history,
     priority: 8,
   );
+  static const walletConfig = AppRouteInfo(
+    path: '/wallet-config',
+    nameKey: 'routeWalletConfig',
+    icon: Icons.account_balance_wallet_outlined,
+    priority: 6,
+  );
 
   static const List<AppRouteInfo> allRoutes = [
     splash,
@@ -215,6 +223,7 @@ class RouteName {
     completeProfile,
     forgotPassword,
     settings,
+    walletConfig,
     editProfile,
     changePassword,
     staffManagement,

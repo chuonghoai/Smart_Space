@@ -12,6 +12,8 @@ import 'package:smartspace_staff/ui/mobile/layout/app_layout.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_staff/ui/mobile/news/widgets/news_card.dart';
+import 'package:intl/intl.dart';
+import 'package:smartspace_staff/features/wallet/providers/staff_wallet_provider.dart';
 
 class MobileHomeScreen extends ConsumerWidget {
   const MobileHomeScreen({super.key});
@@ -27,7 +29,10 @@ class MobileHomeScreen extends ConsumerWidget {
       child: state.isLoading && state.user == null
           ? const Center(child: CircularProgressIndicator())
           : RefreshIndicator(
-              onRefresh: controller.manualRefresh,
+              onRefresh: () async {
+                await controller.manualRefresh();
+                await ref.read(staffWalletProvider.notifier).refresh();
+              },
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.all(16.0),
@@ -110,6 +115,10 @@ class MobileHomeScreen extends ConsumerWidget {
 
                     // Quick Access Section
                     _buildQuickAccessButtonRow(context, theme, l10n),
+                    const SizedBox(height: 24),
+
+                    // Staff Wallet Section (Below Quick Access, Above My Work)
+                    _buildStaffWalletCard(context, theme, l10n, ref),
                     const SizedBox(height: 24),
 
                     // Dashboard Section
@@ -295,6 +304,92 @@ class MobileHomeScreen extends ConsumerWidget {
     );
   }
 
+  Widget _buildStaffWalletCard(
+    BuildContext context,
+    ThemeData theme,
+    AppLocalizations l10n,
+    WidgetRef ref,
+  ) {
+    final walletState = ref.watch(staffWalletProvider);
+    final balance = walletState.wallet?.balance ?? 0.0;
+    final formatter = NumberFormat('#,###', 'vi_VN');
+    final formattedBalance = '${formatter.format(balance)} đ';
+    final isDark = theme.brightness == Brightness.dark;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () {
+          context.push(RouterPath.staffWallet);
+        },
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: isDark
+                ? theme.colorScheme.surfaceContainerHighest.withOpacity(0.45)
+                : theme.colorScheme.primaryContainer.withOpacity(0.3),
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(
+              color: theme.colorScheme.outlineVariant.withOpacity(0.4),
+            ),
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.primary.withOpacity(0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.account_balance_wallet_rounded,
+                  color: theme.colorScheme.primary,
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.staffWallet,
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    if (walletState.isLoading && walletState.wallet == null)
+                      const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    else
+                      Text(
+                        formattedBalance,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onSurface,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.chevron_right_rounded,
+                color: theme.colorScheme.onSurfaceVariant,
+                size: 22,
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
   Widget _buildFilterChip(
     BuildContext context,
     HomeController controller,
@@ -440,7 +535,7 @@ class MobileHomeScreen extends ConsumerWidget {
           Icons.settings_outlined,
           l10n.quickAccessSettings,
           () {
-            /* TODO */
+            context.push(RouterPath.settings);
           },
         ),
         const SizedBox(width: 8),

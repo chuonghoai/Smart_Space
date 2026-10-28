@@ -31,6 +31,10 @@ class AppRouteInfo {
         return l10n.routeEditProfile;
       case 'routeManageDevices':
         return l10n.routeManageDevices;
+      case 'routeStaffWallet':
+        return l10n.routeStaffWallet;
+      case 'routeStaffWalletTransactions':
+        return l10n.routeStaffWalletTransactions;
       // Add more routes here as needed
       default:
         return nameKey;
@@ -141,6 +145,21 @@ class RouteName {
     isHiddenInSearch: true,
   );
 
+  static const staffWallet = AppRouteInfo(
+    path: '/wallet',
+    nameKey: 'routeStaffWallet',
+    icon: Icons.account_balance_wallet_outlined,
+    isHiddenInSearch: false,
+    priority: 4,
+  );
+
+  static const staffWalletTransactions = AppRouteInfo(
+    path: '/wallet/transactions',
+    nameKey: 'routeStaffWalletTransactions',
+    icon: Icons.history,
+    isHiddenInSearch: true,
+  );
+
   static const List<AppRouteInfo> allRoutes = [
     splash,
     login,
@@ -157,6 +176,8 @@ class RouteName {
     map,
     news,
     newsDetail,
+    staffWallet,
+    staffWalletTransactions,
   ];
 
   static List<AppRouteInfo> get searchableRoutes {

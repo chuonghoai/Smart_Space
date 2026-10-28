@@ -15,6 +15,12 @@ class ReportDetailModel extends ReportModel {
   final String? reviewNote;
   final List<String>? reviewImageUrls;
   final DateTime? reviewedAt;
+  final double? baseCommission;
+  final double? deductedCommission;
+  final double? finalCommission;
+  final double? expectedCommission;
+  final bool? commissionAwarded;
+  final int? rehandlingPenaltyCount;
 
   ReportDetailModel({
     required super.id,
@@ -46,6 +52,12 @@ class ReportDetailModel extends ReportModel {
     this.reviewNote,
     this.reviewImageUrls,
     this.reviewedAt,
+    this.baseCommission,
+    this.deductedCommission,
+    this.finalCommission,
+    this.expectedCommission,
+    this.commissionAwarded,
+    this.rehandlingPenaltyCount,
   }) : super(imageUrl: imageUrls.isNotEmpty ? imageUrls.first : '');
 
   factory ReportDetailModel.fromJson(Map<String, dynamic> json) {
@@ -115,6 +127,12 @@ class ReportDetailModel extends ReportModel {
       reviewedAt: json['reviewed_at'] != null || json['reviewedAt'] != null
           ? DateTime.tryParse((json['reviewed_at'] ?? json['reviewedAt']).toString())
           : null,
+      baseCommission: (json['base_commission'] as num?)?.toDouble(),
+      deductedCommission: (json['deducted_commission'] as num?)?.toDouble(),
+      finalCommission: (json['final_commission'] as num?)?.toDouble(),
+      expectedCommission: (json['expected_commission'] as num?)?.toDouble(),
+      commissionAwarded: json['commission_awarded'] as bool?,
+      rehandlingPenaltyCount: (json['rehandling_penalty_count'] as num?)?.toInt(),
     );
   }
 
@@ -137,6 +155,12 @@ class ReportDetailModel extends ReportModel {
     map['review_note'] = reviewNote;
     map['review_image_urls'] = reviewImageUrls;
     map['reviewed_at'] = reviewedAt?.toIso8601String();
+    map['base_commission'] = baseCommission;
+    map['deducted_commission'] = deductedCommission;
+    map['final_commission'] = finalCommission;
+    map['expected_commission'] = expectedCommission;
+    map['commission_awarded'] = commissionAwarded;
+    map['rehandling_penalty_count'] = rehandlingPenaltyCount;
     return map;
   }
 

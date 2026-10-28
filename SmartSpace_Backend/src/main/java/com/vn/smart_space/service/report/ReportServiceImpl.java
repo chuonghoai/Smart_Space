@@ -49,6 +49,9 @@ import com.vn.smart_space.repository.ReportRepository;
 import com.vn.smart_space.repository.UserRepository;
 import com.vn.smart_space.service.notification.IFCMService;
 import com.vn.smart_space.service.notification.INotificationService;
+import com.vn.smart_space.model.WalletConfig;
+import com.vn.smart_space.service.wallet.IStaffWalletService;
+import com.vn.smart_space.service.wallet.IWalletConfigService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -65,6 +68,8 @@ public class ReportServiceImpl implements IReportService {
     private final INotificationService notificationService;
     private final ActivityHistoryRepository activityHistoryRepository;
     private final MessageSource messageSource;
+    private final IStaffWalletService staffWalletService;
+    private final IWalletConfigService walletConfigService;
 
     private static final int MAP_DEFAULT_LIMIT = 300;
     private static final int MAP_MAX_LIMIT = 500;
@@ -429,6 +434,24 @@ public class ReportServiceImpl implements IReportService {
                     .collect(Collectors.toList());
         }
 
+        Double baseCommission = report.getBaseCommission();
+        Double deductedCommission = report.getTotalCommissionDeducted() != null ? report.getTotalCommissionDeducted() : 0.0;
+        Double finalCommission = baseCommission != null ? Math.max(0.0, baseCommission - deductedCommission) : null;
+        Double expectedCommission = null;
+        if (report.getStatus() == EReportStatus.processing && !Boolean.TRUE.equals(report.getCommissionAwarded())) {
+            try {
+                WalletConfig config = walletConfigService.getOrCreateDefaultConfig();
+                EReportSeverity sev = report.getSeverity() != null ? report.getSeverity() : EReportSeverity.low;
+                expectedCommission = switch (sev) {
+                    case low -> config.getCommissionLow();
+                    case medium -> config.getCommissionMedium();
+                    case high -> config.getCommissionHigh();
+                    case critical -> config.getCommissionCritical();
+                };
+            } catch (Exception ignored) {
+            }
+        }
+
         return ReportDetailResponse.builder()
                 .id(report.getId())
                 .title(report.getTitle())
@@ -466,6 +489,12 @@ public class ReportServiceImpl implements IReportService {
                 .reviewedAt(report.getReviewedAt() != null ? report.getReviewedAt().toInstant()
                         .atZone(java.time.ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE_TIME) : null)
                 .userId(user != null ? user.getId() : null)
+                .baseCommission(baseCommission)
+                .deductedCommission(deductedCommission)
+                .finalCommission(finalCommission)
+                .expectedCommission(expectedCommission)
+                .commissionAwarded(report.getCommissionAwarded())
+                .rehandlingPenaltyCount(report.getRehandlingPenaltyCount())
                 .build();
     }
 
@@ -687,6 +716,13 @@ public class ReportServiceImpl implements IReportService {
         report.setReviewedAt(null);
 
         report = reportRepository.save(report);
+
+        // Process staff wallet commission
+        try {
+            staffWalletService.processReportCompletedCommission(report);
+        } catch (Exception ex) {
+            log.error("[Staff Wallet] Error processing commission for report {}: {}", report.getId(), ex.getMessage());
+        }
 
         // Save Activity History
         String staffName = staff != null && staff.getFullName() != null && !staff.getFullName().trim().isEmpty()
@@ -992,8 +1028,21 @@ public class ReportServiceImpl implements IReportService {
         }
         Report saved = reportRepository.save(report);
 
+        if (next == EReportStatus.processed) {
+            try {
+                staffWalletService.processReportCompletedCommission(saved);
+            } catch (Exception ex) {
+                log.error("[Staff Wallet] Error processing commission for report {}: {}", saved.getId(), ex.getMessage());
+            }
+        }
+
         // When admin re-opens from processed back to processing, notify assigned Staff
         if (current == EReportStatus.processed && next == EReportStatus.processing) {
+            try {
+                staffWalletService.processReportReopenPenalty(saved);
+            } catch (Exception ex) {
+                log.error("[Staff Wallet] Error processing penalty for report {}: {}", saved.getId(), ex.getMessage());
+            }
             User staff = saved.getAssignedStaff();
             if (staff != null) {
                 try {

@@ -2971,6 +2971,120 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Location description'**
   String get locationDescriptionLabel;
+
+  /// No description provided for @routeWalletConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet Commission Config'**
+  String get routeWalletConfig;
+
+  /// No description provided for @walletConfigTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet Commission Config'**
+  String get walletConfigTitle;
+
+  /// No description provided for @walletConfigDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure staff commission rates by severity and penalty deduction rates for re-handled reports.'**
+  String get walletConfigDescription;
+
+  /// No description provided for @commissionBySeverity.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission by Severity'**
+  String get commissionBySeverity;
+
+  /// No description provided for @commissionLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low Severity (VND)'**
+  String get commissionLow;
+
+  /// No description provided for @commissionMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium Severity (VND)'**
+  String get commissionMedium;
+
+  /// No description provided for @commissionHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High Severity (VND)'**
+  String get commissionHigh;
+
+  /// No description provided for @commissionCritical.
+  ///
+  /// In en, this message translates to:
+  /// **'Critical Severity (VND)'**
+  String get commissionCritical;
+
+  /// No description provided for @penaltyRateSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-handling Penalty Rates'**
+  String get penaltyRateSettings;
+
+  /// No description provided for @penaltyRate1.
+  ///
+  /// In en, this message translates to:
+  /// **'1st Re-handling Penalty (%)'**
+  String get penaltyRate1;
+
+  /// No description provided for @penaltyRate2.
+  ///
+  /// In en, this message translates to:
+  /// **'2nd Re-handling Penalty (%)'**
+  String get penaltyRate2;
+
+  /// No description provided for @penaltyRate3.
+  ///
+  /// In en, this message translates to:
+  /// **'3rd Re-handling Penalty (%)'**
+  String get penaltyRate3;
+
+  /// No description provided for @penaltyRateNote.
+  ///
+  /// In en, this message translates to:
+  /// **'From the 3rd re-handling onwards, up to 100% of the commission is deducted. Subsequent attempts will have no further changes.'**
+  String get penaltyRateNote;
+
+  /// No description provided for @saveWalletConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Configuration'**
+  String get saveWalletConfig;
+
+  /// No description provided for @saveWalletConfigSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet commission configuration updated successfully!'**
+  String get saveWalletConfigSuccess;
+
+  /// No description provided for @saveWalletConfigFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save configuration, please try again.'**
+  String get saveWalletConfigFailed;
+
+  /// No description provided for @invalidNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid value'**
+  String get invalidNumber;
+
+  /// No description provided for @systemSettingsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'System'**
+  String get systemSettingsSection;
+
+  /// No description provided for @manageWalletConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet and Commission Config'**
+  String get manageWalletConfig;
 }
 
 class _AppLocalizationsDelegate

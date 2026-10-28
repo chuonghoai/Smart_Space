@@ -12,6 +12,7 @@ import 'package:smartspace_admin/ui/screen/settings/change_password_screen.dart'
 import 'package:smartspace_admin/ui/screen/settings/edit_profile_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/settings_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/manage_devices_screen.dart';
+import 'package:smartspace_admin/ui/screen/settings/wallet_config_screen.dart';
 import 'package:smartspace_admin/ui/screen/map/admin_map_screen.dart';
 import 'package:smartspace_admin/ui/screen/staff/staff_management_screen.dart';
 import 'package:smartspace_admin/ui/screen/users/user_management_screen.dart';
@@ -63,6 +64,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.settings,
       builder: (context, state) => const MobileSettingsScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.walletConfig,
+      builder: (context, state) => const WalletConfigScreen(),
     ),
     GoRoute(
       path: RouterPath.editProfile,

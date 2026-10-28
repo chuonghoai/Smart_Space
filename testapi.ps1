@@ -69,6 +69,10 @@ $TestRegistry = @{
         TestClass   = "com.vn.smart_space.controller.report.NearbyReportsAlertTest"
         Description = "Mo phong Client kiem tra phan anh trong ban kinh 200m de kich hoat canh bao realtime/FCM/Modal"
     }
+    "StaffWallet" = @{
+        TestClass   = "com.vn.smart_space.controller.staff.StaffWalletFlowTest"
+        Description = "Kiem tra toan bo luong Vi nhan vien: Tu dong tao vi, nhan hoa hong theo severity, khau tru phat khi danh gia xau va quan tri Admin"
+    }
 }
 
 # -----------------------------------------------------------------------------

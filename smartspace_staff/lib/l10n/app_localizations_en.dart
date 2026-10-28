@@ -832,4 +832,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get citizenReviewPhotos => 'Citizen Photos';
+
+  @override
+  String get staffWallet => 'Staff Wallet';
+
+  @override
+  String get walletBalance => 'Wallet Balance';
+
+  @override
+  String get withdrawMoney => 'Withdraw';
+
+  @override
+  String get transactionHistory => 'Transaction History';
+
+  @override
+  String get featureUnderDevelopment => 'Feature under development';
+
+  @override
+  String get recentTransactions => 'Recent Transactions';
+
+  @override
+  String get noTransactions => 'No transactions yet';
+
+  @override
+  String commissionExpectedNotice(String amount) {
+    return 'You will receive $amount VND after completing this report.';
+  }
+
+  @override
+  String commissionReceived(String amount) {
+    return 'You received $amount VND';
+  }
+
+  @override
+  String commissionPenaltyDeducted(String amount) {
+    return 'Rated poorly: -$amount VND';
+  }
+
+  @override
+  String finalCommissionReceived(String amount) {
+    return 'Final amount received: $amount VND';
+  }
+
+  @override
+  String get rehandlingNoExtraCommission =>
+      'Re-handling will not receive additional commission.';
+
+  @override
+  String get routeStaffWallet => 'Staff Wallet';
+
+  @override
+  String get routeStaffWalletTransactions => 'Transaction History';
+
+  @override
+  String get commissionBreakdown => 'Commission Breakdown';
+
+  @override
+  String get allTransactions => 'All Transactions';
 }

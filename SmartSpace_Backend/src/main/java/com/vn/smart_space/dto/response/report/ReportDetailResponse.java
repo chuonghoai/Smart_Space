@@ -92,4 +92,22 @@ public class ReportDetailResponse {
 
     @JsonProperty("user_id")
     private String userId;
+
+    @JsonProperty("base_commission")
+    private Double baseCommission;
+
+    @JsonProperty("deducted_commission")
+    private Double deductedCommission;
+
+    @JsonProperty("final_commission")
+    private Double finalCommission;
+
+    @JsonProperty("expected_commission")
+    private Double expectedCommission;
+
+    @JsonProperty("commission_awarded")
+    private Boolean commissionAwarded;
+
+    @JsonProperty("rehandling_penalty_count")
+    private Integer rehandlingPenaltyCount;
 }
