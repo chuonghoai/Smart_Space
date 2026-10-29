@@ -417,18 +417,20 @@ public class StaffWalletServiceImpl implements IStaffWalletService {
         try {
             List<User> admins = userRepository.findByRole(ERole.admin);
             String staffName = staff.getFullName() != null ? staff.getFullName() : "Nhân viên";
-            String adminTitle = messageSource.getMessage("notification.wallet.withdrawal.created.title", null, "Yêu cầu rút tiền mới", Locale.getDefault());
-            String adminMessage = messageSource.getMessage("notification.wallet.withdrawal.created.message",
-                    new Object[]{staffName},
-                    String.format("Có yêu cầu rút tiền mới của %s", staffName),
-                    Locale.getDefault());
             String adminActionData = "{\"type\": \"ADMIN_WITHDRAWAL_REQUEST\", \"payload\": {\"withdrawalId\": \"" + saved.getId() + "\"}}";
-
-            NotificationEvent adminEvent = new NotificationEvent(adminTitle, adminMessage, adminActionData, null, Map.of("shouldRefresh", true));
-            NotificationRequest adminFcm = new NotificationRequest(adminTitle, adminMessage, Map.of("type", "ADMIN_WITHDRAWAL_REQUEST", "payload", "{\"withdrawalId\":\"" + saved.getId() + "\"}"));
 
             for (User admin : admins) {
                 try {
+                    Locale adminLocale = "en".equalsIgnoreCase(admin.getLanguage()) ? Locale.ENGLISH : Locale.forLanguageTag("vi");
+                    String adminTitle = messageSource.getMessage("notification.wallet.withdrawal.created.title", null, "Yêu cầu rút tiền mới", adminLocale);
+                    String adminMessage = messageSource.getMessage("notification.wallet.withdrawal.created.message",
+                            new Object[]{staffName},
+                            String.format("Có yêu cầu rút tiền mới của %s", staffName),
+                            adminLocale);
+
+                    NotificationEvent adminEvent = new NotificationEvent(adminTitle, adminMessage, adminActionData, null, Map.of("shouldRefresh", true));
+                    NotificationRequest adminFcm = new NotificationRequest(adminTitle, adminMessage, Map.of("type", "ADMIN_WITHDRAWAL_REQUEST", "payload", "{\"withdrawalId\":\"" + saved.getId() + "\"}"));
+
                     notificationService.createNotification(admin.getId(), adminTitle, adminMessage, adminActionData, null);
                     messagingTemplate.convertAndSendToUser(admin.getId(), "/queue/notifications", adminEvent);
                     fcmService.sendToUser(admin.getId(), adminFcm);

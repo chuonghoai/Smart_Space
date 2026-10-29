@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import '../api/api_client.dart';
+import '../auth/token_storage.dart';
 import '../storage/shared_preferences.dart';
 
 class LocaleProvider extends ChangeNotifier {
@@ -28,6 +30,22 @@ class LocaleProvider extends ChangeNotifier {
     _locale = locale;
     await sharedPreferencesService.set(_localeKey, locale.languageCode);
     notifyListeners();
+
+    await syncLanguageToBackend();
+  }
+
+  Future<void> syncLanguageToBackend() async {
+    try {
+      final token = await TokenStorage.getAccessToken();
+      if (token != null && token.isNotEmpty) {
+        await apiClient.patch(
+          '/api/users/language',
+          data: {'language': _locale.languageCode},
+        );
+      }
+    } catch (e) {
+      debugPrint('[LocaleProvider] Failed to sync language to backend: $e');
+    }
   }
 }
 

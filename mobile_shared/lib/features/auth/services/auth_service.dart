@@ -6,6 +6,7 @@ import 'package:mobile_shared/core/auth/user_storage_service.dart';
 import 'package:mobile_shared/core/connection/connection_manager.dart';
 import 'package:mobile_shared/core/constants/role_constant.dart';
 import 'package:mobile_shared/core/constants/use_mock.dart';
+import 'package:mobile_shared/core/localization/locale_provider.dart';
 import 'package:mobile_shared/core/notification/firebase_service.dart';
 import 'package:mobile_shared/features/auth/models/DeviceSessionModel.dart';
 import 'package:mobile_shared/features/auth/models/token_model.dart';
@@ -48,6 +49,7 @@ class AuthService {
       await TokenStorage.saveRefreshToken(data.refreshToken);
       await userStorageService.saveUser(data.userModel!);
       startScheduledTokenRefresh();
+      await localeProvider.syncLanguageToBackend();
 
       // Kết nối WebSocket và FCM sẽ được xử lý ngầm trong LoginController
       return (response: response, wsConnected: true);
@@ -80,6 +82,7 @@ class AuthService {
       await TokenStorage.saveRefreshToken(data.refreshToken);
       await userStorageService.saveUser(data.userModel!);
       startScheduledTokenRefresh();
+      await localeProvider.syncLanguageToBackend();
 
       return (response: response, wsConnected: true);
     }
@@ -200,6 +203,7 @@ class AuthService {
       await TokenStorage.saveAccessToken(data.accessToken);
       await TokenStorage.saveRefreshToken(data.refreshToken);
       await userStorageService.saveUser(data.userModel!);
+      await localeProvider.syncLanguageToBackend();
     }
 
     return response;
