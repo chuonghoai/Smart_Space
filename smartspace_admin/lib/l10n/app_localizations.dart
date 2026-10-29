@@ -3085,6 +3085,354 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Wallet and Commission Config'**
   String get manageWalletConfig;
+
+  /// No description provided for @manageStaffWallets.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Wallet Management'**
+  String get manageStaffWallets;
+
+  /// No description provided for @routeManageStaffWallets.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Wallet Management'**
+  String get routeManageStaffWallets;
+
+  /// No description provided for @withdrawalRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal Requests'**
+  String get withdrawalRequests;
+
+  /// No description provided for @routeWithdrawalRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal Requests'**
+  String get routeWithdrawalRequests;
+
+  /// No description provided for @withdrawalRequestBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal Request'**
+  String get withdrawalRequestBadge;
+
+  /// No description provided for @pendingWithdrawalBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} withdrawal requests'**
+  String pendingWithdrawalBanner(int count);
+
+  /// No description provided for @staffWalletDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Wallet: {name}'**
+  String staffWalletDetailTitle(String name);
+
+  /// No description provided for @routeStaffWalletDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Wallet Details'**
+  String get routeStaffWalletDetail;
+
+  /// No description provided for @withdrawalDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal Request Details'**
+  String get withdrawalDetailTitle;
+
+  /// No description provided for @bankName.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank'**
+  String get bankName;
+
+  /// No description provided for @bankAccountNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Number'**
+  String get bankAccountNumber;
+
+  /// No description provided for @bankAccountName.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Holder'**
+  String get bankAccountName;
+
+  /// No description provided for @withdrawAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal Amount'**
+  String get withdrawAmount;
+
+  /// No description provided for @quickScanQr.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick QR Scan'**
+  String get quickScanQr;
+
+  /// No description provided for @scanQrAutoFillNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan QR with your banking app to auto-fill payment details'**
+  String get scanQrAutoFillNote;
+
+  /// No description provided for @approveAndTransfer.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm & Approve'**
+  String get approveAndTransfer;
+
+  /// No description provided for @rejectWithdrawal.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get rejectWithdrawal;
+
+  /// No description provided for @rejectReasonPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for rejecting withdrawal'**
+  String get rejectReasonPrompt;
+
+  /// No description provided for @rejectReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a rejection reason'**
+  String get rejectReasonRequired;
+
+  /// No description provided for @confirmApprovalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Withdrawal Approval'**
+  String get confirmApprovalTitle;
+
+  /// No description provided for @confirmApprovalContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you have transferred {amount} to staff {name}?'**
+  String confirmApprovalContent(String amount, String name);
+
+  /// No description provided for @copySuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied to clipboard'**
+  String get copySuccess;
+
+  /// No description provided for @copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copy;
+
+  /// No description provided for @note.
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get note;
+
+  /// No description provided for @adminNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Note'**
+  String get adminNote;
+
+  /// No description provided for @processedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Processed At'**
+  String get processedAt;
+
+  /// No description provided for @createdAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Created At'**
+  String get createdAt;
+
+  /// No description provided for @statusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get statusPending;
+
+  /// No description provided for @statusApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get statusApproved;
+
+  /// No description provided for @statusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get statusRejected;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @noStaffWalletsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No staff wallets found'**
+  String get noStaffWalletsFound;
+
+  /// No description provided for @noWithdrawalRequestsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No withdrawal requests found'**
+  String get noWithdrawalRequestsFound;
+
+  /// No description provided for @noTransactionsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No transactions found'**
+  String get noTransactionsFound;
+
+  /// No description provided for @searchStaffHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search staff by name, email, phone...'**
+  String get searchStaffHint;
+
+  /// No description provided for @staffWalletBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Wallet Balance'**
+  String get staffWalletBalance;
+
+  /// No description provided for @walletBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet Balance'**
+  String get walletBalance;
+
+  /// No description provided for @transactionHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Transaction History'**
+  String get transactionHistory;
+
+  /// No description provided for @relatedReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Report: {title}'**
+  String relatedReport(String title);
+
+  /// No description provided for @viewReportDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'View Report Details'**
+  String get viewReportDetail;
+
+  /// No description provided for @processSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal request processed successfully!'**
+  String get processSuccess;
+
+  /// No description provided for @processFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to process request, please try again.'**
+  String get processFailed;
+
+  /// No description provided for @systemConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'System Configuration'**
+  String get systemConfig;
+
+  /// No description provided for @routeSystemConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'System Configuration'**
+  String get routeSystemConfig;
+
+  /// No description provided for @commissionConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission Configuration'**
+  String get commissionConfig;
+
+  /// No description provided for @routeCommissionConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission Configuration'**
+  String get routeCommissionConfig;
+
+  /// No description provided for @commissionConfigDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure staff commission rates based on report severity level.'**
+  String get commissionConfigDescription;
+
+  /// No description provided for @penaltyRateConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Penalty Deduction Rate Configuration'**
+  String get penaltyRateConfig;
+
+  /// No description provided for @routePenaltyRateConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Penalty Deduction Rate Configuration'**
+  String get routePenaltyRateConfig;
+
+  /// No description provided for @penaltyRateConfigDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure commission deduction percentages when reports are marked unsatisfactory and require re-handling.'**
+  String get penaltyRateConfigDescription;
+
+  /// No description provided for @commissionConfigSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'4 severity levels: Low, Medium, High, Critical'**
+  String get commissionConfigSummary;
+
+  /// No description provided for @penaltyRateConfigSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'3-turn penalty: Turn 1, Turn 2, Turn 3'**
+  String get penaltyRateConfigSummary;
+
+  /// No description provided for @saveCommissionSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Commission configuration updated successfully!'**
+  String get saveCommissionSuccess;
+
+  /// No description provided for @savePenaltyRateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Penalty deduction rate updated successfully!'**
+  String get savePenaltyRateSuccess;
+
+  /// No description provided for @copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get copied;
+
+  /// No description provided for @homePendingWithdrawalBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'There are {count} withdrawal requests'**
+  String homePendingWithdrawalBanner(int count);
+
+  /// No description provided for @homePendingWithdrawalSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to review pending withdrawal requests'**
+  String get homePendingWithdrawalSubtitle;
+
+  /// No description provided for @statusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get statusCancelled;
 }
 
 class _AppLocalizationsDelegate

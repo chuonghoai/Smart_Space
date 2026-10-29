@@ -105,7 +105,7 @@ public class AdminHomeService {
         String message = "";
         if (a.getI18nKey() != null && !a.getI18nKey().trim().isEmpty()) {
             String raw = a.getI18nKey().trim();
-            Locale activeLocale = locale != null ? locale : Locale.getDefault();
+            Locale activeLocale = locale != null ? locale : Locale.forLanguageTag("vi");
             if (raw.contains("|")) {
                 String[] parts = raw.split("\\|", -1);
                 String key = parts[0];

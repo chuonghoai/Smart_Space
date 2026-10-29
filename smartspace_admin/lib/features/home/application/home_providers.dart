@@ -1,3 +1,4 @@
+import '../../wallet_management/data/admin_wallet_repository.dart';
 import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../data/home_repository.dart';
@@ -105,3 +106,12 @@ final recentReportProvider = AsyncNotifierProviderFamily<RecentReportNotifier, L
 );
 
 
+
+// Pending Withdrawal Count Provider
+final pendingWithdrawalCountProvider = FutureProvider<int>((ref) async {
+  final response = await adminWalletRepository.getPendingWithdrawalCount();
+  if (response.success && response.data != null) {
+    return response.data!;
+  }
+  return 0;
+});

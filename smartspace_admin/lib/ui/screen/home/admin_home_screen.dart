@@ -45,6 +45,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
   Future<void> _onRefresh() async {
     final currentTab = _tabs[_tabController.index];
     ref.invalidate(newsListProvider);
+    ref.invalidate(pendingWithdrawalCountProvider);
     final futures = <Future<void>>[
       userStorageService.getUser(),
       ref.read(adminOverviewProvider.notifier).refresh(),
@@ -106,6 +107,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
 
   Widget _buildOverviewSection(BuildContext context, AppLocalizations l10n, ThemeData theme) {
     final overviewAsync = ref.watch(adminOverviewProvider);
+    final pendingWithdrawalCount = ref.watch(pendingWithdrawalCountProvider).valueOrNull ?? 0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -125,6 +127,10 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
               children: [
                 if (hasUnsatisfactory) ...[
                   _buildUnsatisfactoryBanner(context, data, theme, l10n),
+                  const SizedBox(height: 16),
+                ],
+                if (pendingWithdrawalCount > 0) ...[
+                  _buildHomeWithdrawalBanner(context, pendingWithdrawalCount, theme, l10n),
                   const SizedBox(height: 16),
                 ],
                 GridView.count(
@@ -257,6 +263,90 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen> with SingleTi
                 Icons.arrow_forward_ios_rounded,
                 size: 16,
                 color: isDark ? const Color(0xFFFDBA74) : const Color(0xFFEA580C),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHomeWithdrawalBanner(
+    BuildContext context,
+    int count,
+    ThemeData theme,
+    AppLocalizations l10n,
+  ) {
+    final isDark = theme.brightness == Brightness.dark;
+    final bg = isDark ? const Color(0xFF2C1E0A) : const Color(0xFFFFF8E1);
+    final border = isDark ? const Color(0xFF7A4A0A) : const Color(0xFFFFE082);
+    final titleColor = isDark ? const Color(0xFFFFCC80) : const Color(0xFFBF360C);
+    final subtitleColor = isDark ? const Color(0xFFFFB74D).withValues(alpha: 0.8) : const Color(0xFFD84315);
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: () async {
+          await context.push('${RouterPath.adminWithdrawalRequests}?filter=PENDING');
+          ref.invalidate(pendingWithdrawalCountProvider);
+        },
+        borderRadius: BorderRadius.circular(16),
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: bg,
+            borderRadius: BorderRadius.circular(16),
+            border: Border.all(color: border, width: 1.2),
+            boxShadow: [
+              BoxShadow(
+                color: (isDark ? Colors.black : const Color(0xFFF57F17)).withValues(alpha: isDark ? 0.3 : 0.08),
+                blurRadius: 10,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: isDark ? const Color(0xFF7A4A0A) : const Color(0xFFFFE082),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  Icons.notification_important_rounded,
+                  color: isDark ? const Color(0xFFFFB74D) : const Color(0xFFE65100),
+                  size: 22,
+                ),
+              ),
+              const SizedBox(width: 14),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      l10n.homePendingWithdrawalBanner(count),
+                      style: theme.textTheme.titleMedium?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: titleColor,
+                        fontSize: 15,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      l10n.homePendingWithdrawalSubtitle,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: subtitleColor,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              Icon(
+                Icons.arrow_forward_ios_rounded,
+                size: 16,
+                color: isDark ? const Color(0xFFFFB74D) : const Color(0xFFE65100),
               ),
             ],
           ),

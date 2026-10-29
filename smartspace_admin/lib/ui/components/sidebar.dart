@@ -160,6 +160,15 @@ class Sidebar extends ConsumerWidget {
                     },
                   ),
                   _SidebarItem(
+                    icon: Icons.account_balance_wallet_outlined,
+                    label: l10n.manageStaffWallets,
+                    isSelected: currentPath.startsWith(RouterPath.adminStaffWallets),
+                    onTap: () {
+                      Navigator.pop(context);
+                      context.push(RouterPath.adminStaffWallets);
+                    },
+                  ),
+                  _SidebarItem(
                     icon: Icons.workspace_premium_outlined,
                     label: l10n.managePositions,
                     isSelected: currentPath == RouterPath.positionManagement,
@@ -178,12 +187,12 @@ class Sidebar extends ConsumerWidget {
                     },
                   ),
                   _SidebarItem(
-                    icon: Icons.account_balance_wallet_outlined,
-                    label: l10n.walletConfigTitle,
-                    isSelected: currentPath == RouterPath.walletConfig,
+                    icon: Icons.tune_outlined,
+                    label: l10n.systemConfig,
+                    isSelected: currentPath.startsWith(RouterPath.systemConfig),
                     onTap: () {
                       Navigator.pop(context);
-                      context.push(RouterPath.walletConfig);
+                      context.push(RouterPath.systemConfig);
                     },
                   ),
 
@@ -425,6 +434,13 @@ class WebSidebar extends ConsumerWidget {
                 onTap: () => context.push(RouterPath.staffManagement),
               ),
               _WebSidebarItem(
+                icon: Icons.account_balance_wallet_outlined,
+                label: l10n.manageStaffWallets,
+                isExpanded: isExpanded,
+                isSelected: currentPath.startsWith(RouterPath.adminStaffWallets),
+                onTap: () => context.push(RouterPath.adminStaffWallets),
+              ),
+              _WebSidebarItem(
                 icon: Icons.workspace_premium_outlined,
                 label: l10n.managePositions,
                 isExpanded: isExpanded,
@@ -439,11 +455,11 @@ class WebSidebar extends ConsumerWidget {
                 onTap: () => context.push(RouterPath.newsManagement),
               ),
               _WebSidebarItem(
-                icon: Icons.account_balance_wallet_outlined,
-                label: l10n.walletConfigTitle,
+                icon: Icons.tune_outlined,
+                label: l10n.systemConfig,
                 isExpanded: isExpanded,
-                isSelected: currentPath == RouterPath.walletConfig,
-                onTap: () => context.push(RouterPath.walletConfig),
+                isSelected: currentPath.startsWith(RouterPath.systemConfig),
+                onTap: () => context.push(RouterPath.systemConfig),
               ),
 
               const Padding(

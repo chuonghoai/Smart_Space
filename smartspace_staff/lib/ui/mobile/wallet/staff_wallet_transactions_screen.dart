@@ -146,18 +146,49 @@ class _StaffWalletTransactionsScreenState
     AppLocalizations l10n,
     StaffWalletTransactionModel t,
   ) {
-    final isIncome = t.isIncome;
     final successColor =
         isDark ? const Color(0xFF66BB6A) : const Color(0xFF2E7D32);
     final errorColor =
         isDark ? const Color(0xFFEF5350) : const Color(0xFFC62828);
-    final color = isIncome ? successColor : errorColor;
+    final warningColor =
+        isDark ? const Color(0xFFFFB74D) : const Color(0xFFE65100);
+
+    Color color;
+    IconData icon;
+    String prefix;
+
+    if (t.isIncome) {
+      color = successColor;
+      icon = Icons.add_circle_outline_rounded;
+      prefix = '+';
+    } else if (t.isRefund) {
+      color = successColor;
+      icon = Icons.replay_rounded;
+      prefix = '+';
+    } else if (t.isHold) {
+      color = warningColor;
+      icon = Icons.lock_clock_rounded;
+      prefix = '-';
+    } else if (t.isWithdrawal) {
+      color = errorColor;
+      icon = Icons.arrow_downward_rounded;
+      prefix = '-';
+    } else {
+      color = errorColor;
+      icon = Icons.remove_circle_outline_rounded;
+      prefix = '-';
+    }
 
     return InkWell(
-      onTap: t.reportId != null
+      onTap: (t.reportId != null || t.withdrawalId != null)
           ? () {
-              context
-                  .push(RouterPath.reportDetail.replaceAll(':id', t.reportId!));
+              if (t.reportId != null) {
+                context
+                    .push(RouterPath.reportDetail.replaceAll(':id', t.reportId!));
+              } else if (t.withdrawalId != null) {
+                context
+                    .push(RouterPath.staffWithdrawalDetailWithId(t.withdrawalId!));
+              }
             }
           : null,
       borderRadius: BorderRadius.circular(12),
@@ -172,9 +203,7 @@ class _StaffWalletTransactionsScreenState
                 shape: BoxShape.circle,
               ),
               child: Icon(
-                isIncome
-                    ? Icons.add_circle_outline_rounded
-                    : Icons.remove_circle_outline_rounded,
+                icon,
                 color: color,
                 size: 22,
               ),
@@ -219,7 +248,7 @@ class _StaffWalletTransactionsScreenState
               crossAxisAlignment: CrossAxisAlignment.end,
               children: [
                 Text(
-                  '${isIncome ? '+' : '-'}${_formatCurrency(t.amount)}',
+                  '$prefix${_formatCurrency(t.amount)}',
                   style: theme.textTheme.bodyMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                     color: color,
@@ -240,4 +269,3 @@ class _StaffWalletTransactionsScreenState
     );
   }
 }
-

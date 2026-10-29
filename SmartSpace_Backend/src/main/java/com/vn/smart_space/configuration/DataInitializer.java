@@ -38,6 +38,20 @@ public class DataInitializer implements CommandLineRunner {
             log.warn("Failed to migrate user language: " + e.getMessage());
         }
 
+        try {
+            jdbcTemplate.execute("ALTER TABLE staff_wallet_transactions MODIFY COLUMN type VARCHAR(50) NOT NULL");
+            log.info("Migrated staff_wallet_transactions.type column to VARCHAR(50)");
+        } catch (Exception e) {
+            log.info("Migration for staff_wallet_transactions.type: " + e.getMessage());
+        }
+
+        try {
+            jdbcTemplate.execute("ALTER TABLE staff_withdrawal_requests MODIFY COLUMN status VARCHAR(50) NOT NULL");
+            log.info("Migrated staff_withdrawal_requests.status column to VARCHAR(50)");
+        } catch (Exception e) {
+            log.info("Migration for staff_withdrawal_requests.status: " + e.getMessage());
+        }
+
         if (!userRepository.existsByEmailAndRole("admin@gmail.com", ERole.admin)) {
             log.info("Khởi tạo tài khoản admin mặc định...");
             User admin = new User();

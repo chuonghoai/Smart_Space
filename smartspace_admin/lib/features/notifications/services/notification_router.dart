@@ -35,6 +35,15 @@ class NotificationRouter {
           debugPrint('[NotificationRouter] Missing newsId in payload');
         }
         break;
+      case 'ADMIN_WITHDRAWAL_REQUEST':
+      case 'WITHDRAWAL_REQUEST':
+        final withdrawalId = (action.payload['withdrawalId'] ?? action.payload['id']) as String?;
+        final path = withdrawalId != null && withdrawalId.isNotEmpty
+            ? '${RouterPath.adminWithdrawalRequests}?openId=$withdrawalId'
+            : RouterPath.adminWithdrawalRequests;
+        debugPrint('[NotificationRouter] Navigating to $path');
+        GoRouter.of(ctx).push(path);
+        break;
       // Add other feature cases here, e.g. INVOICE_DETAIL, CHAT_MESSAGE
       default:
         debugPrint('[NotificationRouter] Unhandled action type: ${action.type}');

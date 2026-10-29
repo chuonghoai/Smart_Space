@@ -50,6 +50,7 @@ Tạo Implementation Plan chỉ rõ:
   3. `app_router.dart`: Khai báo `GoRoute` map với màn hình tương ứng.
 - Phân tích UI: MUST tuân thủ Dark/Light mode, màu sắc/token theo `app_architecture/design/design.md`. Nếu tính năng có tạo mới màn hình/UI, MUST áp dụng [design-taste-frontend](../design-taste-frontend/SKILL.md): đưa ra 1 dòng "Design Read", xác lập The Three Dials (`DESIGN_VARIANCE`, `MOTION_INTENSITY`, `VISUAL_DENSITY`), và tuân thủ Anti-Default Discipline (không dùng màu sắc/layout rập khuôn AI-slop).
 - Phân tích L10n: MUST xác định các key L10n cần tạo mới hoặc tái sử dụng cho user-facing text.
+- Phân tích Backend Notification & L10n: Khi triển khai hay sửa code trong backend, phải gọi đến cột `language` trong bảng `users` của database (`User.getLanguage()`) để biết người dùng đang chọn ngôn ngữ nào, sau đó trong các code gửi thông báo WebSocket hay Firebase (FCM) đều phải tuân thủ đúng quy tắc key ngôn ngữ L10n (`MessageSource` với `messages_vi.properties` / `messages_en.properties` để hỗ trợ đúng đa ngôn ngữ). Tuyệt đối không được hardcode chuỗi văn bản Tiếng Việt hay Tiếng Anh nào trong code gửi thông báo của backend.
 - Test cần thêm, Risk, Dependency, Migration (nếu có)
 
 **STOP CONDITION:** KHÔNG được viết code ngay nếu user chưa yêu cầu thực thi. Chỉ đưa ra plan và đợi XÁC NHẬN (Approval).

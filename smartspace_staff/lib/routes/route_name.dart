@@ -35,6 +35,14 @@ class AppRouteInfo {
         return l10n.routeStaffWallet;
       case 'routeStaffWalletTransactions':
         return l10n.routeStaffWalletTransactions;
+      case 'routeStaffWithdrawal':
+        return l10n.routeStaffWithdrawal;
+      case 'routeStaffWithdrawalHistory':
+        return l10n.routeStaffWithdrawalHistory;
+      case 'routeStaffWithdrawalDetail':
+        return l10n.routeStaffWithdrawalDetail;
+      case 'routeStaffBankAccounts':
+        return l10n.routeStaffBankAccounts;
       // Add more routes here as needed
       default:
         return nameKey;
@@ -160,6 +168,35 @@ class RouteName {
     isHiddenInSearch: true,
   );
 
+  
+  static const staffWithdrawal = AppRouteInfo(
+    path: '/wallet/withdraw',
+    nameKey: 'routeStaffWithdrawal',
+    icon: Icons.arrow_upward_rounded,
+    isHiddenInSearch: true,
+  );
+
+  static const staffWithdrawalHistory = AppRouteInfo(
+    path: '/wallet/withdrawals',
+    nameKey: 'routeStaffWithdrawalHistory',
+    icon: Icons.history_rounded,
+    isHiddenInSearch: true,
+  );
+
+  static const staffWithdrawalDetail = AppRouteInfo(
+    path: '/wallet/withdrawals/:id',
+    nameKey: 'routeStaffWithdrawalDetail',
+    icon: Icons.receipt_long_rounded,
+    isHiddenInSearch: true,
+  );
+
+  static const staffBankAccounts = AppRouteInfo(
+    path: '/settings/bank-accounts',
+    nameKey: 'routeStaffBankAccounts',
+    icon: Icons.account_balance_outlined,
+    isHiddenInSearch: true,
+  );
+
   static const List<AppRouteInfo> allRoutes = [
     splash,
     login,
@@ -178,6 +215,10 @@ class RouteName {
     newsDetail,
     staffWallet,
     staffWalletTransactions,
+    staffWithdrawal,
+    staffWithdrawalHistory,
+    staffWithdrawalDetail,
+    staffBankAccounts,
   ];
 
   static List<AppRouteInfo> get searchableRoutes {

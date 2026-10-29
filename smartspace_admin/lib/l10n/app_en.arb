@@ -691,5 +691,101 @@
   "saveWalletConfigFailed": "Failed to save configuration, please try again.",
   "invalidNumber": "Invalid value",
   "systemSettingsSection": "System",
-  "manageWalletConfig": "Wallet and Commission Config"
+  "manageWalletConfig": "Wallet and Commission Config",
+  "manageStaffWallets": "Staff Wallet Management",
+  "routeManageStaffWallets": "Staff Wallet Management",
+  "withdrawalRequests": "Withdrawal Requests",
+  "routeWithdrawalRequests": "Withdrawal Requests",
+  "withdrawalRequestBadge": "Withdrawal Request",
+  "pendingWithdrawalBanner": "{count} withdrawal requests",
+  "@pendingWithdrawalBanner": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "staffWalletDetailTitle": "Staff Wallet: {name}",
+  "@staffWalletDetailTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "routeStaffWalletDetail": "Staff Wallet Details",
+  "withdrawalDetailTitle": "Withdrawal Request Details",
+  "bankName": "Bank",
+  "bankAccountNumber": "Account Number",
+  "bankAccountName": "Account Holder",
+  "withdrawAmount": "Withdrawal Amount",
+  "quickScanQr": "Quick QR Scan",
+  "scanQrAutoFillNote": "Scan QR with your banking app to auto-fill payment details",
+  "approveAndTransfer": "Confirm & Approve",
+  "rejectWithdrawal": "Reject",
+  "rejectReasonPrompt": "Reason for rejecting withdrawal",
+  "rejectReasonRequired": "Please enter a rejection reason",
+  "confirmApprovalTitle": "Confirm Withdrawal Approval",
+  "confirmApprovalContent": "Are you sure you have transferred {amount} to staff {name}?",
+  "@confirmApprovalContent": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "copySuccess": "Copied to clipboard",
+  "copy": "Copy",
+  "note": "Note",
+  "adminNote": "Admin Note",
+  "processedAt": "Processed At",
+  "createdAt": "Created At",
+  "statusPending": "Pending",
+  "statusApproved": "Approved",
+  "statusRejected": "Rejected",
+  "filterAll": "All",
+  "noStaffWalletsFound": "No staff wallets found",
+  "noWithdrawalRequestsFound": "No withdrawal requests found",
+  "noTransactionsFound": "No transactions found",
+  "searchStaffHint": "Search staff by name, email, phone...",
+  "staffWalletBalance": "Staff Wallet Balance",
+  "walletBalance": "Wallet Balance",
+  "transactionHistory": "Transaction History",
+  "relatedReport": "Report: {title}",
+  "@relatedReport": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "viewReportDetail": "View Report Details",
+  "processSuccess": "Withdrawal request processed successfully!",
+  "processFailed": "Failed to process request, please try again.",
+  "systemConfig": "System Configuration",
+  "routeSystemConfig": "System Configuration",
+  "commissionConfig": "Commission Configuration",
+  "routeCommissionConfig": "Commission Configuration",
+  "commissionConfigDescription": "Configure staff commission rates based on report severity level.",
+  "penaltyRateConfig": "Penalty Deduction Rate Configuration",
+  "routePenaltyRateConfig": "Penalty Deduction Rate Configuration",
+  "penaltyRateConfigDescription": "Configure commission deduction percentages when reports are marked unsatisfactory and require re-handling.",
+  "commissionConfigSummary": "4 severity levels: Low, Medium, High, Critical",
+  "penaltyRateConfigSummary": "3-turn penalty: Turn 1, Turn 2, Turn 3",
+  "saveCommissionSuccess": "Commission configuration updated successfully!",
+  "savePenaltyRateSuccess": "Penalty deduction rate updated successfully!",
+"copied": "Copied",
+  "homePendingWithdrawalBanner": "There are {count} withdrawal requests",
+  "@homePendingWithdrawalBanner": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homePendingWithdrawalSubtitle": "Tap to review pending withdrawal requests",
+  "statusCancelled": "Cancelled"
 }

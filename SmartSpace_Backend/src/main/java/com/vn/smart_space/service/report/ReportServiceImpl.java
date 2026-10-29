@@ -6,6 +6,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -206,8 +207,13 @@ public class ReportServiceImpl implements IReportService {
         // Notify Users
         if (userId != null) {
             try {
-                String title = "Tạo phản ánh thành công";
-                String message = "Phản ánh của bạn đã được ghi nhận và đang chờ xử lý.";
+                User creator = report.getUser() != null ? report.getUser() : userRepository.findById(userId).orElse(null);
+                Locale userLocale = (creator != null && "en".equalsIgnoreCase(creator.getLanguage()))
+                        ? Locale.ENGLISH
+                        : Locale.forLanguageTag("vi");
+
+                String title = messageSource.getMessage("notification.report.created.user.title", null, "Tạo phản ánh thành công", userLocale);
+                String message = messageSource.getMessage("notification.report.created.user.message", null, "Phản ánh của bạn đã được ghi nhận và đang chờ xử lý.", userLocale);
 
                 // Standardized actionData: { "type": "...", "payload": { ... } }
                 String actionData = "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"" + report.getId()
@@ -236,11 +242,6 @@ public class ReportServiceImpl implements IReportService {
         try {
             List<User> admins = userRepository.findByRole(ERole.admin);
             if (admins != null && !admins.isEmpty()) {
-                String adminTitle = "Có phản ánh mới";
-                String adminMessage = report.getTitle() != null && !report.getTitle().trim().isEmpty()
-                        ? report.getTitle().trim()
-                        : "Một phản ánh mới vừa được tạo và đang chờ xử lý.";
-
                 String createdAtStr = report.getCreatedAt() != null
                         ? report.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME)
                         : java.time.LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
@@ -258,15 +259,25 @@ public class ReportServiceImpl implements IReportService {
                                         ? report.getLocationDescription().replace("\"", "\\\"")
                                         : ""));
 
-                NotificationEvent adminEvent = new NotificationEvent(adminTitle, adminMessage, adminActionData,
-                        report.getImageUrl(), Map.of("shouldRefresh", true));
                 Map<String, String> adminFcmData = Map.of(
                         "type", "REPORT_DETAIL",
                         "payload", "{\"reportId\":\"" + report.getId() + "\"}");
-                NotificationRequest adminNotif = new NotificationRequest(adminTitle, adminMessage, adminFcmData);
 
                 for (User admin : admins) {
                     try {
+                        Locale adminLocale = (admin != null && "en".equalsIgnoreCase(admin.getLanguage()))
+                                ? Locale.ENGLISH
+                                : Locale.forLanguageTag("vi");
+                        String adminTitle = messageSource.getMessage("notification.report.created.admin.title", null, "Có phản ánh mới", adminLocale);
+                        String fallbackMsg = messageSource.getMessage("notification.report.created.admin.fallback_message", null, "Một phản ánh mới vừa được tạo và đang chờ xử lý.", adminLocale);
+                        String adminMessage = report.getTitle() != null && !report.getTitle().trim().isEmpty()
+                                ? report.getTitle().trim()
+                        : fallbackMsg;
+
+                        NotificationEvent adminEvent = new NotificationEvent(adminTitle, adminMessage, adminActionData,
+                                report.getImageUrl(), Map.of("shouldRefresh", true));
+                        NotificationRequest adminNotif = new NotificationRequest(adminTitle, adminMessage, adminFcmData);
+
                         notificationService.createNotification(admin.getId(), adminTitle, adminMessage,
                                 adminActionData, report.getImageUrl());
                         messagingTemplate.convertAndSendToUser(admin.getId(), "/queue/notifications", adminEvent);
@@ -753,9 +764,18 @@ public class ReportServiceImpl implements IReportService {
 
             for (User a : admins) {
                 try {
-                    NotificationEvent event = new NotificationEvent(
-                            "Phản ánh hoàn tất",
+                    Locale adminLocale = (a != null && "en".equalsIgnoreCase(a.getLanguage()))
+                            ? Locale.ENGLISH
+                            : Locale.forLanguageTag("vi");
+                    String adminTitle = messageSource.getMessage("notification.report.completed.admin.title", null, "Phản ánh hoàn tất", adminLocale);
+                    String adminMsg = messageSource.getMessage("notification.report.completed.admin.message",
+                            new Object[] { staffName, report.getTitle() },
                             String.format("Nhân viên %s đã xử lý xong phản ánh '%s'.", staffName, report.getTitle()),
+                            adminLocale);
+
+                    NotificationEvent event = new NotificationEvent(
+                            adminTitle,
+                            adminMsg,
                             actionData,
                             report.getImageUrl(),
                             Map.of("shouldRefresh", true, "status", "processed", "reportId", report.getId()));

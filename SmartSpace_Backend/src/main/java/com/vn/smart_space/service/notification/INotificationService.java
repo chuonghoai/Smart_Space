@@ -1,5 +1,7 @@
 package com.vn.smart_space.service.notification;
 
+import java.util.Map;
+
 import com.vn.smart_space.dto.response.notification.NotificationCountResponse;
 
 import com.vn.smart_space.model.Notification;
@@ -14,4 +16,5 @@ public interface INotificationService {
     PageResponse<NotificationResponse> getMyNotifications(String userId, int page, int size);
     void markAllAsRead(String userId);
     void markAsRead(String userId, String notificationId);
+    Map<String, Object> broadcastTestNotification();
 }

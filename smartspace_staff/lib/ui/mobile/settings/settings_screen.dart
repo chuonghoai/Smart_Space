@@ -68,6 +68,12 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
               ),
               _buildItem(
                 theme: theme,
+                icon: Icons.account_balance_outlined,
+                label: l10n.bankAccountsManagement,
+                onTap: () => context.push(RouterPath.staffBankAccounts),
+              ),
+              _buildItem(
+                theme: theme,
                 icon: Icons.notifications_outlined,
                 label: l10n.notificationSettings,
               ),

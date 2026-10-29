@@ -1580,4 +1580,196 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get manageWalletConfig => 'Wallet and Commission Config';
+
+  @override
+  String get manageStaffWallets => 'Staff Wallet Management';
+
+  @override
+  String get routeManageStaffWallets => 'Staff Wallet Management';
+
+  @override
+  String get withdrawalRequests => 'Withdrawal Requests';
+
+  @override
+  String get routeWithdrawalRequests => 'Withdrawal Requests';
+
+  @override
+  String get withdrawalRequestBadge => 'Withdrawal Request';
+
+  @override
+  String pendingWithdrawalBanner(int count) {
+    return '$count withdrawal requests';
+  }
+
+  @override
+  String staffWalletDetailTitle(String name) {
+    return 'Staff Wallet: $name';
+  }
+
+  @override
+  String get routeStaffWalletDetail => 'Staff Wallet Details';
+
+  @override
+  String get withdrawalDetailTitle => 'Withdrawal Request Details';
+
+  @override
+  String get bankName => 'Bank';
+
+  @override
+  String get bankAccountNumber => 'Account Number';
+
+  @override
+  String get bankAccountName => 'Account Holder';
+
+  @override
+  String get withdrawAmount => 'Withdrawal Amount';
+
+  @override
+  String get quickScanQr => 'Quick QR Scan';
+
+  @override
+  String get scanQrAutoFillNote =>
+      'Scan QR with your banking app to auto-fill payment details';
+
+  @override
+  String get approveAndTransfer => 'Confirm & Approve';
+
+  @override
+  String get rejectWithdrawal => 'Reject';
+
+  @override
+  String get rejectReasonPrompt => 'Reason for rejecting withdrawal';
+
+  @override
+  String get rejectReasonRequired => 'Please enter a rejection reason';
+
+  @override
+  String get confirmApprovalTitle => 'Confirm Withdrawal Approval';
+
+  @override
+  String confirmApprovalContent(String amount, String name) {
+    return 'Are you sure you have transferred $amount to staff $name?';
+  }
+
+  @override
+  String get copySuccess => 'Copied to clipboard';
+
+  @override
+  String get copy => 'Copy';
+
+  @override
+  String get note => 'Note';
+
+  @override
+  String get adminNote => 'Admin Note';
+
+  @override
+  String get processedAt => 'Processed At';
+
+  @override
+  String get createdAt => 'Created At';
+
+  @override
+  String get statusPending => 'Pending';
+
+  @override
+  String get statusApproved => 'Approved';
+
+  @override
+  String get statusRejected => 'Rejected';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get noStaffWalletsFound => 'No staff wallets found';
+
+  @override
+  String get noWithdrawalRequestsFound => 'No withdrawal requests found';
+
+  @override
+  String get noTransactionsFound => 'No transactions found';
+
+  @override
+  String get searchStaffHint => 'Search staff by name, email, phone...';
+
+  @override
+  String get staffWalletBalance => 'Staff Wallet Balance';
+
+  @override
+  String get walletBalance => 'Wallet Balance';
+
+  @override
+  String get transactionHistory => 'Transaction History';
+
+  @override
+  String relatedReport(String title) {
+    return 'Report: $title';
+  }
+
+  @override
+  String get viewReportDetail => 'View Report Details';
+
+  @override
+  String get processSuccess => 'Withdrawal request processed successfully!';
+
+  @override
+  String get processFailed => 'Failed to process request, please try again.';
+
+  @override
+  String get systemConfig => 'System Configuration';
+
+  @override
+  String get routeSystemConfig => 'System Configuration';
+
+  @override
+  String get commissionConfig => 'Commission Configuration';
+
+  @override
+  String get routeCommissionConfig => 'Commission Configuration';
+
+  @override
+  String get commissionConfigDescription =>
+      'Configure staff commission rates based on report severity level.';
+
+  @override
+  String get penaltyRateConfig => 'Penalty Deduction Rate Configuration';
+
+  @override
+  String get routePenaltyRateConfig => 'Penalty Deduction Rate Configuration';
+
+  @override
+  String get penaltyRateConfigDescription =>
+      'Configure commission deduction percentages when reports are marked unsatisfactory and require re-handling.';
+
+  @override
+  String get commissionConfigSummary =>
+      '4 severity levels: Low, Medium, High, Critical';
+
+  @override
+  String get penaltyRateConfigSummary =>
+      '3-turn penalty: Turn 1, Turn 2, Turn 3';
+
+  @override
+  String get saveCommissionSuccess =>
+      'Commission configuration updated successfully!';
+
+  @override
+  String get savePenaltyRateSuccess =>
+      'Penalty deduction rate updated successfully!';
+
+  @override
+  String get copied => 'Copied';
+
+  @override
+  String homePendingWithdrawalBanner(int count) {
+    return 'There are $count withdrawal requests';
+  }
+
+  @override
+  String get homePendingWithdrawalSubtitle =>
+      'Tap to review pending withdrawal requests';
+
+  @override
+  String get statusCancelled => 'Cancelled';
 }

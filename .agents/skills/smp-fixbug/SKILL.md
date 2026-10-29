@@ -39,6 +39,7 @@ Plan phải bao gồm:
 - Affected files & Affected flow
 - Proposed fix
 - Nếu fix có thay đổi UI/Text: MUST đảm bảo tuân thủ Dark/Light mode và KHÔNG hardcode user-facing strings theo `shared-ui-l10n-rules.md`. Áp dụng các nguyên tắc liên quan từ [design-taste-frontend](../design-taste-frontend/SKILL.md) trong phạm vi cục bộ của bug; **TUYỆT ĐỐI KHÔNG** tự ý redesign toàn bộ màn hình hoặc mở rộng phạm vi ngoài yêu cầu sửa lỗi.
+- Nếu fix có liên quan đến Backend & Thông báo (Notification): Khi triển khai hay sửa code trong backend, phải gọi đến cột `language` trong bảng `users` của database (`User.getLanguage()`) để biết người dùng đang chọn ngôn ngữ nào, sau đó trong các code gửi thông báo WebSocket hay Firebase (FCM) đều phải tuân thủ đúng quy tắc key ngôn ngữ L10n (`MessageSource` với `messages_vi.properties` / `messages_en.properties` để hỗ trợ đúng đa ngôn ngữ). Tuyệt đối không được hardcode chuỗi văn bản Tiếng Việt hay Tiếng Anh nào trong code gửi thông báo của backend.
 - Side effects & Regression risks
 - Test cases cần kiểm tra
 

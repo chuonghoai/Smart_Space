@@ -43,6 +43,12 @@ public class NotificationController {
         return ResponseEntity.ok(ApiResponse.success("notification.test.success", null));
     }
 
+    @PostMapping("/broadcast-test")
+    public ResponseEntity<ApiResponse> broadcastTestNotification() {
+        Map<String, Object> result = notificationService.broadcastTestNotification();
+        return ResponseEntity.ok(ApiResponse.success("notification.test.success", result));
+    }
+
     @GetMapping("/unread-count")
     public ResponseEntity<ApiResponse> getUnreadCount(@AuthenticationPrincipal Jwt jwt) {
         String userId = jwt.getClaim("userId").toString();
