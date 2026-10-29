@@ -21,6 +21,8 @@ public class StaffWalletTransactionResponse {
     String reportId;
     @JsonProperty("report_title")
     String reportTitle;
+    @JsonProperty("withdrawal_id")
+    String withdrawalId;
     @JsonProperty("title_i18n_key")
     String titleI18nKey;
     @JsonProperty("title_params")
@@ -29,4 +31,3 @@ public class StaffWalletTransactionResponse {
     @JsonProperty("created_at")
     LocalDateTime createdAt;
 }
-

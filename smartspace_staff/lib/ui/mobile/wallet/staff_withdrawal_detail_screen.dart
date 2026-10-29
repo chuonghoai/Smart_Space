@@ -204,6 +204,62 @@ class _StaffWithdrawalDetailScreenState
             ),
             const SizedBox(height: 16),
 
+            // Notice for PENDING requests (held balance)
+            if (item.isPending) ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? const Color(0xFFFFB74D).withOpacity(0.12)
+                      : const Color(0xFFFFF3E0),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: isDark
+                        ? const Color(0xFFFFB74D).withOpacity(0.4)
+                        : const Color(0xFFFFB74D),
+                  ),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.lock_clock_rounded,
+                      color: isDark
+                          ? const Color(0xFFFFB74D)
+                          : const Color(0xFFE65100),
+                      size: 22,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.heldWithdrawalNoticeTitle,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: isDark
+                                  ? const Color(0xFFFFB74D)
+                                  : const Color(0xFFE65100),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            l10n.heldWithdrawalNoticeDesc,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ],
+
             // Bank Account Info Section
             Container(
               width: double.infinity,
@@ -320,6 +376,41 @@ class _StaffWithdrawalDetailScreenState
                       style: theme.textTheme.bodyMedium?.copyWith(
                         fontWeight: FontWeight.w600,
                         color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: (isDark
+                                ? const Color(0xFF66BB6A)
+                                : const Color(0xFF2E7D32))
+                            .withOpacity(0.12),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.check_circle_outline_rounded,
+                            size: 16,
+                            color: isDark
+                                ? const Color(0xFF66BB6A)
+                                : const Color(0xFF2E7D32),
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              l10n.refundedNoticeDesc,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: isDark
+                                    ? const Color(0xFF81C784)
+                                    : const Color(0xFF2E7D32),
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
                     ),
                   ],

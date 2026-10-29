@@ -1034,4 +1034,15 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get addNewBankAccount => 'Thêm tài khoản ngân hàng mới';
+
+  @override
+  String get heldWithdrawalNoticeTitle => 'Số tiền đang được tạm giữ';
+
+  @override
+  String get heldWithdrawalNoticeDesc =>
+      'Số tiền rút đã được trừ tạm giữ khỏi số dư ví. Nếu yêu cầu bị từ chối, số tiền sẽ được hoàn trả lại ví của bạn.';
+
+  @override
+  String get refundedNoticeDesc =>
+      'Số tiền yêu cầu rút đã được hoàn trả lại vào ví của bạn.';
 }

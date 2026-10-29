@@ -42,7 +42,7 @@ public class StaffWithdrawalRequest extends AbstractEntity {
 
     @Enumerated(EnumType.STRING)
     @Builder.Default
-    @Column(name = "status", nullable = false)
+    @Column(name = "status", nullable = false, columnDefinition = "VARCHAR(50)")
     EWithdrawalStatus status = EWithdrawalStatus.PENDING;
 
     @Column(name = "note")

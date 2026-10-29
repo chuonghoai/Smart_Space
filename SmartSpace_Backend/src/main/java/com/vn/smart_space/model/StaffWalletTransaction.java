@@ -23,7 +23,7 @@ public class StaffWalletTransaction extends AbstractEntity {
     StaffWallet wallet;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "type", nullable = false)
+    @Column(name = "type", nullable = false, columnDefinition = "VARCHAR(50)")
     EWalletTransactionType type;
 
     @Column(name = "amount", nullable = false)
@@ -36,10 +36,13 @@ public class StaffWalletTransaction extends AbstractEntity {
     @JoinColumn(name = "report_id")
     Report report;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "withdrawal_request_id")
+    StaffWithdrawalRequest withdrawalRequest;
+
     @Column(name = "title_i18n_key")
     String titleI18nKey;
 
     @Column(name = "title_params")
     String titleParams;
 }
-

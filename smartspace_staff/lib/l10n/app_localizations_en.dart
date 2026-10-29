@@ -1050,4 +1050,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get addNewBankAccount => 'Add new bank account';
+
+  @override
+  String get heldWithdrawalNoticeTitle => 'Amount is currently held';
+
+  @override
+  String get heldWithdrawalNoticeDesc =>
+      'The withdrawal amount has been held from your wallet balance. If the request is rejected, the amount will be refunded to your wallet.';
+
+  @override
+  String get refundedNoticeDesc =>
+      'The withdrawal amount has been refunded back to your wallet.';
 }

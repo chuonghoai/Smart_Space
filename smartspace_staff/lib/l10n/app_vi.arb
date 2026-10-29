@@ -419,6 +419,9 @@
   "createdDate": "Ngày tạo",
   "save": "Lưu",
   "genericError": "Đã có lỗi xảy ra, vui lòng thử lại!",
-"doNotSave": "Không lưu",
-  "addNewBankAccount": "Thêm tài khoản ngân hàng mới"
+  "doNotSave": "Không lưu",
+  "addNewBankAccount": "Thêm tài khoản ngân hàng mới",
+  "heldWithdrawalNoticeTitle": "Số tiền đang được tạm giữ",
+  "heldWithdrawalNoticeDesc": "Số tiền rút đã được trừ tạm giữ khỏi số dư ví. Nếu yêu cầu bị từ chối, số tiền sẽ được hoàn trả lại ví của bạn.",
+  "refundedNoticeDesc": "Số tiền yêu cầu rút đã được hoàn trả lại vào ví của bạn."
 }

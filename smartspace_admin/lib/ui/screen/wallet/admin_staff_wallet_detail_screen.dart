@@ -295,6 +295,8 @@ class _AdminStaffWalletDetailScreenState extends State<AdminStaffWalletDetailScr
   ) {
     final isIncome = tx.isIncome;
     final isPenalty = tx.isPenalty;
+    final isHold = tx.isHold;
+    final isRefund = tx.isRefund;
 
     Color color;
     IconData icon;
@@ -304,17 +306,27 @@ class _AdminStaffWalletDetailScreenState extends State<AdminStaffWalletDetailScr
       color = isDark ? const Color(0xFF81C784) : const Color(0xFF2E7D32);
       icon = Icons.arrow_downward_rounded;
       prefix = '+';
+    } else if (isRefund) {
+      color = isDark ? const Color(0xFF81C784) : const Color(0xFF2E7D32);
+      icon = Icons.replay_rounded;
+      prefix = '+';
+    } else if (isHold) {
+      color = isDark ? const Color(0xFFFFB74D) : const Color(0xFFE65100);
+      icon = Icons.lock_clock_rounded;
+      prefix = '-';
     } else if (isPenalty) {
       color = isDark ? const Color(0xFFE57373) : const Color(0xFFC62828);
       icon = Icons.arrow_upward_rounded;
       prefix = '-';
     } else {
-      color = isDark ? const Color(0xFFFFB74D) : const Color(0xFFE65100);
+      // WITHDRAWAL
+      color = isDark ? const Color(0xFFE57373) : const Color(0xFFC62828);
       icon = Icons.arrow_upward_rounded;
       prefix = '-';
     }
 
     final hasReport = tx.reportId != null && tx.reportId!.isNotEmpty;
+    final hasWithdrawal = tx.withdrawalId != null && tx.withdrawalId!.isNotEmpty;
 
     return Card(
       elevation: 0,
@@ -327,10 +339,13 @@ class _AdminStaffWalletDetailScreenState extends State<AdminStaffWalletDetailScr
       ),
       clipBehavior: Clip.antiAlias,
       child: InkWell(
-        onTap: hasReport
+        onTap: (hasReport || hasWithdrawal)
             ? () {
-                // Khi bấm vào 1 dòng trong ví nhân viên, context.push vào giao diện chi tiết report tương ứng
-                context.push(RouterPath.reportDetailWithId(tx.reportId!));
+                if (hasReport) {
+                  context.push(RouterPath.reportDetailWithId(tx.reportId!));
+                } else if (hasWithdrawal) {
+                  context.push('${RouterPath.adminWithdrawalRequests}?openId=${tx.withdrawalId}');
+                }
               }
             : null,
         child: Padding(

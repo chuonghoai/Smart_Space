@@ -419,6 +419,9 @@
   "createdDate": "Created Date",
   "save": "Save",
   "genericError": "An error occurred, please try again!",
-"doNotSave": "Don't save",
-  "addNewBankAccount": "Add new bank account"
+  "doNotSave": "Don't save",
+  "addNewBankAccount": "Add new bank account",
+  "heldWithdrawalNoticeTitle": "Amount is currently held",
+  "heldWithdrawalNoticeDesc": "The withdrawal amount has been held from your wallet balance. If the request is rejected, the amount will be refunded to your wallet.",
+  "refundedNoticeDesc": "The withdrawal amount has been refunded back to your wallet."
 }

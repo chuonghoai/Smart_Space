@@ -121,11 +121,17 @@ public class StaffWalletServiceImpl implements IStaffWalletService {
                         }
                     }
                     if (title == null || title.equals(titleKey)) {
-                        title = t.getType() == EWalletTransactionType.COMMISSION
-                                ? "Hoa hồng hoàn thành phản ánh"
-                                : (t.getType() == EWalletTransactionType.PENALTY_DEDUCTION
-                                ? "Phản ánh đánh giá xấu"
-                                : "Rút tiền");
+                        if (t.getType() == EWalletTransactionType.COMMISSION) {
+                            title = "Hoa hồng hoàn thành phản ánh";
+                        } else if (t.getType() == EWalletTransactionType.PENALTY_DEDUCTION) {
+                            title = "Phản ánh đánh giá xấu";
+                        } else if (t.getType() == EWalletTransactionType.WITHDRAWAL_HOLD) {
+                            title = "Tạm giữ yêu cầu rút tiền";
+                        } else if (t.getType() == EWalletTransactionType.WITHDRAWAL_REFUND) {
+                            title = "Hoàn tiền yêu cầu rút tiền";
+                        } else {
+                            title = "Rút tiền về tài khoản ngân hàng";
+                        }
                     }
 
                     return StaffWalletTransactionResponse.builder()
@@ -135,6 +141,7 @@ public class StaffWalletServiceImpl implements IStaffWalletService {
                             .balanceAfter(t.getBalanceAfter())
                             .reportId(t.getReport() != null ? t.getReport().getId() : null)
                             .reportTitle(t.getReport() != null ? t.getReport().getTitle() : null)
+                            .withdrawalId(t.getWithdrawalRequest() != null ? t.getWithdrawalRequest().getId() : null)
                             .titleI18nKey(t.getTitleI18nKey())
                             .titleParams(t.getTitleParams())
                             .title(title)
@@ -378,6 +385,10 @@ public class StaffWalletServiceImpl implements IStaffWalletService {
             throw new BadRequestException("wallet.withdrawal.insufficient_balance");
         }
 
+        double newBalance = wallet.getBalance() - request.getAmount();
+        wallet.setBalance(newBalance);
+        staffWalletRepository.save(wallet);
+
         StaffWithdrawalRequest withdrawal = StaffWithdrawalRequest.builder()
                 .user(staff)
                 .amount(request.getAmount())
@@ -390,6 +401,17 @@ public class StaffWalletServiceImpl implements IStaffWalletService {
                 .build();
 
         StaffWithdrawalRequest saved = staffWithdrawalRequestRepository.save(withdrawal);
+
+        StaffWalletTransaction holdTx = StaffWalletTransaction.builder()
+                .wallet(wallet)
+                .type(EWalletTransactionType.WITHDRAWAL_HOLD)
+                .amount(request.getAmount())
+                .balanceAfter(newBalance)
+                .withdrawalRequest(saved)
+                .titleI18nKey("wallet.transaction.withdrawal_hold.title")
+                .titleParams(request.getBankName())
+                .build();
+        staffWalletTransactionRepository.save(holdTx);
 
         // Notify Admins about new withdrawal request
         try {

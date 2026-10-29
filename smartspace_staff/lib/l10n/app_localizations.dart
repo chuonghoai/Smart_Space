@@ -2065,6 +2065,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Add new bank account'**
   String get addNewBankAccount;
+
+  /// No description provided for @heldWithdrawalNoticeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Amount is currently held'**
+  String get heldWithdrawalNoticeTitle;
+
+  /// No description provided for @heldWithdrawalNoticeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The withdrawal amount has been held from your wallet balance. If the request is rejected, the amount will be refunded to your wallet.'**
+  String get heldWithdrawalNoticeDesc;
+
+  /// No description provided for @refundedNoticeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'The withdrawal amount has been refunded back to your wallet.'**
+  String get refundedNoticeDesc;
 }
 
 class _AppLocalizationsDelegate

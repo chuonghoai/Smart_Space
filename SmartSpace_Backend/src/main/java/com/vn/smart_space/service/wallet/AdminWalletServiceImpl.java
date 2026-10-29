@@ -171,26 +171,29 @@ public class AdminWalletServiceImpl implements IAdminWalletService {
         Locale staffLocale = new Locale(staff.getLanguage() != null ? staff.getLanguage() : "vi");
 
         if ("APPROVED".equalsIgnoreCase(request.getStatus())) {
-            StaffWallet wallet = staffWalletRepository.findByUserIdForUpdate(staff.getId())
-                    .orElseGet(() -> staffWalletService.getOrCreateWallet(staff.getId()));
+            StaffWalletTransaction holdTrans = staffWalletTransactionRepository
+                    .findFirstByWithdrawalRequestIdOrderByCreatedAtDesc(withdrawal.getId())
+                    .orElse(null);
 
-            if (wallet.getBalance() < withdrawal.getAmount()) {
-                throw new BadRequestException("wallet.withdrawal.insufficient_balance");
+            if (holdTrans != null) {
+                holdTrans.setType(EWalletTransactionType.WITHDRAWAL);
+                holdTrans.setTitleI18nKey("wallet.transaction.withdrawal.title");
+                holdTrans.setTitleParams(withdrawal.getBankName());
+                staffWalletTransactionRepository.save(holdTrans);
+            } else {
+                StaffWallet wallet = staffWalletRepository.findByUserIdForUpdate(staff.getId())
+                        .orElseGet(() -> staffWalletService.getOrCreateWallet(staff.getId()));
+                StaffWalletTransaction transaction = StaffWalletTransaction.builder()
+                        .wallet(wallet)
+                        .type(EWalletTransactionType.WITHDRAWAL)
+                        .amount(withdrawal.getAmount())
+                        .balanceAfter(wallet.getBalance())
+                        .withdrawalRequest(withdrawal)
+                        .titleI18nKey("wallet.transaction.withdrawal.title")
+                        .titleParams(withdrawal.getBankName())
+                        .build();
+                staffWalletTransactionRepository.save(transaction);
             }
-
-            double newBalance = wallet.getBalance() - withdrawal.getAmount();
-            wallet.setBalance(newBalance);
-            staffWalletRepository.save(wallet);
-
-            StaffWalletTransaction transaction = StaffWalletTransaction.builder()
-                    .wallet(wallet)
-                    .type(EWalletTransactionType.WITHDRAWAL)
-                    .amount(withdrawal.getAmount())
-                    .balanceAfter(newBalance)
-                    .titleI18nKey("wallet.transaction.withdrawal.title")
-                    .titleParams(withdrawal.getBankName())
-                    .build();
-            staffWalletTransactionRepository.save(transaction);
 
             withdrawal.setStatus(EWithdrawalStatus.APPROVED);
             withdrawal.setAdminNote(request.getAdminNote());
@@ -218,6 +221,24 @@ public class AdminWalletServiceImpl implements IAdminWalletService {
 
             return mapToWithdrawalResponse(saved);
         } else if ("REJECTED".equalsIgnoreCase(request.getStatus())) {
+            StaffWallet wallet = staffWalletRepository.findByUserIdForUpdate(staff.getId())
+                    .orElseGet(() -> staffWalletService.getOrCreateWallet(staff.getId()));
+
+            double refundBalance = wallet.getBalance() + withdrawal.getAmount();
+            wallet.setBalance(refundBalance);
+            staffWalletRepository.save(wallet);
+
+            StaffWalletTransaction refundTrans = StaffWalletTransaction.builder()
+                    .wallet(wallet)
+                    .type(EWalletTransactionType.WITHDRAWAL_REFUND)
+                    .amount(withdrawal.getAmount())
+                    .balanceAfter(refundBalance)
+                    .withdrawalRequest(withdrawal)
+                    .titleI18nKey("wallet.transaction.withdrawal_refund.title")
+                    .titleParams(request.getAdminNote())
+                    .build();
+            staffWalletTransactionRepository.save(refundTrans);
+
             withdrawal.setStatus(EWithdrawalStatus.REJECTED);
             withdrawal.setAdminNote(request.getAdminNote());
             withdrawal.setProcessedAt(LocalDateTime.now());

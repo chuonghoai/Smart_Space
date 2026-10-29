@@ -435,10 +435,17 @@ class _StaffWithdrawScreenState extends ConsumerState<StaffWithdrawScreen> {
     }
 
     // Dropdown to pick a saved account with bottom option to add new bank account
-    final dropdownItems = <DropdownMenuItem<StaffBankAccountModel>>[
-      ...savedAccounts.map((acc) {
-        return DropdownMenuItem<StaffBankAccountModel>(
-          value: acc,
+    final uniqueAccounts = <String, StaffBankAccountModel>{};
+    for (final acc in savedAccounts) {
+      if (acc.id.isNotEmpty) {
+        uniqueAccounts[acc.id] = acc;
+      }
+    }
+
+    final dropdownItems = <DropdownMenuItem<String>>[
+      ...uniqueAccounts.values.map((acc) {
+        return DropdownMenuItem<String>(
+          value: acc.id,
           child: Row(
             children: [
               Icon(
@@ -460,13 +467,8 @@ class _StaffWithdrawScreenState extends ConsumerState<StaffWithdrawScreen> {
           ),
         );
       }),
-      DropdownMenuItem<StaffBankAccountModel>(
-        value: StaffBankAccountModel(
-          id: '__add_new__',
-          bankName: '',
-          bankAccountNumber: '',
-          bankAccountName: '',
-        ),
+      DropdownMenuItem<String>(
+        value: '__add_new__',
         child: Row(
           children: [
             Icon(
@@ -499,7 +501,7 @@ class _StaffWithdrawScreenState extends ConsumerState<StaffWithdrawScreen> {
         ),
       ),
       child: DropdownButtonHideUnderline(
-        child: DropdownButton<StaffBankAccountModel>(
+        child: DropdownButton<String>(
           isExpanded: true,
           hint: Row(
             children: [
@@ -517,18 +519,18 @@ class _StaffWithdrawScreenState extends ConsumerState<StaffWithdrawScreen> {
               ),
             ],
           ),
-          value: savedAccounts
-              .where((a) => a.id == _selectedSavedAccount?.id)
-              .firstOrNull,
+          value: uniqueAccounts.containsKey(_selectedSavedAccount?.id)
+              ? _selectedSavedAccount?.id
+              : null,
           items: dropdownItems,
-          onChanged: (acc) async {
-            if (acc?.id == '__add_new__') {
+          onChanged: (id) async {
+            if (id == '__add_new__') {
               await context.push(RouterPath.staffBankAccounts);
               ref.read(staffBankAccountProvider.notifier).loadAccounts();
               return;
             }
-            if (acc != null) {
-              _onSelectSavedAccount(acc);
+            if (id != null && uniqueAccounts.containsKey(id)) {
+              _onSelectSavedAccount(uniqueAccounts[id]!);
             }
           },
         ),
