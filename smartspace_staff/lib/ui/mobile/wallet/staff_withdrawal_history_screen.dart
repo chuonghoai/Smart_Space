@@ -226,6 +226,11 @@ class _StaffWithdrawalHistoryScreenState
       statusBgColor = statusColor.withOpacity(0.12);
       statusLabel = l10n.statusRejected;
       statusIcon = Icons.cancel_outlined;
+    } else if (item.isCancelled) {
+      statusColor = isDark ? const Color(0xFFEF5350) : const Color(0xFFC62828);
+      statusBgColor = statusColor.withOpacity(0.12);
+      statusLabel = l10n.statusCancelled;
+      statusIcon = Icons.cancel_outlined;
     } else {
       statusColor = isDark ? const Color(0xFFFFCA28) : const Color(0xFFF9A825);
       statusBgColor = statusColor.withOpacity(0.12);
@@ -347,8 +352,8 @@ class _StaffWithdrawalHistoryScreenState
                 ],
               ),
 
-              // Hint to tap if rejected
-              if (item.isRejected) ...[
+              // Hint to tap if rejected or cancelled
+              if (item.isRejected || item.isCancelled) ...[
                 const SizedBox(height: 10),
                 Container(
                   padding:

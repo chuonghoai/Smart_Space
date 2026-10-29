@@ -61,4 +61,14 @@ public class StaffWalletController {
         return ResponseEntity.ok(
                 ApiResponse.success("system.success", staffWalletService.getMyWithdrawals(userId)));
     }
+
+    @PreAuthorize("hasAnyRole('staff', 'admin')")
+    @PostMapping("/withdrawals/{id}/cancel")
+    public ResponseEntity<ApiResponse> cancelWithdrawal(
+            @PathVariable("id") String id,
+            @AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt != null ? jwt.getClaimAsString("userId") : null;
+        return ResponseEntity.ok(
+                ApiResponse.success("system.success", staffWalletService.cancelWithdrawalRequest(userId, id)));
+    }
 }

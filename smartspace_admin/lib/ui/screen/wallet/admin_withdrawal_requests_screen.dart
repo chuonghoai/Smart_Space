@@ -153,6 +153,7 @@ class _AdminWithdrawalRequestsScreenState extends State<AdminWithdrawalRequestsS
       {'key': 'PENDING', 'label': l10n.statusPending},
       {'key': 'APPROVED', 'label': l10n.statusApproved},
       {'key': 'REJECTED', 'label': l10n.statusRejected},
+      {'key': 'CANCELLED', 'label': l10n.statusCancelled},
     ];
 
     return SingleChildScrollView(
@@ -338,6 +339,11 @@ class _AdminWithdrawalRequestsScreenState extends State<AdminWithdrawalRequestsS
         bg = const Color(0xFFFFEBEE);
         fg = const Color(0xFFC62828);
         label = l10n.statusRejected;
+        break;
+      case 'CANCELLED':
+        bg = const Color(0xFFFFEBEE);
+        fg = const Color(0xFFC62828);
+        label = l10n.statusCancelled;
         break;
       case 'PENDING':
       default:

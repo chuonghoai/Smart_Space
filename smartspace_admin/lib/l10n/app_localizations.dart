@@ -3427,6 +3427,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Tap to review pending withdrawal requests'**
   String get homePendingWithdrawalSubtitle;
+
+  /// No description provided for @statusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get statusCancelled;
 }
 
 class _AppLocalizationsDelegate

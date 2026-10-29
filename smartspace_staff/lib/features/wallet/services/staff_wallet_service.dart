@@ -38,6 +38,9 @@ class StaffWalletService {
 
   Future<ApiResponse<List<StaffWithdrawalModel>>> getMyWithdrawals() =>
       _repo.getMyWithdrawals();
+
+  Future<ApiResponse<StaffWithdrawalModel>> cancelWithdrawal(String id) =>
+      _repo.cancelWithdrawal(id);
 }
 
 final staffWalletService = StaffWalletService();

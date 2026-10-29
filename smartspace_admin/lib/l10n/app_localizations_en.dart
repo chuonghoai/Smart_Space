@@ -1769,4 +1769,7 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get homePendingWithdrawalSubtitle =>
       'Tap to review pending withdrawal requests';
+
+  @override
+  String get statusCancelled => 'Cancelled';
 }

@@ -786,5 +786,6 @@
       }
     }
   },
-  "homePendingWithdrawalSubtitle": "Tap to review pending withdrawal requests"
+  "homePendingWithdrawalSubtitle": "Tap to review pending withdrawal requests",
+  "statusCancelled": "Cancelled"
 }

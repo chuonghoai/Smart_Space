@@ -560,6 +560,11 @@ class _WithdrawalDetailModalState extends State<WithdrawalDetailModal> {
         fg = const Color(0xFFC62828);
         label = l10n.statusRejected;
         break;
+      case 'CANCELLED':
+        bg = const Color(0xFFFFEBEE);
+        fg = const Color(0xFFC62828);
+        label = l10n.statusCancelled;
+        break;
       case 'PENDING':
       default:
         bg = const Color(0xFFFFF8E1);

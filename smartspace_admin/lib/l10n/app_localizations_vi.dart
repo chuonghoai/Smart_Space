@@ -1761,4 +1761,7 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get homePendingWithdrawalSubtitle =>
       'Nhấn để xem và duyệt các yêu cầu rút tiền';
+
+  @override
+  String get statusCancelled => 'Đã hủy';
 }

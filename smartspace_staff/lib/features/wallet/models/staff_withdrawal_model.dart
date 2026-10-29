@@ -32,6 +32,8 @@ class StaffWithdrawalModel {
   bool get isPending => status == 'PENDING';
   bool get isApproved => status == 'APPROVED';
   bool get isRejected => status == 'REJECTED';
+  bool get isCancelled => status == 'CANCELLED';
+  bool get canCancel => isPending;
 
   factory StaffWithdrawalModel.fromJson(Map<String, dynamic> json) {
     return StaffWithdrawalModel(

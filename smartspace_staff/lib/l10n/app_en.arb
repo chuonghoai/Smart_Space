@@ -423,5 +423,12 @@
   "addNewBankAccount": "Add new bank account",
   "heldWithdrawalNoticeTitle": "Amount is currently held",
   "heldWithdrawalNoticeDesc": "The withdrawal amount has been held from your wallet balance. If the request is rejected, the amount will be refunded to your wallet.",
-  "refundedNoticeDesc": "The withdrawal amount has been refunded back to your wallet."
+  "refundedNoticeDesc": "The withdrawal amount has been refunded back to your wallet.",
+  "cancelWithdrawalRequest": "Cancel withdrawal request",
+  "confirmCancelWithdrawalTitle": "Confirm cancellation",
+  "confirmCancelWithdrawalContent": "Are you sure you want to cancel this withdrawal request? The held amount will be refunded to your wallet immediately.",
+  "confirmCancel": "Cancel request",
+  "cancelWithdrawalSuccess": "Withdrawal request cancelled successfully, the amount has been refunded to your wallet.",
+  "statusCancelled": "Cancelled",
+  "cancelledNoticeDesc": "This withdrawal request has been cancelled and the held amount has been refunded to your wallet."
 }

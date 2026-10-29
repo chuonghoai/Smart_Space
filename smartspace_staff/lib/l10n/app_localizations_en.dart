@@ -1061,4 +1061,28 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get refundedNoticeDesc =>
       'The withdrawal amount has been refunded back to your wallet.';
+
+  @override
+  String get cancelWithdrawalRequest => 'Cancel withdrawal request';
+
+  @override
+  String get confirmCancelWithdrawalTitle => 'Confirm cancellation';
+
+  @override
+  String get confirmCancelWithdrawalContent =>
+      'Are you sure you want to cancel this withdrawal request? The held amount will be refunded to your wallet immediately.';
+
+  @override
+  String get confirmCancel => 'Cancel request';
+
+  @override
+  String get cancelWithdrawalSuccess =>
+      'Withdrawal request cancelled successfully, the amount has been refunded to your wallet.';
+
+  @override
+  String get statusCancelled => 'Cancelled';
+
+  @override
+  String get cancelledNoticeDesc =>
+      'This withdrawal request has been cancelled and the held amount has been refunded to your wallet.';
 }

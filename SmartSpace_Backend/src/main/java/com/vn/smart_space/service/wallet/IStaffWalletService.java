@@ -21,4 +21,5 @@ public interface IStaffWalletService {
     List<ReportDetailResponse.PenaltyDeductionItem> getPenaltyDeductionsForReport(Report report);
     StaffWithdrawalRequestResponse createWithdrawalRequest(String userId, CreateWithdrawalRequest request);
     List<StaffWithdrawalRequestResponse> getMyWithdrawals(String userId);
+    StaffWithdrawalRequestResponse cancelWithdrawalRequest(String userId, String withdrawalId);
 }

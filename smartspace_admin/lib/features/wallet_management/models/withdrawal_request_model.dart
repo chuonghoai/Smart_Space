@@ -40,6 +40,7 @@ class WithdrawalRequestModel {
   bool get isPending => status == 'PENDING';
   bool get isApproved => status == 'APPROVED';
   bool get isRejected => status == 'REJECTED';
+  bool get isCancelled => status == 'CANCELLED';
 
   factory WithdrawalRequestModel.fromJson(Map<String, dynamic> json) {
     return WithdrawalRequestModel(

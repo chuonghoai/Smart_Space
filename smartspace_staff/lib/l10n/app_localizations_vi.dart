@@ -1045,4 +1045,28 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get refundedNoticeDesc =>
       'Số tiền yêu cầu rút đã được hoàn trả lại vào ví của bạn.';
+
+  @override
+  String get cancelWithdrawalRequest => 'Hủy yêu cầu rút tiền';
+
+  @override
+  String get confirmCancelWithdrawalTitle => 'Xác nhận hủy yêu cầu';
+
+  @override
+  String get confirmCancelWithdrawalContent =>
+      'Bạn có chắc chắn muốn hủy yêu cầu rút tiền này không? Số tiền tạm giữ sẽ được hoàn lại ngay vào ví của bạn.';
+
+  @override
+  String get confirmCancel => 'Hủy yêu cầu';
+
+  @override
+  String get cancelWithdrawalSuccess =>
+      'Hủy yêu cầu rút tiền thành công, số tiền đã được hoàn lại vào ví.';
+
+  @override
+  String get statusCancelled => 'Đã hủy';
+
+  @override
+  String get cancelledNoticeDesc =>
+      'Yêu cầu rút tiền này đã được hủy và số tiền tạm giữ đã được hoàn trả lại ví của bạn.';
 }

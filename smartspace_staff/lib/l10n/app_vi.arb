@@ -423,5 +423,12 @@
   "addNewBankAccount": "Thêm tài khoản ngân hàng mới",
   "heldWithdrawalNoticeTitle": "Số tiền đang được tạm giữ",
   "heldWithdrawalNoticeDesc": "Số tiền rút đã được trừ tạm giữ khỏi số dư ví. Nếu yêu cầu bị từ chối, số tiền sẽ được hoàn trả lại ví của bạn.",
-  "refundedNoticeDesc": "Số tiền yêu cầu rút đã được hoàn trả lại vào ví của bạn."
+  "refundedNoticeDesc": "Số tiền yêu cầu rút đã được hoàn trả lại vào ví của bạn.",
+  "cancelWithdrawalRequest": "Hủy yêu cầu rút tiền",
+  "confirmCancelWithdrawalTitle": "Xác nhận hủy yêu cầu",
+  "confirmCancelWithdrawalContent": "Bạn có chắc chắn muốn hủy yêu cầu rút tiền này không? Số tiền tạm giữ sẽ được hoàn lại ngay vào ví của bạn.",
+  "confirmCancel": "Hủy yêu cầu",
+  "cancelWithdrawalSuccess": "Hủy yêu cầu rút tiền thành công, số tiền đã được hoàn lại vào ví.",
+  "statusCancelled": "Đã hủy",
+  "cancelledNoticeDesc": "Yêu cầu rút tiền này đã được hủy và số tiền tạm giữ đã được hoàn trả lại ví của bạn."
 }

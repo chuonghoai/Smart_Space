@@ -40,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -416,12 +417,14 @@ public class StaffWalletServiceImpl implements IStaffWalletService {
         // Notify Admins about new withdrawal request
         try {
             List<User> admins = userRepository.findByRole(ERole.admin);
-            String staffName = staff.getFullName() != null ? staff.getFullName() : "Nhân viên";
             String adminActionData = "{\"type\": \"ADMIN_WITHDRAWAL_REQUEST\", \"payload\": {\"withdrawalId\": \"" + saved.getId() + "\"}}";
 
             for (User admin : admins) {
                 try {
                     Locale adminLocale = "en".equalsIgnoreCase(admin.getLanguage()) ? Locale.ENGLISH : Locale.forLanguageTag("vi");
+                    String defaultStaffName = messageSource.getMessage("common.staff", null, "Nhân viên", adminLocale);
+                    String staffName = (staff.getFullName() != null && !staff.getFullName().isBlank()) ? staff.getFullName() : defaultStaffName;
+
                     String adminTitle = messageSource.getMessage("notification.wallet.withdrawal.created.title", null, "Yêu cầu rút tiền mới", adminLocale);
                     String adminMessage = messageSource.getMessage("notification.wallet.withdrawal.created.message",
                             new Object[]{staffName},
@@ -450,6 +453,121 @@ public class StaffWalletServiceImpl implements IStaffWalletService {
     public List<StaffWithdrawalRequestResponse> getMyWithdrawals(String userId) {
         List<StaffWithdrawalRequest> list = staffWithdrawalRequestRepository.findByUserIdOrderByCreatedAtDesc(userId);
         return list.stream().map(this::mapToWithdrawalResponse).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public StaffWithdrawalRequestResponse cancelWithdrawalRequest(String userId, String withdrawalId) {
+        if (userId == null || withdrawalId == null) {
+            throw new BadRequestException("wallet.withdrawal.not_found");
+        }
+
+        StaffWithdrawalRequest withdrawal = staffWithdrawalRequestRepository.findById(withdrawalId)
+                .orElseThrow(() -> new BadRequestException("wallet.withdrawal.not_found"));
+
+        User staff = withdrawal.getUser();
+        if (staff == null || !userId.equals(staff.getId())) {
+            throw new BadRequestException("wallet.withdrawal.unauthorized");
+        }
+
+        if (withdrawal.getStatus() != EWithdrawalStatus.PENDING) {
+            throw new BadRequestException("wallet.withdrawal.already_processed");
+        }
+
+        // 1. Hoàn lại số dư ví nhân viên
+        StaffWallet wallet = staffWalletRepository.findByUserIdForUpdate(userId)
+                .orElseGet(() -> getOrCreateWallet(userId));
+
+        double refundBalance = wallet.getBalance() + withdrawal.getAmount();
+        wallet.setBalance(refundBalance);
+        staffWalletRepository.save(wallet);
+
+        // 2. Ghi nhận giao dịch hoàn tiền WITHDRAWAL_REFUND
+        StaffWalletTransaction refundTrans = StaffWalletTransaction.builder()
+                .wallet(wallet)
+                .type(EWalletTransactionType.WITHDRAWAL_REFUND)
+                .amount(withdrawal.getAmount())
+                .balanceAfter(refundBalance)
+                .withdrawalRequest(withdrawal)
+                .titleI18nKey("wallet.transaction.withdrawal_cancel.title")
+                .titleParams(withdrawal.getBankName())
+                .build();
+        staffWalletTransactionRepository.save(refundTrans);
+
+        // 3. Cập nhật trạng thái StaffWithdrawalRequest -> CANCELLED
+        withdrawal.setStatus(EWithdrawalStatus.CANCELLED);
+        Locale staffLocale = "en".equalsIgnoreCase(staff.getLanguage()) ? Locale.ENGLISH : Locale.forLanguageTag("vi");
+        String cancelNote = messageSource.getMessage("wallet.withdrawal.cancelled.note", null, "Nhân viên tự hủy yêu cầu", staffLocale);
+        withdrawal.setAdminNote(cancelNote);
+        withdrawal.setProcessedAt(LocalDateTime.now());
+        StaffWithdrawalRequest saved = staffWithdrawalRequestRepository.save(withdrawal);
+
+        // 4. Bắn Notification cho nhân viên (Staff)
+        try {
+            String title = messageSource.getMessage("notification.wallet.withdrawal.cancelled.title", null, "Yêu cầu rút tiền đã được hủy", staffLocale);
+            String msg = messageSource.getMessage("notification.wallet.withdrawal.cancelled.message",
+                    new Object[]{ String.format("%,.0f", withdrawal.getAmount()), withdrawal.getBankName() },
+                    String.format("Yêu cầu rút %,.0fđ về tài khoản ngân hàng %s đã được hủy thành công. Số tiền tạm giữ đã được hoàn lại vào ví.", withdrawal.getAmount(), withdrawal.getBankName()),
+                    staffLocale);
+
+            String actionData = "{\"type\": \"STAFF_WITHDRAWAL\", \"payload\": {\"status\": \"CANCELLED\", \"withdrawalId\": \"" + saved.getId() + "\"}}";
+            NotificationEvent event = new NotificationEvent(title, msg, actionData, null, Map.of("shouldRefresh", true));
+            NotificationRequest fcmRequest = new NotificationRequest(title, msg, Map.of("type", "STAFF_WITHDRAWAL", "payload", "{\"status\":\"CANCELLED\",\"withdrawalId\":\"" + saved.getId() + "\"}"));
+
+            fcmService.sendToUser(staff.getId(), fcmRequest);
+            messagingTemplate.convertAndSendToUser(staff.getId(), "/queue/notifications", event);
+            notificationService.createNotification(staff.getId(), title, msg, actionData, null);
+        } catch (Exception ex) {
+            log.warn("[Staff Wallet] Failed to send withdrawal cancelled notification to staff {}: {}", staff.getId(), ex.getMessage());
+        }
+
+        // 5. Bắn WebSocket Event, FCM và tạo Notification cho Admin để đồng bộ danh sách realtime
+        try {
+            List<User> admins = userRepository.findByRole(ERole.admin);
+            String adminActionData = "{\"type\": \"ADMIN_WITHDRAWAL_REQUEST\", \"payload\": {\"status\": \"CANCELLED\", \"withdrawalId\": \"" + saved.getId() + "\"}}";
+
+            for (User admin : admins) {
+                try {
+                    Locale adminLocale = "en".equalsIgnoreCase(admin.getLanguage()) ? Locale.ENGLISH : Locale.forLanguageTag("vi");
+                    String defaultStaffName = messageSource.getMessage("common.staff", null, "Nhân viên", adminLocale);
+                    String staffDisplayName = (staff.getFullName() != null && !staff.getFullName().isBlank()) ? staff.getFullName() : defaultStaffName;
+
+                    String adminTitle = messageSource.getMessage(
+                            "notification.wallet.withdrawal.cancelled.admin.title",
+                            null,
+                            "Yêu cầu rút tiền đã bị hủy",
+                            adminLocale);
+
+                    String adminMsg = messageSource.getMessage(
+                            "notification.wallet.withdrawal.cancelled.admin.message",
+                            new Object[]{ staffDisplayName, String.format("%,.0f", withdrawal.getAmount()) },
+                            String.format("%s đã hủy yêu cầu rút tiền %,.0fđ.", staffDisplayName, withdrawal.getAmount()),
+                            adminLocale);
+
+                    NotificationEvent adminEvent = new NotificationEvent(
+                            adminTitle,
+                            adminMsg,
+                            adminActionData,
+                            null,
+                            Map.of("shouldRefresh", true, "status", "CANCELLED", "withdrawalId", saved.getId()));
+
+                    NotificationRequest adminFcm = new NotificationRequest(
+                            adminTitle,
+                            adminMsg,
+                            Map.of("type", "ADMIN_WITHDRAWAL_REQUEST", "payload", "{\"status\":\"CANCELLED\",\"withdrawalId\":\"" + saved.getId() + "\"}"));
+
+                    notificationService.createNotification(admin.getId(), adminTitle, adminMsg, adminActionData, null);
+                    messagingTemplate.convertAndSendToUser(admin.getId(), "/queue/notifications", adminEvent);
+                    fcmService.sendToUser(admin.getId(), adminFcm);
+                } catch (Exception ex) {
+                    log.warn("[Staff Wallet] Failed to notify admin {} about cancelled withdrawal: {}", admin.getId(), ex.getMessage());
+                }
+            }
+        } catch (Exception ex) {
+            log.warn("[Staff Wallet] Failed to notify admins about cancelled withdrawal: {}", ex.getMessage());
+        }
+
+        return mapToWithdrawalResponse(saved);
     }
 
     private StaffWithdrawalRequestResponse mapToWithdrawalResponse(StaffWithdrawalRequest entity) {

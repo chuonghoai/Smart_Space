@@ -18,4 +18,5 @@ abstract class StaffWalletRepo {
     String? note,
   });
   Future<ApiResponse<List<StaffWithdrawalModel>>> getMyWithdrawals();
+  Future<ApiResponse<StaffWithdrawalModel>> cancelWithdrawal(String id);
 }

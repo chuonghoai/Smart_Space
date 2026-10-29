@@ -1,4 +1,5 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:smartspace_staff/features/wallet/models/staff_withdrawal_model.dart';
 import 'package:smartspace_staff/features/wallet/providers/staff_wallet_provider.dart';
 import 'package:smartspace_staff/features/wallet/services/staff_wallet_service.dart';
@@ -23,7 +24,7 @@ class StaffWithdrawalState {
       case WithdrawalFilter.approved:
         return withdrawals.where((w) => w.isApproved).toList();
       case WithdrawalFilter.rejected:
-        return withdrawals.where((w) => w.isRejected).toList();
+        return withdrawals.where((w) => w.isRejected || w.isCancelled).toList();
       case WithdrawalFilter.all:
         return withdrawals;
     }
@@ -75,6 +76,25 @@ class StaffWithdrawalNotifier extends StateNotifier<StaffWithdrawalState> {
       }
     } catch (e) {
       state = state.copyWith(isLoading: false, error: e.toString());
+    }
+  }
+
+  Future<ApiResponse<StaffWithdrawalModel>> cancelWithdrawal(String id) async {
+    try {
+      final res = await staffWalletService.cancelWithdrawal(id);
+      if (res.success && res.data != null) {
+        final updatedList = state.withdrawals.map((w) {
+          if (w.id == id) {
+            return res.data!;
+          }
+          return w;
+        }).toList();
+        state = state.copyWith(withdrawals: updatedList);
+        await _ref.read(staffWalletProvider.notifier).refresh();
+      }
+      return res;
+    } catch (e) {
+      return ApiResponse(success: false, message: e.toString());
     }
   }
 

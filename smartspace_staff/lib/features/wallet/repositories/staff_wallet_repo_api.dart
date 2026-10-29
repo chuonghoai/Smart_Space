@@ -85,4 +85,12 @@ class StaffWalletRepoApi implements StaffWalletRepo {
       },
     );
   }
+
+  @override
+  Future<ApiResponse<StaffWithdrawalModel>> cancelWithdrawal(String id) async {
+    return await apiClient.post<StaffWithdrawalModel>(
+      '/staff/wallet/withdrawals/$id/cancel',
+      decoder: (json) => StaffWithdrawalModel.fromJson(json as Map<String, dynamic>),
+    );
+  }
 }

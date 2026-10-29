@@ -25,6 +25,8 @@ class StaffWithdrawalDetailScreen extends ConsumerStatefulWidget {
 
 class _StaffWithdrawalDetailScreenState
     extends ConsumerState<StaffWithdrawalDetailScreen> {
+  bool _isCancelling = false;
+
   @override
   void initState() {
     super.initState();
@@ -52,11 +54,10 @@ class _StaffWithdrawalDetailScreenState
     final isDark = theme.brightness == Brightness.dark;
 
     final withdrawalState = ref.watch(staffWithdrawalProvider);
-    final item = widget.initialModel ??
-        withdrawalState.withdrawals.cast<StaffWithdrawalModel?>().firstWhere(
-              (w) => w?.id == widget.withdrawalId,
-              orElse: () => null,
-            );
+    final item = withdrawalState.withdrawals.cast<StaffWithdrawalModel?>().firstWhere(
+          (w) => w?.id == widget.withdrawalId,
+          orElse: () => widget.initialModel,
+        );
 
     if (item == null) {
       if (withdrawalState.isLoading) {
@@ -131,6 +132,11 @@ class _StaffWithdrawalDetailScreenState
       statusBgColor = statusColor.withOpacity(0.12);
       statusLabel = l10n.statusRejected;
       statusIcon = Icons.cancel_outlined;
+    } else if (item.isCancelled) {
+      statusColor = isDark ? const Color(0xFFEF5350) : const Color(0xFFC62828);
+      statusBgColor = statusColor.withOpacity(0.12);
+      statusLabel = l10n.statusCancelled;
+      statusIcon = Icons.cancel_outlined;
     } else {
       statusColor = isDark ? const Color(0xFFFFCA28) : const Color(0xFFF9A825);
       statusBgColor = statusColor.withOpacity(0.12);
@@ -204,7 +210,7 @@ class _StaffWithdrawalDetailScreenState
             ),
             const SizedBox(height: 16),
 
-            // Notice for PENDING requests (held balance)
+            // Notice for PENDING / CANCELLED requests
             if (item.isPending) ...[
               Container(
                 width: double.infinity,
@@ -247,6 +253,59 @@ class _StaffWithdrawalDetailScreenState
                           const SizedBox(height: 4),
                           Text(
                             l10n.heldWithdrawalNoticeDesc,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 16),
+            ] else if (item.isCancelled) ...[
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.all(14),
+                decoration: BoxDecoration(
+                  color: isDark
+                      ? const Color(0xFFEF5350).withOpacity(0.10)
+                      : const Color(0xFFFFEBEE),
+                  borderRadius: BorderRadius.circular(16),
+                  border: Border.all(
+                    color: isDark
+                        ? const Color(0xFFEF5350).withOpacity(0.35)
+                        : const Color(0xFFEF9A9A),
+                  ),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Icon(
+                      Icons.cancel_outlined,
+                      color: isDark
+                          ? const Color(0xFFEF5350)
+                          : const Color(0xFFC62828),
+                      size: 22,
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.statusCancelled,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: isDark
+                                  ? const Color(0xFFEF5350)
+                                  : const Color(0xFFC62828),
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            l10n.cancelledNoticeDesc,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.colorScheme.onSurfaceVariant,
                             ),
@@ -325,7 +384,7 @@ class _StaffWithdrawalDetailScreenState
             ),
 
             // Additional Info: Cancellation reason (displayed for cancelled/rejected requests)
-            if (item.isRejected) ...[
+            if (item.isRejected || item.isCancelled) ...[
               const SizedBox(height: 16),
               Container(
                 width: double.infinity,
@@ -420,6 +479,45 @@ class _StaffWithdrawalDetailScreenState
           ],
         ),
       ),
+      bottomNavigationBar: item.canCancel
+          ? SafeArea(
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                child: SizedBox(
+                  width: double.infinity,
+                  height: 48,
+                  child: OutlinedButton.icon(
+                    onPressed: _isCancelling ? null : () => _handleCancel(item, l10n),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: theme.colorScheme.error,
+                      side: BorderSide(
+                        color: _isCancelling
+                            ? theme.colorScheme.error.withOpacity(0.4)
+                            : theme.colorScheme.error,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    icon: _isCancelling
+                        ? SizedBox(
+                            width: 18,
+                            height: 18,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: theme.colorScheme.error,
+                            ),
+                          )
+                        : const Icon(Icons.cancel_outlined, size: 20),
+                    label: Text(
+                      l10n.cancelWithdrawalRequest,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ),
+            )
+          : null,
     );
   }
 
@@ -456,5 +554,88 @@ class _StaffWithdrawalDetailScreenState
       ],
     );
   }
-}
 
+  Future<void> _handleCancel(
+    StaffWithdrawalModel item,
+    AppLocalizations l10n,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) {
+        final dialogTheme = Theme.of(ctx);
+        final isDialogDark = dialogTheme.brightness == Brightness.dark;
+        return AlertDialog(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(20),
+          ),
+          backgroundColor: isDialogDark
+              ? dialogTheme.colorScheme.surfaceContainerHighest
+              : dialogTheme.colorScheme.surface,
+          title: Text(
+            l10n.confirmCancelWithdrawalTitle,
+            style: dialogTheme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          content: Text(
+            l10n.confirmCancelWithdrawalContent,
+            style: dialogTheme.textTheme.bodyMedium?.copyWith(
+              color: dialogTheme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(ctx).pop(false),
+              child: Text(
+                l10n.cancel,
+                style: TextStyle(
+                  color: dialogTheme.colorScheme.onSurfaceVariant,
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+            FilledButton(
+              onPressed: () => Navigator.of(ctx).pop(true),
+              style: FilledButton.styleFrom(
+                backgroundColor: dialogTheme.colorScheme.error,
+                foregroundColor: dialogTheme.colorScheme.onError,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+              ),
+              child: Text(
+                l10n.confirmCancel,
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        );
+      },
+    );
+
+    if (confirmed != true || !mounted) return;
+
+    setState(() => _isCancelling = true);
+    final res = await ref.read(staffWithdrawalProvider.notifier).cancelWithdrawal(item.id);
+    if (!mounted) return;
+    setState(() => _isCancelling = false);
+
+    if (res.success) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.cancelWithdrawalSuccess),
+          backgroundColor: const Color(0xFF2E7D32),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(res.message.isNotEmpty ? res.message : l10n.genericError),
+          backgroundColor: Theme.of(context).colorScheme.error,
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+    }
+  }
+}

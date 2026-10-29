@@ -2083,6 +2083,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'The withdrawal amount has been refunded back to your wallet.'**
   String get refundedNoticeDesc;
+
+  /// No description provided for @cancelWithdrawalRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel withdrawal request'**
+  String get cancelWithdrawalRequest;
+
+  /// No description provided for @confirmCancelWithdrawalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm cancellation'**
+  String get confirmCancelWithdrawalTitle;
+
+  /// No description provided for @confirmCancelWithdrawalContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to cancel this withdrawal request? The held amount will be refunded to your wallet immediately.'**
+  String get confirmCancelWithdrawalContent;
+
+  /// No description provided for @confirmCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel request'**
+  String get confirmCancel;
+
+  /// No description provided for @cancelWithdrawalSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal request cancelled successfully, the amount has been refunded to your wallet.'**
+  String get cancelWithdrawalSuccess;
+
+  /// No description provided for @statusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get statusCancelled;
+
+  /// No description provided for @cancelledNoticeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'This withdrawal request has been cancelled and the held amount has been refunded to your wallet.'**
+  String get cancelledNoticeDesc;
 }
 
 class _AppLocalizationsDelegate
