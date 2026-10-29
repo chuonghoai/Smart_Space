@@ -1,3 +1,4 @@
+import 'package:mobile_shared/core/toast/toast_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
@@ -51,12 +52,7 @@ class _WithdrawalDetailModalState extends State<WithdrawalDetailModal> {
 
   void _copyToClipboard(BuildContext context, String text, AppLocalizations l10n) {
     Clipboard.setData(ClipboardData(text: text));
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(l10n.copySuccess),
-        duration: const Duration(seconds: 2),
-      ),
-    );
+    Toast.showToast(context, l10n.copied);
   }
 
   Future<void> _handleApprove(AppLocalizations l10n) async {
@@ -117,33 +113,39 @@ class _WithdrawalDetailModalState extends State<WithdrawalDetailModal> {
     final confirmed = await showDialog<bool>(
       context: context,
       builder: (dialogCtx) => AlertDialog(
+        insetPadding: const EdgeInsets.symmetric(horizontal: 20, vertical: 24),
         title: Text(l10n.rejectWithdrawal),
-        content: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n.rejectReasonPrompt,
-                style: Theme.of(dialogCtx).textTheme.bodyMedium,
-              ),
-              const SizedBox(height: 12),
-              TextFormField(
-                controller: reasonCtrl,
-                maxLines: 2,
-                decoration: InputDecoration(
-                  hintText: l10n.rejectReasonRequired,
-                  border: const OutlineInputBorder(),
+        content: SizedBox(
+          width: 480,
+          child: Form(
+            key: formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  l10n.rejectReasonPrompt,
+                  style: Theme.of(dialogCtx).textTheme.bodyMedium,
                 ),
-                validator: (val) {
-                  if (val == null || val.trim().isEmpty) {
-                    return l10n.rejectReasonRequired;
-                  }
-                  return null;
-                },
-              ),
-            ],
+                const SizedBox(height: 14),
+                TextFormField(
+                  controller: reasonCtrl,
+                  minLines: 3,
+                  maxLines: 5,
+                  decoration: InputDecoration(
+                    hintText: l10n.rejectReasonRequired,
+                    border: const OutlineInputBorder(),
+                    alignLabelWithHint: true,
+                  ),
+                  validator: (val) {
+                    if (val == null || val.trim().isEmpty) {
+                      return l10n.rejectReasonRequired;
+                    }
+                    return null;
+                  },
+                ),
+              ],
+            ),
           ),
         ),
         actions: [
@@ -372,6 +374,11 @@ class _WithdrawalDetailModalState extends State<WithdrawalDetailModal> {
                   value: req.bankAccountName.toUpperCase(),
                   icon: Icons.badge_outlined,
                   isBold: true,
+                  trailing: IconButton(
+                    icon: const Icon(Icons.copy_rounded, size: 18),
+                    tooltip: l10n.copy,
+                    onPressed: () => _copyToClipboard(context, req.bankAccountName.toUpperCase(), l10n),
+                  ),
                 ),
                 const SizedBox(height: 18),
 

@@ -1765,6 +1765,306 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'All Transactions'**
   String get allTransactions;
+
+  /// No description provided for @routeStaffWithdrawal.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdraw'**
+  String get routeStaffWithdrawal;
+
+  /// No description provided for @routeStaffWithdrawalHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal History'**
+  String get routeStaffWithdrawalHistory;
+
+  /// No description provided for @routeStaffWithdrawalDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Details'**
+  String get routeStaffWithdrawalDetail;
+
+  /// No description provided for @routeStaffBankAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Accounts Management'**
+  String get routeStaffBankAccounts;
+
+  /// No description provided for @bankAccountsManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Accounts Management'**
+  String get bankAccountsManagement;
+
+  /// No description provided for @withdrawalHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal History'**
+  String get withdrawalHistory;
+
+  /// No description provided for @withdrawalDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Details'**
+  String get withdrawalDetail;
+
+  /// No description provided for @selectSavedBankAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Select saved bank account'**
+  String get selectSavedBankAccount;
+
+  /// No description provided for @suggestSaveBankQuick.
+  ///
+  /// In en, this message translates to:
+  /// **'Tip: Save bank account for faster withdrawals next time'**
+  String get suggestSaveBankQuick;
+
+  /// No description provided for @saveBankModalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Bank Account'**
+  String get saveBankModalTitle;
+
+  /// No description provided for @confirmSaveBankPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Do you want to save this account for next time?'**
+  String get confirmSaveBankPrompt;
+
+  /// No description provided for @saveAndContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Save & Continue'**
+  String get saveAndContinue;
+
+  /// No description provided for @continueWithoutSaving.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue without saving'**
+  String get continueWithoutSaving;
+
+  /// No description provided for @bankName.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Name'**
+  String get bankName;
+
+  /// No description provided for @bankNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select or enter bank name'**
+  String get bankNameHint;
+
+  /// No description provided for @bankAccountNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Number'**
+  String get bankAccountNumber;
+
+  /// No description provided for @bankAccountNumberHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter account number'**
+  String get bankAccountNumberHint;
+
+  /// No description provided for @bankAccountOwner.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Holder Name'**
+  String get bankAccountOwner;
+
+  /// No description provided for @bankAccountOwnerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'NGUYEN VAN A'**
+  String get bankAccountOwnerHint;
+
+  /// No description provided for @withdrawalAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal Amount'**
+  String get withdrawalAmount;
+
+  /// No description provided for @withdrawalAmountHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter withdrawal amount'**
+  String get withdrawalAmountHint;
+
+  /// No description provided for @submitWithdrawalRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Withdrawal Request'**
+  String get submitWithdrawalRequest;
+
+  /// No description provided for @withdrawalRequestSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal request submitted successfully'**
+  String get withdrawalRequestSuccess;
+
+  /// No description provided for @filterApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get filterApproved;
+
+  /// No description provided for @filterRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get filterRejected;
+
+  /// No description provided for @filterPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get filterPending;
+
+  /// No description provided for @statusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get statusPending;
+
+  /// No description provided for @statusApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get statusApproved;
+
+  /// No description provided for @statusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get statusRejected;
+
+  /// No description provided for @additionalInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Additional Information'**
+  String get additionalInfo;
+
+  /// No description provided for @cancellationReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancellation Reason'**
+  String get cancellationReason;
+
+  /// No description provided for @noCancellationReasonProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'No specific reason provided'**
+  String get noCancellationReasonProvided;
+
+  /// No description provided for @emptyWithdrawalHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'No withdrawal requests found'**
+  String get emptyWithdrawalHistory;
+
+  /// No description provided for @emptyBankAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'No saved bank accounts yet'**
+  String get emptyBankAccounts;
+
+  /// No description provided for @addBankAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Bank Account'**
+  String get addBankAccount;
+
+  /// No description provided for @deleteBankAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Account'**
+  String get deleteBankAccount;
+
+  /// No description provided for @deleteBankAccountConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this bank account?'**
+  String get deleteBankAccountConfirm;
+
+  /// No description provided for @amountExceedsBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Withdrawal amount cannot exceed wallet balance'**
+  String get amountExceedsBalance;
+
+  /// No description provided for @minWithdrawalAmountError.
+  ///
+  /// In en, this message translates to:
+  /// **'Minimum withdrawal amount is 10,000 VND'**
+  String get minWithdrawalAmountError;
+
+  /// No description provided for @bankInfoIncomplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Please fill in all bank details'**
+  String get bankInfoIncomplete;
+
+  /// No description provided for @savedBankAccounts.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved Bank Accounts'**
+  String get savedBankAccounts;
+
+  /// No description provided for @saveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved successfully'**
+  String get saveSuccess;
+
+  /// No description provided for @deleteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted successfully'**
+  String get deleteSuccess;
+
+  /// No description provided for @confirmDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Delete'**
+  String get confirmDelete;
+
+  /// No description provided for @bankAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Bank Account'**
+  String get bankAccount;
+
+  /// No description provided for @createdDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Created Date'**
+  String get createdDate;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @genericError.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred, please try again!'**
+  String get genericError;
+
+  /// No description provided for @doNotSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t save'**
+  String get doNotSave;
+
+  /// No description provided for @addNewBankAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Add new bank account'**
+  String get addNewBankAccount;
 }
 
 class _AppLocalizationsDelegate

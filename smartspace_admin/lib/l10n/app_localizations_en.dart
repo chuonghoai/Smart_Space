@@ -1757,4 +1757,16 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get savePenaltyRateSuccess =>
       'Penalty deduction rate updated successfully!';
+
+  @override
+  String get copied => 'Copied';
+
+  @override
+  String homePendingWithdrawalBanner(int count) {
+    return 'There are $count withdrawal requests';
+  }
+
+  @override
+  String get homePendingWithdrawalSubtitle =>
+      'Tap to review pending withdrawal requests';
 }

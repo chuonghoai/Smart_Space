@@ -3409,6 +3409,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Penalty deduction rate updated successfully!'**
   String get savePenaltyRateSuccess;
+
+  /// No description provided for @copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get copied;
+
+  /// No description provided for @homePendingWithdrawalBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'There are {count} withdrawal requests'**
+  String homePendingWithdrawalBanner(int count);
+
+  /// No description provided for @homePendingWithdrawalSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to review pending withdrawal requests'**
+  String get homePendingWithdrawalSubtitle;
 }
 
 class _AppLocalizationsDelegate

@@ -9,7 +9,13 @@ import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
 import 'widgets/withdrawal_detail_modal.dart';
 
 class AdminWithdrawalRequestsScreen extends StatefulWidget {
-  const AdminWithdrawalRequestsScreen({super.key});
+  final String? openWithdrawalId;
+  final String? initialFilter;
+  const AdminWithdrawalRequestsScreen({
+    super.key,
+    this.openWithdrawalId,
+    this.initialFilter,
+  });
 
   @override
   State<AdminWithdrawalRequestsScreen> createState() => _AdminWithdrawalRequestsScreenState();
@@ -17,16 +23,40 @@ class AdminWithdrawalRequestsScreen extends StatefulWidget {
 
 class _AdminWithdrawalRequestsScreenState extends State<AdminWithdrawalRequestsScreen> {
   late final AdminWithdrawalController _controller;
+  bool _hasAutoOpened = false;
 
   @override
   void initState() {
     super.initState();
     _controller = AdminWithdrawalController();
-    _controller.loadRequests();
+    _controller.addListener(_checkAutoOpen);
+    if (widget.initialFilter != null && widget.initialFilter!.isNotEmpty) {
+      _controller.setFilter(widget.initialFilter!);
+    } else {
+      _controller.loadRequests();
+    }
+  }
+
+  void _checkAutoOpen() {
+    if (_hasAutoOpened || widget.openWithdrawalId == null) return;
+    final match = _controller.requests.where((r) => r.id == widget.openWithdrawalId).firstOrNull;
+    if (match != null) {
+      _hasAutoOpened = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        WithdrawalDetailModal.show(
+          context,
+          request: match,
+          controller: _controller,
+          onSuccess: () => _controller.loadRequests(),
+        );
+      });
+    }
   }
 
   @override
   void dispose() {
+    _controller.removeListener(_checkAutoOpen);
     _controller.dispose();
     super.dispose();
   }

@@ -776,5 +776,15 @@
   "commissionConfigSummary": "4 severity levels: Low, Medium, High, Critical",
   "penaltyRateConfigSummary": "3-turn penalty: Turn 1, Turn 2, Turn 3",
   "saveCommissionSuccess": "Commission configuration updated successfully!",
-  "savePenaltyRateSuccess": "Penalty deduction rate updated successfully!"
+  "savePenaltyRateSuccess": "Penalty deduction rate updated successfully!",
+"copied": "Copied",
+  "homePendingWithdrawalBanner": "There are {count} withdrawal requests",
+  "@homePendingWithdrawalBanner": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homePendingWithdrawalSubtitle": "Tap to review pending withdrawal requests"
 }

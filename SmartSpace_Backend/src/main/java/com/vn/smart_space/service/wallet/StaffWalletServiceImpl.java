@@ -30,6 +30,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import com.vn.smart_space.dto.response.notification.NotificationEvent;
+import com.vn.smart_space.consts.ERole;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
@@ -57,6 +60,7 @@ public class StaffWalletServiceImpl implements IStaffWalletService {
     IFCMService fcmService;
     INotificationService notificationService;
     MessageSource messageSource;
+    SimpMessagingTemplate messagingTemplate;
 
     @Override
     @Transactional
@@ -386,6 +390,34 @@ public class StaffWalletServiceImpl implements IStaffWalletService {
                 .build();
 
         StaffWithdrawalRequest saved = staffWithdrawalRequestRepository.save(withdrawal);
+
+        // Notify Admins about new withdrawal request
+        try {
+            List<User> admins = userRepository.findByRole(ERole.admin);
+            String staffName = staff.getFullName() != null ? staff.getFullName() : "Nhân viên";
+            String adminTitle = messageSource.getMessage("notification.wallet.withdrawal.created.title", null, "Yêu cầu rút tiền mới", Locale.getDefault());
+            String adminMessage = messageSource.getMessage("notification.wallet.withdrawal.created.message",
+                    new Object[]{staffName},
+                    String.format("Có yêu cầu rút tiền mới của %s", staffName),
+                    Locale.getDefault());
+            String adminActionData = "{\"type\": \"ADMIN_WITHDRAWAL_REQUEST\", \"payload\": {\"withdrawalId\": \"" + saved.getId() + "\"}}";
+
+            NotificationEvent adminEvent = new NotificationEvent(adminTitle, adminMessage, adminActionData, null, Map.of("shouldRefresh", true));
+            NotificationRequest adminFcm = new NotificationRequest(adminTitle, adminMessage, Map.of("type", "ADMIN_WITHDRAWAL_REQUEST", "payload", "{\"withdrawalId\":\"" + saved.getId() + "\"}"));
+
+            for (User admin : admins) {
+                try {
+                    notificationService.createNotification(admin.getId(), adminTitle, adminMessage, adminActionData, null);
+                    messagingTemplate.convertAndSendToUser(admin.getId(), "/queue/notifications", adminEvent);
+                    fcmService.sendToUser(admin.getId(), adminFcm);
+                } catch (Exception ex) {
+                    log.warn("[Staff Wallet] Failed to notify admin {}: {}", admin.getId(), ex.getMessage());
+                }
+            }
+        } catch (Exception ex) {
+            log.warn("[Staff Wallet] Error while notifying admins of new withdrawal: {}", ex.getMessage());
+        }
+
         return mapToWithdrawalResponse(saved);
     }
 

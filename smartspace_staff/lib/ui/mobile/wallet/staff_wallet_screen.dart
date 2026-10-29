@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
-import 'package:mobile_shared/core/toast/toast_service.dart';
 import 'package:smartspace_staff/features/wallet/models/staff_wallet_transaction_model.dart';
 import 'package:smartspace_staff/features/wallet/providers/staff_wallet_provider.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
@@ -47,6 +46,18 @@ class _StaffWalletScreenState extends ConsumerState<StaffWalletScreen> {
             }
           },
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.refresh_rounded),
+            tooltip: l10n.refresh,
+            onPressed: () async {
+              await Future.wait([
+                ref.read(staffWalletProvider.notifier).refresh(),
+                ref.read(staffTransactionsProvider.notifier).refresh(),
+              ]);
+            },
+          ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: () async {
@@ -161,27 +172,52 @@ class _StaffWalletScreenState extends ConsumerState<StaffWalletScreen> {
             ],
           ),
           const SizedBox(height: 16),
-          if (walletState.isLoading && walletState.wallet == null)
-            const SizedBox(
-              height: 40,
-              child: Align(
-                alignment: Alignment.centerLeft,
-                child: SizedBox(
-                  width: 24,
-                  height: 24,
-                  child: CircularProgressIndicator(strokeWidth: 2),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Expanded(
+                child: walletState.isLoading && walletState.wallet == null
+                    ? const SizedBox(
+                        height: 40,
+                        child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(strokeWidth: 2),
+                          ),
+                        ),
+                      )
+                    : Text(
+                        _obscureBalance ? '****** đ' : _formatCurrency(balance),
+                        style: theme.textTheme.headlineMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onSurface,
+                          letterSpacing: -0.5,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+              ),
+              const SizedBox(width: 8),
+              FilledButton.icon(
+                onPressed: () => context.push(RouterPath.staffWithdrawal),
+                icon: const Icon(Icons.arrow_upward_rounded, size: 18),
+                label: Text(
+                  l10n.withdrawMoney,
+                  style: const TextStyle(fontWeight: FontWeight.bold),
+                ),
+                style: FilledButton.styleFrom(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 14, vertical: 10),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
               ),
-            )
-          else
-            Text(
-              _obscureBalance ? '****** đ' : _formatCurrency(balance),
-              style: theme.textTheme.headlineMedium?.copyWith(
-                fontWeight: FontWeight.bold,
-                color: theme.colorScheme.onSurface,
-                letterSpacing: -0.5,
-              ),
-            ),
+            ],
+          ),
         ],
       ),
     );
@@ -195,15 +231,14 @@ class _StaffWalletScreenState extends ConsumerState<StaffWalletScreen> {
   ) {
     return Row(
       children: [
-        // Nút Rút tiền // TODO (chưa xử lý)
+        // Nút Lịch sử rút tiền
         Expanded(
           child: ElevatedButton.icon(
             onPressed: () {
-              // TODO (chưa xử lý)
-              Toast.show(ToastType.info, l10n.featureUnderDevelopment);
+              context.push(RouterPath.staffWithdrawalHistory);
             },
-            icon: const Icon(Icons.arrow_upward_rounded, size: 20),
-            label: Text(l10n.withdrawMoney),
+            icon: const Icon(Icons.receipt_long_rounded, size: 20),
+            label: Text(l10n.withdrawalHistory),
             style: ElevatedButton.styleFrom(
               padding: const EdgeInsets.symmetric(vertical: 14),
               backgroundColor: theme.colorScheme.primary,

@@ -881,4 +881,157 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get allTransactions => 'Tất cả giao dịch';
+
+  @override
+  String get routeStaffWithdrawal => 'Rút tiền';
+
+  @override
+  String get routeStaffWithdrawalHistory => 'Lịch sử rút tiền';
+
+  @override
+  String get routeStaffWithdrawalDetail => 'Chi tiết yêu cầu';
+
+  @override
+  String get routeStaffBankAccounts => 'Quản lý tài khoản ngân hàng';
+
+  @override
+  String get bankAccountsManagement => 'Quản lý tài khoản ngân hàng';
+
+  @override
+  String get withdrawalHistory => 'Lịch sử rút tiền';
+
+  @override
+  String get withdrawalDetail => 'Chi tiết yêu cầu';
+
+  @override
+  String get selectSavedBankAccount => 'Chọn tài khoản ngân hàng đã lưu';
+
+  @override
+  String get suggestSaveBankQuick =>
+      'Gợi ý: Lưu nhanh tài khoản ngân hàng để tiện cho lần sau';
+
+  @override
+  String get saveBankModalTitle => 'Lưu tài khoản ngân hàng';
+
+  @override
+  String get confirmSaveBankPrompt =>
+      'Bạn có muốn lưu lại số tài khoản để tiện cho lần sau hay không?';
+
+  @override
+  String get saveAndContinue => 'Lưu và tiếp tục';
+
+  @override
+  String get continueWithoutSaving => 'Không lưu, tiếp tục';
+
+  @override
+  String get bankName => 'Tên ngân hàng';
+
+  @override
+  String get bankNameHint => 'Chọn hoặc nhập tên ngân hàng';
+
+  @override
+  String get bankAccountNumber => 'Số tài khoản';
+
+  @override
+  String get bankAccountNumberHint => 'Nhập số tài khoản';
+
+  @override
+  String get bankAccountOwner => 'Họ tên chủ tài khoản';
+
+  @override
+  String get bankAccountOwnerHint => 'NGUYEN VAN A';
+
+  @override
+  String get withdrawalAmount => 'Số tiền muốn rút';
+
+  @override
+  String get withdrawalAmountHint => 'Nhập số tiền muốn rút';
+
+  @override
+  String get submitWithdrawalRequest => 'Gửi yêu cầu rút tiền';
+
+  @override
+  String get withdrawalRequestSuccess => 'Gửi yêu cầu rút tiền thành công';
+
+  @override
+  String get filterApproved => 'Đã duyệt';
+
+  @override
+  String get filterRejected => 'Đã hủy';
+
+  @override
+  String get filterPending => 'Đang chờ';
+
+  @override
+  String get statusPending => 'Đang chờ xử lý';
+
+  @override
+  String get statusApproved => 'Đã duyệt';
+
+  @override
+  String get statusRejected => 'Đã hủy';
+
+  @override
+  String get additionalInfo => 'Thông tin thêm';
+
+  @override
+  String get cancellationReason => 'Lý do hủy yêu cầu';
+
+  @override
+  String get noCancellationReasonProvided => 'Không có lý do cụ thể';
+
+  @override
+  String get emptyWithdrawalHistory => 'Chưa có yêu cầu rút tiền nào';
+
+  @override
+  String get emptyBankAccounts => 'Chưa có tài khoản ngân hàng nào được lưu';
+
+  @override
+  String get addBankAccount => 'Thêm tài khoản ngân hàng';
+
+  @override
+  String get deleteBankAccount => 'Xóa tài khoản';
+
+  @override
+  String get deleteBankAccountConfirm =>
+      'Bạn có chắc chắn muốn xóa tài khoản này khỏi danh sách đã lưu?';
+
+  @override
+  String get amountExceedsBalance => 'Số tiền rút không được vượt quá số dư ví';
+
+  @override
+  String get minWithdrawalAmountError => 'Số tiền rút tối thiểu là 10.000 đ';
+
+  @override
+  String get bankInfoIncomplete => 'Vui lòng điền đầy đủ thông tin ngân hàng';
+
+  @override
+  String get savedBankAccounts => 'Tài khoản ngân hàng đã lưu';
+
+  @override
+  String get saveSuccess => 'Lưu thành công';
+
+  @override
+  String get deleteSuccess => 'Xóa thành công';
+
+  @override
+  String get confirmDelete => 'Xác nhận xóa';
+
+  @override
+  String get bankAccount => 'Tài khoản ngân hàng';
+
+  @override
+  String get createdDate => 'Ngày tạo';
+
+  @override
+  String get save => 'Lưu';
+
+  @override
+  String get genericError => 'Đã có lỗi xảy ra, vui lòng thử lại!';
+
+  @override
+  String get doNotSave => 'Không lưu';
+
+  @override
+  String get addNewBankAccount => 'Thêm tài khoản ngân hàng mới';
 }

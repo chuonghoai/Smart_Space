@@ -95,6 +95,32 @@ class Toast {
     
     overlayState.insert(overlayEntry);
   }
+
+  static void showToast(BuildContext? context, String message) {
+    OverlayState? overlayState;
+    if (context != null) {
+      try {
+        overlayState = Overlay.maybeOf(context);
+      } catch (_) {}
+    }
+    overlayState ??= sharedNavigatorKey.currentState?.overlay;
+
+    if (overlayState == null) {
+      show(ToastType.success, message);
+      return;
+    }
+
+    late OverlayEntry entry;
+    entry = OverlayEntry(
+      builder: (ctx) => _ToastOverlayCapsule(
+        message: message,
+        onDismiss: () {
+          entry.remove();
+        },
+      ),
+    );
+    overlayState.insert(entry);
+  }
 }
 
 class _TopNotificationWidget extends StatefulWidget {
@@ -233,6 +259,127 @@ class _TopNotificationWidgetState extends State<_TopNotificationWidget> with Sin
                         },
                         child: Text(widget.actionLabel!),
                       ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+
+class _ToastOverlayCapsule extends StatefulWidget {
+  final String message;
+  final VoidCallback onDismiss;
+
+  const _ToastOverlayCapsule({
+    required this.message,
+    required this.onDismiss,
+  });
+
+  @override
+  State<_ToastOverlayCapsule> createState() => _ToastOverlayCapsuleState();
+}
+
+class _ToastOverlayCapsuleState extends State<_ToastOverlayCapsule>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _fadeAnimation;
+  late Animation<Offset> _slideAnimation;
+  Timer? _timer;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 200),
+    );
+    _fadeAnimation = CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut,
+    );
+    _slideAnimation = Tween<Offset>(
+      begin: const Offset(0, 0.4),
+      end: Offset.zero,
+    ).animate(CurvedAnimation(
+      parent: _controller,
+      curve: Curves.easeOut,
+    ));
+
+    _controller.forward();
+
+    _timer = Timer(const Duration(milliseconds: 2000), () {
+      _dismiss();
+    });
+  }
+
+  void _dismiss() {
+    if (!mounted) return;
+    _timer?.cancel();
+    _controller.reverse().then((_) {
+      if (mounted) widget.onDismiss();
+    });
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Positioned(
+      bottom: 80,
+      left: 32,
+      right: 32,
+      child: Center(
+        child: Material(
+          color: Colors.transparent,
+          child: FadeTransition(
+            opacity: _fadeAnimation,
+            child: SlideTransition(
+              position: _slideAnimation,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                decoration: BoxDecoration(
+                  color: const Color(0xE6212121),
+                  borderRadius: BorderRadius.circular(24),
+                  boxShadow: [
+                    BoxShadow(
+                      // ignore: deprecated_member_use
+                      color: Colors.black.withOpacity(0.25),
+                      blurRadius: 10,
+                      offset: const Offset(0, 4),
+                    ),
+                  ],
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.check_circle_rounded,
+                      color: Color(0xFF81C784),
+                      size: 18,
+                    ),
+                    const SizedBox(width: 8),
+                    Flexible(
+                      child: Text(
+                        widget.message,
+                        textAlign: TextAlign.center,
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w500,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                    ),
                   ],
                 ),
               ),

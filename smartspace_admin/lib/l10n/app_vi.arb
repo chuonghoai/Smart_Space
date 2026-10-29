@@ -776,5 +776,15 @@
   "commissionConfigSummary": "Định mức 4 mức độ: Thấp, Trung bình, Cao, Nghiêm trọng",
   "penaltyRateConfigSummary": "Tỷ lệ phạt 3 lần: Lần 1, Lần 2, Lần 3",
   "saveCommissionSuccess": "Cập nhật cấu hình hoa hồng thành công!",
-  "savePenaltyRateSuccess": "Cập nhật tỷ lệ trừ hoa hồng thành công!"
+  "savePenaltyRateSuccess": "Cập nhật tỷ lệ trừ hoa hồng thành công!",
+"copied": "Đã sao chép",
+  "homePendingWithdrawalBanner": "Có {count} yêu cầu rút tiền",
+  "@homePendingWithdrawalBanner": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "homePendingWithdrawalSubtitle": "Nhấn để xem và duyệt các yêu cầu rút tiền"
 }

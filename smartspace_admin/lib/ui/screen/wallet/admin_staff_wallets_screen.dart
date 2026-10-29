@@ -170,7 +170,7 @@ class _AdminStaffWalletsScreenState extends State<AdminStaffWalletsScreen> {
       clipBehavior: Clip.antiAlias,
       child: InkWell(
         onTap: () async {
-          await context.push(RouterPath.adminWithdrawalRequests);
+          await context.push('${RouterPath.adminWithdrawalRequests}?filter=PENDING');
           _controller.refresh();
         },
         child: Padding(

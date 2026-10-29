@@ -92,7 +92,14 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: RouterPath.adminWithdrawalRequests,
-      builder: (context, state) => const AdminWithdrawalRequestsScreen(),
+      builder: (context, state) {
+        final openId = state.uri.queryParameters['openId'] ?? state.extra as String?;
+        final filter = state.uri.queryParameters['filter'];
+        return AdminWithdrawalRequestsScreen(
+          openWithdrawalId: openId,
+          initialFilter: filter,
+        );
+      },
     ),
     GoRoute(
       path: RouterPath.adminStaffWalletDetail,

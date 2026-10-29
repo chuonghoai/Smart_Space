@@ -1749,4 +1749,16 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get savePenaltyRateSuccess =>
       'Cập nhật tỷ lệ trừ hoa hồng thành công!';
+
+  @override
+  String get copied => 'Đã sao chép';
+
+  @override
+  String homePendingWithdrawalBanner(int count) {
+    return 'Có $count yêu cầu rút tiền';
+  }
+
+  @override
+  String get homePendingWithdrawalSubtitle =>
+      'Nhấn để xem và duyệt các yêu cầu rút tiền';
 }

@@ -894,4 +894,160 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get allTransactions => 'All Transactions';
+
+  @override
+  String get routeStaffWithdrawal => 'Withdraw';
+
+  @override
+  String get routeStaffWithdrawalHistory => 'Withdrawal History';
+
+  @override
+  String get routeStaffWithdrawalDetail => 'Request Details';
+
+  @override
+  String get routeStaffBankAccounts => 'Bank Accounts Management';
+
+  @override
+  String get bankAccountsManagement => 'Bank Accounts Management';
+
+  @override
+  String get withdrawalHistory => 'Withdrawal History';
+
+  @override
+  String get withdrawalDetail => 'Request Details';
+
+  @override
+  String get selectSavedBankAccount => 'Select saved bank account';
+
+  @override
+  String get suggestSaveBankQuick =>
+      'Tip: Save bank account for faster withdrawals next time';
+
+  @override
+  String get saveBankModalTitle => 'Save Bank Account';
+
+  @override
+  String get confirmSaveBankPrompt =>
+      'Do you want to save this account for next time?';
+
+  @override
+  String get saveAndContinue => 'Save & Continue';
+
+  @override
+  String get continueWithoutSaving => 'Continue without saving';
+
+  @override
+  String get bankName => 'Bank Name';
+
+  @override
+  String get bankNameHint => 'Select or enter bank name';
+
+  @override
+  String get bankAccountNumber => 'Account Number';
+
+  @override
+  String get bankAccountNumberHint => 'Enter account number';
+
+  @override
+  String get bankAccountOwner => 'Account Holder Name';
+
+  @override
+  String get bankAccountOwnerHint => 'NGUYEN VAN A';
+
+  @override
+  String get withdrawalAmount => 'Withdrawal Amount';
+
+  @override
+  String get withdrawalAmountHint => 'Enter withdrawal amount';
+
+  @override
+  String get submitWithdrawalRequest => 'Submit Withdrawal Request';
+
+  @override
+  String get withdrawalRequestSuccess =>
+      'Withdrawal request submitted successfully';
+
+  @override
+  String get filterApproved => 'Approved';
+
+  @override
+  String get filterRejected => 'Cancelled';
+
+  @override
+  String get filterPending => 'Pending';
+
+  @override
+  String get statusPending => 'Pending';
+
+  @override
+  String get statusApproved => 'Approved';
+
+  @override
+  String get statusRejected => 'Cancelled';
+
+  @override
+  String get additionalInfo => 'Additional Information';
+
+  @override
+  String get cancellationReason => 'Cancellation Reason';
+
+  @override
+  String get noCancellationReasonProvided => 'No specific reason provided';
+
+  @override
+  String get emptyWithdrawalHistory => 'No withdrawal requests found';
+
+  @override
+  String get emptyBankAccounts => 'No saved bank accounts yet';
+
+  @override
+  String get addBankAccount => 'Add Bank Account';
+
+  @override
+  String get deleteBankAccount => 'Delete Account';
+
+  @override
+  String get deleteBankAccountConfirm =>
+      'Are you sure you want to delete this bank account?';
+
+  @override
+  String get amountExceedsBalance =>
+      'Withdrawal amount cannot exceed wallet balance';
+
+  @override
+  String get minWithdrawalAmountError =>
+      'Minimum withdrawal amount is 10,000 VND';
+
+  @override
+  String get bankInfoIncomplete => 'Please fill in all bank details';
+
+  @override
+  String get savedBankAccounts => 'Saved Bank Accounts';
+
+  @override
+  String get saveSuccess => 'Saved successfully';
+
+  @override
+  String get deleteSuccess => 'Deleted successfully';
+
+  @override
+  String get confirmDelete => 'Confirm Delete';
+
+  @override
+  String get bankAccount => 'Bank Account';
+
+  @override
+  String get createdDate => 'Created Date';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get genericError => 'An error occurred, please try again!';
+
+  @override
+  String get doNotSave => 'Don\'t save';
+
+  @override
+  String get addNewBankAccount => 'Add new bank account';
 }

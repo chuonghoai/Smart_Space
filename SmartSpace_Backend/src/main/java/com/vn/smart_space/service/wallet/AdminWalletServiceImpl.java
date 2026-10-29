@@ -26,6 +26,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.MessageSource;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import com.vn.smart_space.dto.response.notification.NotificationEvent;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -54,6 +56,7 @@ public class AdminWalletServiceImpl implements IAdminWalletService {
     IFCMService fcmService;
     INotificationService notificationService;
     MessageSource messageSource;
+    SimpMessagingTemplate messagingTemplate;
 
     @Override
     @Transactional(readOnly = true)
@@ -202,9 +205,13 @@ public class AdminWalletServiceImpl implements IAdminWalletService {
                         String.format("Yêu cầu rút %,.0fđ về tài khoản ngân hàng %s đã được xử lý thành công.", withdrawal.getAmount(), withdrawal.getBankName()),
                         staffLocale);
 
-                NotificationRequest fcmRequest = new NotificationRequest(title, msg, Map.of("type", "STAFF_WALLET", "payload", "{}"));
+                String actionData = "{\"type\": \"STAFF_WITHDRAWAL\", \"payload\": {\"status\": \"APPROVED\", \"withdrawalId\": \"" + saved.getId() + "\"}}";
+                NotificationEvent event = new NotificationEvent(title, msg, actionData, null, Map.of("shouldRefresh", true));
+                NotificationRequest fcmRequest = new NotificationRequest(title, msg, Map.of("type", "STAFF_WITHDRAWAL", "payload", "{\"status\":\"APPROVED\",\"withdrawalId\":\"" + saved.getId() + "\"}"));
+
                 fcmService.sendToUser(staff.getId(), fcmRequest);
-                notificationService.createNotification(staff.getId(), title, msg, "{\"type\": \"STAFF_WALLET\", \"payload\": {}}", null);
+                messagingTemplate.convertAndSendToUser(staff.getId(), "/queue/notifications", event);
+                notificationService.createNotification(staff.getId(), title, msg, actionData, null);
             } catch (Exception ex) {
                 log.warn("[Staff Wallet] Failed to send withdrawal approved notification: {}", ex.getMessage());
             }
@@ -225,9 +232,13 @@ public class AdminWalletServiceImpl implements IAdminWalletService {
                         String.format("Yêu cầu rút %,.0fđ bị từ chối. Lý do: %s", withdrawal.getAmount(), reason),
                         staffLocale);
 
-                NotificationRequest fcmRequest = new NotificationRequest(title, msg, Map.of("type", "STAFF_WALLET", "payload", "{}"));
+                String actionData = "{\"type\": \"STAFF_WITHDRAWAL\", \"payload\": {\"status\": \"REJECTED\", \"withdrawalId\": \"" + saved.getId() + "\"}}";
+                NotificationEvent event = new NotificationEvent(title, msg, actionData, null, Map.of("shouldRefresh", true));
+                NotificationRequest fcmRequest = new NotificationRequest(title, msg, Map.of("type", "STAFF_WITHDRAWAL", "payload", "{\"status\":\"REJECTED\",\"withdrawalId\":\"" + saved.getId() + "\"}"));
+
                 fcmService.sendToUser(staff.getId(), fcmRequest);
-                notificationService.createNotification(staff.getId(), title, msg, "{\"type\": \"STAFF_WALLET\", \"payload\": {}}", null);
+                messagingTemplate.convertAndSendToUser(staff.getId(), "/queue/notifications", event);
+                notificationService.createNotification(staff.getId(), title, msg, actionData, null);
             } catch (Exception ex) {
                 log.warn("[Staff Wallet] Failed to send withdrawal rejected notification: {}", ex.getMessage());
             }

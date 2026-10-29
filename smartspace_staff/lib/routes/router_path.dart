@@ -18,6 +18,12 @@ class RouterPath {
   static String get staffWallet => RouteName.staffWallet.path;
   static String get staffWalletTransactions =>
       RouteName.staffWalletTransactions.path;
+    static String get staffWithdrawal => RouteName.staffWithdrawal.path;
+  static String get staffWithdrawalHistory =>
+      RouteName.staffWithdrawalHistory.path;
+  static String staffWithdrawalDetailWithId(String id) =>
+      RouteName.staffWithdrawalDetail.path.replaceAll(':id', id);
+  static String get staffBankAccounts => RouteName.staffBankAccounts.path;
   static String newsDetailWithId(String id) =>
       RouteName.newsDetail.path.replaceAll(':id', id);
 }
