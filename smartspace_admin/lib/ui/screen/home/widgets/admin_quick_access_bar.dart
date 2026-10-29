@@ -30,6 +30,11 @@ class AdminQuickAccessBar extends StatelessWidget {
         onTap: () => context.push(RouterPath.staffManagement),
       ),
       _QuickAccessItemData(
+        title: l10n.manageStaffWallets,
+        icon: Icons.account_balance_wallet_outlined,
+        onTap: () => context.push(RouterPath.adminStaffWallets),
+      ),
+      _QuickAccessItemData(
         title: l10n.manageUsers,
         icon: Icons.people_outline,
         onTap: () {
@@ -45,6 +50,11 @@ class AdminQuickAccessBar extends StatelessWidget {
         title: l10n.manageNews,
         icon: Icons.newspaper_outlined,
         onTap: () => context.push(RouterPath.newsManagement),
+      ),
+      _QuickAccessItemData(
+        title: l10n.systemConfig,
+        icon: Icons.tune_outlined,
+        onTap: () => context.push(RouterPath.systemConfig),
       ),
     ];
 

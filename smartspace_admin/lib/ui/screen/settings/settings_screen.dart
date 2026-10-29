@@ -89,9 +89,9 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
               _buildSectionHeader(theme, l10n.systemSettingsSection),
               _buildItem(
                 theme: theme,
-                icon: Icons.account_balance_wallet_outlined,
-                label: l10n.manageWalletConfig,
-                onTap: () => context.push(RouterPath.walletConfig),
+                icon: Icons.tune_outlined,
+                label: l10n.systemConfig,
+                onTap: () => context.push(RouterPath.systemConfig),
               ),
               const Divider(height: 1),
 

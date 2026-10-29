@@ -30,4 +30,12 @@ class RouterPath {
       RouteName.editNews.path.replaceAll(':id', id);
   static String get allActivities => RouteName.allActivities.path;
   static String get walletConfig => RouteName.walletConfig.path;
+  static String get adminStaffWallets => RouteName.adminStaffWallets.path;
+  static String get adminWithdrawalRequests => RouteName.adminWithdrawalRequests.path;
+  static String get adminStaffWalletDetail => RouteName.adminStaffWalletDetail.path;
+  static String adminStaffWalletDetailWithId(String id) =>
+      RouteName.adminStaffWalletDetail.path.replaceAll(':id', id);
+  static String get systemConfig => RouteName.systemConfig.path;
+  static String get commissionConfig => RouteName.commissionConfig.path;
+  static String get penaltyRateConfig => RouteName.penaltyRateConfig.path;
 }

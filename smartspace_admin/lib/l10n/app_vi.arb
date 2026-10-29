@@ -691,5 +691,90 @@
   "saveWalletConfigFailed": "Không thể lưu cấu hình, vui lòng thử lại.",
   "invalidNumber": "Giá trị không hợp lệ",
   "systemSettingsSection": "Hệ thống",
-  "manageWalletConfig": "Cấu hình ví và hoa hồng"
+  "manageWalletConfig": "Cấu hình ví và hoa hồng",
+  "manageStaffWallets": "Quản lý ví nhân viên",
+  "routeManageStaffWallets": "Quản lý ví nhân viên",
+  "withdrawalRequests": "Yêu cầu rút tiền",
+  "routeWithdrawalRequests": "Yêu cầu rút tiền",
+  "withdrawalRequestBadge": "Yêu cầu rút tiền",
+  "pendingWithdrawalBanner": "{count} yêu cầu rút tiền",
+  "@pendingWithdrawalBanner": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "staffWalletDetailTitle": "Ví nhân viên {name}",
+  "@staffWalletDetailTitle": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "routeStaffWalletDetail": "Chi tiết ví nhân viên",
+  "withdrawalDetailTitle": "Chi tiết yêu cầu rút tiền",
+  "bankName": "Ngân hàng",
+  "bankAccountNumber": "Số tài khoản",
+  "bankAccountName": "Tên chủ tài khoản",
+  "withdrawAmount": "Số tiền rút",
+  "quickScanQr": "Mã QR quét nhanh",
+  "scanQrAutoFillNote": "Quét mã bằng ứng dụng ngân hàng để tự động điền thông tin chuyển tiền",
+  "approveAndTransfer": "Xác nhận đã chuyển tiền",
+  "rejectWithdrawal": "Từ chối",
+  "rejectReasonPrompt": "Lý do từ chối yêu cầu rút tiền",
+  "rejectReasonRequired": "Vui lòng nhập lý do từ chối",
+  "confirmApprovalTitle": "Xác nhận duyệt rút tiền",
+  "confirmApprovalContent": "Bạn có chắc chắn đã chuyển số tiền {amount} cho nhân viên {name}?",
+  "@confirmApprovalContent": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "copySuccess": "Đã sao chép vào bộ nhớ tạm",
+  "copy": "Sao chép",
+  "note": "Ghi chú",
+  "adminNote": "Ghi chú xử lý",
+  "processedAt": "Thời gian xử lý",
+  "createdAt": "Thời gian tạo",
+  "statusPending": "Chờ duyệt",
+  "statusApproved": "Đã duyệt",
+  "statusRejected": "Từ chối",
+  "filterAll": "Tất cả",
+  "noStaffWalletsFound": "Không tìm thấy ví nhân viên nào",
+  "noWithdrawalRequestsFound": "Không có yêu cầu rút tiền nào",
+  "noTransactionsFound": "Chưa có giao dịch nào",
+  "searchStaffHint": "Tìm theo tên, email, SĐT...",
+  "staffWalletBalance": "Số dư ví nhân viên",
+  "walletBalance": "Số dư ví",
+  "transactionHistory": "Lịch sử giao dịch",
+  "relatedReport": "Phản ánh: {title}",
+  "@relatedReport": {
+    "placeholders": {
+      "title": {
+        "type": "String"
+      }
+    }
+  },
+  "viewReportDetail": "Xem chi tiết phản ánh",
+  "processSuccess": "Xử lý yêu cầu rút tiền thành công!",
+  "processFailed": "Không thể xử lý yêu cầu, vui lòng thử lại.",
+  "systemConfig": "Cấu hình hệ thống",
+  "routeSystemConfig": "Cấu hình hệ thống",
+  "commissionConfig": "Cấu hình hoa hồng",
+  "routeCommissionConfig": "Cấu hình hoa hồng",
+  "commissionConfigDescription": "Thiết lập định mức hoa hồng cho nhân viên theo từng mức độ nghiêm trọng của phản ánh.",
+  "penaltyRateConfig": "Cấu hình tỷ lệ trừ hoa hồng khi xử lý lại",
+  "routePenaltyRateConfig": "Cấu hình tỷ lệ trừ hoa hồng khi xử lý lại",
+  "penaltyRateConfigDescription": "Thiết lập tỷ lệ phần trăm trừ hoa hồng khi phản ánh bị người dân đánh giá chưa thỏa đáng và cần xử lý lại.",
+  "commissionConfigSummary": "Định mức 4 mức độ: Thấp, Trung bình, Cao, Nghiêm trọng",
+  "penaltyRateConfigSummary": "Tỷ lệ phạt 3 lần: Lần 1, Lần 2, Lần 3",
+  "saveCommissionSuccess": "Cập nhật cấu hình hoa hồng thành công!",
+  "savePenaltyRateSuccess": "Cập nhật tỷ lệ trừ hoa hồng thành công!"
 }

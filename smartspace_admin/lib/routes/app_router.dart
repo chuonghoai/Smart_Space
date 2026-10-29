@@ -12,7 +12,12 @@ import 'package:smartspace_admin/ui/screen/settings/change_password_screen.dart'
 import 'package:smartspace_admin/ui/screen/settings/edit_profile_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/settings_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/manage_devices_screen.dart';
-import 'package:smartspace_admin/ui/screen/settings/wallet_config_screen.dart';
+import 'package:smartspace_admin/ui/screen/settings/system_config_screen.dart';
+import 'package:smartspace_admin/ui/screen/settings/commission_config_screen.dart';
+import 'package:smartspace_admin/ui/screen/settings/penalty_rate_config_screen.dart';
+import 'package:smartspace_admin/ui/screen/wallet/admin_staff_wallets_screen.dart';
+import 'package:smartspace_admin/ui/screen/wallet/admin_withdrawal_requests_screen.dart';
+import 'package:smartspace_admin/ui/screen/wallet/admin_staff_wallet_detail_screen.dart';
 import 'package:smartspace_admin/ui/screen/map/admin_map_screen.dart';
 import 'package:smartspace_admin/ui/screen/staff/staff_management_screen.dart';
 import 'package:smartspace_admin/ui/screen/users/user_management_screen.dart';
@@ -67,7 +72,38 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: RouterPath.walletConfig,
-      builder: (context, state) => const WalletConfigScreen(),
+      builder: (context, state) => const SystemConfigScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.systemConfig,
+      builder: (context, state) => const SystemConfigScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.commissionConfig,
+      builder: (context, state) => const CommissionConfigScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.penaltyRateConfig,
+      builder: (context, state) => const PenaltyRateConfigScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.adminStaffWallets,
+      builder: (context, state) => const AdminStaffWalletsScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.adminWithdrawalRequests,
+      builder: (context, state) => const AdminWithdrawalRequestsScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.adminStaffWalletDetail,
+      builder: (context, state) {
+        final staffId = state.pathParameters['id'] ?? '';
+        final initialName = state.extra as String?;
+        return AdminStaffWalletDetailScreen(
+          staffId: staffId,
+          initialStaffName: initialName,
+        );
+      },
     ),
     GoRoute(
       path: RouterPath.editProfile,

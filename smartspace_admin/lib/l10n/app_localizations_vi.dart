@@ -1572,4 +1572,181 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get manageWalletConfig => 'Cấu hình ví và hoa hồng';
+
+  @override
+  String get manageStaffWallets => 'Quản lý ví nhân viên';
+
+  @override
+  String get routeManageStaffWallets => 'Quản lý ví nhân viên';
+
+  @override
+  String get withdrawalRequests => 'Yêu cầu rút tiền';
+
+  @override
+  String get routeWithdrawalRequests => 'Yêu cầu rút tiền';
+
+  @override
+  String get withdrawalRequestBadge => 'Yêu cầu rút tiền';
+
+  @override
+  String pendingWithdrawalBanner(int count) {
+    return '$count yêu cầu rút tiền';
+  }
+
+  @override
+  String staffWalletDetailTitle(String name) {
+    return 'Ví nhân viên $name';
+  }
+
+  @override
+  String get routeStaffWalletDetail => 'Chi tiết ví nhân viên';
+
+  @override
+  String get withdrawalDetailTitle => 'Chi tiết yêu cầu rút tiền';
+
+  @override
+  String get bankName => 'Ngân hàng';
+
+  @override
+  String get bankAccountNumber => 'Số tài khoản';
+
+  @override
+  String get bankAccountName => 'Tên chủ tài khoản';
+
+  @override
+  String get withdrawAmount => 'Số tiền rút';
+
+  @override
+  String get quickScanQr => 'Mã QR quét nhanh';
+
+  @override
+  String get scanQrAutoFillNote =>
+      'Quét mã bằng ứng dụng ngân hàng để tự động điền thông tin chuyển tiền';
+
+  @override
+  String get approveAndTransfer => 'Xác nhận đã chuyển tiền';
+
+  @override
+  String get rejectWithdrawal => 'Từ chối';
+
+  @override
+  String get rejectReasonPrompt => 'Lý do từ chối yêu cầu rút tiền';
+
+  @override
+  String get rejectReasonRequired => 'Vui lòng nhập lý do từ chối';
+
+  @override
+  String get confirmApprovalTitle => 'Xác nhận duyệt rút tiền';
+
+  @override
+  String confirmApprovalContent(String amount, String name) {
+    return 'Bạn có chắc chắn đã chuyển số tiền $amount cho nhân viên $name?';
+  }
+
+  @override
+  String get copySuccess => 'Đã sao chép vào bộ nhớ tạm';
+
+  @override
+  String get copy => 'Sao chép';
+
+  @override
+  String get note => 'Ghi chú';
+
+  @override
+  String get adminNote => 'Ghi chú xử lý';
+
+  @override
+  String get processedAt => 'Thời gian xử lý';
+
+  @override
+  String get createdAt => 'Thời gian tạo';
+
+  @override
+  String get statusPending => 'Chờ duyệt';
+
+  @override
+  String get statusApproved => 'Đã duyệt';
+
+  @override
+  String get statusRejected => 'Từ chối';
+
+  @override
+  String get filterAll => 'Tất cả';
+
+  @override
+  String get noStaffWalletsFound => 'Không tìm thấy ví nhân viên nào';
+
+  @override
+  String get noWithdrawalRequestsFound => 'Không có yêu cầu rút tiền nào';
+
+  @override
+  String get noTransactionsFound => 'Chưa có giao dịch nào';
+
+  @override
+  String get searchStaffHint => 'Tìm theo tên, email, SĐT...';
+
+  @override
+  String get staffWalletBalance => 'Số dư ví nhân viên';
+
+  @override
+  String get walletBalance => 'Số dư ví';
+
+  @override
+  String get transactionHistory => 'Lịch sử giao dịch';
+
+  @override
+  String relatedReport(String title) {
+    return 'Phản ánh: $title';
+  }
+
+  @override
+  String get viewReportDetail => 'Xem chi tiết phản ánh';
+
+  @override
+  String get processSuccess => 'Xử lý yêu cầu rút tiền thành công!';
+
+  @override
+  String get processFailed => 'Không thể xử lý yêu cầu, vui lòng thử lại.';
+
+  @override
+  String get systemConfig => 'Cấu hình hệ thống';
+
+  @override
+  String get routeSystemConfig => 'Cấu hình hệ thống';
+
+  @override
+  String get commissionConfig => 'Cấu hình hoa hồng';
+
+  @override
+  String get routeCommissionConfig => 'Cấu hình hoa hồng';
+
+  @override
+  String get commissionConfigDescription =>
+      'Thiết lập định mức hoa hồng cho nhân viên theo từng mức độ nghiêm trọng của phản ánh.';
+
+  @override
+  String get penaltyRateConfig => 'Cấu hình tỷ lệ trừ hoa hồng khi xử lý lại';
+
+  @override
+  String get routePenaltyRateConfig =>
+      'Cấu hình tỷ lệ trừ hoa hồng khi xử lý lại';
+
+  @override
+  String get penaltyRateConfigDescription =>
+      'Thiết lập tỷ lệ phần trăm trừ hoa hồng khi phản ánh bị người dân đánh giá chưa thỏa đáng và cần xử lý lại.';
+
+  @override
+  String get commissionConfigSummary =>
+      'Định mức 4 mức độ: Thấp, Trung bình, Cao, Nghiêm trọng';
+
+  @override
+  String get penaltyRateConfigSummary =>
+      'Tỷ lệ phạt 3 lần: Lần 1, Lần 2, Lần 3';
+
+  @override
+  String get saveCommissionSuccess => 'Cập nhật cấu hình hoa hồng thành công!';
+
+  @override
+  String get savePenaltyRateSuccess =>
+      'Cập nhật tỷ lệ trừ hoa hồng thành công!';
 }

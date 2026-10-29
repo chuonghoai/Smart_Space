@@ -2,19 +2,26 @@ package com.vn.smart_space.service.wallet;
 
 import com.vn.smart_space.consts.EReportSeverity;
 import com.vn.smart_space.consts.EWalletTransactionType;
+import com.vn.smart_space.consts.EWithdrawalStatus;
 import com.vn.smart_space.dto.PageResponse;
 import com.vn.smart_space.dto.request.notification.NotificationRequest;
+import com.vn.smart_space.dto.request.wallet.CreateWithdrawalRequest;
+import com.vn.smart_space.dto.response.report.ReportDetailResponse;
 import com.vn.smart_space.dto.response.wallet.StaffWalletResponse;
 import com.vn.smart_space.dto.response.wallet.StaffWalletTransactionResponse;
+import com.vn.smart_space.dto.response.wallet.StaffWithdrawalRequestResponse;
+import com.vn.smart_space.exception.BadRequestException;
 import com.vn.smart_space.exception.ResourceNotFoundException;
 import com.vn.smart_space.model.Report;
 import com.vn.smart_space.model.StaffWallet;
 import com.vn.smart_space.model.StaffWalletTransaction;
+import com.vn.smart_space.model.StaffWithdrawalRequest;
 import com.vn.smart_space.model.User;
 import com.vn.smart_space.model.WalletConfig;
 import com.vn.smart_space.repository.ReportRepository;
 import com.vn.smart_space.repository.StaffWalletRepository;
 import com.vn.smart_space.repository.StaffWalletTransactionRepository;
+import com.vn.smart_space.repository.StaffWithdrawalRequestRepository;
 import com.vn.smart_space.repository.UserRepository;
 import com.vn.smart_space.service.notification.IFCMService;
 import com.vn.smart_space.service.notification.INotificationService;
@@ -28,6 +35,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -41,6 +50,7 @@ public class StaffWalletServiceImpl implements IStaffWalletService {
 
     StaffWalletRepository staffWalletRepository;
     StaffWalletTransactionRepository staffWalletTransactionRepository;
+    StaffWithdrawalRequestRepository staffWithdrawalRequestRepository;
     UserRepository userRepository;
     ReportRepository reportRepository;
     IWalletConfigService walletConfigService;
@@ -145,7 +155,7 @@ public class StaffWalletServiceImpl implements IStaffWalletService {
             return;
         }
 
-        // Rule: If commission has already been awarded previously, don't award again
+        // Idempotency: Check if commission has already been awarded
         if (Boolean.TRUE.equals(report.getCommissionAwarded())) {
             log.info("[Staff Wallet] Report {} has already been awarded commission. Skipping.", report.getId());
             return;
@@ -187,7 +197,7 @@ public class StaffWalletServiceImpl implements IStaffWalletService {
         report.setCommissionAwarded(true);
         reportRepository.save(report);
 
-        // Send FCM Notification to staff (per requirement: no websocket)
+        // Send FCM Notification to staff
         try {
             Locale staffLocale = new Locale(staff.getLanguage() != null ? staff.getLanguage() : "vi");
             String title = messageSource.getMessage(
@@ -258,7 +268,7 @@ public class StaffWalletServiceImpl implements IStaffWalletService {
                     return staffWalletRepository.save(newWallet);
                 });
 
-        double newBalance = wallet.getBalance() - penaltyAmount;
+        double newBalance = Math.max(0.0, wallet.getBalance() - penaltyAmount);
         wallet.setBalance(newBalance);
         staffWalletRepository.save(wallet);
 
@@ -273,13 +283,13 @@ public class StaffWalletServiceImpl implements IStaffWalletService {
                 .build();
         staffWalletTransactionRepository.save(transaction);
 
-        // Update report state
-        double currentDeducted = report.getTotalCommissionDeducted() != null ? report.getTotalCommissionDeducted() : 0.0;
-        report.setTotalCommissionDeducted(currentDeducted + penaltyAmount);
+        // Update report penalty tracking
         report.setRehandlingPenaltyCount(penaltyCount + 1);
+        double totalDeducted = report.getTotalCommissionDeducted() != null ? report.getTotalCommissionDeducted() : 0.0;
+        report.setTotalCommissionDeducted(totalDeducted + penaltyAmount);
         reportRepository.save(report);
 
-        // Send FCM Notification to staff (per requirement: no websocket)
+        // Send FCM Notification to staff
         try {
             Locale staffLocale = new Locale(staff.getLanguage() != null ? staff.getLanguage() : "vi");
             String title = messageSource.getMessage(
@@ -312,20 +322,19 @@ public class StaffWalletServiceImpl implements IStaffWalletService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<com.vn.smart_space.dto.response.report.ReportDetailResponse.PenaltyDeductionItem> getPenaltyDeductionsForReport(Report report) {
-        if (report == null || report.getId() == null) {
-            return java.util.Collections.emptyList();
-        }
+    public List<ReportDetailResponse.PenaltyDeductionItem> getPenaltyDeductionsForReport(Report report) {
+        if (report == null) return java.util.Collections.emptyList();
 
-        List<StaffWalletTransaction> transactions = staffWalletTransactionRepository
+        List<StaffWalletTransaction> penaltyTransactions = staffWalletTransactionRepository
                 .findByReportIdAndType(report.getId(), EWalletTransactionType.PENALTY_DEDUCTION);
 
-        if (transactions != null && !transactions.isEmpty()) {
-            List<com.vn.smart_space.dto.response.report.ReportDetailResponse.PenaltyDeductionItem> items = new java.util.ArrayList<>();
-            for (int i = 0; i < transactions.size(); i++) {
-                items.add(com.vn.smart_space.dto.response.report.ReportDetailResponse.PenaltyDeductionItem.builder()
+        if (!penaltyTransactions.isEmpty()) {
+            List<ReportDetailResponse.PenaltyDeductionItem> items = new java.util.ArrayList<>();
+            for (int i = 0; i < penaltyTransactions.size(); i++) {
+                StaffWalletTransaction tx = penaltyTransactions.get(i);
+                items.add(ReportDetailResponse.PenaltyDeductionItem.builder()
                         .turn(i + 1)
-                        .amount(transactions.get(i).getAmount())
+                        .amount(tx.getAmount())
                         .build());
             }
             return items;
@@ -335,7 +344,7 @@ public class StaffWalletServiceImpl implements IStaffWalletService {
         if (count > 0 && report.getBaseCommission() != null) {
             WalletConfig config = walletConfigService.getOrCreateDefaultConfig();
             double base = report.getBaseCommission();
-            List<com.vn.smart_space.dto.response.report.ReportDetailResponse.PenaltyDeductionItem> items = new java.util.ArrayList<>();
+            List<ReportDetailResponse.PenaltyDeductionItem> items = new java.util.ArrayList<>();
             for (int i = 0; i < Math.min(count, 3); i++) {
                 double rate = switch (i) {
                     case 0 -> config.getPenaltyRate1() != null ? config.getPenaltyRate1() : 20.0;
@@ -343,7 +352,7 @@ public class StaffWalletServiceImpl implements IStaffWalletService {
                     case 2 -> config.getPenaltyRate3() != null ? config.getPenaltyRate3() : 60.0;
                     default -> 0.0;
                 };
-                items.add(com.vn.smart_space.dto.response.report.ReportDetailResponse.PenaltyDeductionItem.builder()
+                items.add(ReportDetailResponse.PenaltyDeductionItem.builder()
                         .turn(i + 1)
                         .amount(base * (rate / 100.0))
                         .build());
@@ -352,6 +361,80 @@ public class StaffWalletServiceImpl implements IStaffWalletService {
         }
 
         return java.util.Collections.emptyList();
+    }
+
+    @Override
+    @Transactional
+    public StaffWithdrawalRequestResponse createWithdrawalRequest(String userId, CreateWithdrawalRequest request) {
+        User staff = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("user.not_found"));
+
+        StaffWallet wallet = getOrCreateWallet(userId);
+        if (wallet.getBalance() < request.getAmount()) {
+            throw new BadRequestException("wallet.withdrawal.insufficient_balance");
+        }
+
+        StaffWithdrawalRequest withdrawal = StaffWithdrawalRequest.builder()
+                .user(staff)
+                .amount(request.getAmount())
+                .bankCode(request.getBankCode())
+                .bankName(request.getBankName())
+                .bankAccountNumber(request.getBankAccountNumber())
+                .bankAccountName(request.getBankAccountName())
+                .status(EWithdrawalStatus.PENDING)
+                .note(request.getNote())
+                .build();
+
+        StaffWithdrawalRequest saved = staffWithdrawalRequestRepository.save(withdrawal);
+        return mapToWithdrawalResponse(saved);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<StaffWithdrawalRequestResponse> getMyWithdrawals(String userId) {
+        List<StaffWithdrawalRequest> list = staffWithdrawalRequestRepository.findByUserIdOrderByCreatedAtDesc(userId);
+        return list.stream().map(this::mapToWithdrawalResponse).collect(Collectors.toList());
+    }
+
+    private StaffWithdrawalRequestResponse mapToWithdrawalResponse(StaffWithdrawalRequest entity) {
+        User u = entity.getUser();
+        String qrUrl = generateVietQRUrl(entity.getBankCode(), entity.getBankAccountNumber(), entity.getAmount(), entity.getBankAccountName());
+
+        return StaffWithdrawalRequestResponse.builder()
+                .id(entity.getId())
+                .userId(u != null ? u.getId() : null)
+                .staffName(u != null ? u.getFullName() : "")
+                .staffEmail(u != null ? u.getEmail() : "")
+                .staffPhone(u != null ? u.getPhone() : "")
+                .staffAvatar(u != null ? u.getAvatarUrl() : null)
+                .amount(entity.getAmount())
+                .bankCode(entity.getBankCode())
+                .bankName(entity.getBankName())
+                .bankAccountNumber(entity.getBankAccountNumber())
+                .bankAccountName(entity.getBankAccountName())
+                .qrCodeUrl(qrUrl)
+                .status(entity.getStatus() != null ? entity.getStatus().name() : "")
+                .note(entity.getNote())
+                .adminNote(entity.getAdminNote())
+                .createdAt(entity.getCreatedAt())
+                .processedAt(entity.getProcessedAt())
+                .build();
+    }
+
+    private String generateVietQRUrl(String bankCode, String accountNumber, Double amount, String accountName) {
+        try {
+            long amt = amount != null ? Math.round(amount) : 0L;
+            String encodedAccountName = accountName != null ? URLEncoder.encode(accountName, StandardCharsets.UTF_8) : "";
+            String encodedInfo = URLEncoder.encode("Rut tien vi SmartSpace", StandardCharsets.UTF_8);
+            return String.format("https://img.vietqr.io/image/%s-%s-compact2.png?amount=%d&addInfo=%s&accountName=%s",
+                    bankCode != null ? bankCode.trim() : "",
+                    accountNumber != null ? accountNumber.trim() : "",
+                    amt,
+                    encodedInfo,
+                    encodedAccountName);
+        } catch (Exception e) {
+            return "";
+        }
     }
 
     private double getCommissionAmountBySeverity(EReportSeverity severity, WalletConfig config) {

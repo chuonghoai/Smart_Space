@@ -1,7 +1,9 @@
 package com.vn.smart_space.controller.staff;
 
 import com.vn.smart_space.dto.ApiResponse;
+import com.vn.smart_space.dto.request.wallet.CreateWithdrawalRequest;
 import com.vn.smart_space.service.wallet.IStaffWalletService;
+import jakarta.validation.Valid;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -41,5 +43,22 @@ public class StaffWalletController {
                 ApiResponse.success("system.success",
                         staffWalletService.getTransactions(userId, page, size, locale)));
     }
-}
 
+    @PreAuthorize("hasAnyRole('staff', 'admin')")
+    @PostMapping("/withdraw")
+    public ResponseEntity<ApiResponse> createWithdrawal(
+            @Valid @RequestBody CreateWithdrawalRequest request,
+            @AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt != null ? jwt.getClaimAsString("userId") : null;
+        return ResponseEntity.ok(
+                ApiResponse.success("system.success", staffWalletService.createWithdrawalRequest(userId, request)));
+    }
+
+    @PreAuthorize("hasAnyRole('staff', 'admin')")
+    @GetMapping("/withdrawals")
+    public ResponseEntity<ApiResponse> getMyWithdrawals(@AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt != null ? jwt.getClaimAsString("userId") : null;
+        return ResponseEntity.ok(
+                ApiResponse.success("system.success", staffWalletService.getMyWithdrawals(userId)));
+    }
+}

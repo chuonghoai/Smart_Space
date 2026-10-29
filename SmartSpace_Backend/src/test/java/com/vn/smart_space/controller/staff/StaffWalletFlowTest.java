@@ -271,6 +271,117 @@ public class StaffWalletFlowTest {
         assertTrue(transItems.size() >= 2, "Phải có ít nhất 2 giao dịch (COMMISSION và PENALTY_DEDUCTION)");
         System.out.println(">> [BƯỚC 8 OK] Lịch sử giao dịch: Tìm thấy " + transItems.size() + " giao dịch.");
 
+        // -------------------------------------------------------------------------
+        // BƯỚC 9: Staff gửi yêu cầu rút tiền (POST /staff/wallet/withdraw)
+        // -------------------------------------------------------------------------
+        System.out.println("\n>> [BƯỚC 9] Staff gửi yêu cầu rút tiền...");
+        double withdrawAmount = 50000.0;
+        double staffBalanceNow = balanceAfterComp2;
+        if (withdrawAmount > staffBalanceNow) {
+            withdrawAmount = Math.max(10000.0, staffBalanceNow);
+        }
+
+        String withdrawPayload = String.format(java.util.Locale.US, """
+        {
+          "amount": %.1f,
+          "bank_code": "MB",
+          "bank_name": "Ngân hàng Quân Đội (MBBank)",
+          "bank_account_number": "0987654321",
+          "bank_account_name": "NGUYEN VAN STAFF",
+          "note": "Rút tiền hoa hồng tháng này"
+        }
+        """, withdrawAmount);
+
+        HttpRequest withdrawReq = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/staff/wallet/withdraw"))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + staffToken)
+                .POST(HttpRequest.BodyPublishers.ofString(withdrawPayload, StandardCharsets.UTF_8))
+                .build();
+        HttpResponse<String> withdrawRes = client.send(withdrawReq, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        assertEquals(200, withdrawRes.statusCode(), "Yêu cầu rút tiền phải thành công: " + withdrawRes.body());
+        JsonNode withdrawNode = mapper.readTree(withdrawRes.body()).get("data");
+        String withdrawalId = withdrawNode.get("id").asText();
+        assertNotNull(withdrawNode.get("qr_code_url").asText(), "Phải sinh ra link VietQR");
+        assertTrue(withdrawNode.get("qr_code_url").asText().contains("vietqr.io"), "Link QR phải chứa domain vietqr.io");
+        System.out.println(">> [BƯỚC 9 OK] Đã tạo yêu cầu rút tiền: " + withdrawalId + ", VietQR: " + withdrawNode.get("qr_code_url").asText());
+
+        // -------------------------------------------------------------------------
+        // BƯỚC 10: Admin kiểm tra số yêu cầu rút tiền chờ duyệt (GET /admin/wallet/withdrawals/pending-count)
+        // -------------------------------------------------------------------------
+        System.out.println("\n>> [BƯỚC 10] Admin kiểm tra số yêu cầu rút tiền chờ duyệt...");
+        HttpRequest countReq = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/admin/wallet/withdrawals/pending-count"))
+                .header("Authorization", "Bearer " + adminToken)
+                .GET()
+                .build();
+        HttpResponse<String> countRes = client.send(countReq, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        assertEquals(200, countRes.statusCode(), "Lấy pending count phải thành công");
+        long pendingCount = mapper.readTree(countRes.body()).get("data").asLong();
+        assertTrue(pendingCount >= 1, "Số yêu cầu chờ duyệt phải >= 1");
+        System.out.println(">> [BƯỚC 10 OK] Số yêu cầu rút tiền chờ duyệt: " + pendingCount);
+
+        // -------------------------------------------------------------------------
+        // BƯỚC 11: Admin lấy danh sách ví nhân viên (GET /admin/wallet/staffs)
+        // -------------------------------------------------------------------------
+        System.out.println("\n>> [BƯỚC 11] Admin lấy danh sách ví nhân viên...");
+        HttpRequest adminStaffsReq = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/admin/wallet/staffs?page=1&size=10"))
+                .header("Authorization", "Bearer " + adminToken)
+                .GET()
+                .build();
+        HttpResponse<String> adminStaffsRes = client.send(adminStaffsReq, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        assertEquals(200, adminStaffsRes.statusCode(), "Lấy danh sách ví nhân viên phải thành công");
+        JsonNode adminStaffsNode = mapper.readTree(adminStaffsRes.body()).get("data");
+        assertTrue(adminStaffsNode.get("content").size() > 0, "Danh sách ví nhân viên phải có dữ liệu");
+        System.out.println(">> [BƯỚC 11 OK] Tìm thấy " + adminStaffsNode.get("content").size() + " ví nhân viên.");
+
+        // -------------------------------------------------------------------------
+        // BƯỚC 12: Admin lấy danh sách yêu cầu rút tiền (GET /admin/wallet/withdrawals)
+        // -------------------------------------------------------------------------
+        System.out.println("\n>> [BƯỚC 12] Admin lấy danh sách yêu cầu rút tiền...");
+        HttpRequest adminWithdrawalsReq = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/admin/wallet/withdrawals?status=PENDING&page=1&size=10"))
+                .header("Authorization", "Bearer " + adminToken)
+                .GET()
+                .build();
+        HttpResponse<String> adminWithdrawalsRes = client.send(adminWithdrawalsReq, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        assertEquals(200, adminWithdrawalsRes.statusCode(), "Lấy danh sách yêu cầu rút tiền phải thành công");
+        JsonNode withdrawalItems = mapper.readTree(adminWithdrawalsRes.body()).get("data").get("content");
+        assertTrue(withdrawalItems.size() > 0, "Phải có yêu cầu rút tiền PENDING");
+        System.out.println(">> [BƯỚC 12 OK] Danh sách yêu cầu rút tiền có " + withdrawalItems.size() + " bản ghi.");
+
+        // -------------------------------------------------------------------------
+        // BƯỚC 13: Admin duyệt chuyển tiền (PUT /admin/wallet/withdrawals/{id}/process)
+        // -------------------------------------------------------------------------
+        System.out.println("\n>> [BƯỚC 13] Admin duyệt chuyển tiền cho yêu cầu rút tiền...");
+        String processPayload = """
+        {
+          "status": "APPROVED",
+          "admin_note": "Đã chuyển khoản qua app ngân hàng MB"
+        }
+        """;
+        HttpRequest processReq = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/admin/wallet/withdrawals/" + withdrawalId + "/process"))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + adminToken)
+                .PUT(HttpRequest.BodyPublishers.ofString(processPayload, StandardCharsets.UTF_8))
+                .build();
+        HttpResponse<String> processRes = client.send(processReq, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        assertEquals(200, processRes.statusCode(), "Admin duyệt rút tiền phải thành công: " + processRes.body());
+        JsonNode processedData = mapper.readTree(processRes.body()).get("data");
+        assertEquals("APPROVED", processedData.get("status").asText(), "Trạng thái phải là APPROVED");
+        System.out.println(">> [BƯỚC 13 OK] Duyệt yêu cầu rút tiền thành công!");
+
+        // -------------------------------------------------------------------------
+        // BƯỚC 14: Kiểm tra số dư ví Staff sau khi rút tiền
+        // -------------------------------------------------------------------------
+        System.out.println("\n>> [BƯỚC 14] Kiểm tra số dư ví Staff sau khi trừ tiền rút...");
+        HttpResponse<String> walletAfterWithRes = client.send(getWalletReq, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        double finalBalance = mapper.readTree(walletAfterWithRes.body()).get("data").get("balance").asDouble();
+        assertEquals(staffBalanceNow - withdrawAmount, finalBalance, "Số dư phải bị trừ đúng số tiền đã rút");
+        System.out.println(">> [BƯỚC 14 OK] Số dư sau khi rút tiền: " + finalBalance + " đ (-" + withdrawAmount + "đ)");
+
         System.out.println("\n================================================================================");
         System.out.println(">> [KẾT QUẢ KIỂM THỬ] TẤT CẢ CÁC BƯỚC TEST VÍ NHÂN VIÊN ĐỀU THÀNH CÔNG RỰC RỠ!");
         System.out.println("================================================================================");
