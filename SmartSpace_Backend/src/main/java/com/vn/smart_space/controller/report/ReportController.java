@@ -81,13 +81,16 @@ public class ReportController {
 
     @GetMapping("/map")
     public ResponseEntity<ApiResponse> getMapReports(
+            @AuthenticationPrincipal Jwt jwt,
             @RequestParam(name = "min_lat") Double minLat,
             @RequestParam(name = "max_lat") Double maxLat,
             @RequestParam(name = "min_lng") Double minLng,
             @RequestParam(name = "max_lng") Double maxLng,
+            @RequestParam(defaultValue = "all") String filter,
             @RequestParam(defaultValue = "300") int limit) {
+        String viewerId = jwt.getClaim("userId").toString();
         return ResponseEntity.ok(ApiResponse.success("system.success",
-                reportService.getReportsInBounds(minLat, maxLat, minLng, maxLng, limit)));
+                reportService.getReportsInBounds(viewerId, minLat, maxLat, minLng, maxLng, filter, limit)));
     }
 
     @GetMapping("/{id}")

@@ -801,6 +801,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mapLoadReportsFailed => 'Couldn\'t load tasks on the map';
 
   @override
+  String get viewOnMap => 'View on map';
+
+  @override
+  String get mapFocusedReportHidden =>
+      'This report isn\'t one of your tasks in progress, so it isn\'t shown on the map';
+
+  @override
   String get locationSection => 'Incident Location';
 
   @override

@@ -258,12 +258,15 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                         Limit limit);
 
         // Client map viewport: reports inside a lat/lng box, most severe first then newest.
-        // Processed reports are kept only while updatedAt >= processedSince.
+        // Processed reports are only visible to their owner (viewerId) and only while updatedAt >= processedSince.
+        // status / ownerId null = no restriction.
         @Query("SELECT r FROM Report r " +
                         "WHERE r.latitude BETWEEN :minLat AND :maxLat " +
                         "AND r.longitude BETWEEN :minLng AND :maxLng " +
                         "AND r.status <> :excluded " +
-                        "AND (r.status <> :processed OR r.updatedAt >= :processedSince) " +
+                        "AND (r.status <> :processed OR (r.user.id = :viewerId AND r.updatedAt >= :processedSince)) " +
+                        "AND (:status IS NULL OR r.status = :status) " +
+                        "AND (:ownerId IS NULL OR r.user.id = :ownerId) " +
                         "ORDER BY CASE r.severity " +
                         "WHEN com.vn.smart_space.consts.EReportSeverity.critical THEN 0 " +
                         "WHEN com.vn.smart_space.consts.EReportSeverity.high THEN 1 " +
@@ -276,6 +279,9 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                         @Param("excluded") EReportStatus excluded,
                         @Param("processed") EReportStatus processed,
                         @Param("processedSince") LocalDateTime processedSince,
+                        @Param("viewerId") String viewerId,
+                        @Param("status") EReportStatus status,
+                        @Param("ownerId") String ownerId,
                         Limit limit);
 
 }

@@ -1518,6 +1518,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mapLoadReportsFailed => 'Couldn\'t load reports on the map';
 
   @override
+  String get viewOnMap => 'View on map';
+
+  @override
+  String get mapFocusedReportHidden =>
+      'This report doesn\'t match the current map filters';
+
+  @override
   String get locationDescriptionLabel => 'Location description';
 
   @override

@@ -29,9 +29,9 @@ public interface IReportService {
         PageResponse<ReportDetailResponse> getFeed(String status, int page, int size,
                         Double userLat, Double userLong);
 
-        // Client Map — reports inside a viewport (bounding box)
-        MapReportsResponse getReportsInBounds(Double minLat, Double maxLat, Double minLng, Double maxLng,
-                        int limit);
+        // Client Map — reports inside a viewport (bounding box), narrowed by filter (see EMapReportFilter)
+        MapReportsResponse getReportsInBounds(String viewerId, Double minLat, Double maxLat, Double minLng,
+                        Double maxLng, String filter, int limit);
 
         List<RecentReportResponse> getAdminRecentReports(String tab, int limit);
 
