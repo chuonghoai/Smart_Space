@@ -2966,6 +2966,18 @@ abstract class AppLocalizations {
   /// **'Couldn\'t load reports on the map'**
   String get mapLoadReportsFailed;
 
+  /// No description provided for @viewOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'View on map'**
+  String get viewOnMap;
+
+  /// No description provided for @mapFocusedReportHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'This report doesn\'t match the current map filters'**
+  String get mapFocusedReportHidden;
+
   /// No description provided for @locationDescriptionLabel.
   ///
   /// In en, this message translates to:

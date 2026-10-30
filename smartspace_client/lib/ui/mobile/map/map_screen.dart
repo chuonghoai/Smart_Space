@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:mobile_shared/features/map/cluster/cluster_map_layer.dart';
+import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:mobile_shared/util/location_service.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/providers/map_reports_provider.dart';
@@ -13,6 +14,7 @@ import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/routes/router_path.dart';
 import 'package:smartspace_client/ui/components/map_cluster_sheet.dart';
 import 'package:smartspace_client/ui/components/map_controls.dart';
+import 'package:smartspace_client/ui/components/map_filter_bar.dart';
 import 'package:smartspace_client/ui/components/marker_image_generator.dart';
 import 'package:smartspace_client/ui/components/report_info_sheet.dart';
 import 'package:smartspace_client/ui/mobile/map/map_controller.dart';
@@ -21,8 +23,13 @@ import 'package:smartspace_client/ui/mobile/map/map_controller.dart';
 ///
 /// Bấm cluster: zoom tới mức cluster tách ra; nếu không tách được nữa
 /// (trùng/sát toạ độ) thì mở danh sách report trong cluster.
+///
+/// Có [focus] (mở từ chi tiết report) → camera mở tại report đó; lần tải đầu xong thì
+/// mở thẻ thông tin của nó, hoặc báo nếu nó không hiện trên bản đồ (vd. bị bộ lọc ẩn).
 class MobileMapScreen extends ConsumerStatefulWidget {
-  const MobileMapScreen({super.key});
+  final MapFocusTarget? focus;
+
+  const MobileMapScreen({super.key, this.focus});
 
   @override
   ConsumerState<MobileMapScreen> createState() => _MobileMapScreenState();
@@ -38,6 +45,7 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
 
   /// Report đang vẽ trên bản đồ (đã áp filter).
   List<ReportModel> _visibleReports = const [];
+  bool _didHandleFocus = false;
 
   // HCM city center
   static final _defaultCenter = Point(coordinates: Position(106.6297, 10.8231));
@@ -98,10 +106,13 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
     );
 
     // Set 2D top-down camera (radar view)
+    final focus = widget.focus;
     await mapboxMap.setCamera(
       CameraOptions(
-        center: _defaultCenter,
-        zoom: 12.0,
+        center: focus != null
+            ? Point(coordinates: Position(focus.longitude, focus.latitude))
+            : _defaultCenter,
+        zoom: focus != null ? MapFocusTarget.zoom : 12.0,
         pitch: 0.0,
         bearing: 0.0,
       ),
@@ -145,6 +156,29 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
         .getFilteredReports(ref.read(mapReportsProvider).reports);
     _visibleReports = filtered;
     _clusterLayer?.setMarkers(filtered.map(_toMarker).toList());
+  }
+
+  /// Lần tải thành công đầu tiên (camera đang ở report được focus) → mở thẻ của report đó,
+  /// hoặc báo nó không hiện trên bản đồ.
+  void _handleFocusOnce() {
+    final focus = widget.focus;
+    if (focus == null || _didHandleFocus) return;
+    _didHandleFocus = true;
+
+    // Mở sheet sau frame hiện tại: lời gọi đến từ listener của provider
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final report = _visibleReports.where((r) => r.id == focus.reportId).firstOrNull;
+      if (report != null) {
+        _showReportInfo(report);
+        return;
+      }
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.mapFocusedReportHidden)),
+        );
+    });
   }
 
   /// Điểm lẻ → thẻ thông tin; cluster tách được → layer đã zoom vào;
@@ -248,8 +282,12 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
     final mapState = ref.watch(mapControllerProvider);
     final reportsState = ref.watch(mapReportsProvider);
 
-    // Dữ liệu hoặc filter đổi → cập nhật source của bản đồ
-    ref.listen(mapReportsProvider.select((s) => s.reports), (_, _) => _syncReports());
+    // Dữ liệu hoặc filter đổi → cập nhật source của bản đồ.
+    // Mỗi lần tải thành công trả list mới → listener này cũng đánh dấu "đã có dữ liệu" cho focus.
+    ref.listen(mapReportsProvider.select((s) => s.reports), (_, _) {
+      _syncReports();
+      _handleFocusOnce();
+    });
     ref.listen(
       mapControllerProvider.select((s) => (s.showDangerous, s.showNormal)),
       (_, _) => _syncReports(),
@@ -289,9 +327,21 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
               child: const LinearProgressIndicator(minHeight: 2),
             ),
 
+          // Chừa cột nút điều khiển bên phải (12 lề + 42 nút + 8 khoảng cách)
+          Positioned(
+            top: topInset + 8,
+            left: 0,
+            right: 62,
+            child: MapFilterBar(
+              selected: reportsState.filter,
+              onSelected: (filter) =>
+                  ref.read(mapControllerProvider.notifier).setFilter(filter),
+            ),
+          ),
+
           if (reportsState.truncated)
             Positioned(
-              top: topInset + 12,
+              top: topInset + 64,
               left: 72,
               right: 72,
               child: Center(child: _ZoomInHint(label: l10n.mapZoomInForMore)),

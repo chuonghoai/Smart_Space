@@ -1598,6 +1598,18 @@ abstract class AppLocalizations {
   /// **'Couldn\'t load tasks on the map'**
   String get mapLoadReportsFailed;
 
+  /// No description provided for @viewOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'View on map'**
+  String get viewOnMap;
+
+  /// No description provided for @mapFocusedReportHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'This report isn\'t one of your tasks in progress, so it isn\'t shown on the map'**
+  String get mapFocusedReportHidden;
+
   /// No description provided for @locationSection.
   ///
   /// In en, this message translates to:

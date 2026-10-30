@@ -1,19 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 
 /// Map control buttons — my location, show all tasks, filter, refresh
 class MapControls extends StatelessWidget {
   final bool showDangerous;
   final bool showNormal;
+  final bool showRehandling;
   final VoidCallback onMyLocationPressed;
   final VoidCallback onShowAllTasksPressed;
   final VoidCallback onRefreshPressed;
-  final void Function({bool? showDangerous, bool? showNormal}) onFilterChanged;
+  final void Function({bool? showDangerous, bool? showNormal, bool? showRehandling}) onFilterChanged;
 
   const MapControls({
     super.key,
     required this.showDangerous,
     required this.showNormal,
+    required this.showRehandling,
     required this.onMyLocationPressed,
     required this.onShowAllTasksPressed,
     required this.onFilterChanged,
@@ -67,6 +70,17 @@ class MapControls extends StatelessWidget {
             onPressed: () => onFilterChanged(showNormal: !showNormal),
             isActive: showNormal,
             activeColor: colorScheme.primary,
+            colorScheme: colorScheme,
+          ),
+          const SizedBox(height: 8),
+
+          // Filter Rehandling — cùng màu viền marker việc cần xử lý lại
+          _ControlButton(
+            icon: Icons.replay_rounded,
+            tooltip: l10n.rehandling,
+            onPressed: () => onFilterChanged(showRehandling: !showRehandling),
+            isActive: showRehandling,
+            activeColor: AppSemanticColors.of(context).warning,
             colorScheme: colorScheme,
           ),
           const SizedBox(height: 8),

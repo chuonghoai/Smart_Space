@@ -91,6 +91,20 @@ void main() {
         ['normal', 'unrated']);
   });
 
+  test('MapState.getFilteredReports: tắt Xử lý lại → ẩn mọi việc xử lý lại, bất kể mức độ', () {
+    final reports = [
+      _report('danger', severity: ReportSeverity.high),
+      _report('danger-rehandling', severity: ReportSeverity.critical, isReviewResolved: false),
+      _report('normal-rehandling', severity: ReportSeverity.low, isReviewResolved: false),
+      _report('normal', severity: ReportSeverity.low),
+    ];
+    expect(const MapState(showRehandling: false).getFilteredReports(reports).map((r) => r.id),
+        ['danger', 'normal']);
+    // Việc xử lý lại vẫn phải qua bộ lọc mức độ
+    expect(const MapState(showDangerous: false).getFilteredReports(reports).map((r) => r.id),
+        ['normal-rehandling', 'normal']);
+  });
+
   group('MapClusterSheet.sortForCluster', () {
     test('có khoảng cách → gần nhất trước', () {
       final sorted = MapClusterSheet.sortForCluster([

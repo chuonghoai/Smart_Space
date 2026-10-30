@@ -53,6 +53,13 @@ class AdminMapController extends StateNotifier<AdminMapState> {
     });
   }
 
+  /// Tải ngay khung [bounds], bỏ qua debounce và cache — dùng khi mở bản đồ focus vào một report,
+  /// vì dữ liệu của lần mở trước (provider không autoDispose) có thể đã cũ.
+  Future<void> loadNow(MapBounds bounds) {
+    _viewportDebounce?.cancel();
+    return _ref.read(mapReportsProvider.notifier).loadForViewport(bounds, force: true);
+  }
+
   void refresh() {
     _viewportDebounce?.cancel();
     _ref.read(mapReportsProvider.notifier).refresh();

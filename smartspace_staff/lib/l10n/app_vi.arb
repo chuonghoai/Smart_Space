@@ -305,6 +305,8 @@
     }
   },
   "mapLoadReportsFailed": "Không tải được việc trên bản đồ",
+  "viewOnMap": "Xem trên bản đồ",
+  "mapFocusedReportHidden": "Phản ánh này không thuộc việc đang xử lý của bạn nên không hiện trên bản đồ",
   "locationSection": "Vị trí sự cố",
   "noAddress": "Chưa cập nhật địa chỉ",
   "locationDescriptionLabel": "Mô tả vị trí",

@@ -1510,6 +1510,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get mapLoadReportsFailed => 'Không tải được phản ánh trên bản đồ';
 
   @override
+  String get viewOnMap => 'Xem trên bản đồ';
+
+  @override
+  String get mapFocusedReportHidden =>
+      'Phản ánh này không khớp bộ lọc hiện tại của bản đồ';
+
+  @override
   String get locationDescriptionLabel => 'Mô tả vị trí';
 
   @override

@@ -672,6 +672,8 @@
   "mapClusterSortHint": "Chờ xử lý trước, mới nhất trước",
   "mapZoomInForMore": "Phóng to để xem thêm phản ánh",
   "mapLoadReportsFailed": "Không tải được phản ánh trên bản đồ",
+  "viewOnMap": "Xem trên bản đồ",
+  "mapFocusedReportHidden": "Phản ánh này không khớp bộ lọc hiện tại của bản đồ",
   "locationDescriptionLabel": "Mô tả vị trí",
   "routeWalletConfig": "Cấu hình hoa hồng ví",
   "walletConfigTitle": "Cấu hình hoa hồng ví",

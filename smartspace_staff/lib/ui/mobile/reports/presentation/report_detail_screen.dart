@@ -16,7 +16,8 @@ import 'package:smartspace_staff/features/reports/utils/report_severity_ext.dart
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:smartspace_staff/ui/mobile/reports/presentation/widgets/fullscreen_image_viewer.dart';
 import 'package:smartspace_staff/ui/mobile/reports/presentation/widgets/handling_progress_dialog.dart';
-import 'package:smartspace_staff/ui/shared/utils/open_in_google_maps.dart';
+import 'package:mobile_shared/features/map/models/map_focus_target.dart';
+import 'package:smartspace_staff/routes/router_path.dart';
 
 class ReportDetailScreen extends ConsumerStatefulWidget {
   final String reportId;
@@ -93,7 +94,12 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
     ref.invalidate(reportDistanceProvider(widget.reportId));
   }
 
-  Future<void> _openGoogleMaps(double lat, double lng) => openInGoogleMaps(context, lat, lng);
+  /// Mở bản đồ Mapbox trong app, focus vào report này.
+  void _openOnMap(double lat, double lng) {
+    context.push(RouterPath.mapWithFocus(
+      MapFocusTarget(reportId: widget.reportId, latitude: lat, longitude: lng),
+    ));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -937,7 +943,7 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                                           child: Material(
                                             color: Colors.transparent,
                                             child: InkWell(
-                                              onTap: () => _openGoogleMaps(report.latitude, report.longitude),
+                                              onTap: () => _openOnMap(report.latitude, report.longitude),
                                             ),
                                           ),
                                         ),
@@ -949,9 +955,9 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                                 SizedBox(
                                   width: double.infinity,
                                   child: OutlinedButton.icon(
-                                    onPressed: () => _openGoogleMaps(report.latitude, report.longitude),
+                                    onPressed: () => _openOnMap(report.latitude, report.longitude),
                                     icon: const Icon(Icons.map_outlined, size: 18),
-                                    label: Text(l10n.openInGoogleMaps),
+                                    label: Text(l10n.viewOnMap),
                                     style: OutlinedButton.styleFrom(
                                       shape: RoundedRectangleBorder(
                                         borderRadius: BorderRadius.circular(12),

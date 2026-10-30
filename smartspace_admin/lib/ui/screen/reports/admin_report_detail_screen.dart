@@ -10,7 +10,9 @@ import 'package:smartspace_admin/features/reports/models/staff_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
 import 'package:smartspace_admin/ui/shared/position/position_widgets.dart';
-import 'package:url_launcher/url_launcher.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mobile_shared/features/map/models/map_focus_target.dart';
+import 'package:smartspace_admin/routes/router_path.dart';
 
 class AdminReportDetailScreen extends ConsumerStatefulWidget {
   final String reportId;
@@ -804,9 +806,9 @@ class _AdminReportDetailScreenState
               SizedBox(
                 width: double.infinity,
                 child: OutlinedButton.icon(
-                  onPressed: () => _openMaps(report.latitude!, report.longitude!, l10n),
+                  onPressed: () => _openOnMap(report.id, report.latitude!, report.longitude!),
                   icon: const Icon(Icons.map_outlined, size: 18),
-                  label: Text(l10n.openInGoogleMaps),
+                  label: Text(l10n.viewOnMap),
                   style: OutlinedButton.styleFrom(
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -821,19 +823,11 @@ class _AdminReportDetailScreenState
     );
   }
 
-  Future<void> _openMaps(double lat, double lng, AppLocalizations l10n) async {
-    final Uri uri = Uri.parse('https://www.google.com/maps/search/?api=1&query=$lat,$lng');
-    try {
-      final launched = await launchUrl(uri, mode: LaunchMode.externalApplication);
-      if (!launched) {
-        final fallbackLaunched = await launchUrl(uri);
-        if (!fallbackLaunched) {
-          Toast.show(ToastType.warning, l10n.cannotOpenMaps);
-        }
-      }
-    } catch (_) {
-      Toast.show(ToastType.warning, l10n.cannotOpenMaps);
-    }
+  /// Mở bản đồ Mapbox trong app, focus vào report này.
+  void _openOnMap(String reportId, double lat, double lng) {
+    context.push(RouterPath.spaceMapWithFocus(
+      MapFocusTarget(reportId: reportId, latitude: lat, longitude: lng),
+    ));
   }
 
   /// 2-Column Section for Assigning Staff (Left Column) & Severity Selection (Right Column)

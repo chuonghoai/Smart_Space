@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:mobile_shared/features/map/cluster/cluster_layer_colors.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
+import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:smartspace_admin/features/map/models/map_report_model.dart';
 import 'package:smartspace_admin/ui/shared/report_status/report_status_style.dart';
 import 'widgets/map_cluster_colors.dart';
@@ -24,6 +25,7 @@ Widget buildPlatformMap({
   required void Function(List<MapReportModel> reports) onClusterTap,
   required void Function(MapBounds bounds) onViewportChanged,
   VoidCallback? onMapTap,
+  MapFocusTarget? initialFocus,
 }) {
   return _WebMapView(
     reports: reports,
@@ -31,6 +33,7 @@ Widget buildPlatformMap({
     onClusterTap: onClusterTap,
     onViewportChanged: onViewportChanged,
     onMapTap: onMapTap,
+    initialFocus: initialFocus,
   );
 }
 
@@ -41,12 +44,16 @@ class _WebMapView extends StatefulWidget {
   final void Function(MapBounds bounds) onViewportChanged;
   final VoidCallback? onMapTap;
 
+  /// Có giá trị → camera mở tại report này thay vì trung tâm mặc định.
+  final MapFocusTarget? initialFocus;
+
   const _WebMapView({
     required this.reports,
     required this.onMarkerTap,
     required this.onClusterTap,
     required this.onViewportChanged,
     this.onMapTap,
+    this.initialFocus,
   });
 
   @override
@@ -92,7 +99,11 @@ class _WebMapViewState extends State<_WebMapView> {
   }
 
   void _registerView() {
+    final focus = widget.initialFocus;
     final config = jsonEncode({
+      // [lng, lat] theo quy ước Mapbox GL JS; mặc định trung tâm HCM
+      'center': focus != null ? [focus.longitude, focus.latitude] : [106.6297, 10.8231],
+      'zoom': focus != null ? MapFocusTarget.zoom : 12,
       'channel': _viewId,
       'token': dotenv.env['MAPBOX_ACCESS_TOKEN'] ?? '',
       // ponytail: always light map for admin readability — add style toggle in Phase 3 if needed
@@ -285,8 +296,8 @@ class _WebMapViewState extends State<_WebMapView> {
   var map = new mapboxgl.Map({
     container: 'map',
     style: config.style,
-    center: [106.6297, 10.8231],
-    zoom: 12,
+    center: config.center,
+    zoom: config.zoom,
     pitch: 0,
     bearing: 0
   });

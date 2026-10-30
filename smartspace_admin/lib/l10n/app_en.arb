@@ -672,6 +672,8 @@
   "mapClusterSortHint": "Pending first, then newest",
   "mapZoomInForMore": "Zoom in to see more reports",
   "mapLoadReportsFailed": "Couldn't load reports on the map",
+  "viewOnMap": "View on map",
+  "mapFocusedReportHidden": "This report doesn't match the current map filters",
   "locationDescriptionLabel": "Location description",
   "routeWalletConfig": "Wallet Commission Config",
   "walletConfigTitle": "Wallet Commission Config",

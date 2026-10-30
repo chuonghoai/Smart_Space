@@ -7,6 +7,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:mobile_shared/features/map/cluster/cluster_map_layer.dart';
+import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:mobile_shared/util/location_service.dart';
 import 'package:smartspace_staff/features/reports/models/report_model.dart';
 import 'package:smartspace_staff/features/reports/providers/staff_map_reports_provider.dart';
@@ -23,8 +24,13 @@ import 'package:smartspace_staff/ui/shared/utils/open_in_google_maps.dart';
 ///
 /// Bấm cluster: zoom tới mức cluster tách ra; nếu không tách được nữa
 /// (trùng/sát toạ độ) thì mở danh sách việc, sắp gần nhất trước khi có GPS.
+///
+/// Có [focus] (mở từ chi tiết report) → camera mở tại report đó thay vì căn mọi việc,
+/// tải xong thì mở thẻ thông tin của nó (hoặc báo nếu nó không có trên bản đồ).
 class MapScreen extends ConsumerStatefulWidget {
-  const MapScreen({super.key});
+  final MapFocusTarget? focus;
+
+  const MapScreen({super.key, this.focus});
 
   @override
   ConsumerState<MapScreen> createState() => _MapScreenState();
@@ -43,6 +49,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   List<ReportModel> _visibleReports = const [];
   geo.Position? _userPosition;
   bool _didFitInitialCamera = false;
+  bool _didHandleFocus = false;
 
   // HCM city center
   static final _defaultCenter = Point(coordinates: Position(106.6297, 10.8231));
@@ -50,6 +57,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   @override
   void initState() {
     super.initState();
+    // Đang focus một report → giữ camera tại report, không căn lại theo mọi việc
+    _didFitInitialCamera = widget.focus != null;
     _loadUserPosition();
   }
 
@@ -123,10 +132,13 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     // Bắt tap ở mức bản đồ, layer tự query feature gốc từ source
     mapboxMap.addInteraction(TapInteraction.onMap(_onMapTap, stopPropagation: false));
 
+    final focus = widget.focus;
     await mapboxMap.setCamera(
       CameraOptions(
-        center: _defaultCenter,
-        zoom: 12.0,
+        center: focus != null
+            ? Point(coordinates: Position(focus.longitude, focus.latitude))
+            : _defaultCenter,
+        zoom: focus != null ? MapFocusTarget.zoom : 12.0,
         pitch: 0.0,
         bearing: 0.0,
       ),
@@ -145,6 +157,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   void _onStyleLoaded(StyleLoadedEventData _) async {
     await _clusterLayer?.install(_visibleReports.map(_toMarker).toList());
     _fitInitialCameraOnce();
+    _handleFocusOnce();
   }
 
   void _onMapIdle(MapIdleEventData _) {
@@ -158,6 +171,30 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     _visibleReports = ref.read(mapControllerProvider).getFilteredReports(reports);
     _clusterLayer?.setMarkers(_visibleReports.map(_toMarker).toList());
     _fitInitialCameraOnce();
+    _handleFocusOnce();
+  }
+
+  /// Lần đầu có dữ liệu → mở thẻ của report được focus, hoặc báo nó không thuộc việc đang xử lý.
+  void _handleFocusOnce() {
+    final focus = widget.focus;
+    if (focus == null || _didHandleFocus || _clusterLayer == null) return;
+    if (ref.read(staffMapReportsProvider).valueOrNull == null) return;
+    _didHandleFocus = true;
+
+    // Mở sheet sau frame hiện tại: lời gọi có thể đến từ listener của provider
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final report = _visibleReports.where((r) => r.id == focus.reportId).firstOrNull;
+      if (report != null) {
+        _showReportInfo(_withDistances([report]).single);
+        return;
+      }
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.mapFocusedReportHidden)),
+        );
+    });
   }
 
   /// Lần đầu có dữ liệu → căn camera thấy mọi việc, để staff không phải tự kéo tìm.
@@ -318,7 +355,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     // Chỉ vẽ lại khi dữ liệu hoặc filter đổi (không vẽ lại khi chọn/bỏ chọn report)
     ref.listen(staffMapReportsProvider.select((s) => s.valueOrNull), (_, _) => _syncReports());
     ref.listen(
-      mapControllerProvider.select((s) => (s.showDangerous, s.showNormal)),
+      mapControllerProvider.select((s) => (s.showDangerous, s.showNormal, s.showRehandling)),
       (_, _) => _syncReports(),
     );
     ref.listen(staffMapReportsProvider.select((s) => s.hasError), (previous, next) {
@@ -399,12 +436,16 @@ class _MapScreenState extends ConsumerState<MapScreen> {
           MapControls(
             showDangerous: mapState.showDangerous,
             showNormal: mapState.showNormal,
-            onFilterChanged: ({showDangerous, showNormal}) {
+            showRehandling: mapState.showRehandling,
+            onFilterChanged: ({showDangerous, showNormal, showRehandling}) {
               if (showDangerous != null) {
                 ref.read(mapControllerProvider.notifier).toggleDangerous();
               }
               if (showNormal != null) {
                 ref.read(mapControllerProvider.notifier).toggleNormal();
+              }
+              if (showRehandling != null) {
+                ref.read(mapControllerProvider.notifier).toggleRehandling();
               }
             },
             onMyLocationPressed: _flyToUserLocation,

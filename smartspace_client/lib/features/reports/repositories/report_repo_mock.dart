@@ -1,5 +1,6 @@
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
+import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
 import 'package:smartspace_client/features/reports/models/map_reports_result.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
@@ -82,7 +83,11 @@ class ReportRepoMock implements ReportRepo {
   }
 
   @override
-  Future<ApiResponse<MapReportsResult>> getReportsInBounds(MapBounds bounds, {int limit = 300}) async {
+  Future<ApiResponse<MapReportsResult>> getReportsInBounds(
+    MapBounds bounds, {
+    MapReportFilter filter = MapReportFilter.all,
+    int limit = 300,
+  }) async {
     await Future.delayed(const Duration(milliseconds: 500));
     final now = DateTime.now();
     // Nhóm 4 report cùng toạ độ để kiểm tra luồng "không tách được → mở danh sách"
@@ -119,6 +124,13 @@ class ReportRepoMock implements ReportRepo {
             r.latitude <= bounds.maxLat &&
             r.longitude >= bounds.minLng &&
             r.longitude <= bounds.maxLng)
+        // Mock không có người dùng hiện tại → chỉ mô phỏng phần lọc theo trạng thái
+        .where((r) => switch (filter) {
+              MapReportFilter.pending => r.status == ReportStatus.pending,
+              MapReportFilter.processing => r.status == ReportStatus.processing,
+              MapReportFilter.processed => r.status == ReportStatus.processed,
+              MapReportFilter.all || MapReportFilter.mine => true,
+            })
         .toList();
 
     return ApiResponse(

@@ -27,7 +27,7 @@ $TestRegistry = @{
     }
     "MapReports" = @{
         TestClass   = "com.vn.smart_space.controller.report.MapReportsTest"
-        Description = "Ban do Client theo khung nhin: 401/400, chi tra report trong khung, loai rejected, limit + truncated"
+        Description = "Ban do Client theo khung nhin: 401/400, chi tra report trong khung, loai rejected, limit + truncated, filter all|mine|pending|processing|processed (da xu ly chi chinh chu thay)"
     }
     "StaffAssignedMap" = @{
         TestClass   = "com.vn.smart_space.controller.staff.StaffAssignedMapTest"

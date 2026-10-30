@@ -84,9 +84,15 @@ public class MapReportsTest {
 
     private HttpResponse<String> getMap(String token, double minLat, double maxLat, double minLng, double maxLng,
             Integer limit) throws Exception {
+        return getMap(token, minLat, maxLat, minLng, maxLng, limit, null);
+    }
+
+    private HttpResponse<String> getMap(String token, double minLat, double maxLat, double minLng, double maxLng,
+            Integer limit, String filter) throws Exception {
         String query = String.format(Locale.US, "min_lat=%f&max_lat=%f&min_lng=%f&max_lng=%f",
                 minLat, maxLat, minLng, maxLng);
         if (limit != null) query += "&limit=" + limit;
+        if (filter != null) query += "&filter=" + filter;
 
         HttpRequest.Builder builder = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/reports/map?" + query))
@@ -115,6 +121,42 @@ public class MapReportsTest {
         HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         assertEquals(200, response.statusCode(), "Tạo report phải trả về 200 OK: " + response.body());
         return mapper.readTree(response.body()).path("data").path("id").asText();
+    }
+
+    /** Khung nhỏ quanh một điểm, lọc theo [filter] (null = không gửi param). */
+    private JsonNode mapAround(String token, double[] point, String filter) throws Exception {
+        HttpResponse<String> response = getMap(token,
+                point[0] - 0.0005, point[0] + 0.0005, point[1] - 0.0005, point[1] + 0.0005, null, filter);
+        assertEquals(200, response.statusCode(), "filter=" + filter + " phải trả về 200: " + response.body());
+        return mapper.readTree(response.body()).path("data").path("reports");
+    }
+
+    private void sendOk(HttpRequest request, String step) throws Exception {
+        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        assertEquals(200, response.statusCode(), step + " phải thành công: " + response.body());
+    }
+
+    /** Admin phân công cho staff u5 → processing. */
+    private void assignToStaff(String reportId) throws Exception {
+        String adminToken = generateToken("admin@gmail.com", "u1", "ROLE_admin");
+        sendOk(HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/admin/reports/" + reportId + "/assign"))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + adminToken)
+                .POST(HttpRequest.BodyPublishers.ofString("{\"staffId\": \"u5\", \"severity\": \"low\"}"))
+                .build(), "Admin phân công report");
+    }
+
+    /** Staff u5 hoàn tất → processed. */
+    private void completeByStaff(String reportId) throws Exception {
+        String staffToken = generateToken("staff@gmail.com", "u5", "ROLE_staff");
+        sendOk(HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/reports/" + reportId + "/complete"))
+                .header("Content-Type", "application/json")
+                .header("Authorization", "Bearer " + staffToken)
+                .POST(HttpRequest.BodyPublishers.ofString(
+                        "{\"note\": \"MapReportsTest hoàn tất\", \"image_urls\": []}", StandardCharsets.UTF_8))
+                .build(), "Staff hoàn tất report");
     }
 
     private boolean containsReport(JsonNode reports, String reportId) {
@@ -208,5 +250,60 @@ public class MapReportsTest {
         JsonNode data = mapper.readTree(response.body()).path("data");
         assertEquals(1, data.path("reports").size(), "Chỉ trả về đúng limit report");
         assertTrue(data.path("truncated").asBoolean(), "Có nhiều report hơn limit → truncated phải là true");
+    }
+
+    @Test
+    @DisplayName("filter không hợp lệ → 400")
+    void testMapReports_InvalidFilter() throws Exception {
+        String token = generateToken("user@gmail.com", "u2", "client");
+        HttpResponse<String> response = getMap(token, 10.7, 10.9, 106.6, 106.8, null, "rejected");
+        assertEquals(400, response.statusCode(), "filter ngoài all|mine|pending|processing|processed phải trả về 400");
+    }
+
+    @Test
+    @DisplayName("Đang chờ / đang xử lý thấy của mọi người, mine chỉ thấy của tôi")
+    void testMapReports_StatusAndMineFilters() throws Exception {
+        String ownerToken = generateToken("user@gmail.com", "u2", "client");
+        // Người xem khác: /reports/map chỉ đọc userId từ JWT
+        String otherToken = generateToken("other-viewer@gmail.com", "map-test-" + UUID.randomUUID(), "client");
+
+        double[] point = randomPoint();
+        String reportId = createReport(ownerToken, point[0], point[1]);
+
+        assertTrue(containsReport(mapAround(otherToken, point, "pending"), reportId),
+                "Report đang chờ của người khác phải hiện ở filter=pending");
+        assertFalse(containsReport(mapAround(otherToken, point, "processing"), reportId),
+                "Report đang chờ không được hiện ở filter=processing");
+        assertTrue(containsReport(mapAround(ownerToken, point, "mine"), reportId),
+                "Report của tôi phải hiện ở filter=mine");
+        assertFalse(containsReport(mapAround(otherToken, point, "mine"), reportId),
+                "Report của người khác không được hiện ở filter=mine");
+
+        assignToStaff(reportId);
+        assertTrue(containsReport(mapAround(otherToken, point, "processing"), reportId),
+                "Report đang xử lý của người khác phải hiện ở filter=processing");
+        assertFalse(containsReport(mapAround(otherToken, point, "pending"), reportId),
+                "Report đang xử lý không được hiện ở filter=pending");
+    }
+
+    @Test
+    @DisplayName("Report đã xử lý chỉ hiện cho chính chủ (all, mine, processed)")
+    void testMapReports_ProcessedOnlyForOwner() throws Exception {
+        String ownerToken = generateToken("user@gmail.com", "u2", "client");
+        String otherToken = generateToken("other-viewer@gmail.com", "map-test-" + UUID.randomUUID(), "client");
+
+        double[] point = randomPoint();
+        String reportId = createReport(ownerToken, point[0], point[1]);
+        assignToStaff(reportId);
+        completeByStaff(reportId);
+
+        for (String filter : new String[] { null, "all", "mine", "processed" }) {
+            assertTrue(containsReport(mapAround(ownerToken, point, filter), reportId),
+                    "Chủ report phải thấy report đã xử lý ở filter=" + filter);
+        }
+        for (String filter : new String[] { null, "all", "processed", "processing" }) {
+            assertFalse(containsReport(mapAround(otherToken, point, filter), reportId),
+                    "Người khác không được thấy report đã xử lý ở filter=" + filter);
+        }
     }
 }
