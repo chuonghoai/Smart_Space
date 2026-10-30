@@ -105,6 +105,8 @@ class FirebaseService {
   static Future<String?> getAndRegisterToken() async {
     try {
       if (kIsWeb) {
+        // Web cần xin quyền Notification trước khi lấy token
+        await requestPermission();
         // Web cần VAPID key từ Firebase Console -> Cloud Messaging -> Web Push certificates
         _currentFcmToken = await _messaging.getToken(
           vapidKey:

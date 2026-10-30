@@ -72,6 +72,21 @@
   "forgotPasswordTitle": "Quên mật khẩu",
   "forgotPasswordSubtitle": "Nhập email của bạn để nhận mã OTP",
   "pleaseEnterConfirmPassword": "Vui lòng xác nhận mật khẩu",
+  "backToLogin": "Quay lại đăng nhập",
+  "adminPortalBadge": "Cổng Quản Trị & Điều Hành Đô Thị",
+  "adminPortalSubtitle": "Hệ thống quản trị tập trung hạ tầng đô thị, giám sát phản ánh và điều phối hoạt động cộng đồng.",
+  "adminFeatureRealtime": "Giám sát thời gian thực",
+  "adminFeatureRealtimeDesc": "Theo dõi trực tiếp sự cố đô thị, cảnh báo và phản hồi từ người dân.",
+  "adminFeatureCoordination": "Điều phối xử lý sự cố",
+  "adminFeatureCoordinationDesc": "Phân công nhiệm vụ và giám sát tiến độ xử lý của nhân viên vận hành.",
+  "adminFeatureSecurity": "Bảo mật & Phân quyền",
+  "adminFeatureSecurityDesc": "Kiểm soát phân quyền theo vai trò và bảo vệ phiên làm việc an toàn.",
+  "forgotPasswordHeroTitle": "Khôi Phục Bảo Mật Tài Khoản",
+  "forgotPasswordHeroSubtitle": "Quy trình xác thực hai bước bảo mật để khôi phục quyền truy cập quản trị.",
+  "stepEmailVerification": "1. Yêu cầu mã xác thực gửi về email đã đăng ký",
+  "stepPasswordReset": "2. Xác thực mã OTP và thiết lập mật khẩu mới an toàn",
+  "forgotPasswordHelpNote": "Nếu không còn quyền truy cập email này, vui lòng liên hệ quản trị viên cấp cao.",
+  "systemSecureNotice": "Môi trường quản trị bảo mật SmartSpace",
   "search": "Tìm kiếm",
   "createReport": "Tạo phản ánh",
   "subTitleCreateReport": "Báo cáo vấn đề an ninh, môi trường",
@@ -779,7 +794,7 @@
   "penaltyRateConfigSummary": "Tỷ lệ phạt 3 lần: Lần 1, Lần 2, Lần 3",
   "saveCommissionSuccess": "Cập nhật cấu hình hoa hồng thành công!",
   "savePenaltyRateSuccess": "Cập nhật tỷ lệ trừ hoa hồng thành công!",
-"copied": "Đã sao chép",
+  "copied": "Đã sao chép",
   "homePendingWithdrawalBanner": "Có {count} yêu cầu rút tiền",
   "@homePendingWithdrawalBanner": {
     "placeholders": {
@@ -789,5 +804,10 @@
     }
   },
   "homePendingWithdrawalSubtitle": "Nhấn để xem và duyệt các yêu cầu rút tiền",
-  "statusCancelled": "Đã hủy"
+  "statusCancelled": "Đã hủy",
+  "connectionStable": "Kết nối ổn định",
+  "connectionConnecting": "Đang thiết lập kết nối...",
+  "connectionDisconnected": "Mất kết nối. Bấm để thử lại.",
+  "scrollLeft": "Cuộn sang trái",
+  "scrollRight": "Cuộn sang phải"
 }

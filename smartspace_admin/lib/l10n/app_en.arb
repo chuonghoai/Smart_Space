@@ -72,6 +72,21 @@
   "forgotPasswordTitle": "Forgot Password",
   "forgotPasswordSubtitle": "Enter your email to receive an OTP",
   "pleaseEnterConfirmPassword": "Please enter confirm password",
+  "backToLogin": "Back to Login",
+  "adminPortalBadge": "Civic Management & Operations",
+  "adminPortalSubtitle": "Centralized administration for municipal infrastructure, public reports, and community operations.",
+  "adminFeatureRealtime": "Real-time Monitoring",
+  "adminFeatureRealtimeDesc": "Live tracking of municipal incidents, sensor alerts, and citizen feedback.",
+  "adminFeatureCoordination": "Rapid Incident Response",
+  "adminFeatureCoordinationDesc": "Seamless task assignment and progress auditing across operational staff.",
+  "adminFeatureSecurity": "Enterprise Access Control",
+  "adminFeatureSecurityDesc": "Role-based authorization and encrypted administrative session management.",
+  "forgotPasswordHeroTitle": "Account Security Recovery",
+  "forgotPasswordHeroSubtitle": "Secure two-step verification to restore your administrative credentials.",
+  "stepEmailVerification": "1. Request verification code via registered email",
+  "stepPasswordReset": "2. Verify OTP and establish a new secure password",
+  "forgotPasswordHelpNote": "If you no longer have access to this email, contact system administrator.",
+  "systemSecureNotice": "SmartSpace Protected Administrative Environment",
   "search": "Search",
   "createReport": "Create report",
   "subTitleCreateReport": "Report security and environmental issues",
@@ -779,7 +794,7 @@
   "penaltyRateConfigSummary": "3-turn penalty: Turn 1, Turn 2, Turn 3",
   "saveCommissionSuccess": "Commission configuration updated successfully!",
   "savePenaltyRateSuccess": "Penalty deduction rate updated successfully!",
-"copied": "Copied",
+  "copied": "Copied",
   "homePendingWithdrawalBanner": "There are {count} withdrawal requests",
   "@homePendingWithdrawalBanner": {
     "placeholders": {
@@ -789,5 +804,10 @@
     }
   },
   "homePendingWithdrawalSubtitle": "Tap to review pending withdrawal requests",
-  "statusCancelled": "Cancelled"
+  "statusCancelled": "Cancelled",
+  "connectionStable": "Stable connection",
+  "connectionConnecting": "Connecting services...",
+  "connectionDisconnected": "Connection lost. Click to reconnect.",
+  "scrollLeft": "Scroll left",
+  "scrollRight": "Scroll right"
 }
