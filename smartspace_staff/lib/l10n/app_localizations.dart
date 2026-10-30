@@ -1610,6 +1610,18 @@ abstract class AppLocalizations {
   /// **'This report isn\'t one of your tasks in progress, so it isn\'t shown on the map'**
   String get mapFocusedReportHidden;
 
+  /// No description provided for @mapGetDirections.
+  ///
+  /// In en, this message translates to:
+  /// **'Directions'**
+  String get mapGetDirections;
+
+  /// No description provided for @mapNoTasksForFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'No tasks match the current filters'**
+  String get mapNoTasksForFilter;
+
   /// No description provided for @locationSection.
   ///
   /// In en, this message translates to:

@@ -170,7 +170,7 @@ class ReportInfoSheet extends StatelessWidget {
                       child: OutlinedButton.icon(
                         onPressed: onOpenInMaps,
                         icon: const Icon(Icons.directions_outlined, size: 20),
-                        label: Text(l10n.openInGoogleMaps, maxLines: 1, overflow: TextOverflow.ellipsis),
+                        label: Text(l10n.mapGetDirections, maxLines: 1, overflow: TextOverflow.ellipsis),
                         style: OutlinedButton.styleFrom(minimumSize: const Size.fromHeight(48)),
                       ),
                     ),

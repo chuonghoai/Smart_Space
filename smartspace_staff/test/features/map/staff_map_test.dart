@@ -9,6 +9,7 @@ import 'package:smartspace_staff/features/reports/repositories/report_repo.dart'
 import 'package:smartspace_staff/features/reports/services/report_service.dart';
 import 'package:smartspace_staff/ui/mobile/map/map_cluster_sheet.dart';
 import 'package:smartspace_staff/ui/mobile/map/map_controller.dart';
+import 'package:smartspace_staff/ui/shared/utils/open_in_google_maps.dart';
 
 /// Repo giả: ghi lại tham số và trả response theo hàng đợi.
 class _FakeReportRepo implements ReportRepo {
@@ -91,18 +92,52 @@ void main() {
         ['normal', 'unrated']);
   });
 
-  test('MapState.getFilteredReports: tắt Xử lý lại → ẩn mọi việc xử lý lại, bất kể mức độ', () {
+  group('MapState.getFilteredReports theo chip trạng thái', () {
     final reports = [
       _report('danger', severity: ReportSeverity.high),
       _report('danger-rehandling', severity: ReportSeverity.critical, isReviewResolved: false),
       _report('normal-rehandling', severity: ReportSeverity.low, isReviewResolved: false),
       _report('normal', severity: ReportSeverity.low),
     ];
-    expect(const MapState(showRehandling: false).getFilteredReports(reports).map((r) => r.id),
-        ['danger', 'normal']);
-    // Việc xử lý lại vẫn phải qua bộ lọc mức độ
-    expect(const MapState(showDangerous: false).getFilteredReports(reports).map((r) => r.id),
-        ['normal-rehandling', 'normal']);
+
+    List<String> ids(MapState state) => state.getFilteredReports(reports).map((r) => r.id).toList();
+
+    test('mặc định Tất cả: mọi việc đang xử lý, kể cả xử lý lại', () {
+      expect(const MapState().statusFilter, StaffMapStatusFilter.all);
+      expect(ids(const MapState()), ['danger', 'danger-rehandling', 'normal-rehandling', 'normal']);
+    });
+
+    test('Đang xử lý: bỏ việc cần xử lý lại', () {
+      expect(ids(const MapState(statusFilter: StaffMapStatusFilter.processing)), ['danger', 'normal']);
+    });
+
+    test('Xử lý lại: chỉ việc bị đánh giá chưa thoả đáng', () {
+      expect(ids(const MapState(statusFilter: StaffMapStatusFilter.rehandling)),
+          ['danger-rehandling', 'normal-rehandling']);
+    });
+
+    test('chip trạng thái kết hợp với nút mức độ', () {
+      expect(
+        ids(const MapState(statusFilter: StaffMapStatusFilter.rehandling, showDangerous: false)),
+        ['normal-rehandling'],
+      );
+    });
+
+    test('MapController.setStatusFilter giữ nguyên nút mức độ', () {
+      final controller = MapController()..toggleDangerous();
+      controller.setStatusFilter(StaffMapStatusFilter.rehandling);
+      expect(controller.state.statusFilter, StaffMapStatusFilter.rehandling);
+      expect(controller.state.showDangerous, isFalse);
+      controller.dispose();
+    });
+  });
+
+  test('googleMapsDirectionsUri: URL chỉ đường chính thức tới toạ độ report', () {
+    final uri = googleMapsDirectionsUri(10.8231, 106.6297);
+    expect(uri.scheme, 'https');
+    expect(uri.host, 'www.google.com');
+    expect(uri.path, '/maps/dir/');
+    expect(uri.queryParameters, {'api': '1', 'destination': '10.8231,106.6297'});
   });
 
   group('MapClusterSheet.sortForCluster', () {

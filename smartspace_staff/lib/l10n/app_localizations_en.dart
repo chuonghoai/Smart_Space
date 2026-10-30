@@ -808,6 +808,12 @@ class AppLocalizationsEn extends AppLocalizations {
       'This report isn\'t one of your tasks in progress, so it isn\'t shown on the map';
 
   @override
+  String get mapGetDirections => 'Directions';
+
+  @override
+  String get mapNoTasksForFilter => 'No tasks match the current filters';
+
+  @override
   String get locationSection => 'Incident Location';
 
   @override
