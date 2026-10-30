@@ -530,6 +530,96 @@ abstract class AppLocalizations {
   /// **'Please enter confirm password'**
   String get pleaseEnterConfirmPassword;
 
+  /// No description provided for @backToLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Login'**
+  String get backToLogin;
+
+  /// No description provided for @adminPortalBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Civic Management & Operations'**
+  String get adminPortalBadge;
+
+  /// No description provided for @adminPortalSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Centralized administration for municipal infrastructure, public reports, and community operations.'**
+  String get adminPortalSubtitle;
+
+  /// No description provided for @adminFeatureRealtime.
+  ///
+  /// In en, this message translates to:
+  /// **'Real-time Monitoring'**
+  String get adminFeatureRealtime;
+
+  /// No description provided for @adminFeatureRealtimeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Live tracking of municipal incidents, sensor alerts, and citizen feedback.'**
+  String get adminFeatureRealtimeDesc;
+
+  /// No description provided for @adminFeatureCoordination.
+  ///
+  /// In en, this message translates to:
+  /// **'Rapid Incident Response'**
+  String get adminFeatureCoordination;
+
+  /// No description provided for @adminFeatureCoordinationDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Seamless task assignment and progress auditing across operational staff.'**
+  String get adminFeatureCoordinationDesc;
+
+  /// No description provided for @adminFeatureSecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'Enterprise Access Control'**
+  String get adminFeatureSecurity;
+
+  /// No description provided for @adminFeatureSecurityDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Role-based authorization and encrypted administrative session management.'**
+  String get adminFeatureSecurityDesc;
+
+  /// No description provided for @forgotPasswordHeroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Security Recovery'**
+  String get forgotPasswordHeroTitle;
+
+  /// No description provided for @forgotPasswordHeroSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure two-step verification to restore your administrative credentials.'**
+  String get forgotPasswordHeroSubtitle;
+
+  /// No description provided for @stepEmailVerification.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Request verification code via registered email'**
+  String get stepEmailVerification;
+
+  /// No description provided for @stepPasswordReset.
+  ///
+  /// In en, this message translates to:
+  /// **'2. Verify OTP and establish a new secure password'**
+  String get stepPasswordReset;
+
+  /// No description provided for @forgotPasswordHelpNote.
+  ///
+  /// In en, this message translates to:
+  /// **'If you no longer have access to this email, contact system administrator.'**
+  String get forgotPasswordHelpNote;
+
+  /// No description provided for @systemSecureNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'SmartSpace Protected Administrative Environment'**
+  String get systemSecureNotice;
+
   /// No description provided for @search.
   ///
   /// In en, this message translates to:

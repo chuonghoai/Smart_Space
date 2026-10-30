@@ -226,6 +226,60 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseEnterConfirmPassword => 'Please enter confirm password';
 
   @override
+  String get backToLogin => 'Back to Login';
+
+  @override
+  String get adminPortalBadge => 'Civic Management & Operations';
+
+  @override
+  String get adminPortalSubtitle =>
+      'Centralized administration for municipal infrastructure, public reports, and community operations.';
+
+  @override
+  String get adminFeatureRealtime => 'Real-time Monitoring';
+
+  @override
+  String get adminFeatureRealtimeDesc =>
+      'Live tracking of municipal incidents, sensor alerts, and citizen feedback.';
+
+  @override
+  String get adminFeatureCoordination => 'Rapid Incident Response';
+
+  @override
+  String get adminFeatureCoordinationDesc =>
+      'Seamless task assignment and progress auditing across operational staff.';
+
+  @override
+  String get adminFeatureSecurity => 'Enterprise Access Control';
+
+  @override
+  String get adminFeatureSecurityDesc =>
+      'Role-based authorization and encrypted administrative session management.';
+
+  @override
+  String get forgotPasswordHeroTitle => 'Account Security Recovery';
+
+  @override
+  String get forgotPasswordHeroSubtitle =>
+      'Secure two-step verification to restore your administrative credentials.';
+
+  @override
+  String get stepEmailVerification =>
+      '1. Request verification code via registered email';
+
+  @override
+  String get stepPasswordReset =>
+      '2. Verify OTP and establish a new secure password';
+
+  @override
+  String get forgotPasswordHelpNote =>
+      'If you no longer have access to this email, contact system administrator.';
+
+  @override
+  String get systemSecureNotice =>
+      'SmartSpace Protected Administrative Environment';
+
+  @override
   String get search => 'Search';
 
   @override
