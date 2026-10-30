@@ -307,6 +307,8 @@
   "mapLoadReportsFailed": "Couldn't load tasks on the map",
   "viewOnMap": "View on map",
   "mapFocusedReportHidden": "This report isn't one of your tasks in progress, so it isn't shown on the map",
+  "mapGetDirections": "Directions",
+  "mapNoTasksForFilter": "No tasks match the current filters",
   "locationSection": "Incident Location",
   "noAddress": "No address provided",
   "locationDescriptionLabel": "Location description",

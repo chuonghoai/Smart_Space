@@ -8,11 +8,13 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:mobile_shared/features/map/cluster/cluster_map_layer.dart';
 import 'package:mobile_shared/features/map/models/map_focus_target.dart';
+import 'package:mobile_shared/features/map/widgets/map_filter_chip_bar.dart';
 import 'package:mobile_shared/util/location_service.dart';
 import 'package:smartspace_staff/features/reports/models/report_model.dart';
 import 'package:smartspace_staff/features/reports/providers/staff_map_reports_provider.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
+import 'package:smartspace_staff/ui/mobile/map/map_app_bar.dart';
 import 'package:smartspace_staff/ui/mobile/map/map_cluster_sheet.dart';
 import 'package:smartspace_staff/ui/mobile/map/map_controller.dart';
 import 'package:smartspace_staff/ui/mobile/map/map_controls.dart';
@@ -21,6 +23,7 @@ import 'package:smartspace_staff/ui/mobile/map/report_info_sheet.dart';
 import 'package:smartspace_staff/ui/shared/utils/open_in_google_maps.dart';
 
 /// Mobile Map Screen for Staff — mọi việc đang xử lý, gom cụm (cluster).
+/// Lọc tại máy theo chip trạng thái (Tất cả / Đang xử lý / Xử lý lại) và nút mức độ.
 ///
 /// Bấm cluster: zoom tới mức cluster tách ra; nếu không tách được nữa
 /// (trùng/sát toạ độ) thì mở danh sách việc, sắp gần nhất trước khi có GPS.
@@ -287,7 +290,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       isScrollControlled: true,
       builder: (sheetContext) => ReportInfoSheet(
         report: report,
-        onOpenInMaps: () => openInGoogleMaps(context, report.latitude, report.longitude),
+        onOpenInMaps: () => openGoogleMapsDirections(context, report.latitude, report.longitude),
         onViewDetail: () {
           Navigator.of(sheetContext).pop();
           _openReportDetail(report);
@@ -305,7 +308,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       backgroundColor: Colors.transparent,
       builder: (sheetContext) => MapClusterSheet(
         reports: reports,
-        onOpenInMaps: (report) => openInGoogleMaps(context, report.latitude, report.longitude),
+        onOpenInMaps: (report) => openGoogleMapsDirections(context, report.latitude, report.longitude),
         onReportTap: (report) {
           Navigator.of(sheetContext).pop();
           _openReportDetail(report);
@@ -347,7 +350,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final cs = Theme.of(context).colorScheme;
     final mapState = ref.watch(mapControllerProvider);
     final reportsAsync = ref.watch(staffMapReportsProvider);
     final data = reportsAsync.valueOrNull;
@@ -355,9 +357,14 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     // Chỉ vẽ lại khi dữ liệu hoặc filter đổi (không vẽ lại khi chọn/bỏ chọn report)
     ref.listen(staffMapReportsProvider.select((s) => s.valueOrNull), (_, _) => _syncReports());
     ref.listen(
-      mapControllerProvider.select((s) => (s.showDangerous, s.showNormal, s.showRehandling)),
+      mapControllerProvider.select((s) => (s.showDangerous, s.showNormal)),
       (_, _) => _syncReports(),
     );
+    // Đổi chip trạng thái → căn camera lại cho thấy hết việc của nhóm mới
+    ref.listen(mapControllerProvider.select((s) => s.statusFilter), (_, _) {
+      _syncReports();
+      _showAllTasks();
+    });
     ref.listen(staffMapReportsProvider.select((s) => s.hasError), (previous, next) {
       if (!next || previous == true) return;
       ScaffoldMessenger.of(context)
@@ -379,35 +386,15 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         l10n.mapShowingFirstTasks(StaffMapReportsNotifier.limit),
       StaffMapReports(:final reports) when reports.isEmpty && !reportsAsync.isLoading =>
         l10n.mapNoActiveTasks,
+      // Có việc nhưng chip/nút mức độ đang ẩn hết → nói rõ để staff không tưởng là hết việc
+      StaffMapReports(:final reports) when mapState.getFilteredReports(reports).isEmpty =>
+        l10n.mapNoTasksForFilter,
       _ => null,
     };
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: IconThemeData(color: cs.onSurface),
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            decoration: BoxDecoration(
-              color: cs.surface.withValues(alpha: 0.9),
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: cs.shadow.withValues(alpha: 0.1),
-                  blurRadius: 8,
-                ),
-              ],
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ),
-        ),
-      ),
+      appBar: const MapAppBar(),
       body: Stack(
         children: [
           MapWidget(
@@ -433,19 +420,35 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               child: Center(child: _MapHint(label: hint)),
             ),
 
+          // Cùng hàng với nút back (56dp) và chừa cột nút điều khiển bên phải (12 lề + 48 nút + 8)
+          Positioned(
+            top: topInset + 4,
+            left: 56,
+            right: 68,
+            child: MapFilterChipBar<StaffMapStatusFilter>(
+              options: [
+                MapFilterChipOption(value: StaffMapStatusFilter.all, label: l10n.filterAll),
+                MapFilterChipOption(
+                  value: StaffMapStatusFilter.processing,
+                  label: l10n.reportStatusProcessing,
+                ),
+                MapFilterChipOption(value: StaffMapStatusFilter.rehandling, label: l10n.rehandling),
+              ],
+              selected: mapState.statusFilter,
+              onSelected: (filter) =>
+                  ref.read(mapControllerProvider.notifier).setStatusFilter(filter),
+            ),
+          ),
+
           MapControls(
             showDangerous: mapState.showDangerous,
             showNormal: mapState.showNormal,
-            showRehandling: mapState.showRehandling,
-            onFilterChanged: ({showDangerous, showNormal, showRehandling}) {
+            onFilterChanged: ({showDangerous, showNormal}) {
               if (showDangerous != null) {
                 ref.read(mapControllerProvider.notifier).toggleDangerous();
               }
               if (showNormal != null) {
                 ref.read(mapControllerProvider.notifier).toggleNormal();
-              }
-              if (showRehandling != null) {
-                ref.read(mapControllerProvider.notifier).toggleRehandling();
               }
             },
             onMyLocationPressed: _flyToUserLocation,

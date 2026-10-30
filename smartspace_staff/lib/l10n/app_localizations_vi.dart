@@ -795,6 +795,12 @@ class AppLocalizationsVi extends AppLocalizations {
       'Phản ánh này không thuộc việc đang xử lý của bạn nên không hiện trên bản đồ';
 
   @override
+  String get mapGetDirections => 'Chỉ đường';
+
+  @override
+  String get mapNoTasksForFilter => 'Không có việc nào khớp bộ lọc';
+
+  @override
   String get locationSection => 'Vị trí sự cố';
 
   @override
