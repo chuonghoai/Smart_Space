@@ -792,7 +792,7 @@
   "penaltyRateConfigSummary": "3-turn penalty: Turn 1, Turn 2, Turn 3",
   "saveCommissionSuccess": "Commission configuration updated successfully!",
   "savePenaltyRateSuccess": "Penalty deduction rate updated successfully!",
-"copied": "Copied",
+  "copied": "Copied",
   "homePendingWithdrawalBanner": "There are {count} withdrawal requests",
   "@homePendingWithdrawalBanner": {
     "placeholders": {
@@ -802,5 +802,10 @@
     }
   },
   "homePendingWithdrawalSubtitle": "Tap to review pending withdrawal requests",
-  "statusCancelled": "Cancelled"
+  "statusCancelled": "Cancelled",
+  "connectionStable": "Stable connection",
+  "connectionConnecting": "Connecting services...",
+  "connectionDisconnected": "Connection lost. Click to reconnect.",
+  "scrollLeft": "Scroll left",
+  "scrollRight": "Scroll right"
 }

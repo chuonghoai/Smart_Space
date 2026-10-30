@@ -34,9 +34,11 @@ class _AppLayoutState extends State<AppLayout>
   @override
   Widget build(BuildContext context) {
     // Mobile → Drawer layout giữ nguyên
-    if (!kIsWeb) {
+    final isDesktop = MediaQuery.of(context).size.width >= 850;
+    // Mobile hoặc Web thu nhỏ khung hình (< 850px) → Drawer layout giữ nguyên như Mobile
+    if (!kIsWeb || !isDesktop) {
       return Scaffold(
-        appBar: widget.customAppBar ?? const TopBar(),
+        appBar: widget.customAppBar ?? const TopBar(showMenuButton: true),
         drawer: widget.showDrawer ? const Sidebar() : null,
         floatingActionButton: widget.floatingActionButton,
         body: widget.child,

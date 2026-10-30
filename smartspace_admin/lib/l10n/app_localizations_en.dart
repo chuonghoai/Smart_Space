@@ -1826,4 +1826,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statusCancelled => 'Cancelled';
+
+  @override
+  String get connectionStable => 'Stable connection';
+
+  @override
+  String get connectionConnecting => 'Connecting services...';
+
+  @override
+  String get connectionDisconnected => 'Connection lost. Click to reconnect.';
+
+  @override
+  String get scrollLeft => 'Scroll left';
+
+  @override
+  String get scrollRight => 'Scroll right';
 }

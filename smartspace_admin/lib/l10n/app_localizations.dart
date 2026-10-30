@@ -3523,6 +3523,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cancelled'**
   String get statusCancelled;
+
+  /// No description provided for @connectionStable.
+  ///
+  /// In en, this message translates to:
+  /// **'Stable connection'**
+  String get connectionStable;
+
+  /// No description provided for @connectionConnecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting services...'**
+  String get connectionConnecting;
+
+  /// No description provided for @connectionDisconnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection lost. Click to reconnect.'**
+  String get connectionDisconnected;
+
+  /// No description provided for @scrollLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll left'**
+  String get scrollLeft;
+
+  /// No description provided for @scrollRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll right'**
+  String get scrollRight;
 }
 
 class _AppLocalizationsDelegate

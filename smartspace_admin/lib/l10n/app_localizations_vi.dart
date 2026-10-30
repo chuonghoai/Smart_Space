@@ -1817,4 +1817,19 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get statusCancelled => 'Đã hủy';
+
+  @override
+  String get connectionStable => 'Kết nối ổn định';
+
+  @override
+  String get connectionConnecting => 'Đang thiết lập kết nối...';
+
+  @override
+  String get connectionDisconnected => 'Mất kết nối. Bấm để thử lại.';
+
+  @override
+  String get scrollLeft => 'Cuộn sang trái';
+
+  @override
+  String get scrollRight => 'Cuộn sang phải';
 }

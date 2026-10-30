@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:math';
 import 'package:flutter/foundation.dart';
+import 'package:mobile_shared/core/auth/token_storage.dart';
 import 'package:mobile_shared/core/connection/connection_state_provider.dart';
 import 'package:mobile_shared/core/notification/firebase_service.dart';
 import 'package:mobile_shared/core/websocket/websocket_service.dart';
@@ -16,6 +17,8 @@ class ConnectionManagerService {
   final int _maxBackoffSeconds = 30;
   
   bool _isFcmConnected = false;
+  bool get isFcmConnected => _isFcmConnected;
+  bool get isWebSocketConnected => webSocketService.isConnected;
 
   void startConnections() {
     _isUserLoggedIn = true;
@@ -98,10 +101,22 @@ class ConnectionManagerService {
     connectionStateProvider.setDisconnected();
   }
 
-  void resumeConnections() {
-    if (_isUserLoggedIn && !_isRunning) {
+  Future<void> resumeConnections() async {
+    if (_isRunning) return;
+    if (_isUserLoggedIn) {
       debugPrint('[ConnectionManager] Resuming connections (Foreground)');
       startConnections();
+      return;
+    }
+    // Khi reload trang Web, kiểm tra token trong storage để tự động kết nối lại
+    try {
+      final token = await TokenStorage.getAccessToken();
+      if (token != null && token.isNotEmpty) {
+        debugPrint('[ConnectionManager] User token found in storage, resuming connections');
+        startConnections();
+      }
+    } catch (e) {
+      debugPrint('[ConnectionManager] TokenStorage not ready: $e');
     }
   }
 

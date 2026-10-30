@@ -792,7 +792,7 @@
   "penaltyRateConfigSummary": "Tỷ lệ phạt 3 lần: Lần 1, Lần 2, Lần 3",
   "saveCommissionSuccess": "Cập nhật cấu hình hoa hồng thành công!",
   "savePenaltyRateSuccess": "Cập nhật tỷ lệ trừ hoa hồng thành công!",
-"copied": "Đã sao chép",
+  "copied": "Đã sao chép",
   "homePendingWithdrawalBanner": "Có {count} yêu cầu rút tiền",
   "@homePendingWithdrawalBanner": {
     "placeholders": {
@@ -802,5 +802,10 @@
     }
   },
   "homePendingWithdrawalSubtitle": "Nhấn để xem và duyệt các yêu cầu rút tiền",
-  "statusCancelled": "Đã hủy"
+  "statusCancelled": "Đã hủy",
+  "connectionStable": "Kết nối ổn định",
+  "connectionConnecting": "Đang thiết lập kết nối...",
+  "connectionDisconnected": "Mất kết nối. Bấm để thử lại.",
+  "scrollLeft": "Cuộn sang trái",
+  "scrollRight": "Cuộn sang phải"
 }
