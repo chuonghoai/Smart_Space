@@ -15,6 +15,7 @@ import 'package:smartspace_admin/features/reports/models/staff_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/layout/app_layout.dart';
 import 'package:smartspace_admin/ui/screen/news/admin_news_list_screen.dart';
+import 'package:smartspace_admin/ui/screen/notifications/admin_notification_screen.dart';
 import 'package:smartspace_admin/ui/screen/reports/admin_report_detail_screen.dart';
 import 'package:smartspace_admin/ui/screen/search/search_screen.dart';
 
@@ -216,6 +217,23 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.text('Báo cáo sự cố rò rỉ nước tại khu vực nhà vệ sinh tầng 3'), findsOneWidget);
+    });
+  });
+
+  group('AdminNotificationScreen Tests', () {
+    testWidgets('renders notification screen on Mobile view (retains mobile layout & actions)', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(400, 800));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        _buildTestApp(
+          child: const AdminNotificationScreen(),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(AppBar), findsOneWidget);
+      expect(find.byType(TextButton), findsOneWidget);
     });
   });
 }
