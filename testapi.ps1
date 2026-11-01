@@ -77,6 +77,10 @@ $TestRegistry = @{
         TestClass   = "com.vn.smart_space.controller.staff.StaffCancelWithdrawalTest"
         Description = "Kiem tra luong Staff huy yeu cau rut tien (PENDING -> CANCELLED), hoan tien vi, chan huy trai quyen va ban thong bao"
     }
+    "StaffDelegation" = @{
+        TestClass   = "com.vn.smart_space.controller.staff.StaffDelegationTest"
+        Description = "Nho lam gium: giu bonus, nhan/tu choi/huy/thu hoi hoan tien, nguoi lam gium nhan hoa hong + bonus va chiu phat khi mo lai, phan quyen, cau hinh ty le admin"
+    }
     "SendTestNotification" = @{
         TestClass   = "com.vn.smart_space.controller.notification.SendTestNotificationTest"
         Description = "Kich hoat Backend gui thong bao fake kiem thu da ngon ngu (VI/EN theo DB) toi toan bo Admin, Staff va Client"
