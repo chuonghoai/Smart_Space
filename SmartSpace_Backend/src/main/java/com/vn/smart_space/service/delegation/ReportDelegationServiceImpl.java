@@ -216,13 +216,18 @@ public class ReportDelegationServiceImpl implements IReportDelegationService {
         @Override
         @Transactional
         public DelegationResponse accept(String helperId, String delegationId) {
+                // Khoá report trước rồi mới tới yêu cầu, cùng thứ tự với hoàn tất / phân công report → không deadlock.
+                // Chỉ đọc report id (không nạp entity) để lần khoá yêu cầu bên dưới đọc trạng thái mới nhất.
+                String reportId = delegationRepository.findReportIdById(delegationId)
+                                .orElseThrow(() -> new ResourceNotFoundException("delegation.not_found"));
+                Report report = reportRepository.findByIdForUpdate(reportId)
+                                .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
+
                 ReportDelegation delegation = lockOwnPending(delegationId, helperId, true);
                 if (delegation.getExpiresAt().isBefore(LocalDateTime.now())) {
                         throw new BadRequestException("delegation.expired");
                 }
 
-                Report report = reportRepository.findByIdForUpdate(delegation.getReport().getId())
-                                .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
                 // Phòng hờ: admin đã đổi người/trạng thái mà hook chưa kịp thu hồi
                 boolean stillRequesterTask = report.getStatus() == EReportStatus.processing
                                 && report.getAssignedStaff() != null

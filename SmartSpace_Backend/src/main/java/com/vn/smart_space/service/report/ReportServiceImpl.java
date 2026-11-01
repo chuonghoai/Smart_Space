@@ -754,16 +754,17 @@ public class ReportServiceImpl implements IReportService {
 
         report = reportRepository.save(report);
 
+        // Nhờ làm giùm: trả bonus cho người làm giùm / thu hồi yêu cầu còn chờ.
+        // Không nuốt lỗi — tiền đã giữ phải được xử lý cùng transaction với việc hoàn tất.
+        // Chạy trước hoa hồng để khoá yêu cầu trước ví (report → yêu cầu → ví), cùng thứ tự với từ chối / huỷ / hết hạn.
+        delegationService.onReportCompleted(report);
+
         // Process staff wallet commission
         try {
             staffWalletService.processReportCompletedCommission(report);
         } catch (Exception ex) {
             log.error("[Staff Wallet] Error processing commission for report {}: {}", report.getId(), ex.getMessage());
         }
-
-        // Nhờ làm giùm: trả bonus cho người làm giùm / thu hồi yêu cầu còn chờ.
-        // Không nuốt lỗi — tiền đã giữ phải được xử lý cùng transaction với việc hoàn tất.
-        delegationService.onReportCompleted(report);
 
         // Save Activity History
         String staffName = staff != null && staff.getFullName() != null && !staff.getFullName().trim().isEmpty()
@@ -1079,13 +1080,13 @@ public class ReportServiceImpl implements IReportService {
         Report saved = reportRepository.save(report);
 
         if (next == EReportStatus.processed) {
+            // Admin hoàn tất thay → xử lý yêu cầu nhờ làm giùm như khi staff hoàn tất (trước hoa hồng: yêu cầu → ví)
+            delegationService.onReportCompleted(saved);
             try {
                 staffWalletService.processReportCompletedCommission(saved);
             } catch (Exception ex) {
                 log.error("[Staff Wallet] Error processing commission for report {}: {}", saved.getId(), ex.getMessage());
             }
-            // Admin hoàn tất thay → xử lý yêu cầu nhờ làm giùm như khi staff hoàn tất
-            delegationService.onReportCompleted(saved);
         }
 
         // Admin từ chối report → thu hồi yêu cầu nhờ làm giùm đang hoạt động, hoàn bonus

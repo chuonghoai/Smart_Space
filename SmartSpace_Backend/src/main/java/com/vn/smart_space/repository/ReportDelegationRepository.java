@@ -24,6 +24,10 @@ public interface ReportDelegationRepository extends JpaRepository<ReportDelegati
     @Query("SELECT d FROM ReportDelegation d WHERE d.id = :id")
     Optional<ReportDelegation> findByIdForUpdate(@Param("id") String id);
 
+    /** Chỉ lấy report id (không nạp entity) để khoá report trước yêu cầu, giữ đúng thứ tự khoá. */
+    @Query("SELECT d.report.id FROM ReportDelegation d WHERE d.id = :id")
+    Optional<String> findReportIdById(@Param("id") String id);
+
     /** Yêu cầu đang chiếm task (PENDING/ACCEPTED) — tối đa một bản ghi nhờ khoá report khi tạo. */
     @EntityGraph(attributePaths = { "requester", "helper" })
     Optional<ReportDelegation> findFirstByReportIdAndStatusInOrderByCreatedAtDesc(
