@@ -782,7 +782,7 @@ class _ReportCard extends StatelessWidget {
       case 'resolved':
         return isDark ? const Color(0xFF66BB6A) : const Color(0xFF2E7D32);
       case 'processing':
-        return isDark ? const Color(0xFF26A69A) : const Color(0xFF00796B);
+        return isDark ? const Color(0xFF42A5F5) : const Color(0xFF1565C0);
       case 'pending':
         return isDark ? const Color(0xFFFFCA28) : const Color(0xFFF57F17);
       case 'rejected':

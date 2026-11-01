@@ -226,6 +226,59 @@ class AppLocalizationsVi extends AppLocalizations {
   String get pleaseEnterConfirmPassword => 'Vui lòng xác nhận mật khẩu';
 
   @override
+  String get backToLogin => 'Quay lại đăng nhập';
+
+  @override
+  String get adminPortalBadge => 'Cổng Quản Trị & Điều Hành Đô Thị';
+
+  @override
+  String get adminPortalSubtitle =>
+      'Hệ thống quản trị tập trung hạ tầng đô thị, giám sát phản ánh và điều phối hoạt động cộng đồng.';
+
+  @override
+  String get adminFeatureRealtime => 'Giám sát thời gian thực';
+
+  @override
+  String get adminFeatureRealtimeDesc =>
+      'Theo dõi trực tiếp sự cố đô thị, cảnh báo và phản hồi từ người dân.';
+
+  @override
+  String get adminFeatureCoordination => 'Điều phối xử lý sự cố';
+
+  @override
+  String get adminFeatureCoordinationDesc =>
+      'Phân công nhiệm vụ và giám sát tiến độ xử lý của nhân viên vận hành.';
+
+  @override
+  String get adminFeatureSecurity => 'Bảo mật & Phân quyền';
+
+  @override
+  String get adminFeatureSecurityDesc =>
+      'Kiểm soát phân quyền theo vai trò và bảo vệ phiên làm việc an toàn.';
+
+  @override
+  String get forgotPasswordHeroTitle => 'Khôi Phục Bảo Mật Tài Khoản';
+
+  @override
+  String get forgotPasswordHeroSubtitle =>
+      'Quy trình xác thực hai bước bảo mật để khôi phục quyền truy cập quản trị.';
+
+  @override
+  String get stepEmailVerification =>
+      '1. Yêu cầu mã xác thực gửi về email đã đăng ký';
+
+  @override
+  String get stepPasswordReset =>
+      '2. Xác thực mã OTP và thiết lập mật khẩu mới an toàn';
+
+  @override
+  String get forgotPasswordHelpNote =>
+      'Nếu không còn quyền truy cập email này, vui lòng liên hệ quản trị viên cấp cao.';
+
+  @override
+  String get systemSecureNotice => 'Môi trường quản trị bảo mật SmartSpace';
+
+  @override
   String get search => 'Tìm kiếm';
 
   @override
@@ -1771,4 +1824,19 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get statusCancelled => 'Đã hủy';
+
+  @override
+  String get connectionStable => 'Kết nối ổn định';
+
+  @override
+  String get connectionConnecting => 'Đang thiết lập kết nối...';
+
+  @override
+  String get connectionDisconnected => 'Mất kết nối. Bấm để thử lại.';
+
+  @override
+  String get scrollLeft => 'Cuộn sang trái';
+
+  @override
+  String get scrollRight => 'Cuộn sang phải';
 }

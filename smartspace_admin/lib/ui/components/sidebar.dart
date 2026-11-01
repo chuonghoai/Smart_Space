@@ -11,6 +11,14 @@ import 'package:smartspace_admin/routes/app_router.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
 
+String _getCurrentPath(BuildContext context) {
+  try {
+    return GoRouterState.of(context).uri.path;
+  } catch (_) {
+    return appRouter.routeInformationProvider.value.uri.path;
+  }
+}
+
 class Sidebar extends ConsumerWidget {
   const Sidebar({super.key});
 
@@ -20,7 +28,7 @@ class Sidebar extends ConsumerWidget {
     final theme = Theme.of(context);
     final notificationState = ref.watch(notificationProvider);
     final unreadCount = notificationState.countModel?.notifNumber ?? 0;
-    final currentPath = appRouter.routeInformationProvider.value.uri.path;
+    final currentPath = _getCurrentPath(context);
 
     return Drawer(
       child: SafeArea(
@@ -120,79 +128,109 @@ class Sidebar extends ConsumerWidget {
                     isSelected: currentPath == RouterPath.notifications,
                     onTap: () {
                       Navigator.pop(context);
-                      context.push(RouterPath.notifications);
+                      if (currentPath != RouterPath.notifications) {
+                        context.push(RouterPath.notifications);
+                      }
                     },
                   ),
                   _SidebarItem(
                     icon: Icons.report_outlined,
                     label: l10n.manageReports,
-                    isSelected: currentPath == RouterPath.reportDashboard,
+                    isSelected: currentPath == RouterPath.reportDashboard ||
+                        currentPath == RouterPath.reportList ||
+                        currentPath == RouterPath.unsatisfactoryReports ||
+                        currentPath.startsWith('/reports'),
                     onTap: () {
                       Navigator.pop(context);
-                      context.push(RouterPath.reportDashboard);
+                      if (currentPath != RouterPath.reportDashboard) {
+                        context.push(RouterPath.reportDashboard);
+                      }
                     },
                   ),
                   _SidebarItem(
                     icon: Icons.map_outlined,
                     label: l10n.spaceMap,
-                    isSelected: currentPath == RouterPath.spaceMap,
+                    isSelected: currentPath == RouterPath.spaceMap ||
+                        currentPath.startsWith(RouterPath.spaceMap),
                     onTap: () {
                       Navigator.pop(context);
-                      context.push(RouterPath.spaceMap);
+                      if (currentPath != RouterPath.spaceMap) {
+                        context.push(RouterPath.spaceMap);
+                      }
                     },
                   ),
                   _SidebarItem(
                     icon: Icons.people_outline,
                     label: l10n.manageUsers,
-                    isSelected: currentPath == RouterPath.userManagement,
+                    isSelected: currentPath == RouterPath.userManagement ||
+                        currentPath.startsWith(RouterPath.userManagement),
                     onTap: () {
                       Navigator.pop(context);
-                      context.go(RouterPath.userManagement);
+                      if (currentPath != RouterPath.userManagement) {
+                        context.go(RouterPath.userManagement);
+                      }
                     },
                   ),
                   _SidebarItem(
                     icon: Icons.badge_outlined,
                     label: l10n.manageStaffs,
-                    isSelected: currentPath == RouterPath.staffManagement,
+                    isSelected: currentPath == RouterPath.staffManagement ||
+                        currentPath.startsWith(RouterPath.staffManagement),
                     onTap: () {
                       Navigator.pop(context);
-                      context.push(RouterPath.staffManagement);
+                      if (currentPath != RouterPath.staffManagement) {
+                        context.push(RouterPath.staffManagement);
+                      }
                     },
                   ),
                   _SidebarItem(
                     icon: Icons.account_balance_wallet_outlined,
                     label: l10n.manageStaffWallets,
-                    isSelected: currentPath.startsWith(RouterPath.adminStaffWallets),
+                    isSelected: currentPath.startsWith(RouterPath.adminStaffWallets) ||
+                        currentPath.startsWith(RouterPath.adminWithdrawalRequests),
                     onTap: () {
                       Navigator.pop(context);
-                      context.push(RouterPath.adminStaffWallets);
+                      if (currentPath != RouterPath.adminStaffWallets) {
+                        context.push(RouterPath.adminStaffWallets);
+                      }
                     },
                   ),
                   _SidebarItem(
                     icon: Icons.workspace_premium_outlined,
                     label: l10n.managePositions,
-                    isSelected: currentPath == RouterPath.positionManagement,
+                    isSelected: currentPath == RouterPath.positionManagement ||
+                        currentPath.startsWith(RouterPath.positionManagement),
                     onTap: () {
                       Navigator.pop(context);
-                      context.push(RouterPath.positionManagement);
+                      if (currentPath != RouterPath.positionManagement) {
+                        context.push(RouterPath.positionManagement);
+                      }
                     },
                   ),
                   _SidebarItem(
                     icon: Icons.newspaper_outlined,
                     label: l10n.manageNews,
-                    isSelected: currentPath == RouterPath.newsManagement || currentPath.startsWith('/news'),
+                    isSelected: currentPath == RouterPath.newsManagement ||
+                        currentPath.startsWith('/news'),
                     onTap: () {
                       Navigator.pop(context);
-                      context.push(RouterPath.newsManagement);
+                      if (currentPath != RouterPath.newsManagement) {
+                        context.push(RouterPath.newsManagement);
+                      }
                     },
                   ),
                   _SidebarItem(
                     icon: Icons.tune_outlined,
                     label: l10n.systemConfig,
-                    isSelected: currentPath.startsWith(RouterPath.systemConfig),
+                    isSelected: currentPath.startsWith(RouterPath.systemConfig) ||
+                        currentPath == RouterPath.walletConfig ||
+                        currentPath == RouterPath.commissionConfig ||
+                        currentPath == RouterPath.penaltyRateConfig,
                     onTap: () {
                       Navigator.pop(context);
-                      context.push(RouterPath.systemConfig);
+                      if (currentPath != RouterPath.systemConfig) {
+                        context.push(RouterPath.systemConfig);
+                      }
                     },
                   ),
 
@@ -205,10 +243,15 @@ class Sidebar extends ConsumerWidget {
                   _SidebarItem(
                     icon: Icons.settings_outlined,
                     label: l10n.settings,
-                    isSelected: currentPath == RouterPath.settings,
+                    isSelected: currentPath == RouterPath.settings ||
+                        currentPath == RouterPath.editProfile ||
+                        currentPath == RouterPath.changePassword ||
+                        currentPath == RouterPath.manageDevices,
                     onTap: () {
                       Navigator.pop(context);
-                      context.push(RouterPath.settings);
+                      if (currentPath != RouterPath.settings) {
+                        context.push(RouterPath.settings);
+                      }
                     },
                   ),
                   _SidebarItem(
@@ -316,7 +359,7 @@ class WebSidebar extends ConsumerWidget {
     final theme = Theme.of(context);
     final notificationState = ref.watch(notificationProvider);
     final unreadCount = notificationState.countModel?.notifNumber ?? 0;
-    final currentPath = GoRouterState.of(context).uri.path;
+    final currentPath = _getCurrentPath(context);
 
     return Column(
       children: [
@@ -400,66 +443,110 @@ class WebSidebar extends ConsumerWidget {
                 isSelected: currentPath == RouterPath.notifications,
                 badge: unreadCount > 0 ? unreadCount : null,
                 onTap: () {
-                  context.push(RouterPath.notifications);
+                  if (currentPath != RouterPath.notifications) {
+                    context.push(RouterPath.notifications);
+                  }
                 },
               ),
               _WebSidebarItem(
                 icon: Icons.report_outlined,
                 label: l10n.manageReports,
                 isExpanded: isExpanded,
-                isSelected: currentPath == RouterPath.reportDashboard,
+                isSelected: currentPath == RouterPath.reportDashboard ||
+                    currentPath == RouterPath.reportList ||
+                    currentPath == RouterPath.unsatisfactoryReports ||
+                    currentPath.startsWith('/reports'),
                 onTap: () {
-                  context.push(RouterPath.reportDashboard);
+                  if (currentPath != RouterPath.reportDashboard) {
+                    context.push(RouterPath.reportDashboard);
+                  }
                 },
               ),
               _WebSidebarItem(
                 icon: Icons.map_outlined,
                 label: l10n.spaceMap,
                 isExpanded: isExpanded,
-                isSelected: currentPath == RouterPath.spaceMap,
-                onTap: () => context.push(RouterPath.spaceMap),
+                isSelected: currentPath == RouterPath.spaceMap ||
+                    currentPath.startsWith(RouterPath.spaceMap),
+                onTap: () {
+                  if (currentPath != RouterPath.spaceMap) {
+                    context.push(RouterPath.spaceMap);
+                  }
+                },
               ),
               _WebSidebarItem(
                 icon: Icons.people_outline,
                 label: l10n.manageUsers,
                 isExpanded: isExpanded,
-                isSelected: currentPath == RouterPath.userManagement,
-                onTap: () => context.go(RouterPath.userManagement),
+                isSelected: currentPath == RouterPath.userManagement ||
+                    currentPath.startsWith(RouterPath.userManagement),
+                onTap: () {
+                  if (currentPath != RouterPath.userManagement) {
+                    context.go(RouterPath.userManagement);
+                  }
+                },
               ),
               _WebSidebarItem(
                 icon: Icons.badge_outlined,
                 label: l10n.manageStaffs,
                 isExpanded: isExpanded,
-                isSelected: currentPath == RouterPath.staffManagement,
-                onTap: () => context.push(RouterPath.staffManagement),
+                isSelected: currentPath == RouterPath.staffManagement ||
+                    currentPath.startsWith(RouterPath.staffManagement),
+                onTap: () {
+                  if (currentPath != RouterPath.staffManagement) {
+                    context.push(RouterPath.staffManagement);
+                  }
+                },
               ),
               _WebSidebarItem(
                 icon: Icons.account_balance_wallet_outlined,
                 label: l10n.manageStaffWallets,
                 isExpanded: isExpanded,
-                isSelected: currentPath.startsWith(RouterPath.adminStaffWallets),
-                onTap: () => context.push(RouterPath.adminStaffWallets),
+                isSelected: currentPath.startsWith(RouterPath.adminStaffWallets) ||
+                    currentPath.startsWith(RouterPath.adminWithdrawalRequests),
+                onTap: () {
+                  if (currentPath != RouterPath.adminStaffWallets) {
+                    context.push(RouterPath.adminStaffWallets);
+                  }
+                },
               ),
               _WebSidebarItem(
                 icon: Icons.workspace_premium_outlined,
                 label: l10n.managePositions,
                 isExpanded: isExpanded,
-                isSelected: currentPath == RouterPath.positionManagement,
-                onTap: () => context.push(RouterPath.positionManagement),
+                isSelected: currentPath == RouterPath.positionManagement ||
+                    currentPath.startsWith(RouterPath.positionManagement),
+                onTap: () {
+                  if (currentPath != RouterPath.positionManagement) {
+                    context.push(RouterPath.positionManagement);
+                  }
+                },
               ),
               _WebSidebarItem(
                 icon: Icons.newspaper_outlined,
                 label: l10n.manageNews,
                 isExpanded: isExpanded,
-                isSelected: currentPath == RouterPath.newsManagement || currentPath.startsWith('/news'),
-                onTap: () => context.push(RouterPath.newsManagement),
+                isSelected: currentPath == RouterPath.newsManagement ||
+                    currentPath.startsWith('/news'),
+                onTap: () {
+                  if (currentPath != RouterPath.newsManagement) {
+                    context.push(RouterPath.newsManagement);
+                  }
+                },
               ),
               _WebSidebarItem(
                 icon: Icons.tune_outlined,
                 label: l10n.systemConfig,
                 isExpanded: isExpanded,
-                isSelected: currentPath.startsWith(RouterPath.systemConfig),
-                onTap: () => context.push(RouterPath.systemConfig),
+                isSelected: currentPath.startsWith(RouterPath.systemConfig) ||
+                    currentPath == RouterPath.walletConfig ||
+                    currentPath == RouterPath.commissionConfig ||
+                    currentPath == RouterPath.penaltyRateConfig,
+                onTap: () {
+                  if (currentPath != RouterPath.systemConfig) {
+                    context.push(RouterPath.systemConfig);
+                  }
+                },
               ),
 
               const Padding(
@@ -471,8 +558,15 @@ class WebSidebar extends ConsumerWidget {
                 icon: Icons.settings_outlined,
                 label: l10n.settings,
                 isExpanded: isExpanded,
-                isSelected: currentPath == RouterPath.settings,
-                onTap: () => context.push(RouterPath.settings),
+                isSelected: currentPath == RouterPath.settings ||
+                    currentPath == RouterPath.editProfile ||
+                    currentPath == RouterPath.changePassword ||
+                    currentPath == RouterPath.manageDevices,
+                onTap: () {
+                  if (currentPath != RouterPath.settings) {
+                    context.push(RouterPath.settings);
+                  }
+                },
               ),
               _WebSidebarItem(
                 icon: Icons.help_outline,
