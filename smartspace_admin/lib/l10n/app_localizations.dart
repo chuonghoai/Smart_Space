@@ -3536,6 +3536,47 @@ abstract class AppLocalizations {
   /// **'Cancelled'**
   String get statusCancelled;
 
+  /// No description provided for @delegationRateConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Delegated Task Commission Configuration'**
+  String get delegationRateConfig;
+
+  /// No description provided for @routeDelegationRateConfig.
+  ///
+  /// In en, this message translates to:
+  /// **'Delegated Task Commission Configuration'**
+  String get routeDelegationRateConfig;
+
+  /// No description provided for @delegationRateConfigDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Set the extra bonus a staff member earns when handling a task on behalf of a colleague, as a percentage of the task commission by severity. The bonus is paid from the requester\'s wallet.'**
+  String get delegationRateConfigDescription;
+
+  /// No description provided for @delegationRateExample.
+  ///
+  /// In en, this message translates to:
+  /// **'{rate}% × {commission}đ = {bonus}đ bonus'**
+  String delegationRateExample(String rate, String commission, String bonus);
+
+  /// No description provided for @delegationRateNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The helper receives the task commission plus this bonus. Changes only apply to delegation requests sent after saving.'**
+  String get delegationRateNote;
+
+  /// No description provided for @saveDelegationRateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Delegated task commission rates updated successfully!'**
+  String get saveDelegationRateSuccess;
+
+  /// No description provided for @delegationRateLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load the configuration'**
+  String get delegationRateLoadFailed;
   /// No description provided for @connectionStable.
   ///
   /// In en, this message translates to:

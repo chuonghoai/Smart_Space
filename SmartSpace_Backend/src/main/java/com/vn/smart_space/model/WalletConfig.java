@@ -1,5 +1,6 @@
 package com.vn.smart_space.model;
 
+import com.vn.smart_space.consts.EReportSeverity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Table;
@@ -43,5 +44,45 @@ public class WalletConfig extends AbstractEntity {
     @Builder.Default
     @Column(name = "penalty_rate_3", nullable = false)
     Double penaltyRate3 = 60.0;
+
+    // Tỷ lệ bonus (%) người làm giùm nhận thêm, tính trên hoa hồng của task, trả từ ví người nhờ.
+    // DEFAULT trong columnDefinition để ddl-auto=update điền sẵn cho dòng cấu hình đã có.
+    @Builder.Default
+    @Column(name = "delegation_rate_low", nullable = false, columnDefinition = "DOUBLE DEFAULT 50")
+    Double delegationRateLow = 50.0;
+
+    @Builder.Default
+    @Column(name = "delegation_rate_medium", nullable = false, columnDefinition = "DOUBLE DEFAULT 40")
+    Double delegationRateMedium = 40.0;
+
+    @Builder.Default
+    @Column(name = "delegation_rate_high", nullable = false, columnDefinition = "DOUBLE DEFAULT 30")
+    Double delegationRateHigh = 30.0;
+
+    @Builder.Default
+    @Column(name = "delegation_rate_critical", nullable = false, columnDefinition = "DOUBLE DEFAULT 20")
+    Double delegationRateCritical = 20.0;
+
+    /** Hoa hồng hệ thống của task theo mức độ (chưa đánh giá → mức thấp, như luồng hoa hồng hiện tại). */
+    public double commissionFor(EReportSeverity severity) {
+        if (severity == null) return commissionLow;
+        return switch (severity) {
+            case low -> commissionLow;
+            case medium -> commissionMedium;
+            case high -> commissionHigh;
+            case critical -> commissionCritical;
+        };
+    }
+
+    /** Tỷ lệ bonus nhờ làm giùm (%) theo mức độ. */
+    public double delegationRateFor(EReportSeverity severity) {
+        if (severity == null) return delegationRateLow;
+        return switch (severity) {
+            case low -> delegationRateLow;
+            case medium -> delegationRateMedium;
+            case high -> delegationRateHigh;
+            case critical -> delegationRateCritical;
+        };
+    }
 }
 

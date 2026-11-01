@@ -26,6 +26,11 @@ class RouterPath {
   static String staffWithdrawalDetailWithId(String id) =>
       RouteName.staffWithdrawalDetail.path.replaceAll(':id', id);
   static String get staffBankAccounts => RouteName.staffBankAccounts.path;
+  static String get delegations => RouteName.delegations.path;
+
+  /// Màn "Việc nhờ làm giùm" mở sẵn tab [box] (`received` | `sent`).
+  static String delegationsWithBox(String box) =>
+      Uri(path: delegations, queryParameters: {'box': box}).toString();
   static String newsDetailWithId(String id) =>
       RouteName.newsDetail.path.replaceAll(':id', id);
 }

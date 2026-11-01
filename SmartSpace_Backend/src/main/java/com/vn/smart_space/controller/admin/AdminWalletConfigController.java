@@ -1,6 +1,7 @@
 package com.vn.smart_space.controller.admin;
 
 import com.vn.smart_space.dto.ApiResponse;
+import com.vn.smart_space.dto.request.wallet.DelegationRateConfigUpdateRequest;
 import com.vn.smart_space.dto.request.wallet.WalletConfigUpdateRequest;
 import com.vn.smart_space.service.wallet.IWalletConfigService;
 import jakarta.validation.Valid;
@@ -31,6 +32,21 @@ public class AdminWalletConfigController {
     public ResponseEntity<ApiResponse> updateConfig(@Valid @RequestBody WalletConfigUpdateRequest request) {
         return ResponseEntity.ok(
                 ApiResponse.success("system.success", walletConfigService.updateConfig(request)));
+    }
+
+    @PreAuthorize("hasRole('admin')")
+    @GetMapping("/delegation")
+    public ResponseEntity<ApiResponse> getDelegationRates() {
+        return ResponseEntity.ok(
+                ApiResponse.success("system.success", walletConfigService.getDelegationRates()));
+    }
+
+    @PreAuthorize("hasRole('admin')")
+    @PutMapping("/delegation")
+    public ResponseEntity<ApiResponse> updateDelegationRates(
+            @Valid @RequestBody DelegationRateConfigUpdateRequest request) {
+        return ResponseEntity.ok(
+                ApiResponse.success("system.success", walletConfigService.updateDelegationRates(request)));
     }
 }
 

@@ -52,8 +52,10 @@ import com.vn.smart_space.repository.UserRepository;
 import com.vn.smart_space.service.notification.IFCMService;
 import com.vn.smart_space.service.notification.INotificationService;
 import com.vn.smart_space.model.WalletConfig;
+import com.vn.smart_space.service.delegation.IReportDelegationService;
 import com.vn.smart_space.service.wallet.IStaffWalletService;
 import com.vn.smart_space.service.wallet.IWalletConfigService;
+import org.springframework.security.access.AccessDeniedException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -72,6 +74,7 @@ public class ReportServiceImpl implements IReportService {
     private final MessageSource messageSource;
     private final IStaffWalletService staffWalletService;
     private final IWalletConfigService walletConfigService;
+    private final IReportDelegationService delegationService;
 
     private static final int MAP_DEFAULT_LIMIT = 300;
     private static final int MAP_MAX_LIMIT = 500;
@@ -581,10 +584,18 @@ public class ReportServiceImpl implements IReportService {
             }
         }
 
+        boolean assigneeChanged = report.getAssignedStaff() == null
+                || !report.getAssignedStaff().getId().equals(staff.getId());
+
         report.setAssignedStaff(staff);
         report.setStatus(EReportStatus.processing);
         report.setAssignedAt(new java.util.Date());
         report = reportRepository.save(report);
+
+        // Phân công cho người khác → yêu cầu nhờ làm giùm cũ không còn ý nghĩa, hoàn bonus
+        if (assigneeChanged) {
+            delegationService.onReportUnassigned(report);
+        }
 
         // Save Activity History
         User admin = adminId != null ? userRepository.findById(adminId).orElse(null) : null;
@@ -710,13 +721,19 @@ public class ReportServiceImpl implements IReportService {
             ReportCompleteRequest request,
             String staffId) {
 
-        Report report = reportRepository.findById(reportId)
+        // Khoá report: tránh hoàn tất đúng lúc task đang được chuyển cho người làm giùm
+        Report report = reportRepository.findByIdForUpdate(reportId)
                 .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
 
-        User staff = staffId != null ? userRepository.findById(staffId).orElse(null) : null;
-        if (staff != null && report.getAssignedStaff() == null) {
-            report.setAssignedStaff(staff);
+        // Chỉ staff đang được giao mới hoàn tất được (người nhờ không tự hoàn tất task đã giao cho người làm giùm)
+        if (staffId == null || report.getAssignedStaff() == null
+                || !staffId.equals(report.getAssignedStaff().getId())) {
+            throw new AccessDeniedException("report.complete.not_assignee");
         }
+        if (report.getStatus() != EReportStatus.processing) {
+            throw new BadRequestException("report.invalid.status.transition");
+        }
+        User staff = report.getAssignedStaff();
 
         report.setStatus(EReportStatus.processed);
         if (request.getNote() != null && !request.getNote().trim().isEmpty()) {
@@ -736,6 +753,11 @@ public class ReportServiceImpl implements IReportService {
         report.setReviewedAt(null);
 
         report = reportRepository.save(report);
+
+        // Nhờ làm giùm: trả bonus cho người làm giùm / thu hồi yêu cầu còn chờ.
+        // Không nuốt lỗi — tiền đã giữ phải được xử lý cùng transaction với việc hoàn tất.
+        // Chạy trước hoa hồng để khoá yêu cầu trước ví (report → yêu cầu → ví), cùng thứ tự với từ chối / huỷ / hết hạn.
+        delegationService.onReportCompleted(report);
 
         // Process staff wallet commission
         try {
@@ -1058,11 +1080,18 @@ public class ReportServiceImpl implements IReportService {
         Report saved = reportRepository.save(report);
 
         if (next == EReportStatus.processed) {
+            // Admin hoàn tất thay → xử lý yêu cầu nhờ làm giùm như khi staff hoàn tất (trước hoa hồng: yêu cầu → ví)
+            delegationService.onReportCompleted(saved);
             try {
                 staffWalletService.processReportCompletedCommission(saved);
             } catch (Exception ex) {
                 log.error("[Staff Wallet] Error processing commission for report {}: {}", saved.getId(), ex.getMessage());
             }
+        }
+
+        // Admin từ chối report → thu hồi yêu cầu nhờ làm giùm đang hoạt động, hoàn bonus
+        if (next == EReportStatus.rejected) {
+            delegationService.onReportUnassigned(saved);
         }
 
         // When admin re-opens from processed back to processing, notify assigned Staff

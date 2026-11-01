@@ -805,6 +805,21 @@
   },
   "homePendingWithdrawalSubtitle": "Nhấn để xem và duyệt các yêu cầu rút tiền",
   "statusCancelled": "Đã hủy",
+  "delegationRateConfig": "Cấu hình hoa hồng công việc được nhờ",
+  "routeDelegationRateConfig": "Cấu hình hoa hồng công việc được nhờ",
+  "delegationRateConfigDescription": "Thiết lập bonus nhân viên nhận thêm khi làm giùm đồng nghiệp, tính theo % hoa hồng của task theo mức độ nghiêm trọng. Bonus được trừ từ ví của người nhờ.",
+  "delegationRateExample": "{rate}% × {commission}đ = {bonus}đ bonus",
+  "@delegationRateExample": {
+    "placeholders": {
+      "rate": { "type": "String" },
+      "commission": { "type": "String" },
+      "bonus": { "type": "String" }
+    }
+  },
+  "delegationRateNote": "Người làm giùm nhận hoa hồng của task cộng thêm bonus này. Thay đổi chỉ áp dụng cho yêu cầu nhờ gửi sau khi lưu.",
+  "saveDelegationRateSuccess": "Cập nhật hoa hồng công việc được nhờ thành công!",
+  "delegationRateLoadFailed": "Không tải được cấu hình"
+}
   "connectionStable": "Kết nối ổn định",
   "connectionConnecting": "Đang thiết lập kết nối...",
   "connectionDisconnected": "Mất kết nối. Bấm để thử lại.",

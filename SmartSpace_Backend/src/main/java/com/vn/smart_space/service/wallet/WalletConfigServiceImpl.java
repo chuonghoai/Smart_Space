@@ -1,6 +1,8 @@
 package com.vn.smart_space.service.wallet;
 
+import com.vn.smart_space.dto.request.wallet.DelegationRateConfigUpdateRequest;
 import com.vn.smart_space.dto.request.wallet.WalletConfigUpdateRequest;
+import com.vn.smart_space.dto.response.wallet.DelegationRateConfigResponse;
 import com.vn.smart_space.dto.response.wallet.WalletConfigResponse;
 import com.vn.smart_space.model.WalletConfig;
 import com.vn.smart_space.repository.WalletConfigRepository;
@@ -54,6 +56,36 @@ public class WalletConfigServiceImpl implements IWalletConfigService {
 
         WalletConfig saved = walletConfigRepository.save(config);
         return mapToResponse(saved);
+    }
+
+    @Override
+    @Transactional
+    public DelegationRateConfigResponse getDelegationRates() {
+        return mapToDelegationResponse(getOrCreateDefaultConfig());
+    }
+
+    @Override
+    @Transactional
+    public DelegationRateConfigResponse updateDelegationRates(DelegationRateConfigUpdateRequest request) {
+        WalletConfig config = getOrCreateDefaultConfig();
+        config.setDelegationRateLow(request.getRateLow());
+        config.setDelegationRateMedium(request.getRateMedium());
+        config.setDelegationRateHigh(request.getRateHigh());
+        config.setDelegationRateCritical(request.getRateCritical());
+        return mapToDelegationResponse(walletConfigRepository.save(config));
+    }
+
+    private DelegationRateConfigResponse mapToDelegationResponse(WalletConfig config) {
+        return DelegationRateConfigResponse.builder()
+                .rateLow(config.getDelegationRateLow())
+                .rateMedium(config.getDelegationRateMedium())
+                .rateHigh(config.getDelegationRateHigh())
+                .rateCritical(config.getDelegationRateCritical())
+                .commissionLow(config.getCommissionLow())
+                .commissionMedium(config.getCommissionMedium())
+                .commissionHigh(config.getCommissionHigh())
+                .commissionCritical(config.getCommissionCritical())
+                .build();
     }
 
     private WalletConfigResponse mapToResponse(WalletConfig config) {

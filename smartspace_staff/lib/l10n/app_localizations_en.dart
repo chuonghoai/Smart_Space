@@ -1098,4 +1098,204 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get cancelledNoticeDesc =>
       'This withdrawal request has been cancelled and the held amount has been refunded to your wallet.';
+
+  @override
+  String get routeDelegations => 'Delegated tasks';
+
+  @override
+  String get delegationScreenTitle => 'Delegated tasks';
+
+  @override
+  String get delegationTabReceived => 'Received';
+
+  @override
+  String get delegationTabSent => 'Sent';
+
+  @override
+  String get delegationEmptyReceived =>
+      'No one has asked you to handle a task yet';
+
+  @override
+  String get delegationEmptySent =>
+      'You haven\'t asked anyone to handle a task yet';
+
+  @override
+  String get delegationLoadFailed => 'Couldn\'t load delegation requests';
+
+  @override
+  String get delegationRequestAction => 'Ask a colleague';
+
+  @override
+  String get delegationSheetTitle => 'Ask a colleague to handle this task';
+
+  @override
+  String get delegationSearchHint => 'Search colleagues by name';
+
+  @override
+  String get delegationNoColleagues => 'No matching colleagues';
+
+  @override
+  String get delegationChooseColleague => 'Choose a colleague';
+
+  @override
+  String get delegationHelperReceives => 'Colleague receives';
+
+  @override
+  String delegationHelperReceivesValue(String commission, String bonus) {
+    return '$commissionđ + $bonusđ bonus';
+  }
+
+  @override
+  String get delegationYouPay => 'Deducted from your wallet';
+
+  @override
+  String delegationBonusRate(String rate) {
+    return 'Bonus = $rate% of the task commission';
+  }
+
+  @override
+  String get delegationCurrentBalance => 'Current balance';
+
+  @override
+  String get delegationInsufficientBalance =>
+      'Your wallet balance is not enough to pay this bonus';
+
+  @override
+  String get delegationHoldHint =>
+      'The bonus is held in your wallet and refunded if the request doesn\'t go through. Requests expire after 24 hours.';
+
+  @override
+  String get delegationNoteLabel => 'Message (optional)';
+
+  @override
+  String get delegationSendAction => 'Send request';
+
+  @override
+  String get delegationSentSuccess => 'Delegation request sent';
+
+  @override
+  String delegationPendingRequesterBanner(String name) {
+    return 'Waiting for $name to accept';
+  }
+
+  @override
+  String delegationAcceptedRequesterBanner(String name) {
+    return '$name is handling this task for you';
+  }
+
+  @override
+  String delegationPendingHelperBanner(String name) {
+    return '$name asked you to handle this task';
+  }
+
+  @override
+  String delegationAcceptedHelperBanner(String name) {
+    return 'You are handling this task for $name';
+  }
+
+  @override
+  String delegationHelperEarns(String commission, String bonus) {
+    return 'You\'ll receive $commissionđ + $bonusđ bonus';
+  }
+
+  @override
+  String delegationBonusHeld(String bonus) {
+    return '$bonusđ bonus held from your wallet';
+  }
+
+  @override
+  String commissionExpectedWithBonusNotice(String commission, String bonus) {
+    return 'You will receive $commission VND + $bonus VND delegation bonus after completing this report.';
+  }
+
+  @override
+  String delegationBonusReceivedLine(String name, String amount) {
+    return 'Delegation bonus from $name: +$amount VND';
+  }
+
+  @override
+  String delegationBonusPaidNotice(String amount, String name) {
+    return 'You paid $name a $amount VND bonus for handling this report.';
+  }
+
+  @override
+  String delegationExpiresAt(String time) {
+    return 'Expires at $time';
+  }
+
+  @override
+  String get delegationAcceptAction => 'Accept';
+
+  @override
+  String get delegationDeclineAction => 'Decline';
+
+  @override
+  String get delegationCancelAction => 'Cancel request';
+
+  @override
+  String get delegationAcceptConfirmTitle => 'Accept this task?';
+
+  @override
+  String get delegationAcceptConfirmMessage =>
+      'The report will be assigned to you. You\'ll be responsible for it, including any re-handling and penalties.';
+
+  @override
+  String get delegationDeclineConfirmTitle => 'Decline this request?';
+
+  @override
+  String delegationDeclineConfirmMessage(String name) {
+    return '$name will get the held bonus back.';
+  }
+
+  @override
+  String get delegationCancelConfirmTitle => 'Cancel this request?';
+
+  @override
+  String get delegationCancelConfirmMessage =>
+      'The held bonus will be refunded to your wallet.';
+
+  @override
+  String get delegationAcceptedSuccess => 'You accepted the task';
+
+  @override
+  String get delegationDeclinedSuccess => 'Request declined';
+
+  @override
+  String get delegationCancelledSuccess => 'Request cancelled, bonus refunded';
+
+  @override
+  String delegationFrom(String name) {
+    return 'From $name';
+  }
+
+  @override
+  String delegationTo(String name) {
+    return 'Asked $name';
+  }
+
+  @override
+  String delegationBonusLabel(String amount) {
+    return 'Bonus $amountđ';
+  }
+
+  @override
+  String get delegationStatusPending => 'Awaiting reply';
+
+  @override
+  String get delegationStatusAccepted => 'In progress';
+
+  @override
+  String get delegationStatusDeclined => 'Declined';
+
+  @override
+  String get delegationStatusCancelled => 'Cancelled';
+
+  @override
+  String get delegationStatusExpired => 'Expired';
+
+  @override
+  String get delegationStatusCompleted => 'Completed';
+
+  @override
+  String get delegationStatusRevoked => 'Revoked';
 }

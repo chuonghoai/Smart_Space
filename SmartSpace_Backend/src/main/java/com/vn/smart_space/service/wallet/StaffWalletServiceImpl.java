@@ -611,15 +611,8 @@ public class StaffWalletServiceImpl implements IStaffWalletService {
         }
     }
 
+    // Cùng công thức với bonus nhờ làm giùm (ReportDelegationServiceImpl) → một nguồn duy nhất
     private double getCommissionAmountBySeverity(EReportSeverity severity, WalletConfig config) {
-        if (severity == null) {
-            return config.getCommissionLow();
-        }
-        return switch (severity) {
-            case low -> config.getCommissionLow();
-            case medium -> config.getCommissionMedium();
-            case high -> config.getCommissionHigh();
-            case critical -> config.getCommissionCritical();
-        };
+        return config.commissionFor(severity);
     }
 }

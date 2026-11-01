@@ -434,5 +434,107 @@
   "confirmCancel": "Cancel request",
   "cancelWithdrawalSuccess": "Withdrawal request cancelled successfully, the amount has been refunded to your wallet.",
   "statusCancelled": "Cancelled",
-  "cancelledNoticeDesc": "This withdrawal request has been cancelled and the held amount has been refunded to your wallet."
+  "cancelledNoticeDesc": "This withdrawal request has been cancelled and the held amount has been refunded to your wallet.",
+  "routeDelegations": "Delegated tasks",
+  "delegationScreenTitle": "Delegated tasks",
+  "delegationTabReceived": "Received",
+  "delegationTabSent": "Sent",
+  "delegationEmptyReceived": "No one has asked you to handle a task yet",
+  "delegationEmptySent": "You haven't asked anyone to handle a task yet",
+  "delegationLoadFailed": "Couldn't load delegation requests",
+  "delegationRequestAction": "Ask a colleague",
+  "delegationSheetTitle": "Ask a colleague to handle this task",
+  "delegationSearchHint": "Search colleagues by name",
+  "delegationNoColleagues": "No matching colleagues",
+  "delegationChooseColleague": "Choose a colleague",
+  "delegationHelperReceives": "Colleague receives",
+  "delegationHelperReceivesValue": "{commission}đ + {bonus}đ bonus",
+  "@delegationHelperReceivesValue": {
+    "placeholders": { "commission": { "type": "String" }, "bonus": { "type": "String" } }
+  },
+  "delegationYouPay": "Deducted from your wallet",
+  "delegationBonusRate": "Bonus = {rate}% of the task commission",
+  "@delegationBonusRate": {
+    "placeholders": { "rate": { "type": "String" } }
+  },
+  "delegationCurrentBalance": "Current balance",
+  "delegationInsufficientBalance": "Your wallet balance is not enough to pay this bonus",
+  "delegationHoldHint": "The bonus is held in your wallet and refunded if the request doesn't go through. Requests expire after 24 hours.",
+  "delegationNoteLabel": "Message (optional)",
+  "delegationSendAction": "Send request",
+  "delegationSentSuccess": "Delegation request sent",
+  "delegationPendingRequesterBanner": "Waiting for {name} to accept",
+  "@delegationPendingRequesterBanner": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "delegationAcceptedRequesterBanner": "{name} is handling this task for you",
+  "@delegationAcceptedRequesterBanner": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "delegationPendingHelperBanner": "{name} asked you to handle this task",
+  "@delegationPendingHelperBanner": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "delegationAcceptedHelperBanner": "You are handling this task for {name}",
+  "@delegationAcceptedHelperBanner": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "delegationHelperEarns": "You'll receive {commission}đ + {bonus}đ bonus",
+  "@delegationHelperEarns": {
+    "placeholders": { "commission": { "type": "String" }, "bonus": { "type": "String" } }
+  },
+  "delegationBonusHeld": "{bonus}đ bonus held from your wallet",
+  "@delegationBonusHeld": {
+    "placeholders": { "bonus": { "type": "String" } }
+  },
+  "commissionExpectedWithBonusNotice": "You will receive {commission} VND + {bonus} VND delegation bonus after completing this report.",
+  "@commissionExpectedWithBonusNotice": {
+    "placeholders": { "commission": { "type": "String" }, "bonus": { "type": "String" } }
+  },
+  "delegationBonusReceivedLine": "Delegation bonus from {name}: +{amount} VND",
+  "@delegationBonusReceivedLine": {
+    "placeholders": { "name": { "type": "String" }, "amount": { "type": "String" } }
+  },
+  "delegationBonusPaidNotice": "You paid {name} a {amount} VND bonus for handling this report.",
+  "@delegationBonusPaidNotice": {
+    "placeholders": { "amount": { "type": "String" }, "name": { "type": "String" } }
+  },
+  "delegationExpiresAt": "Expires at {time}",
+  "@delegationExpiresAt": {
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "delegationAcceptAction": "Accept",
+  "delegationDeclineAction": "Decline",
+  "delegationCancelAction": "Cancel request",
+  "delegationAcceptConfirmTitle": "Accept this task?",
+  "delegationAcceptConfirmMessage": "The report will be assigned to you. You'll be responsible for it, including any re-handling and penalties.",
+  "delegationDeclineConfirmTitle": "Decline this request?",
+  "delegationDeclineConfirmMessage": "{name} will get the held bonus back.",
+  "@delegationDeclineConfirmMessage": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "delegationCancelConfirmTitle": "Cancel this request?",
+  "delegationCancelConfirmMessage": "The held bonus will be refunded to your wallet.",
+  "delegationAcceptedSuccess": "You accepted the task",
+  "delegationDeclinedSuccess": "Request declined",
+  "delegationCancelledSuccess": "Request cancelled, bonus refunded",
+  "delegationFrom": "From {name}",
+  "@delegationFrom": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "delegationTo": "Asked {name}",
+  "@delegationTo": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "delegationBonusLabel": "Bonus {amount}đ",
+  "@delegationBonusLabel": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "delegationStatusPending": "Awaiting reply",
+  "delegationStatusAccepted": "In progress",
+  "delegationStatusDeclined": "Declined",
+  "delegationStatusCancelled": "Cancelled",
+  "delegationStatusExpired": "Expired",
+  "delegationStatusCompleted": "Completed",
+  "delegationStatusRevoked": "Revoked"
 }

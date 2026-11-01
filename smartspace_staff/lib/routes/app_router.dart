@@ -25,6 +25,8 @@ import 'package:smartspace_staff/ui/mobile/wallet/staff_withdraw_screen.dart';
 import 'package:smartspace_staff/ui/mobile/wallet/staff_withdrawal_detail_screen.dart';
 import 'package:smartspace_staff/ui/mobile/wallet/staff_withdrawal_history_screen.dart';
 import 'package:smartspace_staff/features/wallet/models/staff_withdrawal_model.dart';
+import 'package:smartspace_staff/features/delegation/models/delegation_model.dart';
+import 'package:smartspace_staff/ui/mobile/delegation/delegations_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = sharedNavigatorKey;
 
@@ -84,6 +86,15 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.news,
       builder: (context, state) => const StaffNewsListScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.delegations,
+      builder: (context, state) => DelegationsScreen(
+        initialBox: DelegationBox.values.firstWhere(
+          (box) => box.name == state.uri.queryParameters['box'],
+          orElse: () => DelegationBox.received,
+        ),
+      ),
     ),
     GoRoute(
       path: '/news/:id',
