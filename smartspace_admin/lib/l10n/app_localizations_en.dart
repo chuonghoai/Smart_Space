@@ -1862,13 +1862,13 @@ class AppLocalizationsEn extends AppLocalizations {
   String get densityLegendTitle => 'Report Density';
 
   @override
-  String get densityLow => 'Low (1 - 3)';
+  String get densityLow => '1–2 reports (Low)';
 
   @override
-  String get densityMedium => 'Medium (4 - 7)';
+  String get densityMedium => '3–5 reports (Medium)';
 
   @override
-  String get densityHigh => 'High (>= 8)';
+  String get densityHigh => 'Over 5 reports (High)';
 
   @override
   String get filterTimeframe => 'Timeframe';

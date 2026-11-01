@@ -3593,19 +3593,19 @@ abstract class AppLocalizations {
   /// No description provided for @densityLow.
   ///
   /// In en, this message translates to:
-  /// **'Low (1 - 3)'**
+  /// **'1–2 reports (Low)'**
   String get densityLow;
 
   /// No description provided for @densityMedium.
   ///
   /// In en, this message translates to:
-  /// **'Medium (4 - 7)'**
+  /// **'3–5 reports (Medium)'**
   String get densityMedium;
 
   /// No description provided for @densityHigh.
   ///
   /// In en, this message translates to:
-  /// **'High (>= 8)'**
+  /// **'Over 5 reports (High)'**
   String get densityHigh;
 
   /// No description provided for @filterTimeframe.

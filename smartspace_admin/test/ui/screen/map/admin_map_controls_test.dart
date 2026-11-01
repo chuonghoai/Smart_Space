@@ -37,9 +37,9 @@ void main() {
 
     expect(find.byIcon(Icons.layers_rounded), findsOneWidget);
     expect(find.text('Mật độ phản ánh'), findsOneWidget);
-    expect(find.text('Thấp (1 - 3)'), findsOneWidget);
-    expect(find.text('Trung bình (4 - 7)'), findsOneWidget);
-    expect(find.text('Cao (>= 8)'), findsOneWidget);
+    expect(find.text('1–2 phản ánh (Thấp)'), findsOneWidget);
+    expect(find.text('3–5 phản ánh (Trung bình)'), findsOneWidget);
+    expect(find.text('Trên 5 phản ánh (Cao)'), findsOneWidget);
   });
 
   testWidgets('MapLegend renders 4 status colors without exception', (tester) async {

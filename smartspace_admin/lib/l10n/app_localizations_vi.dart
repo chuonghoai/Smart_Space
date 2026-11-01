@@ -1854,13 +1854,13 @@ class AppLocalizationsVi extends AppLocalizations {
   String get densityLegendTitle => 'Mật độ phản ánh';
 
   @override
-  String get densityLow => 'Thấp (1 - 3)';
+  String get densityLow => '1–2 phản ánh (Thấp)';
 
   @override
-  String get densityMedium => 'Trung bình (4 - 7)';
+  String get densityMedium => '3–5 phản ánh (Trung bình)';
 
   @override
-  String get densityHigh => 'Cao (>= 8)';
+  String get densityHigh => 'Trên 5 phản ánh (Cao)';
 
   @override
   String get filterTimeframe => 'Khoảng thời gian';
