@@ -388,5 +388,12 @@
   "densityLow": "1–2 reports (Low)",
   "densityMedium": "3–5 reports (Medium)",
   "densityHigh": "Over 5 reports (High)",
-  "mapBack": "Back"
+  "mapBack": "Back",
+  "filterTimeframe": "Timeframe",
+  "timeframeAll": "All time",
+  "timeframe1Month": "1 month",
+  "timeframe3Months": "3 months",
+  "timeframe6Months": "6 months",
+  "timeframe9Months": "9 months",
+  "timeframe12Months": "12 months"
 }

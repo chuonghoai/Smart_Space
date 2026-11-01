@@ -2,8 +2,12 @@ package com.vn.smart_space.service.report;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
+import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +28,7 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uber.h3core.H3Core;
 import com.uber.h3core.util.LatLng;
+import com.vn.smart_space.consts.EDensityTimeframe;
 import com.vn.smart_space.consts.EReportStatus;
 import com.vn.smart_space.dto.response.report.ReportDensityCellDto;
 import com.vn.smart_space.dto.response.report.ReportDensityResponse;
@@ -42,9 +47,6 @@ public class ReportDensityServiceImpl implements IReportDensityService {
     public static final double HEXAGON_AREA_SCALE = 1.5;
     public static final double HEXAGON_RADIUS_SCALE = Math.sqrt(HEXAGON_AREA_SCALE);
 
-    public static final String KEY_CELLS = "map:density:cells";
-    public static final String KEY_GEO = "map:density:geo";
-    public static final String KEY_META = "map:density:meta";
     public static final String KEY_LOCK = "lock:map:density:recalc";
     public static final String KEY_REPORT_PREFIX = "map:density:report:";
 
@@ -69,8 +71,35 @@ public class ReportDensityServiceImpl implements IReportDensityService {
         }
     }
 
+    public static String getKeyCells(String timeframe) {
+        EDensityTimeframe tf = EDensityTimeframe.fromCode(timeframe);
+        return tf == EDensityTimeframe.ALL ? "map:density:cells" : "map:density:" + tf.getCode() + ":cells";
+    }
+
+    public static String getKeyCells(EDensityTimeframe timeframe) {
+        return getKeyCells(timeframe != null ? timeframe.getCode() : "all");
+    }
+
+    public static String getKeyGeo(String timeframe) {
+        EDensityTimeframe tf = EDensityTimeframe.fromCode(timeframe);
+        return tf == EDensityTimeframe.ALL ? "map:density:geo" : "map:density:" + tf.getCode() + ":geo";
+    }
+
+    public static String getKeyGeo(EDensityTimeframe timeframe) {
+        return getKeyGeo(timeframe != null ? timeframe.getCode() : "all");
+    }
+
+    public static String getKeyMeta(String timeframe) {
+        EDensityTimeframe tf = EDensityTimeframe.fromCode(timeframe);
+        return tf == EDensityTimeframe.ALL ? "map:density:meta" : "map:density:" + tf.getCode() + ":meta";
+    }
+
+    public static String getKeyMeta(EDensityTimeframe timeframe) {
+        return getKeyMeta(timeframe != null ? timeframe.getCode() : "all");
+    }
+
     @Override
-    public ReportDensityResponse getDensity(Double north, Double south, Double east, Double west, Double zoom) {
+    public ReportDensityResponse getDensity(Double north, Double south, Double east, Double west, Double zoom, String timeframe) {
         // 1. Validate parameters
         if (north == null || south == null || east == null || west == null) {
             throw new BadRequestException("report.density.bounds_required");
@@ -82,8 +111,13 @@ public class ReportDensityServiceImpl implements IReportDensityService {
             zoom = 14.0;
         }
 
-        // 2. Ensure cache is ready (auto-heal / fallback if absent)
-        ensureCacheReady();
+        EDensityTimeframe tf = EDensityTimeframe.fromCode(timeframe);
+        String tfCode = tf.getCode();
+        String keyCells = getKeyCells(tfCode);
+        String keyGeo = getKeyGeo(tfCode);
+
+        // 2. Ensure cache is ready for this timeframe
+        ensureCacheReady(tfCode);
 
         // 3. Determine zoom limits
         int maxLimit = getLimitForZoom(zoom);
@@ -98,18 +132,18 @@ public class ReportDensityServiceImpl implements IReportDensityService {
             double centerLng = (west + east) / 2.0;
             double widthKm = Math.max(0.05, (east - west) * 111.32 * Math.cos(Math.toRadians(centerLat)));
             double radiusKm = Math.hypot(widthKm, heightKm) / 2.0;
-            cellIds.addAll(queryCellIdsInRadius(centerLng, centerLat, radiusKm, south, north, west, east, maxLimit));
+            cellIds.addAll(queryCellIdsInRadius(keyGeo, centerLng, centerLat, radiusKm, south, north, west, east, maxLimit));
         } else {
             // Split across antimeridian: [west, 180] and [-180, east]
             double centerLng1 = (west + 180.0) / 2.0;
             double widthKm1 = Math.max(0.05, (180.0 - west) * 111.32 * Math.cos(Math.toRadians(centerLat)));
             double radiusKm1 = Math.hypot(widthKm1, heightKm) / 2.0;
-            cellIds.addAll(queryCellIdsInRadius(centerLng1, centerLat, radiusKm1, south, north, west, 180.0, maxLimit / 2));
+            cellIds.addAll(queryCellIdsInRadius(keyGeo, centerLng1, centerLat, radiusKm1, south, north, west, 180.0, maxLimit / 2));
 
             double centerLng2 = (-180.0 + east) / 2.0;
             double widthKm2 = Math.max(0.05, (east - (-180.0)) * 111.32 * Math.cos(Math.toRadians(centerLat)));
             double radiusKm2 = Math.hypot(widthKm2, heightKm) / 2.0;
-            cellIds.addAll(queryCellIdsInRadius(centerLng2, centerLat, radiusKm2, south, north, -180.0, east, maxLimit / 2));
+            cellIds.addAll(queryCellIdsInRadius(keyGeo, centerLng2, centerLat, radiusKm2, south, north, -180.0, east, maxLimit / 2));
         }
 
         boolean truncated = cellIds.size() >= maxLimit;
@@ -117,7 +151,7 @@ public class ReportDensityServiceImpl implements IReportDensityService {
         // 5. Fetch details from Hash
         List<ReportDensityCellDto> cellDtos = new ArrayList<>();
         if (!cellIds.isEmpty()) {
-            List<Object> rawCells = redisTemplate.opsForHash().multiGet(KEY_CELLS, new ArrayList<>(cellIds));
+            List<Object> rawCells = redisTemplate.opsForHash().multiGet(keyCells, new ArrayList<>(cellIds));
             for (Object raw : rawCells) {
                 if (raw != null) {
                     try {
@@ -153,7 +187,7 @@ public class ReportDensityServiceImpl implements IReportDensityService {
         }
     }
 
-    private List<String> queryCellIdsInRadius(double centerLng, double centerLat, double radiusKm,
+    private List<String> queryCellIdsInRadius(String keyGeo, double centerLng, double centerLat, double radiusKm,
                                               double south, double north, double west, double east, int limit) {
         try {
             Circle circle = new Circle(new Point(centerLng, centerLat), new Distance(radiusKm, Metrics.KILOMETERS));
@@ -161,7 +195,7 @@ public class ReportDensityServiceImpl implements IReportDensityService {
                     .includeCoordinates()
                     .limit(limit);
 
-            GeoResults<RedisGeoCommands.GeoLocation<String>> results = redisTemplate.opsForGeo().radius(KEY_GEO, circle, args);
+            GeoResults<RedisGeoCommands.GeoLocation<String>> results = redisTemplate.opsForGeo().radius(keyGeo, circle, args);
 
             if (results == null) return Collections.emptyList();
 
@@ -183,7 +217,7 @@ public class ReportDensityServiceImpl implements IReportDensityService {
             }
             return list;
         } catch (Exception e) {
-            log.warn("[ReportDensity] Error querying GEORADIUS from Redis: {}", e.getMessage());
+            log.warn("[ReportDensity] Error querying GEORADIUS from Redis for key {}: {}", keyGeo, e.getMessage());
             return Collections.emptyList();
         }
     }
@@ -199,6 +233,8 @@ public class ReportDensityServiceImpl implements IReportDensityService {
             properties.put("count", cell.getCount());
             properties.put("level", cell.getLevel());
             properties.put("color", cell.getColor());
+            properties.put("latitude", cell.getLatitude());
+            properties.put("longitude", cell.getLongitude());
             feature.put("properties", properties);
 
             Map<String, Object> geometry = new HashMap<>();
@@ -230,12 +266,11 @@ public class ReportDensityServiceImpl implements IReportDensityService {
     }
 
     @Override
-    public synchronized ReportDensityStatusResponse triggerFullRecalculation(boolean async) {
-        // Check lock
+    public synchronized ReportDensityStatusResponse triggerFullRecalculation(boolean async, String timeframe) {
         String lockVal = UUID.randomUUID().toString();
-        Boolean acquired = redisTemplate.opsForValue().setIfAbsent(KEY_LOCK, lockVal, Duration.ofMinutes(5));
+        Boolean acquired = redisTemplate.opsForValue().setIfAbsent(KEY_LOCK, lockVal, Duration.ofMinutes(10));
         if (Boolean.FALSE.equals(acquired)) {
-            ReportDensityStatusResponse currentStatus = getStatus();
+            ReportDensityStatusResponse currentStatus = getStatus(timeframe);
             currentStatus.setMessage("Full recalculation is already in progress by another task");
             return currentStatus;
         }
@@ -243,55 +278,84 @@ public class ReportDensityServiceImpl implements IReportDensityService {
         if (async) {
             CompletableFuture.runAsync(() -> {
                 try {
-                    doFullRecalculationInternal(lockVal);
+                    doFullRecalculationInternal(lockVal, timeframe);
                 } catch (Exception e) {
                     log.error("[ReportDensity] Asynchronous full recalculation failed", e);
+                } finally {
+                    releaseLock(lockVal);
                 }
             });
             return ReportDensityStatusResponse.builder()
                     .status("RUNNING")
                     .resolution(H3_RESOLUTION)
-                    .message("Recalculation started asynchronously")
+                    .message("Recalculation started asynchronously for " + (timeframe != null ? timeframe : "all timeframes"))
                     .lastCalculatedAt(Instant.now().toString())
                     .build();
         } else {
             try {
-                return doFullRecalculationInternal(lockVal);
+                return doFullRecalculationInternal(lockVal, timeframe);
             } finally {
                 releaseLock(lockVal);
             }
         }
     }
 
-    private ReportDensityStatusResponse doFullRecalculationInternal(String lockVal) {
+    private ReportDensityStatusResponse doFullRecalculationInternal(String lockVal, String targetTimeframe) {
         long startTime = System.currentTimeMillis();
         String stagingId = UUID.randomUUID().toString();
-        String stagingCellsKey = KEY_CELLS + ":staging:" + stagingId;
-        String stagingGeoKey = KEY_GEO + ":staging:" + stagingId;
 
         try {
-            log.info("[ReportDensity] Starting Full Recalculation (Staging ID: {})...", stagingId);
+            log.info("[ReportDensity] Starting Full Recalculation across timeframes (Staging ID: {})...", stagingId);
 
-            // 1. Fetch all valid coordinates from DB
+            // 1. Fetch all valid coordinates with createdAt from DB
             List<Object[]> rawReports = reportRepository.findValidCoordinatesForDensity(EReportStatus.rejected);
             log.info("[ReportDensity] Fetched {} valid reports with coordinates from database", rawReports.size());
 
-            // 2. Aggregate counts per H3 cell
-            Map<String, Integer> cellCounts = new HashMap<>();
+            LocalDateTime now = LocalDateTime.now();
+
+            // Prepare timeframe aggregation maps
+            Map<EDensityTimeframe, Map<String, Integer>> tfCellCounts = new EnumMap<>(EDensityTimeframe.class);
+            Map<EDensityTimeframe, Integer> tfReportCounts = new EnumMap<>(EDensityTimeframe.class);
+            for (EDensityTimeframe tf : EDensityTimeframe.values()) {
+                tfCellCounts.put(tf, new HashMap<>());
+                tfReportCounts.put(tf, 0);
+            }
+
+            // 2. Single-pass aggregation O(N)
             for (Object[] row : rawReports) {
                 if (row == null || row.length < 3) continue;
                 String reportId = row[0] != null ? row[0].toString() : null;
                 Double lat = row[1] != null ? (Double) row[1] : null;
                 Double lng = row[2] != null ? (Double) row[2] : null;
 
+                LocalDateTime createdAt = null;
+                if (row.length > 3 && row[3] != null) {
+                    if (row[3] instanceof LocalDateTime ldt) {
+                        createdAt = ldt;
+                    } else if (row[3] instanceof java.sql.Timestamp ts) {
+                        createdAt = ts.toLocalDateTime();
+                    } else if (row[3] instanceof Date d) {
+                        createdAt = d.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                    }
+                }
+
                 if (lat != null && lng != null) {
                     try {
                         String cellId = h3.latLngToCellAddress(lat, lng, H3_RESOLUTION);
-                        cellCounts.put(cellId, cellCounts.getOrDefault(cellId, 0) + 1);
 
-                        // Save report-to-cell mapping for idempotency
+                        // Map report to cell for idempotency
                         if (reportId != null) {
                             redisTemplate.opsForValue().set(KEY_REPORT_PREFIX + reportId, cellId, Duration.ofDays(30));
+                        }
+
+                        // Distribute into applicable timeframes
+                        for (EDensityTimeframe tf : EDensityTimeframe.values()) {
+                            LocalDateTime cutoff = tf.getCutoff(now);
+                            if (cutoff == null || (createdAt != null && !createdAt.isBefore(cutoff))) {
+                                Map<String, Integer> counts = tfCellCounts.get(tf);
+                                counts.put(cellId, counts.getOrDefault(cellId, 0) + 1);
+                                tfReportCounts.put(tf, tfReportCounts.get(tf) + 1);
+                            }
                         }
                     } catch (Exception e) {
                         log.warn("[ReportDensity] Failed to convert lat/lng ({}, {}) to H3: {}", lat, lng, e.getMessage());
@@ -299,89 +363,104 @@ public class ReportDensityServiceImpl implements IReportDensityService {
                 }
             }
 
-            // 3. Write aggregated cells to staging keys
-            int cellCount = 0;
-            Map<String, String> stagingCells = new HashMap<>();
-            for (Map.Entry<String, Integer> entry : cellCounts.entrySet()) {
-                String cellId = entry.getKey();
-                int count = entry.getValue();
-                if (count <= 0) continue;
-
-                ReportDensityCellDto dto = buildCellDto(cellId, count);
-                stagingCells.put(cellId, objectMapper.writeValueAsString(dto));
-
-                // Add to staging GEO set
-                redisTemplate.opsForGeo().add(
-                        stagingGeoKey,
-                        new Point(dto.getLongitude(), dto.getLatitude()),
-                        cellId);
-                cellCount++;
-            }
-
-            if (!stagingCells.isEmpty()) {
-                redisTemplate.opsForHash().putAll(stagingCellsKey, stagingCells);
-            }
-
-            // 4. Atomic switch using Redis RENAME
-            if (redisTemplate.hasKey(stagingCellsKey)) {
-                redisTemplate.rename(stagingCellsKey, KEY_CELLS);
-            } else {
-                redisTemplate.delete(KEY_CELLS);
-            }
-
-            if (redisTemplate.hasKey(stagingGeoKey)) {
-                redisTemplate.rename(stagingGeoKey, KEY_GEO);
-            } else {
-                redisTemplate.delete(KEY_GEO);
-            }
-
-            // 5. Update metadata
+            // 3. Write each timeframe to Redis via Staging keys & Atomic Switch
+            int totalAllCells = 0;
             String nowStr = Instant.now().toString();
-            Map<String, String> meta = Map.of(
-                    "status", "READY",
-                    "resolution", String.valueOf(H3_RESOLUTION),
-                    "totalCells", String.valueOf(cellCount),
-                    "totalReports", String.valueOf(rawReports.size()),
-                    "version", String.valueOf(CACHE_VERSION),
-                    "lastCalculatedAt", nowStr
-            );
-            redisTemplate.opsForHash().putAll(KEY_META, meta);
+
+            for (EDensityTimeframe tf : EDensityTimeframe.values()) {
+                String tfCode = tf.getCode();
+                // If a specific timeframe was requested and it's not this one and not ALL, skip
+                if (targetTimeframe != null && !targetTimeframe.equalsIgnoreCase("all") && !targetTimeframe.equalsIgnoreCase(tfCode)) {
+                    continue;
+                }
+
+                String stagingCellsKey = getKeyCells(tfCode) + ":staging:" + stagingId;
+                String stagingGeoKey = getKeyGeo(tfCode) + ":staging:" + stagingId;
+
+                Map<String, Integer> cellCounts = tfCellCounts.get(tf);
+                Map<String, String> stagingCells = new HashMap<>();
+                int tfCellCount = 0;
+
+                for (Map.Entry<String, Integer> entry : cellCounts.entrySet()) {
+                    String cellId = entry.getKey();
+                    int count = entry.getValue();
+                    if (count <= 0) continue;
+
+                    ReportDensityCellDto dto = buildCellDto(cellId, count);
+                    stagingCells.put(cellId, objectMapper.writeValueAsString(dto));
+
+                    redisTemplate.opsForGeo().add(
+                            stagingGeoKey,
+                            new Point(dto.getLongitude(), dto.getLatitude()),
+                            cellId);
+                    tfCellCount++;
+                }
+
+                if (tf == EDensityTimeframe.ALL) {
+                    totalAllCells = tfCellCount;
+                }
+
+                if (!stagingCells.isEmpty()) {
+                    redisTemplate.opsForHash().putAll(stagingCellsKey, stagingCells);
+                }
+
+                // Atomic switch using Redis RENAME
+                String keyCells = getKeyCells(tfCode);
+                String keyGeo = getKeyGeo(tfCode);
+                String keyMeta = getKeyMeta(tfCode);
+
+                if (redisTemplate.hasKey(stagingCellsKey)) {
+                    redisTemplate.rename(stagingCellsKey, keyCells);
+                } else {
+                    redisTemplate.delete(keyCells);
+                }
+
+                if (redisTemplate.hasKey(stagingGeoKey)) {
+                    redisTemplate.rename(stagingGeoKey, keyGeo);
+                } else {
+                    redisTemplate.delete(keyGeo);
+                }
+
+                // Update metadata
+                Map<String, String> meta = Map.of(
+                        "status", "READY",
+                        "timeframe", tfCode,
+                        "resolution", String.valueOf(H3_RESOLUTION),
+                        "totalCells", String.valueOf(tfCellCount),
+                        "totalReports", String.valueOf(tfReportCounts.get(tf)),
+                        "version", String.valueOf(CACHE_VERSION),
+                        "lastCalculatedAt", nowStr
+                );
+                redisTemplate.opsForHash().putAll(keyMeta, meta);
+            }
 
             long durationMs = System.currentTimeMillis() - startTime;
-            log.info("[ReportDensity] Full Recalculation completed successfully in {} ms: {} cells, {} reports",
-                    durationMs, cellCount, rawReports.size());
+            log.info("[ReportDensity] Full Recalculation completed successfully in {} ms: {} cells, {} reports (ALL timeframe)",
+                    durationMs, totalAllCells, rawReports.size());
 
             return ReportDensityStatusResponse.builder()
-                    .status("READY")
+                    .status("COMPLETED")
                     .resolution(H3_RESOLUTION)
-                    .totalCells(cellCount)
+                    .totalCells(totalAllCells)
                     .totalReports(rawReports.size())
                     .lastCalculatedAt(nowStr)
-                    .message("Recalculation succeeded in " + durationMs + " ms")
+                    .message("Recalculation completed in " + durationMs + " ms across timeframes")
                     .build();
 
         } catch (Exception e) {
-            log.error("[ReportDensity] Full Recalculation failed: {}", e.getMessage(), e);
-            // Clean up staging keys on error to preserve active cache
-            try {
-                redisTemplate.delete(stagingCellsKey);
-                redisTemplate.delete(stagingGeoKey);
-            } catch (Exception ignored) {
-            }
-            throw new RuntimeException("Recalculation failed: " + e.getMessage(), e);
-        } finally {
-            releaseLock(lockVal);
+            log.error("[ReportDensity] Full recalculation failed", e);
+            throw new RuntimeException("Recalculation error: " + e.getMessage(), e);
         }
     }
 
     private void releaseLock(String lockVal) {
         try {
             String current = redisTemplate.opsForValue().get(KEY_LOCK);
-            if (lockVal.equals(current)) {
+            if (lockVal != null && lockVal.equals(current)) {
                 redisTemplate.delete(KEY_LOCK);
             }
         } catch (Exception e) {
-            log.warn("[ReportDensity] Failed to release lock: {}", e.getMessage());
+            log.warn("[ReportDensity] Could not release lock: {}", e.getMessage());
         }
     }
 
@@ -434,23 +513,24 @@ public class ReportDensityServiceImpl implements IReportDensityService {
     }
 
     @Override
-    public ReportDensityStatusResponse getStatus() {
+    public ReportDensityStatusResponse getStatus(String timeframe) {
+        String keyMeta = getKeyMeta(timeframe);
         try {
-            Map<Object, Object> entries = redisTemplate.opsForHash().entries(KEY_META);
+            Map<Object, Object> entries = redisTemplate.opsForHash().entries(keyMeta);
             if (entries.isEmpty()) {
                 return ReportDensityStatusResponse.builder()
                         .status("NOT_INITIALIZED")
                         .resolution(H3_RESOLUTION)
                         .totalCells(0)
                         .totalReports(0)
-                        .message("Cache not yet initialized")
+                        .message("Cache not yet initialized for timeframe " + timeframe)
                         .build();
             }
 
-            String status = entries.getOrDefault("status", "READY").toString();
-            int totalCells = Integer.parseInt(entries.getOrDefault("totalCells", "0").toString());
-            long totalReports = Long.parseLong(entries.getOrDefault("totalReports", "0").toString());
-            String lastCalculatedAt = entries.getOrDefault("lastCalculatedAt", "").toString();
+            int totalCells = entries.containsKey("totalCells") ? Integer.parseInt(entries.get("totalCells").toString()) : 0;
+            int totalReports = entries.containsKey("totalReports") ? Integer.parseInt(entries.get("totalReports").toString()) : 0;
+            String status = entries.getOrDefault("status", "UNKNOWN").toString();
+            String lastCalculatedAt = entries.containsKey("lastCalculatedAt") ? entries.get("lastCalculatedAt").toString() : null;
 
             return ReportDensityStatusResponse.builder()
                     .status(status)
@@ -458,14 +538,16 @@ public class ReportDensityServiceImpl implements IReportDensityService {
                     .totalCells(totalCells)
                     .totalReports(totalReports)
                     .lastCalculatedAt(lastCalculatedAt)
-                    .message("Current cache status: " + status)
+                    .message("Cache status: " + status + " for timeframe " + timeframe)
                     .build();
         } catch (Exception e) {
-            log.error("[ReportDensity] Failed to read status from Redis", e);
+            log.error("[ReportDensity] Error reading status for timeframe {}: {}", timeframe, e.getMessage());
             return ReportDensityStatusResponse.builder()
                     .status("ERROR")
                     .resolution(H3_RESOLUTION)
-                    .message(e.getMessage())
+                    .totalCells(0)
+                    .totalReports(0)
+                    .message("Failed to retrieve status: " + e.getMessage())
                     .build();
         }
     }
@@ -473,48 +555,59 @@ public class ReportDensityServiceImpl implements IReportDensityService {
     @Override
     public void initializeCacheIfAbsent() {
         try {
-            Boolean hasMeta = redisTemplate.hasKey(KEY_META);
-            if (Boolean.TRUE.equals(hasMeta)) {
-                Object status = redisTemplate.opsForHash().get(KEY_META, "status");
-                Object version = redisTemplate.opsForHash().get(KEY_META, "version");
-                if ("READY".equals(status) && String.valueOf(CACHE_VERSION).equals(version)) {
-                    log.info("[ReportDensity] Cache is already initialized and valid (Status: READY, Version: {})", version);
-                    return;
+            boolean allValid = true;
+            for (EDensityTimeframe tf : EDensityTimeframe.values()) {
+                String keyMeta = getKeyMeta(tf.getCode());
+                Boolean hasMeta = redisTemplate.hasKey(keyMeta);
+                if (Boolean.TRUE.equals(hasMeta)) {
+                    Object status = redisTemplate.opsForHash().get(keyMeta, "status");
+                    Object version = redisTemplate.opsForHash().get(keyMeta, "version");
+                    if (!"READY".equals(status) || !String.valueOf(CACHE_VERSION).equals(version)) {
+                        allValid = false;
+                        break;
+                    }
+                } else {
+                    allValid = false;
+                    break;
                 }
             }
 
-            log.info("[ReportDensity] Cache missing or invalid on startup. Triggering initial Full Recalculation...");
-            triggerFullRecalculation(true);
+            if (allValid) {
+                log.info("[ReportDensity] All timeframe density caches are initialized and valid (Status: READY, Version: {})", CACHE_VERSION);
+                return;
+            }
+
+            log.info("[ReportDensity] One or more timeframe caches missing or invalid on startup. Triggering initial Full Recalculation...");
+            triggerFullRecalculation(true, null);
         } catch (Exception e) {
             log.warn("[ReportDensity] Could not verify cache during startup: {}", e.getMessage());
         }
     }
 
-    private void ensureCacheReady() {
+    private void ensureCacheReady(String timeframe) {
+        String keyMeta = getKeyMeta(timeframe);
         try {
-            Boolean hasMeta = redisTemplate.hasKey(KEY_META);
+            Boolean hasMeta = redisTemplate.hasKey(keyMeta);
             if (Boolean.TRUE.equals(hasMeta)) {
-                Object status = redisTemplate.opsForHash().get(KEY_META, "status");
+                Object status = redisTemplate.opsForHash().get(keyMeta, "status");
                 if ("READY".equals(status)) {
                     return;
                 }
             }
 
-            log.warn("[ReportDensity] Cache not ready upon query request. Attempting synchronization...");
-            // Acquire lock and recalculate if needed
+            log.warn("[ReportDensity] Cache not ready for timeframe {} upon query request. Attempting synchronization...", timeframe);
             String lockVal = UUID.randomUUID().toString();
-            Boolean acquired = redisTemplate.opsForValue().setIfAbsent(KEY_LOCK, lockVal, Duration.ofMinutes(5));
+            Boolean acquired = redisTemplate.opsForValue().setIfAbsent(KEY_LOCK, lockVal, Duration.ofMinutes(10));
             if (Boolean.TRUE.equals(acquired)) {
                 try {
-                    doFullRecalculationInternal(lockVal);
+                    doFullRecalculationInternal(lockVal, timeframe);
                 } finally {
                     releaseLock(lockVal);
                 }
             } else {
-                // Wait briefly for calculation to complete
                 for (int i = 0; i < 6; i++) {
                     Thread.sleep(500);
-                    Object status = redisTemplate.opsForHash().get(KEY_META, "status");
+                    Object status = redisTemplate.opsForHash().get(keyMeta, "status");
                     if ("READY".equals(status)) {
                         return;
                     }
@@ -526,27 +619,34 @@ public class ReportDensityServiceImpl implements IReportDensityService {
     }
 
     @Override
-    public void onReportCreated(String reportId, Double latitude, Double longitude) {
+    public void onReportCreated(String reportId, Double latitude, Double longitude, LocalDateTime createdAt) {
         if (latitude == null || longitude == null || reportId == null) return;
         try {
             String cellId = h3.latLngToCellAddress(latitude, longitude, H3_RESOLUTION);
 
-            // Idempotency check: SETNX report key
             Boolean isNew = redisTemplate.opsForValue().setIfAbsent(KEY_REPORT_PREFIX + reportId, cellId, Duration.ofDays(30));
             if (Boolean.FALSE.equals(isNew)) {
                 log.info("[ReportDensity] Report {} already processed for cell {}. Skipping duplicate increment.", reportId, cellId);
                 return;
             }
 
-            incrementCell(cellId);
-            log.info("[ReportDensity] Incremented cell {} for new report {}", cellId, reportId);
+            LocalDateTime reportTime = createdAt != null ? createdAt : LocalDateTime.now();
+            LocalDateTime now = LocalDateTime.now();
+
+            for (EDensityTimeframe tf : EDensityTimeframe.values()) {
+                LocalDateTime cutoff = tf.getCutoff(now);
+                if (cutoff == null || !reportTime.isBefore(cutoff)) {
+                    incrementCell(cellId, tf.getCode());
+                }
+            }
+            log.info("[ReportDensity] Incremented cell {} for new report {} across applicable timeframes", cellId, reportId);
         } catch (Exception e) {
             log.warn("[ReportDensity] Failed incremental update on create report {}: {}", reportId, e.getMessage());
         }
     }
 
     @Override
-    public void onReportMoved(String reportId, Double oldLat, Double oldLng, Double newLat, Double newLng) {
+    public void onReportMoved(String reportId, Double oldLat, Double oldLng, Double newLat, Double newLng, LocalDateTime createdAt) {
         if (reportId == null || newLat == null || newLng == null) return;
         try {
             String newCellId = h3.latLngToCellAddress(newLat, newLng, H3_RESOLUTION);
@@ -557,22 +657,30 @@ public class ReportDensityServiceImpl implements IReportDensityService {
             }
 
             if (newCellId.equals(oldCellId)) {
-                return; // Same cell, no update needed
+                return;
             }
 
-            if (oldCellId != null) {
-                decrementCell(oldCellId);
+            LocalDateTime reportTime = createdAt != null ? createdAt : LocalDateTime.now();
+            LocalDateTime now = LocalDateTime.now();
+
+            for (EDensityTimeframe tf : EDensityTimeframe.values()) {
+                LocalDateTime cutoff = tf.getCutoff(now);
+                if (cutoff == null || !reportTime.isBefore(cutoff)) {
+                    if (oldCellId != null) {
+                        decrementCell(oldCellId, tf.getCode());
+                    }
+                    incrementCell(newCellId, tf.getCode());
+                }
             }
-            incrementCell(newCellId);
             redisTemplate.opsForValue().set(KEY_REPORT_PREFIX + reportId, newCellId, Duration.ofDays(30));
-            log.info("[ReportDensity] Moved report {} from cell {} to cell {}", reportId, oldCellId, newCellId);
+            log.info("[ReportDensity] Moved report {} from cell {} to cell {} across applicable timeframes", reportId, oldCellId, newCellId);
         } catch (Exception e) {
             log.warn("[ReportDensity] Failed incremental update on move report {}: {}", reportId, e.getMessage());
         }
     }
 
     @Override
-    public void onReportRejected(String reportId, Double latitude, Double longitude) {
+    public void onReportRejected(String reportId, Double latitude, Double longitude, LocalDateTime createdAt) {
         if (reportId == null) return;
         try {
             String cellId = redisTemplate.opsForValue().get(KEY_REPORT_PREFIX + reportId);
@@ -580,18 +688,29 @@ public class ReportDensityServiceImpl implements IReportDensityService {
                 cellId = h3.latLngToCellAddress(latitude, longitude, H3_RESOLUTION);
             }
             if (cellId != null) {
-                decrementCell(cellId);
+                LocalDateTime reportTime = createdAt != null ? createdAt : LocalDateTime.now();
+                LocalDateTime now = LocalDateTime.now();
+
+                for (EDensityTimeframe tf : EDensityTimeframe.values()) {
+                    LocalDateTime cutoff = tf.getCutoff(now);
+                    if (cutoff == null || !reportTime.isBefore(cutoff)) {
+                        decrementCell(cellId, tf.getCode());
+                    }
+                }
                 redisTemplate.delete(KEY_REPORT_PREFIX + reportId);
-                log.info("[ReportDensity] Decremented cell {} for rejected report {}", cellId, reportId);
+                log.info("[ReportDensity] Decremented cell {} for rejected report {} across applicable timeframes", cellId, reportId);
             }
         } catch (Exception e) {
             log.warn("[ReportDensity] Failed incremental update on reject report {}: {}", reportId, e.getMessage());
         }
     }
 
-    private synchronized void incrementCell(String cellId) {
+    private synchronized void incrementCell(String cellId, String timeframe) {
         try {
-            Object raw = redisTemplate.opsForHash().get(KEY_CELLS, cellId);
+            String keyCells = getKeyCells(timeframe);
+            String keyGeo = getKeyGeo(timeframe);
+
+            Object raw = redisTemplate.opsForHash().get(keyCells, cellId);
             ReportDensityCellDto dto;
             if (raw == null) {
                 dto = buildCellDto(cellId, 1);
@@ -602,31 +721,34 @@ public class ReportDensityServiceImpl implements IReportDensityService {
                 dto.setColor(classifyColor(dto.getLevel()));
             }
 
-            redisTemplate.opsForHash().put(KEY_CELLS, cellId, objectMapper.writeValueAsString(dto));
-            redisTemplate.opsForGeo().add(KEY_GEO, new Point(dto.getLongitude(), dto.getLatitude()), cellId);
+            redisTemplate.opsForHash().put(keyCells, cellId, objectMapper.writeValueAsString(dto));
+            redisTemplate.opsForGeo().add(keyGeo, new Point(dto.getLongitude(), dto.getLatitude()), cellId);
         } catch (Exception e) {
-            log.warn("[ReportDensity] Error in incrementCell: {}", e.getMessage());
+            log.warn("[ReportDensity] Error in incrementCell for timeframe {}: {}", timeframe, e.getMessage());
         }
     }
 
-    private synchronized void decrementCell(String cellId) {
+    private synchronized void decrementCell(String cellId, String timeframe) {
         try {
-            Object raw = redisTemplate.opsForHash().get(KEY_CELLS, cellId);
+            String keyCells = getKeyCells(timeframe);
+            String keyGeo = getKeyGeo(timeframe);
+
+            Object raw = redisTemplate.opsForHash().get(keyCells, cellId);
             if (raw == null) return;
 
             ReportDensityCellDto dto = objectMapper.readValue(raw.toString(), ReportDensityCellDto.class);
             int newCount = dto.getCount() - 1;
             if (newCount <= 0) {
-                redisTemplate.opsForHash().delete(KEY_CELLS, cellId);
-                redisTemplate.opsForZSet().remove(KEY_GEO, cellId);
+                redisTemplate.opsForHash().delete(keyCells, cellId);
+                redisTemplate.opsForZSet().remove(keyGeo, cellId);
             } else {
                 dto.setCount(newCount);
                 dto.setLevel(classifyLevel(newCount));
                 dto.setColor(classifyColor(dto.getLevel()));
-                redisTemplate.opsForHash().put(KEY_CELLS, cellId, objectMapper.writeValueAsString(dto));
+                redisTemplate.opsForHash().put(keyCells, cellId, objectMapper.writeValueAsString(dto));
             }
         } catch (Exception e) {
-            log.warn("[ReportDensity] Error in decrementCell: {}", e.getMessage());
+            log.warn("[ReportDensity] Error in decrementCell for timeframe {}: {}", timeframe, e.getMessage());
         }
     }
 }

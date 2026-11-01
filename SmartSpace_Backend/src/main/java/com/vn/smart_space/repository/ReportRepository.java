@@ -267,6 +267,7 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                         "AND (r.status <> :processed OR (r.user.id = :viewerId AND r.updatedAt >= :processedSince)) " +
                         "AND (:status IS NULL OR r.status = :status) " +
                         "AND (:ownerId IS NULL OR r.user.id = :ownerId) " +
+                        "AND (:createdAfter IS NULL OR r.createdAt >= :createdAfter) " +
                         "ORDER BY CASE r.severity " +
                         "WHEN com.vn.smart_space.consts.EReportSeverity.critical THEN 0 " +
                         "WHEN com.vn.smart_space.consts.EReportSeverity.high THEN 1 " +
@@ -279,17 +280,18 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                         @Param("excluded") EReportStatus excluded,
                         @Param("processed") EReportStatus processed,
                         @Param("processedSince") LocalDateTime processedSince,
+                        @Param("createdAfter") LocalDateTime createdAfter,
                         @Param("viewerId") String viewerId,
                         @Param("status") EReportStatus status,
                         @Param("ownerId") String ownerId,
                         Limit limit);
 
-        @Query("SELECT r.id, r.latitude, r.longitude FROM Report r " +
+        @Query("SELECT r.id, r.latitude, r.longitude, r.createdAt FROM Report r " +
                         "WHERE r.latitude IS NOT NULL AND r.longitude IS NOT NULL " +
                         "AND r.status <> :excluded")
         List<Object[]> findValidCoordinatesForDensity(@Param("excluded") EReportStatus excluded);
 
-        @Query("SELECT r.id, r.latitude, r.longitude FROM Report r " +
+        @Query("SELECT r.id, r.latitude, r.longitude, r.createdAt FROM Report r " +
                         "WHERE r.latitude BETWEEN :minLat AND :maxLat " +
                         "AND r.longitude BETWEEN :minLng AND :maxLng " +
                         "AND r.status <> :excluded")

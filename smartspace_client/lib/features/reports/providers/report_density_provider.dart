@@ -4,6 +4,7 @@ import 'package:mobile_shared/core/storage/shared_preferences.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
 import 'package:mobile_shared/features/map/viewport/viewport_load_gate.dart';
 import 'package:smartspace_client/features/reports/models/report_density_model.dart';
+import 'package:smartspace_client/features/reports/models/report_timeframe.dart';
 import 'package:smartspace_client/features/reports/services/report_service.dart';
 
 class ReportDensityState {
@@ -13,6 +14,7 @@ class ReportDensityState {
   final List<ReportDensityCell> cells;
   final String? geojsonString;
   final String? error;
+  final ReportTimeframe timeframe;
 
   const ReportDensityState({
     this.isEnabled = false,
@@ -21,6 +23,7 @@ class ReportDensityState {
     this.cells = const [],
     this.geojsonString,
     this.error,
+    this.timeframe = ReportTimeframe.all,
   });
 
   ReportDensityState copyWith({
@@ -32,6 +35,7 @@ class ReportDensityState {
     bool clearGeojson = false,
     String? error,
     bool clearError = false,
+    ReportTimeframe? timeframe,
   }) {
     return ReportDensityState(
       isEnabled: isEnabled ?? this.isEnabled,
@@ -40,12 +44,14 @@ class ReportDensityState {
       cells: cells ?? this.cells,
       geojsonString: clearGeojson ? null : (geojsonString ?? this.geojsonString),
       error: clearError ? null : (error ?? this.error),
+      timeframe: timeframe ?? this.timeframe,
     );
   }
 }
 
 class ReportDensityNotifier extends StateNotifier<ReportDensityState> {
   static const String _prefKey = 'map_show_density';
+  static const String _prefKeyTimeframe = 'map_report_timeframe';
   static const Duration freshness = Duration(minutes: 2);
   static const double prefetchFactor = 1.3;
 
@@ -63,8 +69,20 @@ class ReportDensityNotifier extends StateNotifier<ReportDensityState> {
 
   Future<void> _loadPreference() async {
     final enabled = await sharedPreferencesService.get<bool>(_prefKey) ?? false;
-    state = state.copyWith(isEnabled: enabled);
+    final tfCode = await sharedPreferencesService.get<String>(_prefKeyTimeframe);
+    final tf = ReportTimeframe.fromCode(tfCode);
+    state = state.copyWith(isEnabled: enabled, timeframe: tf);
     if (enabled && _currentBounds != null) {
+      await loadForViewport(_currentBounds!, _currentZoom, force: true);
+    }
+  }
+
+  Future<void> setTimeframe(ReportTimeframe tf) async {
+    if (state.timeframe == tf) return;
+    _gate.invalidate();
+    state = state.copyWith(timeframe: tf);
+    unawaited(sharedPreferencesService.set(_prefKeyTimeframe, tf.code));
+    if (state.isEnabled && _currentBounds != null) {
       await loadForViewport(_currentBounds!, _currentZoom, force: true);
     }
   }
@@ -110,6 +128,7 @@ class ReportDensityNotifier extends StateNotifier<ReportDensityState> {
         east: bounds.maxLng,
         west: bounds.minLng,
         zoom: zoom,
+        timeframe: state.timeframe.code,
       );
 
       if (!mounted || requestId != _activeRequestId || !_gate.isCurrent(request)) return;

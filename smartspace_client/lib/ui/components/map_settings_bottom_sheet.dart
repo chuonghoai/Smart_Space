@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
+import 'package:smartspace_client/features/reports/models/report_timeframe.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 
 class MapSettingsBottomSheet extends StatefulWidget {
@@ -7,6 +8,8 @@ class MapSettingsBottomSheet extends StatefulWidget {
   final ValueChanged<bool> onDensityToggle;
   final MapReportFilter currentFilter;
   final ValueChanged<MapReportFilter> onFilterSelected;
+  final ReportTimeframe currentTimeframe;
+  final ValueChanged<ReportTimeframe> onTimeframeSelected;
 
   const MapSettingsBottomSheet({
     super.key,
@@ -14,6 +17,8 @@ class MapSettingsBottomSheet extends StatefulWidget {
     required this.onDensityToggle,
     required this.currentFilter,
     required this.onFilterSelected,
+    required this.currentTimeframe,
+    required this.onTimeframeSelected,
   });
 
   static Future<void> show(
@@ -22,6 +27,8 @@ class MapSettingsBottomSheet extends StatefulWidget {
     required ValueChanged<bool> onDensityToggle,
     required MapReportFilter currentFilter,
     required ValueChanged<MapReportFilter> onFilterSelected,
+    required ReportTimeframe currentTimeframe,
+    required ValueChanged<ReportTimeframe> onTimeframeSelected,
   }) {
     return showModalBottomSheet(
       context: context,
@@ -32,6 +39,8 @@ class MapSettingsBottomSheet extends StatefulWidget {
         onDensityToggle: onDensityToggle,
         currentFilter: currentFilter,
         onFilterSelected: onFilterSelected,
+        currentTimeframe: currentTimeframe,
+        onTimeframeSelected: onTimeframeSelected,
       ),
     );
   }
@@ -43,12 +52,14 @@ class MapSettingsBottomSheet extends StatefulWidget {
 class _MapSettingsBottomSheetState extends State<MapSettingsBottomSheet> {
   late bool _isDensityEnabled;
   late MapReportFilter _currentFilter;
+  late ReportTimeframe _currentTimeframe;
 
   @override
   void initState() {
     super.initState();
     _isDensityEnabled = widget.isDensityEnabled;
     _currentFilter = widget.currentFilter;
+    _currentTimeframe = widget.currentTimeframe;
   }
 
   static String _filterLabel(MapReportFilter filter, AppLocalizations l10n) => switch (filter) {
@@ -246,6 +257,63 @@ class _MapSettingsBottomSheetState extends State<MapSettingsBottomSheet> {
                       onSelected: (_) {
                         setState(() => _currentFilter = filter);
                         widget.onFilterSelected(filter);
+                      },
+                    );
+                  }).toList(),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Section 3: Timeframe Filter
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                child: Row(
+                  children: [
+                    Icon(Icons.calendar_today_rounded, size: 18, color: colorScheme.primary),
+                    const SizedBox(width: 8),
+                    Text(
+                      l10n.filterTimeframe,
+                      style: theme.textTheme.titleSmall?.copyWith(
+                        fontWeight: FontWeight.bold,
+                        color: colorScheme.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 10),
+
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: ReportTimeframe.values.map((timeframe) {
+                    final isSelected = timeframe == _currentTimeframe;
+                    final label = timeframe.localizedLabel(context);
+
+                    return FilterChip(
+                      selected: isSelected,
+                      label: Text(label),
+                      labelStyle: TextStyle(
+                        fontSize: 13,
+                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                        color: isSelected ? colorScheme.onPrimaryContainer : colorScheme.onSurface,
+                      ),
+                      selectedColor: colorScheme.primaryContainer,
+                      backgroundColor: colorScheme.surfaceContainerLow,
+                      checkmarkColor: colorScheme.primary,
+                      side: BorderSide(
+                        color: isSelected ? colorScheme.primary : colorScheme.outlineVariant,
+                        width: isSelected ? 1.5 : 1.0,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      onSelected: (_) {
+                        setState(() => _currentTimeframe = timeframe);
+                        widget.onTimeframeSelected(timeframe);
                       },
                     );
                   }).toList(),

@@ -33,8 +33,9 @@ public class ReportController {
             @RequestParam(name = "south") Double south,
             @RequestParam(name = "east") Double east,
             @RequestParam(name = "west") Double west,
-            @RequestParam(name = "zoom", defaultValue = "14.0") Double zoom) {
-        ReportDensityResponse response = reportDensityService.getDensity(north, south, east, west, zoom);
+            @RequestParam(name = "zoom", defaultValue = "14.0") Double zoom,
+            @RequestParam(name = "timeframe", required = false, defaultValue = "all") String timeframe) {
+        ReportDensityResponse response = reportDensityService.getDensity(north, south, east, west, zoom, timeframe);
         return ResponseEntity.ok(ApiResponse.success("system.success", response));
     }
 
@@ -101,10 +102,11 @@ public class ReportController {
             @RequestParam(name = "min_lng") Double minLng,
             @RequestParam(name = "max_lng") Double maxLng,
             @RequestParam(defaultValue = "all") String filter,
+            @RequestParam(name = "timeframe", required = false) String timeframe,
             @RequestParam(defaultValue = "300") int limit) {
         String viewerId = jwt.getClaim("userId").toString();
         return ResponseEntity.ok(ApiResponse.success("system.success",
-                reportService.getReportsInBounds(viewerId, minLat, maxLat, minLng, maxLng, filter, limit)));
+                reportService.getReportsInBounds(viewerId, minLat, maxLat, minLng, maxLng, filter, timeframe, limit)));
     }
 
     @GetMapping("/{id}")

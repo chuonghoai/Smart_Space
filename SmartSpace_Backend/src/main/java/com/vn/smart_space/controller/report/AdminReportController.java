@@ -37,15 +37,17 @@ public class AdminReportController {
     @PostMapping("/density/recalculate")
     @PreAuthorize("hasRole('admin')")
     public ResponseEntity<ApiResponse> triggerDensityRecalculation(
-            @RequestParam(defaultValue = "true") boolean async) {
-        ReportDensityStatusResponse response = reportDensityService.triggerFullRecalculation(async);
+            @RequestParam(defaultValue = "true") boolean async,
+            @RequestParam(required = false) String timeframe) {
+        ReportDensityStatusResponse response = reportDensityService.triggerFullRecalculation(async, timeframe);
         return ResponseEntity.ok(ApiResponse.success("system.success", response));
     }
 
     @GetMapping("/density/status")
     @PreAuthorize("hasRole('admin')")
-    public ResponseEntity<ApiResponse> getDensityStatus() {
-        ReportDensityStatusResponse response = reportDensityService.getStatus();
+    public ResponseEntity<ApiResponse> getDensityStatus(
+            @RequestParam(required = false, defaultValue = "all") String timeframe) {
+        ReportDensityStatusResponse response = reportDensityService.getStatus(timeframe);
         return ResponseEntity.ok(ApiResponse.success("system.success", response));
     }
 

@@ -20,6 +20,7 @@ abstract class ReportRepo {
   Future<ApiResponse<MapReportsResult>> getReportsInBounds(
     MapBounds bounds, {
     MapReportFilter filter = MapReportFilter.all,
+    String? timeframe,
     int limit = 300,
   });
   Future<ApiResponse<ReportDetailModel>> submitReview(
@@ -43,5 +44,6 @@ abstract class ReportRepo {
     required double east,
     required double west,
     double zoom = 14.0,
+    String? timeframe,
   });
 }

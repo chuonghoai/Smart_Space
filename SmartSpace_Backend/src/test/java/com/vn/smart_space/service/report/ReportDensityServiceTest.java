@@ -2,6 +2,7 @@ package com.vn.smart_space.service.report;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -15,6 +16,7 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.uber.h3core.H3Core;
 import com.uber.h3core.util.LatLng;
+import com.vn.smart_space.consts.EDensityTimeframe;
 import com.vn.smart_space.exception.BadRequestException;
 import com.vn.smart_space.repository.ReportRepository;
 
@@ -125,6 +127,42 @@ class ReportDensityServiceTest {
     void testHexagonPolygonScaling() {
         assertEquals(1.5, ReportDensityServiceImpl.HEXAGON_AREA_SCALE, 0.0001);
         assertEquals(Math.sqrt(1.5), ReportDensityServiceImpl.HEXAGON_RADIUS_SCALE, 0.000001);
+    }
+
+    @Test
+    @DisplayName("Timeframe: EDensityTimeframe mappings and cutoff dates")
+    void testDensityTimeframeCutoffs() {
+        assertEquals(EDensityTimeframe.ALL, EDensityTimeframe.fromCode("all"));
+        assertEquals(EDensityTimeframe.ALL, EDensityTimeframe.fromCode(null));
+        assertEquals(EDensityTimeframe.ALL, EDensityTimeframe.fromCode("invalid"));
+
+        assertEquals(EDensityTimeframe.MONTH_1, EDensityTimeframe.fromCode("1m"));
+        assertEquals(EDensityTimeframe.MONTH_3, EDensityTimeframe.fromCode("3m"));
+        assertEquals(EDensityTimeframe.MONTH_6, EDensityTimeframe.fromCode("6m"));
+        assertEquals(EDensityTimeframe.MONTH_9, EDensityTimeframe.fromCode("9m"));
+        assertEquals(EDensityTimeframe.MONTH_12, EDensityTimeframe.fromCode("12m"));
+
+        LocalDateTime now = LocalDateTime.of(2026, 11, 2, 0, 0);
+        assertNull(EDensityTimeframe.ALL.getCutoff(now));
+        assertEquals(now.minusMonths(1), EDensityTimeframe.MONTH_1.getCutoff(now));
+        assertEquals(now.minusMonths(3), EDensityTimeframe.MONTH_3.getCutoff(now));
+        assertEquals(now.minusMonths(6), EDensityTimeframe.MONTH_6.getCutoff(now));
+        assertEquals(now.minusMonths(9), EDensityTimeframe.MONTH_9.getCutoff(now));
+        assertEquals(now.minusMonths(12), EDensityTimeframe.MONTH_12.getCutoff(now));
+    }
+
+    @Test
+    @DisplayName("Redis Keys: Format matches timeframe")
+    void testRedisKeyFormatting() {
+        assertEquals("map:density:cells", densityService.getKeyCells(EDensityTimeframe.ALL));
+        assertEquals("map:density:geo", densityService.getKeyGeo(EDensityTimeframe.ALL));
+        assertEquals("map:density:meta", densityService.getKeyMeta(EDensityTimeframe.ALL));
+
+        assertEquals("map:density:1m:cells", densityService.getKeyCells(EDensityTimeframe.MONTH_1));
+        assertEquals("map:density:1m:geo", densityService.getKeyGeo(EDensityTimeframe.MONTH_1));
+        assertEquals("map:density:1m:meta", densityService.getKeyMeta(EDensityTimeframe.MONTH_1));
+
+        assertEquals("map:density:12m:cells", densityService.getKeyCells(EDensityTimeframe.MONTH_12));
     }
 }
 

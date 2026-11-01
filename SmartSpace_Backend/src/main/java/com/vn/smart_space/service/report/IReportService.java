@@ -29,9 +29,14 @@ public interface IReportService {
         PageResponse<ReportDetailResponse> getFeed(String status, int page, int size,
                         Double userLat, Double userLong);
 
-        // Client Map — reports inside a viewport (bounding box), narrowed by filter (see EMapReportFilter)
+        // Client Map — reports inside a viewport (bounding box), narrowed by filter & timeframe
         MapReportsResponse getReportsInBounds(String viewerId, Double minLat, Double maxLat, Double minLng,
-                        Double maxLng, String filter, int limit);
+                        Double maxLng, String filter, String timeframe, int limit);
+
+        default MapReportsResponse getReportsInBounds(String viewerId, Double minLat, Double maxLat, Double minLng,
+                        Double maxLng, String filter, int limit) {
+                return getReportsInBounds(viewerId, minLat, maxLat, minLng, maxLng, filter, null, limit);
+        }
 
         List<RecentReportResponse> getAdminRecentReports(String tab, int limit);
 
@@ -76,4 +81,3 @@ public interface IReportService {
 
         ReportDetailResponse cancelReport(String reportId, String userId);
 }
-

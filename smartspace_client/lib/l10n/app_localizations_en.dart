@@ -993,4 +993,25 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get mapBack => 'Back';
+
+  @override
+  String get filterTimeframe => 'Timeframe';
+
+  @override
+  String get timeframeAll => 'All time';
+
+  @override
+  String get timeframe1Month => '1 month';
+
+  @override
+  String get timeframe3Months => '3 months';
+
+  @override
+  String get timeframe6Months => '6 months';
+
+  @override
+  String get timeframe9Months => '9 months';
+
+  @override
+  String get timeframe12Months => '12 months';
 }

@@ -983,4 +983,25 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get mapBack => 'Quay lại';
+
+  @override
+  String get filterTimeframe => 'Khoảng thời gian';
+
+  @override
+  String get timeframeAll => 'Tất cả';
+
+  @override
+  String get timeframe1Month => '1 tháng';
+
+  @override
+  String get timeframe3Months => '3 tháng';
+
+  @override
+  String get timeframe6Months => '6 tháng';
+
+  @override
+  String get timeframe9Months => '9 tháng';
+
+  @override
+  String get timeframe12Months => '12 tháng';
 }

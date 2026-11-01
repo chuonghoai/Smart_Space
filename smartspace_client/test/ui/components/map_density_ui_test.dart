@@ -3,6 +3,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
+import 'package:smartspace_client/features/reports/models/report_timeframe.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/ui/components/map_controls.dart';
 import 'package:smartspace_client/ui/components/map_density_legend.dart';
@@ -40,20 +41,25 @@ void main() {
       expect(find.text('Trên 5 phản ánh (Cao)'), findsOneWidget);
     });
 
-    testWidgets('MapSettingsBottomSheet renders, triggers toggle, and selects filter', (tester) async {
+    testWidgets('MapSettingsBottomSheet renders, triggers toggle, and selects filter and timeframe', (tester) async {
       bool toggledValue = false;
       MapReportFilter selectedFilter = MapReportFilter.all;
+      ReportTimeframe selectedTimeframe = ReportTimeframe.all;
 
       await tester.pumpWidget(
         createLocalizedApp(
           MapSettingsBottomSheet(
             isDensityEnabled: false,
             currentFilter: MapReportFilter.all,
+            currentTimeframe: ReportTimeframe.all,
             onDensityToggle: (val) {
               toggledValue = val;
             },
             onFilterSelected: (filter) {
               selectedFilter = filter;
+            },
+            onTimeframeSelected: (tf) {
+              selectedTimeframe = tf;
             },
           ),
         ),
@@ -63,14 +69,22 @@ void main() {
       expect(find.text('Cài đặt bản đồ'), findsOneWidget);
       expect(find.text('Hiển thị mật độ phản ánh'), findsOneWidget);
       expect(find.text('Bộ lọc báo cáo'), findsOneWidget);
+      expect(find.text('Khoảng thời gian'), findsOneWidget);
       expect(find.byType(Switch), findsOneWidget);
 
-      // Verify filter chips exist
-      expect(find.text('Tất cả'), findsOneWidget);
+      // Verify status filter chips exist
+      expect(find.text('Tất cả'), findsNWidgets(2)); // Status 'Tất cả' and Timeframe 'Tất cả'
       expect(find.text('Phản ánh của tôi'), findsOneWidget);
       expect(find.text('Đang chờ'), findsOneWidget);
       expect(find.text('Đang xử lý'), findsOneWidget);
       expect(find.text('Đã xử lý'), findsOneWidget);
+
+      // Verify timeframe chips exist
+      expect(find.text('1 tháng'), findsOneWidget);
+      expect(find.text('3 tháng'), findsOneWidget);
+      expect(find.text('6 tháng'), findsOneWidget);
+      expect(find.text('9 tháng'), findsOneWidget);
+      expect(find.text('12 tháng'), findsOneWidget);
 
       // Toggle switch
       await tester.tap(find.byType(Switch));
@@ -81,6 +95,11 @@ void main() {
       await tester.tap(find.text('Đang chờ'));
       await tester.pumpAndSettle();
       expect(selectedFilter, equals(MapReportFilter.pending));
+
+      // Tap timeframe chip
+      await tester.tap(find.text('3 tháng'));
+      await tester.pumpAndSettle();
+      expect(selectedTimeframe, equals(ReportTimeframe.month3));
     });
 
     testWidgets('MapControls includes settings button and fires callback', (tester) async {

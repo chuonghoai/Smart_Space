@@ -46,11 +46,20 @@ class ReportRepoApi implements ReportRepo {
   Future<ApiResponse<MapReportsResult>> getReportsInBounds(
     MapBounds bounds, {
     MapReportFilter filter = MapReportFilter.all,
+    String? timeframe,
     int limit = 300,
   }) async {
+    final Map<String, dynamic> params = {
+      ...bounds.toQueryParameters(),
+      'filter': filter.name,
+      'limit': limit,
+    };
+    if (timeframe != null && timeframe.isNotEmpty) {
+      params['timeframe'] = timeframe;
+    }
     return await apiClient.get<MapReportsResult>(
       '/reports/map',
-      queryParameters: {...bounds.toQueryParameters(), 'filter': filter.name, 'limit': limit},
+      queryParameters: params,
       decoder: (json) {
         if (json is Map<String, dynamic>) {
           return MapReportsResult.fromJson(json);
@@ -206,16 +215,21 @@ class ReportRepoApi implements ReportRepo {
     required double east,
     required double west,
     double zoom = 14.0,
+    String? timeframe,
   }) async {
+    final Map<String, dynamic> params = {
+      'north': north,
+      'south': south,
+      'east': east,
+      'west': west,
+      'zoom': zoom,
+    };
+    if (timeframe != null && timeframe.isNotEmpty) {
+      params['timeframe'] = timeframe;
+    }
     return await apiClient.get<ReportDensityResult>(
       '/reports/density',
-      queryParameters: {
-        'north': north,
-        'south': south,
-        'east': east,
-        'west': west,
-        'zoom': zoom,
-      },
+      queryParameters: params,
       decoder: (json) {
         if (json is Map<String, dynamic>) {
           return ReportDensityResult.fromJson(json);

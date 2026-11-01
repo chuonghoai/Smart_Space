@@ -3,9 +3,11 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
 import 'package:smartspace_client/features/reports/models/map_reports_result.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
+import 'package:smartspace_client/features/reports/models/report_timeframe.dart';
 import 'package:smartspace_client/features/reports/providers/map_reports_provider.dart';
 import 'package:smartspace_client/features/reports/repositories/report_repo.dart';
 import 'package:smartspace_client/features/reports/services/report_service.dart';
@@ -14,16 +16,19 @@ import 'package:smartspace_client/features/reports/services/report_service.dart'
 class _FakeReportRepo implements ReportRepo {
   final List<MapBounds> requestedBounds = [];
   final List<MapReportFilter> requestedFilters = [];
+  final List<String?> requestedTimeframes = [];
   final List<Completer<ApiResponse<MapReportsResult>>> pending = [];
 
   @override
   Future<ApiResponse<MapReportsResult>> getReportsInBounds(
     MapBounds bounds, {
     MapReportFilter filter = MapReportFilter.all,
+    String? timeframe,
     int limit = 300,
   }) {
     requestedBounds.add(bounds);
     requestedFilters.add(filter);
+    requestedTimeframes.add(timeframe);
     final completer = Completer<ApiResponse<MapReportsResult>>();
     pending.add(completer);
     return completer.future;
@@ -51,6 +56,7 @@ ApiResponse<MapReportsResult> _ok(List<String> ids, {bool truncated = false}) =>
     );
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
   const viewport = MapBounds(minLat: 10.7, maxLat: 10.9, minLng: 106.6, maxLng: 106.8);
   const insideViewport = MapBounds(minLat: 10.75, maxLat: 10.85, minLng: 106.65, maxLng: 106.75);
 
@@ -59,6 +65,7 @@ void main() {
   late MapReportsNotifier notifier;
 
   setUp(() {
+    SharedPreferences.setMockInitialValues({});
     repo = _FakeReportRepo();
     now = DateTime(2026, 1, 1, 12);
     notifier = MapReportsNotifier(ReportService(reportRepo: repo), now: () => now);
@@ -206,5 +213,20 @@ void main() {
 
     expect(notifier.state.reports.map((r) => r.id), ['pending-1']);
     expect(notifier.state.filter, MapReportFilter.pending);
+  });
+
+  test('đổi timeframe: bỏ cache, tải lại ngay khung gần nhất với timeframe mới', () async {
+    final first = notifier.loadForViewport(viewport);
+    repo.pending.single.complete(_ok(['a']));
+    await first;
+
+    unawaited(notifier.setTimeframe(ReportTimeframe.month3));
+    expect(notifier.state.timeframe, ReportTimeframe.month3);
+    expect(repo.requestedTimeframes, ['all', '3m']);
+
+    repo.pending.last.complete(_ok(['tf-3m']));
+    await Future<void>.delayed(Duration.zero);
+    expect(notifier.state.reports.map((r) => r.id), ['tf-3m']);
+    expect(notifier.state.timeframe, ReportTimeframe.month3);
   });
 }

@@ -19,6 +19,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.vn.smart_space.consts.EDensityTimeframe;
 import com.vn.smart_space.consts.EMapReportFilter;
 import com.vn.smart_space.consts.EReportSeverity;
 import com.vn.smart_space.consts.EReportStatus;
@@ -172,7 +173,7 @@ public class ReportServiceImpl implements IReportService {
 
         // Incremental update for map density
         try {
-            reportDensityService.onReportCreated(report.getId(), report.getLatitude(), report.getLongitude());
+            reportDensityService.onReportCreated(report.getId(), report.getLatitude(), report.getLongitude(), report.getCreatedAt());
         } catch (Exception e) {
             log.warn("[ReportDensity] Failed to trigger density update on create report: {}", e.getMessage());
         }
@@ -366,6 +367,13 @@ public class ReportServiceImpl implements IReportService {
     @Transactional(readOnly = true)
     public MapReportsResponse getReportsInBounds(String viewerId, Double minLat, Double maxLat, Double minLng,
             Double maxLng, String filter, int limit) {
+        return getReportsInBounds(viewerId, minLat, maxLat, minLng, maxLng, filter, "all", limit);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MapReportsResponse getReportsInBounds(String viewerId, Double minLat, Double maxLat, Double minLng,
+            Double maxLng, String filter, String timeframe, int limit) {
         validateMapBounds(minLat, maxLat, minLng, maxLng);
         EMapReportFilter mapFilter = EMapReportFilter.from(filter);
         if (mapFilter == null) {
@@ -373,11 +381,14 @@ public class ReportServiceImpl implements IReportService {
         }
         int safeLimit = safeMapLimit(limit, MAP_DEFAULT_LIMIT);
 
+        LocalDateTime createdAfter = EDensityTimeframe.fromCode(timeframe).getCutoff(LocalDateTime.now());
+
         // Fetch one extra row to know whether the viewport holds more than safeLimit
         // reports
         List<Report> reports = reportRepository.findInBounds(minLat, maxLat, minLng, maxLng,
                 EReportStatus.rejected, EReportStatus.processed,
                 LocalDateTime.now().minusDays(MAP_PROCESSED_VISIBLE_DAYS),
+                createdAfter,
                 viewerId,
                 mapFilter.status(),
                 mapFilter == EMapReportFilter.mine ? viewerId : null,
@@ -1067,7 +1078,7 @@ public class ReportServiceImpl implements IReportService {
 
         if (next == EReportStatus.rejected) {
             try {
-                reportDensityService.onReportRejected(saved.getId(), saved.getLatitude(), saved.getLongitude());
+                reportDensityService.onReportRejected(saved.getId(), saved.getLatitude(), saved.getLongitude(), saved.getCreatedAt());
             } catch (Exception ex) {
                 log.warn("[ReportDensity] Error updating density for rejected report {}: {}", saved.getId(), ex.getMessage());
             }
@@ -1659,10 +1670,13 @@ public class ReportServiceImpl implements IReportService {
 
         report = reportRepository.save(report);
 
-        try {
-            reportDensityService.onReportRejected(report.getId(), report.getLatitude(), report.getLongitude());
-        } catch (Exception e) {
-            log.warn("[ReportDensity] Failed to trigger density update on cancel report: {}", e.getMessage());
+        if (oldLat != null && oldLng != null && report.getLatitude() != null && report.getLongitude() != null
+                && (!oldLat.equals(report.getLatitude()) || !oldLng.equals(report.getLongitude()))) {
+            try {
+                reportDensityService.onReportMoved(report.getId(), oldLat, oldLng, report.getLatitude(), report.getLongitude(), report.getCreatedAt());
+            } catch (Exception e) {
+                log.warn("[ReportDensity] Failed to trigger density update on move report: {}", e.getMessage());
+            }
         }
 
         if (userId != null && report.getUser() != null) {
@@ -1702,7 +1716,7 @@ public class ReportServiceImpl implements IReportService {
         report = reportRepository.save(report);
 
         try {
-            reportDensityService.onReportRejected(report.getId(), report.getLatitude(), report.getLongitude());
+            reportDensityService.onReportRejected(report.getId(), report.getLatitude(), report.getLongitude(), report.getCreatedAt());
         } catch (Exception e) {
             log.warn("[ReportDensity] Failed to trigger density update on cancel report: {}", e.getMessage());
         }

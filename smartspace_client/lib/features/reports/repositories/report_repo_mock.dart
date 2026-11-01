@@ -87,6 +87,7 @@ class ReportRepoMock implements ReportRepo {
   Future<ApiResponse<MapReportsResult>> getReportsInBounds(
     MapBounds bounds, {
     MapReportFilter filter = MapReportFilter.all,
+    String? timeframe,
     int limit = 300,
   }) async {
     await Future.delayed(const Duration(milliseconds: 500));
@@ -330,6 +331,7 @@ class ReportRepoMock implements ReportRepo {
     required double east,
     required double west,
     double zoom = 14.0,
+    String? timeframe,
   }) async {
     return ApiResponse(
       success: true,

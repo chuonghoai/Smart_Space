@@ -1,13 +1,18 @@
+import 'dart:async';
+
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile_shared/core/storage/shared_preferences.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
 import 'package:mobile_shared/features/map/viewport/viewport_load_gate.dart';
 import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
+import 'package:smartspace_client/features/reports/models/report_timeframe.dart';
 import 'package:smartspace_client/features/reports/services/report_service.dart';
 
 class MapReportsState {
   final List<ReportModel> reports;
   final MapReportFilter filter;
+  final ReportTimeframe timeframe;
   final bool truncated;
   final bool isLoading;
   final String? error;
@@ -15,6 +20,7 @@ class MapReportsState {
   const MapReportsState({
     this.reports = const [],
     this.filter = MapReportFilter.all,
+    this.timeframe = ReportTimeframe.all,
     this.truncated = false,
     this.isLoading = false,
     this.error,
@@ -23,6 +29,7 @@ class MapReportsState {
   MapReportsState copyWith({
     List<ReportModel>? reports,
     MapReportFilter? filter,
+    ReportTimeframe? timeframe,
     bool? truncated,
     bool? isLoading,
     String? error,
@@ -31,6 +38,7 @@ class MapReportsState {
     return MapReportsState(
       reports: reports ?? this.reports,
       filter: filter ?? this.filter,
+      timeframe: timeframe ?? this.timeframe,
       truncated: truncated ?? this.truncated,
       isLoading: isLoading ?? this.isLoading,
       error: clearError ? null : (error ?? this.error),
@@ -42,6 +50,7 @@ class MapReportsState {
 /// Quy tắc khi nào tải lại nằm ở [ViewportLoadGate] (dùng chung với Admin).
 /// Giữ dữ liệu cũ trong lúc tải → bản đồ không bị trống/nháy.
 class MapReportsNotifier extends StateNotifier<MapReportsState> {
+  static const String _prefKeyTimeframe = 'map_report_timeframe';
   static const double prefetchFactor = 1.5;
   static const Duration freshness = Duration(minutes: 2);
   static const int limit = 300;
@@ -51,7 +60,18 @@ class MapReportsNotifier extends StateNotifier<MapReportsState> {
 
   MapReportsNotifier(this._service, {DateTime Function()? now})
       : _gate = ViewportLoadGate(prefetchFactor: prefetchFactor, freshness: freshness, now: now),
-        super(const MapReportsState());
+        super(const MapReportsState()) {
+    _loadPreference();
+  }
+
+  Future<void> _loadPreference() async {
+    final tfCode = await sharedPreferencesService.get<String>(_prefKeyTimeframe);
+    final tf = ReportTimeframe.fromCode(tfCode);
+    if (tf != state.timeframe) {
+      state = state.copyWith(timeframe: tf);
+      await refresh();
+    }
+  }
 
   Future<void> loadForViewport(MapBounds viewport, {bool force = false}) async {
     final request = _gate.begin(viewport, force: force);
@@ -61,7 +81,12 @@ class MapReportsNotifier extends StateNotifier<MapReportsState> {
     state = state.copyWith(isLoading: true, clearError: true);
 
     try {
-      final response = await _service.getReportsInBounds(request.bounds, filter: filter, limit: limit);
+      final response = await _service.getReportsInBounds(
+        request.bounds,
+        filter: filter,
+        timeframe: state.timeframe.code,
+        limit: limit,
+      );
       if (!mounted || !_gate.isCurrent(request)) return;
 
       final data = response.data;
@@ -72,6 +97,7 @@ class MapReportsNotifier extends StateNotifier<MapReportsState> {
               .where((r) => r.latitude != 0 || r.longitude != 0)
               .toList(),
           filter: filter,
+          timeframe: state.timeframe,
           truncated: data.truncated,
         );
       } else {
@@ -90,6 +116,15 @@ class MapReportsNotifier extends StateNotifier<MapReportsState> {
     if (filter == state.filter) return;
     _gate.invalidate();
     state = state.copyWith(filter: filter);
+    await refresh();
+  }
+
+  /// Đổi khung thời gian → dữ liệu đã tải không còn đúng, tải lại ngay khung đang xem.
+  Future<void> setTimeframe(ReportTimeframe timeframe) async {
+    if (timeframe == state.timeframe) return;
+    _gate.invalidate();
+    state = state.copyWith(timeframe: timeframe);
+    unawaited(sharedPreferencesService.set(_prefKeyTimeframe, timeframe.code));
     await refresh();
   }
 

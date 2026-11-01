@@ -285,11 +285,13 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
   void _showMapSettings() {
     final isEnabled = ref.read(reportDensityProvider).isEnabled;
     final currentFilter = ref.read(mapReportsProvider).filter;
+    final currentTimeframe = ref.read(mapReportsProvider).timeframe;
 
     MapSettingsBottomSheet.show(
       context,
       isDensityEnabled: isEnabled,
       currentFilter: currentFilter,
+      currentTimeframe: currentTimeframe,
       onDensityToggle: (val) async {
         final map = _mapboxMap;
         MapBounds? bounds;
@@ -303,6 +305,9 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
       },
       onFilterSelected: (filter) {
         ref.read(mapControllerProvider.notifier).setFilter(filter);
+      },
+      onTimeframeSelected: (timeframe) {
+        ref.read(mapControllerProvider.notifier).setTimeframe(timeframe);
       },
     );
   }

@@ -388,5 +388,12 @@
   "densityLow": "1–2 phản ánh (Thấp)",
   "densityMedium": "3–5 phản ánh (Trung bình)",
   "densityHigh": "Trên 5 phản ánh (Cao)",
-  "mapBack": "Quay lại"
+  "mapBack": "Quay lại",
+  "filterTimeframe": "Khoảng thời gian",
+  "timeframeAll": "Tất cả",
+  "timeframe1Month": "1 tháng",
+  "timeframe3Months": "3 tháng",
+  "timeframe6Months": "6 tháng",
+  "timeframe9Months": "9 tháng",
+  "timeframe12Months": "12 tháng"
 }

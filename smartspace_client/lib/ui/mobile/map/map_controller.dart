@@ -4,7 +4,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
 import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
+import 'package:smartspace_client/features/reports/models/report_timeframe.dart';
 import 'package:smartspace_client/features/reports/providers/map_reports_provider.dart';
+import 'package:smartspace_client/features/reports/providers/report_density_provider.dart';
 
 /// UI State cho Map Screen
 class MapState {
@@ -86,6 +88,12 @@ class MapController extends StateNotifier<MapState> {
   void setFilter(MapReportFilter filter) {
     _viewportDebounce?.cancel();
     _ref.read(mapReportsProvider.notifier).setFilter(filter);
+  }
+
+  void setTimeframe(ReportTimeframe timeframe) {
+    _viewportDebounce?.cancel();
+    _ref.read(mapReportsProvider.notifier).setTimeframe(timeframe);
+    _ref.read(reportDensityProvider.notifier).setTimeframe(timeframe);
   }
 
   @override
