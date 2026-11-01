@@ -3,12 +3,14 @@ package com.vn.smart_space.repository;
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -17,7 +19,14 @@ import com.vn.smart_space.consts.EReportStatus;
 import com.vn.smart_space.consts.ERole;
 import com.vn.smart_space.model.Report;
 
+import jakarta.persistence.LockModeType;
+
 public interface ReportRepository extends JpaRepository<Report, String> {
+
+        // Khoá dòng report khi đổi người được giao (nhờ làm giùm) để 2 yêu cầu song song không cùng lọt qua kiểm tra
+        @Lock(LockModeType.PESSIMISTIC_WRITE)
+        @Query("SELECT r FROM Report r WHERE r.id = :id")
+        Optional<Report> findByIdForUpdate(@Param("id") String id);
 
         @Query("SELECT r FROM Report r WHERE r.severity IN :severities ORDER BY r.createdAt DESC")
         List<Report> findTopBySeverityInOrderByCreatedAtDesc(@Param("severities") List<EReportSeverity> severities,
