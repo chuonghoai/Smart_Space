@@ -331,13 +331,17 @@ class ReportRepoMock implements ReportRepo {
     required double west,
     double zoom = 14.0,
   }) async {
-    return ApiResponse.success(const ReportDensityResult(
-      resolution: 11,
-      zoom: 14.0,
-      totalCells: 0,
-      truncated: false,
-      cells: [],
-      geojson: {'type': 'FeatureCollection', 'features': []},
-    ));
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: ReportDensityResult(
+        resolution: 11,
+        zoom: 14.0,
+        totalCells: 0,
+        truncated: false,
+        cells: [],
+        geojson: {'type': 'FeatureCollection', 'features': []},
+      )
+    );
   }
 }

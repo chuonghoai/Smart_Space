@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.geo.Circle;
 import org.springframework.data.geo.Distance;
 import org.springframework.data.geo.GeoResult;
@@ -53,10 +54,10 @@ public class ReportDensityServiceImpl implements IReportDensityService {
     public ReportDensityServiceImpl(
             ReportRepository reportRepository,
             StringRedisTemplate redisTemplate,
-            ObjectMapper objectMapper) {
+            @Autowired(required = false) ObjectMapper objectMapper) {
         this.reportRepository = reportRepository;
         this.redisTemplate = redisTemplate;
-        this.objectMapper = objectMapper;
+        this.objectMapper = (objectMapper != null) ? objectMapper : new ObjectMapper();
         try {
             this.h3 = H3Core.newInstance();
             log.info("[ReportDensity] Uber H3 v4 initialized successfully with Resolution: {}", H3_RESOLUTION);
