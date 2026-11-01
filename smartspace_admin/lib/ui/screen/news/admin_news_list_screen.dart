@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
@@ -16,20 +17,9 @@ class AdminNewsListScreen extends ConsumerWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
     final newsAsync = ref.watch(newsListProvider);
+    final isDesktop = kIsWeb && MediaQuery.of(context).size.width >= 850;
 
-    return AppLayout(
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () => context.push(RouterPath.createNews),
-        icon: const Icon(Icons.add),
-        label: Text(l10n.createNewNews),
-        backgroundColor: colorScheme.primary,
-        foregroundColor: colorScheme.onPrimary,
-      ),
-      child: RefreshIndicator(
-        onRefresh: () async {
-          ref.invalidate(newsListProvider);
-        },
-        child: CustomScrollView(
+    final scrollView = CustomScrollView(
           physics: const AlwaysScrollableScrollPhysics(
             parent: ClampingScrollPhysics(),
           ),
@@ -40,12 +30,15 @@ class AdminNewsListScreen extends ConsumerWidget {
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    Text(
-                      l10n.manageNews,
-                      style: theme.textTheme.headlineSmall?.copyWith(
-                        fontWeight: FontWeight.bold,
+                    Expanded(
+                      child: Text(
+                        l10n.manageNews,
+                        style: theme.textTheme.headlineSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
                     ),
+                    const SizedBox(width: 8),
                     FilledButton.icon(
                       onPressed: () => context.push(RouterPath.createNews),
                       icon: const Icon(Icons.post_add, size: 18),
@@ -112,7 +105,29 @@ class AdminNewsListScreen extends ConsumerWidget {
               ),
             ),
           ],
-        ),
+        );
+
+    return AppLayout(
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () => context.push(RouterPath.createNews),
+        icon: const Icon(Icons.add),
+        label: Text(l10n.createNewNews),
+        backgroundColor: colorScheme.primary,
+        foregroundColor: colorScheme.onPrimary,
+      ),
+      child: RefreshIndicator(
+        onRefresh: () async {
+          ref.invalidate(newsListProvider);
+        },
+        child: isDesktop
+            ? Align(
+                alignment: Alignment.topCenter,
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 880),
+                  child: scrollView,
+                ),
+              )
+            : scrollView,
       ),
     );
   }

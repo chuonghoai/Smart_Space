@@ -480,7 +480,7 @@ class _UnsatisfactoryReportCard extends StatelessWidget {
 
     switch (status?.toLowerCase()) {
       case 'processing':
-        color = Colors.teal;
+        color = Colors.blue;
         label = l10n.reportStatusProcessing;
         break;
       case 'processed':
