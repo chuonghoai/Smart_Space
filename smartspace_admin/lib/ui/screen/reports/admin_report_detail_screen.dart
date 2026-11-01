@@ -13,6 +13,7 @@ import 'package:smartspace_admin/ui/shared/position/position_widgets.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
+import 'package:smartspace_admin/ui/shared/report_status/report_status_style.dart';
 
 class AdminReportDetailScreen extends ConsumerStatefulWidget {
   final String reportId;
@@ -1791,20 +1792,7 @@ class _AdminReportDetailScreenState
   }
 
   Color _getStatusColor(String status, ThemeData theme) {
-    switch (status.toUpperCase()) {
-      case 'PENDING':
-        return Colors.orange;
-      case 'PROCESSING':
-        return theme.colorScheme.primary;
-      case 'PROCESSED':
-      case 'RESOLVED':
-      case 'DONE':
-        return Colors.green;
-      case 'REJECTED':
-        return Colors.red;
-      default:
-        return theme.colorScheme.outline;
-    }
+    return reportStatusColor(context, status);
   }
 
   String _getStatusText(String status, AppLocalizations l10n) {

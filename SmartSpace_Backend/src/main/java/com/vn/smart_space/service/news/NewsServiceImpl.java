@@ -50,7 +50,7 @@ public class NewsServiceImpl implements INewsService {
     @Transactional(readOnly = true)
     public List<NewsResponse> getAllNews() {
         return newsRepository.findAllByOrderByCreatedAtDesc().stream()
-                .map(this::toResponse)
+                .map(this::toListResponse)
                 .collect(Collectors.toList());
     }
 
@@ -134,6 +134,33 @@ public class NewsServiceImpl implements INewsService {
             return user.getFullName().trim();
         }
         return user.getEmail() != null ? user.getEmail() : messageService.get("news.default_author");
+    }
+
+    private NewsResponse toListResponse(News news) {
+        String content = news.getContent();
+        if (content != null && content.length() > 500) {
+            content = content.substring(0, 500);
+        }
+
+        List<String> images = Collections.emptyList();
+        if (news.getImageUrls() != null && !news.getImageUrls().trim().isEmpty()) {
+            images = Arrays.stream(news.getImageUrls().split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toList());
+        }
+
+        return NewsResponse.builder()
+                .id(news.getId())
+                .title(news.getTitle())
+                .content(content)
+                .imageUrls(images)
+                .authorId(news.getAuthor() != null ? news.getAuthor().getId() : null)
+                .authorName(news.getAuthorName() != null ? news.getAuthorName() : resolveAuthorName(news.getAuthor()))
+                .authorAvatar(news.getAuthor() != null ? news.getAuthor().getAvatarUrl() : null)
+                .createdAt(news.getCreatedAt())
+                .updatedAt(news.getUpdatedAt())
+                .build();
     }
 
     private NewsResponse toResponse(News news) {

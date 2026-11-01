@@ -709,6 +709,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
               children: [
                 LayoutBuilder(
                   builder: (context, constraints) {
+                    const cardHeight = 120.0;
                     if (constraints.maxWidth >= 720 && reports.length > 1) {
                       final cardWidth = (constraints.maxWidth - 12) / 2;
                       return Wrap(
@@ -717,6 +718,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
                         children: reports.map((report) {
                           return SizedBox(
                             width: cardWidth,
+                            height: cardHeight,
                             child: _buildReportCard(report, theme, l10n),
                           );
                         }).toList(),
@@ -729,7 +731,10 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
                       separatorBuilder: (_, _) => const SizedBox(height: 12),
                       itemBuilder: (context, index) {
                         final report = reports[index];
-                        return _buildReportCard(report, theme, l10n);
+                        return SizedBox(
+                          height: cardHeight,
+                          child: _buildReportCard(report, theme, l10n),
+                        );
                       },
                     );
                   },
@@ -811,7 +816,10 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
                     children: newsList.map((news) {
                       return SizedBox(
                         width: cardWidth,
-                        child: NewsCard(news: news),
+                        child: NewsCard(
+                          news: news,
+                          margin: EdgeInsets.zero,
+                        ),
                       );
                     }).toList(),
                   );
@@ -1024,6 +1032,87 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
     }
   }
 
+  Widget _buildReportThumbnail(
+    RecentReportModel report,
+    ThemeData theme,
+    bool isDark,
+  ) {
+    if (report.imageUrl != null && report.imageUrl!.isNotEmpty) {
+      return AppNetworkImage(
+        url: report.imageUrl,
+        width: 60,
+        height: 60,
+        borderRadius: BorderRadius.circular(10),
+        fit: BoxFit.cover,
+        errorWidget: _buildThumbnailPlaceholder(theme, isDark),
+      );
+    }
+    return _buildThumbnailPlaceholder(theme, isDark);
+  }
+
+  Widget _buildThumbnailPlaceholder(ThemeData theme, bool isDark) {
+    return Container(
+      width: 60,
+      height: 60,
+      decoration: BoxDecoration(
+        color: isDark
+            ? theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4)
+            : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+        ),
+      ),
+      child: Icon(
+        Icons.assignment_outlined,
+        size: 26,
+        color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+      ),
+    );
+  }
+
+  Widget _buildAnonymousBadge(
+    ThemeData theme,
+    bool isDark,
+    AppLocalizations l10n,
+  ) {
+    final badgeBg = isDark
+        ? theme.colorScheme.errorContainer.withValues(alpha: 0.3)
+        : theme.colorScheme.errorContainer.withValues(alpha: 0.2);
+    final badgeColor = theme.colorScheme.error;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: badgeBg,
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: badgeColor.withValues(alpha: isDark ? 0.5 : 0.35),
+          width: 1,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.visibility_off_outlined,
+            size: 10,
+            color: badgeColor,
+          ),
+          const SizedBox(width: 3),
+          Text(
+            l10n.anonymousUser,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: badgeColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 10,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildReportCard(
     RecentReportModel report,
     ThemeData theme,
@@ -1036,7 +1125,8 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
       onTap: () => context.push(RouterPath.reportDetailWithId(report.id)),
       borderRadius: BorderRadius.circular(14),
       child: Container(
-        padding: const EdgeInsets.all(14),
+        height: 120,
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: theme.cardColor,
           borderRadius: BorderRadius.circular(14),
@@ -1053,126 +1143,140 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
           ],
         ),
         child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            if (report.imageUrl != null && report.imageUrl!.isNotEmpty)
-              AppNetworkImage(
-                url: report.imageUrl,
-                width: 60,
-                height: 60,
-                borderRadius: BorderRadius.circular(10),
-                fit: BoxFit.cover,
-                errorWidget: Container(
-                  width: 60,
-                  height: 60,
-                  decoration: BoxDecoration(
-                    color: isDark ? Colors.grey[800] : Colors.grey[200],
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  child: const Icon(Icons.image_not_supported, size: 24),
-                ),
-              ),
-            if (report.imageUrl != null && report.imageUrl!.isNotEmpty)
-              const SizedBox(width: 12),
+            _buildReportThumbnail(report, theme, isDark),
+            const SizedBox(width: 12),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Text(
-                    report.title,
-                    style: theme.textTheme.titleMedium
-                        ?.copyWith(fontWeight: FontWeight.bold, fontSize: 14),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  if (report.isAnonymous) ...[
-                    const SizedBox(height: 4),
-                    Container(
-                      padding:
-                          const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.errorContainer
-                            .withValues(alpha: 0.25),
-                        borderRadius: BorderRadius.circular(4),
-                        border: Border.all(
-                          color:
-                              theme.colorScheme.error.withValues(alpha: 0.35),
+                  SizedBox(
+                    height: 38,
+                    child: Align(
+                      alignment: Alignment.topLeft,
+                      child: Text(
+                        report.title,
+                        style: theme.textTheme.titleMedium?.copyWith(
+                          fontWeight: FontWeight.bold,
+                          fontSize: 14,
+                          height: 1.25,
                         ),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.visibility_off_outlined,
-                            size: 12,
-                            color: theme.colorScheme.error,
-                          ),
-                          const SizedBox(width: 4),
-                          Flexible(
-                            child: Text(
-                              l10n.anonymousUserNote,
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                fontSize: 10,
-                                fontWeight: FontWeight.w600,
-                                color: theme.colorScheme.error,
-                              ),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
-                  ],
-                  const SizedBox(height: 4),
-                  Text(
-                    _formatDateTime(report.createdAt),
-                    style: theme.textTheme.bodySmall
-                        ?.copyWith(color: theme.hintColor, fontSize: 11),
                   ),
-                  if (report.assignedStaffName != null &&
-                      report.assignedStaffName!.isNotEmpty) ...[
-                    const SizedBox(height: 6),
-                    Row(
+                  const SizedBox(height: 6),
+                  SizedBox(
+                    height: 16,
+                    child: Row(
                       children: [
-                        AppNetworkImage(
-                          url: report.assignedStaffAvatarUrl,
-                          width: 20,
-                          height: 20,
-                          isCircle: true,
-                          errorWidget: CircleAvatar(
-                            radius: 10,
-                            backgroundColor: theme.colorScheme.primaryContainer,
-                            child: const Icon(Icons.person, size: 12),
-                          ),
+                        Icon(
+                          Icons.access_time_rounded,
+                          size: 13,
+                          color: theme.hintColor,
                         ),
-                        const SizedBox(width: 6),
+                        const SizedBox(width: 4),
                         Expanded(
                           child: Text(
-                            report.assignedStaffName!,
-                            style: theme.textTheme.bodySmall?.copyWith(fontSize: 11),
+                            _formatDateTime(report.createdAt),
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: theme.hintColor,
+                              fontSize: 11,
+                            ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
                         ),
                       ],
                     ),
-                  ],
+                  ),
+                  const SizedBox(height: 6),
+                  SizedBox(
+                    height: 20,
+                    child: Row(
+                      children: [
+                        if (report.assignedStaffName != null &&
+                            report.assignedStaffName!.isNotEmpty) ...[
+                          AppNetworkImage(
+                            url: report.assignedStaffAvatarUrl,
+                            width: 20,
+                            height: 20,
+                            isCircle: true,
+                            errorWidget: CircleAvatar(
+                              radius: 10,
+                              backgroundColor:
+                                  theme.colorScheme.primaryContainer,
+                              child: const Icon(Icons.person, size: 12),
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              report.assignedStaffName!,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                fontSize: 11,
+                                fontWeight: FontWeight.w500,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ] else ...[
+                          CircleAvatar(
+                            radius: 10,
+                            backgroundColor: isDark
+                                ? theme.colorScheme.surfaceContainerHighest
+                                : theme.colorScheme.surfaceContainerHighest,
+                            child: Icon(
+                              Icons.person_outline,
+                              size: 12,
+                              color: theme.hintColor,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Expanded(
+                            child: Text(
+                              l10n.unassignedStaff,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                fontSize: 11,
+                                color: theme.hintColor,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
             const SizedBox(width: 10),
             Column(
               crossAxisAlignment: CrossAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                if (isNew) ...[
-                  _buildNewBadge(theme, isDark, l10n),
-                  const SizedBox(height: 6),
-                ],
-                if (report.isReviewResolved == false) ...[
-                  _buildRehandlingBadge(theme, isDark, l10n),
-                  const SizedBox(height: 6),
-                ],
                 _buildReportStatusBadge(report.status, theme, l10n),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    if (isNew) ...[
+                      _buildNewBadge(theme, isDark, l10n),
+                      const SizedBox(height: 3),
+                    ],
+                    if (report.isReviewResolved == false) ...[
+                      _buildRehandlingBadge(theme, isDark, l10n),
+                      if (report.isAnonymous) const SizedBox(height: 3),
+                    ],
+                    if (report.isAnonymous)
+                      _buildAnonymousBadge(theme, isDark, l10n),
+                  ],
+                ),
               ],
             ),
           ],
@@ -1309,7 +1413,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
       case 'resolved':
         return isDark ? const Color(0xFF66BB6A) : const Color(0xFF2E7D32);
       case 'processing':
-        return isDark ? const Color(0xFF26A69A) : const Color(0xFF00796B);
+        return isDark ? const Color(0xFF42A5F5) : const Color(0xFF1565C0);
       case 'pending':
         return isDark ? const Color(0xFFFFCA28) : const Color(0xFFF57F17);
       case 'rejected':
