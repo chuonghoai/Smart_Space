@@ -25,11 +25,12 @@ class StaffWalletTransactionModel {
     required this.createdAt,
   });
 
-  bool get isIncome => type == 'COMMISSION';
+  // DELEGATION_*: nhờ làm giùm — bonus nhận được (thu nhập), giữ bonus khi nhờ, hoàn bonus khi không thành
+  bool get isIncome => type == 'COMMISSION' || type == 'DELEGATION_BONUS';
   bool get isPenalty => type == 'PENALTY_DEDUCTION';
   bool get isWithdrawal => type == 'WITHDRAWAL';
-  bool get isHold => type == 'WITHDRAWAL_HOLD';
-  bool get isRefund => type == 'WITHDRAWAL_REFUND';
+  bool get isHold => type == 'WITHDRAWAL_HOLD' || type == 'DELEGATION_HOLD';
+  bool get isRefund => type == 'WITHDRAWAL_REFUND' || type == 'DELEGATION_REFUND';
 
   factory StaffWalletTransactionModel.fromJson(Map<String, dynamic> json) {
     return StaffWalletTransactionModel(
