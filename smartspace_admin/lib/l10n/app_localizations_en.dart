@@ -1848,4 +1848,58 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scrollRight => 'Scroll right';
+
+  @override
+  String get mapSettings => 'Map Settings';
+
+  @override
+  String get mapDensityToggle => 'Report Density';
+
+  @override
+  String get mapDensityDescription => 'Show H3 density grid by report level';
+
+  @override
+  String get densityLegendTitle => 'Report Density';
+
+  @override
+  String get densityLow => 'Low (1 - 3)';
+
+  @override
+  String get densityMedium => 'Medium (4 - 7)';
+
+  @override
+  String get densityHigh => 'High (>= 8)';
+
+  @override
+  String get filterTimeframe => 'Timeframe';
+
+  @override
+  String get timeframeAll => 'All';
+
+  @override
+  String get timeframe1Month => '1 month';
+
+  @override
+  String get timeframe3Months => '3 months';
+
+  @override
+  String get timeframe6Months => '6 months';
+
+  @override
+  String get timeframe9Months => '9 months';
+
+  @override
+  String get timeframe12Months => '12 months';
+
+  @override
+  String get filterReports => 'Filter Reports';
+
+  @override
+  String get myLocation => 'My Location';
+
+  @override
+  String get locationPermissionDenied => 'Location permission denied';
+
+  @override
+  String get locationServiceDisabled => 'Location services disabled';
 }

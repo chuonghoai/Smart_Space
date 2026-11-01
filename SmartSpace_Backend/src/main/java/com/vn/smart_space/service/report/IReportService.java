@@ -59,8 +59,14 @@ public interface IReportService {
         ReportDetailResponse updateReportStatus(String reportId, String newStatus, String adminId);
 
         // Admin Map — lightweight list with lat/lng, optional viewport (all bounds null = whole map)
-        AdminMapReportsResponse getAdminMapReports(String status, String severity, String assigneeId,
+        default AdminMapReportsResponse getAdminMapReports(String status, String severity, String assigneeId,
                         String from, String to, Double minLat, Double maxLat, Double minLng, Double maxLng,
+                        int limit) {
+                return getAdminMapReports(status, severity, assigneeId, from, to, null, minLat, maxLat, minLng, maxLng, limit);
+        }
+
+        AdminMapReportsResponse getAdminMapReports(String status, String severity, String assigneeId,
+                        String from, String to, String timeframe, Double minLat, Double maxLat, Double minLng, Double maxLng,
                         int limit);
 
         List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, int page, int limit);

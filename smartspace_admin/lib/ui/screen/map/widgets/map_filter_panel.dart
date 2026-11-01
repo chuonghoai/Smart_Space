@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:smartspace_admin/features/map/application/map_providers.dart';
+import 'package:smartspace_admin/features/map/models/report_timeframe.dart';
 import 'package:smartspace_admin/features/reports/models/report_filter_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 
@@ -32,6 +33,7 @@ class _MapFilterPanelState extends ConsumerState<MapFilterPanel> {
     if (filter.severity != null && filter.severity!.isNotEmpty) activeCount++;
     if (filter.from != null || filter.to != null) activeCount++;
     if (filter.assigneeId != null && filter.assigneeId!.isNotEmpty) activeCount++;
+    if (filter.timeframe != null && filter.timeframe!.isNotEmpty && filter.timeframe != 'all') activeCount++;
 
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -113,19 +115,19 @@ class _MapFilterPanelState extends ConsumerState<MapFilterPanel> {
                           label: l10n.reportStatusPending,
                           selected: filter.status == 'pending',
                           onSelected: (_) => ref.read(mapFilterProvider.notifier).state = filter.copyWith(status: 'pending'),
-                          selectedColor: const Color(0xFFEF5350).withOpacity(0.2),
+                          selectedColor: const Color(0xFFEF5350).withValues(alpha: 0.2),
                         ),
                         _buildChoiceChip(
                           label: l10n.reportStatusProcessing,
                           selected: filter.status == 'processing',
                           onSelected: (_) => ref.read(mapFilterProvider.notifier).state = filter.copyWith(status: 'processing'),
-                          selectedColor: const Color(0xFFFFCA28).withOpacity(0.2),
+                          selectedColor: const Color(0xFFFFCA28).withValues(alpha: 0.2),
                         ),
                         _buildChoiceChip(
                           label: l10n.reportStatusProcessed,
                           selected: filter.status == 'processed',
                           onSelected: (_) => ref.read(mapFilterProvider.notifier).state = filter.copyWith(status: 'processed'),
-                          selectedColor: const Color(0xFF66BB6A).withOpacity(0.2),
+                          selectedColor: const Color(0xFF66BB6A).withValues(alpha: 0.2),
                         ),
                         _buildChoiceChip(
                           label: l10n.reportStatusRejected,
@@ -170,6 +172,27 @@ class _MapFilterPanelState extends ConsumerState<MapFilterPanel> {
                           selectedColor: cs.errorContainer,
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 16),
+                    // Timeframe
+                    Text(l10n.filterTimeframe, style: theme.textTheme.labelMedium),
+                    const SizedBox(height: 8),
+                    Wrap(
+                      spacing: 8,
+                      runSpacing: 4,
+                      children: ReportTimeframe.values.map((tf) {
+                        final isSelected = (filter.timeframe ?? 'all') == tf.code;
+                        return _buildChoiceChip(
+                          label: tf.localizedLabel(context),
+                          selected: isSelected,
+                          onSelected: (_) {
+                            ref.read(mapFilterProvider.notifier).state = filter.copyWith(
+                              timeframe: tf.code,
+                            );
+                            ref.read(adminReportDensityProvider.notifier).setTimeframe(tf);
+                          },
+                        );
+                      }).toList(),
                     ),
                     const SizedBox(height: 16),
                     // Date Range
@@ -239,18 +262,11 @@ class _MapFilterPanelState extends ConsumerState<MapFilterPanel> {
                       mainAxisAlignment: MainAxisAlignment.end,
                       children: [
                         TextButton(
-                          onPressed: activeCount > 0 ? _clearFilters : null,
+                          onPressed: _clearFilters,
                           child: Text(l10n.mapFilterClear),
                         ),
-                        const SizedBox(width: 8),
-                        FilledButton(
-                          onPressed: () {
-                            setState(() => _isExpanded = false);
-                          },
-                          child: Text(l10n.mapFilterApply),
-                        ),
                       ],
-                    )
+                    ),
                   ],
                 ),
               ),
@@ -263,19 +279,20 @@ class _MapFilterPanelState extends ConsumerState<MapFilterPanel> {
   Widget _buildChoiceChip({
     required String label,
     required bool selected,
-    required void Function(bool) onSelected,
+    required ValueChanged<bool> onSelected,
     Color? selectedColor,
   }) {
+    final cs = Theme.of(context).colorScheme;
     return ChoiceChip(
       label: Text(label),
       selected: selected,
       onSelected: onSelected,
-      selectedColor: selectedColor,
+      selectedColor: selectedColor ?? cs.primaryContainer,
       labelStyle: TextStyle(
         fontSize: 13,
+        color: selected ? cs.onPrimaryContainer : cs.onSurface,
         fontWeight: selected ? FontWeight.bold : FontWeight.normal,
       ),
-      padding: const EdgeInsets.all(4),
     );
   }
 }

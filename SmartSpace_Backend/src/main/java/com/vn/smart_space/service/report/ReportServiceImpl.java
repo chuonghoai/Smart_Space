@@ -1146,6 +1146,13 @@ public class ReportServiceImpl implements IReportService {
     @Transactional(readOnly = true)
     public AdminMapReportsResponse getAdminMapReports(String status, String severity, String assigneeId,
             String from, String to, Double minLat, Double maxLat, Double minLng, Double maxLng, int limit) {
+        return getAdminMapReports(status, severity, assigneeId, from, to, null, minLat, maxLat, minLng, maxLng, limit);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AdminMapReportsResponse getAdminMapReports(String status, String severity, String assigneeId,
+            String from, String to, String timeframe, Double minLat, Double maxLat, Double minLng, Double maxLng, int limit) {
         // Bounds are optional, but all-or-nothing
         boolean anyBound = minLat != null || maxLat != null || minLng != null || maxLng != null;
         if (anyBound) {
@@ -1178,6 +1185,11 @@ public class ReportServiceImpl implements IReportService {
                 toDt = LocalDate.parse(to.trim()).atTime(23, 59, 59);
         } catch (Exception e) {
             log.warn("[MapReports] Invalid date filter from={} to={}", from, to);
+        }
+
+        // If fromDt not set, but timeframe is provided, derive fromDt from timeframe cutoff
+        if (fromDt == null && timeframe != null && !timeframe.trim().isEmpty()) {
+            fromDt = EDensityTimeframe.fromCode(timeframe).getCutoff(LocalDateTime.now());
         }
 
         String assigneeParam = (assigneeId != null && !assigneeId.trim().isEmpty()) ? assigneeId.trim() : null;

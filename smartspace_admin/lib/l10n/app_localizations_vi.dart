@@ -1839,4 +1839,59 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get scrollRight => 'Cuộn sang phải';
+
+  @override
+  String get mapSettings => 'Cài đặt bản đồ';
+
+  @override
+  String get mapDensityToggle => 'Mật độ phản ánh';
+
+  @override
+  String get mapDensityDescription =>
+      'Hiển thị lưới mật độ H3 theo cấp độ báo cáo';
+
+  @override
+  String get densityLegendTitle => 'Mật độ phản ánh';
+
+  @override
+  String get densityLow => 'Thấp (1 - 3)';
+
+  @override
+  String get densityMedium => 'Trung bình (4 - 7)';
+
+  @override
+  String get densityHigh => 'Cao (>= 8)';
+
+  @override
+  String get filterTimeframe => 'Khoảng thời gian';
+
+  @override
+  String get timeframeAll => 'Tất cả';
+
+  @override
+  String get timeframe1Month => '1 tháng';
+
+  @override
+  String get timeframe3Months => '3 tháng';
+
+  @override
+  String get timeframe6Months => '6 tháng';
+
+  @override
+  String get timeframe9Months => '9 tháng';
+
+  @override
+  String get timeframe12Months => '12 tháng';
+
+  @override
+  String get filterReports => 'Lọc phản ánh';
+
+  @override
+  String get myLocation => 'Vị trí của tôi';
+
+  @override
+  String get locationPermissionDenied => 'Quyền truy cập vị trí bị từ chối';
+
+  @override
+  String get locationServiceDisabled => 'Dịch vụ định vị đang tắt';
 }

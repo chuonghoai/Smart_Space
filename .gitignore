@@ -10,3 +10,4 @@ npm-debug.log*
 **/generated_plugins.cmake
 smartspace_staff/windows/flutter/generated_plugins.cmake
 smartspace_admin/windows/flutter/generated_plugins.cmake
+weekly_reports/

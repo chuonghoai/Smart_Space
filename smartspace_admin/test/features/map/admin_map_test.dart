@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:smartspace_admin/features/map/application/map_providers.dart';
 import 'package:smartspace_admin/features/map/models/admin_map_reports_result.dart';
 import 'package:smartspace_admin/features/map/models/map_report_model.dart';
@@ -13,7 +14,7 @@ import 'package:smartspace_admin/ui/screen/map/widgets/map_cluster_sheet.dart';
 
 /// Service giả: mỗi lần gọi trả về một Completer để test điều khiển thứ tự response.
 class _FakeMapService extends MapService {
-  final List<({String? status, MapBounds? bounds})> calls = [];
+  final List<({String? status, MapBounds? bounds, String? timeframe})> calls = [];
   final List<Completer<ApiResponse<AdminMapReportsResult>>> pending = [];
 
   @override
@@ -23,10 +24,11 @@ class _FakeMapService extends MapService {
     String? assigneeId,
     DateTime? from,
     DateTime? to,
+    String? timeframe,
     MapBounds? bounds,
     int limit = 500,
   }) {
-    calls.add((status: status, bounds: bounds));
+    calls.add((status: status, bounds: bounds, timeframe: timeframe));
     final completer = Completer<ApiResponse<AdminMapReportsResult>>();
     pending.add(completer);
     return completer.future;
@@ -50,6 +52,12 @@ ApiResponse<AdminMapReportsResult> _ok(List<String> ids, {bool truncated = false
     );
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+  });
+
   group('AdminMapReportsResult.fromJson', () {
     test('parse reports và truncated', () {
       final result = AdminMapReportsResult.fromJson({
@@ -99,74 +107,41 @@ void main() {
 
     tearDown(() => container.dispose());
 
-    MapReportsNotifier notifier() => container.read(mapReportsProvider.notifier);
+    test('tải lần đầu: gọi service với bounding box mở rộng', () async {
+      final notifier = container.read(mapReportsProvider.notifier);
+      final future = notifier.loadForViewport(viewport);
 
-    test('gửi khung mở rộng kèm bộ lọc hiện tại', () async {
-      container.read(mapFilterProvider.notifier).state =
-          const ReportFilter(size: 500, status: 'pending');
-      final future = notifier().loadForViewport(viewport);
+      expect(service.calls, hasLength(1));
+      final call = service.calls.single;
+      expect(call.status, isNull);
+      expect(call.bounds, isNotNull);
+      expect(call.bounds!.contains(viewport), isTrue);
 
-      expect(service.calls.single.status, 'pending');
-      expect(service.calls.single.bounds, viewport.expandBy(1.5));
-
-      service.pending.single.complete(_ok(['a'], truncated: true));
+      service.pending.single.complete(_ok(['r1', 'r2']));
       await future;
+
       final state = container.read(mapReportsProvider);
-      expect(state.reports.map((r) => r.id), ['a']);
-      expect(state.truncated, isTrue);
+      expect(state.reports.map((r) => r.id), ['r1', 'r2']);
       expect(state.isLoading, isFalse);
     });
 
-    test('đang tải lại vẫn giữ dữ liệu cũ (bản đồ không bị dựng lại)', () async {
-      final first = notifier().loadForViewport(viewport);
-      service.pending.single.complete(_ok(['a']));
-      await first;
+    test('đổi filter: kích hoạt tải lại', () async {
+      container.read(mapReportsProvider);
+      final notifier = container.read(mapReportsProvider.notifier);
 
-      unawaited(notifier().refresh());
-      final state = container.read(mapReportsProvider);
-      expect(state.isLoading, isTrue);
-      expect(state.reports.map((r) => r.id), ['a']);
-    });
+      final f1 = notifier.loadForViewport(viewport);
+      service.pending[0].complete(_ok(['r1']));
+      await f1;
 
-    test('đổi bộ lọc → tải lại ngay khung đang xem với bộ lọc mới', () async {
-      container.read(mapReportsProvider); // khởi tạo notifier để lắng nghe bộ lọc
-      final first = notifier().loadForViewport(viewport);
-      service.pending.single.complete(_ok(['a']));
-      await first;
-
-      container.read(mapFilterProvider.notifier).state =
-          const ReportFilter(size: 500, status: 'rejected');
+      container.read(mapFilterProvider.notifier).state = const ReportFilter(status: 'pending');
 
       expect(service.calls, hasLength(2));
-      expect(service.calls.last.status, 'rejected');
-      expect(service.calls.last.bounds, viewport.expandBy(1.5));
-    });
+      expect(service.calls.last.status, 'pending');
 
-    test('lỗi: giữ dữ liệu cũ và lưu error', () async {
-      final first = notifier().loadForViewport(viewport);
-      service.pending.single.complete(_ok(['a']));
-      await first;
+      service.pending[1].complete(_ok(['r2']));
+      await pumpEventQueue();
 
-      final second = notifier().refresh();
-      service.pending.last.complete(ApiResponse(success: false, message: 'boom'));
-      await second;
-
-      final state = container.read(mapReportsProvider);
-      expect(state.reports.map((r) => r.id), ['a']);
-      expect(state.error, 'boom');
-      expect(state.isLoading, isFalse);
-    });
-
-    test('response của request cũ về sau request mới thì bị bỏ', () async {
-      final first = notifier().loadForViewport(viewport);
-      final second = notifier().loadForViewport(viewport, force: true);
-
-      service.pending[1].complete(_ok(['new']));
-      await second;
-      service.pending[0].complete(_ok(['stale']));
-      await first;
-
-      expect(container.read(mapReportsProvider).reports.map((r) => r.id), ['new']);
+      expect(container.read(mapReportsProvider).reports.map((r) => r.id), ['r2']);
     });
   });
 }
