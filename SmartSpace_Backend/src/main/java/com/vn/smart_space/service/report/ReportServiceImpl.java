@@ -19,6 +19,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.vn.smart_space.consts.EDensityTimeframe;
 import com.vn.smart_space.consts.EMapReportFilter;
 import com.vn.smart_space.consts.EReportSeverity;
 import com.vn.smart_space.consts.EReportStatus;
@@ -74,6 +75,7 @@ public class ReportServiceImpl implements IReportService {
     private final MessageSource messageSource;
     private final IStaffWalletService staffWalletService;
     private final IWalletConfigService walletConfigService;
+    private final IReportDensityService reportDensityService;
     private final IReportDelegationService delegationService;
 
     private static final int MAP_DEFAULT_LIMIT = 300;
@@ -171,6 +173,13 @@ public class ReportServiceImpl implements IReportService {
         }
 
         report = reportRepository.save(report);
+
+        // Incremental update for map density
+        try {
+            reportDensityService.onReportCreated(report.getId(), report.getLatitude(), report.getLongitude(), report.getCreatedAt());
+        } catch (Exception e) {
+            log.warn("[ReportDensity] Failed to trigger density update on create report: {}", e.getMessage());
+        }
 
         if (userId != null) {
             User actor = report.getUser();
@@ -361,6 +370,13 @@ public class ReportServiceImpl implements IReportService {
     @Transactional(readOnly = true)
     public MapReportsResponse getReportsInBounds(String viewerId, Double minLat, Double maxLat, Double minLng,
             Double maxLng, String filter, int limit) {
+        return getReportsInBounds(viewerId, minLat, maxLat, minLng, maxLng, filter, "all", limit);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MapReportsResponse getReportsInBounds(String viewerId, Double minLat, Double maxLat, Double minLng,
+            Double maxLng, String filter, String timeframe, int limit) {
         validateMapBounds(minLat, maxLat, minLng, maxLng);
         EMapReportFilter mapFilter = EMapReportFilter.from(filter);
         if (mapFilter == null) {
@@ -368,11 +384,14 @@ public class ReportServiceImpl implements IReportService {
         }
         int safeLimit = safeMapLimit(limit, MAP_DEFAULT_LIMIT);
 
+        LocalDateTime createdAfter = EDensityTimeframe.fromCode(timeframe).getCutoff(LocalDateTime.now());
+
         // Fetch one extra row to know whether the viewport holds more than safeLimit
         // reports
         List<Report> reports = reportRepository.findInBounds(minLat, maxLat, minLng, maxLng,
                 EReportStatus.rejected, EReportStatus.processed,
                 LocalDateTime.now().minusDays(MAP_PROCESSED_VISIBLE_DAYS),
+                createdAfter,
                 viewerId,
                 mapFilter.status(),
                 mapFilter == EMapReportFilter.mine ? viewerId : null,
@@ -1079,6 +1098,14 @@ public class ReportServiceImpl implements IReportService {
         }
         Report saved = reportRepository.save(report);
 
+        if (next == EReportStatus.rejected) {
+            try {
+                reportDensityService.onReportRejected(saved.getId(), saved.getLatitude(), saved.getLongitude(), saved.getCreatedAt());
+            } catch (Exception ex) {
+                log.warn("[ReportDensity] Error updating density for rejected report {}: {}", saved.getId(), ex.getMessage());
+            }
+        }
+
         if (next == EReportStatus.processed) {
             // Admin hoàn tất thay → xử lý yêu cầu nhờ làm giùm như khi staff hoàn tất (trước hoa hồng: yêu cầu → ví)
             delegationService.onReportCompleted(saved);
@@ -1148,6 +1175,13 @@ public class ReportServiceImpl implements IReportService {
     @Transactional(readOnly = true)
     public AdminMapReportsResponse getAdminMapReports(String status, String severity, String assigneeId,
             String from, String to, Double minLat, Double maxLat, Double minLng, Double maxLng, int limit) {
+        return getAdminMapReports(status, severity, assigneeId, from, to, null, minLat, maxLat, minLng, maxLng, limit);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AdminMapReportsResponse getAdminMapReports(String status, String severity, String assigneeId,
+            String from, String to, String timeframe, Double minLat, Double maxLat, Double minLng, Double maxLng, int limit) {
         // Bounds are optional, but all-or-nothing
         boolean anyBound = minLat != null || maxLat != null || minLng != null || maxLng != null;
         if (anyBound) {
@@ -1180,6 +1214,11 @@ public class ReportServiceImpl implements IReportService {
                 toDt = LocalDate.parse(to.trim()).atTime(23, 59, 59);
         } catch (Exception e) {
             log.warn("[MapReports] Invalid date filter from={} to={}", from, to);
+        }
+
+        // If fromDt not set, but timeframe is provided, derive fromDt from timeframe cutoff
+        if (fromDt == null && timeframe != null && !timeframe.trim().isEmpty()) {
+            fromDt = EDensityTimeframe.fromCode(timeframe).getCutoff(LocalDateTime.now());
         }
 
         String assigneeParam = (assigneeId != null && !assigneeId.trim().isEmpty()) ? assigneeId.trim() : null;
@@ -1417,6 +1456,8 @@ public class ReportServiceImpl implements IReportService {
         report.setReviewedAt(new java.util.Date());
         Report saved = reportRepository.save(report);
 
+
+
         // When client submits unresolved review, notify all Admins via WebSocket + DB
         // notification + FCM
         if (Boolean.FALSE.equals(saved.getIsReviewResolved())) {
@@ -1640,6 +1681,9 @@ public class ReportServiceImpl implements IReportService {
         if (request.getDescription() != null && !request.getDescription().trim().isEmpty()) {
             report.setDescription(request.getDescription().trim());
         }
+        Double oldLat = report.getLatitude();
+        Double oldLng = report.getLongitude();
+
         if (request.getLatitude() != null) {
             report.setLatitude(request.getLatitude());
         }
@@ -1666,6 +1710,15 @@ public class ReportServiceImpl implements IReportService {
         }
 
         report = reportRepository.save(report);
+
+        if (oldLat != null && oldLng != null && report.getLatitude() != null && report.getLongitude() != null
+                && (!oldLat.equals(report.getLatitude()) || !oldLng.equals(report.getLongitude()))) {
+            try {
+                reportDensityService.onReportMoved(report.getId(), oldLat, oldLng, report.getLatitude(), report.getLongitude(), report.getCreatedAt());
+            } catch (Exception e) {
+                log.warn("[ReportDensity] Failed to trigger density update on move report: {}", e.getMessage());
+            }
+        }
 
         if (userId != null && report.getUser() != null) {
             User actor = report.getUser();
@@ -1702,6 +1755,12 @@ public class ReportServiceImpl implements IReportService {
 
         report.setStatus(EReportStatus.rejected);
         report = reportRepository.save(report);
+
+        try {
+            reportDensityService.onReportRejected(report.getId(), report.getLatitude(), report.getLongitude(), report.getCreatedAt());
+        } catch (Exception e) {
+            log.warn("[ReportDensity] Failed to trigger density update on cancel report: {}", e.getMessage());
+        }
 
         if (userId != null && report.getUser() != null) {
             User actor = report.getUser();

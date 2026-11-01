@@ -380,5 +380,20 @@
   "editReportTitle": "Chỉnh sửa phản ánh",
   "editReportOnlyPending": "Chỉ có thể chỉnh sửa phản ánh đang ở trạng thái chờ xử lý",
   "cancelReportOnlyPending": "Chỉ có thể hủy yêu cầu phản ánh đang ở trạng thái chờ xử lý",
-  "genericError": "Đã có lỗi xảy ra, vui lòng thử lại sau"
+    "genericError": "Đã có lỗi xảy ra, vui lòng thử lại sau",
+  "mapSettings": "Cài đặt bản đồ",
+  "mapDensityToggle": "Hiển thị mật độ phản ánh",
+  "mapDensityDescription": "Hiển thị các khu vực có nhiều phản ánh theo màu sắc (50m)",
+  "densityLegendTitle": "Mật độ phản ánh",
+  "densityLow": "1–2 phản ánh (Thấp)",
+  "densityMedium": "3–5 phản ánh (Trung bình)",
+  "densityHigh": "Trên 5 phản ánh (Cao)",
+  "mapBack": "Quay lại",
+  "filterTimeframe": "Khoảng thời gian",
+  "timeframeAll": "Tất cả",
+  "timeframe1Month": "1 tháng",
+  "timeframe3Months": "3 tháng",
+  "timeframe6Months": "6 tháng",
+  "timeframe9Months": "9 tháng",
+  "timeframe12Months": "12 tháng"
 }

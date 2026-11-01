@@ -1,3 +1,4 @@
+import 'package:smartspace_client/features/reports/models/report_density_model.dart';
 import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
@@ -45,11 +46,20 @@ class ReportRepoApi implements ReportRepo {
   Future<ApiResponse<MapReportsResult>> getReportsInBounds(
     MapBounds bounds, {
     MapReportFilter filter = MapReportFilter.all,
+    String? timeframe,
     int limit = 300,
   }) async {
+    final Map<String, dynamic> params = {
+      ...bounds.toQueryParameters(),
+      'filter': filter.name,
+      'limit': limit,
+    };
+    if (timeframe != null && timeframe.isNotEmpty) {
+      params['timeframe'] = timeframe;
+    }
     return await apiClient.get<MapReportsResult>(
       '/reports/map',
-      queryParameters: {...bounds.toQueryParameters(), 'filter': filter.name, 'limit': limit},
+      queryParameters: params,
       decoder: (json) {
         if (json is Map<String, dynamic>) {
           return MapReportsResult.fromJson(json);
@@ -195,6 +205,36 @@ class ReportRepoApi implements ReportRepo {
           return ReportDetailModel.fromJson(json);
         }
         throw Exception('Invalid response format');
+      },
+    );
+  }
+  @override
+  Future<ApiResponse<ReportDensityResult>> getReportDensity({
+    required double north,
+    required double south,
+    required double east,
+    required double west,
+    double zoom = 14.0,
+    String? timeframe,
+  }) async {
+    final Map<String, dynamic> params = {
+      'north': north,
+      'south': south,
+      'east': east,
+      'west': west,
+      'zoom': zoom,
+    };
+    if (timeframe != null && timeframe.isNotEmpty) {
+      params['timeframe'] = timeframe;
+    }
+    return await apiClient.get<ReportDensityResult>(
+      '/reports/density',
+      queryParameters: params,
+      decoder: (json) {
+        if (json is Map<String, dynamic>) {
+          return ReportDensityResult.fromJson(json);
+        }
+        throw Exception('Invalid density response format');
       },
     );
   }

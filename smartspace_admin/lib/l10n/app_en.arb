@@ -819,10 +819,27 @@
   "delegationRateNote": "The helper receives the task commission plus this bonus. Changes only apply to delegation requests sent after saving.",
   "saveDelegationRateSuccess": "Delegated task commission rates updated successfully!",
   "delegationRateLoadFailed": "Couldn't load the configuration"
-}
   "connectionStable": "Stable connection",
   "connectionConnecting": "Connecting services...",
   "connectionDisconnected": "Connection lost. Click to reconnect.",
   "scrollLeft": "Scroll left",
-  "scrollRight": "Scroll right"
+  "scrollRight": "Scroll right",
+  "mapSettings": "Map Settings",
+  "mapDensityToggle": "Report Density",
+  "mapDensityDescription": "Show H3 density grid by report level",
+  "densityLegendTitle": "Report Density",
+  "densityLow": "1–2 reports (Low)",
+  "densityMedium": "3–5 reports (Medium)",
+  "densityHigh": "Over 5 reports (High)",
+  "filterTimeframe": "Timeframe",
+  "timeframeAll": "All",
+  "timeframe1Month": "1 month",
+  "timeframe3Months": "3 months",
+  "timeframe6Months": "6 months",
+  "timeframe9Months": "9 months",
+  "timeframe12Months": "12 months",
+  "filterReports": "Filter Reports",
+  "myLocation": "My Location",
+  "locationPermissionDenied": "Location permission denied",
+  "locationServiceDisabled": "Location services disabled"
 }

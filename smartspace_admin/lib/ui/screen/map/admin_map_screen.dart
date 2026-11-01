@@ -14,11 +14,15 @@ import 'admin_map_controller.dart';
 import 'admin_map_screen_mobile.dart'
     if (dart.library.html) 'admin_map_screen_web.dart'
     as platform_map;
+import 'platform_map_controller.dart';
 import 'widgets/map_cluster_sheet.dart';
-import 'widgets/map_filter_panel.dart';
+import 'widgets/map_controls.dart';
+import 'widgets/map_density_legend.dart';
+import 'widgets/map_filter_bottom_sheet.dart';
 import 'widgets/map_legend.dart';
 import 'widgets/map_report_sheet.dart';
 import 'widgets/map_quick_assign_sheet.dart';
+import 'widgets/map_settings_bottom_sheet.dart';
 
 /// Có [focus] (mở từ chi tiết report) → camera mở tại report đó; khung đầu tiên được tải mới
 /// (bỏ qua cache) rồi mở thẻ của report, hoặc báo nó không khớp bộ lọc hiện tại.
@@ -34,6 +38,23 @@ class AdminMapScreen extends ConsumerStatefulWidget {
 class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
   bool _sheetOpen = false;
   bool _didRequestFocus = false;
+  PlatformMapController? _platformMapController;
+
+  @override
+  void initState() {
+    super.initState();
+    // Luôn tải lại dữ liệu mới nhất mỗi khi mở giao diện bản đồ
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        _handleRefresh();
+      }
+    });
+  }
+
+  Future<void> _handleRefresh() async {
+    ref.read(adminMapControllerProvider.notifier).refresh();
+    await _platformMapController?.refreshViewport();
+  }
 
   void _onViewportChanged(MapBounds bounds) {
     final focus = widget.focus;
@@ -76,6 +97,7 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
     // Close existing sheet before opening new one
     if (_sheetOpen) {
       Navigator.of(context).pop();
+      _sheetOpen = false;
     }
 
     _sheetOpen = true;
@@ -102,6 +124,12 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
   }
 
   void _showQuickAssign(MapReportModel report) {
+    if (_sheetOpen) {
+      Navigator.of(context).pop();
+      _sheetOpen = false;
+    }
+
+    _sheetOpen = true;
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -109,16 +137,17 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
       builder: (_) => PointerInterceptor(
         child: MapQuickAssignSheet(
           report: report,
-          onAssigned: () => ref.read(adminMapControllerProvider.notifier).refresh(),
+          onAssigned: () => _handleRefresh(),
         ),
       ),
-    );
+    ).whenComplete(() => _sheetOpen = false);
   }
 
   /// Cluster không tách được nữa → danh sách; bấm một dòng → sheet chi tiết (có phân công).
   void _showClusterSheet(List<MapReportModel> reports) {
     if (_sheetOpen) {
       Navigator.of(context).pop();
+      _sheetOpen = false;
     }
 
     _sheetOpen = true;
@@ -139,6 +168,47 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
     ).whenComplete(() => _sheetOpen = false);
   }
 
+  void _showMapSettings() async {
+    if (_sheetOpen) {
+      Navigator.of(context).pop();
+      _sheetOpen = false;
+    }
+
+    final densityState = ref.read(adminReportDensityProvider);
+    final currentFilter = ref.read(mapFilterProvider);
+    final currentTimeframe = ref.read(mapReportsProvider).timeframe;
+
+    _sheetOpen = true;
+    await MapSettingsBottomSheet.show(
+      context,
+      isDensityEnabled: densityState.isEnabled,
+      currentStatus: currentFilter.status,
+      currentTimeframe: currentTimeframe,
+      onDensityToggle: (val) {
+        ref.read(adminReportDensityProvider.notifier).toggleEnabled();
+      },
+      onStatusSelected: (status) {
+        ref.read(mapFilterProvider.notifier).state =
+            currentFilter.copyWith(status: status, clearStatus: status == null);
+      },
+      onTimeframeSelected: (tf) {
+        ref.read(adminMapControllerProvider.notifier).setTimeframe(tf);
+      },
+    );
+    _sheetOpen = false;
+  }
+
+  void _showFilterSheet() async {
+    if (_sheetOpen) {
+      Navigator.of(context).pop();
+      _sheetOpen = false;
+    }
+
+    _sheetOpen = true;
+    await MapFilterBottomSheet.show(context);
+    _sheetOpen = false;
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -146,6 +216,19 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
     final cs = theme.colorScheme;
 
     final reportsState = ref.watch(mapReportsProvider);
+    final densityState = ref.watch(adminReportDensityProvider);
+    final filter = ref.watch(mapFilterProvider);
+
+    int activeFilterCount = 0;
+    if (filter.status != null && filter.status!.isNotEmpty) activeFilterCount++;
+    if (filter.severity != null && filter.severity!.isNotEmpty) activeFilterCount++;
+    if (filter.from != null || filter.to != null) activeFilterCount++;
+    if (filter.assigneeId != null && filter.assigneeId!.isNotEmpty) activeFilterCount++;
+    if (filter.timeframe != null &&
+        filter.timeframe!.isNotEmpty &&
+        filter.timeframe != 'all') {
+      activeFilterCount++;
+    }
 
     ref.listen(mapReportsProvider.select((s) => s.error), (previous, next) {
       if (next == null || previous != null) return;
@@ -156,7 +239,7 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
             content: Text(l10n.mapLoadReportsFailed),
             action: SnackBarAction(
               label: l10n.retry,
-              onPressed: () => ref.read(adminMapControllerProvider.notifier).refresh(),
+              onPressed: _handleRefresh,
             ),
           ),
         );
@@ -182,7 +265,7 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
           IconButton(
             icon: const Icon(Icons.refresh),
             tooltip: l10n.mapRefresh,
-            onPressed: () => ref.read(adminMapControllerProvider.notifier).refresh(),
+            onPressed: _handleRefresh,
           ),
         ],
       ),
@@ -197,16 +280,22 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
               onClusterTap: _showClusterSheet,
               onViewportChanged: _onViewportChanged,
               initialFocus: widget.focus,
+              onMapControllerCreated: (controller) {
+                _platformMapController = controller;
+              },
               onMapTap: () {
-                // Only pop if there's a dialog/sheet open (canPop true)
-                if (Navigator.of(context).canPop()) {
+                // Chỉ tắt modal/sheet nếu đang mở một sheet, TUYỆT ĐỐI không pop AdminMapScreen
+                if (_sheetOpen) {
                   Navigator.of(context).pop();
+                  _sheetOpen = false;
+                  return;
                 }
+                ref.read(adminMapControllerProvider.notifier).clearSelection();
               },
             ),
           ),
 
-          if (reportsState.isLoading)
+          if (reportsState.isLoading || (densityState.isEnabled && densityState.isLoading))
             const Positioned(
               top: 0,
               left: 0,
@@ -214,7 +303,7 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
               child: LinearProgressIndicator(minHeight: 2),
             ),
 
-          if (reportsState.truncated)
+          if (reportsState.truncated || (densityState.isEnabled && densityState.truncated))
             Positioned(
               bottom: 16,
               left: 0,
@@ -224,18 +313,36 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
               ),
             ),
 
-          // Legend
-          const MapLegend(),
-
-          // Filter Panel (Top Left)
-          SafeArea(
-            child: Align(
-              alignment: Alignment.topLeft,
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(maxWidth: 450),
-                child: PointerInterceptor(child: const MapFilterPanel()),
+          // Legends (Bottom Left: Density Legend above Status Legend)
+          Positioned(
+            bottom: 16,
+            left: 12,
+            child: PointerInterceptor(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // Density Legend placed ABOVE the Status Legend
+                  if (densityState.isEnabled) ...[
+                    const MapDensityLegend(),
+                    const SizedBox(height: 8),
+                  ],
+                  const MapLegend(),
+                ],
               ),
             ),
+          ),
+
+          // Map Controls (Top Right: Settings, My Location, Filter Reports)
+          MapControls(
+            isDensityActive: densityState.isEnabled,
+            onSettingsPressed: _showMapSettings,
+            onMyLocationPressed: () {
+              _platformMapController?.flyToUserLocation();
+            },
+            onFilterPressed: _showFilterSheet,
+            isFilterActive: activeFilterCount > 0,
+            activeFilterCount: activeFilterCount,
           ),
         ],
       ),

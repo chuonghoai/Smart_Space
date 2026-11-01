@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 
-/// Map control buttons — filter, my location, refresh
+/// Map control buttons — settings, location, filters, refresh
 class MapControls extends StatelessWidget {
   final bool showDangerous;
   final bool showNormal;
+  final bool isDensityActive;
+  final VoidCallback? onSettingsPressed;
   final VoidCallback onMyLocationPressed;
   final VoidCallback onRefreshPressed;
   final void Function({bool? showDangerous, bool? showNormal}) onFilterChanged;
@@ -13,6 +15,8 @@ class MapControls extends StatelessWidget {
     super.key,
     required this.showDangerous,
     required this.showNormal,
+    this.isDensityActive = false,
+    this.onSettingsPressed,
     required this.onMyLocationPressed,
     required this.onFilterChanged,
     required this.onRefreshPressed,
@@ -29,8 +33,21 @@ class MapControls extends StatelessWidget {
       right: 12,
       child: Column(
         children: [
+          // Map Settings / Density Toggle Sheet
+          if (onSettingsPressed != null) ...[
+            MapControlButton(
+              icon: Icons.layers_outlined,
+              tooltip: l10n.mapSettings,
+              onPressed: onSettingsPressed!,
+              isActive: isDensityActive,
+              activeColor: colorScheme.primary,
+              colorScheme: colorScheme,
+            ),
+            const SizedBox(height: 8),
+          ],
+
           // My Location
-          _ControlButton(
+          MapControlButton(
             icon: Icons.my_location,
             tooltip: l10n.myLocation,
             onPressed: onMyLocationPressed,
@@ -39,7 +56,7 @@ class MapControls extends StatelessWidget {
           const SizedBox(height: 8),
 
           // Filter Dangerous
-          _ControlButton(
+          MapControlButton(
             icon: Icons.warning_amber_rounded,
             tooltip: l10n.dangerousReports,
             onPressed: () => onFilterChanged(showDangerous: !showDangerous),
@@ -49,8 +66,8 @@ class MapControls extends StatelessWidget {
           ),
           const SizedBox(height: 8),
 
-          // Filter Normal (không nguy hiểm)
-          _ControlButton(
+          // Filter Normal
+          MapControlButton(
             icon: Icons.place_outlined,
             tooltip: l10n.mapNormalReports,
             onPressed: () => onFilterChanged(showNormal: !showNormal),
@@ -61,7 +78,7 @@ class MapControls extends StatelessWidget {
           const SizedBox(height: 8),
 
           // Refresh
-          _ControlButton(
+          MapControlButton(
             icon: Icons.refresh,
             tooltip: l10n.refresh,
             onPressed: onRefreshPressed,
@@ -73,7 +90,7 @@ class MapControls extends StatelessWidget {
   }
 }
 
-class _ControlButton extends StatelessWidget {
+class MapControlButton extends StatelessWidget {
   final IconData icon;
   final String tooltip;
   final VoidCallback onPressed;
@@ -81,7 +98,8 @@ class _ControlButton extends StatelessWidget {
   final Color? activeColor;
   final ColorScheme colorScheme;
 
-  const _ControlButton({
+  const MapControlButton({
+    super.key,
     required this.icon,
     required this.tooltip,
     required this.onPressed,

@@ -9,6 +9,8 @@ import com.vn.smart_space.dto.ApiResponse;
 import com.vn.smart_space.dto.response.report.ReportDetailResponse;
 import com.vn.smart_space.dto.response.report.ReportResponse;
 import com.vn.smart_space.service.report.IReportService;
+import com.vn.smart_space.dto.response.report.ReportDensityResponse;
+import com.vn.smart_space.service.report.IReportDensityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,6 +25,19 @@ import java.util.List;
 public class ReportController {
 
     private final IReportService reportService;
+    private final IReportDensityService reportDensityService;
+
+    @GetMapping("/density")
+    public ResponseEntity<ApiResponse> getReportDensity(
+            @RequestParam(name = "north") Double north,
+            @RequestParam(name = "south") Double south,
+            @RequestParam(name = "east") Double east,
+            @RequestParam(name = "west") Double west,
+            @RequestParam(name = "zoom", defaultValue = "14.0") Double zoom,
+            @RequestParam(name = "timeframe", required = false, defaultValue = "all") String timeframe) {
+        ReportDensityResponse response = reportDensityService.getDensity(north, south, east, west, zoom, timeframe);
+        return ResponseEntity.ok(ApiResponse.success("system.success", response));
+    }
 
     @GetMapping("/dangerous")
     public ResponseEntity<ApiResponse> getDangerousReports() {
@@ -87,10 +102,11 @@ public class ReportController {
             @RequestParam(name = "min_lng") Double minLng,
             @RequestParam(name = "max_lng") Double maxLng,
             @RequestParam(defaultValue = "all") String filter,
+            @RequestParam(name = "timeframe", required = false) String timeframe,
             @RequestParam(defaultValue = "300") int limit) {
         String viewerId = jwt.getClaim("userId").toString();
         return ResponseEntity.ok(ApiResponse.success("system.success",
-                reportService.getReportsInBounds(viewerId, minLat, maxLat, minLng, maxLng, filter, limit)));
+                reportService.getReportsInBounds(viewerId, minLat, maxLat, minLng, maxLng, filter, timeframe, limit)));
     }
 
     @GetMapping("/{id}")
