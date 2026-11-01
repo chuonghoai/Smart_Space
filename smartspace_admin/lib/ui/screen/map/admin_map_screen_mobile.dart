@@ -263,6 +263,14 @@ class _MobileMapViewState extends ConsumerState<_MobileMapView>
   @override
   Future<void> refreshViewport() async {
     await _emitViewport(force: true);
+    _clusterLayer?.setMarkers(_markers());
+    if (ref.read(adminReportDensityProvider).isEnabled) {
+      final geojson = ref.read(adminReportDensityProvider).geojsonString;
+      if (geojson != null) {
+        await _densityLayer?.updateData(geojson);
+        await _densityLayer?.setVisible(true);
+      }
+    }
   }
 
   @override

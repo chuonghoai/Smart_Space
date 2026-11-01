@@ -2,19 +2,23 @@ import 'package:flutter/material.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 
-/// Control buttons cho bản đồ Admin — cài đặt/mật độ, vị trí của tôi, làm mới.
+/// Control buttons cho bản đồ Admin — cài đặt/mật độ, vị trí của tôi, lọc phản ánh.
 class MapControls extends StatelessWidget {
   final bool isDensityActive;
   final VoidCallback? onSettingsPressed;
   final VoidCallback onMyLocationPressed;
-  final VoidCallback onRefreshPressed;
+  final VoidCallback onFilterPressed;
+  final bool isFilterActive;
+  final int activeFilterCount;
 
   const MapControls({
     super.key,
     this.isDensityActive = false,
     this.onSettingsPressed,
     required this.onMyLocationPressed,
-    required this.onRefreshPressed,
+    required this.onFilterPressed,
+    this.isFilterActive = false,
+    this.activeFilterCount = 0,
   });
 
   @override
@@ -52,11 +56,14 @@ class MapControls extends StatelessWidget {
             ),
             const SizedBox(height: 8),
 
-            // Refresh
+            // Filter Reports (directly below My Location)
             MapControlButton(
-              icon: Icons.refresh,
-              tooltip: l10n.mapRefresh,
-              onPressed: onRefreshPressed,
+              icon: Icons.filter_list_rounded,
+              tooltip: l10n.mapFilterTitle,
+              onPressed: onFilterPressed,
+              isActive: isFilterActive,
+              activeColor: colorScheme.primary,
+              badgeCount: activeFilterCount > 0 ? activeFilterCount : null,
               colorScheme: colorScheme,
             ),
           ],
@@ -72,6 +79,7 @@ class MapControlButton extends StatelessWidget {
   final VoidCallback onPressed;
   final bool isActive;
   final Color? activeColor;
+  final int? badgeCount;
   final ColorScheme colorScheme;
 
   const MapControlButton({
@@ -81,6 +89,7 @@ class MapControlButton extends StatelessWidget {
     required this.onPressed,
     this.isActive = false,
     this.activeColor,
+    this.badgeCount,
     required this.colorScheme,
   });
 
@@ -88,7 +97,7 @@ class MapControlButton extends StatelessWidget {
   Widget build(BuildContext context) {
     final effectiveActiveColor = activeColor ?? colorScheme.primary;
 
-    return Tooltip(
+    Widget button = Tooltip(
       message: tooltip,
       child: Material(
         color: isActive
@@ -122,6 +131,19 @@ class MapControlButton extends StatelessWidget {
         ),
       ),
     );
+
+    if (badgeCount != null && badgeCount! > 0) {
+      button = Badge(
+        label: Text(
+          '$badgeCount',
+          style: const TextStyle(fontSize: 10, fontWeight: FontWeight.bold),
+        ),
+        backgroundColor: colorScheme.primary,
+        textColor: colorScheme.onPrimary,
+        child: button,
+      );
+    }
+
+    return button;
   }
 }
-

@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
@@ -129,7 +128,7 @@ void main() {
       expect(result.zoom, 14.5);
       expect(result.cells.length, 1);
       expect(result.geojsonString, isNotNull);
-      expect(jsonDecode(result.geojsonString!)['type'], 'FeatureCollection');
+      expect(jsonDecode(result.geojsonString)['type'], 'FeatureCollection');
     });
   });
 

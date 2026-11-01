@@ -74,6 +74,7 @@ class _WebMapViewState extends ConsumerState<_WebMapView>
   bool _registered = false;
   bool _ready = false;
   String? _lastPayload;
+  bool _forceNextViewport = false;
 
   @override
   void initState() {
@@ -155,9 +156,11 @@ class _WebMapViewState extends ConsumerState<_WebMapView>
       case 'viewport':
         final bounds = _boundsOf(message);
         if (bounds != null) {
+          final force = _forceNextViewport;
+          _forceNextViewport = false;
           widget.onViewportChanged(bounds);
           final zoom = (message['zoom'] as num?)?.toDouble() ?? 14.0;
-          ref.read(adminReportDensityProvider.notifier).loadForViewport(bounds, zoom);
+          ref.read(adminReportDensityProvider.notifier).loadForViewport(bounds, zoom, force: force);
         }
       case 'marker_click':
         final report = widget.reports.where((r) => r.id == message['id']).firstOrNull;
