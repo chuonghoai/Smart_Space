@@ -18,6 +18,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.vn.smart_space.dto.ApiResponse;
 import com.vn.smart_space.dto.request.admin.ReportAssignRequest;
 import com.vn.smart_space.service.report.IReportService;
+import com.vn.smart_space.dto.response.report.ReportDensityStatusResponse;
+import com.vn.smart_space.service.report.IReportDensityService;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -30,6 +32,22 @@ import lombok.experimental.FieldDefaults;
 public class AdminReportController {
 
     IReportService reportService;
+    IReportDensityService reportDensityService;
+
+    @PostMapping("/density/recalculate")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<ApiResponse> triggerDensityRecalculation(
+            @RequestParam(defaultValue = "true") boolean async) {
+        ReportDensityStatusResponse response = reportDensityService.triggerFullRecalculation(async);
+        return ResponseEntity.ok(ApiResponse.success("system.success", response));
+    }
+
+    @GetMapping("/density/status")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<ApiResponse> getDensityStatus() {
+        ReportDensityStatusResponse response = reportDensityService.getStatus();
+        return ResponseEntity.ok(ApiResponse.success("system.success", response));
+    }
 
     @GetMapping("/recent")
     @PreAuthorize("hasRole('admin')")

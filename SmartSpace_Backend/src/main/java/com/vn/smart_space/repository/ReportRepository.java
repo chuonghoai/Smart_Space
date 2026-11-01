@@ -284,4 +284,20 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                         @Param("ownerId") String ownerId,
                         Limit limit);
 
+        @Query("SELECT r.id, r.latitude, r.longitude FROM Report r " +
+                        "WHERE r.latitude IS NOT NULL AND r.longitude IS NOT NULL " +
+                        "AND r.status <> :excluded")
+        List<Object[]> findValidCoordinatesForDensity(@Param("excluded") EReportStatus excluded);
+
+        @Query("SELECT r.id, r.latitude, r.longitude FROM Report r " +
+                        "WHERE r.latitude BETWEEN :minLat AND :maxLat " +
+                        "AND r.longitude BETWEEN :minLng AND :maxLng " +
+                        "AND r.status <> :excluded")
+        List<Object[]> findValidCoordinatesInBounds(
+                        @Param("minLat") Double minLat,
+                        @Param("maxLat") Double maxLat,
+                        @Param("minLng") Double minLng,
+                        @Param("maxLng") Double maxLng,
+                        @Param("excluded") EReportStatus excluded);
+
 }

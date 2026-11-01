@@ -9,6 +9,8 @@ import com.vn.smart_space.dto.ApiResponse;
 import com.vn.smart_space.dto.response.report.ReportDetailResponse;
 import com.vn.smart_space.dto.response.report.ReportResponse;
 import com.vn.smart_space.service.report.IReportService;
+import com.vn.smart_space.dto.response.report.ReportDensityResponse;
+import com.vn.smart_space.service.report.IReportDensityService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -23,6 +25,18 @@ import java.util.List;
 public class ReportController {
 
     private final IReportService reportService;
+    private final IReportDensityService reportDensityService;
+
+    @GetMapping("/density")
+    public ResponseEntity<ApiResponse> getReportDensity(
+            @RequestParam(name = "north") Double north,
+            @RequestParam(name = "south") Double south,
+            @RequestParam(name = "east") Double east,
+            @RequestParam(name = "west") Double west,
+            @RequestParam(name = "zoom", defaultValue = "14.0") Double zoom) {
+        ReportDensityResponse response = reportDensityService.getDensity(north, south, east, west, zoom);
+        return ResponseEntity.ok(ApiResponse.success("system.success", response));
+    }
 
     @GetMapping("/dangerous")
     public ResponseEntity<ApiResponse> getDangerousReports() {

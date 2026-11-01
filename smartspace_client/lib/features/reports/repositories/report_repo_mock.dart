@@ -1,3 +1,4 @@
+import 'package:smartspace_client/features/reports/models/report_density_model.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
 import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
@@ -321,5 +322,22 @@ class ReportRepoMock implements ReportRepo {
         isAnonymous: false,
       ),
     );
+  }
+  @override
+  Future<ApiResponse<ReportDensityResult>> getReportDensity({
+    required double north,
+    required double south,
+    required double east,
+    required double west,
+    double zoom = 14.0,
+  }) async {
+    return ApiResponse.success(const ReportDensityResult(
+      resolution: 11,
+      zoom: 14.0,
+      totalCells: 0,
+      truncated: false,
+      cells: [],
+      geojson: {'type': 'FeatureCollection', 'features': []},
+    ));
   }
 }

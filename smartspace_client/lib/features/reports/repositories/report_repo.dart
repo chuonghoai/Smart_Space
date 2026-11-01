@@ -1,3 +1,4 @@
+import 'package:smartspace_client/features/reports/models/report_density_model.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
 import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
@@ -36,5 +37,11 @@ abstract class ReportRepo {
   });
   Future<ApiResponse<ReportDetailModel>> updateReport(String reportId, ReportDto reportDto);
   Future<ApiResponse<ReportDetailModel>> cancelReport(String reportId);
+  Future<ApiResponse<ReportDensityResult>> getReportDensity({
+    required double north,
+    required double south,
+    required double east,
+    required double west,
+    double zoom = 14.0,
+  });
 }
-

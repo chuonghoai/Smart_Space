@@ -958,4 +958,29 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get genericError => 'Đã có lỗi xảy ra, vui lòng thử lại sau';
+
+  @override
+  String get mapSettings => 'Cài đặt bản đồ';
+
+  @override
+  String get mapDensityToggle => 'Hiển thị mật độ phản ánh';
+
+  @override
+  String get mapDensityDescription =>
+      'Hiển thị các khu vực có nhiều phản ánh theo màu sắc (50m)';
+
+  @override
+  String get densityLegendTitle => 'Mật độ phản ánh';
+
+  @override
+  String get densityLow => '1–2 phản ánh (Thấp)';
+
+  @override
+  String get densityMedium => '3–5 phản ánh (Trung bình)';
+
+  @override
+  String get densityHigh => 'Trên 5 phản ánh (Cao)';
+
+  @override
+  String get mapBack => 'Quay lại';
 }

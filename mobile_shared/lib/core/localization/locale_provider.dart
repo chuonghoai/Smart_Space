@@ -24,7 +24,7 @@ class LocaleProvider extends ChangeNotifier {
   }
 
   Future<void> setLocale(Locale locale) async {
-    if (!['en', 'vi'].contains(locale.languageCode)) return;
+    if (!['en', 'vi', 'zh'].contains(locale.languageCode)) return;
     if (_locale == locale) return;
 
     _locale = locale;

@@ -7,6 +7,7 @@ import 'package:intl/intl.dart' as intl;
 
 import 'app_localizations_en.dart';
 import 'app_localizations_vi.dart';
+import 'app_localizations_zh.dart';
 
 // ignore_for_file: type=lint
 
@@ -96,6 +97,7 @@ abstract class AppLocalizations {
   static const List<Locale> supportedLocales = <Locale>[
     Locale('en'),
     Locale('vi'),
+    Locale('zh'),
   ];
 
   /// No description provided for @appTitle.
@@ -1909,6 +1911,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'An error occurred, please try again later'**
   String get genericError;
+
+  /// No description provided for @mapSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Map Settings'**
+  String get mapSettings;
+
+  /// No description provided for @mapDensityToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show report density'**
+  String get mapDensityToggle;
+
+  /// No description provided for @mapDensityDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Display high-density report areas grouped by color (50m)'**
+  String get mapDensityDescription;
+
+  /// No description provided for @densityLegendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Density'**
+  String get densityLegendTitle;
+
+  /// No description provided for @densityLow.
+  ///
+  /// In en, this message translates to:
+  /// **'1–2 reports (Low)'**
+  String get densityLow;
+
+  /// No description provided for @densityMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'3–5 reports (Medium)'**
+  String get densityMedium;
+
+  /// No description provided for @densityHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Over 5 reports (High)'**
+  String get densityHigh;
+
+  /// No description provided for @mapBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get mapBack;
 }
 
 class _AppLocalizationsDelegate
@@ -1922,7 +1972,7 @@ class _AppLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['en', 'vi'].contains(locale.languageCode);
+      <String>['en', 'vi', 'zh'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_AppLocalizationsDelegate old) => false;
@@ -1935,6 +1985,8 @@ AppLocalizations lookupAppLocalizations(Locale locale) {
       return AppLocalizationsEn();
     case 'vi':
       return AppLocalizationsVi();
+    case 'zh':
+      return AppLocalizationsZh();
   }
 
   throw FlutterError(

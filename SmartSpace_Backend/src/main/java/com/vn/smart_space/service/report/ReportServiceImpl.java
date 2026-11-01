@@ -72,6 +72,7 @@ public class ReportServiceImpl implements IReportService {
     private final MessageSource messageSource;
     private final IStaffWalletService staffWalletService;
     private final IWalletConfigService walletConfigService;
+    private final IReportDensityService reportDensityService;
 
     private static final int MAP_DEFAULT_LIMIT = 300;
     private static final int MAP_MAX_LIMIT = 500;
@@ -168,6 +169,13 @@ public class ReportServiceImpl implements IReportService {
         }
 
         report = reportRepository.save(report);
+
+        // Incremental update for map density
+        try {
+            reportDensityService.onReportCreated(report.getId(), report.getLatitude(), report.getLongitude());
+        } catch (Exception e) {
+            log.warn("[ReportDensity] Failed to trigger density update on create report: {}", e.getMessage());
+        }
 
         if (userId != null) {
             User actor = report.getUser();
@@ -1057,6 +1065,14 @@ public class ReportServiceImpl implements IReportService {
         }
         Report saved = reportRepository.save(report);
 
+        if (next == EReportStatus.rejected) {
+            try {
+                reportDensityService.onReportRejected(saved.getId(), saved.getLatitude(), saved.getLongitude());
+            } catch (Exception ex) {
+                log.warn("[ReportDensity] Error updating density for rejected report {}: {}", saved.getId(), ex.getMessage());
+            }
+        }
+
         if (next == EReportStatus.processed) {
             try {
                 staffWalletService.processReportCompletedCommission(saved);
@@ -1388,6 +1404,8 @@ public class ReportServiceImpl implements IReportService {
         report.setReviewedAt(new java.util.Date());
         Report saved = reportRepository.save(report);
 
+
+
         // When client submits unresolved review, notify all Admins via WebSocket + DB
         // notification + FCM
         if (Boolean.FALSE.equals(saved.getIsReviewResolved())) {
@@ -1611,6 +1629,9 @@ public class ReportServiceImpl implements IReportService {
         if (request.getDescription() != null && !request.getDescription().trim().isEmpty()) {
             report.setDescription(request.getDescription().trim());
         }
+        Double oldLat = report.getLatitude();
+        Double oldLng = report.getLongitude();
+
         if (request.getLatitude() != null) {
             report.setLatitude(request.getLatitude());
         }
@@ -1637,6 +1658,12 @@ public class ReportServiceImpl implements IReportService {
         }
 
         report = reportRepository.save(report);
+
+        try {
+            reportDensityService.onReportRejected(report.getId(), report.getLatitude(), report.getLongitude());
+        } catch (Exception e) {
+            log.warn("[ReportDensity] Failed to trigger density update on cancel report: {}", e.getMessage());
+        }
 
         if (userId != null && report.getUser() != null) {
             User actor = report.getUser();
@@ -1673,6 +1700,12 @@ public class ReportServiceImpl implements IReportService {
 
         report.setStatus(EReportStatus.rejected);
         report = reportRepository.save(report);
+
+        try {
+            reportDensityService.onReportRejected(report.getId(), report.getLatitude(), report.getLongitude());
+        } catch (Exception e) {
+            log.warn("[ReportDensity] Failed to trigger density update on cancel report: {}", e.getMessage());
+        }
 
         if (userId != null && report.getUser() != null) {
             User actor = report.getUser();

@@ -1,3 +1,4 @@
+import 'package:smartspace_client/features/reports/models/report_density_model.dart';
 import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
@@ -195,6 +196,31 @@ class ReportRepoApi implements ReportRepo {
           return ReportDetailModel.fromJson(json);
         }
         throw Exception('Invalid response format');
+      },
+    );
+  }
+  @override
+  Future<ApiResponse<ReportDensityResult>> getReportDensity({
+    required double north,
+    required double south,
+    required double east,
+    required double west,
+    double zoom = 14.0,
+  }) async {
+    return await apiClient.get<ReportDensityResult>(
+      '/reports/density',
+      queryParameters: {
+        'north': north,
+        'south': south,
+        'east': east,
+        'west': west,
+        'zoom': zoom,
+      },
+      decoder: (json) {
+        if (json is Map<String, dynamic>) {
+          return ReportDensityResult.fromJson(json);
+        }
+        throw Exception('Invalid density response format');
       },
     );
   }

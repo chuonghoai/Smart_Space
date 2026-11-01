@@ -968,4 +968,29 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get genericError => 'An error occurred, please try again later';
+
+  @override
+  String get mapSettings => 'Map Settings';
+
+  @override
+  String get mapDensityToggle => 'Show report density';
+
+  @override
+  String get mapDensityDescription =>
+      'Display high-density report areas grouped by color (50m)';
+
+  @override
+  String get densityLegendTitle => 'Report Density';
+
+  @override
+  String get densityLow => '1–2 reports (Low)';
+
+  @override
+  String get densityMedium => '3–5 reports (Medium)';
+
+  @override
+  String get densityHigh => 'Over 5 reports (High)';
+
+  @override
+  String get mapBack => 'Back';
 }
