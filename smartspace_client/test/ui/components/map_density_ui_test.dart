@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
+import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/ui/components/map_controls.dart';
 import 'package:smartspace_client/ui/components/map_density_legend.dart';
 import 'package:smartspace_client/ui/components/map_settings_bottom_sheet.dart';
+import 'package:smartspace_client/ui/components/report_info_sheet.dart';
 
 Widget createLocalizedApp(Widget child) {
   return MaterialApp(
@@ -111,6 +113,42 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(settingsClicked, isTrue);
+    });
+
+    testWidgets('ReportInfoSheet renders and triggers onViewDetail when tapped', (tester) async {
+      bool detailClicked = false;
+      final report = ReportModel(
+        id: 'test-report-123',
+        title: 'Hố ga mất nắp',
+        description: 'Đường Nguyễn Huệ hố ga nguy hiểm',
+        imageUrl: '',
+        latitude: 10.7769,
+        longitude: 106.7009,
+        status: ReportStatus.pending,
+        createdAt: DateTime(2026, 1, 1),
+      );
+
+      await tester.pumpWidget(
+        createLocalizedApp(
+          ReportInfoSheet(
+            report: report,
+            onViewDetail: () {
+              detailClicked = true;
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Hố ga mất nắp'), findsOneWidget);
+      expect(find.text('Đường Nguyễn Huệ hố ga nguy hiểm'), findsOneWidget);
+      expect(find.byIcon(Icons.arrow_forward_ios_rounded), findsOneWidget);
+
+      // Tap on the sheet
+      await tester.tap(find.byType(ReportInfoSheet));
+      await tester.pumpAndSettle();
+
+      expect(detailClicked, isTrue);
     });
   });
 }
