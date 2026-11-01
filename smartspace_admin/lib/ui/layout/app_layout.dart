@@ -11,6 +11,7 @@ class AppLayout extends StatefulWidget {
   final PreferredSizeWidget? customAppBar;
   final bool showDrawer;
   final Widget? floatingActionButton;
+  final Widget? bottomNavigationBar;
 
   const AppLayout({
     super.key,
@@ -18,6 +19,7 @@ class AppLayout extends StatefulWidget {
     this.customAppBar,
     this.showDrawer = true,
     this.floatingActionButton,
+    this.bottomNavigationBar,
   });
 
   @override
@@ -41,6 +43,7 @@ class _AppLayoutState extends State<AppLayout>
         appBar: widget.customAppBar ?? const TopBar(showMenuButton: true),
         drawer: widget.showDrawer ? const Sidebar() : null,
         floatingActionButton: widget.floatingActionButton,
+        bottomNavigationBar: widget.bottomNavigationBar,
         body: widget.child,
       );
     }
@@ -110,6 +113,9 @@ class _AppLayoutState extends State<AppLayout>
                 widget.customAppBar ?? const TopBar(showMenuButton: false),
                 // Content
                 Expanded(child: widget.child),
+                // Bottom navigation / action bar
+                if (widget.bottomNavigationBar != null)
+                  widget.bottomNavigationBar!,
               ],
             ),
           ),

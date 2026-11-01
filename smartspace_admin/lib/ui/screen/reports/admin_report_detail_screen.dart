@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
+import 'package:smartspace_admin/ui/layout/app_layout.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_shared/mobile_shared.dart';
@@ -44,9 +46,80 @@ class _AdminReportDetailScreenState
     final reportAsync = ref.watch(reportDetailProvider(widget.reportId));
     final assignState = ref.watch(reportAssignProvider);
 
-    return Scaffold(
-      backgroundColor: theme.scaffoldBackgroundColor,
-      appBar: AppBar(
+    final isDesktop = kIsWeb && MediaQuery.of(context).size.width >= 850;
+
+    final bodyWidget = reportAsync.when(
+      loading: () => const Center(
+        child: CircularProgressIndicator(),
+      ),
+      error: (error, stack) => Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline_rounded,
+                size: 56,
+                color: theme.colorScheme.error,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                error.toString(),
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 16),
+              FilledButton.icon(
+                onPressed: () {
+                  ref
+                      .read(reportDetailProvider(widget.reportId).notifier)
+                      .refresh();
+                },
+                icon: const Icon(Icons.refresh),
+                label: Text(l10n.retry),
+              ),
+            ],
+          ),
+        ),
+      ),
+      data: (report) => RefreshIndicator(
+        onRefresh: () async {
+          await ref.read(reportDetailProvider(widget.reportId).notifier).refresh();
+        },
+        child: _buildContent(context, report, l10n, theme, assignState, isDesktop),
+      ),
+    );
+
+    if (!isDesktop) {
+      // Mobile View: GIỮ NGUYÊN TRẠNG 100%
+      return Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        appBar: AppBar(
+          title: Text(
+            l10n.reportDetailTitle,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          elevation: 0,
+          centerTitle: true,
+        ),
+        body: bodyWidget,
+        bottomNavigationBar: _buildBottomActionButton(
+            context, l10n, theme, assignState, reportAsync.valueOrNull, false),
+      );
+    }
+
+    // Web Desktop View: Có Sidebar cố định bên trái qua AppLayout, AppBar có nút Back
+    return AppLayout(
+      customAppBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
         title: Text(
           l10n.reportDetailTitle,
           style: theme.textTheme.titleMedium?.copyWith(
@@ -56,51 +129,9 @@ class _AdminReportDetailScreenState
         elevation: 0,
         centerTitle: true,
       ),
-      body: reportAsync.when(
-        loading: () => const Center(
-          child: CircularProgressIndicator(),
-        ),
-        error: (error, stack) => Center(
-          child: Padding(
-            padding: const EdgeInsets.all(24.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.error_outline_rounded,
-                  size: 56,
-                  color: theme.colorScheme.error,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  error.toString(),
-                  textAlign: TextAlign.center,
-                  style: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
-                  ),
-                ),
-                const SizedBox(height: 16),
-                FilledButton.icon(
-                  onPressed: () {
-                    ref
-                        .read(reportDetailProvider(widget.reportId).notifier)
-                        .refresh();
-                  },
-                  icon: const Icon(Icons.refresh),
-                  label: Text(l10n.retry),
-                ),
-              ],
-            ),
-          ),
-        ),
-        data: (report) => RefreshIndicator(
-          onRefresh: () async {
-            await ref.read(reportDetailProvider(widget.reportId).notifier).refresh();
-          },
-          child: _buildContent(context, report, l10n, theme, assignState),
-        ),
-      ),
-      bottomNavigationBar: _buildBottomActionButton(context, l10n, theme, assignState, reportAsync.valueOrNull),
+      bottomNavigationBar: _buildBottomActionButton(
+          context, l10n, theme, assignState, reportAsync.valueOrNull, true),
+      child: bodyWidget,
     );
   }
 
@@ -110,63 +141,79 @@ class _AdminReportDetailScreenState
     AppLocalizations l10n,
     ThemeData theme,
     ReportAssignState assignState,
+    bool isDesktop,
   ) {
     final isPending = report.status.toUpperCase() == 'PENDING';
     final isDone = report.status.toUpperCase() == 'PROCESSED' ||
         report.status.toUpperCase() == 'RESOLVED' ||
         report.status.toUpperCase() == 'DONE';
 
+    final contentColumn = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // 1. Image Slider / Single Image Header (from image_urls list)
+        _buildImageSection(context, report.images, l10n, isDesktop),
+        const SizedBox(height: 16),
+
+        // 2. Status & Severity Dual Cards Header
+        _buildStatusAndSeveritySection(context, report, l10n, theme),
+        const SizedBox(height: 16),
+
+        // 3. Report Info Card (Title, Description, CreatedAt)
+        _buildReportInfoCard(context, report, l10n, theme),
+        const SizedBox(height: 16),
+
+        // 4. Reporter Card
+        _buildReporterCard(context, report, l10n, theme),
+        const SizedBox(height: 16),
+
+        // 5. Location Card
+        _buildLocationCard(context, report, l10n, theme),
+        const SizedBox(height: 16),
+
+        // 6. Assign Staff & Severity 2-Column Section
+        if (isPending)
+          _buildAssignStaffTwoColumnSection(context, report, l10n, theme)
+        else
+          _buildAssignedStaffTwoColumnCard(context, report, l10n, theme),
+
+        // 7. Staff Resolution Section (when status is Done/Processed)
+        if (isDone) ...[
+          const SizedBox(height: 16),
+          _buildResolutionSection(context, report, l10n, theme, isDesktop),
+        ],
+
+        // 8. Citizen Review Section (when report has citizen review)
+        if (report.isReviewResolved != null) ...[
+          const SizedBox(height: 16),
+          _buildCitizenReviewSection(context, report, l10n, theme, isDone, isDesktop),
+        ],
+      ],
+    );
+
     return SingleChildScrollView(
       physics: const AlwaysScrollableScrollPhysics(
         parent: ClampingScrollPhysics(),
       ),
       padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 100),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          // 1. Image Slider / Single Image Header (from image_urls list)
-          _buildImageSection(context, report.images, l10n),
-          const SizedBox(height: 16),
-
-          // 2. Status & Severity Dual Cards Header
-          _buildStatusAndSeveritySection(context, report, l10n, theme),
-          const SizedBox(height: 16),
-
-          // 3. Report Info Card (Title, Description, CreatedAt)
-          _buildReportInfoCard(context, report, l10n, theme),
-          const SizedBox(height: 16),
-
-          // 4. Reporter Card
-          _buildReporterCard(context, report, l10n, theme),
-          const SizedBox(height: 16),
-
-          // 5. Location Card
-          _buildLocationCard(context, report, l10n, theme),
-          const SizedBox(height: 16),
-
-          // 6. Assign Staff & Severity 2-Column Section
-          if (isPending)
-            _buildAssignStaffTwoColumnSection(context, report, l10n, theme)
-          else
-            _buildAssignedStaffTwoColumnCard(context, report, l10n, theme),
-
-          // 7. Staff Resolution Section (when status is Done/Processed)
-          if (isDone) ...[
-            const SizedBox(height: 16),
-            _buildResolutionSection(context, report, l10n, theme),
-          ],
-
-          // 8. Citizen Review Section (when report has citizen review)
-          if (report.isReviewResolved != null) ...[
-            const SizedBox(height: 16),
-            _buildCitizenReviewSection(context, report, l10n, theme, isDone),
-          ],
-        ],
-      ),
+      child: isDesktop
+          ? Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 880),
+                child: contentColumn,
+              ),
+            )
+          : contentColumn,
     );
   }
 
-  Widget _buildImageSection(BuildContext context, List<String> images, AppLocalizations l10n) {
+  Widget _buildImageSection(
+    BuildContext context,
+    List<String> images,
+    AppLocalizations l10n,
+    bool isDesktop,
+  ) {
     final theme = Theme.of(context);
 
     if (images.isEmpty) {
@@ -202,68 +249,84 @@ class _AdminReportDetailScreenState
     }
 
     if (images.length == 1) {
+      final imgWidget = GestureDetector(
+        onTap: () => _openFullscreenImage(images, 0),
+        child: AppNetworkImage(
+          url: images.first,
+          fit: BoxFit.cover,
+        ),
+      );
+
       return ClipRRect(
         borderRadius: BorderRadius.circular(16),
-        child: GestureDetector(
-          onTap: () => _openFullscreenImage(images, 0),
-          child: AspectRatio(
-            aspectRatio: 16 / 9,
-            child: AppNetworkImage(
-              url: images.first,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
+        child: isDesktop
+            ? SizedBox(
+                height: 380,
+                width: double.infinity,
+                child: imgWidget,
+              )
+            : AspectRatio(
+                aspectRatio: 16 / 9,
+                child: imgWidget,
+              ),
       );
     }
 
     // Multiple images slider
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(16),
-      child: AspectRatio(
-        aspectRatio: 16 / 9,
-        child: Stack(
-          children: [
-            PageView.builder(
-              itemCount: images.length,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentImageIndex = index;
-                });
-              },
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () => _openFullscreenImage(images, index),
-                  child: AppNetworkImage(
-                    url: images[index],
-                    fit: BoxFit.cover,
-                  ),
-                );
-              },
+    final sliderContent = Stack(
+      children: [
+        PageView.builder(
+          itemCount: images.length,
+          onPageChanged: (index) {
+            setState(() {
+              _currentImageIndex = index;
+            });
+          },
+          itemBuilder: (context, index) {
+            return GestureDetector(
+              onTap: () => _openFullscreenImage(images, index),
+              child: AppNetworkImage(
+                url: images[index],
+                fit: BoxFit.cover,
+              ),
+            );
+          },
+        ),
+        // Page Indicator badge
+        Positioned(
+          bottom: 12,
+          right: 12,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.65),
+              borderRadius: BorderRadius.circular(12),
             ),
-            // Page Indicator badge
-            Positioned(
-              bottom: 12,
-              right: 12,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.65),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '${_currentImageIndex + 1}/${images.length}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+            child: Text(
+              '${_currentImageIndex + 1}/${images.length}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ],
+          ),
         ),
-      ),
+      ],
+    );
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: isDesktop
+          ? SizedBox(
+              height: 380,
+              width: double.infinity,
+              child: sliderContent,
+            )
+          : AspectRatio(
+              aspectRatio: 16 / 9,
+              child: sliderContent,
+            ),
     );
   }
 
@@ -314,11 +377,15 @@ class _AdminReportDetailScreenState
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: 6),
-                    Text(
-                      l10n.statusLabel,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w600,
+                    Expanded(
+                      child: Text(
+                        l10n.statusLabel,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
                     ),
                   ],
@@ -416,14 +483,16 @@ class _AdminReportDetailScreenState
                       color: theme.colorScheme.onSurfaceVariant,
                     ),
                     const SizedBox(width: 6),
-                    Text(
-                      l10n.severitySection,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w600,
+                    Expanded(
+                      child: Text(
+                        l10n.severitySection,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      maxLines: 1,
-                      overflow: TextOverflow.ellipsis,
                     ),
                   ],
                 ),
@@ -535,10 +604,12 @@ class _AdminReportDetailScreenState
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
                 const SizedBox(width: 4),
-                Text(
-                  '${l10n.createdAtLabel}: $formattedDate',
-                  style: theme.textTheme.bodySmall?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant,
+                Expanded(
+                  child: Text(
+                    '${l10n.createdAtLabel}: $formattedDate',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
                   ),
                 ),
               ],
@@ -1460,6 +1531,7 @@ class _AdminReportDetailScreenState
     ReportDetailModel report,
     AppLocalizations l10n,
     ThemeData theme,
+    bool isDesktop,
   ) {
     final staffName = report.assignedStaffName?.trim().isNotEmpty == true
         ? report.assignedStaffName!
@@ -1553,7 +1625,7 @@ class _AdminReportDetailScreenState
 
             // Slider of Resolution Images
             _buildResolvedImageSlider(
-                context, report.resolvedImages, l10n, theme),
+                context, report.resolvedImages, l10n, theme, isDesktop),
             const SizedBox(height: 16),
 
             // Resolution Note Subheader
@@ -1612,6 +1684,7 @@ class _AdminReportDetailScreenState
     List<String> images,
     AppLocalizations l10n,
     ThemeData theme,
+    bool isDesktop,
   ) {
     if (images.isEmpty) {
       return Container(
@@ -1648,67 +1721,83 @@ class _AdminReportDetailScreenState
     }
 
     if (images.length == 1) {
+      final imgWidget = GestureDetector(
+        onTap: () => _openFullscreenImage(images, 0),
+        child: AppNetworkImage(
+          url: images.first,
+          fit: BoxFit.cover,
+        ),
+      );
+
       return ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        child: GestureDetector(
-          onTap: () => _openFullscreenImage(images, 0),
-          child: AspectRatio(
-            aspectRatio: 16 / 9,
-            child: AppNetworkImage(
-              url: images.first,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
+        child: isDesktop
+            ? SizedBox(
+                height: 340,
+                width: double.infinity,
+                child: imgWidget,
+              )
+            : AspectRatio(
+                aspectRatio: 16 / 9,
+                child: imgWidget,
+              ),
       );
     }
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: AspectRatio(
-        aspectRatio: 16 / 9,
-        child: Stack(
-          children: [
-            PageView.builder(
-              itemCount: images.length,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentResolvedImageIndex = index;
-                });
-              },
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () => _openFullscreenImage(images, index),
-                  child: AppNetworkImage(
-                    url: images[index],
-                    fit: BoxFit.cover,
-                  ),
-                );
-              },
+    final sliderWidget = Stack(
+      children: [
+        PageView.builder(
+          itemCount: images.length,
+          onPageChanged: (index) {
+            setState(() {
+              _currentResolvedImageIndex = index;
+            });
+          },
+          itemBuilder: (context, index) {
+            return GestureDetector(
+              onTap: () => _openFullscreenImage(images, index),
+              child: AppNetworkImage(
+                url: images[index],
+                fit: BoxFit.cover,
+              ),
+            );
+          },
+        ),
+        Positioned(
+          bottom: 10,
+          right: 10,
+          child: Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.65),
+              borderRadius: BorderRadius.circular(10),
             ),
-            Positioned(
-              bottom: 10,
-              right: 10,
-              child: Container(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.65),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  '${_currentResolvedImageIndex + 1}/${images.length}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+            child: Text(
+              '${_currentResolvedImageIndex + 1}/${images.length}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ],
+          ),
         ),
-      ),
+      ],
+    );
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: isDesktop
+          ? SizedBox(
+              height: 340,
+              width: double.infinity,
+              child: sliderWidget,
+            )
+          : AspectRatio(
+              aspectRatio: 16 / 9,
+              child: sliderWidget,
+            ),
     );
   }
 
@@ -1720,6 +1809,7 @@ class _AdminReportDetailScreenState
     ThemeData theme,
     ReportAssignState assignState,
     ReportDetailModel? report,
+    bool isDesktop,
   ) {
     if (report == null) return null;
     if (report.status.toUpperCase() != 'PENDING') return null;
@@ -1729,9 +1819,57 @@ class _AdminReportDetailScreenState
       return null;
     }
 
+    final buttonWidget = FilledButton(
+      onPressed: assignState.isLoading
+          ? null
+          : () => _submitAssign(context, l10n),
+      style: FilledButton.styleFrom(
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
+      ),
+      child: assignState.isLoading
+          ? const SizedBox(
+              width: 20,
+              height: 20,
+              child: CircularProgressIndicator(
+                strokeWidth: 2,
+                color: Colors.white,
+              ),
+            )
+          : Text(
+              l10n.processReportButton,
+              style: const TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+    );
+
+    if (!isDesktop) {
+      // Mobile View: GIỮ NGUYÊN TRẠNG 100%
+      return SafeArea(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                offset: const Offset(0, -2),
+                blurRadius: 10,
+              ),
+            ],
+          ),
+          child: buttonWidget,
+        ),
+      );
+    }
+
+    // Web Desktop View: Căn giữa với maxWidth: 880
     return SafeArea(
       child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: BoxDecoration(
           color: theme.colorScheme.surface,
           boxShadow: [
@@ -1742,32 +1880,15 @@ class _AdminReportDetailScreenState
             ),
           ],
         ),
-        child: FilledButton(
-          onPressed: assignState.isLoading
-              ? null
-              : () => _submitAssign(context, l10n),
-          style: FilledButton.styleFrom(
-            padding: const EdgeInsets.symmetric(vertical: 14),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(14),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 880),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: buttonWidget,
             ),
           ),
-          child: assignState.isLoading
-              ? const SizedBox(
-                  width: 20,
-                  height: 20,
-                  child: CircularProgressIndicator(
-                    strokeWidth: 2,
-                    color: Colors.white,
-                  ),
-                )
-              : Text(
-                  l10n.processReportButton,
-                  style: const TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
         ),
       ),
     );
@@ -1916,6 +2037,7 @@ class _AdminReportDetailScreenState
     AppLocalizations l10n,
     ThemeData theme,
     bool isDone,
+    bool isDesktop,
   ) {
     final isUnresolved = report.isReviewResolved == false;
 
@@ -2053,7 +2175,7 @@ class _AdminReportDetailScreenState
                 ),
                 const SizedBox(height: 10),
                 _buildReviewImageSlider(
-                    context, report.reviewImages, l10n, theme),
+                    context, report.reviewImages, l10n, theme, isDesktop),
                 const SizedBox(height: 16),
               ],
 
@@ -2137,72 +2259,89 @@ class _AdminReportDetailScreenState
     List<String> images,
     AppLocalizations l10n,
     ThemeData theme,
+    bool isDesktop,
   ) {
     if (images.isEmpty) {
       return const SizedBox.shrink();
     }
 
     if (images.length == 1) {
+      final imgWidget = GestureDetector(
+        onTap: () => _openFullscreenImage(images, 0),
+        child: AppNetworkImage(
+          url: images.first,
+          fit: BoxFit.cover,
+        ),
+      );
+
       return ClipRRect(
         borderRadius: BorderRadius.circular(12),
-        child: GestureDetector(
-          onTap: () => _openFullscreenImage(images, 0),
-          child: AspectRatio(
-            aspectRatio: 16 / 9,
-            child: AppNetworkImage(
-              url: images.first,
-              fit: BoxFit.cover,
-            ),
-          ),
-        ),
+        child: isDesktop
+            ? SizedBox(
+                height: 320,
+                width: double.infinity,
+                child: imgWidget,
+              )
+            : AspectRatio(
+                aspectRatio: 16 / 9,
+                child: imgWidget,
+              ),
       );
     }
 
-    return ClipRRect(
-      borderRadius: BorderRadius.circular(12),
-      child: AspectRatio(
-        aspectRatio: 16 / 9,
-        child: Stack(
-          children: [
-            PageView.builder(
-              itemCount: images.length,
-              onPageChanged: (index) {
-                setState(() {
-                  _currentReviewImageIndex = index;
-                });
-              },
-              itemBuilder: (context, index) {
-                return GestureDetector(
-                  onTap: () => _openFullscreenImage(images, index),
-                  child: AppNetworkImage(
-                    url: images[index],
-                    fit: BoxFit.cover,
-                  ),
-                );
-              },
+    final sliderWidget = Stack(
+      children: [
+        PageView.builder(
+          itemCount: images.length,
+          onPageChanged: (index) {
+            setState(() {
+              _currentReviewImageIndex = index;
+            });
+          },
+          itemBuilder: (context, index) {
+            return GestureDetector(
+              onTap: () => _openFullscreenImage(images, index),
+              child: AppNetworkImage(
+                url: images[index],
+                fit: BoxFit.cover,
+              ),
+            );
+          },
+        ),
+        Positioned(
+          bottom: 8,
+          right: 8,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.65),
+              borderRadius: BorderRadius.circular(10),
             ),
-            Positioned(
-              bottom: 8,
-              right: 8,
-              child: Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                decoration: BoxDecoration(
-                  color: Colors.black.withValues(alpha: 0.65),
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                child: Text(
-                  '${_currentReviewImageIndex + 1}/${images.length}',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 11,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+            child: Text(
+              '${_currentReviewImageIndex + 1}/${images.length}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ],
+          ),
         ),
-      ),
+      ],
+    );
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: isDesktop
+          ? SizedBox(
+              height: 320,
+              width: double.infinity,
+              child: sliderWidget,
+            )
+          : AspectRatio(
+              aspectRatio: 16 / 9,
+              child: sliderWidget,
+            ),
     );
   }
 }
