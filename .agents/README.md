@@ -37,6 +37,7 @@ Mọi thay đổi do AI Agent thực hiện phải tuân thủ các tài liệu 
     ├── smp-fixbug/                         # Truy vết root cause và lập kế hoạch sửa bug
     ├── smp-newFeature/                     # Phân tích yêu cầu và lập kế hoạch tính năng mới
     ├── smp-newTesting/                     # Quy chuẩn viết Integration Test Backend & testapi.ps1
+    ├── smp-newWeeklyReport/                # Tự động hóa audit codebase & lập 4 file báo cáo tiến độ tuần
     ├── smp-review-code/                    # Review code branch hiện tại so với dev
     ├── smp-reviewPR/                       # Tổng hợp: Review toàn diện và Merge PR
     └── smp-reviewSecurityPerformance/      # Đánh giá an toàn, bảo mật và hiệu năng
@@ -68,6 +69,7 @@ Các quy tắc trong `.agents/rules/` được phân loại rõ ràng theo cơ c
 | `/smp-createPR` | Push code và tạo Pull Request lên remote | Không | Không | Có (push) | Không (chỉ tạo PR) |
 | `/smp-createTestCase` | Đọc code thực tế để tạo Test Cases | Không / Mô tả | Không | Không | Không |
 | `/smp-newTesting` | Viết integration test backend & cấu hình `testapi.ps1` | Tên API / Flow | Có (khi user cho phép) | Không | **Có** (cho plan test) |
+| `/smp-newWeeklyReport` | Audit codebase & tạo 4 file báo cáo tiến độ tuần theo template | Tên tuần & Danh sách tính năng | Không (chỉ tạo file .md báo cáo) | Không | **Có** (nếu ghi đè báo cáo cũ) |
 | `/smp-cleanup` | Quét và dọn dẹp file rác trong workspace | Không | Không (chỉ xóa rác) | Không | **Có** (trước khi xóa file) |
 | `design-taste-frontend` | Hướng dẫn thiết kế frontend chất lượng cao, chống AI-slop | Brief UI / Yêu cầu thiết kế | Có (áp dụng trong code UI) | Không | Theo quy trình của task |
 | `find-skills` | Tìm kiếm và cài đặt thêm skill từ hệ sinh thái [skills.sh](https://skills.sh/) | Câu hỏi / Từ khóa tìm kiếm | Không | Không | **Có** (trước khi cài đặt) |
