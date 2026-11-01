@@ -40,4 +40,5 @@ class RouterPath {
   static String get systemConfig => RouteName.systemConfig.path;
   static String get commissionConfig => RouteName.commissionConfig.path;
   static String get penaltyRateConfig => RouteName.penaltyRateConfig.path;
+  static String get delegationRateConfig => RouteName.delegationRateConfig.path;
 }

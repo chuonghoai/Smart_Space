@@ -40,6 +40,10 @@ public class StaffWalletTransaction extends AbstractEntity {
     @JoinColumn(name = "withdrawal_request_id")
     StaffWithdrawalRequest withdrawalRequest;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "delegation_id")
+    ReportDelegation delegation;
+
     @Column(name = "title_i18n_key")
     String titleI18nKey;
 

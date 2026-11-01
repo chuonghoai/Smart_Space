@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:smartspace_admin/features/wallet_config/application/wallet_config_controller.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
@@ -137,6 +138,19 @@ class _SystemConfigScreenState extends State<SystemConfigScreen> {
                 await context.push(RouterPath.penaltyRateConfig);
                 _controller.loadConfig();
               },
+            ),
+            const SizedBox(height: 14),
+
+            // Item 3: Cấu hình hoa hồng công việc được nhờ (bonus nhờ làm giùm)
+            _buildConfigOptionCard(
+              context: context,
+              theme: theme,
+              colorScheme: colorScheme,
+              icon: Icons.handshake_outlined,
+              iconColor: AppSemanticColors.of(context).info,
+              title: l10n.delegationRateConfig,
+              subtitle: l10n.delegationRateConfigDescription,
+              onTap: () => context.push(RouterPath.delegationRateConfig),
             ),
           ],
         ),

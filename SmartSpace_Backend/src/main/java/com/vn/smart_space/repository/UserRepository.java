@@ -91,4 +91,18 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.position WHERE u.id IN :ids")
     List<User> findWithPositionByIdIn(@Param("ids") List<String> ids);
 
+    // Staff chọn đồng nghiệp để nhờ làm giùm: staff đang hoạt động, trừ chính mình, tìm theo tên
+    @Query(value = "SELECT u FROM User u LEFT JOIN FETCH u.position WHERE u.role = :role AND u.status = :status " +
+            "AND u.id <> :excludeId " +
+            "AND (:search IS NULL OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%')))",
+            countQuery = "SELECT COUNT(u) FROM User u WHERE u.role = :role AND u.status = :status " +
+                    "AND u.id <> :excludeId " +
+                    "AND (:search IS NULL OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%')))")
+    Page<User> searchColleagues(
+            @Param("role") ERole role,
+            @Param("status") EUserStatus status,
+            @Param("excludeId") String excludeId,
+            @Param("search") String search,
+            Pageable pageable);
+
 }

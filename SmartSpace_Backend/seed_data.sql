@@ -8,6 +8,7 @@
 -- 1/ Admin: admin@gmail.com (u1) | cudan2@gmail.com (u4) | Mật khẩu: Ad123456!
 -- 2/ Staff: staff1@gmail.com (u5) | staff2@gmail.com (u6) | staff3@gmail.com (u8) | staff4@gmail.com (u9) | staff5@gmail.com (u10) | Mật khẩu: Ad123456!
 -- 3/ Client: user@gmail.com (u2) | cudan@gmail.com (u3) | client3@gmail.com (u7) | Mật khẩu: Ad123456!
+-- 4/ Nhờ làm giùm: xem kịch bản test ở mục "Nhờ làm giùm" cuối file (staff1 = người nhờ, staff2 = người làm giùm)
 
 SET FOREIGN_KEY_CHECKS = 0;
 
@@ -22,6 +23,11 @@ DELETE FROM device_tokens;
 DELETE FROM user_notification_states;
 DELETE FROM notifications;
 DELETE FROM activity_histories;
+-- Ví & nhờ làm giùm (reset để số dư khớp lịch sử giao dịch seed bên dưới; giữ nguyên wallet_configs của admin)
+DELETE FROM staff_wallet_transactions;
+DELETE FROM staff_withdrawal_requests;
+DELETE FROM report_delegations;
+DELETE FROM staff_wallets;
 DELETE FROM reports;
 DELETE FROM users;
 DELETE FROM positions;
@@ -191,5 +197,102 @@ INSERT INTO chat_messages (id, conversation_id, sender_id, content, message_type
 -- --------------------------------------------------------
 INSERT INTO message_media (id, message_id, file_name, thumbnail_url, file_type, uploaded_at) VALUES
 (1, 'm1', 'sample_image.jpg', 'https://picsum.photos/400/300?random=5', 'IMAGE', NOW());
+
+-- ========================================================
+-- Nhờ làm giùm (staff delegation) + Ví staff
+-- Số tiền theo cấu hình mặc định: hoa hồng thấp/TB/cao/nghiêm trọng = 2.000/5.000/7.000/10.000đ,
+-- tỷ lệ bonus 50/40/30/20% → bonus 1.000/2.000/2.100/2.000đ (đã chốt vào từng yêu cầu).
+--
+-- Kịch bản test (mật khẩu Ad123456!):
+--   staff1 (u5, ví 20.900đ):
+--     - r2, r6, r12, r16, r20, r36: đang xử lý, chưa có yêu cầu → hiện nút "Nhờ làm giùm"
+--     - r32: đã nhờ staff2, đang chờ trả lời → banner + nút "Huỷ yêu cầu"
+--     - r33: staff2 đã nhận → task đã chuyển sang staff2
+--     - r34: đã nhờ staff2 nhưng quá hạn 24h → job hết hạn chạy ~1 phút sau khi backend khởi động, hoàn 1.000đ (ví → 21.900đ)
+--     - r39: đang xử lý lại (đã nhận hoa hồng, bị phạt 1 lần) → KHÔNG được nhờ
+--     - Tab "Được nhờ": dg4 đã hoàn tất (nhận 10.000đ hoa hồng + 2.000đ bonus từ staff2)
+--   staff2 (u6, ví 5.000đ):
+--     - Tab "Được nhờ": dg1 (r32) chờ trả lời → "Nhận làm" / "Từ chối"; dg3 (r34) quá hạn → nhận sẽ báo hết hạn
+--     - r33: task được nhờ đã nhận → hoàn tất để nhận 7.000đ hoa hồng + 2.100đ bonus
+--     - r8, r37: đang xử lý, có thể nhờ người khác
+--   staff3 (u8, chưa có ví = 0đ): r38 → nút "Nhờ làm giùm" bị khoá vì số dư không đủ
+--   Lịch sử: dg5 bị từ chối (staff1 → staff3), dg6 bị huỷ (staff2 → staff4), đều đã hoàn tiền
+-- ========================================================
+
+-- --------------------------------------------------------
+-- Table: reports (bổ sung cho nhờ làm giùm)
+-- Columns: như trên + assigned_at, resolved_at, resolved_note, base_commission, commission_awarded,
+--          rehandling_penalty_count, total_commission_deducted
+-- --------------------------------------------------------
+INSERT INTO reports (id, created_at, updated_at, title, description, image_url, latitude, longitude, severity, status, user_id, assigned_staff_id, image_urls, address, location_description, is_anonymous, assigned_at, resolved_at, resolved_note, base_commission, commission_awarded, rehandling_penalty_count, total_commission_deducted) VALUES
+-- Đã hoàn tất: nguồn số dư ví
+('r40', DATE_SUB(NOW(), INTERVAL 10080 MINUTE), DATE_SUB(NOW(), INTERVAL 8640 MINUTE), 'Ống nước rò rỉ trước chợ', 'Ống cấp nước rò rỉ liên tục trước cổng chợ Tân Định', 'https://picsum.photos/400/300?random=40', 10.7905, 106.6905, 'high', 'processed', 'u2', 'u6', 'https://picsum.photos/400/300?random=40', 'Quận 1, TP.HCM', 'Cổng chợ', FALSE, DATE_SUB(NOW(), INTERVAL 9800 MINUTE), DATE_SUB(NOW(), INTERVAL 8640 MINUTE), 'Đã thay đoạn ống rò rỉ', 7000, TRUE, 0, 0),
+('r30', DATE_SUB(NOW(), INTERVAL 8640 MINUTE), DATE_SUB(NOW(), INTERVAL 7200 MINUTE), 'Trụ điện nghiêng sắp đổ', 'Trụ điện bị xe tông nghiêng hẳn sang một bên', 'https://picsum.photos/400/300?random=30', 10.7810, 106.6950, 'critical', 'processed', 'u2', 'u5', 'https://picsum.photos/400/300?random=30', 'Quận 3, TP.HCM', 'Đầu hẻm 102', FALSE, DATE_SUB(NOW(), INTERVAL 8000 MINUTE), DATE_SUB(NOW(), INTERVAL 7200 MINUTE), 'Đã chằng néo và báo điện lực', 10000, TRUE, 0, 0),
+('r35', DATE_SUB(NOW(), INTERVAL 5760 MINUTE), DATE_SUB(NOW(), INTERVAL 2880 MINUTE), 'Cống thoát nước bị tắc', 'Cống tắc khiến nước mưa ứ đọng cả đoạn đường', 'https://picsum.photos/400/300?random=35', 10.7695, 106.6820, 'critical', 'processed', 'u3', 'u5', 'https://picsum.photos/400/300?random=35', 'Quận 10, TP.HCM', 'Trước trường tiểu học', FALSE, DATE_SUB(NOW(), INTERVAL 4200 MINUTE), DATE_SUB(NOW(), INTERVAL 2880 MINUTE), 'Đã nạo vét cống', 10000, TRUE, 0, 0),
+-- Đang xử lý lại (đã nhận hoa hồng + bị phạt 20%) → không được nhờ
+('r39', DATE_SUB(NOW(), INTERVAL 7200 MINUTE), DATE_SUB(NOW(), INTERVAL 4320 MINUTE), 'Nắp hố ga bị vỡ', 'Nắp hố ga vỡ, đã sửa nhưng người dân báo lại vẫn lún', 'https://picsum.photos/400/300?random=39', 10.7750, 106.6700, 'medium', 'processing', 'u3', 'u5', 'https://picsum.photos/400/300?random=39', 'Quận 10, TP.HCM', 'Giữa lòng đường', FALSE, DATE_SUB(NOW(), INTERVAL 7000 MINUTE), DATE_SUB(NOW(), INTERVAL 5760 MINUTE), 'Đã thay nắp tạm', 5000, TRUE, 1, 1000),
+-- Đang xử lý, gắn với các yêu cầu nhờ làm giùm
+('r32', DATE_SUB(NOW(), INTERVAL 180 MINUTE), DATE_SUB(NOW(), INTERVAL 60 MINUTE), 'Đèn tín hiệu giao thông chập chờn', 'Đèn đỏ lúc sáng lúc tắt tại giao lộ, dễ gây tai nạn', 'https://picsum.photos/400/300?random=32', 10.7680, 106.6660, 'medium', 'processing', 'u2', 'u5', 'https://picsum.photos/400/300?random=32', 'Quận 10, TP.HCM', 'Giao lộ 3/2 - Lý Thường Kiệt', FALSE, DATE_SUB(NOW(), INTERVAL 150 MINUTE), NULL, NULL, NULL, FALSE, 0, 0),
+('r33', DATE_SUB(NOW(), INTERVAL 480 MINUTE), DATE_SUB(NOW(), INTERVAL 240 MINUTE), 'Cây xanh gãy cành nguy hiểm', 'Cành cây lớn gãy treo lơ lửng trên đường', 'https://picsum.photos/400/300?random=33', 10.7860, 106.7000, 'high', 'processing', 'u3', 'u6', 'https://picsum.photos/400/300?random=33', 'Quận 1, TP.HCM', 'Công viên Lê Văn Tám', FALSE, DATE_SUB(NOW(), INTERVAL 240 MINUTE), NULL, NULL, NULL, FALSE, 0, 0),
+('r34', DATE_SUB(NOW(), INTERVAL 1700 MINUTE), DATE_SUB(NOW(), INTERVAL 1560 MINUTE), 'Rác tồn đọng ở hẻm 12', 'Rác chưa được thu gom 3 ngày, bốc mùi', 'https://picsum.photos/400/300?random=34', 10.7600, 106.6630, 'low', 'processing', 'u2', 'u5', 'https://picsum.photos/400/300?random=34', 'Quận 5, TP.HCM', 'Hẻm 12', FALSE, DATE_SUB(NOW(), INTERVAL 1650 MINUTE), NULL, NULL, NULL, FALSE, 0, 0),
+('r36', DATE_SUB(NOW(), INTERVAL 1900 MINUTE), DATE_SUB(NOW(), INTERVAL 1680 MINUTE), 'Vạch kẻ đường bị mờ', 'Vạch qua đường cho người đi bộ gần như không còn thấy', 'https://picsum.photos/400/300?random=36', 10.7720, 106.6580, 'low', 'processing', 'u3', 'u5', 'https://picsum.photos/400/300?random=36', 'Quận 11, TP.HCM', 'Trước bệnh viện', FALSE, DATE_SUB(NOW(), INTERVAL 1850 MINUTE), NULL, NULL, NULL, FALSE, 0, 0),
+('r37', DATE_SUB(NOW(), INTERVAL 1300 MINUTE), DATE_SUB(NOW(), INTERVAL 1140 MINUTE), 'Nước thải tràn ra vỉa hè', 'Nước thải từ quán ăn chảy tràn ra vỉa hè', 'https://picsum.photos/400/300?random=37', 10.8020, 106.7120, 'medium', 'processing', 'u2', 'u6', 'https://picsum.photos/400/300?random=37', 'Bình Thạnh, TP.HCM', 'Dãy quán ăn', FALSE, DATE_SUB(NOW(), INTERVAL 1250 MINUTE), NULL, NULL, NULL, FALSE, 0, 0),
+('r38', DATE_SUB(NOW(), INTERVAL 600 MINUTE), DATE_SUB(NOW(), INTERVAL 550 MINUTE), 'Biển tên đường bị mất', 'Biển tên đường ở ngã ba bị mất, khó tìm đường', 'https://picsum.photos/400/300?random=38', 10.8100, 106.6650, 'low', 'processing', 'u3', 'u8', 'https://picsum.photos/400/300?random=38', 'Tân Bình, TP.HCM', 'Ngã ba', FALSE, DATE_SUB(NOW(), INTERVAL 550 MINUTE), NULL, NULL, NULL, FALSE, 0, 0);
+
+-- --------------------------------------------------------
+-- Table: report_delegations
+-- Phụ thuộc: reports, users
+-- Model: ReportDelegation (AbstractEntity)
+-- Columns: id, created_at, updated_at, report_id, requester_id, helper_id, status, severity, rate_percent,
+--          commission_amount, bonus_amount, note, expires_at, responded_at, completed_at
+-- --------------------------------------------------------
+INSERT INTO report_delegations (id, created_at, updated_at, report_id, requester_id, helper_id, status, severity, rate_percent, commission_amount, bonus_amount, note, expires_at, responded_at, completed_at) VALUES
+('dg1', DATE_SUB(NOW(), INTERVAL 60 MINUTE), DATE_SUB(NOW(), INTERVAL 60 MINUTE), 'r32', 'u5', 'u6', 'PENDING', 'medium', 40, 5000, 2000, 'Mình đang xử lý việc khác ở Q7, nhờ bạn giúp nhé', DATE_ADD(NOW(), INTERVAL 1380 MINUTE), NULL, NULL),
+('dg2', DATE_SUB(NOW(), INTERVAL 360 MINUTE), DATE_SUB(NOW(), INTERVAL 240 MINUTE), 'r33', 'u5', 'u6', 'ACCEPTED', 'high', 30, 7000, 2100, 'Cần người có thang, nhờ bạn hỗ trợ', DATE_ADD(NOW(), INTERVAL 1080 MINUTE), DATE_SUB(NOW(), INTERVAL 240 MINUTE), NULL),
+('dg3', DATE_SUB(NOW(), INTERVAL 1560 MINUTE), DATE_SUB(NOW(), INTERVAL 1560 MINUTE), 'r34', 'u5', 'u6', 'PENDING', 'low', 50, 2000, 1000, NULL, DATE_SUB(NOW(), INTERVAL 120 MINUTE), NULL, NULL),
+('dg4', DATE_SUB(NOW(), INTERVAL 4320 MINUTE), DATE_SUB(NOW(), INTERVAL 2879 MINUTE), 'r35', 'u6', 'u5', 'COMPLETED', 'critical', 20, 10000, 2000, 'Khu vực này bạn rành hơn mình', DATE_SUB(NOW(), INTERVAL 2880 MINUTE), DATE_SUB(NOW(), INTERVAL 4200 MINUTE), DATE_SUB(NOW(), INTERVAL 2879 MINUTE)),
+('dg5', DATE_SUB(NOW(), INTERVAL 1800 MINUTE), DATE_SUB(NOW(), INTERVAL 1680 MINUTE), 'r36', 'u5', 'u8', 'DECLINED', 'low', 50, 2000, 1000, NULL, DATE_SUB(NOW(), INTERVAL 360 MINUTE), DATE_SUB(NOW(), INTERVAL 1680 MINUTE), NULL),
+('dg6', DATE_SUB(NOW(), INTERVAL 1200 MINUTE), DATE_SUB(NOW(), INTERVAL 1140 MINUTE), 'r37', 'u6', 'u9', 'CANCELLED', 'medium', 40, 5000, 2000, NULL, DATE_ADD(NOW(), INTERVAL 240 MINUTE), DATE_SUB(NOW(), INTERVAL 1140 MINUTE), NULL);
+
+-- --------------------------------------------------------
+-- Table: staff_wallets
+-- Phụ thuộc: users
+-- Model: StaffWallet (AbstractEntity)
+-- Columns: id, created_at, updated_at, user_id, balance
+-- Số dư = balance_after của giao dịch mới nhất bên dưới
+-- --------------------------------------------------------
+INSERT INTO staff_wallets (id, created_at, updated_at, user_id, balance) VALUES
+('w5', DATE_SUB(NOW(), INTERVAL 8000 MINUTE), DATE_SUB(NOW(), INTERVAL 60 MINUTE), 'u5', 20900),
+('w6', DATE_SUB(NOW(), INTERVAL 9800 MINUTE), DATE_SUB(NOW(), INTERVAL 1140 MINUTE), 'u6', 5000);
+
+-- --------------------------------------------------------
+-- Table: staff_wallet_transactions
+-- Phụ thuộc: staff_wallets, reports, report_delegations
+-- Model: StaffWalletTransaction (AbstractEntity)
+-- Columns: id, created_at, updated_at, wallet_id, type, amount, balance_after, report_id, delegation_id, title_i18n_key, title_params
+-- Mỗi yêu cầu: HOLD = bonus; từ chối/huỷ/hết hạn → REFUND = bonus; hoàn tất → BONUS = bonus cho người làm giùm
+-- --------------------------------------------------------
+INSERT INTO staff_wallet_transactions (id, created_at, updated_at, wallet_id, type, amount, balance_after, report_id, delegation_id, title_i18n_key, title_params) VALUES
+-- staff1 (u5): 0 → 20.900đ
+('wt1', DATE_SUB(NOW(), INTERVAL 7200 MINUTE), DATE_SUB(NOW(), INTERVAL 7200 MINUTE), 'w5', 'COMMISSION', 10000, 10000, 'r30', NULL, 'wallet.transaction.commission.title', 'Trụ điện nghiêng sắp đổ'),
+('wt2', DATE_SUB(NOW(), INTERVAL 5760 MINUTE), DATE_SUB(NOW(), INTERVAL 5760 MINUTE), 'w5', 'COMMISSION', 5000, 15000, 'r39', NULL, 'wallet.transaction.commission.title', 'Nắp hố ga bị vỡ'),
+('wt3', DATE_SUB(NOW(), INTERVAL 4320 MINUTE), DATE_SUB(NOW(), INTERVAL 4320 MINUTE), 'w5', 'PENALTY_DEDUCTION', 1000, 14000, 'r39', NULL, 'wallet.transaction.penalty.title', 'Nắp hố ga bị vỡ'),
+('wt4', DATE_SUB(NOW(), INTERVAL 2880 MINUTE), DATE_SUB(NOW(), INTERVAL 2880 MINUTE), 'w5', 'COMMISSION', 10000, 24000, 'r35', NULL, 'wallet.transaction.commission.title', 'Cống thoát nước bị tắc'),
+('wt5', DATE_SUB(NOW(), INTERVAL 2879 MINUTE), DATE_SUB(NOW(), INTERVAL 2879 MINUTE), 'w5', 'DELEGATION_BONUS', 2000, 26000, 'r35', 'dg4', 'wallet.transaction.delegation_bonus.title', 'Cống thoát nước bị tắc'),
+('wt6', DATE_SUB(NOW(), INTERVAL 1800 MINUTE), DATE_SUB(NOW(), INTERVAL 1800 MINUTE), 'w5', 'DELEGATION_HOLD', 1000, 25000, 'r36', 'dg5', 'wallet.transaction.delegation_hold.title', 'Vạch kẻ đường bị mờ'),
+('wt7', DATE_SUB(NOW(), INTERVAL 1680 MINUTE), DATE_SUB(NOW(), INTERVAL 1680 MINUTE), 'w5', 'DELEGATION_REFUND', 1000, 26000, 'r36', 'dg5', 'wallet.transaction.delegation_refund.title', 'Vạch kẻ đường bị mờ'),
+('wt8', DATE_SUB(NOW(), INTERVAL 1560 MINUTE), DATE_SUB(NOW(), INTERVAL 1560 MINUTE), 'w5', 'DELEGATION_HOLD', 1000, 25000, 'r34', 'dg3', 'wallet.transaction.delegation_hold.title', 'Rác tồn đọng ở hẻm 12'),
+('wt9', DATE_SUB(NOW(), INTERVAL 360 MINUTE), DATE_SUB(NOW(), INTERVAL 360 MINUTE), 'w5', 'DELEGATION_HOLD', 2100, 22900, 'r33', 'dg2', 'wallet.transaction.delegation_hold.title', 'Cây xanh gãy cành nguy hiểm'),
+('wt10', DATE_SUB(NOW(), INTERVAL 60 MINUTE), DATE_SUB(NOW(), INTERVAL 60 MINUTE), 'w5', 'DELEGATION_HOLD', 2000, 20900, 'r32', 'dg1', 'wallet.transaction.delegation_hold.title', 'Đèn tín hiệu giao thông chập chờn'),
+-- staff2 (u6): 0 → 5.000đ
+('wt11', DATE_SUB(NOW(), INTERVAL 8640 MINUTE), DATE_SUB(NOW(), INTERVAL 8640 MINUTE), 'w6', 'COMMISSION', 7000, 7000, 'r40', NULL, 'wallet.transaction.commission.title', 'Ống nước rò rỉ trước chợ'),
+('wt12', DATE_SUB(NOW(), INTERVAL 4320 MINUTE), DATE_SUB(NOW(), INTERVAL 4320 MINUTE), 'w6', 'DELEGATION_HOLD', 2000, 5000, 'r35', 'dg4', 'wallet.transaction.delegation_hold.title', 'Cống thoát nước bị tắc'),
+('wt13', DATE_SUB(NOW(), INTERVAL 1200 MINUTE), DATE_SUB(NOW(), INTERVAL 1200 MINUTE), 'w6', 'DELEGATION_HOLD', 2000, 3000, 'r37', 'dg6', 'wallet.transaction.delegation_hold.title', 'Nước thải tràn ra vỉa hè'),
+('wt14', DATE_SUB(NOW(), INTERVAL 1140 MINUTE), DATE_SUB(NOW(), INTERVAL 1140 MINUTE), 'w6', 'DELEGATION_REFUND', 2000, 5000, 'r37', 'dg6', 'wallet.transaction.delegation_refund.title', 'Nước thải tràn ra vỉa hè');
+
+-- Thông báo nhờ làm giùm (type STAFF_DELEGATION, bấm vào mở chi tiết report)
+INSERT INTO notifications (id, created_at, updated_at, title, message, user_id, is_read, action_data) VALUES
+('n5', DATE_SUB(NOW(), INTERVAL 60 MINUTE), DATE_SUB(NOW(), INTERVAL 60 MINUTE), 'Có yêu cầu nhờ làm giùm', 'Nguyễn Văn Nhân Viên nhờ bạn làm giùm phản ánh "Đèn tín hiệu giao thông chập chờn". Bạn sẽ nhận hoa hồng của task và thêm 2,000đ bonus.', 'u6', 0, '{"type": "STAFF_DELEGATION", "payload": {"delegationId":"dg1","reportId":"r32"}}'),
+('n6', DATE_SUB(NOW(), INTERVAL 240 MINUTE), DATE_SUB(NOW(), INTERVAL 240 MINUTE), 'Yêu cầu nhờ làm giùm đã được nhận', 'Lê Thị Hỗ Trợ đã nhận làm giùm phản ánh "Cây xanh gãy cành nguy hiểm". Bonus đã giữ sẽ được chuyển khi task hoàn tất.', 'u5', 0, '{"type": "STAFF_DELEGATION", "payload": {"delegationId":"dg2","reportId":"r33"}}');
 
 SET FOREIGN_KEY_CHECKS = 1;

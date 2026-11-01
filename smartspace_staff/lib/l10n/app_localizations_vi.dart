@@ -1082,4 +1082,203 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get cancelledNoticeDesc =>
       'Yêu cầu rút tiền này đã được hủy và số tiền tạm giữ đã được hoàn trả lại ví của bạn.';
+
+  @override
+  String get routeDelegations => 'Việc nhờ làm giùm';
+
+  @override
+  String get delegationScreenTitle => 'Việc nhờ làm giùm';
+
+  @override
+  String get delegationTabReceived => 'Được nhờ';
+
+  @override
+  String get delegationTabSent => 'Đã nhờ';
+
+  @override
+  String get delegationEmptyReceived => 'Chưa có ai nhờ bạn làm giùm';
+
+  @override
+  String get delegationEmptySent => 'Bạn chưa nhờ ai làm giùm';
+
+  @override
+  String get delegationLoadFailed => 'Không tải được danh sách nhờ làm giùm';
+
+  @override
+  String get delegationRequestAction => 'Nhờ làm giùm';
+
+  @override
+  String get delegationSheetTitle => 'Nhờ đồng nghiệp làm giùm';
+
+  @override
+  String get delegationSearchHint => 'Tìm đồng nghiệp theo tên';
+
+  @override
+  String get delegationNoColleagues => 'Không tìm thấy đồng nghiệp phù hợp';
+
+  @override
+  String get delegationChooseColleague => 'Chọn đồng nghiệp';
+
+  @override
+  String get delegationHelperReceives => 'Đồng nghiệp nhận';
+
+  @override
+  String delegationHelperReceivesValue(String commission, String bonus) {
+    return '$commissionđ + $bonusđ bonus';
+  }
+
+  @override
+  String get delegationYouPay => 'Ví bạn bị trừ';
+
+  @override
+  String delegationBonusRate(String rate) {
+    return 'Bonus = $rate% hoa hồng của task';
+  }
+
+  @override
+  String get delegationCurrentBalance => 'Số dư hiện tại';
+
+  @override
+  String get delegationInsufficientBalance =>
+      'Số dư ví không đủ để trả bonus này';
+
+  @override
+  String get delegationHoldHint =>
+      'Bonus được giữ tạm trong ví và hoàn lại nếu yêu cầu không thành. Yêu cầu hết hạn sau 24 giờ.';
+
+  @override
+  String get delegationNoteLabel => 'Lời nhắn (không bắt buộc)';
+
+  @override
+  String get delegationSendAction => 'Gửi yêu cầu';
+
+  @override
+  String get delegationSentSuccess => 'Đã gửi yêu cầu nhờ làm giùm';
+
+  @override
+  String delegationPendingRequesterBanner(String name) {
+    return 'Đang chờ $name nhận làm giùm';
+  }
+
+  @override
+  String delegationAcceptedRequesterBanner(String name) {
+    return '$name đang làm giùm bạn phản ánh này';
+  }
+
+  @override
+  String delegationPendingHelperBanner(String name) {
+    return '$name nhờ bạn làm giùm phản ánh này';
+  }
+
+  @override
+  String delegationAcceptedHelperBanner(String name) {
+    return 'Bạn đang làm giùm $name';
+  }
+
+  @override
+  String delegationHelperEarns(String commission, String bonus) {
+    return 'Bạn sẽ nhận $commissionđ + $bonusđ bonus';
+  }
+
+  @override
+  String delegationBonusHeld(String bonus) {
+    return 'Đang giữ $bonusđ bonus từ ví của bạn';
+  }
+
+  @override
+  String commissionExpectedWithBonusNotice(String commission, String bonus) {
+    return 'Bạn sẽ nhận được $commissionđ + $bonusđ bonus làm giùm sau khi hoàn tất xử lý phản ánh này.';
+  }
+
+  @override
+  String delegationBonusReceivedLine(String name, String amount) {
+    return 'Bonus làm giùm từ $name: +$amountđ';
+  }
+
+  @override
+  String delegationBonusPaidNotice(String amount, String name) {
+    return 'Bạn đã trả $amountđ bonus cho $name làm giùm phản ánh này.';
+  }
+
+  @override
+  String delegationExpiresAt(String time) {
+    return 'Hết hạn lúc $time';
+  }
+
+  @override
+  String get delegationAcceptAction => 'Nhận làm';
+
+  @override
+  String get delegationDeclineAction => 'Từ chối';
+
+  @override
+  String get delegationCancelAction => 'Huỷ yêu cầu';
+
+  @override
+  String get delegationAcceptConfirmTitle => 'Nhận làm giùm phản ánh này?';
+
+  @override
+  String get delegationAcceptConfirmMessage =>
+      'Phản ánh sẽ được giao cho bạn. Bạn chịu trách nhiệm xử lý, kể cả khi phải xử lý lại và bị trừ hoa hồng.';
+
+  @override
+  String get delegationDeclineConfirmTitle => 'Từ chối yêu cầu này?';
+
+  @override
+  String delegationDeclineConfirmMessage(String name) {
+    return '$name sẽ được hoàn lại bonus đã giữ.';
+  }
+
+  @override
+  String get delegationCancelConfirmTitle => 'Huỷ yêu cầu nhờ làm giùm?';
+
+  @override
+  String get delegationCancelConfirmMessage =>
+      'Bonus đã giữ sẽ được hoàn lại vào ví của bạn.';
+
+  @override
+  String get delegationAcceptedSuccess => 'Bạn đã nhận làm giùm';
+
+  @override
+  String get delegationDeclinedSuccess => 'Đã từ chối yêu cầu';
+
+  @override
+  String get delegationCancelledSuccess =>
+      'Đã huỷ yêu cầu, bonus đã được hoàn lại';
+
+  @override
+  String delegationFrom(String name) {
+    return 'Từ $name';
+  }
+
+  @override
+  String delegationTo(String name) {
+    return 'Nhờ $name';
+  }
+
+  @override
+  String delegationBonusLabel(String amount) {
+    return 'Bonus $amountđ';
+  }
+
+  @override
+  String get delegationStatusPending => 'Chờ phản hồi';
+
+  @override
+  String get delegationStatusAccepted => 'Đang làm giùm';
+
+  @override
+  String get delegationStatusDeclined => 'Đã từ chối';
+
+  @override
+  String get delegationStatusCancelled => 'Đã huỷ';
+
+  @override
+  String get delegationStatusExpired => 'Hết hạn';
+
+  @override
+  String get delegationStatusCompleted => 'Hoàn tất';
+
+  @override
+  String get delegationStatusRevoked => 'Đã thu hồi';
 }

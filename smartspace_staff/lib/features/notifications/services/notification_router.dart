@@ -52,6 +52,15 @@ class NotificationRouter {
           GoRouter.of(ctx).push(path);
         }
         break;
+      case 'STAFF_DELEGATION':
+        // Chi tiết report có banner nhờ làm giùm kèm thao tác (nhận / từ chối / huỷ)
+        final delegationReportId = action.payload['reportId'] as String?;
+        final delegationPath = delegationReportId != null && delegationReportId.isNotEmpty
+            ? RouterPath.reportDetail.replaceAll(':id', delegationReportId)
+            : RouterPath.delegations;
+        debugPrint('[NotificationRouter] Navigating to $delegationPath');
+        GoRouter.of(ctx).push(delegationPath);
+        break;
       case 'STAFF_WALLET':
       case 'WALLET':
         final path = RouterPath.staffWallet;

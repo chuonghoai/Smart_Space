@@ -18,6 +18,10 @@ import 'package:smartspace_staff/ui/mobile/reports/presentation/widgets/fullscre
 import 'package:smartspace_staff/ui/mobile/reports/presentation/widgets/handling_progress_dialog.dart';
 import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
+import 'package:smartspace_staff/features/delegation/providers/delegation_providers.dart';
+import 'package:smartspace_staff/ui/mobile/delegation/widgets/delegation_section.dart';
+import 'package:smartspace_staff/ui/mobile/delegation/widgets/delegation_common.dart';
+import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 
 class ReportDetailScreen extends ConsumerStatefulWidget {
   final String reportId;
@@ -109,9 +113,20 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
     final reportAsyncValue = ref.watch(reportDetailProvider(widget.reportId));
     final reportData = reportAsyncValue.asData?.value;
     final isHandling = handleReportBackgroundService.isHandling(widget.reportId);
+    final currentStaffId = ref.watch(currentStaffIdProvider).valueOrNull;
+    // Bonus nhờ làm giùm của người đang xem, cộng vào khung hoa hồng
+    final delegationState = ref.watch(delegationReportStateProvider(widget.reportId)).valueOrNull;
+    final bonusReceived = delegationState?.bonusReceivedByViewer;
+    final bonusPaid = delegationState?.bonusPaidByViewer;
+    final upcomingBonus = delegationState?.upcomingBonusForViewer;
+    // Chỉ người đang được giao mới xử lý được (vd. người nhờ sau khi task đã chuyển cho người làm giùm thì không)
+    final isAssignee = reportData?.assignedStaffId == null ||
+        currentStaffId == null ||
+        reportData!.assignedStaffId == currentStaffId;
     final canHandle = reportData != null &&
         reportData.status != ReportStatus.processed &&
         reportData.status != ReportStatus.rejected &&
+        isAssignee &&
         !isHandling;
 
     return Scaffold(
@@ -195,7 +210,10 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
             child: reportAsyncValue.when(
         data: (report) {
           return RefreshIndicator(
-            onRefresh: () => ref.read(reportDetailProvider(widget.reportId).notifier).refresh(),
+            onRefresh: () {
+              ref.invalidate(delegationReportStateProvider(widget.reportId));
+              return ref.read(reportDetailProvider(widget.reportId).notifier).refresh();
+            },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
@@ -287,6 +305,9 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Nhờ làm giùm: banner yêu cầu đang hoạt động hoặc nút nhờ đồng nghiệp
+                        DelegationSection(reportId: widget.reportId),
+
                         // Rehandling Notice Banner (only when rehandling is requested)
                         if (report.status == ReportStatus.processing && report.isReviewResolved == false) ...[
                           Container(
@@ -329,7 +350,41 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                         ],
 
                         // Commission Details Banner / Card (Always at the top)
-                        if (report.commissionAwarded == true || (report.baseCommission != null && report.baseCommission! > 0)) ...[
+                        // Người nhờ: task đã chuyển cho người làm giùm → không hiện hoa hồng, chỉ hiện bonus đã trả
+                        if (delegationState?.hidesViewerCommission ?? false) ...[
+                          if (bonusPaid != null)
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.all(12),
+                              margin: const EdgeInsets.only(bottom: 16),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.35),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: theme.colorScheme.outlineVariant.withOpacity(0.4),
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    Icons.handshake_outlined,
+                                    size: 18,
+                                    color: AppSemanticColors.of(context).info,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Expanded(
+                                    child: Text(
+                                      l10n.delegationBonusPaidNotice(
+                                        formatDelegationMoney(bonusPaid.bonusAmount),
+                                        bonusPaid.helper.fullName,
+                                      ),
+                                      style: theme.textTheme.bodySmall,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                        ] else if (report.commissionAwarded == true || (report.baseCommission != null && report.baseCommission! > 0)) ...[
                           Container(
                             width: double.infinity,
                             padding: const EdgeInsets.all(12),
@@ -387,10 +442,25 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                                     ),
                                   ),
                                 ],
+                                // Bonus làm giùm không bị trừ khi phạt (phạt chỉ tính trên hoa hồng)
+                                if (bonusReceived != null && bonusReceived.bonusAmount > 0) ...[
+                                  const SizedBox(height: 2),
+                                  Text(
+                                    l10n.delegationBonusReceivedLine(
+                                      bonusReceived.requester.fullName,
+                                      formatDelegationMoney(bonusReceived.bonusAmount),
+                                    ),
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: AppSemanticColors.of(context).success,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                ],
                                 if (report.finalCommission != null) ...[
                                   const SizedBox(height: 4),
                                   Text(
-                                    l10n.finalCommissionReceived(NumberFormat('#,###', 'vi_VN').format(report.finalCommission!)),
+                                    l10n.finalCommissionReceived(NumberFormat('#,###', 'vi_VN')
+                                        .format(report.finalCommission! + (bonusReceived?.bonusAmount ?? 0))),
                                     style: theme.textTheme.bodySmall?.copyWith(
                                       fontWeight: FontWeight.bold,
                                       color: isDark ? const Color(0xFF81C784) : const Color(0xFF2E7D32),
@@ -439,9 +509,14 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                                 const SizedBox(width: 10),
                                 Expanded(
                                   child: Text(
-                                    l10n.commissionExpectedNotice(
-                                      NumberFormat('#,###', 'vi_VN').format(report.expectedCommission!),
-                                    ),
+                                    upcomingBonus != null
+                                        ? l10n.commissionExpectedWithBonusNotice(
+                                            NumberFormat('#,###', 'vi_VN').format(report.expectedCommission!),
+                                            formatDelegationMoney(upcomingBonus),
+                                          )
+                                        : l10n.commissionExpectedNotice(
+                                            NumberFormat('#,###', 'vi_VN').format(report.expectedCommission!),
+                                          ),
                                     style: theme.textTheme.bodySmall?.copyWith(
                                       color: isDark
                                           ? const Color(0xFFC8E6C9)

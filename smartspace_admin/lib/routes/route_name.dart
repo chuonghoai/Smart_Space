@@ -69,6 +69,8 @@ class AppRouteInfo {
         return l10n.routeCommissionConfig;
       case 'routePenaltyRateConfig':
         return l10n.routePenaltyRateConfig;
+      case 'routeDelegationRateConfig':
+        return l10n.routeDelegationRateConfig;
       default:
         return nameKey;
     }
@@ -262,6 +264,12 @@ class RouteName {
     icon: Icons.percent_outlined,
     isHiddenInSearch: true,
   );
+  static const delegationRateConfig = AppRouteInfo(
+    path: '/system-config/delegation-rate',
+    nameKey: 'routeDelegationRateConfig',
+    icon: Icons.handshake_outlined,
+    isHiddenInSearch: true,
+  );
 
   static const List<AppRouteInfo> allRoutes = [
     splash,
@@ -278,6 +286,7 @@ class RouteName {
     systemConfig,
     commissionConfig,
     penaltyRateConfig,
+    delegationRateConfig,
     editProfile,
     changePassword,
     staffManagement,
