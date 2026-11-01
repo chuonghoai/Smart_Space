@@ -33,6 +33,8 @@ class AppRouteInfo {
         return l10n.routeManageDevices;
       case 'routeStaffWallet':
         return l10n.routeStaffWallet;
+      case 'routeDelegations':
+        return l10n.routeDelegations;
       case 'routeStaffWalletTransactions':
         return l10n.routeStaffWalletTransactions;
       case 'routeStaffWithdrawal':
@@ -197,6 +199,14 @@ class RouteName {
     isHiddenInSearch: true,
   );
 
+  static const delegations = AppRouteInfo(
+    path: '/delegations',
+    nameKey: 'routeDelegations',
+    icon: Icons.handshake_outlined,
+    isHiddenInSearch: false,
+    priority: 5,
+  );
+
   static const List<AppRouteInfo> allRoutes = [
     splash,
     login,
@@ -219,6 +229,7 @@ class RouteName {
     staffWithdrawalHistory,
     staffWithdrawalDetail,
     staffBankAccounts,
+    delegations,
   ];
 
   static List<AppRouteInfo> get searchableRoutes {

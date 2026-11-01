@@ -2149,6 +2149,312 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'This withdrawal request has been cancelled and the held amount has been refunded to your wallet.'**
   String get cancelledNoticeDesc;
+
+  /// No description provided for @routeDelegations.
+  ///
+  /// In en, this message translates to:
+  /// **'Delegated tasks'**
+  String get routeDelegations;
+
+  /// No description provided for @delegationScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delegated tasks'**
+  String get delegationScreenTitle;
+
+  /// No description provided for @delegationTabReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Received'**
+  String get delegationTabReceived;
+
+  /// No description provided for @delegationTabSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get delegationTabSent;
+
+  /// No description provided for @delegationEmptyReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'No one has asked you to handle a task yet'**
+  String get delegationEmptyReceived;
+
+  /// No description provided for @delegationEmptySent.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t asked anyone to handle a task yet'**
+  String get delegationEmptySent;
+
+  /// No description provided for @delegationLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load delegation requests'**
+  String get delegationLoadFailed;
+
+  /// No description provided for @delegationRequestAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask a colleague'**
+  String get delegationRequestAction;
+
+  /// No description provided for @delegationSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask a colleague to handle this task'**
+  String get delegationSheetTitle;
+
+  /// No description provided for @delegationSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search colleagues by name'**
+  String get delegationSearchHint;
+
+  /// No description provided for @delegationNoColleagues.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching colleagues'**
+  String get delegationNoColleagues;
+
+  /// No description provided for @delegationChooseColleague.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a colleague'**
+  String get delegationChooseColleague;
+
+  /// No description provided for @delegationHelperReceives.
+  ///
+  /// In en, this message translates to:
+  /// **'Colleague receives'**
+  String get delegationHelperReceives;
+
+  /// No description provided for @delegationHelperReceivesValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{commission}đ + {bonus}đ bonus'**
+  String delegationHelperReceivesValue(String commission, String bonus);
+
+  /// No description provided for @delegationYouPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Deducted from your wallet'**
+  String get delegationYouPay;
+
+  /// No description provided for @delegationBonusRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus = {rate}% of the task commission'**
+  String delegationBonusRate(String rate);
+
+  /// No description provided for @delegationCurrentBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Current balance'**
+  String get delegationCurrentBalance;
+
+  /// No description provided for @delegationInsufficientBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Your wallet balance is not enough to pay this bonus'**
+  String get delegationInsufficientBalance;
+
+  /// No description provided for @delegationHoldHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The bonus is held in your wallet and refunded if the request doesn\'t go through. Requests expire after 24 hours.'**
+  String get delegationHoldHint;
+
+  /// No description provided for @delegationNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Message (optional)'**
+  String get delegationNoteLabel;
+
+  /// No description provided for @delegationSendAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Send request'**
+  String get delegationSendAction;
+
+  /// No description provided for @delegationSentSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Delegation request sent'**
+  String get delegationSentSuccess;
+
+  /// No description provided for @delegationPendingRequesterBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for {name} to accept'**
+  String delegationPendingRequesterBanner(String name);
+
+  /// No description provided for @delegationAcceptedRequesterBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is handling this task for you'**
+  String delegationAcceptedRequesterBanner(String name);
+
+  /// No description provided for @delegationPendingHelperBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} asked you to handle this task'**
+  String delegationPendingHelperBanner(String name);
+
+  /// No description provided for @delegationAcceptedHelperBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'You are handling this task for {name}'**
+  String delegationAcceptedHelperBanner(String name);
+
+  /// No description provided for @delegationHelperEarns.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ll receive {commission}đ + {bonus}đ bonus'**
+  String delegationHelperEarns(String commission, String bonus);
+
+  /// No description provided for @delegationBonusHeld.
+  ///
+  /// In en, this message translates to:
+  /// **'{bonus}đ bonus held from your wallet'**
+  String delegationBonusHeld(String bonus);
+
+  /// No description provided for @delegationExpiresAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires at {time}'**
+  String delegationExpiresAt(String time);
+
+  /// No description provided for @delegationAcceptAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get delegationAcceptAction;
+
+  /// No description provided for @delegationDeclineAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get delegationDeclineAction;
+
+  /// No description provided for @delegationCancelAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel request'**
+  String get delegationCancelAction;
+
+  /// No description provided for @delegationAcceptConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept this task?'**
+  String get delegationAcceptConfirmTitle;
+
+  /// No description provided for @delegationAcceptConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The report will be assigned to you. You\'ll be responsible for it, including any re-handling and penalties.'**
+  String get delegationAcceptConfirmMessage;
+
+  /// No description provided for @delegationDeclineConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline this request?'**
+  String get delegationDeclineConfirmTitle;
+
+  /// No description provided for @delegationDeclineConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} will get the held bonus back.'**
+  String delegationDeclineConfirmMessage(String name);
+
+  /// No description provided for @delegationCancelConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this request?'**
+  String get delegationCancelConfirmTitle;
+
+  /// No description provided for @delegationCancelConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The held bonus will be refunded to your wallet.'**
+  String get delegationCancelConfirmMessage;
+
+  /// No description provided for @delegationAcceptedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'You accepted the task'**
+  String get delegationAcceptedSuccess;
+
+  /// No description provided for @delegationDeclinedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Request declined'**
+  String get delegationDeclinedSuccess;
+
+  /// No description provided for @delegationCancelledSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Request cancelled, bonus refunded'**
+  String get delegationCancelledSuccess;
+
+  /// No description provided for @delegationFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From {name}'**
+  String delegationFrom(String name);
+
+  /// No description provided for @delegationTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Asked {name}'**
+  String delegationTo(String name);
+
+  /// No description provided for @delegationBonusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Bonus {amount}đ'**
+  String delegationBonusLabel(String amount);
+
+  /// No description provided for @delegationStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting reply'**
+  String get delegationStatusPending;
+
+  /// No description provided for @delegationStatusAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get delegationStatusAccepted;
+
+  /// No description provided for @delegationStatusDeclined.
+  ///
+  /// In en, this message translates to:
+  /// **'Declined'**
+  String get delegationStatusDeclined;
+
+  /// No description provided for @delegationStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get delegationStatusCancelled;
+
+  /// No description provided for @delegationStatusExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get delegationStatusExpired;
+
+  /// No description provided for @delegationStatusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get delegationStatusCompleted;
+
+  /// No description provided for @delegationStatusRevoked.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoked'**
+  String get delegationStatusRevoked;
 }
 
 class _AppLocalizationsDelegate

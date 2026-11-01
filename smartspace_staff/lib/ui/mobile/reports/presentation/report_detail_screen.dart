@@ -18,6 +18,8 @@ import 'package:smartspace_staff/ui/mobile/reports/presentation/widgets/fullscre
 import 'package:smartspace_staff/ui/mobile/reports/presentation/widgets/handling_progress_dialog.dart';
 import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
+import 'package:smartspace_staff/features/delegation/providers/delegation_providers.dart';
+import 'package:smartspace_staff/ui/mobile/delegation/widgets/delegation_section.dart';
 
 class ReportDetailScreen extends ConsumerStatefulWidget {
   final String reportId;
@@ -109,9 +111,15 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
     final reportAsyncValue = ref.watch(reportDetailProvider(widget.reportId));
     final reportData = reportAsyncValue.asData?.value;
     final isHandling = handleReportBackgroundService.isHandling(widget.reportId);
+    final currentStaffId = ref.watch(currentStaffIdProvider).valueOrNull;
+    // Chỉ người đang được giao mới xử lý được (vd. người nhờ sau khi task đã chuyển cho người làm giùm thì không)
+    final isAssignee = reportData?.assignedStaffId == null ||
+        currentStaffId == null ||
+        reportData!.assignedStaffId == currentStaffId;
     final canHandle = reportData != null &&
         reportData.status != ReportStatus.processed &&
         reportData.status != ReportStatus.rejected &&
+        isAssignee &&
         !isHandling;
 
     return Scaffold(
@@ -195,7 +203,10 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
             child: reportAsyncValue.when(
         data: (report) {
           return RefreshIndicator(
-            onRefresh: () => ref.read(reportDetailProvider(widget.reportId).notifier).refresh(),
+            onRefresh: () {
+              ref.invalidate(delegationReportStateProvider(widget.reportId));
+              return ref.read(reportDetailProvider(widget.reportId).notifier).refresh();
+            },
             child: SingleChildScrollView(
               physics: const AlwaysScrollableScrollPhysics(),
               child: Column(
@@ -287,6 +298,9 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // Nhờ làm giùm: banner yêu cầu đang hoạt động hoặc nút nhờ đồng nghiệp
+                        DelegationSection(reportId: widget.reportId),
+
                         // Rehandling Notice Banner (only when rehandling is requested)
                         if (report.status == ReportStatus.processing && report.isReviewResolved == false) ...[
                           Container(

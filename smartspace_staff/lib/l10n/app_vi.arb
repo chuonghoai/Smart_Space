@@ -434,5 +434,95 @@
   "confirmCancel": "Hủy yêu cầu",
   "cancelWithdrawalSuccess": "Hủy yêu cầu rút tiền thành công, số tiền đã được hoàn lại vào ví.",
   "statusCancelled": "Đã hủy",
-  "cancelledNoticeDesc": "Yêu cầu rút tiền này đã được hủy và số tiền tạm giữ đã được hoàn trả lại ví của bạn."
+  "cancelledNoticeDesc": "Yêu cầu rút tiền này đã được hủy và số tiền tạm giữ đã được hoàn trả lại ví của bạn.",
+  "routeDelegations": "Việc nhờ làm giùm",
+  "delegationScreenTitle": "Việc nhờ làm giùm",
+  "delegationTabReceived": "Được nhờ",
+  "delegationTabSent": "Đã nhờ",
+  "delegationEmptyReceived": "Chưa có ai nhờ bạn làm giùm",
+  "delegationEmptySent": "Bạn chưa nhờ ai làm giùm",
+  "delegationLoadFailed": "Không tải được danh sách nhờ làm giùm",
+  "delegationRequestAction": "Nhờ làm giùm",
+  "delegationSheetTitle": "Nhờ đồng nghiệp làm giùm",
+  "delegationSearchHint": "Tìm đồng nghiệp theo tên",
+  "delegationNoColleagues": "Không tìm thấy đồng nghiệp phù hợp",
+  "delegationChooseColleague": "Chọn đồng nghiệp",
+  "delegationHelperReceives": "Đồng nghiệp nhận",
+  "delegationHelperReceivesValue": "{commission}đ + {bonus}đ bonus",
+  "@delegationHelperReceivesValue": {
+    "placeholders": { "commission": { "type": "String" }, "bonus": { "type": "String" } }
+  },
+  "delegationYouPay": "Ví bạn bị trừ",
+  "delegationBonusRate": "Bonus = {rate}% hoa hồng của task",
+  "@delegationBonusRate": {
+    "placeholders": { "rate": { "type": "String" } }
+  },
+  "delegationCurrentBalance": "Số dư hiện tại",
+  "delegationInsufficientBalance": "Số dư ví không đủ để trả bonus này",
+  "delegationHoldHint": "Bonus được giữ tạm trong ví và hoàn lại nếu yêu cầu không thành. Yêu cầu hết hạn sau 24 giờ.",
+  "delegationNoteLabel": "Lời nhắn (không bắt buộc)",
+  "delegationSendAction": "Gửi yêu cầu",
+  "delegationSentSuccess": "Đã gửi yêu cầu nhờ làm giùm",
+  "delegationPendingRequesterBanner": "Đang chờ {name} nhận làm giùm",
+  "@delegationPendingRequesterBanner": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "delegationAcceptedRequesterBanner": "{name} đang làm giùm bạn phản ánh này",
+  "@delegationAcceptedRequesterBanner": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "delegationPendingHelperBanner": "{name} nhờ bạn làm giùm phản ánh này",
+  "@delegationPendingHelperBanner": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "delegationAcceptedHelperBanner": "Bạn đang làm giùm {name}",
+  "@delegationAcceptedHelperBanner": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "delegationHelperEarns": "Bạn sẽ nhận {commission}đ + {bonus}đ bonus",
+  "@delegationHelperEarns": {
+    "placeholders": { "commission": { "type": "String" }, "bonus": { "type": "String" } }
+  },
+  "delegationBonusHeld": "Đang giữ {bonus}đ bonus từ ví của bạn",
+  "@delegationBonusHeld": {
+    "placeholders": { "bonus": { "type": "String" } }
+  },
+  "delegationExpiresAt": "Hết hạn lúc {time}",
+  "@delegationExpiresAt": {
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "delegationAcceptAction": "Nhận làm",
+  "delegationDeclineAction": "Từ chối",
+  "delegationCancelAction": "Huỷ yêu cầu",
+  "delegationAcceptConfirmTitle": "Nhận làm giùm phản ánh này?",
+  "delegationAcceptConfirmMessage": "Phản ánh sẽ được giao cho bạn. Bạn chịu trách nhiệm xử lý, kể cả khi phải xử lý lại và bị trừ hoa hồng.",
+  "delegationDeclineConfirmTitle": "Từ chối yêu cầu này?",
+  "delegationDeclineConfirmMessage": "{name} sẽ được hoàn lại bonus đã giữ.",
+  "@delegationDeclineConfirmMessage": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "delegationCancelConfirmTitle": "Huỷ yêu cầu nhờ làm giùm?",
+  "delegationCancelConfirmMessage": "Bonus đã giữ sẽ được hoàn lại vào ví của bạn.",
+  "delegationAcceptedSuccess": "Bạn đã nhận làm giùm",
+  "delegationDeclinedSuccess": "Đã từ chối yêu cầu",
+  "delegationCancelledSuccess": "Đã huỷ yêu cầu, bonus đã được hoàn lại",
+  "delegationFrom": "Từ {name}",
+  "@delegationFrom": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "delegationTo": "Nhờ {name}",
+  "@delegationTo": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "delegationBonusLabel": "Bonus {amount}đ",
+  "@delegationBonusLabel": {
+    "placeholders": { "amount": { "type": "String" } }
+  },
+  "delegationStatusPending": "Chờ phản hồi",
+  "delegationStatusAccepted": "Đang làm giùm",
+  "delegationStatusDeclined": "Đã từ chối",
+  "delegationStatusCancelled": "Đã huỷ",
+  "delegationStatusExpired": "Hết hạn",
+  "delegationStatusCompleted": "Hoàn tất",
+  "delegationStatusRevoked": "Đã thu hồi"
 }
