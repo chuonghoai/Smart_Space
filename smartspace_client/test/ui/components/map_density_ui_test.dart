@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/ui/components/map_controls.dart';
 import 'package:smartspace_client/ui/components/map_density_legend.dart';
@@ -17,7 +18,6 @@ Widget createLocalizedApp(Widget child) {
     supportedLocales: const [
       Locale('vi'),
       Locale('en'),
-      Locale('zh'),
     ],
     locale: const Locale('vi'),
     home: Scaffold(body: child),
@@ -38,15 +38,20 @@ void main() {
       expect(find.text('Trên 5 phản ánh (Cao)'), findsOneWidget);
     });
 
-    testWidgets('MapSettingsBottomSheet renders and triggers toggle', (tester) async {
+    testWidgets('MapSettingsBottomSheet renders, triggers toggle, and selects filter', (tester) async {
       bool toggledValue = false;
+      MapReportFilter selectedFilter = MapReportFilter.all;
 
       await tester.pumpWidget(
         createLocalizedApp(
           MapSettingsBottomSheet(
             isDensityEnabled: false,
+            currentFilter: MapReportFilter.all,
             onDensityToggle: (val) {
               toggledValue = val;
+            },
+            onFilterSelected: (filter) {
+              selectedFilter = filter;
             },
           ),
         ),
@@ -55,12 +60,25 @@ void main() {
 
       expect(find.text('Cài đặt bản đồ'), findsOneWidget);
       expect(find.text('Hiển thị mật độ phản ánh'), findsOneWidget);
+      expect(find.text('Bộ lọc báo cáo'), findsOneWidget);
       expect(find.byType(Switch), findsOneWidget);
 
+      // Verify filter chips exist
+      expect(find.text('Tất cả'), findsOneWidget);
+      expect(find.text('Phản ánh của tôi'), findsOneWidget);
+      expect(find.text('Đang chờ'), findsOneWidget);
+      expect(find.text('Đang xử lý'), findsOneWidget);
+      expect(find.text('Đã xử lý'), findsOneWidget);
+
+      // Toggle switch
       await tester.tap(find.byType(Switch));
       await tester.pumpAndSettle();
-
       expect(toggledValue, isTrue);
+
+      // Tap filter chip
+      await tester.tap(find.text('Đang chờ'));
+      await tester.pumpAndSettle();
+      expect(selectedFilter, equals(MapReportFilter.pending));
     });
 
     testWidgets('MapControls includes settings button and fires callback', (tester) async {
@@ -96,4 +114,3 @@ void main() {
     });
   });
 }
-

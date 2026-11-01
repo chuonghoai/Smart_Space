@@ -66,12 +66,16 @@ class MapController extends StateNotifier<MapState> {
     state = state.copyWith(clearSelection: true);
   }
 
-  /// Gọi khi camera dừng; chỉ tải sau khi người dùng ngừng kéo/zoom.
-  void onViewportChanged(MapBounds bounds) {
+  /// Gọi khi camera dừng; tải ngay nếu [force] = true, hoặc debounce 400ms sau khi ngừng kéo/zoom.
+  void onViewportChanged(MapBounds bounds, {bool force = false}) {
     _viewportDebounce?.cancel();
-    _viewportDebounce = Timer(viewportDebounce, () {
-      _ref.read(mapReportsProvider.notifier).loadForViewport(bounds);
-    });
+    if (force) {
+      _ref.read(mapReportsProvider.notifier).loadForViewport(bounds, force: true);
+    } else {
+      _viewportDebounce = Timer(viewportDebounce, () {
+        _ref.read(mapReportsProvider.notifier).loadForViewport(bounds);
+      });
+    }
   }
 
   void refresh() {

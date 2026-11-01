@@ -64,6 +64,9 @@ class ReportDensityNotifier extends StateNotifier<ReportDensityState> {
   Future<void> _loadPreference() async {
     final enabled = await sharedPreferencesService.get<bool>(_prefKey) ?? false;
     state = state.copyWith(isEnabled: enabled);
+    if (enabled && _currentBounds != null) {
+      await loadForViewport(_currentBounds!, _currentZoom, force: true);
+    }
   }
 
   Future<void> toggleEnabled({MapBounds? bounds, double? zoom}) async {
@@ -134,7 +137,7 @@ class ReportDensityNotifier extends StateNotifier<ReportDensityState> {
 }
 
 final reportDensityProvider =
-    StateNotifierProvider.autoDispose<ReportDensityNotifier, ReportDensityState>((ref) {
+    StateNotifierProvider<ReportDensityNotifier, ReportDensityState>((ref) {
   return ReportDensityNotifier(reportService);
 });
 

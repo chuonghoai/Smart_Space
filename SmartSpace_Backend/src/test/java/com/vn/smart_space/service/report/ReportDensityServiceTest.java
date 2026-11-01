@@ -119,5 +119,12 @@ class ReportDensityServiceTest {
         assertThrows(BadRequestException.class, () -> densityService.getDensity(95.0, 10.0, 106.0, 105.0, 14.0));
         assertThrows(BadRequestException.class, () -> densityService.getDensity(10.0, -95.0, 106.0, 105.0, 14.0));
     }
+
+    @Test
+    @DisplayName("Geometry Scaling: Hexagon polygon area scaled by 1.5x (radius scale sqrt(1.5))")
+    void testHexagonPolygonScaling() {
+        assertEquals(1.5, ReportDensityServiceImpl.HEXAGON_AREA_SCALE, 0.0001);
+        assertEquals(Math.sqrt(1.5), ReportDensityServiceImpl.HEXAGON_RADIUS_SCALE, 0.000001);
+    }
 }
 

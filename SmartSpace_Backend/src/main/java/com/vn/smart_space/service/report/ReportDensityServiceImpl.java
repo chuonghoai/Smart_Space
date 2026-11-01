@@ -39,6 +39,8 @@ public class ReportDensityServiceImpl implements IReportDensityService {
 
     public static final int H3_RESOLUTION = 11;
     public static final int CACHE_VERSION = 1;
+    public static final double HEXAGON_AREA_SCALE = 1.5;
+    public static final double HEXAGON_RADIUS_SCALE = Math.sqrt(HEXAGON_AREA_SCALE);
 
     public static final String KEY_CELLS = "map:density:cells";
     public static final String KEY_GEO = "map:density:geo";
@@ -392,7 +394,10 @@ public class ReportDensityServiceImpl implements IReportDensityService {
 
         List<List<Double>> coords = new ArrayList<>();
         for (LatLng pt : boundary) {
-            coords.add(List.of(pt.lat, pt.lng));
+            // Scale vertices outward from centroid by sqrt(1.5) to increase polygon area by exactly 1.5x
+            double scaledLat = center.lat + (pt.lat - center.lat) * HEXAGON_RADIUS_SCALE;
+            double scaledLng = center.lng + (pt.lng - center.lng) * HEXAGON_RADIUS_SCALE;
+            coords.add(List.of(scaledLat, scaledLng));
         }
 
         return ReportDensityCellDto.builder()
