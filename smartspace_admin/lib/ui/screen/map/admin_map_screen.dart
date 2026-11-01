@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_shared/features/map/models/map_bounds.dart';
+import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:smartspace_admin/features/map/application/map_providers.dart';
 import 'package:smartspace_admin/features/map/models/map_report_model.dart';
@@ -18,8 +20,12 @@ import 'widgets/map_legend.dart';
 import 'widgets/map_report_sheet.dart';
 import 'widgets/map_quick_assign_sheet.dart';
 
+/// Có [focus] (mở từ chi tiết report) → camera mở tại report đó; khung đầu tiên được tải mới
+/// (bỏ qua cache) rồi mở thẻ của report, hoặc báo nó không khớp bộ lọc hiện tại.
 class AdminMapScreen extends ConsumerStatefulWidget {
-  const AdminMapScreen({super.key});
+  final MapFocusTarget? focus;
+
+  const AdminMapScreen({super.key, this.focus});
 
   @override
   ConsumerState<AdminMapScreen> createState() => _AdminMapScreenState();
@@ -27,6 +33,42 @@ class AdminMapScreen extends ConsumerStatefulWidget {
 
 class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
   bool _sheetOpen = false;
+  bool _didRequestFocus = false;
+
+  void _onViewportChanged(MapBounds bounds) {
+    final focus = widget.focus;
+    final controller = ref.read(adminMapControllerProvider.notifier);
+    if (focus == null || _didRequestFocus) {
+      controller.onViewportChanged(bounds);
+      return;
+    }
+    _didRequestFocus = true;
+    _loadAndShowFocus(controller, bounds, focus);
+  }
+
+  Future<void> _loadAndShowFocus(
+    AdminMapController controller,
+    MapBounds bounds,
+    MapFocusTarget focus,
+  ) async {
+    await controller.loadNow(bounds);
+    if (!mounted) return;
+
+    // Lỗi đã có SnackBar riêng; còn đang tải = request khác (người dùng kéo bản đồ) đã thay thế
+    final state = ref.read(mapReportsProvider);
+    if (state.error != null || state.isLoading) return;
+
+    final report = state.reports.where((r) => r.id == focus.reportId).firstOrNull;
+    if (report != null) {
+      _onReportTap(report);
+      return;
+    }
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(content: Text(AppLocalizations.of(context)!.mapFocusedReportHidden)),
+      );
+  }
 
   void _onReportTap(MapReportModel report) {
     ref.read(adminMapControllerProvider.notifier).selectReport(report);
@@ -153,8 +195,8 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
               reports: reportsState.reports,
               onMarkerTap: _onReportTap,
               onClusterTap: _showClusterSheet,
-              onViewportChanged: (bounds) =>
-                  ref.read(adminMapControllerProvider.notifier).onViewportChanged(bounds),
+              onViewportChanged: _onViewportChanged,
+              initialFocus: widget.focus,
               onMapTap: () {
                 // Only pop if there's a dialog/sheet open (canPop true)
                 if (Navigator.of(context).canPop()) {

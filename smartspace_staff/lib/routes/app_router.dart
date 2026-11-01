@@ -7,6 +7,7 @@ import 'package:smartspace_staff/ui/mobile/notifications/staff_notification_scre
 import 'package:smartspace_staff/ui/mobile/search/search_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_shared/core/toast/toast_service.dart';
+import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:smartspace_staff/ui/mobile/reports/presentation/report_detail_screen.dart';
 import 'package:smartspace_staff/ui/mobile/reports/presentation/handle_report_screen.dart';
 import 'package:smartspace_staff/ui/mobile/reports/all_reports_screen.dart';
@@ -76,7 +77,9 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: RouterPath.map,
-      builder: (context, state) => const MapScreen(),
+      builder: (context, state) => MapScreen(
+        focus: MapFocusTarget.fromQueryParameters(state.uri.queryParameters),
+      ),
     ),
     GoRoute(
       path: RouterPath.news,

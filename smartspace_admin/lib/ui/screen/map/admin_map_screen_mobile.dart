@@ -5,6 +5,7 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:mobile_shared/features/map/cluster/cluster_map_layer.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
+import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:mobile_shared/util/location_service.dart';
 import 'package:smartspace_admin/features/map/models/map_report_model.dart';
 import 'package:smartspace_admin/ui/shared/report_status/report_status_style.dart';
@@ -19,6 +20,7 @@ Widget buildPlatformMap({
   required void Function(List<MapReportModel> reports) onClusterTap,
   required void Function(MapBounds bounds) onViewportChanged,
   VoidCallback? onMapTap,
+  MapFocusTarget? initialFocus,
 }) {
   return _MobileMapView(
     reports: reports,
@@ -26,6 +28,7 @@ Widget buildPlatformMap({
     onClusterTap: onClusterTap,
     onViewportChanged: onViewportChanged,
     onMapTap: onMapTap,
+    initialFocus: initialFocus,
   );
 }
 
@@ -36,12 +39,16 @@ class _MobileMapView extends StatefulWidget {
   final void Function(MapBounds bounds) onViewportChanged;
   final VoidCallback? onMapTap;
 
+  /// Có giá trị → camera mở tại report này thay vì trung tâm mặc định.
+  final MapFocusTarget? initialFocus;
+
   const _MobileMapView({
     required this.reports,
     required this.onMarkerTap,
     required this.onClusterTap,
     required this.onViewportChanged,
     this.onMapTap,
+    this.initialFocus,
   });
 
   @override
@@ -127,10 +134,13 @@ class _MobileMapViewState extends State<_MobileMapView> {
     // Bắt tap ở mức bản đồ, layer tự query feature gốc từ source
     mapboxMap.addInteraction(TapInteraction.onMap(_onMapTap, stopPropagation: false));
 
+    final focus = widget.initialFocus;
     await mapboxMap.setCamera(
       CameraOptions(
-        center: _defaultCenter,
-        zoom: 12.0,
+        center: focus != null
+            ? Point(coordinates: Position(focus.longitude, focus.latitude))
+            : _defaultCenter,
+        zoom: focus != null ? MapFocusTarget.zoom : 12.0,
         pitch: 0.0,
         bearing: 0.0,
       ),

@@ -196,7 +196,7 @@ class _ClusterReportTile extends StatelessWidget {
             ),
             // Vùng chạm 48dp: tìm đường tới hiện trường mà không cần mở chi tiết
             IconButton(
-              tooltip: l10n.openInGoogleMaps,
+              tooltip: l10n.mapGetDirections,
               onPressed: onOpenInMaps,
               icon: Icon(Icons.directions_outlined, color: cs.primary),
               constraints: const BoxConstraints(minWidth: 48, minHeight: 48),

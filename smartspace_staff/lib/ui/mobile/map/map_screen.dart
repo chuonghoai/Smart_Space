@@ -7,11 +7,14 @@ import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:mobile_shared/features/map/cluster/cluster_map_layer.dart';
+import 'package:mobile_shared/features/map/models/map_focus_target.dart';
+import 'package:mobile_shared/features/map/widgets/map_filter_chip_bar.dart';
 import 'package:mobile_shared/util/location_service.dart';
 import 'package:smartspace_staff/features/reports/models/report_model.dart';
 import 'package:smartspace_staff/features/reports/providers/staff_map_reports_provider.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
+import 'package:smartspace_staff/ui/mobile/map/map_app_bar.dart';
 import 'package:smartspace_staff/ui/mobile/map/map_cluster_sheet.dart';
 import 'package:smartspace_staff/ui/mobile/map/map_controller.dart';
 import 'package:smartspace_staff/ui/mobile/map/map_controls.dart';
@@ -20,11 +23,17 @@ import 'package:smartspace_staff/ui/mobile/map/report_info_sheet.dart';
 import 'package:smartspace_staff/ui/shared/utils/open_in_google_maps.dart';
 
 /// Mobile Map Screen for Staff — mọi việc đang xử lý, gom cụm (cluster).
+/// Lọc tại máy theo chip trạng thái (Tất cả / Đang xử lý / Xử lý lại) và nút mức độ.
 ///
 /// Bấm cluster: zoom tới mức cluster tách ra; nếu không tách được nữa
 /// (trùng/sát toạ độ) thì mở danh sách việc, sắp gần nhất trước khi có GPS.
+///
+/// Có [focus] (mở từ chi tiết report) → camera mở tại report đó thay vì căn mọi việc,
+/// tải xong thì mở thẻ thông tin của nó (hoặc báo nếu nó không có trên bản đồ).
 class MapScreen extends ConsumerStatefulWidget {
-  const MapScreen({super.key});
+  final MapFocusTarget? focus;
+
+  const MapScreen({super.key, this.focus});
 
   @override
   ConsumerState<MapScreen> createState() => _MapScreenState();
@@ -43,6 +52,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   List<ReportModel> _visibleReports = const [];
   geo.Position? _userPosition;
   bool _didFitInitialCamera = false;
+  bool _didHandleFocus = false;
 
   // HCM city center
   static final _defaultCenter = Point(coordinates: Position(106.6297, 10.8231));
@@ -50,6 +60,8 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   @override
   void initState() {
     super.initState();
+    // Đang focus một report → giữ camera tại report, không căn lại theo mọi việc
+    _didFitInitialCamera = widget.focus != null;
     _loadUserPosition();
   }
 
@@ -123,10 +135,13 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     // Bắt tap ở mức bản đồ, layer tự query feature gốc từ source
     mapboxMap.addInteraction(TapInteraction.onMap(_onMapTap, stopPropagation: false));
 
+    final focus = widget.focus;
     await mapboxMap.setCamera(
       CameraOptions(
-        center: _defaultCenter,
-        zoom: 12.0,
+        center: focus != null
+            ? Point(coordinates: Position(focus.longitude, focus.latitude))
+            : _defaultCenter,
+        zoom: focus != null ? MapFocusTarget.zoom : 12.0,
         pitch: 0.0,
         bearing: 0.0,
       ),
@@ -145,6 +160,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   void _onStyleLoaded(StyleLoadedEventData _) async {
     await _clusterLayer?.install(_visibleReports.map(_toMarker).toList());
     _fitInitialCameraOnce();
+    _handleFocusOnce();
   }
 
   void _onMapIdle(MapIdleEventData _) {
@@ -158,6 +174,30 @@ class _MapScreenState extends ConsumerState<MapScreen> {
     _visibleReports = ref.read(mapControllerProvider).getFilteredReports(reports);
     _clusterLayer?.setMarkers(_visibleReports.map(_toMarker).toList());
     _fitInitialCameraOnce();
+    _handleFocusOnce();
+  }
+
+  /// Lần đầu có dữ liệu → mở thẻ của report được focus, hoặc báo nó không thuộc việc đang xử lý.
+  void _handleFocusOnce() {
+    final focus = widget.focus;
+    if (focus == null || _didHandleFocus || _clusterLayer == null) return;
+    if (ref.read(staffMapReportsProvider).valueOrNull == null) return;
+    _didHandleFocus = true;
+
+    // Mở sheet sau frame hiện tại: lời gọi có thể đến từ listener của provider
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final report = _visibleReports.where((r) => r.id == focus.reportId).firstOrNull;
+      if (report != null) {
+        _showReportInfo(_withDistances([report]).single);
+        return;
+      }
+      ScaffoldMessenger.of(context)
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(content: Text(AppLocalizations.of(context)!.mapFocusedReportHidden)),
+        );
+    });
   }
 
   /// Lần đầu có dữ liệu → căn camera thấy mọi việc, để staff không phải tự kéo tìm.
@@ -250,7 +290,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       isScrollControlled: true,
       builder: (sheetContext) => ReportInfoSheet(
         report: report,
-        onOpenInMaps: () => openInGoogleMaps(context, report.latitude, report.longitude),
+        onOpenInMaps: () => openGoogleMapsDirections(context, report.latitude, report.longitude),
         onViewDetail: () {
           Navigator.of(sheetContext).pop();
           _openReportDetail(report);
@@ -268,7 +308,7 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       backgroundColor: Colors.transparent,
       builder: (sheetContext) => MapClusterSheet(
         reports: reports,
-        onOpenInMaps: (report) => openInGoogleMaps(context, report.latitude, report.longitude),
+        onOpenInMaps: (report) => openGoogleMapsDirections(context, report.latitude, report.longitude),
         onReportTap: (report) {
           Navigator.of(sheetContext).pop();
           _openReportDetail(report);
@@ -310,7 +350,6 @@ class _MapScreenState extends ConsumerState<MapScreen> {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final cs = Theme.of(context).colorScheme;
     final mapState = ref.watch(mapControllerProvider);
     final reportsAsync = ref.watch(staffMapReportsProvider);
     final data = reportsAsync.valueOrNull;
@@ -321,6 +360,11 @@ class _MapScreenState extends ConsumerState<MapScreen> {
       mapControllerProvider.select((s) => (s.showDangerous, s.showNormal)),
       (_, _) => _syncReports(),
     );
+    // Đổi chip trạng thái → căn camera lại cho thấy hết việc của nhóm mới
+    ref.listen(mapControllerProvider.select((s) => s.statusFilter), (_, _) {
+      _syncReports();
+      _showAllTasks();
+    });
     ref.listen(staffMapReportsProvider.select((s) => s.hasError), (previous, next) {
       if (!next || previous == true) return;
       ScaffoldMessenger.of(context)
@@ -342,35 +386,15 @@ class _MapScreenState extends ConsumerState<MapScreen> {
         l10n.mapShowingFirstTasks(StaffMapReportsNotifier.limit),
       StaffMapReports(:final reports) when reports.isEmpty && !reportsAsync.isLoading =>
         l10n.mapNoActiveTasks,
+      // Có việc nhưng chip/nút mức độ đang ẩn hết → nói rõ để staff không tưởng là hết việc
+      StaffMapReports(:final reports) when mapState.getFilteredReports(reports).isEmpty =>
+        l10n.mapNoTasksForFilter,
       _ => null,
     };
 
     return Scaffold(
       extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        backgroundColor: Colors.transparent,
-        elevation: 0,
-        iconTheme: IconThemeData(color: cs.onSurface),
-        leading: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            decoration: BoxDecoration(
-              color: cs.surface.withValues(alpha: 0.9),
-              shape: BoxShape.circle,
-              boxShadow: [
-                BoxShadow(
-                  color: cs.shadow.withValues(alpha: 0.1),
-                  blurRadius: 8,
-                ),
-              ],
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.arrow_back),
-              onPressed: () => Navigator.pop(context),
-            ),
-          ),
-        ),
-      ),
+      appBar: const MapAppBar(),
       body: Stack(
         children: [
           MapWidget(
@@ -395,6 +419,26 @@ class _MapScreenState extends ConsumerState<MapScreen> {
               right: 24,
               child: Center(child: _MapHint(label: hint)),
             ),
+
+          // Cùng hàng với nút back (56dp) và chừa cột nút điều khiển bên phải (12 lề + 48 nút + 8)
+          Positioned(
+            top: topInset + 4,
+            left: 56,
+            right: 68,
+            child: MapFilterChipBar<StaffMapStatusFilter>(
+              options: [
+                MapFilterChipOption(value: StaffMapStatusFilter.all, label: l10n.filterAll),
+                MapFilterChipOption(
+                  value: StaffMapStatusFilter.processing,
+                  label: l10n.reportStatusProcessing,
+                ),
+                MapFilterChipOption(value: StaffMapStatusFilter.rehandling, label: l10n.rehandling),
+              ],
+              selected: mapState.statusFilter,
+              onSelected: (filter) =>
+                  ref.read(mapControllerProvider.notifier).setStatusFilter(filter),
+            ),
+          ),
 
           MapControls(
             showDangerous: mapState.showDangerous,

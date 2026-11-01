@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 
-/// Map control buttons — my location, show all tasks, filter, refresh
+/// Map control buttons — my location, show all tasks, severity filter, refresh.
+/// Lọc theo trạng thái nằm ở hàng chip phía trên bản đồ.
 class MapControls extends StatelessWidget {
   final bool showDangerous;
   final bool showNormal;

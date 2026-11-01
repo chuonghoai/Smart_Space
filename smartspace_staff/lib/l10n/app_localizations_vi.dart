@@ -788,6 +788,19 @@ class AppLocalizationsVi extends AppLocalizations {
   String get mapLoadReportsFailed => 'Không tải được việc trên bản đồ';
 
   @override
+  String get viewOnMap => 'Xem trên bản đồ';
+
+  @override
+  String get mapFocusedReportHidden =>
+      'Phản ánh này không thuộc việc đang xử lý của bạn nên không hiện trên bản đồ';
+
+  @override
+  String get mapGetDirections => 'Chỉ đường';
+
+  @override
+  String get mapNoTasksForFilter => 'Không có việc nào khớp bộ lọc';
+
+  @override
   String get locationSection => 'Vị trí sự cố';
 
   @override

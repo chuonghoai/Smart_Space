@@ -1,3 +1,4 @@
+import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:smartspace_client/routes/route_name.dart';
 
 class RouterPath {
@@ -15,6 +16,7 @@ class RouterPath {
   static String get editProfile => RouteName.editProfile.path;
   static String get createReport => RouteName.createReport.path;
   static String get map => RouteName.map.path;
+  static String mapWithFocus(MapFocusTarget focus) => focus.toLocation(map);
   static String get reportDetail => RouteName.reportDetail.path;
   static String get myReports => RouteName.myReports.path;
   static String get communityFeed => RouteName.communityFeed.path;

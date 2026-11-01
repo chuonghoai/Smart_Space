@@ -1,17 +1,20 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
 import 'package:mobile_shared/features/map/viewport/viewport_load_gate.dart';
+import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/services/report_service.dart';
 
 class MapReportsState {
   final List<ReportModel> reports;
+  final MapReportFilter filter;
   final bool truncated;
   final bool isLoading;
   final String? error;
 
   const MapReportsState({
     this.reports = const [],
+    this.filter = MapReportFilter.all,
     this.truncated = false,
     this.isLoading = false,
     this.error,
@@ -19,6 +22,7 @@ class MapReportsState {
 
   MapReportsState copyWith({
     List<ReportModel>? reports,
+    MapReportFilter? filter,
     bool? truncated,
     bool? isLoading,
     String? error,
@@ -26,6 +30,7 @@ class MapReportsState {
   }) {
     return MapReportsState(
       reports: reports ?? this.reports,
+      filter: filter ?? this.filter,
       truncated: truncated ?? this.truncated,
       isLoading: isLoading ?? this.isLoading,
       error: clearError ? null : (error ?? this.error),
@@ -33,7 +38,7 @@ class MapReportsState {
   }
 }
 
-/// Report trên bản đồ Client, tải theo khung nhìn.
+/// Report trên bản đồ Client, tải theo khung nhìn + bộ lọc [MapReportFilter] (lọc ở backend).
 /// Quy tắc khi nào tải lại nằm ở [ViewportLoadGate] (dùng chung với Admin).
 /// Giữ dữ liệu cũ trong lúc tải → bản đồ không bị trống/nháy.
 class MapReportsNotifier extends StateNotifier<MapReportsState> {
@@ -52,10 +57,11 @@ class MapReportsNotifier extends StateNotifier<MapReportsState> {
     final request = _gate.begin(viewport, force: force);
     if (request == null) return;
 
+    final filter = state.filter;
     state = state.copyWith(isLoading: true, clearError: true);
 
     try {
-      final response = await _service.getReportsInBounds(request.bounds, limit: limit);
+      final response = await _service.getReportsInBounds(request.bounds, filter: filter, limit: limit);
       if (!mounted || !_gate.isCurrent(request)) return;
 
       final data = response.data;
@@ -65,6 +71,7 @@ class MapReportsNotifier extends StateNotifier<MapReportsState> {
           reports: data.reports
               .where((r) => r.latitude != 0 || r.longitude != 0)
               .toList(),
+          filter: filter,
           truncated: data.truncated,
         );
       } else {
@@ -76,6 +83,14 @@ class MapReportsNotifier extends StateNotifier<MapReportsState> {
       _gate.fail(request);
       state = state.copyWith(isLoading: false, error: e.toString());
     }
+  }
+
+  /// Đổi bộ lọc → dữ liệu đã tải không còn đúng, tải lại ngay khung đang xem.
+  Future<void> setFilter(MapReportFilter filter) async {
+    if (filter == state.filter) return;
+    _gate.invalidate();
+    state = state.copyWith(filter: filter);
+    await refresh();
   }
 
   /// Tải lại khung nhìn gần nhất, bỏ qua cache.

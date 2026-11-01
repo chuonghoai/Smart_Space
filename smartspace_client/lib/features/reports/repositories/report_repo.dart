@@ -1,5 +1,6 @@
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
+import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
 import 'package:smartspace_client/features/reports/models/map_reports_result.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
@@ -15,7 +16,11 @@ abstract class ReportRepo {
   Future<ApiResponse<List<ReportModel>>> getMyReports({String? status, int limit = 50});
   Future<ApiResponse<ReportDetailModel>> getReportDetail(String reportId);
   Future<ApiResponse<ReportFeedPage>> getFeed({String? status, int page = 1, int size = 10, double? lat, double? lng});
-  Future<ApiResponse<MapReportsResult>> getReportsInBounds(MapBounds bounds, {int limit = 300});
+  Future<ApiResponse<MapReportsResult>> getReportsInBounds(
+    MapBounds bounds, {
+    MapReportFilter filter = MapReportFilter.all,
+    int limit = 300,
+  });
   Future<ApiResponse<ReportDetailModel>> submitReview(
     String reportId, {
     required bool isResolved,

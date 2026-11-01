@@ -883,6 +883,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get mapLoadReportsFailed => 'Couldn\'t load reports on the map';
 
   @override
+  String get mapFilterAll => 'All';
+
+  @override
+  String get viewOnMap => 'View on map';
+
+  @override
+  String get mapFocusedReportHidden =>
+      'This report isn\'t currently shown on the map';
+
+  @override
   String get locationSection => 'Incident Location';
 
   @override

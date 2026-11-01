@@ -19,6 +19,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.vn.smart_space.consts.EMapReportFilter;
 import com.vn.smart_space.consts.EReportSeverity;
 import com.vn.smart_space.consts.EReportStatus;
 import com.vn.smart_space.consts.ERole;
@@ -355,9 +356,13 @@ public class ReportServiceImpl implements IReportService {
 
     @Override
     @Transactional(readOnly = true)
-    public MapReportsResponse getReportsInBounds(Double minLat, Double maxLat, Double minLng, Double maxLng,
-            int limit) {
+    public MapReportsResponse getReportsInBounds(String viewerId, Double minLat, Double maxLat, Double minLng,
+            Double maxLng, String filter, int limit) {
         validateMapBounds(minLat, maxLat, minLng, maxLng);
+        EMapReportFilter mapFilter = EMapReportFilter.from(filter);
+        if (mapFilter == null) {
+            throw new BadRequestException("report.map.invalid_filter");
+        }
         int safeLimit = safeMapLimit(limit, MAP_DEFAULT_LIMIT);
 
         // Fetch one extra row to know whether the viewport holds more than safeLimit
@@ -365,6 +370,9 @@ public class ReportServiceImpl implements IReportService {
         List<Report> reports = reportRepository.findInBounds(minLat, maxLat, minLng, maxLng,
                 EReportStatus.rejected, EReportStatus.processed,
                 LocalDateTime.now().minusDays(MAP_PROCESSED_VISIBLE_DAYS),
+                viewerId,
+                mapFilter.status(),
+                mapFilter == EMapReportFilter.mine ? viewerId : null,
                 Limit.of(safeLimit + 1));
 
         boolean truncated = reports.size() > safeLimit;

@@ -1,4 +1,5 @@
 import 'package:go_router/go_router.dart';
+import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/screen/notifications/admin_notification_screen.dart';
 import 'package:smartspace_admin/ui/screen/auth/login/login_screen.dart';
@@ -142,7 +143,9 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: RouterPath.spaceMap,
-      builder: (context, state) => const AdminMapScreen(),
+      builder: (context, state) => AdminMapScreen(
+        focus: MapFocusTarget.fromQueryParameters(state.uri.queryParameters),
+      ),
     ),
     GoRoute(
       path: RouterPath.search,
