@@ -16,6 +16,7 @@ import 'package:smartspace_admin/ui/screen/settings/manage_devices_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/system_config_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/commission_config_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/penalty_rate_config_screen.dart';
+import 'package:smartspace_admin/ui/screen/settings/delegation_rate_config_screen.dart';
 import 'package:smartspace_admin/ui/screen/wallet/admin_staff_wallets_screen.dart';
 import 'package:smartspace_admin/ui/screen/wallet/admin_withdrawal_requests_screen.dart';
 import 'package:smartspace_admin/ui/screen/wallet/admin_staff_wallet_detail_screen.dart';
@@ -86,6 +87,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.penaltyRateConfig,
       builder: (context, state) => const PenaltyRateConfigScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.delegationRateConfig,
+      builder: (context, state) => const DelegationRateConfigScreen(),
     ),
     GoRoute(
       path: RouterPath.adminStaffWallets,

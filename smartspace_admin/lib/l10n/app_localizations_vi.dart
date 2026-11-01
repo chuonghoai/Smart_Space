@@ -1771,4 +1771,31 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get statusCancelled => 'Đã hủy';
+
+  @override
+  String get delegationRateConfig => 'Cấu hình hoa hồng công việc được nhờ';
+
+  @override
+  String get routeDelegationRateConfig =>
+      'Cấu hình hoa hồng công việc được nhờ';
+
+  @override
+  String get delegationRateConfigDescription =>
+      'Thiết lập bonus nhân viên nhận thêm khi làm giùm đồng nghiệp, tính theo % hoa hồng của task theo mức độ nghiêm trọng. Bonus được trừ từ ví của người nhờ.';
+
+  @override
+  String delegationRateExample(String rate, String commission, String bonus) {
+    return '$rate% × $commissionđ = $bonusđ bonus';
+  }
+
+  @override
+  String get delegationRateNote =>
+      'Người làm giùm nhận hoa hồng của task cộng thêm bonus này. Thay đổi chỉ áp dụng cho yêu cầu nhờ gửi sau khi lưu.';
+
+  @override
+  String get saveDelegationRateSuccess =>
+      'Cập nhật hoa hồng công việc được nhờ thành công!';
+
+  @override
+  String get delegationRateLoadFailed => 'Không tải được cấu hình';
 }

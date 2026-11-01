@@ -1779,4 +1779,31 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get statusCancelled => 'Cancelled';
+
+  @override
+  String get delegationRateConfig => 'Delegated Task Commission Configuration';
+
+  @override
+  String get routeDelegationRateConfig =>
+      'Delegated Task Commission Configuration';
+
+  @override
+  String get delegationRateConfigDescription =>
+      'Set the extra bonus a staff member earns when handling a task on behalf of a colleague, as a percentage of the task commission by severity. The bonus is paid from the requester\'s wallet.';
+
+  @override
+  String delegationRateExample(String rate, String commission, String bonus) {
+    return '$rate% × $commissionđ = $bonusđ bonus';
+  }
+
+  @override
+  String get delegationRateNote =>
+      'The helper receives the task commission plus this bonus. Changes only apply to delegation requests sent after saving.';
+
+  @override
+  String get saveDelegationRateSuccess =>
+      'Delegated task commission rates updated successfully!';
+
+  @override
+  String get delegationRateLoadFailed => 'Couldn\'t load the configuration';
 }

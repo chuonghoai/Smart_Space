@@ -789,5 +789,19 @@
     }
   },
   "homePendingWithdrawalSubtitle": "Tap to review pending withdrawal requests",
-  "statusCancelled": "Cancelled"
+  "statusCancelled": "Cancelled",
+  "delegationRateConfig": "Delegated Task Commission Configuration",
+  "routeDelegationRateConfig": "Delegated Task Commission Configuration",
+  "delegationRateConfigDescription": "Set the extra bonus a staff member earns when handling a task on behalf of a colleague, as a percentage of the task commission by severity. The bonus is paid from the requester's wallet.",
+  "delegationRateExample": "{rate}% × {commission}đ = {bonus}đ bonus",
+  "@delegationRateExample": {
+    "placeholders": {
+      "rate": { "type": "String" },
+      "commission": { "type": "String" },
+      "bonus": { "type": "String" }
+    }
+  },
+  "delegationRateNote": "The helper receives the task commission plus this bonus. Changes only apply to delegation requests sent after saving.",
+  "saveDelegationRateSuccess": "Delegated task commission rates updated successfully!",
+  "delegationRateLoadFailed": "Couldn't load the configuration"
 }
