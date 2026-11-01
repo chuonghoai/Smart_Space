@@ -94,11 +94,19 @@ public class ReportDelegationServiceImpl implements IReportDelegationService {
                 Report report = reportRepository.findById(reportId)
                                 .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
 
-                // Chỉ người nhờ / người được nhờ mới thấy yêu cầu đang hoạt động
+                // Chỉ người nhờ / người được nhờ mới thấy yêu cầu của report
                 ReportDelegation active = findActive(report.getId())
-                                .filter(d -> staffId.equals(d.getRequester().getId())
-                                                || staffId.equals(d.getHelper().getId()))
+                                .filter(d -> isParticipant(d, staffId))
                                 .orElse(null);
+                // Đã hoàn tất thì không còn yêu cầu đang hoạt động (task đã nhận hoa hồng không nhờ lại được)
+                ReportDelegation completed = active != null ? null
+                                : delegationRepository.findFirstByReportIdAndStatusInOrderByCreatedAtDesc(
+                                                report.getId(), List.of(EDelegationStatus.COMPLETED))
+                                                .filter(d -> isParticipant(d, staffId))
+                                                .orElse(null);
+                ReportDelegation shown = active != null ? active : completed;
+                String viewerRole = shown == null ? null
+                                : staffId.equals(shown.getRequester().getId()) ? "REQUESTER" : "HELPER";
 
                 WalletConfig config = walletConfigService.getOrCreateDefaultConfig();
                 double commission = config.commissionFor(report.getSeverity());
@@ -120,6 +128,8 @@ public class ReportDelegationServiceImpl implements IReportDelegationService {
                                 .bonusAmount(bonus)
                                 .balance(balance)
                                 .activeDelegation(active != null ? toResponse(active) : null)
+                                .completedDelegation(completed != null ? toResponse(completed) : null)
+                                .viewerRole(viewerRole)
                                 .build();
         }
 
@@ -366,6 +376,10 @@ public class ReportDelegationServiceImpl implements IReportDelegationService {
                 if (report.getSeverity() == null)
                         return "delegation.severity_missing";
                 return null;
+        }
+
+        private static boolean isParticipant(ReportDelegation delegation, String staffId) {
+                return staffId.equals(delegation.getRequester().getId()) || staffId.equals(delegation.getHelper().getId());
         }
 
         private Optional<ReportDelegation> findActive(String reportId) {

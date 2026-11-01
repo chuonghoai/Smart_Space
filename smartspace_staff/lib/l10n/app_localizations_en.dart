@@ -1204,6 +1204,21 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
+  String commissionExpectedWithBonusNotice(String commission, String bonus) {
+    return 'You will receive $commission VND + $bonus VND delegation bonus after completing this report.';
+  }
+
+  @override
+  String delegationBonusReceivedLine(String name, String amount) {
+    return 'Delegation bonus from $name: +$amount VND';
+  }
+
+  @override
+  String delegationBonusPaidNotice(String amount, String name) {
+    return 'You paid $name a $amount VND bonus for handling this report.';
+  }
+
+  @override
   String delegationExpiresAt(String time) {
     return 'Expires at $time';
   }

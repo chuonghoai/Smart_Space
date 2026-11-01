@@ -1186,6 +1186,21 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
+  String commissionExpectedWithBonusNotice(String commission, String bonus) {
+    return 'Bạn sẽ nhận được $commissionđ + $bonusđ bonus làm giùm sau khi hoàn tất xử lý phản ánh này.';
+  }
+
+  @override
+  String delegationBonusReceivedLine(String name, String amount) {
+    return 'Bonus làm giùm từ $name: +$amountđ';
+  }
+
+  @override
+  String delegationBonusPaidNotice(String amount, String name) {
+    return 'Bạn đã trả $amountđ bonus cho $name làm giùm phản ánh này.';
+  }
+
+  @override
   String delegationExpiresAt(String time) {
     return 'Hết hạn lúc $time';
   }

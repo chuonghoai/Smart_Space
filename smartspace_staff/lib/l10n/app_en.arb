@@ -487,6 +487,18 @@
   "@delegationBonusHeld": {
     "placeholders": { "bonus": { "type": "String" } }
   },
+  "commissionExpectedWithBonusNotice": "You will receive {commission} VND + {bonus} VND delegation bonus after completing this report.",
+  "@commissionExpectedWithBonusNotice": {
+    "placeholders": { "commission": { "type": "String" }, "bonus": { "type": "String" } }
+  },
+  "delegationBonusReceivedLine": "Delegation bonus from {name}: +{amount} VND",
+  "@delegationBonusReceivedLine": {
+    "placeholders": { "name": { "type": "String" }, "amount": { "type": "String" } }
+  },
+  "delegationBonusPaidNotice": "You paid {name} a {amount} VND bonus for handling this report.",
+  "@delegationBonusPaidNotice": {
+    "placeholders": { "amount": { "type": "String" }, "name": { "type": "String" } }
+  },
   "delegationExpiresAt": "Expires at {time}",
   "@delegationExpiresAt": {
     "placeholders": { "time": { "type": "String" } }

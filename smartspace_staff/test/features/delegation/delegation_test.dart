@@ -101,6 +101,44 @@ void main() {
       expect(withActive.activeDelegation?.id, '2');
     });
 
+    test('Khung hoa hồng theo người đang xem: người làm giùm cộng bonus, người nhờ ẩn hoa hồng', () {
+      DelegationReportStateModel state(String role, {Map<String, dynamic>? active, Map<String, dynamic>? completed}) =>
+          DelegationReportStateModel.fromJson({
+            'can_request': false,
+            'viewer_role': role,
+            'active_delegation': active,
+            'completed_delegation': completed,
+          });
+
+      // Đang làm giùm: người làm giùm thấy bonus sắp nhận; người nhờ không còn thấy hoa hồng của task
+      final helperDoing = state('HELPER', active: _delegationJson('1', status: 'ACCEPTED'));
+      expect(helperDoing.viewerRole, DelegationViewerRole.helper);
+      expect(helperDoing.upcomingBonusForViewer, 10000);
+      expect(helperDoing.hidesViewerCommission, isFalse);
+      expect(state('REQUESTER', active: _delegationJson('1', status: 'ACCEPTED')).hidesViewerCommission, isTrue);
+
+      // Đang chờ trả lời: người nhờ vẫn là người được giao → vẫn thấy hoa hồng của mình
+      final requesterWaiting = state('REQUESTER', active: _delegationJson('1'));
+      expect(requesterWaiting.hidesViewerCommission, isFalse);
+      expect(requesterWaiting.upcomingBonusForViewer, isNull);
+
+      // Đã hoàn tất: người làm giùm thấy bonus đã nhận, người nhờ thấy bonus đã trả
+      final helperDone = state('HELPER', completed: _delegationJson('2', status: 'COMPLETED'));
+      expect(helperDone.bonusReceivedByViewer?.bonusAmount, 10000);
+      expect(helperDone.bonusPaidByViewer, isNull);
+      expect(helperDone.upcomingBonusForViewer, isNull);
+      final requesterDone = state('REQUESTER', completed: _delegationJson('2', status: 'COMPLETED'));
+      expect(requesterDone.bonusPaidByViewer?.helper.fullName, 'Helper');
+      expect(requesterDone.hidesViewerCommission, isTrue);
+
+      // Không tham gia → giữ nguyên khung hoa hồng cũ
+      final outsider = DelegationReportStateModel.fromJson({'can_request': false});
+      expect(outsider.viewerRole, isNull);
+      expect(outsider.hidesViewerCommission, isFalse);
+      expect(outsider.upcomingBonusForViewer, isNull);
+      expect(outsider.bonusReceivedByViewer, isNull);
+    });
+
     test('DelegationPage đọc PageResponse (camelCase) và hasMore', () {
       final page = DelegationPage.fromJson(
         {'currentPage': 0, 'totalPages': 2, 'content': [_delegationJson('1')]},

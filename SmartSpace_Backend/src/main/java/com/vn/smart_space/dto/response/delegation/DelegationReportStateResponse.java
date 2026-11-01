@@ -40,4 +40,15 @@ public class DelegationReportStateResponse {
 
     @JsonProperty("active_delegation")
     DelegationResponse activeDelegation;
+
+    /** Yêu cầu đã hoàn tất của report mà staff tham gia (để hiện bonus đã nhận / đã trả), null nếu không có. */
+    @JsonProperty("completed_delegation")
+    DelegationResponse completedDelegation;
+
+    /**
+     * Vai trò của staff đang xem trong yêu cầu đang hoạt động hoặc đã hoàn tất: REQUESTER / HELPER, null nếu không tham gia.
+     * Tính ở backend từ JWT nên app không phải tự so id người dùng.
+     */
+    @JsonProperty("viewer_role")
+    String viewerRole;
 }

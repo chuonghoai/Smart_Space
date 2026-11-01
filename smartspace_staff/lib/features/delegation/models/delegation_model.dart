@@ -20,6 +20,18 @@ enum DelegationStatus {
   bool get isActive => this == pending || this == accepted;
 }
 
+/// Vai trò của staff đang xem trong yêu cầu nhờ làm giùm của report (backend tính từ JWT).
+enum DelegationViewerRole {
+  requester,
+  helper;
+
+  static DelegationViewerRole? parse(String? raw) => switch (raw?.toUpperCase()) {
+        'REQUESTER' => requester,
+        'HELPER' => helper,
+        _ => null,
+      };
+}
+
 /// Hộp danh sách: yêu cầu mình nhận được (được nhờ) hoặc mình đã gửi (đi nhờ).
 enum DelegationBox { received, sent }
 
@@ -116,6 +128,10 @@ class DelegationReportStateModel {
   final double balance;
   final DelegationModel? activeDelegation;
 
+  /// Yêu cầu đã hoàn tất mà staff tham gia (không đồng thời với [activeDelegation]).
+  final DelegationModel? completedDelegation;
+  final DelegationViewerRole? viewerRole;
+
   const DelegationReportStateModel({
     required this.canRequest,
     this.reasonCode,
@@ -125,10 +141,34 @@ class DelegationReportStateModel {
     required this.bonusAmount,
     required this.balance,
     this.activeDelegation,
+    this.completedDelegation,
+    this.viewerRole,
   });
 
   /// Lý do duy nhất nên cho người dùng thấy (các lý do khác chỉ làm ẩn nút).
   bool get isInsufficientBalance => reasonCode == 'delegation.insufficient_balance';
+
+  // Khung hoa hồng ở chi tiết report hiển thị theo người đang xem
+
+  /// Bonus người làm giùm sẽ nhận thêm khi hoàn tất (yêu cầu đang chờ / đã nhận), null nếu không áp dụng.
+  double? get upcomingBonusForViewer {
+    final active = activeDelegation;
+    if (viewerRole != DelegationViewerRole.helper || active == null || active.bonusAmount <= 0) return null;
+    return active.bonusAmount;
+  }
+
+  /// Yêu cầu đã hoàn tất mà người đang xem là người làm giùm → cộng bonus vào số tiền đã nhận.
+  DelegationModel? get bonusReceivedByViewer =>
+      viewerRole == DelegationViewerRole.helper ? completedDelegation : null;
+
+  /// Yêu cầu đã hoàn tất mà người đang xem là người nhờ → hiện bonus đã trả.
+  DelegationModel? get bonusPaidByViewer =>
+      viewerRole == DelegationViewerRole.requester ? completedDelegation : null;
+
+  /// Task đã chuyển cho người làm giùm → hoa hồng không thuộc về người nhờ, ẩn khung hoa hồng.
+  bool get hidesViewerCommission =>
+      viewerRole == DelegationViewerRole.requester &&
+      (activeDelegation?.status == DelegationStatus.accepted || completedDelegation != null);
 
   factory DelegationReportStateModel.fromJson(Map<String, dynamic> json) => DelegationReportStateModel(
         canRequest: json['can_request'] == true,
@@ -141,6 +181,10 @@ class DelegationReportStateModel {
         activeDelegation: json['active_delegation'] is Map<String, dynamic>
             ? DelegationModel.fromJson(json['active_delegation'] as Map<String, dynamic>)
             : null,
+        completedDelegation: json['completed_delegation'] is Map<String, dynamic>
+            ? DelegationModel.fromJson(json['completed_delegation'] as Map<String, dynamic>)
+            : null,
+        viewerRole: DelegationViewerRole.parse(json['viewer_role']?.toString()),
       );
 }
 

@@ -487,6 +487,18 @@
   "@delegationBonusHeld": {
     "placeholders": { "bonus": { "type": "String" } }
   },
+  "commissionExpectedWithBonusNotice": "Bạn sẽ nhận được {commission}đ + {bonus}đ bonus làm giùm sau khi hoàn tất xử lý phản ánh này.",
+  "@commissionExpectedWithBonusNotice": {
+    "placeholders": { "commission": { "type": "String" }, "bonus": { "type": "String" } }
+  },
+  "delegationBonusReceivedLine": "Bonus làm giùm từ {name}: +{amount}đ",
+  "@delegationBonusReceivedLine": {
+    "placeholders": { "name": { "type": "String" }, "amount": { "type": "String" } }
+  },
+  "delegationBonusPaidNotice": "Bạn đã trả {amount}đ bonus cho {name} làm giùm phản ánh này.",
+  "@delegationBonusPaidNotice": {
+    "placeholders": { "amount": { "type": "String" }, "name": { "type": "String" } }
+  },
   "delegationExpiresAt": "Hết hạn lúc {time}",
   "@delegationExpiresAt": {
     "placeholders": { "time": { "type": "String" } }

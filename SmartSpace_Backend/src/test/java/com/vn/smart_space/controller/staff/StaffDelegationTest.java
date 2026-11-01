@@ -163,6 +163,8 @@ public class StaffDelegationTest {
         assertEquals("ACCEPTED", accepted.path("status").asText());
         assertEquals("ACCEPTED", state(reportId, requesterToken).path("active_delegation").path("status").asText(),
                 "Người nhờ vẫn thấy yêu cầu đang hoạt động");
+        assertEquals("REQUESTER", state(reportId, requesterToken).path("viewer_role").asText());
+        assertEquals("HELPER", state(reportId, helperToken).path("viewer_role").asText());
 
         assertEquals(403, complete(reportId, requesterToken).statusCode(), "Người nhờ không còn là người được giao");
 
@@ -179,6 +181,14 @@ public class StaffDelegationTest {
             if (delegationId.equals(d.path("id").asText())) completed = "COMPLETED".equals(d.path("status").asText());
         }
         assertTrue(completed, "Yêu cầu phải chuyển sang COMPLETED");
+
+        // Chi tiết report sau hoàn tất: cả hai bên vẫn thấy yêu cầu đã hoàn tất để hiện bonus đã nhận / đã trả
+        JsonNode helperState = state(reportId, helperToken);
+        assertTrue(helperState.path("active_delegation").isNull() || helperState.path("active_delegation").isMissingNode());
+        assertEquals(delegationId, helperState.path("completed_delegation").path("id").asText());
+        assertEquals(bonus, helperState.path("completed_delegation").path("bonus_amount").asDouble(), 0.001);
+        assertEquals("HELPER", helperState.path("viewer_role").asText());
+        assertEquals("REQUESTER", state(reportId, requesterToken).path("viewer_role").asText());
 
         // Mở lại: người làm giùm chịu phạt, người nhờ không bị ảnh hưởng
         double helperBeforeReopen = balance(helperToken);

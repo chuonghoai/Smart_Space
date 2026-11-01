@@ -2318,6 +2318,24 @@ abstract class AppLocalizations {
   /// **'{bonus}đ bonus held from your wallet'**
   String delegationBonusHeld(String bonus);
 
+  /// No description provided for @commissionExpectedWithBonusNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'You will receive {commission} VND + {bonus} VND delegation bonus after completing this report.'**
+  String commissionExpectedWithBonusNotice(String commission, String bonus);
+
+  /// No description provided for @delegationBonusReceivedLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Delegation bonus from {name}: +{amount} VND'**
+  String delegationBonusReceivedLine(String name, String amount);
+
+  /// No description provided for @delegationBonusPaidNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'You paid {name} a {amount} VND bonus for handling this report.'**
+  String delegationBonusPaidNotice(String amount, String name);
+
   /// No description provided for @delegationExpiresAt.
   ///
   /// In en, this message translates to:
