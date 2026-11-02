@@ -247,17 +247,20 @@ class StaffDetailRow extends StatelessWidget {
 }
 
 /// Dialog thêm/chỉnh sửa nhân viên — Web (2 cột) và Mobile (1 cột bottom sheet)
-void showStaffFormDialog(
+/// Mở form thêm/sửa nhân viên. Khi thêm mới thành công, form trả về email của
+/// nhân viên vừa tạo → hiển thị dialog xác nhận đã gửi mật khẩu qua email.
+Future<void> showStaffFormDialog(
   BuildContext context,
   AppLocalizations l10n,
   ThemeData theme,
   WidgetRef ref, {
   StaffModel? editingStaff,
-}) {
+}) async {
   final isWeb = MediaQuery.sizeOf(context).width >= 640;
 
+  final String? createdEmail;
   if (isWeb) {
-    showDialog(
+    createdEmail = await showDialog<String>(
       context: context,
       builder: (ctx) => Dialog(
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
@@ -268,7 +271,7 @@ void showStaffFormDialog(
       ),
     );
   } else {
-    showModalBottomSheet(
+    createdEmail = await showModalBottomSheet<String>(
       context: context,
       isScrollControlled: true,
       shape: const RoundedRectangleBorder(
@@ -289,6 +292,87 @@ void showStaffFormDialog(
       ),
     );
   }
+
+  if (createdEmail == null || !context.mounted) return;
+  await _showStaffCreatedDialog(context, l10n, createdEmail);
+}
+
+/// Dialog xác nhận đã tạo tài khoản nhân viên và gửi mật khẩu qua email.
+Future<void> _showStaffCreatedDialog(
+  BuildContext context,
+  AppLocalizations l10n,
+  String email,
+) {
+  return showDialog<void>(
+    context: context,
+    builder: (dialogContext) {
+      final theme = Theme.of(dialogContext);
+      final cs = theme.colorScheme;
+      final successColor = AppSemanticColors.of(dialogContext).success;
+
+      return AlertDialog(
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        icon: Icon(
+          Icons.mark_email_read_outlined,
+          color: successColor,
+          size: 40,
+        ),
+        title: Text(l10n.staffCreatedTitle),
+        content: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 420),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Text(
+                l10n.staffCreatedCredentialsSent,
+                style: theme.textTheme.bodyMedium,
+              ),
+              const SizedBox(height: 12),
+              Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 10,
+                ),
+                decoration: BoxDecoration(
+                  color: cs.surfaceContainerHighest,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  children: [
+                    Icon(Icons.email_outlined, size: 20, color: cs.primary),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: SelectableText(
+                        email,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: cs.onSurface,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+              Text(
+                l10n.staffCreatedCheckInboxHint,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: cs.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext),
+            child: Text(l10n.closeAction),
+          ),
+        ],
+      );
+    },
+  );
 }
 
 /// Form thêm/chỉnh sửa nhân viên — StatefulWidget dùng chung cho Web và Mobile
@@ -318,12 +402,10 @@ class _StaffFormState extends State<_StaffForm> {
   final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
-  final _passCtrl = TextEditingController();
 
   DateTime? _selectedDate;
   String? _selectedGender;
   String? _selectedPositionId;
-  bool _obscurePass = true;
 
   bool _isLoading = false;
 
@@ -350,7 +432,6 @@ class _StaffFormState extends State<_StaffForm> {
     _nameCtrl.dispose();
     _emailCtrl.dispose();
     _phoneCtrl.dispose();
-    _passCtrl.dispose();
     super.dispose();
   }
 
@@ -420,9 +501,9 @@ class _StaffFormState extends State<_StaffForm> {
           ? '${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}'
           : null;
 
-      bool success;
       if (widget.isEditMode) {
-        success = await widget.ref.read(staffListProvider.notifier).updateStaff(
+        final success =
+            await widget.ref.read(staffListProvider.notifier).updateStaff(
           staffId: widget.editingStaff!.id,
           fullName: _nameCtrl.text.trim(),
           email: _emailCtrl.text.trim(),
@@ -433,34 +514,43 @@ class _StaffFormState extends State<_StaffForm> {
           // '' = bỏ chức vụ (backend hiểu chuỗi rỗng là xóa)
           positionId: _selectedPositionId ?? '',
         );
-      } else {
-        success = await widget.ref.read(staffListProvider.notifier).createStaff(
-          fullName: _nameCtrl.text.trim(),
-          email: _emailCtrl.text.trim(),
-          password: _passCtrl.text,
-          phone: _phoneCtrl.text.trim(),
-          dateOfBirth: dateStr,
-          gender: _selectedGender,
-          avatarUrl: avatarUrl,
-          positionId: _selectedPositionId,
+
+        if (!mounted) return;
+        setState(() => _isLoading = false);
+
+        if (success) Navigator.pop(context);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(success
+              ? widget.l10n.updateStaffSuccess
+              : widget.l10n.updateStaffFailed)),
         );
+        return;
       }
+
+      final email = _emailCtrl.text.trim();
+      final error = await widget.ref.read(staffListProvider.notifier).createStaff(
+        fullName: _nameCtrl.text.trim(),
+        email: email,
+        phone: _phoneCtrl.text.trim(),
+        dateOfBirth: dateStr,
+        gender: _selectedGender,
+        avatarUrl: avatarUrl,
+        positionId: _selectedPositionId,
+      );
 
       if (!mounted) return;
       setState(() => _isLoading = false);
 
-      if (success) {
-        Navigator.pop(context);
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(widget.isEditMode
-              ? widget.l10n.updateStaffSuccess
-              : widget.l10n.addStaffSuccess)),
-        );
+      if (error == null) {
+        // Trả email về cho showStaffFormDialog để hiển thị dialog tạo thành công
+        // bằng context của màn hình cha (form đã đóng).
+        Navigator.pop(context, email);
       } else {
+        // Hiển thị lý do cụ thể từ backend (email trùng, gửi mail thất bại, ...).
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(widget.isEditMode
-              ? widget.l10n.updateStaffFailed
-              : widget.l10n.addStaffFailed)),
+          SnackBar(
+            content: Text(error.isNotEmpty ? error : widget.l10n.addStaffFailed),
+          ),
         );
       }
     } catch (e) {
@@ -679,26 +769,13 @@ class _StaffFormState extends State<_StaffForm> {
           ],
         ),
         const SizedBox(height: 16),
-        // Row 3: Giới tính + Mật khẩu (chỉ hiển khi thêm mới)
+        // Row 3: Giới tính + Chức vụ
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(child: _buildGenderField(l10n)),
             const SizedBox(width: 16),
-            if (!widget.isEditMode)
-              Expanded(child: _buildPasswordField(l10n))
-            else
-              const Expanded(child: SizedBox.shrink()),
-          ],
-        ),
-        const SizedBox(height: 16),
-        // Row 4: Chức vụ
-        Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
             Expanded(child: _buildPositionField(l10n)),
-            const SizedBox(width: 16),
-            const Expanded(child: SizedBox.shrink()),
           ],
         ),
       ],
@@ -720,10 +797,6 @@ class _StaffFormState extends State<_StaffForm> {
         _buildGenderField(l10n),
         const SizedBox(height: 12),
         _buildPositionField(l10n),
-        if (!widget.isEditMode) ...[
-          const SizedBox(height: 12),
-          _buildPasswordField(l10n),
-        ],
       ],
     );
   }
@@ -851,31 +924,6 @@ class _StaffFormState extends State<_StaffForm> {
       },
     );
   }
-
-  Widget _buildPasswordField(AppLocalizations l10n) => TextFormField(
-    controller: _passCtrl,
-    obscureText: _obscurePass,
-    textInputAction: TextInputAction.done,
-    onFieldSubmitted: (_) => _submit(),
-    decoration: InputDecoration(
-      labelText: '${l10n.password} *',
-      prefixIcon: const Icon(Icons.lock_outline),
-      border: _inputBorder,
-      suffixIcon: IconButton(
-        icon: Icon(
-          _obscurePass
-              ? Icons.visibility_outlined
-              : Icons.visibility_off_outlined,
-        ),
-        onPressed: () => setState(() => _obscurePass = !_obscurePass),
-      ),
-    ),
-    validator: (v) {
-      if (v == null || v.isEmpty) return l10n.passwordRequired;
-      if (v.length < 6) return l10n.passwordReqLength;
-      return null;
-    },
-  );
 }
 
 /// Bottom Sheet chi tiết nhân viên

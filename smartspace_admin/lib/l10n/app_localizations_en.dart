@@ -1860,6 +1860,8 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get delegationRateLoadFailed => 'Couldn\'t load the configuration';
+
+  @override
   String get connectionStable => 'Stable connection';
 
   @override
@@ -1873,4 +1875,15 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get scrollRight => 'Scroll right';
+
+  @override
+  String get staffCreatedTitle => 'Staff account created';
+
+  @override
+  String get staffCreatedCredentialsSent =>
+      'The login password has been sent to:';
+
+  @override
+  String get staffCreatedCheckInboxHint =>
+      'Ask the staff member to check their inbox (including Spam) and change the password after signing in for the first time.';
 }
