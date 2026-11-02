@@ -1,5 +1,7 @@
 package com.vn.smart_space.dto.response.admin;
 
+import java.time.LocalDate;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,6 +20,8 @@ public class StaffResponse {
     String email;
     String phoneNumber;
     String avatarUrl;
+    LocalDate dateOfBirth;
+    String gender; // "male" | "female" | "other"
     String status; // "active" | "blocked"
     long processingCount;
     String positionId;

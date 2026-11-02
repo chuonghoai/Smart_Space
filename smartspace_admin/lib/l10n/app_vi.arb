@@ -261,6 +261,7 @@
   "updateStaff": "Cập nhật",
   "updateStaffSuccess": "Cập nhật thành công",
   "updateStaffFailed": "Cập nhật thất bại",
+  "staffEmailNotEditable": "Email đăng nhập không thể thay đổi",
   "editInfo": "Chỉnh sửa",
   "staffStatusChart": "Trạng thái nhân viên",
   "workloadChart": "Khối lượng công việc",
@@ -819,7 +820,6 @@
   "delegationRateNote": "Người làm giùm nhận hoa hồng của task cộng thêm bonus này. Thay đổi chỉ áp dụng cho yêu cầu nhờ gửi sau khi lưu.",
   "saveDelegationRateSuccess": "Cập nhật hoa hồng công việc được nhờ thành công!",
   "delegationRateLoadFailed": "Không tải được cấu hình",
-  "delegationRateLoadFailed": "Không tải được cấu hình"
   "connectionStable": "Kết nối ổn định",
   "connectionConnecting": "Đang thiết lập kết nối...",
   "connectionDisconnected": "Mất kết nối. Bấm để thử lại.",
@@ -827,7 +827,7 @@
   "scrollRight": "Cuộn sang phải",
   "staffCreatedTitle": "Đã tạo tài khoản nhân viên",
   "staffCreatedCredentialsSent": "Mật khẩu đăng nhập đã được gửi tới:",
-  "staffCreatedCheckInboxHint": "Nhắc nhân viên kiểm tra hộp thư (kể cả mục Thư rác) và đổi mật khẩu sau khi đăng nhập lần đầu."
+  "staffCreatedCheckInboxHint": "Nhắc nhân viên kiểm tra hộp thư (kể cả mục Thư rác) và đổi mật khẩu sau khi đăng nhập lần đầu.",
   "mapSettings": "Cài đặt bản đồ",
   "mapDensityToggle": "Mật độ phản ánh",
   "mapDensityDescription": "Hiển thị lưới mật độ H3 theo cấp độ báo cáo",

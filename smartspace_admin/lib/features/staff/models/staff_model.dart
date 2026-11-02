@@ -4,6 +4,8 @@ class StaffModel {
   final String email;
   final String? phoneNumber;
   final String? avatarUrl;
+  final DateTime? dateOfBirth;
+  final String? gender; // 'male' | 'female' | 'other'
   final String? status;
   final int processingCount;
   final String? positionId;
@@ -15,6 +17,8 @@ class StaffModel {
     required this.email,
     this.phoneNumber,
     this.avatarUrl,
+    this.dateOfBirth,
+    this.gender,
     this.status,
     this.processingCount = 0,
     this.positionId,
@@ -28,6 +32,8 @@ class StaffModel {
       email: json['email'] as String? ?? '',
       phoneNumber: json['phoneNumber'] as String?,
       avatarUrl: json['avatarUrl'] as String?,
+      dateOfBirth: DateTime.tryParse(json['dateOfBirth']?.toString() ?? ''),
+      gender: json['gender'] as String?,
       status: json['status'] as String?,
       processingCount: (json['processingCount'] as num?)?.toInt() ?? 0,
       positionId: json['positionId'] as String?,

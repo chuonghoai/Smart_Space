@@ -82,7 +82,6 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
   Future<bool> updateStaff({
     required String staffId,
     required String fullName,
-    required String email,
     String? phone,
     String? dateOfBirth,
     String? gender,
@@ -92,7 +91,6 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
     final response = await staffRepository.updateStaff(
       staffId: staffId,
       fullName: fullName,
-      email: email,
       phone: phone,
       dateOfBirth: dateOfBirth,
       gender: gender,
