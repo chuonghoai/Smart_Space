@@ -40,6 +40,11 @@ spring:
           auth: true
           starttls:
             enable: true
+          # Timeout (ms) — mặc định JavaMail chờ vô hạn, làm request treo khi SMTP chậm.
+          # Tổng tối đa ~25s phải < receiveTimeout của request tạo staff ở app admin (30s).
+          connectiontimeout: 5000
+          timeout: 10000
+          writetimeout: 10000
 
 # JWT Config
 jwt:
