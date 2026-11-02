@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:smartspace_admin/features/staff/models/staff_statistics_model.dart';
@@ -34,10 +35,15 @@ class StaffRepository {
     );
   }
 
+  /// Backend gửi email thông tin đăng nhập (SMTP) đồng bộ trước khi trả kết quả,
+  /// nên request này cần chờ lâu hơn mặc định (10s). Giá trị phải lớn hơn tổng
+  /// SMTP timeout của backend (~25s, xem `spring.mail.properties` ở backend) để
+  /// app luôn nhận được kết quả thật thay vì timeout trong khi backend vẫn tạo.
+  static const _createStaffTimeout = Duration(seconds: 30);
+
   Future<ApiResponse> createStaff({
     required String fullName,
     required String email,
-    required String password,
     String? phone,
     String? dateOfBirth,
     String? gender,
@@ -46,10 +52,10 @@ class StaffRepository {
   }) async {
     return apiClient.post(
       '/admin/staffs',
+      options: Options(receiveTimeout: _createStaffTimeout),
       data: {
         'fullName': fullName,
         'email': email,
-        'password': password,
         if (phone != null && phone.isNotEmpty) 'phone': phone,
         if (dateOfBirth != null) 'dateOfBirth': dateOfBirth,
         if (gender != null) 'gender': gender,

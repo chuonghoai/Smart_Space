@@ -50,11 +50,11 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
     return false;
   }
 
-  // Create Staff
-  Future<bool> createStaff({
+  /// Tạo staff — backend tự sinh mật khẩu và gửi qua email.
+  /// Trả về `null` khi thành công, ngược lại là message lỗi từ backend (có thể rỗng).
+  Future<String?> createStaff({
     required String fullName,
     required String email,
-    required String password,
     String? phone,
     String? dateOfBirth,
     String? gender,
@@ -64,7 +64,6 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
     final response = await staffRepository.createStaff(
       fullName: fullName,
       email: email,
-      password: password,
       phone: phone,
       dateOfBirth: dateOfBirth,
       gender: gender,
@@ -74,9 +73,9 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
     if (response.success) {
       ref.invalidateSelf();
       _invalidateStatistics();
-      return true;
+      return null;
     }
-    return false;
+    return response.message;
   }
 
   // Update Staff

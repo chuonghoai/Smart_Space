@@ -111,6 +111,12 @@
     		<artifactId>spring-boot-starter-mail</artifactId>
 		</dependency>
 
+		<!-- Thymeleaf — render HTML email templates (templates/mail/*) -->
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-thymeleaf</artifactId>
+		</dependency>
+
 		<!-- Google API Client -->
 		<dependency>
 			<groupId>com.google.api-client</groupId>

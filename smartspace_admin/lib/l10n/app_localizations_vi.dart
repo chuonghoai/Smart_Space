@@ -1851,6 +1851,8 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get delegationRateLoadFailed => 'Không tải được cấu hình';
+
+  @override
   String get connectionStable => 'Kết nối ổn định';
 
   @override
@@ -1866,6 +1868,15 @@ class AppLocalizationsVi extends AppLocalizations {
   String get scrollRight => 'Cuộn sang phải';
 
   @override
+  String get staffCreatedTitle => 'Đã tạo tài khoản nhân viên';
+
+  @override
+  String get staffCreatedCredentialsSent =>
+      'Mật khẩu đăng nhập đã được gửi tới:';
+
+  @override
+  String get staffCreatedCheckInboxHint =>
+      'Nhắc nhân viên kiểm tra hộp thư (kể cả mục Thư rác) và đổi mật khẩu sau khi đăng nhập lần đầu.';
   String get mapSettings => 'Cài đặt bản đồ';
 
   @override

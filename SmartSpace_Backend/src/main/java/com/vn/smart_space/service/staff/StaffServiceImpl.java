@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.mail.MailException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,12 +43,16 @@ import com.vn.smart_space.repository.ActivityHistoryRepository;
 import com.vn.smart_space.repository.PositionRepository;
 import com.vn.smart_space.repository.ReportRepository;
 import com.vn.smart_space.repository.UserRepository;
+import com.vn.smart_space.service.mail.IMailService;
+import com.vn.smart_space.utils.PasswordGenerator;
 import com.vn.smart_space.utils.TrendBucketHelper;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -60,6 +66,7 @@ public class StaffServiceImpl implements IStaffService {
         ActivityHistoryRepository activityHistoryRepository;
         PositionRepository positionRepository;
         PasswordEncoder passwordEncoder;
+        IMailService mailService;
 
         @Override
         public List<StaffResponse> getStaffs() {
@@ -189,29 +196,24 @@ public class StaffServiceImpl implements IStaffService {
         @Transactional
         public StaffResponse createStaff(CreateStaffRequest request, String adminId) {
 
-                // 1. Validate email chưa tồn tại
-                if (userRepository.existsByEmailAndRole(request.email(), ERole.staff)) {
-                        throw new BadRequestException("Email đã được sử dụng");
+                // 1. Validate email chưa tồn tại (fullName/email đã được @Valid kiểm tra ở
+                // controller)
+                String email = request.email().trim();
+                if (userRepository.existsByEmailAndRole(email, ERole.staff)) {
+                        throw new BadRequestException("auth.email.exists");
                 }
 
-                // 2. Parse dateOfBirth (nullable)
-                LocalDate dob = null;
-                if (request.dateOfBirth() != null && !request.dateOfBirth().isEmpty()) {
-                        dob = LocalDate.parse(request.dateOfBirth());
-                }
+                // 2-3. Parse dateOfBirth & gender (nullable, sai định dạng → 400)
+                LocalDate dob = parseDateOfBirth(request.dateOfBirth());
+                EGender gender = parseGender(request.gender());
 
-                // 3. Parse gender (nullable)
-                EGender gender = null;
-                if (request.gender() != null && !request.gender().isEmpty()) {
-                        gender = EGender.valueOf(request.gender().toLowerCase());
-                }
-
-                // 4. Tạo User — password hash bằng BCrypt
+                // 4. Tự sinh mật khẩu ngẫu nhiên và tạo User — password hash bằng BCrypt
+                String rawPassword = PasswordGenerator.generateRandomPassword();
                 User staff = User.builder()
-                                .fullName(request.fullName())
-                                .email(request.email())
+                                .fullName(request.fullName().trim())
+                                .email(email)
                                 .phone(request.phone())
-                                .password(passwordEncoder.encode(request.password()))
+                                .password(passwordEncoder.encode(rawPassword))
                                 .dateOfBirth(dob)
                                 .gender(gender)
                                 .role(ERole.staff)
@@ -237,7 +239,20 @@ public class StaffServiceImpl implements IStaffService {
                                 .build();
                 activityHistoryRepository.save(activity);
 
-                // 6. Return response
+                // 6. Gửi email thông báo tài khoản và mật khẩu cho nhân viên.
+                try {
+                        mailService.sendStaffCredentialsEmail(
+                                        staff.getEmail(),
+                                        staff.getFullName(),
+                                        rawPassword,
+                                        staff.getPosition() != null ? staff.getPosition().getName() : null,
+                                        staff.getLanguage());
+                } catch (MailException e) {
+                        log.error("Failed to send staff credentials email to {}", staff.getEmail(), e);
+                        throw new BadRequestException("mail.staff.credentials.send_failed");
+                }
+
+                // 7. Return response
                 return toStaffResponse(staff);
         }
 
@@ -257,7 +272,7 @@ public class StaffServiceImpl implements IStaffService {
                 if (request.email() != null && !request.email().isEmpty()
                                 && !request.email().equals(staff.getEmail())) {
                         if (userRepository.existsByEmailAndRole(request.email(), ERole.staff)) {
-                                throw new BadRequestException("Email đã được sử dụng");
+                                throw new BadRequestException("auth.email.exists");
                         }
                         staff.setEmail(request.email());
                 }
@@ -269,11 +284,13 @@ public class StaffServiceImpl implements IStaffService {
                 if (request.phone() != null) {
                         staff.setPhone(request.phone());
                 }
-                if (request.dateOfBirth() != null && !request.dateOfBirth().isEmpty()) {
-                        staff.setDateOfBirth(LocalDate.parse(request.dateOfBirth()));
+                LocalDate dob = parseDateOfBirth(request.dateOfBirth());
+                if (dob != null) {
+                        staff.setDateOfBirth(dob);
                 }
-                if (request.gender() != null && !request.gender().isEmpty()) {
-                        staff.setGender(EGender.valueOf(request.gender().toLowerCase()));
+                EGender gender = parseGender(request.gender());
+                if (gender != null) {
+                        staff.setGender(gender);
                 }
                 if (request.avatarUrl() != null) {
                         staff.setAvatarUrl(request.avatarUrl());
@@ -307,6 +324,33 @@ public class StaffServiceImpl implements IStaffService {
         }
 
         /** Trả về Position hợp lệ (đang active), null nếu chuỗi rỗng. */
+        /** Ngày sinh dạng ISO (yyyy-MM-dd); null/rỗng → null, sai định dạng → 400. */
+        private LocalDate parseDateOfBirth(String value) {
+                if (value == null || value.isBlank()) {
+                        return null;
+                }
+                try {
+                        return LocalDate.parse(value.trim());
+                } catch (DateTimeParseException e) {
+                        throw new BadRequestException("staff.date_of_birth.invalid");
+                }
+        }
+
+        /**
+         * Giới tính theo EGender (không phân biệt hoa thường); null/rỗng → null, sai
+         * giá trị → 400.
+         */
+        private EGender parseGender(String value) {
+                if (value == null || value.isBlank()) {
+                        return null;
+                }
+                try {
+                        return EGender.valueOf(value.trim().toLowerCase());
+                } catch (IllegalArgumentException e) {
+                        throw new BadRequestException("staff.gender.invalid");
+                }
+        }
+
         private Position resolvePosition(String positionId) {
                 if (positionId == null || positionId.trim().isEmpty()) {
                         return null;

@@ -3577,6 +3577,7 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Couldn\'t load the configuration'**
   String get delegationRateLoadFailed;
+
   /// No description provided for @connectionStable.
   ///
   /// In en, this message translates to:
@@ -3607,6 +3608,23 @@ abstract class AppLocalizations {
   /// **'Scroll right'**
   String get scrollRight;
 
+  /// No description provided for @staffCreatedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff account created'**
+  String get staffCreatedTitle;
+
+  /// No description provided for @staffCreatedCredentialsSent.
+  ///
+  /// In en, this message translates to:
+  /// **'The login password has been sent to:'**
+  String get staffCreatedCredentialsSent;
+
+  /// No description provided for @staffCreatedCheckInboxHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask the staff member to check their inbox (including Spam) and change the password after signing in for the first time.'**
+  String get staffCreatedCheckInboxHint;
   /// No description provided for @mapSettings.
   ///
   /// In en, this message translates to:
