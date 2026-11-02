@@ -3,7 +3,8 @@ import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/utils/report_time_format.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 
-/// Bottom sheet hiển thị thông tin report khi tap marker
+/// Bottom sheet hiển thị thông tin report khi tap marker,
+/// có hỗ trợ tap để điều hướng đến màn hình chi tiết phản ánh.
 class ReportInfoSheet extends StatelessWidget {
   final ReportModel report;
   final VoidCallback? onViewDetail;
@@ -20,129 +21,138 @@ class ReportInfoSheet extends StatelessWidget {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
 
-    return Container(
-      decoration: BoxDecoration(
-        color: colorScheme.surface,
+    return Material(
+      color: colorScheme.surface,
+      borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      elevation: 8,
+      child: InkWell(
+        onTap: onViewDetail,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.1),
-            blurRadius: 20,
-            offset: const Offset(0, -4),
-          ),
-        ],
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          // Handle bar
-          Padding(
-            padding: const EdgeInsets.only(top: 12, bottom: 4),
-            child: Container(
-              width: 36,
-              height: 4,
-              decoration: BoxDecoration(
-                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
-                borderRadius: BorderRadius.circular(2),
-              ),
-            ),
-          ),
-
-          // Main content: Thumbnail + Info
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Thumbnail ảnh report
-                _ReportThumbnail(
-                  imageUrl: report.imageUrl,
-                  colorScheme: colorScheme,
+        child: SafeArea(
+          top: false,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Handle bar
+              Padding(
+                padding: const EdgeInsets.only(top: 12, bottom: 4),
+                child: Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: colorScheme.onSurfaceVariant.withValues(alpha: 0.3),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
                 ),
-                const SizedBox(width: 14),
+              ),
 
-                // Info bên phải thumbnail
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Status chip
-                      _StatusChip(
-                        status: report.status,
-                        colorScheme: colorScheme,
-                      ),
-                      const SizedBox(height: 6),
+              // Main content: Thumbnail + Info
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Thumbnail ảnh report
+                    _ReportThumbnail(
+                      imageUrl: report.imageUrl,
+                      colorScheme: colorScheme,
+                    ),
+                    const SizedBox(width: 14),
 
-                      // Title
-                      Text(
-                        report.title,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onSurface,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 4),
-
-                      // Description
-                      Text(
-                        report.description,
-                        style: theme.textTheme.bodySmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                          height: 1.3,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                      const SizedBox(height: 8),
-
-                      // Meta info row: Distance + Time
-                      Row(
+                    // Info bên phải thumbnail
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Distance
-                          if (report.distanceInMeters != null) ...[
-                            Icon(
-                              Icons.near_me_rounded,
-                              size: 14,
-                              color: colorScheme.primary,
-                            ),
-                            const SizedBox(width: 3),
-                            Text(
-                              _formatDistance(report.distanceInMeters!),
-                              style: theme.textTheme.labelSmall?.copyWith(
-                                color: colorScheme.primary,
-                                fontWeight: FontWeight.w600,
+                          // Status chip + Chevron icon (báo hiệu có thể tap)
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              _StatusChip(
+                                status: report.status,
+                                colorScheme: colorScheme,
                               ),
-                            ),
-                            const SizedBox(width: 12),
-                          ],
-                          // Time
-                          Icon(
-                            Icons.access_time_rounded,
-                            size: 14,
-                            color: colorScheme.onSurfaceVariant.withValues(
-                              alpha: 0.7,
-                            ),
+                              Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                size: 14,
+                                color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                              ),
+                            ],
                           ),
-                          const SizedBox(width: 3),
+                          const SizedBox(height: 6),
+
+                          // Title
                           Text(
-                            formatReportTimeAgo(report.createdAt, l10n),
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant.withValues(
-                                alpha: 0.7,
-                              ),
+                            report.title,
+                            style: theme.textTheme.titleSmall?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: colorScheme.onSurface,
                             ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 4),
+
+                          // Description
+                          Text(
+                            report.description,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.onSurfaceVariant,
+                              height: 1.3,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          const SizedBox(height: 8),
+
+                          // Meta info row: Distance + Time
+                          Row(
+                            children: [
+                              // Distance
+                              if (report.distanceInMeters != null) ...[
+                                Icon(
+                                  Icons.near_me_rounded,
+                                  size: 14,
+                                  color: colorScheme.primary,
+                                ),
+                                const SizedBox(width: 3),
+                                Text(
+                                  _formatDistance(report.distanceInMeters!),
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: colorScheme.primary,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                              ],
+                              // Time
+                              Icon(
+                                Icons.access_time_rounded,
+                                size: 14,
+                                color: colorScheme.onSurfaceVariant.withValues(
+                                  alpha: 0.7,
+                                ),
+                              ),
+                              const SizedBox(width: 3),
+                              Text(
+                                formatReportTimeAgo(report.createdAt, l10n),
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant.withValues(
+                                    alpha: 0.7,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ],
                       ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
@@ -153,7 +163,6 @@ class ReportInfoSheet extends StatelessWidget {
     }
     return '${(meters / 1000).toStringAsFixed(1)} km';
   }
-
 }
 
 /// Thumbnail ảnh report với fallback icon

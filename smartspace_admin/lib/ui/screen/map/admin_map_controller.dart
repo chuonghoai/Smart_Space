@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
 import 'package:smartspace_admin/features/map/application/map_providers.dart';
 import 'package:smartspace_admin/features/map/models/map_report_model.dart';
+import 'package:smartspace_admin/features/map/models/report_timeframe.dart';
 
 class AdminMapState {
   final MapReportModel? selectedReport;
@@ -45,12 +46,16 @@ class AdminMapController extends StateNotifier<AdminMapState> {
   AdminMapController(this._ref) : super(const AdminMapState());
 
   /// Gọi khi camera dừng (mobile: map idle, web: moveend);
-  /// chỉ tải sau khi người dùng ngừng kéo/zoom.
-  void onViewportChanged(MapBounds bounds) {
+  /// chỉ tải sau khi người dùng ngừng kéo/zoom hoặc khi [force] = true.
+  void onViewportChanged(MapBounds bounds, {bool force = false}) {
     _viewportDebounce?.cancel();
-    _viewportDebounce = Timer(viewportDebounce, () {
-      _ref.read(mapReportsProvider.notifier).loadForViewport(bounds);
-    });
+    if (force) {
+      _ref.read(mapReportsProvider.notifier).loadForViewport(bounds, force: true);
+    } else {
+      _viewportDebounce = Timer(viewportDebounce, () {
+        _ref.read(mapReportsProvider.notifier).loadForViewport(bounds);
+      });
+    }
   }
 
   /// Tải ngay khung [bounds], bỏ qua debounce và cache — dùng khi mở bản đồ focus vào một report,
@@ -63,6 +68,12 @@ class AdminMapController extends StateNotifier<AdminMapState> {
   void refresh() {
     _viewportDebounce?.cancel();
     _ref.read(mapReportsProvider.notifier).refresh();
+  }
+
+  void setTimeframe(ReportTimeframe timeframe) {
+    _viewportDebounce?.cancel();
+    _ref.read(mapReportsProvider.notifier).setTimeframe(timeframe);
+    _ref.read(adminReportDensityProvider.notifier).setTimeframe(timeframe);
   }
 
   @override

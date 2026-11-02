@@ -6,26 +6,25 @@ import 'package:go_router/go_router.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:mobile_shared/features/map/cluster/cluster_map_layer.dart';
+import 'package:mobile_shared/features/map/models/map_bounds.dart';
 import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:mobile_shared/util/location_service.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/providers/map_reports_provider.dart';
+import 'package:smartspace_client/features/reports/providers/report_density_provider.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/routes/router_path.dart';
+import 'package:smartspace_client/ui/components/density_map_layer.dart';
 import 'package:smartspace_client/ui/components/map_cluster_sheet.dart';
 import 'package:smartspace_client/ui/components/map_controls.dart';
-import 'package:smartspace_client/ui/components/map_filter_bar.dart';
+import 'package:smartspace_client/ui/components/map_density_legend.dart';
+import 'package:smartspace_client/ui/components/map_settings_bottom_sheet.dart';
 import 'package:smartspace_client/ui/components/marker_image_generator.dart';
 import 'package:smartspace_client/ui/components/report_info_sheet.dart';
 import 'package:smartspace_client/ui/mobile/map/map_controller.dart';
 
-/// Mobile Map Screen — report theo khung nhìn, gom cụm (cluster).
-///
-/// Bấm cluster: zoom tới mức cluster tách ra; nếu không tách được nữa
-/// (trùng/sát toạ độ) thì mở danh sách report trong cluster.
-///
-/// Có [focus] (mở từ chi tiết report) → camera mở tại report đó; lần tải đầu xong thì
-/// mở thẻ thông tin của nó, hoặc báo nếu nó không hiện trên bản đồ (vd. bị bộ lọc ẩn).
+/// Mobile Map Screen — report theo khung nhìn, gom cụm (cluster),
+/// và hiển thị bản đồ mật độ phản ánh H3 (50m, scale 1.5x) lưu Redis.
 class MobileMapScreen extends ConsumerStatefulWidget {
   final MapFocusTarget? focus;
 
@@ -38,6 +37,7 @@ class MobileMapScreen extends ConsumerStatefulWidget {
 class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
   MapboxMap? _mapboxMap;
   ClusterMapLayer? _clusterLayer;
+  DensityMapLayer? _densityLayer;
   final MarkerImageGenerator _markerGenerator = MarkerImageGenerator();
 
   ClusterLayerColors? _colors;
@@ -90,6 +90,7 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
 
   void _onMapCreated(MapboxMap mapboxMap) async {
     _mapboxMap = mapboxMap;
+    _densityLayer = DensityMapLayer(map: mapboxMap);
     _clusterLayer = ClusterMapLayer(
       map: mapboxMap,
       imageBuilder: _buildMarkerImage,
@@ -100,7 +101,6 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
     );
 
     // Bắt tap ở mức bản đồ, layer tự query feature gốc từ source
-    // (không phụ thuộc việc layer cluster đã tồn tại lúc đăng ký).
     mapboxMap.addInteraction(
       TapInteraction.onMap(_onMapTap, stopPropagation: false),
     );
@@ -125,10 +125,17 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
     );
   }
 
-  /// Style load xong (kể cả reload) → thêm lại source/layer rồi tải report.
+  /// Style load xong (kể cả reload) → thêm lại source/layer rồi tải dữ liệu mới nhất từ API.
   void _onStyleLoaded(StyleLoadedEventData _) async {
+    final densityGeojson = ref.read(reportDensityProvider).geojsonString;
+    await _densityLayer?.install(geojsonString: densityGeojson);
+    if (!ref.read(reportDensityProvider).isEnabled) {
+      await _densityLayer?.setVisible(false);
+    }
+
     await _clusterLayer?.install(_visibleReports.map(_toMarker).toList());
-    _emitViewport();
+    // Luôn ép gọi API lấy dữ liệu mới nhất mỗi khi mở giao diện bản đồ
+    _emitViewport(force: true);
   }
 
   void _onMapIdle(MapIdleEventData _) {
@@ -138,13 +145,16 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
     _clusterLayer?.loadVisibleImages(size.width, size.height);
   }
 
-  Future<void> _emitViewport() async {
+  Future<void> _emitViewport({bool force = false}) async {
     final map = _mapboxMap;
     if (map == null || !mounted) return;
     try {
       final bounds = await ClusterMapLayer.readViewport(map);
       if (!mounted || bounds == null) return;
-      ref.read(mapControllerProvider.notifier).onViewportChanged(bounds);
+      ref.read(mapControllerProvider.notifier).onViewportChanged(bounds, force: force);
+
+      final camera = await map.getCameraState();
+      ref.read(reportDensityProvider.notifier).loadForViewport(bounds, camera.zoom, force: force);
     } catch (e) {
       debugPrint('[MapScreen] Failed to read viewport — $e');
     }
@@ -165,7 +175,6 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
     if (focus == null || _didHandleFocus) return;
     _didHandleFocus = true;
 
-    // Mở sheet sau frame hiện tại: lời gọi đến từ listener của provider
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       final report = _visibleReports.where((r) => r.id == focus.reportId).firstOrNull;
@@ -181,8 +190,6 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
     });
   }
 
-  /// Điểm lẻ → thẻ thông tin; cluster tách được → layer đã zoom vào;
-  /// cluster không tách được nữa → danh sách report trong cluster.
   Future<void> _onMapTap(MapContentGestureContext gestureContext) async {
     final layer = _clusterLayer;
     if (layer == null || !mounted) return;
@@ -242,7 +249,6 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
     );
   }
 
-  /// Bật location puck (chấm vị trí người dùng) trên bản đồ
   void _enableLocationPuck() async {
     if (_mapboxMap == null) return;
     final info = AppSemanticColors.of(context).info;
@@ -276,14 +282,54 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
     );
   }
 
+  void _showMapSettings() {
+    final isEnabled = ref.read(reportDensityProvider).isEnabled;
+    final currentFilter = ref.read(mapReportsProvider).filter;
+    final currentTimeframe = ref.read(mapReportsProvider).timeframe;
+
+    MapSettingsBottomSheet.show(
+      context,
+      isDensityEnabled: isEnabled,
+      currentFilter: currentFilter,
+      currentTimeframe: currentTimeframe,
+      onDensityToggle: (val) async {
+        final map = _mapboxMap;
+        MapBounds? bounds;
+        double? zoom;
+        if (map != null) {
+          bounds = await ClusterMapLayer.readViewport(map);
+          final camera = await map.getCameraState();
+          zoom = camera.zoom;
+        }
+        ref.read(reportDensityProvider.notifier).toggleEnabled(bounds: bounds, zoom: zoom);
+      },
+      onFilterSelected: (filter) {
+        ref.read(mapControllerProvider.notifier).setFilter(filter);
+      },
+      onTimeframeSelected: (timeframe) {
+        ref.read(mapControllerProvider.notifier).setTimeframe(timeframe);
+      },
+    );
+  }
+
+  void _onBackPressed() {
+    if (context.canPop()) {
+      context.pop();
+    } else {
+      context.go(RouterPath.home);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
     final mapState = ref.watch(mapControllerProvider);
     final reportsState = ref.watch(mapReportsProvider);
+    final densityState = ref.watch(reportDensityProvider);
 
-    // Dữ liệu hoặc filter đổi → cập nhật source của bản đồ.
-    // Mỗi lần tải thành công trả list mới → listener này cũng đánh dấu "đã có dữ liệu" cho focus.
+    // Sync reports with Mapbox cluster layer
     ref.listen(mapReportsProvider.select((s) => s.reports), (_, _) {
       _syncReports();
       _handleFocusOnce();
@@ -307,6 +353,22 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
         );
     });
 
+    // Listen to Density GeoJSON updates
+    ref.listen(reportDensityProvider.select((s) => s.geojsonString), (_, geojson) {
+      if (ref.read(reportDensityProvider).isEnabled) {
+        _densityLayer?.updateData(geojson);
+        _densityLayer?.setVisible(true);
+      }
+    });
+
+    // Listen to Density Toggle on/off
+    ref.listen(reportDensityProvider.select((s) => s.isEnabled), (_, isEnabled) {
+      _densityLayer?.setVisible(isEnabled);
+      if (isEnabled) {
+        _emitViewport(force: true);
+      }
+    });
+
     final topInset = MediaQuery.of(context).padding.top;
 
     return Scaffold(
@@ -319,7 +381,7 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
             styleUri: MapboxStyles.STANDARD,
           ),
 
-          if (reportsState.isLoading)
+          if (reportsState.isLoading || (densityState.isEnabled && densityState.isLoading))
             Positioned(
               top: topInset,
               left: 0,
@@ -327,29 +389,40 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
               child: const LinearProgressIndicator(minHeight: 2),
             ),
 
-          // Chừa cột nút điều khiển bên phải (12 lề + 42 nút + 8 khoảng cách)
+          // Back Button — Top Left (chống cụt luồng điều hướng, góc trên thoáng đãng)
           Positioned(
-            top: topInset + 8,
-            left: 0,
-            right: 62,
-            child: MapFilterBar(
-              selected: reportsState.filter,
-              onSelected: (filter) =>
-                  ref.read(mapControllerProvider.notifier).setFilter(filter),
+            top: topInset + 12,
+            left: 12,
+            child: MapControlButton(
+              icon: Icons.arrow_back,
+              tooltip: l10n.mapBack,
+              onPressed: _onBackPressed,
+              colorScheme: colorScheme,
             ),
           ),
 
-          if (reportsState.truncated)
+          if (reportsState.truncated || (densityState.isEnabled && densityState.truncated))
             Positioned(
-              top: topInset + 64,
-              left: 72,
-              right: 72,
+              top: topInset + 16,
+              left: 64,
+              right: 64,
               child: Center(child: _ZoomInHint(label: l10n.mapZoomInForMore)),
             ),
 
+          // Density Legend — Bottom Left (chỉ hiện khi tính năng bật)
+          if (densityState.isEnabled)
+            Positioned(
+              bottom: MediaQuery.of(context).padding.bottom + 24,
+              left: 12,
+              child: const MapDensityLegend(),
+            ),
+
+          // Map Controls — Right Column (Settings, My Location, Filters, Refresh)
           MapControls(
             showDangerous: mapState.showDangerous,
             showNormal: mapState.showNormal,
+            isDensityActive: densityState.isEnabled,
+            onSettingsPressed: _showMapSettings,
             onMyLocationPressed: _flyToUserLocation,
             onFilterChanged: ({bool? showDangerous, bool? showNormal}) {
               if (showDangerous != null) {
@@ -361,6 +434,7 @@ class _MobileMapScreenState extends ConsumerState<MobileMapScreen> {
             },
             onRefreshPressed: () {
               ref.read(mapControllerProvider.notifier).refresh();
+              _emitViewport(force: true);
             },
           ),
         ],

@@ -29,9 +29,14 @@ public interface IReportService {
         PageResponse<ReportDetailResponse> getFeed(String status, int page, int size,
                         Double userLat, Double userLong);
 
-        // Client Map — reports inside a viewport (bounding box), narrowed by filter (see EMapReportFilter)
+        // Client Map — reports inside a viewport (bounding box), narrowed by filter & timeframe
         MapReportsResponse getReportsInBounds(String viewerId, Double minLat, Double maxLat, Double minLng,
-                        Double maxLng, String filter, int limit);
+                        Double maxLng, String filter, String timeframe, int limit);
+
+        default MapReportsResponse getReportsInBounds(String viewerId, Double minLat, Double maxLat, Double minLng,
+                        Double maxLng, String filter, int limit) {
+                return getReportsInBounds(viewerId, minLat, maxLat, minLng, maxLng, filter, null, limit);
+        }
 
         List<RecentReportResponse> getAdminRecentReports(String tab, int limit);
 
@@ -54,8 +59,14 @@ public interface IReportService {
         ReportDetailResponse updateReportStatus(String reportId, String newStatus, String adminId);
 
         // Admin Map — lightweight list with lat/lng, optional viewport (all bounds null = whole map)
-        AdminMapReportsResponse getAdminMapReports(String status, String severity, String assigneeId,
+        default AdminMapReportsResponse getAdminMapReports(String status, String severity, String assigneeId,
                         String from, String to, Double minLat, Double maxLat, Double minLng, Double maxLng,
+                        int limit) {
+                return getAdminMapReports(status, severity, assigneeId, from, to, null, minLat, maxLat, minLng, maxLng, limit);
+        }
+
+        AdminMapReportsResponse getAdminMapReports(String status, String severity, String assigneeId,
+                        String from, String to, String timeframe, Double minLat, Double maxLat, Double minLng, Double maxLng,
                         int limit);
 
         List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, int page, int limit);
@@ -76,4 +87,3 @@ public interface IReportService {
 
         ReportDetailResponse cancelReport(String reportId, String userId);
 }
-

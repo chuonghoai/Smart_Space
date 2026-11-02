@@ -1,14 +1,18 @@
 import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart';
 import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:mobile_shared/features/map/cluster/cluster_map_layer.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
 import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:mobile_shared/util/location_service.dart';
+import 'package:smartspace_admin/features/map/application/map_providers.dart';
 import 'package:smartspace_admin/features/map/models/map_report_model.dart';
 import 'package:smartspace_admin/ui/shared/report_status/report_status_style.dart';
+import 'platform_map_controller.dart';
+import 'widgets/density_map_layer.dart';
 import 'widgets/map_cluster_colors.dart';
 import 'widgets/marker_image_generator.dart';
 
@@ -21,6 +25,7 @@ Widget buildPlatformMap({
   required void Function(MapBounds bounds) onViewportChanged,
   VoidCallback? onMapTap,
   MapFocusTarget? initialFocus,
+  void Function(PlatformMapController controller)? onMapControllerCreated,
 }) {
   return _MobileMapView(
     reports: reports,
@@ -29,18 +34,18 @@ Widget buildPlatformMap({
     onViewportChanged: onViewportChanged,
     onMapTap: onMapTap,
     initialFocus: initialFocus,
+    onMapControllerCreated: onMapControllerCreated,
   );
 }
 
-class _MobileMapView extends StatefulWidget {
+class _MobileMapView extends ConsumerStatefulWidget {
   final List<MapReportModel> reports;
   final void Function(MapReportModel report) onMarkerTap;
   final void Function(List<MapReportModel> reports) onClusterTap;
   final void Function(MapBounds bounds) onViewportChanged;
   final VoidCallback? onMapTap;
-
-  /// Có giá trị → camera mở tại report này thay vì trung tâm mặc định.
   final MapFocusTarget? initialFocus;
+  final void Function(PlatformMapController controller)? onMapControllerCreated;
 
   const _MobileMapView({
     required this.reports,
@@ -49,15 +54,18 @@ class _MobileMapView extends StatefulWidget {
     required this.onViewportChanged,
     this.onMapTap,
     this.initialFocus,
+    this.onMapControllerCreated,
   });
 
   @override
-  State<_MobileMapView> createState() => _MobileMapViewState();
+  ConsumerState<_MobileMapView> createState() => _MobileMapViewState();
 }
 
-class _MobileMapViewState extends State<_MobileMapView> {
+class _MobileMapViewState extends ConsumerState<_MobileMapView>
+    implements PlatformMapController {
   MapboxMap? _mapboxMap;
   ClusterMapLayer? _clusterLayer;
+  DensityMapLayer? _densityLayer;
   final MarkerImageGenerator _markerGenerator = MarkerImageGenerator();
 
   ClusterLayerColors? _colors;
@@ -67,6 +75,12 @@ class _MobileMapViewState extends State<_MobileMapView> {
   Map<String, Color> _statusColors = const {};
 
   static final _defaultCenter = Point(coordinates: Position(106.6297, 10.8231));
+
+  @override
+  void initState() {
+    super.initState();
+    widget.onMapControllerCreated?.call(this);
+  }
 
   @override
   void didChangeDependencies() {
@@ -94,10 +108,10 @@ class _MobileMapViewState extends State<_MobileMapView> {
   @override
   void dispose() {
     _markerGenerator.clearCache();
+    _densityLayer?.remove();
     super.dispose();
   }
 
-  /// Report chờ xử lý (pending) là việc cần làm → nổi bật cả ở marker lẫn cluster.
   List<ClusterMarker> _markers() => [
         for (final report in widget.reports)
           ClusterMarker(
@@ -122,6 +136,7 @@ class _MobileMapViewState extends State<_MobileMapView> {
 
   void _onMapCreated(MapboxMap mapboxMap) async {
     _mapboxMap = mapboxMap;
+    _densityLayer = DensityMapLayer(map: mapboxMap);
     _clusterLayer = ClusterMapLayer(
       map: mapboxMap,
       imageBuilder: _buildMarkerImage,
@@ -131,7 +146,6 @@ class _MobileMapViewState extends State<_MobileMapView> {
       imageHeight: MarkerImageGenerator.markerHeight,
     );
 
-    // Bắt tap ở mức bản đồ, layer tự query feature gốc từ source
     mapboxMap.addInteraction(TapInteraction.onMap(_onMapTap, stopPropagation: false));
 
     final focus = widget.initialFocus;
@@ -155,8 +169,14 @@ class _MobileMapViewState extends State<_MobileMapView> {
 
   /// Style load xong (kể cả reload) → thêm lại source/layer rồi báo khung nhìn.
   void _onStyleLoaded(StyleLoadedEventData _) async {
+    final densityGeojson = ref.read(adminReportDensityProvider).geojsonString;
+    await _densityLayer?.install(geojsonString: densityGeojson);
+    if (!ref.read(adminReportDensityProvider).isEnabled) {
+      await _densityLayer?.setVisible(false);
+    }
+
     await _clusterLayer?.install(_markers());
-    _emitViewport();
+    _emitViewport(force: true);
   }
 
   void _onMapIdle(MapIdleEventData _) {
@@ -166,12 +186,20 @@ class _MobileMapViewState extends State<_MobileMapView> {
     _clusterLayer?.loadVisibleImages(size.width, size.height);
   }
 
-  Future<void> _emitViewport() async {
+  Future<void> _emitViewport({bool force = false}) async {
     final map = _mapboxMap;
     if (map == null || !mounted) return;
     try {
       final bounds = await ClusterMapLayer.readViewport(map);
-      if (mounted && bounds != null) widget.onViewportChanged(bounds);
+      if (mounted && bounds != null) {
+        widget.onViewportChanged(bounds);
+        final camera = await map.getCameraState();
+        ref.read(adminReportDensityProvider.notifier).loadForViewport(
+              bounds,
+              camera.zoom,
+              force: force,
+            );
+      }
     } catch (e) {
       debugPrint('[AdminMap] Failed to read viewport — $e');
     }
@@ -218,38 +246,56 @@ class _MobileMapViewState extends State<_MobileMapView> {
   }
 
   @override
+  Future<void> flyToUserLocation() async {
+    final pos = await locationService.getCurrentPosition();
+    if (pos == null || _mapboxMap == null) return;
+    _enableLocationPuck();
+    await _mapboxMap!.flyTo(
+      CameraOptions(
+        center: Point(coordinates: Position(pos.longitude, pos.latitude)),
+        zoom: 15.0,
+        pitch: 0.0,
+      ),
+      MapAnimationOptions(duration: 1500),
+    );
+  }
+
+  @override
+  Future<void> refreshViewport() async {
+    await _emitViewport(force: true);
+    _clusterLayer?.setMarkers(_markers());
+    if (ref.read(adminReportDensityProvider).isEnabled) {
+      final geojson = ref.read(adminReportDensityProvider).geojsonString;
+      if (geojson != null) {
+        await _densityLayer?.updateData(geojson);
+        await _densityLayer?.setVisible(true);
+      }
+    }
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        MapWidget(
-          onMapCreated: _onMapCreated,
-          onStyleLoadedListener: _onStyleLoaded,
-          onMapIdleListener: _onMapIdle,
-          styleUri: MapboxStyles.STANDARD,
-        ),
-        // My location button
-        Positioned(
-          top: 12,
-          right: 12,
-          child: FloatingActionButton.small(
-            heroTag: 'map_location',
-            onPressed: () async {
-              final pos = await locationService.getCurrentPosition();
-              if (pos == null || _mapboxMap == null) return;
-              _enableLocationPuck();
-              await _mapboxMap!.flyTo(
-                CameraOptions(
-                  center: Point(coordinates: Position(pos.longitude, pos.latitude)),
-                  zoom: 15.0,
-                  pitch: 0.0,
-                ),
-                MapAnimationOptions(duration: 1500),
-              );
-            },
-            child: const Icon(Icons.my_location),
-          ),
-        ),
-      ],
+    // Listen to Density GeoJSON updates
+    ref.listen(adminReportDensityProvider.select((s) => s.geojsonString), (_, geojson) {
+      if (ref.read(adminReportDensityProvider).isEnabled) {
+        _densityLayer?.updateData(geojson);
+        _densityLayer?.setVisible(true);
+      }
+    });
+
+    // Listen to Density Toggle on/off
+    ref.listen(adminReportDensityProvider.select((s) => s.isEnabled), (_, isEnabled) {
+      _densityLayer?.setVisible(isEnabled);
+      if (isEnabled) {
+        _emitViewport(force: true);
+      }
+    });
+
+    return MapWidget(
+      onMapCreated: _onMapCreated,
+      onStyleLoadedListener: _onStyleLoaded,
+      onMapIdleListener: _onMapIdle,
+      styleUri: MapboxStyles.STANDARD,
     );
   }
 }

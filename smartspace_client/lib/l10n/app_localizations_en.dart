@@ -968,4 +968,50 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get genericError => 'An error occurred, please try again later';
+
+  @override
+  String get mapSettings => 'Map Settings';
+
+  @override
+  String get mapDensityToggle => 'Show report density';
+
+  @override
+  String get mapDensityDescription =>
+      'Display high-density report areas grouped by color (50m)';
+
+  @override
+  String get densityLegendTitle => 'Report Density';
+
+  @override
+  String get densityLow => '1–2 reports (Low)';
+
+  @override
+  String get densityMedium => '3–5 reports (Medium)';
+
+  @override
+  String get densityHigh => 'Over 5 reports (High)';
+
+  @override
+  String get mapBack => 'Back';
+
+  @override
+  String get filterTimeframe => 'Timeframe';
+
+  @override
+  String get timeframeAll => 'All time';
+
+  @override
+  String get timeframe1Month => '1 month';
+
+  @override
+  String get timeframe3Months => '3 months';
+
+  @override
+  String get timeframe6Months => '6 months';
+
+  @override
+  String get timeframe9Months => '9 months';
+
+  @override
+  String get timeframe12Months => '12 months';
 }

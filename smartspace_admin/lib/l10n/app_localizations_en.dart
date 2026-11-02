@@ -1886,4 +1886,56 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get staffCreatedCheckInboxHint =>
       'Ask the staff member to check their inbox (including Spam) and change the password after signing in for the first time.';
+  String get mapSettings => 'Map Settings';
+
+  @override
+  String get mapDensityToggle => 'Report Density';
+
+  @override
+  String get mapDensityDescription => 'Show H3 density grid by report level';
+
+  @override
+  String get densityLegendTitle => 'Report Density';
+
+  @override
+  String get densityLow => '1–2 reports (Low)';
+
+  @override
+  String get densityMedium => '3–5 reports (Medium)';
+
+  @override
+  String get densityHigh => 'Over 5 reports (High)';
+
+  @override
+  String get filterTimeframe => 'Timeframe';
+
+  @override
+  String get timeframeAll => 'All';
+
+  @override
+  String get timeframe1Month => '1 month';
+
+  @override
+  String get timeframe3Months => '3 months';
+
+  @override
+  String get timeframe6Months => '6 months';
+
+  @override
+  String get timeframe9Months => '9 months';
+
+  @override
+  String get timeframe12Months => '12 months';
+
+  @override
+  String get filterReports => 'Filter Reports';
+
+  @override
+  String get myLocation => 'My Location';
+
+  @override
+  String get locationPermissionDenied => 'Location permission denied';
+
+  @override
+  String get locationServiceDisabled => 'Location services disabled';
 }

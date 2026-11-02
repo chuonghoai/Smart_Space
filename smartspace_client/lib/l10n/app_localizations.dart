@@ -1909,6 +1909,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'An error occurred, please try again later'**
   String get genericError;
+
+  /// No description provided for @mapSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Map Settings'**
+  String get mapSettings;
+
+  /// No description provided for @mapDensityToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Show report density'**
+  String get mapDensityToggle;
+
+  /// No description provided for @mapDensityDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Display high-density report areas grouped by color (50m)'**
+  String get mapDensityDescription;
+
+  /// No description provided for @densityLegendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Density'**
+  String get densityLegendTitle;
+
+  /// No description provided for @densityLow.
+  ///
+  /// In en, this message translates to:
+  /// **'1–2 reports (Low)'**
+  String get densityLow;
+
+  /// No description provided for @densityMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'3–5 reports (Medium)'**
+  String get densityMedium;
+
+  /// No description provided for @densityHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Over 5 reports (High)'**
+  String get densityHigh;
+
+  /// No description provided for @mapBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Back'**
+  String get mapBack;
+
+  /// No description provided for @filterTimeframe.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeframe'**
+  String get filterTimeframe;
+
+  /// No description provided for @timeframeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All time'**
+  String get timeframeAll;
+
+  /// No description provided for @timeframe1Month.
+  ///
+  /// In en, this message translates to:
+  /// **'1 month'**
+  String get timeframe1Month;
+
+  /// No description provided for @timeframe3Months.
+  ///
+  /// In en, this message translates to:
+  /// **'3 months'**
+  String get timeframe3Months;
+
+  /// No description provided for @timeframe6Months.
+  ///
+  /// In en, this message translates to:
+  /// **'6 months'**
+  String get timeframe6Months;
+
+  /// No description provided for @timeframe9Months.
+  ///
+  /// In en, this message translates to:
+  /// **'9 months'**
+  String get timeframe9Months;
+
+  /// No description provided for @timeframe12Months.
+  ///
+  /// In en, this message translates to:
+  /// **'12 months'**
+  String get timeframe12Months;
 }
 
 class _AppLocalizationsDelegate

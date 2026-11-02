@@ -54,130 +54,134 @@ class MapReportSheet extends StatelessWidget {
             ),
           ),
 
-          // Main content: Thumbnail + Info
-          Padding(
-            padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Thumbnail
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(14),
-                  child: SizedBox(
-                    width: 100,
-                    height: 100,
-                    child: AppNetworkImage(
-                      url: report.imageUrl,
+          // Main content: Thumbnail + Info (clickable to view detail)
+          InkWell(
+            onTap: onViewDetail,
+            borderRadius: BorderRadius.circular(16),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(16, 8, 16, 16),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  // Thumbnail
+                  ClipRRect(
+                    borderRadius: BorderRadius.circular(14),
+                    child: SizedBox(
                       width: 100,
                       height: 100,
-                      errorWidget: Container(
+                      child: AppNetworkImage(
+                        url: report.imageUrl,
                         width: 100,
                         height: 100,
-                        color: cs.surfaceContainerHighest,
-                        child: Icon(
-                          Icons.photo_camera_outlined,
-                          size: 32,
-                          color: cs.onSurfaceVariant.withValues(alpha: 0.4),
+                        errorWidget: Container(
+                          width: 100,
+                          height: 100,
+                          color: cs.surfaceContainerHighest,
+                          child: Icon(
+                            Icons.photo_camera_outlined,
+                            size: 32,
+                            color: cs.onSurfaceVariant.withValues(alpha: 0.4),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 14),
+                  const SizedBox(width: 14),
 
-                // Info
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Status chip
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 8,
-                          vertical: 3,
-                        ),
-                        decoration: BoxDecoration(
-                          color: statusColor.withValues(alpha: 0.12),
-                          borderRadius: BorderRadius.circular(6),
-                        ),
-                        child: Text(
-                          _statusLabel(l10n, report.status),
-                          style: TextStyle(
-                            color: statusColor,
-                            fontSize: 11,
-                            fontWeight: FontWeight.w600,
+                  // Info
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // Status chip
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 3,
+                          ),
+                          decoration: BoxDecoration(
+                            color: statusColor.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            _statusLabel(l10n, report.status),
+                            style: TextStyle(
+                              color: statusColor,
+                              fontSize: 11,
+                              fontWeight: FontWeight.w600,
+                            ),
                           ),
                         ),
-                      ),
-                      const SizedBox(height: 6),
+                        const SizedBox(height: 6),
 
-                      // Title
-                      Text(
-                        report.title,
-                        style: theme.textTheme.titleSmall?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: cs.onSurface,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-
-                      // Address
-                      if (report.address != null &&
-                          report.address!.isNotEmpty) ...[
-                        const SizedBox(height: 4),
+                        // Title
                         Text(
-                          report.address!,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: cs.onSurfaceVariant,
-                            height: 1.3,
+                          report.title,
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            color: cs.onSurface,
                           ),
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
                         ),
-                      ],
-                      const SizedBox(height: 8),
 
-                      // Meta info row: Severity + Time
-                      Row(
-                        children: [
-                          // Severity
-                          if (report.severity != null) ...[
+                        // Address
+                        if (report.address != null &&
+                            report.address!.isNotEmpty) ...[
+                          const SizedBox(height: 4),
+                          Text(
+                            report.address!,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: cs.onSurfaceVariant,
+                              height: 1.3,
+                            ),
+                            maxLines: 2,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ],
+                        const SizedBox(height: 8),
+
+                        // Meta info row: Severity + Time
+                        Row(
+                          children: [
+                            // Severity
+                            if (report.severity != null) ...[
+                              Icon(
+                                Icons.warning_amber_rounded,
+                                size: 14,
+                                color: cs.primary,
+                              ),
+                              const SizedBox(width: 3),
+                              Text(
+                                report.severity!.toUpperCase(),
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: cs.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                            ],
+                            // Time
                             Icon(
-                              Icons.warning_amber_rounded,
+                              Icons.access_time_rounded,
                               size: 14,
-                              color: cs.primary,
+                              color: cs.onSurfaceVariant.withValues(alpha: 0.7),
                             ),
                             const SizedBox(width: 3),
                             Text(
-                              report.severity!.toUpperCase(),
+                              _formatTime(report.createdAt, l10n),
                               style: theme.textTheme.labelSmall?.copyWith(
-                                color: cs.primary,
-                                fontWeight: FontWeight.w600,
+                                color:
+                                    cs.onSurfaceVariant.withValues(alpha: 0.7),
                               ),
                             ),
-                            const SizedBox(width: 12),
                           ],
-                          // Time
-                          Icon(
-                            Icons.access_time_rounded,
-                            size: 14,
-                            color: cs.onSurfaceVariant.withValues(alpha: 0.7),
-                          ),
-                          const SizedBox(width: 3),
-                          Text(
-                            _formatTime(report.createdAt, l10n),
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color:
-                                  cs.onSurfaceVariant.withValues(alpha: 0.7),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
+                        ),
+                      ],
+                    ),
                   ),
-                ),
-              ],
+                ],
+              ),
             ),
           ),
 
