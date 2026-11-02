@@ -1520,6 +1520,12 @@ abstract class AppLocalizations {
   /// **'Failed to update staff'**
   String get updateStaffFailed;
 
+  /// No description provided for @staffEmailNotEditable.
+  ///
+  /// In en, this message translates to:
+  /// **'Login email cannot be changed'**
+  String get staffEmailNotEditable;
+
   /// No description provided for @editInfo.
   ///
   /// In en, this message translates to:
@@ -3625,6 +3631,7 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Ask the staff member to check their inbox (including Spam) and change the password after signing in for the first time.'**
   String get staffCreatedCheckInboxHint;
+
   /// No description provided for @mapSettings.
   ///
   /// In en, this message translates to:

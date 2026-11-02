@@ -268,16 +268,7 @@ public class StaffServiceImpl implements IStaffService {
                         throw new BadRequestException("Người dùng này không phải nhân viên");
                 }
 
-                // 2. Nếu email thay đổi → validate không trùng
-                if (request.email() != null && !request.email().isEmpty()
-                                && !request.email().equals(staff.getEmail())) {
-                        if (userRepository.existsByEmailAndRole(request.email(), ERole.staff)) {
-                                throw new BadRequestException("auth.email.exists");
-                        }
-                        staff.setEmail(request.email());
-                }
-
-                // 3. Cập nhật các trường
+                // 2. Cập nhật hồ sơ — email & mật khẩu là thông tin đăng nhập, admin không được sửa
                 if (request.fullName() != null && !request.fullName().isEmpty()) {
                         staff.setFullName(request.fullName());
                 }
@@ -371,6 +362,8 @@ public class StaffServiceImpl implements IStaffService {
                                 .email(s.getEmail())
                                 .phoneNumber(s.getPhone())
                                 .avatarUrl(s.getAvatarUrl())
+                                .dateOfBirth(s.getDateOfBirth())
+                                .gender(s.getGender() != null ? s.getGender().name() : null)
                                 .status(s.getStatus() != null ? s.getStatus().name() : null)
                                 .processingCount(0)
                                 .positionId(position != null ? position.getId() : null)

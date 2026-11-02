@@ -398,6 +398,8 @@ class _StaffForm extends StatefulWidget {
 }
 
 class _StaffFormState extends State<_StaffForm> {
+  static const _genderValues = ['male', 'female', 'other'];
+
   final _formKey = GlobalKey<FormState>();
   final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
@@ -422,6 +424,9 @@ class _StaffFormState extends State<_StaffForm> {
       _nameCtrl.text = staff.fullName;
       _emailCtrl.text = staff.email;
       _phoneCtrl.text = staff.phoneNumber ?? '';
+      _selectedDate = staff.dateOfBirth;
+      // Chỉ nhận giá trị dropdown hỗ trợ, tránh assert khi backend trả giá trị lạ
+      _selectedGender = _genderValues.contains(staff.gender) ? staff.gender : null;
       _existingAvatarUrl = staff.avatarUrl;
       _selectedPositionId = staff.positionId;
     }
@@ -506,7 +511,6 @@ class _StaffFormState extends State<_StaffForm> {
             await widget.ref.read(staffListProvider.notifier).updateStaff(
           staffId: widget.editingStaff!.id,
           fullName: _nameCtrl.text.trim(),
-          email: _emailCtrl.text.trim(),
           phone: _phoneCtrl.text.trim(),
           dateOfBirth: dateStr,
           gender: _selectedGender,
@@ -813,21 +817,40 @@ class _StaffFormState extends State<_StaffForm> {
         (v == null || v.trim().isEmpty) ? l10n.fullnameRequired : null,
   );
 
-  Widget _buildEmailField(AppLocalizations l10n) => TextFormField(
-    controller: _emailCtrl,
-    keyboardType: TextInputType.emailAddress,
-    textInputAction: TextInputAction.next,
-    decoration: InputDecoration(
-      labelText: '${l10n.email} *',
-      prefixIcon: const Icon(Icons.email_outlined),
-      border: _inputBorder,
-    ),
-    validator: (v) {
-      if (v == null || v.isEmpty) return l10n.emailRequired;
-      if (!v.contains('@')) return l10n.invalidEmail;
-      return null;
-    },
-  );
+  /// Email là thông tin đăng nhập: chỉ nhập khi tạo mới, chế độ sửa chỉ hiển thị.
+  Widget _buildEmailField(AppLocalizations l10n) {
+    if (widget.isEditMode) {
+      final colorScheme = Theme.of(context).colorScheme;
+      return TextFormField(
+        controller: _emailCtrl,
+        readOnly: true,
+        canRequestFocus: false,
+        style: TextStyle(color: colorScheme.onSurfaceVariant),
+        decoration: InputDecoration(
+          labelText: l10n.email,
+          prefixIcon: const Icon(Icons.email_outlined),
+          suffixIcon: Icon(Icons.lock_outline, color: colorScheme.onSurfaceVariant),
+          helperText: l10n.staffEmailNotEditable,
+          border: _inputBorder,
+        ),
+      );
+    }
+    return TextFormField(
+      controller: _emailCtrl,
+      keyboardType: TextInputType.emailAddress,
+      textInputAction: TextInputAction.next,
+      decoration: InputDecoration(
+        labelText: '${l10n.email} *',
+        prefixIcon: const Icon(Icons.email_outlined),
+        border: _inputBorder,
+      ),
+      validator: (v) {
+        if (v == null || v.isEmpty) return l10n.emailRequired;
+        if (!v.contains('@')) return l10n.invalidEmail;
+        return null;
+      },
+    );
+  }
 
   Widget _buildPhoneField(AppLocalizations l10n) => TextFormField(
     controller: _phoneCtrl,
@@ -859,7 +882,7 @@ class _StaffFormState extends State<_StaffForm> {
 
   Widget _buildGenderField(AppLocalizations l10n) =>
       DropdownButtonFormField<String>(
-        value: _selectedGender,
+        initialValue: _selectedGender,
         isExpanded: true,
         decoration: InputDecoration(
           labelText: l10n.gender,

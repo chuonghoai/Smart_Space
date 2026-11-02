@@ -261,6 +261,7 @@
   "updateStaff": "Update",
   "updateStaffSuccess": "Staff updated successfully",
   "updateStaffFailed": "Failed to update staff",
+  "staffEmailNotEditable": "Login email cannot be changed",
   "editInfo": "Edit",
   "staffStatusChart": "Staff Status",
   "workloadChart": "Workload Distribution",
@@ -819,7 +820,6 @@
   "delegationRateNote": "The helper receives the task commission plus this bonus. Changes only apply to delegation requests sent after saving.",
   "saveDelegationRateSuccess": "Delegated task commission rates updated successfully!",
   "delegationRateLoadFailed": "Couldn't load the configuration",
-  "delegationRateLoadFailed": "Couldn't load the configuration"
   "connectionStable": "Stable connection",
   "connectionConnecting": "Connecting services...",
   "connectionDisconnected": "Connection lost. Click to reconnect.",
@@ -827,7 +827,7 @@
   "scrollRight": "Scroll right",
   "staffCreatedTitle": "Staff account created",
   "staffCreatedCredentialsSent": "The login password has been sent to:",
-  "staffCreatedCheckInboxHint": "Ask the staff member to check their inbox (including Spam) and change the password after signing in for the first time."
+  "staffCreatedCheckInboxHint": "Ask the staff member to check their inbox (including Spam) and change the password after signing in for the first time.",
   "mapSettings": "Map Settings",
   "mapDensityToggle": "Report Density",
   "mapDensityDescription": "Show H3 density grid by report level",

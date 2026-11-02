@@ -744,6 +744,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get updateStaffFailed => 'Failed to update staff';
 
   @override
+  String get staffEmailNotEditable => 'Login email cannot be changed';
+
+  @override
   String get editInfo => 'Edit';
 
   @override
@@ -1886,6 +1889,8 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get staffCreatedCheckInboxHint =>
       'Ask the staff member to check their inbox (including Spam) and change the password after signing in for the first time.';
+
+  @override
   String get mapSettings => 'Map Settings';
 
   @override

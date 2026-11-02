@@ -66,10 +66,10 @@ class StaffRepository {
   }
 
   /// [positionId]: null = giữ nguyên, '' = bỏ chức vụ, giá trị = đổi chức vụ.
+  /// Chỉ cập nhật hồ sơ — email & mật khẩu (thông tin đăng nhập) admin không được sửa.
   Future<ApiResponse> updateStaff({
     required String staffId,
     required String fullName,
-    required String email,
     String? phone,
     String? dateOfBirth,
     String? gender,
@@ -80,7 +80,6 @@ class StaffRepository {
       '/admin/staffs/$staffId',
       data: {
         'fullName': fullName,
-        'email': email,
         if (phone != null) 'phone': phone,
         if (dateOfBirth != null) 'dateOfBirth': dateOfBirth,
         if (gender != null) 'gender': gender,

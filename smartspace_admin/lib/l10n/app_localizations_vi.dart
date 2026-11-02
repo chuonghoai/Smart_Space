@@ -742,6 +742,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get updateStaffFailed => 'Cập nhật thất bại';
 
   @override
+  String get staffEmailNotEditable => 'Email đăng nhập không thể thay đổi';
+
+  @override
   String get editInfo => 'Chỉnh sửa';
 
   @override
@@ -1877,6 +1880,8 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get staffCreatedCheckInboxHint =>
       'Nhắc nhân viên kiểm tra hộp thư (kể cả mục Thư rác) và đổi mật khẩu sau khi đăng nhập lần đầu.';
+
+  @override
   String get mapSettings => 'Cài đặt bản đồ';
 
   @override
