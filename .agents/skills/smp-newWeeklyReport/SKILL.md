@@ -91,7 +91,7 @@ Trước khi viết bất kỳ file nào, Agent **MUST** tiến hành audit mã 
   - Màn hình (Screens), Components, Widgets.
   - Routing: Kiểm tra hệ thống 3-file (`route_name.dart`, `router_path.dart`, `app_router.dart`).
   - State Management & Controller / Service client.
-  - UI/UX: Hỗ trợ Dark Mode / Light Mode, Design tokens theo `app_architecture/design/design.md`, các tiêu chí chống rập khuôn theo `design-taste-frontend`.
+  - UI/UX: Hỗ trợ Dark Mode / Light Mode, Design tokens theo `DESIGN.md`, các tiêu chí chống rập khuôn theo `design-taste-frontend`.
   - Localization: `app_vi.arb`, `app_en.arb` (tuyệt đối không hardcode text).
 - **Backend (`SmartSpace_Backend`):**
   - Controller, API Endpoints, Request/Response DTOs.

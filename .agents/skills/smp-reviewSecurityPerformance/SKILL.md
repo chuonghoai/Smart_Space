@@ -30,7 +30,7 @@ Kiểm tra các khía cạnh:
 
 ### Step 3 — Performance Review
 - **App:** Unnecessary rebuild/API calls, memory, image loading, list rendering, startup.
-- **UX:** Flow có quá dài? Loading state, feedback, error recovery, empty state, responsiveness. (Phải dựa trên requirement, `design.md`, tính nhất quán. Không dựa trên sở thích cá nhân).
+- **UX:** Flow có quá dài? Loading state, feedback, error recovery, empty state, responsiveness. (Phải dựa trên requirement, `DESIGN.md`, tính nhất quán. Không dựa trên sở thích cá nhân).
 - **API:** N+1, pagination, response size, caching, timeout, retry, rate limiting.
 - **Backend:** Database query, indexing, transaction, concurrency, memory, CPU.
 

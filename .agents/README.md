@@ -9,7 +9,7 @@ Hệ thống Skills và Rules trong thư mục `.agents` được thiết kế �
 Mọi thay đổi do AI Agent thực hiện phải tuân thủ các tài liệu kiến trúc gốc theo thứ tự ưu tiên:
 1. `app_architecture/` (Kiến trúc ứng dụng Client/Admin/Staff)
 2. `backend_architecture/` (Kiến trúc Backend Spring Boot)
-3. `app_architecture/design/design.md` (Design tokens, màu sắc, typography chuẩn)
+3. `DESIGN.md` (Design tokens, màu sắc, typography chuẩn)
 4. `.agents/rules/` và `.agents/skills/` (Quy định hành vi và kỹ năng chuẩn hóa của Agent)
 
 > **Nguyên tắc bảo toàn:** Yêu cầu nghiệp vụ, tính đúng đắn của logic, khả năng tiếp cận (Accessibility) và hệ thống token kiến trúc luôn có độ ưu tiên cao nhất. Thẩm mỹ thiết kế không được phép làm thay đổi hoặc phá vỡ yêu cầu nghiệp vụ.
