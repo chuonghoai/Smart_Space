@@ -1,3 +1,4 @@
+import 'package:dio/dio.dart';
 import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:smartspace_staff/features/reports/models/report_model.dart';
@@ -60,6 +61,10 @@ class ReportRepoApi implements ReportRepo {
         'note': note,
         'image_urls': imageUrls,
       },
+      options: Options(
+        sendTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+      ),
       decoder: (json) {
         if (json is Map<String, dynamic>) {
           return ReportDetailModel.fromJson(json);

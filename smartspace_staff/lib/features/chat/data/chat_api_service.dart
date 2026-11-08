@@ -1,7 +1,9 @@
 import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:smartspace_staff/features/chat/models/chat_message_model.dart';
+import 'package:smartspace_staff/features/chat/models/conversation_info_model.dart';
 import 'package:smartspace_staff/features/chat/models/conversation_model.dart';
+import 'package:smartspace_staff/features/chat/models/linked_report_model.dart';
 import 'package:smartspace_staff/features/chat/models/position_model.dart';
 
 class ChatApiService {
@@ -168,6 +170,40 @@ class ChatApiService {
               .toList();
         }
         return <PositionModel>[];
+      },
+    );
+  }
+
+  Future<ApiResponse<ConversationInfoModel>> getConversationInfo(String conversationId) async {
+    return apiClient.get<ConversationInfoModel>(
+      '/conversations/$conversationId/info',
+      decoder: (json) => ConversationInfoModel.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  Future<ApiResponse<List<LinkedReportModel>>> getConversationReports(
+    String conversationId, {
+    int page = 1,
+    int size = 10,
+  }) async {
+    return apiClient.get<List<LinkedReportModel>>(
+      '/conversations/$conversationId/reports',
+      queryParameters: {
+        'page': page,
+        'size': size,
+      },
+      decoder: (json) {
+        if (json is Map && json['content'] is List) {
+          return (json['content'] as List)
+              .map((e) => LinkedReportModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        }
+        if (json is List) {
+          return json
+              .map((e) => LinkedReportModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        }
+        return <LinkedReportModel>[];
       },
     );
   }

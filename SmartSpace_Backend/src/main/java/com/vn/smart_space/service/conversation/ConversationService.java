@@ -19,13 +19,16 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.vn.smart_space.consts.EConversationType;
 import com.vn.smart_space.consts.EMessageType;
+import com.vn.smart_space.consts.EReportStatus;
 import com.vn.smart_space.consts.ERole;
 import com.vn.smart_space.dto.PageResponse;
 import com.vn.smart_space.dto.request.conversation.CreateConversationRequest;
 import com.vn.smart_space.dto.request.notification.NotificationRequest;
 import com.vn.smart_space.dto.response.chat.ChatMessageResponse;
 import com.vn.smart_space.dto.response.conversation.ConversationDetailResponse;
+import com.vn.smart_space.dto.response.conversation.ConversationInfoResponse;
 import com.vn.smart_space.dto.response.conversation.CreateConversationResponse;
+import com.vn.smart_space.dto.response.conversation.LinkedReportResponse;
 import com.vn.smart_space.dto.response.conversation.ParticipantResponse;
 import com.vn.smart_space.exception.BadRequestException;
 import com.vn.smart_space.mapper.ConversationMapper;
@@ -166,32 +169,37 @@ public class ConversationService implements IConversationService {
             return null;
         }
 
-        String participantHash = "report_" + report.getId() + "_" +
-                Stream.of(assignedStaff.getId(), clientUser.getId())
-                        .sorted()
-                        .collect(Collectors.joining("_"));
+        boolean isReportAnon = Boolean.TRUE.equals(report.getIsAnonymous());
+        String prefix = isReportAnon ? "anon_" : "user_";
+        String sortedUsers = Stream.of(assignedStaff.getId(), clientUser.getId())
+                .sorted()
+                .collect(Collectors.joining("_"));
+        String participantHash = prefix + sortedUsers;
 
+        // Check if an existing conversation exists with this hash
         Optional<Conversation> existing = conversationRepository.findByParticipantHash(participantHash);
+        Conversation conversation;
         if (existing.isPresent()) {
-            return existing.get();
+            conversation = existing.get();
+        } else {
+            conversation = Conversation.builder()
+                    .name(isReportAnon ? "Người dùng ẩn danh" : (clientUser.getFullName() != null ? clientUser.getFullName() : "Trò chuyện"))
+                    .conversationType(EConversationType.PRIVATE)
+                    .participantHash(participantHash)
+                    .isAnonymous(isReportAnon)
+                    .createdAt(LocalDateTime.now())
+                    .build();
+
+            conversation.addParticipants(assignedStaff);
+            conversation.addParticipants(clientUser);
+            conversation = conversationRepository.save(conversation);
         }
 
-        Optional<Conversation> byReport = conversationRepository.findByReportId(report.getId());
-        if (byReport.isPresent()) {
-            return byReport.get();
-        }
+        // Associate report with this conversation (N-1)
+        report.setConversation(conversation);
+        reportRepository.save(report);
 
-        Conversation conversation = Conversation.builder()
-                .name(report.getTitle())
-                .conversationType(EConversationType.PRIVATE)
-                .report(report)
-                .participantHash(participantHash)
-                .createdAt(LocalDateTime.now())
-                .build();
-
-        conversation.addParticipants(assignedStaff);
-        conversation.addParticipants(clientUser);
-        return conversationRepository.save(conversation);
+        return conversation;
     }
 
     @Override
@@ -250,8 +258,10 @@ public class ConversationService implements IConversationService {
             }
         }
 
-        // Send FCM to targetUser if provided and not viewing conversation
-        if (targetUser != null && !chatPresenceService.isUserViewingConversation(targetUser.getId(), conversation.getId())) {
+        // Send FCM to targetUser if provided and not viewing conversation or viewing conversation list
+        if (targetUser != null
+                && !chatPresenceService.isUserViewingConversation(targetUser.getId(), conversation.getId())
+                && !chatPresenceService.isUserViewingConversation(targetUser.getId(), "list")) {
             try {
                 String lang = targetUser.getLanguage() != null ? targetUser.getLanguage() : "vi";
                 Locale locale = Locale.forLanguageTag(lang);
@@ -261,9 +271,16 @@ public class ConversationService implements IConversationService {
                         "payload", "{\"conversationId\":\"" + conversation.getId() + "\"}"
                 );
                 NotificationRequest fcmRequest = new NotificationRequest(title, message.getContent(), data);
-                fcmService.sendToUser(targetUser.getId(), fcmRequest);
+                final String targetUserId = targetUser.getId();
+                java.util.concurrent.CompletableFuture.runAsync(() -> {
+                    try {
+                        fcmService.sendToUser(targetUserId, fcmRequest);
+                    } catch (Exception e) {
+                        log.error("Failed to send system FCM to user {}: {}", targetUserId, e.getMessage());
+                    }
+                });
             } catch (Exception e) {
-                log.error("Failed to send system FCM to user {}: {}", targetUser.getId(), e.getMessage());
+                log.error("Failed to prepare system FCM to user {}: {}", targetUser.getId(), e.getMessage());
             }
         }
 
@@ -274,32 +291,13 @@ public class ConversationService implements IConversationService {
     @Transactional
     public void transferReportConversation(Report report, User oldStaff, User newStaff) {
         if (report == null || oldStaff == null || newStaff == null) return;
-        Optional<Conversation> convOpt = conversationRepository.findByReportId(report.getId());
-        if (convOpt.isEmpty()) return;
-
-        Conversation conversation = convOpt.get();
+        Conversation oldConv = report.getConversation();
         User clientUser = report.getUser();
 
-        // 1. Update participantHash
-        String newHash = "report_" + report.getId() + "_" +
-                Stream.of(newStaff.getId(), clientUser.getId())
-                        .sorted()
-                        .collect(Collectors.joining("_"));
-        conversation.setParticipantHash(newHash);
+        // 1. Create or get conversation for newStaff and clientUser
+        Conversation newConv = getOrCreateReportConversation(report);
 
-        // 2. Transfer participant: find participant record of oldStaff and update to newStaff
-        for (ConversationParticipant cp : conversation.getParticipants()) {
-            if (cp.getUser().getId().equals(oldStaff.getId())) {
-                cp.setUser(newStaff);
-                cp.setJoinedAt(LocalDateTime.now());
-                cp.setUnreadCount(0);
-                conversationParticipantRepository.save(cp);
-                break;
-            }
-        }
-        conversationRepository.save(conversation);
-
-        // 3. Send system message about delegation transfer
+        // 2. Send system message about delegation transfer to old conversation (if exists)
         Locale clientLocale = Locale.forLanguageTag(clientUser.getLanguage() != null ? clientUser.getLanguage() : "vi");
         String oldName = oldStaff.getFullName() != null ? oldStaff.getFullName() : "Nhân viên";
         String newName = newStaff.getFullName() != null ? newStaff.getFullName() : "Nhân viên";
@@ -308,14 +306,29 @@ public class ConversationService implements IConversationService {
                 String.format("%s đã chuyển giao phản ánh '%s' cho %s", oldName, report.getTitle(), newName),
                 clientLocale);
 
-        sendSystemMessage(conversation, content, clientUser);
+        if (oldConv != null) {
+            sendSystemMessage(oldConv, content, clientUser);
+        }
 
-        // Notify new staff as well
+        // 3. Send system message in new conversation
+        if (newConv != null) {
+            String newAssignMsg = messageSource.getMessage("chat.system.report_assigned",
+                    new Object[]{ newName, report.getTitle() },
+                    String.format("%s đã tiếp nhận phản ánh '%s'", newName, report.getTitle()),
+                    clientLocale);
+            sendSystemMessage(newConv, newAssignMsg, clientUser);
+        }
+
+        // Notify both staff
         try {
-            messagingTemplate.convertAndSendToUser(newStaff.getId(), "/queue/conversations",
-                    ConversationMapper.toConversationDetailResponse(newStaff.getId(), conversation));
-            messagingTemplate.convertAndSendToUser(oldStaff.getId(), "/queue/conversations",
-                    ConversationMapper.toConversationDetailResponse(oldStaff.getId(), conversation));
+            if (newConv != null) {
+                messagingTemplate.convertAndSendToUser(newStaff.getId(), "/queue/conversations",
+                        ConversationMapper.toConversationDetailResponse(newStaff.getId(), newConv));
+            }
+            if (oldConv != null) {
+                messagingTemplate.convertAndSendToUser(oldStaff.getId(), "/queue/conversations",
+                        ConversationMapper.toConversationDetailResponse(oldStaff.getId(), oldConv));
+            }
         } catch (Exception ignored) {
         }
     }
@@ -420,6 +433,144 @@ public class ConversationService implements IConversationService {
     @Transactional(readOnly = true)
     public Long getUnreadCount(String userId) {
         return conversationParticipantRepository.countTotalUnreadByUserId(userId);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ConversationInfoResponse getConversationInfo(String userId, String conversationId) {
+        Conversation conversation = conversationRepository.findByIdAndMember(conversationId, userId)
+                .orElseThrow(() -> new BadRequestException("conversation.not_found"));
+
+        User partner = conversation.getParticipants().stream()
+                .map(ConversationParticipant::getUser)
+                .filter(u -> !u.getId().equals(userId))
+                .findFirst()
+                .orElse(null);
+
+        List<Report> activeProcessingReports = reportRepository
+                .findActiveReportsByConversationId(conversationId);
+
+        List<Report> allLinkedReports = reportRepository
+                .findByConversationIdOrderByCreatedAtDesc(conversationId);
+
+        boolean hasAnonymousReport = allLinkedReports.stream()
+                .anyMatch(r -> Boolean.TRUE.equals(r.getIsAnonymous()));
+        if (!hasAnonymousReport && conversation.getReport() != null) {
+            hasAnonymousReport = Boolean.TRUE.equals(conversation.getReport().getIsAnonymous());
+        }
+
+        boolean isAnonymous = (Boolean.TRUE.equals(conversation.getIsAnonymous()) || hasAnonymousReport)
+                && partner != null && partner.getRole() == ERole.client;
+
+        boolean hasAnyLinkedReport = !allLinkedReports.isEmpty() || conversation.getReport() != null;
+        boolean canSendMessage;
+        if (hasAnyLinkedReport || (partner != null && partner.getRole() == ERole.client)) {
+            canSendMessage = !activeProcessingReports.isEmpty();
+        } else {
+            canSendMessage = true;
+        }
+
+        String partnerName = null;
+        String partnerAvatar = null;
+        String partnerPhone = null;
+        String partnerEmail = null;
+        ERole partnerRole = null;
+        String partnerPosition = null;
+
+        if (partner != null) {
+            partnerRole = partner.getRole();
+            if (partner.getPosition() != null) {
+                partnerPosition = partner.getPosition().getName();
+            }
+
+            if (isAnonymous) {
+                partnerName = "Người dùng ẩn danh";
+                partnerAvatar = null;
+                partnerPhone = null;
+                partnerEmail = null;
+            } else {
+                partnerName = partner.getFullName() != null && !partner.getFullName().trim().isEmpty()
+                        ? partner.getFullName().trim()
+                        : partner.getEmail();
+                partnerAvatar = partner.getAvatarUrl();
+                partnerPhone = partner.getPhone();
+                partnerEmail = partner.getEmail();
+            }
+        }
+
+        List<LinkedReportResponse> reportResponses = activeProcessingReports.stream()
+                .map(r -> {
+                    boolean isRehandling = (r.getStatus() == EReportStatus.processing || r.getStatus() == EReportStatus.processed)
+                            && Boolean.FALSE.equals(r.getIsReviewResolved());
+                    return LinkedReportResponse.builder()
+                            .id(r.getId())
+                            .title(r.getTitle())
+                            .description(r.getDescription())
+                            .imageUrl(r.getImageUrl())
+                            .status(r.getStatus() != null ? r.getStatus().name() : null)
+                            .severity(r.getSeverity() != null ? r.getSeverity().name() : null)
+                            .createdAt(r.getCreatedAt() != null ? r.getCreatedAt().toString() : null)
+                            .address(r.getAddress())
+                            .isReviewResolved(r.getIsReviewResolved())
+                            .needsRehandling(isRehandling)
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return ConversationInfoResponse.builder()
+                .id(conversation.getId())
+                .partnerId(partner != null ? partner.getId() : null)
+                .partnerName(partnerName)
+                .partnerAvatarUrl(partnerAvatar)
+                .partnerRole(partnerRole)
+                .partnerPosition(partnerPosition)
+                .partnerPhone(partnerPhone)
+                .partnerEmail(partnerEmail)
+                .isAnonymous(isAnonymous)
+                .canSendMessage(canSendMessage)
+                .activeReports(reportResponses)
+                .createdAt(conversation.getCreatedAt())
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponse<LinkedReportResponse> getConversationReports(String userId, String conversationId, int page, int size) {
+        conversationRepository.findByIdAndMember(conversationId, userId)
+                .orElseThrow(() -> new BadRequestException("conversation.not_found"));
+
+        int safePage = Math.max(0, page - 1);
+        int safeSize = Math.max(1, Math.min(size, 50));
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(safePage, safeSize);
+
+        org.springframework.data.domain.Page<Report> reportPage = reportRepository.findActiveReportsByConversationId(conversationId, pageable);
+
+        List<LinkedReportResponse> content = reportPage.getContent().stream()
+                .map(r -> {
+                    boolean isRehandling = (r.getStatus() == EReportStatus.processing || r.getStatus() == EReportStatus.processed)
+                            && Boolean.FALSE.equals(r.getIsReviewResolved());
+                    return LinkedReportResponse.builder()
+                            .id(r.getId())
+                            .title(r.getTitle())
+                            .description(r.getDescription())
+                            .imageUrl(r.getImageUrl())
+                            .status(r.getStatus() != null ? r.getStatus().name() : null)
+                            .severity(r.getSeverity() != null ? r.getSeverity().name() : null)
+                            .createdAt(r.getCreatedAt() != null ? r.getCreatedAt().toString() : null)
+                            .address(r.getAddress())
+                            .isReviewResolved(r.getIsReviewResolved())
+                            .needsRehandling(isRehandling)
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return PageResponse.<LinkedReportResponse>builder()
+                .currentPage(page)
+                .pageSize(safeSize)
+                .totalElements(reportPage.getTotalElements())
+                .totalPages(reportPage.getTotalPages())
+                .content(content)
+                .build();
     }
 
 }

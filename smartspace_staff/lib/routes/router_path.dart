@@ -11,6 +11,8 @@ class RouterPath {
   static String get editProfile => RouteName.editProfile.path;
   static String get manageDevices => RouteName.manageDevices.path;
   static String get reportDetail => RouteName.reportDetail.path;
+  static String reportDetailWithId(String id) =>
+      RouteName.reportDetail.path.replaceAll(':id', id);
   static String get search => RouteName.search.path;
   static String get allReports => RouteName.allReports.path;
   static String get map => RouteName.map.path;
@@ -31,6 +33,9 @@ class RouterPath {
   static String get chatDetail => RouteName.chatDetail.path;
   static String chatDetailWithId(String id) =>
       RouteName.chatDetail.path.replaceAll(':id', id);
+  static String get conversationInfo => RouteName.conversationInfo.path;
+  static String conversationInfoWithId(String id) =>
+      RouteName.conversationInfo.path.replaceAll(':id', id);
 
   /// Màn "Việc nhờ làm giùm" mở sẵn tab [box] (`received` | `sent`).
   static String delegationsWithBox(String box) =>

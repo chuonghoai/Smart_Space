@@ -24,6 +24,7 @@ import 'package:smartspace_staff/ui/mobile/delegation/widgets/delegation_section
 import 'package:smartspace_staff/ui/mobile/delegation/widgets/delegation_common.dart';
 import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:smartspace_staff/features/chat/data/chat_repository.dart';
+import 'package:smartspace_staff/features/chat/models/conversation_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ReportDetailScreen extends ConsumerStatefulWidget {
@@ -120,8 +121,15 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
       if (!mounted) return;
       if (res.success && res.data != null) {
         final convId = res.data!.id;
-        context.push(RouterPath.conversations);
-        context.push(RouterPath.chatDetailWithId(convId));
+        final reportData = ref.read(reportDetailProvider(widget.reportId)).asData?.value;
+        final isAnon = reportData?.isAnonymous ?? false;
+        final partner = ParticipantModel(
+          userId: reportData?.userId ?? '',
+          name: isAnon ? AppLocalizations.of(context)!.anonymousPerson : (reportData?.userName ?? ''),
+          avatarUrl: isAnon ? null : reportData?.userAvatarUrl,
+          role: 'client',
+        );
+        context.push(RouterPath.chatDetailWithId(convId), extra: partner);
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -886,21 +894,23 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                                       ),
                                     ),
                                     const SizedBox(width: 8),
-                                    // 2 circular buttons on the far right: Call and Message
-                                    Material(
-                                      color: theme.colorScheme.primaryContainer,
-                                      shape: const CircleBorder(),
-                                      clipBehavior: Clip.antiAlias,
-                                      child: IconButton(
-                                        icon: const Icon(Icons.phone_rounded, size: 20),
-                                        color: theme.colorScheme.onPrimaryContainer,
-                                        tooltip: l10n.callClient,
-                                        onPressed: () => _callReporter(report),
-                                        constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
-                                        padding: EdgeInsets.zero,
+                                    // 2 circular buttons on the far right: Call (if not anonymous) and Message
+                                    if (!report.isAnonymous) ...[
+                                      Material(
+                                        color: theme.colorScheme.primaryContainer,
+                                        shape: const CircleBorder(),
+                                        clipBehavior: Clip.antiAlias,
+                                        child: IconButton(
+                                          icon: const Icon(Icons.phone_rounded, size: 20),
+                                          color: theme.colorScheme.onPrimaryContainer,
+                                          tooltip: l10n.callClient,
+                                          onPressed: () => _callReporter(report),
+                                          constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                                          padding: EdgeInsets.zero,
+                                        ),
                                       ),
-                                    ),
-                                    const SizedBox(width: 8),
+                                      const SizedBox(width: 8),
+                                    ],
                                     Material(
                                       color: theme.colorScheme.primaryContainer,
                                       shape: const CircleBorder(),

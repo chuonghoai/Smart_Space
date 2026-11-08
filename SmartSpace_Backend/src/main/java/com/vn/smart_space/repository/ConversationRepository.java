@@ -24,13 +24,17 @@ public interface ConversationRepository extends JpaRepository<Conversation, Stri
 
     // Get Page Conversation - All
     @EntityGraph(attributePaths = { "participants", "participants.user", "participants.user.position", "report" })
-    @Query("SELECT DISTINCT c FROM Conversation c JOIN c.participants p WHERE p.user.id = :userId ORDER BY c.lastMessageTime DESC NULLS LAST")
+    @Query("SELECT DISTINCT c FROM Conversation c JOIN c.participants p " +
+            "WHERE p.user.id = :userId " +
+            "AND (c.report IS NOT NULL OR c.reports IS NOT EMPTY OR c.lastMessageContent IS NOT NULL OR c.lastMessageTime IS NOT NULL) " +
+            "ORDER BY c.lastMessageTime DESC NULLS LAST")
     Page<Conversation> findAllByUserId(@Param("userId") String userId, Pageable pageable);
 
     // Get Page Conversation - All with search query (Name, Phone, Email, Content)
     @EntityGraph(attributePaths = { "participants", "participants.user", "participants.user.position", "report" })
     @Query("SELECT DISTINCT c FROM Conversation c JOIN c.participants p " +
             "WHERE p.user.id = :userId " +
+            "AND (c.report IS NOT NULL OR c.reports IS NOT EMPTY OR c.lastMessageContent IS NOT NULL OR c.lastMessageTime IS NOT NULL) " +
             "AND (LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
             "     OR LOWER(c.lastMessageContent) LIKE LOWER(CONCAT('%', :query, '%')) " +
             "     OR EXISTS (SELECT p2 FROM c.participants p2 WHERE p2.user.id <> :userId " +
@@ -45,6 +49,7 @@ public interface ConversationRepository extends JpaRepository<Conversation, Stri
     @Query("SELECT DISTINCT c FROM Conversation c " +
             "JOIN c.participants p " +
             "WHERE p.user.id = :userId " +
+            "AND (c.report IS NOT NULL OR c.reports IS NOT EMPTY OR c.lastMessageContent IS NOT NULL OR c.lastMessageTime IS NOT NULL) " +
             "AND EXISTS (SELECT p2 FROM c.participants p2 WHERE p2.user.id <> :userId AND p2.user.role = :role) " +
             "ORDER BY c.lastMessageTime DESC NULLS LAST")
     Page<Conversation> findAllByUserIdAndRole(@Param("userId") String userId, @Param("role") ERole role, Pageable pageable);
@@ -54,6 +59,7 @@ public interface ConversationRepository extends JpaRepository<Conversation, Stri
     @Query("SELECT DISTINCT c FROM Conversation c " +
             "JOIN c.participants p " +
             "WHERE p.user.id = :userId " +
+            "AND (c.report IS NOT NULL OR c.reports IS NOT EMPTY OR c.lastMessageContent IS NOT NULL OR c.lastMessageTime IS NOT NULL) " +
             "AND EXISTS (SELECT p2 FROM c.participants p2 WHERE p2.user.id <> :userId AND p2.user.role = :role " +
             "            AND (:hasPositions = false OR p2.user.position.id IN :positionIds) " +
             "            AND (:hasQuery = false " +
@@ -76,6 +82,7 @@ public interface ConversationRepository extends JpaRepository<Conversation, Stri
     @Query("SELECT DISTINCT c FROM Conversation c " +
             "JOIN c.participants p " +
             "WHERE p.user.id = :userId " +
+            "AND (c.report IS NOT NULL OR c.reports IS NOT EMPTY OR c.lastMessageContent IS NOT NULL OR c.lastMessageTime IS NOT NULL) " +
             "AND EXISTS (SELECT p2 FROM c.participants p2 WHERE p2.user.id <> :userId AND p2.user.role = :role " +
             "            AND (LOWER(p2.user.fullName) LIKE LOWER(CONCAT('%', :query, '%')) " +
             "                 OR LOWER(p2.user.phone) LIKE LOWER(CONCAT('%', :query, '%')) " +

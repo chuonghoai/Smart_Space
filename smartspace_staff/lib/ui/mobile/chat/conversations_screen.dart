@@ -1,6 +1,8 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:smartspace_staff/features/chat/data/chat_repository.dart';
 import 'package:smartspace_staff/features/chat/models/conversation_model.dart';
 import 'package:smartspace_staff/features/chat/providers/conversations_provider.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
@@ -17,22 +19,60 @@ class ConversationsScreen extends ConsumerStatefulWidget {
   ConsumerState<ConversationsScreen> createState() => _ConversationsScreenState();
 }
 
-class _ConversationsScreenState extends ConsumerState<ConversationsScreen> {
+class _ConversationsScreenState extends ConsumerState<ConversationsScreen>
+    with WidgetsBindingObserver {
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
+  Timer? _heartbeatTimer;
+  bool _isInListPresence = false;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _scrollController.addListener(_onScroll);
+    _enterListPresence();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _leaveListPresence();
     _searchController.dispose();
     _scrollController.removeListener(_onScroll);
     _scrollController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.resumed) {
+      _enterListPresence();
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.hidden) {
+      _leaveListPresence();
+    }
+  }
+
+  void _enterListPresence() {
+    if (_isInListPresence) return;
+    _isInListPresence = true;
+    chatRepository.enterPresence('list');
+    _heartbeatTimer?.cancel();
+    _heartbeatTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+      if (mounted && _isInListPresence) {
+        chatRepository.heartbeatPresence('list');
+      }
+    });
+  }
+
+  void _leaveListPresence() {
+    if (!_isInListPresence) return;
+    _isInListPresence = false;
+    _heartbeatTimer?.cancel();
+    _heartbeatTimer = null;
+    chatRepository.leavePresence('list');
   }
 
   void _onScroll() {
@@ -472,9 +512,13 @@ class _ConversationsScreenState extends ConsumerState<ConversationsScreen> {
                     isSlidingOut: state.slidingOutId == conv.id,
                     isSlidingIn: state.slidingInId == conv.id,
                     isPulsing: state.pulseHighlightId == conv.id,
-                    onTap: () {
+                    onTap: () async {
                       ref.read(conversationsProvider.notifier).markConversationRead(conv.id);
-                      context.push(RouterPath.chatDetailWithId(conv.id));
+                      _leaveListPresence();
+                      await context.push(RouterPath.chatDetailWithId(conv.id));
+                      if (mounted) {
+                        _enterListPresence();
+                      }
                     },
                   ),
                   Divider(
@@ -555,8 +599,12 @@ class _ConversationsScreenState extends ConsumerState<ConversationsScreen> {
     ParticipantModel user,
   ) {
     return InkWell(
-      onTap: () {
-        context.push('/conversations/new_${user.userId}', extra: user);
+      onTap: () async {
+        _leaveListPresence();
+        await context.push('/conversations/new_${user.userId}', extra: user);
+        if (mounted) {
+          _enterListPresence();
+        }
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),

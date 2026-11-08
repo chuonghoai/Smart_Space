@@ -49,6 +49,8 @@ class AppRouteInfo {
         return l10n.routeConversations;
       case 'routeChatDetail':
         return l10n.routeChatDetail;
+      case 'routeConversationInfo':
+        return l10n.routeConversationInfo;
       // Add more routes here as needed
       default:
         return nameKey;
@@ -226,6 +228,13 @@ class RouteName {
     isHiddenInSearch: true,
   );
 
+  static const conversationInfo = AppRouteInfo(
+    path: '/conversations/:id/info',
+    nameKey: 'routeConversationInfo',
+    icon: Icons.info_outline_rounded,
+    isHiddenInSearch: true,
+  );
+
   static const List<AppRouteInfo> allRoutes = [
     splash,
     login,
@@ -251,6 +260,7 @@ class RouteName {
     delegations,
     conversations,
     chatDetail,
+    conversationInfo,
   ];
 
   static List<AppRouteInfo> get searchableRoutes {

@@ -30,6 +30,7 @@ import 'package:smartspace_staff/ui/mobile/delegation/delegations_screen.dart';
 import 'package:smartspace_staff/features/chat/models/conversation_model.dart';
 import 'package:smartspace_staff/ui/mobile/chat/conversations_screen.dart';
 import 'package:smartspace_staff/ui/mobile/chat/chat_detail_screen.dart';
+import 'package:smartspace_staff/ui/mobile/chat/conversation_info_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = sharedNavigatorKey;
 
@@ -169,6 +170,13 @@ final appRouter = GoRouter(
           conversationId: conversationId,
           initialPartner: initialPartner,
         );
+      },
+    ),
+    GoRoute(
+      path: '/conversations/:id/info',
+      builder: (context, state) {
+        final conversationId = state.pathParameters['id'] ?? '';
+        return ConversationInfoScreen(conversationId: conversationId);
       },
     ),
   ],

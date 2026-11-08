@@ -2677,6 +2677,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{count} positions'**
   String positionSelectedCount(int count);
+
+  /// No description provided for @routeConversationInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation Info'**
+  String get routeConversationInfo;
+
+  /// No description provided for @conversationInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation Info'**
+  String get conversationInfoTitle;
+
+  /// No description provided for @activeReportsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Reports'**
+  String get activeReportsSection;
+
+  /// No description provided for @activeReportsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} active reports'**
+  String activeReportsCount(int count);
+
+  /// No description provided for @allReportsProcessed.
+  ///
+  /// In en, this message translates to:
+  /// **'All reports have been processed'**
+  String get allReportsProcessed;
+
+  /// No description provided for @conversationClosedNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation closed as all reports have been processed'**
+  String get conversationClosedNotice;
+
+  /// No description provided for @conversationActiveNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation is currently active'**
+  String get conversationActiveNotice;
+
+  /// No description provided for @callButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get callButtonLabel;
+
+  /// No description provided for @videoCallButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Video call'**
+  String get videoCallButtonLabel;
+
+  /// No description provided for @videoCallComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Video call feature is under development'**
+  String get videoCallComingSoon;
+
+  /// No description provided for @cannotMakePhoneCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot initiate phone call'**
+  String get cannotMakePhoneCall;
+
+  /// No description provided for @viewReportDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'View Details'**
+  String get viewReportDetail;
+
+  /// No description provided for @anonymousUserProtectionNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact info is protected for anonymous reports'**
+  String get anonymousUserProtectionNote;
+
+  /// No description provided for @conversationRefreshed.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation info and messages refreshed successfully'**
+  String get conversationRefreshed;
+
+  /// No description provided for @conversationRefreshFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not refresh conversation, please try again later'**
+  String get conversationRefreshFailed;
+
+  /// No description provided for @noActiveReportsInConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'No active reports in this conversation'**
+  String get noActiveReportsInConversation;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
+  /// No description provided for @conversationLockedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get conversationLockedBadge;
 }
 
 class _AppLocalizationsDelegate

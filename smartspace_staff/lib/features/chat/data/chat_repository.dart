@@ -2,7 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:smartspace_staff/features/chat/data/chat_api_service.dart';
 import 'package:smartspace_staff/features/chat/models/chat_message_model.dart';
+import 'package:smartspace_staff/features/chat/models/conversation_info_model.dart';
 import 'package:smartspace_staff/features/chat/models/conversation_model.dart';
+import 'package:smartspace_staff/features/chat/models/linked_report_model.dart';
 import 'package:smartspace_staff/features/chat/models/position_model.dart';
 import 'package:smartspace_staff/features/chat/services/chat_ws_service.dart';
 
@@ -63,6 +65,14 @@ abstract class ChatRepository {
   });
 
   Future<ApiResponse<List<PositionModel>>> getPositions();
+
+  Future<ApiResponse<ConversationInfoModel>> getConversationInfo(String conversationId);
+
+  Future<ApiResponse<List<LinkedReportModel>>> getConversationReports(
+    String conversationId, {
+    int page = 1,
+    int size = 10,
+  });
 }
 
 class ChatRepositoryImpl implements ChatRepository {
@@ -191,6 +201,20 @@ class ChatRepositoryImpl implements ChatRepository {
   @override
   Future<ApiResponse<List<PositionModel>>> getPositions() {
     return _apiService.getPositions();
+  }
+
+  @override
+  Future<ApiResponse<ConversationInfoModel>> getConversationInfo(String conversationId) {
+    return _apiService.getConversationInfo(conversationId);
+  }
+
+  @override
+  Future<ApiResponse<List<LinkedReportModel>>> getConversationReports(
+    String conversationId, {
+    int page = 1,
+    int size = 10,
+  }) {
+    return _apiService.getConversationReports(conversationId, page: page, size: size);
   }
 }
 

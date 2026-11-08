@@ -76,7 +76,7 @@ class _ConversationItemState extends State<ConversationItem>
     super.dispose();
   }
 
-  String _formatTime(BuildContext context, DateTime? time) {
+  String _formatTime(AppLocalizations l10n, DateTime? time) {
     if (time == null) return '';
     final now = DateTime.now();
     final difference = now.difference(time);
@@ -84,7 +84,7 @@ class _ConversationItemState extends State<ConversationItem>
     if (difference.inDays == 0 && now.day == time.day) {
       return DateFormat('HH:mm').format(time);
     } else if (difference.inDays < 2 && now.day - time.day == 1) {
-      return 'Hôm qua';
+      return l10n.yesterday;
     } else if (difference.inDays < 7) {
       return DateFormat('E', 'vi').format(time);
     } else {
@@ -98,6 +98,7 @@ class _ConversationItemState extends State<ConversationItem>
     final l10n = AppLocalizations.of(context)!;
     final conv = widget.conversation;
     final hasUnread = conv.unreadCount > 0;
+    final isLocked = conv.isClient && !conv.canSendMessage;
 
     final displayName = conv.isAnonymous
         ? l10n.anonymousPerson
@@ -105,7 +106,7 @@ class _ConversationItemState extends State<ConversationItem>
             ? conv.partnerName!
             : (conv.name?.isNotEmpty == true ? conv.name! : l10n.conversations));
 
-    final timeStr = _formatTime(context, conv.lastMessageTime ?? conv.createdAt);
+    final timeStr = _formatTime(l10n, conv.lastMessageTime ?? conv.createdAt);
 
     return SlideTransition(
       position: _slideAnimation,
@@ -125,7 +126,7 @@ class _ConversationItemState extends State<ConversationItem>
               child: Row(
                 children: [
                   // Avatar
-                  _buildAvatar(theme, conv),
+                  _buildAvatar(theme, conv, isLocked),
                   const SizedBox(width: 12),
 
                   // Info
@@ -135,6 +136,14 @@ class _ConversationItemState extends State<ConversationItem>
                       children: [
                         Row(
                           children: [
+                            if (isLocked) ...[
+                              Icon(
+                                Icons.lock_rounded,
+                                size: 15,
+                                color: theme.colorScheme.error,
+                              ),
+                              const SizedBox(width: 4),
+                            ],
                             Expanded(
                               child: Text(
                                 displayName,
@@ -166,6 +175,39 @@ class _ConversationItemState extends State<ConversationItem>
                               position: conv.partnerPosition,
                               isCompact: true,
                             ),
+                            if (isLocked) ...[
+                              const SizedBox(width: 6),
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.errorContainer.withValues(alpha: 0.7),
+                                  borderRadius: BorderRadius.circular(4),
+                                  border: Border.all(
+                                    color: theme.colorScheme.error.withValues(alpha: 0.3),
+                                    width: 0.8,
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.lock_outline_rounded,
+                                      size: 11,
+                                      color: theme.colorScheme.onErrorContainer,
+                                    ),
+                                    const SizedBox(width: 3),
+                                    Text(
+                                      l10n.conversationLockedBadge,
+                                      style: theme.textTheme.labelSmall?.copyWith(
+                                        color: theme.colorScheme.onErrorContainer,
+                                        fontSize: 10,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
                             if (conv.reportTitle != null && conv.reportTitle!.isNotEmpty) ...[
                               const SizedBox(width: 6),
                               Flexible(
@@ -231,9 +273,10 @@ class _ConversationItemState extends State<ConversationItem>
     );
   }
 
-  Widget _buildAvatar(ThemeData theme, ConversationModel conv) {
+  Widget _buildAvatar(ThemeData theme, ConversationModel conv, bool isLocked) {
+    Widget avatarWidget;
     if (conv.isAnonymous) {
-      return CircleAvatar(
+      avatarWidget = CircleAvatar(
         radius: 24,
         backgroundColor: theme.colorScheme.surfaceContainerHighest,
         child: Icon(
@@ -242,10 +285,8 @@ class _ConversationItemState extends State<ConversationItem>
           size: 26,
         ),
       );
-    }
-
-    if (conv.partnerAvatarUrl != null && conv.partnerAvatarUrl!.isNotEmpty) {
-      return AppNetworkImage(
+    } else if (conv.partnerAvatarUrl != null && conv.partnerAvatarUrl!.isNotEmpty) {
+      avatarWidget = AppNetworkImage(
         url: conv.partnerAvatarUrl,
         width: 48,
         height: 48,
@@ -262,18 +303,47 @@ class _ConversationItemState extends State<ConversationItem>
           ),
         ),
       );
+    } else {
+      avatarWidget = CircleAvatar(
+        radius: 24,
+        backgroundColor: theme.colorScheme.primaryContainer,
+        child: Text(
+          (conv.partnerName?.isNotEmpty == true ? conv.partnerName![0] : 'S').toUpperCase(),
+          style: TextStyle(
+            fontWeight: FontWeight.bold,
+            color: theme.colorScheme.onPrimaryContainer,
+          ),
+        ),
+      );
     }
 
-    return CircleAvatar(
-      radius: 24,
-      backgroundColor: theme.colorScheme.primaryContainer,
-      child: Text(
-        (conv.partnerName?.isNotEmpty == true ? conv.partnerName![0] : 'S').toUpperCase(),
-        style: TextStyle(
-          fontWeight: FontWeight.bold,
-          color: theme.colorScheme.onPrimaryContainer,
+    if (!isLocked) return avatarWidget;
+
+    return Stack(
+      clipBehavior: Clip.none,
+      children: [
+        avatarWidget,
+        Positioned(
+          right: -2,
+          bottom: -2,
+          child: Container(
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.error,
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: theme.colorScheme.surface,
+                width: 1.5,
+              ),
+            ),
+            child: Icon(
+              Icons.lock_rounded,
+              size: 10,
+              color: theme.colorScheme.onError,
+            ),
+          ),
         ),
-      ),
+      ],
     );
   }
 }

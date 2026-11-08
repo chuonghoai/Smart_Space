@@ -32,6 +32,7 @@ import com.vn.smart_space.model.User;
 import com.vn.smart_space.repository.ChatMessageRepository;
 import com.vn.smart_space.repository.ConversationParticipantRepository;
 import com.vn.smart_space.repository.ConversationRepository;
+import com.vn.smart_space.repository.ReportRepository;
 import com.vn.smart_space.repository.UserRepository;
 import com.vn.smart_space.service.notification.IFCMService;
 
@@ -47,6 +48,7 @@ public class ChatMessageService implements IChatMessageService {
     private final ConversationRepository conversationRepository;
     private final ConversationParticipantRepository conversationParticipantRepository;
     private final ChatMessageRepository chatMessageRepository;
+    private final ReportRepository reportRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatPresenceService chatPresenceService;
     private final IFCMService fcmService;
@@ -64,8 +66,16 @@ public class ChatMessageService implements IChatMessageService {
                 .orElseThrow(() -> new BadRequestException("conversation.not_found"));
 
         // 3. Permission & Report status check
-        Report report = conversation.getReport();
-        if (report != null) {
+        List<Report> linkedReports = reportRepository.findByConversationIdOrderByCreatedAtDesc(conversation.getId());
+        if (!linkedReports.isEmpty()) {
+            boolean hasActive = linkedReports.stream()
+                    .anyMatch(r -> r.getStatus() == EReportStatus.processing
+                            || (r.getStatus() == EReportStatus.processed && Boolean.FALSE.equals(r.getIsReviewResolved())));
+            if (!hasActive) {
+                throw new BadRequestException("chat.report.not_processing");
+            }
+        } else if (conversation.getReport() != null) {
+            Report report = conversation.getReport();
             boolean isAssignedStaff = report.getAssignedStaff() != null && report.getAssignedStaff().getId().equals(senderId);
             boolean isReportCreator = report.getUser() != null && report.getUser().getId().equals(senderId);
             boolean isAdmin = sender.getRole() == ERole.admin;
@@ -74,8 +84,8 @@ public class ChatMessageService implements IChatMessageService {
                 throw new BadRequestException("chat.permission_denied");
             }
 
-            // CRITICAL BUSINESS RULE: Staff can only send messages if report status is 'processing'
-            if (report.getStatus() != EReportStatus.processing) {
+            boolean isRehandling = report.getStatus() == EReportStatus.processed && Boolean.FALSE.equals(report.getIsReviewResolved());
+            if (report.getStatus() != EReportStatus.processing && !isRehandling) {
                 throw new BadRequestException("chat.report.not_processing");
             }
         }
@@ -125,14 +135,18 @@ public class ChatMessageService implements IChatMessageService {
             boolean isRecipient = !recipient.getId().equals(senderId);
 
             if (isRecipient) {
-                boolean isViewing = chatPresenceService.isUserViewingConversation(recipient.getId(), conversation.getId());
-                if (!isViewing) {
+                boolean isViewingConv = chatPresenceService.isUserViewingConversation(recipient.getId(), conversation.getId());
+                boolean isViewingList = chatPresenceService.isUserViewingConversation(recipient.getId(), "list");
+
+                if (!isViewingConv) {
                     // Increment unread count
                     participant.setUnreadCount((participant.getUnreadCount() != null ? participant.getUnreadCount() : 0) + 1);
                     conversationParticipantRepository.save(participant);
 
-                    // Send FCM notification (suppressed if actively viewing conversation)
-                    sendFcmNotification(recipient, sender, conversation, message.getContent());
+                    // Send FCM notification only if not viewing the conversation AND not in the conversation list
+                    if (!isViewingList) {
+                        sendFcmNotification(recipient, sender, conversation, message.getContent());
+                    }
                 }
             }
 
@@ -216,7 +230,14 @@ public class ChatMessageService implements IChatMessageService {
             );
 
             NotificationRequest fcmRequest = new NotificationRequest(senderDisplayName, body, data);
-            fcmService.sendToUser(recipient.getId(), fcmRequest);
+            final String recipientId = recipient.getId();
+            java.util.concurrent.CompletableFuture.runAsync(() -> {
+                try {
+                    fcmService.sendToUser(recipientId, fcmRequest);
+                } catch (Exception ex) {
+                    log.warn("Failed to send chat FCM to user {}: {}", recipientId, ex.getMessage());
+                }
+            });
         } catch (Exception e) {
             log.error("Failed to send chat FCM to user {}: {}", recipient.getId(), e.getMessage());
         }

@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.vn.smart_space.dto.ApiResponse;
 import com.vn.smart_space.dto.request.conversation.CreateConversationRequest;
 import com.vn.smart_space.dto.response.conversation.ConversationDetailResponse;
+import com.vn.smart_space.dto.response.conversation.ConversationInfoResponse;
 import com.vn.smart_space.dto.response.conversation.CreateConversationResponse;
 import com.vn.smart_space.service.chat.ChatPresenceService;
 import com.vn.smart_space.service.conversation.IConversationService;
@@ -82,6 +83,41 @@ public class ConversationController {
                 .success(true)
                 .data(data)
                 .message("conversation.get.success")
+                .build());
+    }
+
+    // 3.1 Get Conversation Info & Active Linked Reports
+    @GetMapping("/{id}/info")
+    public ResponseEntity<ApiResponse> getConversationInfo(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String id) {
+
+        var userId = jwt.getClaim("userId").toString();
+        ConversationInfoResponse data = conversationService.getConversationInfo(userId, id);
+
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .data(data)
+                .message("conversation.info.success")
+                .build());
+    }
+
+    // 3.2 Get Linked Reports of Conversation with Pagination
+    @GetMapping("/{id}/reports")
+    public ResponseEntity<ApiResponse> getConversationReports(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String id,
+            @RequestParam(required = false, defaultValue = "1") int page,
+            @RequestParam(required = false, defaultValue = "10") int size) {
+
+        var userId = jwt.getClaim("userId").toString();
+        com.vn.smart_space.dto.PageResponse<com.vn.smart_space.dto.response.conversation.LinkedReportResponse> data =
+                conversationService.getConversationReports(userId, id, page, size);
+
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .data(data)
+                .message("conversation.reports.success")
                 .build());
     }
 

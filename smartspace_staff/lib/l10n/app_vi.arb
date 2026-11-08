@@ -581,5 +581,30 @@
         "type": "int"
       }
     }
-  }
+  },
+  "routeConversationInfo": "Thông tin hội thoại",
+  "conversationInfoTitle": "Thông tin hội thoại",
+  "activeReportsSection": "Phản ánh đang xử lý",
+  "activeReportsCount": "{count} phản ánh đang xử lý",
+  "@activeReportsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "allReportsProcessed": "Tất cả phản ánh đã được xử lý xong",
+  "conversationClosedNotice": "Cuộc hội thoại đã đóng do toàn bộ phản ánh đã hoàn tất",
+  "conversationActiveNotice": "Cuộc hội thoại đang hoạt động",
+  "callButtonLabel": "Gọi điện",
+  "videoCallButtonLabel": "Video call",
+  "videoCallComingSoon": "Tính năng gọi video call đang phát triển",
+  "cannotMakePhoneCall": "Không thể thực hiện cuộc gọi",
+  "viewReportDetail": "Xem chi tiết",
+  "anonymousUserProtectionNote": "Thông tin người đăng bài ẩn danh được bảo vệ tuyệt đối",
+  "conversationRefreshed": "Đã làm mới thông tin và tin nhắn hội thoại",
+  "conversationRefreshFailed": "Không thể làm mới hội thoại, vui lòng thử lại sau",
+  "noActiveReportsInConversation": "Không có phản ánh nào đang xử lý",
+  "yesterday": "Hôm qua",
+  "conversationLockedBadge": "Đã khóa"
 }

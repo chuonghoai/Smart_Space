@@ -27,11 +27,25 @@ public final class ConversationMapper {
         String reportId = null;
         String reportTitle = null;
         String reportStatus = null;
-        if (report != null) {
+
+        if (conversation.getReports() != null && !conversation.getReports().isEmpty()) {
+            Report activeReport = conversation.getReports().stream()
+                    .filter(r -> r.getStatus() == EReportStatus.processing
+                            || (r.getStatus() == EReportStatus.processed && Boolean.FALSE.equals(r.getIsReviewResolved())))
+                    .findFirst()
+                    .orElse(conversation.getReports().get(0));
+            reportId = activeReport.getId();
+            reportTitle = activeReport.getTitle();
+            reportStatus = activeReport.getStatus() != null ? activeReport.getStatus().name() : null;
+            canSendMessage = conversation.getReports().stream()
+                    .anyMatch(r -> r.getStatus() == EReportStatus.processing
+                            || (r.getStatus() == EReportStatus.processed && Boolean.FALSE.equals(r.getIsReviewResolved())));
+        } else if (report != null) {
             reportId = report.getId();
             reportTitle = report.getTitle();
             reportStatus = report.getStatus() != null ? report.getStatus().name() : null;
-            canSendMessage = report.getStatus() == EReportStatus.processing;
+            canSendMessage = report.getStatus() == EReportStatus.processing
+                    || (report.getStatus() == EReportStatus.processed && Boolean.FALSE.equals(report.getIsReviewResolved()));
         }
 
         return CreateConversationResponse.builder()
@@ -66,11 +80,25 @@ public final class ConversationMapper {
         String reportId = null;
         String reportTitle = null;
         String reportStatus = null;
-        if (report != null) {
+
+        if (conversation.getReports() != null && !conversation.getReports().isEmpty()) {
+            Report activeReport = conversation.getReports().stream()
+                    .filter(r -> r.getStatus() == EReportStatus.processing
+                            || (r.getStatus() == EReportStatus.processed && Boolean.FALSE.equals(r.getIsReviewResolved())))
+                    .findFirst()
+                    .orElse(conversation.getReports().get(0));
+            reportId = activeReport.getId();
+            reportTitle = activeReport.getTitle();
+            reportStatus = activeReport.getStatus() != null ? activeReport.getStatus().name() : null;
+            canSendMessage = conversation.getReports().stream()
+                    .anyMatch(r -> r.getStatus() == EReportStatus.processing
+                            || (r.getStatus() == EReportStatus.processed && Boolean.FALSE.equals(r.getIsReviewResolved())));
+        } else if (report != null) {
             reportId = report.getId();
             reportTitle = report.getTitle();
             reportStatus = report.getStatus() != null ? report.getStatus().name() : null;
-            canSendMessage = report.getStatus() == EReportStatus.processing;
+            canSendMessage = report.getStatus() == EReportStatus.processing
+                    || (report.getStatus() == EReportStatus.processed && Boolean.FALSE.equals(report.getIsReviewResolved()));
         }
 
         // Get unread count for current user
@@ -140,8 +168,14 @@ public final class ConversationMapper {
         info.role = partner.getRole();
 
         // Check anonymous client
-        Report report = conversation.getReport();
-        boolean isAnon = report != null && Boolean.TRUE.equals(report.getIsAnonymous()) && partner.getRole() == ERole.client;
+        boolean isAnon = Boolean.TRUE.equals(conversation.getIsAnonymous()) && partner.getRole() == ERole.client;
+        if (!isAnon) {
+            Report report = conversation.getReport();
+            isAnon = report != null && Boolean.TRUE.equals(report.getIsAnonymous()) && partner.getRole() == ERole.client;
+        }
+        if (!isAnon && conversation.getReports() != null && !conversation.getReports().isEmpty() && partner.getRole() == ERole.client) {
+            isAnon = conversation.getReports().stream().anyMatch(r -> Boolean.TRUE.equals(r.getIsAnonymous()));
+        }
         info.isAnonymous = isAnon;
 
         if (isAnon) {

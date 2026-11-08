@@ -796,7 +796,10 @@ public class ReportServiceImpl implements IReportService {
 
         // Send system message to report conversation that report is resolved
         try {
-            com.vn.smart_space.model.Conversation conv = conversationService.getOrCreateReportConversation(report);
+            com.vn.smart_space.model.Conversation conv = report.getConversation();
+            if (conv == null) {
+                conv = conversationService.getOrCreateReportConversation(report);
+            }
             if (conv != null && report.getUser() != null) {
                 User clientUser = report.getUser();
                 java.util.Locale clientLocale = java.util.Locale.forLanguageTag(
@@ -902,7 +905,14 @@ public class ReportServiceImpl implements IReportService {
                 NotificationRequest clientNotif = new NotificationRequest(
                         clientTitle, clientMessage,
                         Map.of("type", "REPORT_DETAIL", "payload", "{\"reportId\":\"" + report.getId() + "\"}"));
-                fcmService.sendToUser(report.getUser().getId(), clientNotif);
+                final String clientUserId = report.getUser().getId();
+                java.util.concurrent.CompletableFuture.runAsync(() -> {
+                    try {
+                        fcmService.sendToUser(clientUserId, clientNotif);
+                    } catch (Exception ex) {
+                        log.warn("[FCM] Failed to send client FCM notification: {}", ex.getMessage());
+                    }
+                });
             } catch (Exception ignored) {
             }
         }
@@ -934,7 +944,14 @@ public class ReportServiceImpl implements IReportService {
                 NotificationRequest staffNotif = new NotificationRequest(
                         staffTitle, staffMessage,
                         Map.of("type", "REPORT_DETAIL", "payload", "{\"reportId\":\"" + report.getId() + "\"}"));
-                fcmService.sendToUser(staff.getId(), staffNotif);
+                final String staffUserId = staff.getId();
+                java.util.concurrent.CompletableFuture.runAsync(() -> {
+                    try {
+                        fcmService.sendToUser(staffUserId, staffNotif);
+                    } catch (Exception ex) {
+                        log.warn("[FCM] Failed to send staff FCM notification: {}", ex.getMessage());
+                    }
+                });
             } catch (Exception ex) {
                 log.warn("[Notify Staff] Failed to notify staff {}: {}", staff.getId(), ex.getMessage());
             }

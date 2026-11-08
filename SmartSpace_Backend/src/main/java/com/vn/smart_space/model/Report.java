@@ -50,6 +50,10 @@ public class Report extends AbstractEntity {
     @JoinColumn(name = "assigned_staff_id")
     User assignedStaff;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "conversation_id")
+    Conversation conversation;
+
     @Column(name = "image_urls", columnDefinition = "TEXT")
     String imageUrls;
 

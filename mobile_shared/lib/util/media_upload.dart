@@ -55,7 +55,13 @@ class MediaUploadUtil {
     final String tags = sigData['tags'];
 
     // Upload trực tiếp lên Cloudinary
-    final cloudinaryDio = Dio();
+    final cloudinaryDio = Dio(
+      BaseOptions(
+        connectTimeout: const Duration(seconds: 30),
+        sendTimeout: const Duration(seconds: 60),
+        receiveTimeout: const Duration(seconds: 30),
+      ),
+    );
     final cloudinaryUrl =
         'https://api.cloudinary.com/v1_1/$cloudName/image/upload';
     final formData = FormData.fromMap({

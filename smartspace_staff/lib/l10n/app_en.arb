@@ -581,5 +581,30 @@
         "type": "int"
       }
     }
-  }
+  },
+  "routeConversationInfo": "Conversation Info",
+  "conversationInfoTitle": "Conversation Info",
+  "activeReportsSection": "Active Reports",
+  "activeReportsCount": "{count} active reports",
+  "@activeReportsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "allReportsProcessed": "All reports have been processed",
+  "conversationClosedNotice": "Conversation closed as all reports have been processed",
+  "conversationActiveNotice": "Conversation is currently active",
+  "callButtonLabel": "Call",
+  "videoCallButtonLabel": "Video call",
+  "videoCallComingSoon": "Video call feature is under development",
+  "cannotMakePhoneCall": "Cannot initiate phone call",
+  "viewReportDetail": "View Details",
+  "anonymousUserProtectionNote": "Contact info is protected for anonymous reports",
+  "conversationRefreshed": "Conversation info and messages refreshed successfully",
+  "conversationRefreshFailed": "Could not refresh conversation, please try again later",
+  "noActiveReportsInConversation": "No active reports in this conversation",
+  "yesterday": "Yesterday",
+  "conversationLockedBadge": "Locked"
 }

@@ -24,8 +24,8 @@ class EnvConfig {
   static int get apiTimeout {
     final timeoutStr =
         dotenv.env['API_TIMEOUT'] ??
-        const String.fromEnvironment('API_TIMEOUT', defaultValue: '10000');
-    return int.tryParse(timeoutStr) ?? 10000;
+        const String.fromEnvironment('API_TIMEOUT', defaultValue: '20000');
+    return int.tryParse(timeoutStr) ?? 20000;
   }
 
   static String get apiBaseUrl {

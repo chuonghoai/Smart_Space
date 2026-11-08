@@ -32,4 +32,8 @@ public interface IConversationService {
 
     List<ParticipantResponse> searchUsersForChat(String userId, String role, List<String> positionIds, String query);
 
+    com.vn.smart_space.dto.response.conversation.ConversationInfoResponse getConversationInfo(String userId, String conversationId);
+
+    PageResponse<com.vn.smart_space.dto.response.conversation.LinkedReportResponse> getConversationReports(String userId, String conversationId, int page, int size);
+
 }

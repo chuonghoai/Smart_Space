@@ -1405,4 +1405,65 @@ class AppLocalizationsEn extends AppLocalizations {
   String positionSelectedCount(int count) {
     return '$count positions';
   }
+
+  @override
+  String get routeConversationInfo => 'Conversation Info';
+
+  @override
+  String get conversationInfoTitle => 'Conversation Info';
+
+  @override
+  String get activeReportsSection => 'Active Reports';
+
+  @override
+  String activeReportsCount(int count) {
+    return '$count active reports';
+  }
+
+  @override
+  String get allReportsProcessed => 'All reports have been processed';
+
+  @override
+  String get conversationClosedNotice =>
+      'Conversation closed as all reports have been processed';
+
+  @override
+  String get conversationActiveNotice => 'Conversation is currently active';
+
+  @override
+  String get callButtonLabel => 'Call';
+
+  @override
+  String get videoCallButtonLabel => 'Video call';
+
+  @override
+  String get videoCallComingSoon => 'Video call feature is under development';
+
+  @override
+  String get cannotMakePhoneCall => 'Cannot initiate phone call';
+
+  @override
+  String get viewReportDetail => 'View Details';
+
+  @override
+  String get anonymousUserProtectionNote =>
+      'Contact info is protected for anonymous reports';
+
+  @override
+  String get conversationRefreshed =>
+      'Conversation info and messages refreshed successfully';
+
+  @override
+  String get conversationRefreshFailed =>
+      'Could not refresh conversation, please try again later';
+
+  @override
+  String get noActiveReportsInConversation =>
+      'No active reports in this conversation';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get conversationLockedBadge => 'Locked';
 }

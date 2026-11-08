@@ -46,6 +46,10 @@ public class Conversation {
     @Column(name = "participant_hash", unique = true)
     private String participantHash;
 
+    @Column(name = "is_anonymous")
+    @Builder.Default
+    private Boolean isAnonymous = false;
+
     private LocalDateTime createdAt;
 
     private String lastMessageId;
@@ -57,6 +61,10 @@ public class Conversation {
     @jakarta.persistence.ManyToOne(fetch = FetchType.LAZY)
     @jakarta.persistence.JoinColumn(name = "report_id")
     private Report report;
+
+    @OneToMany(mappedBy = "conversation", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Report> reports = new ArrayList<>();
 
     // Relationship
     @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

@@ -311,4 +311,21 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                         @Param("maxLng") Double maxLng,
                         @Param("excluded") EReportStatus excluded);
 
+        List<Report> findByConversationIdAndStatusOrderByCreatedAtDesc(String conversationId, EReportStatus status);
+
+        List<Report> findByConversationIdOrderByCreatedAtDesc(String conversationId);
+
+        boolean existsByConversationIdAndStatus(String conversationId, EReportStatus status);
+
+        boolean existsByConversationId(String conversationId);
+
+        @Query("SELECT r FROM Report r WHERE r.conversation.id = :conversationId AND (r.status = com.vn.smart_space.consts.EReportStatus.processing OR (r.status = com.vn.smart_space.consts.EReportStatus.processed AND r.isReviewResolved = false)) ORDER BY r.createdAt DESC")
+        org.springframework.data.domain.Page<Report> findActiveReportsByConversationId(@Param("conversationId") String conversationId, org.springframework.data.domain.Pageable pageable);
+
+        @Query("SELECT r FROM Report r WHERE r.conversation.id = :conversationId AND (r.status = com.vn.smart_space.consts.EReportStatus.processing OR (r.status = com.vn.smart_space.consts.EReportStatus.processed AND r.isReviewResolved = false)) ORDER BY r.createdAt DESC")
+        List<Report> findActiveReportsByConversationId(@Param("conversationId") String conversationId);
+
+        @Query("SELECT COUNT(r) FROM Report r WHERE r.conversation.id = :conversationId AND (r.status = com.vn.smart_space.consts.EReportStatus.processing OR (r.status = com.vn.smart_space.consts.EReportStatus.processed AND r.isReviewResolved = false))")
+        long countActiveReportsByConversationId(@Param("conversationId") String conversationId);
+
 }

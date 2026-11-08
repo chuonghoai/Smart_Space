@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:smartspace_staff/features/chat/models/conversation_model.dart';
 import 'package:smartspace_staff/features/chat/providers/chat_detail_provider.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
+import 'package:smartspace_staff/routes/router_path.dart';
 import 'package:smartspace_staff/ui/mobile/chat/widgets/chat_message_bubble.dart';
 import 'package:smartspace_staff/ui/mobile/chat/widgets/chat_role_badge.dart';
 import 'package:smartspace_staff/ui/shared/image/app_network_image.dart';
@@ -127,6 +129,14 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.more_vert_rounded),
+            onPressed: () {
+              context.push(RouterPath.conversationInfoWithId(widget.conversationId));
+            },
+          ),
+        ],
       ),
       body: SafeArea(
         child: Column(
