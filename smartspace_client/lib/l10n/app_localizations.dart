@@ -1999,6 +1999,114 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'12 months'**
   String get timeframe12Months;
+
+  /// No description provided for @routeConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversations'**
+  String get routeConversations;
+
+  /// No description provided for @routeChatDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat Detail'**
+  String get routeChatDetail;
+
+  /// No description provided for @conversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get conversations;
+
+  /// No description provided for @noConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations yet'**
+  String get noConversations;
+
+  /// No description provided for @noConversationsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'You can message support staff from the detail of your active reports.'**
+  String get noConversationsSub;
+
+  /// No description provided for @searchConversationsPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name or content...'**
+  String get searchConversationsPlaceholder;
+
+  /// No description provided for @roleStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get roleStaff;
+
+  /// No description provided for @roleAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get roleAdmin;
+
+  /// No description provided for @chatInputHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a message...'**
+  String get chatInputHint;
+
+  /// No description provided for @emptyMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet. Start chatting!'**
+  String get emptyMessages;
+
+  /// No description provided for @errorLoadMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load messages'**
+  String get errorLoadMessages;
+
+  /// No description provided for @anonymousPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous User'**
+  String get anonymousPerson;
+
+  /// No description provided for @supportStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Support Staff'**
+  String get supportStaff;
+
+  /// No description provided for @managementBoard.
+  ///
+  /// In en, this message translates to:
+  /// **'Management'**
+  String get managementBoard;
+
+  /// No description provided for @chatDisabledNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'The report has been resolved. Chat is currently in read-only history mode.'**
+  String get chatDisabledNotice;
+
+  /// No description provided for @chatWithStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Message staff'**
+  String get chatWithStaff;
+
+  /// No description provided for @viewStaffChat.
+  ///
+  /// In en, this message translates to:
+  /// **'View support messages'**
+  String get viewStaffChat;
+
+  /// No description provided for @cannotStartChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to start conversation, please try again later'**
+  String get cannotStartChat;
 }
 
 class _AppLocalizationsDelegate

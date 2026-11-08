@@ -39,6 +39,10 @@ class AppRouteInfo {
         return l10n.routeManageDevices;
       case 'routeNotifications':
         return l10n.routeNotifications;
+      case 'routeConversations':
+        return l10n.conversations;
+      case 'routeChatDetail':
+        return l10n.routeChatDetail;
       default:
         return nameKey;
     }
@@ -172,6 +176,18 @@ class RouteName {
     icon: Icons.newspaper,
     isHiddenInSearch: true,
   );
+  static const conversations = AppRouteInfo(
+    path: '/conversations',
+    nameKey: 'routeConversations',
+    icon: Icons.chat_bubble_outline,
+    priority: 8,
+  );
+  static const chatDetail = AppRouteInfo(
+    path: '/chat/:id',
+    nameKey: 'routeChatDetail',
+    icon: Icons.chat,
+    isHiddenInSearch: true,
+  );
 
   static const List<AppRouteInfo> allRoutes = [
     splash,
@@ -192,6 +208,8 @@ class RouteName {
     myReports,
     search,
     notifications,
+    conversations,
+    chatDetail,
     communityFeed,
     news,
     newsDetail,

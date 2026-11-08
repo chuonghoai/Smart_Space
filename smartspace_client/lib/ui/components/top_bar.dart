@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smartspace_client/features/notifications/providers/notification_provider.dart';
+import 'package:smartspace_client/features/chat/providers/client_conversations_provider.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/routes/router_path.dart';
 import 'package:smartspace_client/ui/components/connection_indicator.dart';
@@ -17,6 +18,7 @@ class TopBar extends ConsumerWidget implements PreferredSizeWidget {
     final theme = Theme.of(context);
     final notificationState = ref.watch(notificationProvider);
     final unreadCount = notificationState.countModel?.notifNumber ?? 0;
+    final chatUnreadCount = ref.watch(clientChatTotalUnreadProvider);
 
     return AppBar(
       title: const _TopBarSearchBox(),
@@ -24,6 +26,38 @@ class TopBar extends ConsumerWidget implements PreferredSizeWidget {
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 8.0),
           child: ConnectionIndicator(),
+        ),
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.chat_outlined),
+              onPressed: () {
+                context.push(RouterPath.conversations);
+              },
+              tooltip: l10n.conversations,
+            ),
+            if (chatUnreadCount > 0)
+              Positioned(
+                right: 8,
+                top: 8,
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.error,
+                    shape: BoxShape.circle,
+                  ),
+                  child: Text(
+                    chatUnreadCount > 99 ? '99+' : chatUnreadCount.toString(),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onError,
+                      fontSize: 10,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ),
+          ],
         ),
         Stack(
           alignment: Alignment.center,

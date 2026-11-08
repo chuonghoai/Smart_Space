@@ -1014,4 +1014,61 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get timeframe12Months => '12 months';
+
+  @override
+  String get routeConversations => 'Conversations';
+
+  @override
+  String get routeChatDetail => 'Chat Detail';
+
+  @override
+  String get conversations => 'Messages';
+
+  @override
+  String get noConversations => 'No conversations yet';
+
+  @override
+  String get noConversationsSub =>
+      'You can message support staff from the detail of your active reports.';
+
+  @override
+  String get searchConversationsPlaceholder => 'Search by name or content...';
+
+  @override
+  String get roleStaff => 'Staff';
+
+  @override
+  String get roleAdmin => 'Admin';
+
+  @override
+  String get chatInputHint => 'Type a message...';
+
+  @override
+  String get emptyMessages => 'No messages yet. Start chatting!';
+
+  @override
+  String get errorLoadMessages => 'Failed to load messages';
+
+  @override
+  String get anonymousPerson => 'Anonymous User';
+
+  @override
+  String get supportStaff => 'Support Staff';
+
+  @override
+  String get managementBoard => 'Management';
+
+  @override
+  String get chatDisabledNotice =>
+      'The report has been resolved. Chat is currently in read-only history mode.';
+
+  @override
+  String get chatWithStaff => 'Message staff';
+
+  @override
+  String get viewStaffChat => 'View support messages';
+
+  @override
+  String get cannotStartChat =>
+      'Unable to start conversation, please try again later';
 }

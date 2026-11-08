@@ -47,7 +47,19 @@ class NotificationRouter {
           debugPrint('[NotificationRouter] Missing newsId in payload');
         }
         break;
-      // Add other feature cases here, e.g. INVOICE_DETAIL, CHAT_MESSAGE
+      case 'CHAT':
+      case 'CHAT_DETAIL':
+        final convId = (action.payload['conversationId'] ??
+            action.payload['convId'] ??
+            action.payload['id']) as String?;
+        if (convId != null && convId.isNotEmpty) {
+          final path = RouterPath.chatDetailWithId(convId);
+          debugPrint('[NotificationRouter] Navigating to $path');
+          GoRouter.of(ctx).push(path);
+        } else {
+          GoRouter.of(ctx).push(RouterPath.conversations);
+        }
+        break;
       default:
         debugPrint('[NotificationRouter] Unhandled action type: ${action.type}');
     }

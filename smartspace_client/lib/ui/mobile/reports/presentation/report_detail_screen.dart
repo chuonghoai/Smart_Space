@@ -20,6 +20,8 @@ import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/routes/router_path.dart';
 import 'package:smartspace_client/ui/mobile/reports/presentation/widgets/fullscreen_image_viewer.dart';
 import 'package:smartspace_client/ui/mobile/reports/presentation/widgets/report_review_dialog.dart';
+import 'package:mobile_shared/features/chat/data/chat_repository.dart';
+import 'package:mobile_shared/features/chat/models/conversation_model.dart';
 
 class ReportDetailScreen extends ConsumerStatefulWidget {
   final String reportId;
@@ -43,6 +45,49 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
         ref.read(reportDetailProvider(widget.reportId).notifier).refresh();
       },
     );
+  }
+
+  Future<void> _openStaffChat(ReportDetailModel report) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const Center(child: CircularProgressIndicator()),
+      );
+
+      final res = await chatRepository.createOrGetConversation(reportId: report.id);
+      if (!mounted) return;
+      Navigator.of(context, rootNavigator: true).pop(); // pop loading
+
+      if (res.success && res.data != null) {
+        context.push(
+          RouterPath.chatDetailWithId(res.data!.id),
+          extra: ParticipantModel(
+            userId: report.assignedStaffId ?? '',
+            name: report.assignedStaffName ?? l10n.supportStaff,
+            avatarUrl: report.assignedStaffAvatarUrl,
+            role: 'staff',
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(res.message.isNotEmpty ? res.message : l10n.cannotStartChat),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.of(context, rootNavigator: true).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.cannotStartChat),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
   }
 
   Future<void> _handleEditReport(ReportDetailModel report) async {
@@ -736,6 +781,25 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
                                       ),
                                     ),
                                   ],
+                                ),
+                                const SizedBox(height: 12),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: OutlinedButton.icon(
+                                    icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
+                                    label: Text(
+                                      (report.status == ReportStatus.processing)
+                                          ? l10n.chatWithStaff
+                                          : l10n.viewStaffChat,
+                                    ),
+                                    style: OutlinedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(vertical: 10),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    onPressed: () => _openStaffChat(report),
+                                  ),
                                 ),
                               ],
                             ),

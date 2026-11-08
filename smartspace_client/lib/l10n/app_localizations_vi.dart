@@ -1004,4 +1004,62 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get timeframe12Months => '12 tháng';
+
+  @override
+  String get routeConversations => 'Hội thoại';
+
+  @override
+  String get routeChatDetail => 'Chi tiết tin nhắn';
+
+  @override
+  String get conversations => 'Tin nhắn';
+
+  @override
+  String get noConversations => 'Chưa có cuộc trò chuyện nào';
+
+  @override
+  String get noConversationsSub =>
+      'Bạn có thể gửi tin nhắn hỗ trợ từ chi tiết các phản ánh đang xử lý.';
+
+  @override
+  String get searchConversationsPlaceholder =>
+      'Tìm kiếm theo tên hoặc nội dung...';
+
+  @override
+  String get roleStaff => 'Nhân viên';
+
+  @override
+  String get roleAdmin => 'Quản trị viên';
+
+  @override
+  String get chatInputHint => 'Nhập tin nhắn...';
+
+  @override
+  String get emptyMessages => 'Chưa có tin nhắn nào. Bắt đầu trò chuyện ngay!';
+
+  @override
+  String get errorLoadMessages => 'Không thể tải tin nhắn';
+
+  @override
+  String get anonymousPerson => 'Người dùng ẩn danh';
+
+  @override
+  String get supportStaff => 'Nhân viên hỗ trợ';
+
+  @override
+  String get managementBoard => 'Ban quản lý';
+
+  @override
+  String get chatDisabledNotice =>
+      'Phản ánh đã hoàn tất xử lý. Khung chat hiện ở chế độ xem lại lịch sử.';
+
+  @override
+  String get chatWithStaff => 'Nhắn tin cho nhân viên';
+
+  @override
+  String get viewStaffChat => 'Xem tin nhắn hỗ trợ';
+
+  @override
+  String get cannotStartChat =>
+      'Không thể kết nối trò chuyện, vui lòng thử lại sau';
 }
