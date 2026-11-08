@@ -435,15 +435,15 @@
   "cancelWithdrawalSuccess": "Hủy yêu cầu rút tiền thành công, số tiền đã được hoàn lại vào ví.",
   "statusCancelled": "Đã hủy",
   "cancelledNoticeDesc": "Yêu cầu rút tiền này đã được hủy và số tiền tạm giữ đã được hoàn trả lại ví của bạn.",
-  "routeDelegations": "Việc nhờ làm giùm",
-  "delegationScreenTitle": "Việc nhờ làm giùm",
+  "routeDelegations": "Việc nhờ làm hộ",
+  "delegationScreenTitle": "Việc nhờ làm hộ",
   "delegationTabReceived": "Được nhờ",
   "delegationTabSent": "Đã nhờ",
-  "delegationEmptyReceived": "Chưa có ai nhờ bạn làm giùm",
-  "delegationEmptySent": "Bạn chưa nhờ ai làm giùm",
-  "delegationLoadFailed": "Không tải được danh sách nhờ làm giùm",
-  "delegationRequestAction": "Nhờ làm giùm",
-  "delegationSheetTitle": "Nhờ đồng nghiệp làm giùm",
+  "delegationEmptyReceived": "Chưa có ai nhờ bạn làm hộ",
+  "delegationEmptySent": "Bạn chưa nhờ ai làm hộ",
+  "delegationLoadFailed": "Không tải được danh sách nhờ làm hộ",
+  "delegationRequestAction": "Nhờ làm hộ",
+  "delegationSheetTitle": "Nhờ đồng nghiệp làm hộ",
   "delegationSearchHint": "Tìm đồng nghiệp theo tên",
   "delegationNoColleagues": "Không tìm thấy đồng nghiệp phù hợp",
   "delegationChooseColleague": "Chọn đồng nghiệp",
@@ -462,20 +462,20 @@
   "delegationHoldHint": "Bonus được giữ tạm trong ví và hoàn lại nếu yêu cầu không thành. Yêu cầu hết hạn sau 24 giờ.",
   "delegationNoteLabel": "Lời nhắn (không bắt buộc)",
   "delegationSendAction": "Gửi yêu cầu",
-  "delegationSentSuccess": "Đã gửi yêu cầu nhờ làm giùm",
-  "delegationPendingRequesterBanner": "Đang chờ {name} nhận làm giùm",
+  "delegationSentSuccess": "Đã gửi yêu cầu nhờ làm hộ",
+  "delegationPendingRequesterBanner": "Đang chờ {name} nhận làm hộ",
   "@delegationPendingRequesterBanner": {
     "placeholders": { "name": { "type": "String" } }
   },
-  "delegationAcceptedRequesterBanner": "{name} đang làm giùm bạn phản ánh này",
+  "delegationAcceptedRequesterBanner": "{name} đang làm hộ bạn phản ánh này",
   "@delegationAcceptedRequesterBanner": {
     "placeholders": { "name": { "type": "String" } }
   },
-  "delegationPendingHelperBanner": "{name} nhờ bạn làm giùm phản ánh này",
+  "delegationPendingHelperBanner": "{name} nhờ bạn làm hộ phản ánh này",
   "@delegationPendingHelperBanner": {
     "placeholders": { "name": { "type": "String" } }
   },
-  "delegationAcceptedHelperBanner": "Bạn đang làm giùm {name}",
+  "delegationAcceptedHelperBanner": "Bạn đang làm hộ {name}",
   "@delegationAcceptedHelperBanner": {
     "placeholders": { "name": { "type": "String" } }
   },
@@ -487,15 +487,15 @@
   "@delegationBonusHeld": {
     "placeholders": { "bonus": { "type": "String" } }
   },
-  "commissionExpectedWithBonusNotice": "Bạn sẽ nhận được {commission}đ + {bonus}đ bonus làm giùm sau khi hoàn tất xử lý phản ánh này.",
+  "commissionExpectedWithBonusNotice": "Bạn sẽ nhận được {commission}đ + {bonus}đ bonus làm hộ sau khi hoàn tất xử lý phản ánh này.",
   "@commissionExpectedWithBonusNotice": {
     "placeholders": { "commission": { "type": "String" }, "bonus": { "type": "String" } }
   },
-  "delegationBonusReceivedLine": "Bonus làm giùm từ {name}: +{amount}đ",
+  "delegationBonusReceivedLine": "Bonus làm hộ từ {name}: +{amount}đ",
   "@delegationBonusReceivedLine": {
     "placeholders": { "name": { "type": "String" }, "amount": { "type": "String" } }
   },
-  "delegationBonusPaidNotice": "Bạn đã trả {amount}đ bonus cho {name} làm giùm phản ánh này.",
+  "delegationBonusPaidNotice": "Bạn đã trả {amount}đ bonus cho {name} làm hộ phản ánh này.",
   "@delegationBonusPaidNotice": {
     "placeholders": { "amount": { "type": "String" }, "name": { "type": "String" } }
   },
@@ -506,16 +506,16 @@
   "delegationAcceptAction": "Nhận làm",
   "delegationDeclineAction": "Từ chối",
   "delegationCancelAction": "Huỷ yêu cầu",
-  "delegationAcceptConfirmTitle": "Nhận làm giùm phản ánh này?",
+  "delegationAcceptConfirmTitle": "Nhận làm hộ phản ánh này?",
   "delegationAcceptConfirmMessage": "Phản ánh sẽ được giao cho bạn. Bạn chịu trách nhiệm xử lý, kể cả khi phải xử lý lại và bị trừ hoa hồng.",
   "delegationDeclineConfirmTitle": "Từ chối yêu cầu này?",
   "delegationDeclineConfirmMessage": "{name} sẽ được hoàn lại bonus đã giữ.",
   "@delegationDeclineConfirmMessage": {
     "placeholders": { "name": { "type": "String" } }
   },
-  "delegationCancelConfirmTitle": "Huỷ yêu cầu nhờ làm giùm?",
+  "delegationCancelConfirmTitle": "Huỷ yêu cầu nhờ làm hộ?",
   "delegationCancelConfirmMessage": "Bonus đã giữ sẽ được hoàn lại vào ví của bạn.",
-  "delegationAcceptedSuccess": "Bạn đã nhận làm giùm",
+  "delegationAcceptedSuccess": "Bạn đã nhận làm hộ",
   "delegationDeclinedSuccess": "Đã từ chối yêu cầu",
   "delegationCancelledSuccess": "Đã huỷ yêu cầu, bonus đã được hoàn lại",
   "delegationFrom": "Từ {name}",
@@ -531,10 +531,41 @@
     "placeholders": { "amount": { "type": "String" } }
   },
   "delegationStatusPending": "Chờ phản hồi",
-  "delegationStatusAccepted": "Đang làm giùm",
+  "delegationStatusAccepted": "Đang làm hộ",
   "delegationStatusDeclined": "Đã từ chối",
   "delegationStatusCancelled": "Đã huỷ",
   "delegationStatusExpired": "Hết hạn",
   "delegationStatusCompleted": "Hoàn tất",
-  "delegationStatusRevoked": "Đã thu hồi"
+  "delegationStatusRevoked": "Đã thu hồi",
+  "routeConversations": "Tin nhắn",
+  "routeChatDetail": "Cuộc trò chuyện",
+  "conversations": "Tin nhắn",
+  "quickAccessChat": "Tin nhắn",
+  "roleClient": "Cư dân",
+  "roleStaff": "Nhân viên",
+  "roleAdmin": "Quản trị viên",
+  "staffNoPosition": "Nhân viên chưa có chức vụ",
+  "chatInputHint": "Nhập tin nhắn...",
+  "chatDisabledNotice": "Bạn hiện không thể nhắn tin cho người dùng {name}",
+  "@chatDisabledNotice": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "messageReporter": "Nhắn tin",
+  "emptyConversations": "Chưa có cuộc trò chuyện nào",
+  "emptyConversationsDesc": "Các cuộc trò chuyện với cư dân và đồng nghiệp sẽ hiển thị tại đây.",
+  "emptyMessages": "Chưa có tin nhắn nào. Bắt đầu trò chuyện ngay!",
+  "errorLoadConversations": "Không thể tải danh sách cuộc trò chuyện",
+  "errorLoadMessages": "Không thể tải tin nhắn",
+  "sendMessageFailed": "Gửi tin nhắn thất bại, chạm để thử lại",
+  "anonymousPerson": "Người dùng ẩn danh",
+  "filterClient": "Cư dân",
+  "filterStaff": "Nhân viên",
+  "filterAdmin": "Quản trị viên",
+  "sendAction": "Gửi",
+  "callClient": "Gọi điện",
+  "noPhoneNumber": "Người dùng không cung cấp số điện thoại",
+  "searchConversations": "Tìm kiếm...",
+  "otherUsers": "Người dùng khác",
+  "startConversation": "Bắt đầu cuộc trò chuyện",
+  "noUsersFound": "Không tìm thấy người dùng phù hợp"
 }

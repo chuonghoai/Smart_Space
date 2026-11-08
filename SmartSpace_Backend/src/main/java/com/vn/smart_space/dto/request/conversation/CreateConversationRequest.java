@@ -4,18 +4,13 @@ import java.util.List;
 
 import com.vn.smart_space.consts.EConversationType;
 
-import jakarta.validation.constraints.NotEmpty;
 import jakarta.validation.constraints.NotNull;
 
 public record CreateConversationRequest(
-                String name, // Tên conversation (bắt buộc với GROUP, không cần với PRIVATE)
-                String conversationAvatar, // Avatar của nhóm (optional)
-
-                @NotNull(message = "{conversation.type.required}") EConversationType conversationType, // PRIVATE hoặc
-                                                                                                        // GROUP
-
-                @NotEmpty(message = "{conversation.participantIds.required}") List<String> participantIds // Danh sách userId của
-                                                                                                // người
-                                                                                                // tham gia
+        String name,
+        String conversationAvatar,
+        @NotNull(message = "{conversation.type.required}") EConversationType conversationType,
+        List<String> participantIds,
+        String reportId
 ) {
 }

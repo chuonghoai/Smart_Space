@@ -27,6 +27,10 @@ class RouterPath {
       RouteName.staffWithdrawalDetail.path.replaceAll(':id', id);
   static String get staffBankAccounts => RouteName.staffBankAccounts.path;
   static String get delegations => RouteName.delegations.path;
+  static String get conversations => RouteName.conversations.path;
+  static String get chatDetail => RouteName.chatDetail.path;
+  static String chatDetailWithId(String id) =>
+      RouteName.chatDetail.path.replaceAll(':id', id);
 
   /// Màn "Việc nhờ làm giùm" mở sẵn tab [box] (`received` | `sent`).
   static String delegationsWithBox(String box) =>

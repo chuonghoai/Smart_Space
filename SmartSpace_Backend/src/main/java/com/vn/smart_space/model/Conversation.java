@@ -54,6 +54,10 @@ public class Conversation {
 
     private LocalDateTime lastMessageTime;
 
+    @jakarta.persistence.ManyToOne(fetch = FetchType.LAZY)
+    @jakarta.persistence.JoinColumn(name = "report_id")
+    private Report report;
+
     // Relationship
     @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default

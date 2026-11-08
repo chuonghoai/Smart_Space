@@ -2,6 +2,7 @@ package com.vn.smart_space.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -45,6 +46,16 @@ public class GlobalExceptionHandler {
         }
         return errorResponse;
 
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e, WebRequest request) {
+        log.warn("Malformed JSON or unreadable HTTP message: {}", e.getMessage());
+        return ApiResponse.builder()
+                .success(false)
+                .message(messageService.get("validation.request_body_invalid", "Dữ liệu yêu cầu không hợp lệ!"))
+                .build();
     }
 
     @ExceptionHandler({ MethodArgumentTypeMismatchException.class })

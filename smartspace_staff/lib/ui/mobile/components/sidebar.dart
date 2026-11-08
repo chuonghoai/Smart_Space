@@ -11,6 +11,7 @@ import 'package:smartspace_staff/routes/app_router.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
 import 'package:smartspace_staff/ui/mobile/home/home_controller.dart';
 import 'package:smartspace_staff/ui/shared/image/app_network_image.dart';
+import 'package:smartspace_staff/features/chat/providers/conversations_provider.dart';
 
 class Sidebar extends ConsumerWidget {
   const Sidebar({super.key});
@@ -21,6 +22,7 @@ class Sidebar extends ConsumerWidget {
     final theme = Theme.of(context);
     final notificationState = ref.watch(notificationProvider);
     final unreadCount = notificationState.countModel?.notifNumber ?? 0;
+    final unreadChatCount = ref.watch(conversationsProvider.select((s) => s.totalUnreadCount));
     // Sidebar is only mounted inside MobileHomeScreen, so the home provider is alive here.
     final stats = ref.watch(
       homeControllerProvider.select((state) => state.statistics),
@@ -112,6 +114,15 @@ class Sidebar extends ConsumerWidget {
                       context.push(RouterPath.map);
                     },
                     isSelected: false,
+                  ),
+                  _SidebarItem(
+                    icon: Icons.chat_bubble_outline_rounded,
+                    label: l10n.conversations,
+                    trailing: _CountBadge(count: unreadChatCount, highlight: true),
+                    onTap: () {
+                      Navigator.pop(context);
+                      context.push(RouterPath.conversations);
+                    },
                   ),
                   _SidebarItem(
                     icon: Icons.article_outlined,

@@ -2473,6 +2473,174 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Revoked'**
   String get delegationStatusRevoked;
+
+  /// No description provided for @routeConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get routeConversations;
+
+  /// No description provided for @routeChatDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation'**
+  String get routeChatDetail;
+
+  /// No description provided for @conversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get conversations;
+
+  /// No description provided for @quickAccessChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get quickAccessChat;
+
+  /// No description provided for @roleClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Resident'**
+  String get roleClient;
+
+  /// No description provided for @roleStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get roleStaff;
+
+  /// No description provided for @roleAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get roleAdmin;
+
+  /// No description provided for @staffNoPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff with no assigned position'**
+  String get staffNoPosition;
+
+  /// No description provided for @chatInputHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a message...'**
+  String get chatInputHint;
+
+  /// No description provided for @chatDisabledNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'You cannot message {name} at this time'**
+  String chatDisabledNotice(String name);
+
+  /// No description provided for @messageReporter.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get messageReporter;
+
+  /// No description provided for @emptyConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations yet'**
+  String get emptyConversations;
+
+  /// No description provided for @emptyConversationsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversations with residents and colleagues will appear here.'**
+  String get emptyConversationsDesc;
+
+  /// No description provided for @emptyMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet. Start chatting!'**
+  String get emptyMessages;
+
+  /// No description provided for @errorLoadConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load conversations'**
+  String get errorLoadConversations;
+
+  /// No description provided for @errorLoadMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load messages'**
+  String get errorLoadMessages;
+
+  /// No description provided for @sendMessageFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send message, tap to retry'**
+  String get sendMessageFailed;
+
+  /// No description provided for @anonymousPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous User'**
+  String get anonymousPerson;
+
+  /// No description provided for @filterClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Resident'**
+  String get filterClient;
+
+  /// No description provided for @filterStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get filterStaff;
+
+  /// No description provided for @filterAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get filterAdmin;
+
+  /// No description provided for @sendAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get sendAction;
+
+  /// No description provided for @callClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get callClient;
+
+  /// No description provided for @noPhoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'No phone number available'**
+  String get noPhoneNumber;
+
+  /// No description provided for @searchConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Search...'**
+  String get searchConversations;
+
+  /// No description provided for @otherUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Other users'**
+  String get otherUsers;
+
+  /// No description provided for @startConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Start conversation'**
+  String get startConversation;
+
+  /// No description provided for @noUsersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No users found'**
+  String get noUsersFound;
 }
 
 class _AppLocalizationsDelegate

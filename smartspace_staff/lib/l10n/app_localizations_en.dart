@@ -1298,4 +1298,91 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get delegationStatusRevoked => 'Revoked';
+
+  @override
+  String get routeConversations => 'Messages';
+
+  @override
+  String get routeChatDetail => 'Conversation';
+
+  @override
+  String get conversations => 'Messages';
+
+  @override
+  String get quickAccessChat => 'Messages';
+
+  @override
+  String get roleClient => 'Resident';
+
+  @override
+  String get roleStaff => 'Staff';
+
+  @override
+  String get roleAdmin => 'Admin';
+
+  @override
+  String get staffNoPosition => 'Staff with no assigned position';
+
+  @override
+  String get chatInputHint => 'Type a message...';
+
+  @override
+  String chatDisabledNotice(String name) {
+    return 'You cannot message $name at this time';
+  }
+
+  @override
+  String get messageReporter => 'Message';
+
+  @override
+  String get emptyConversations => 'No conversations yet';
+
+  @override
+  String get emptyConversationsDesc =>
+      'Conversations with residents and colleagues will appear here.';
+
+  @override
+  String get emptyMessages => 'No messages yet. Start chatting!';
+
+  @override
+  String get errorLoadConversations => 'Could not load conversations';
+
+  @override
+  String get errorLoadMessages => 'Could not load messages';
+
+  @override
+  String get sendMessageFailed => 'Failed to send message, tap to retry';
+
+  @override
+  String get anonymousPerson => 'Anonymous User';
+
+  @override
+  String get filterClient => 'Resident';
+
+  @override
+  String get filterStaff => 'Staff';
+
+  @override
+  String get filterAdmin => 'Admin';
+
+  @override
+  String get sendAction => 'Send';
+
+  @override
+  String get callClient => 'Call';
+
+  @override
+  String get noPhoneNumber => 'No phone number available';
+
+  @override
+  String get searchConversations => 'Search...';
+
+  @override
+  String get otherUsers => 'Other users';
+
+  @override
+  String get startConversation => 'Start conversation';
+
+  @override
+  String get noUsersFound => 'No users found';
 }

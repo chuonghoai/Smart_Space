@@ -69,6 +69,7 @@ public class ReportDelegationServiceImpl implements IReportDelegationService {
         IWalletConfigService walletConfigService;
         MessageService messageService;
         DelegationNotifier notifier;
+        com.vn.smart_space.service.conversation.IConversationService conversationService;
 
         // Đọc
 
@@ -238,6 +239,13 @@ public class ReportDelegationServiceImpl implements IReportDelegationService {
                 report.setAssignedStaff(delegation.getHelper());
                 report.setAssignedAt(new java.util.Date());
                 reportRepository.save(report);
+
+                // Transfer conversation to helper
+                try {
+                        conversationService.transferReportConversation(report, delegation.getRequester(), delegation.getHelper());
+                } catch (Exception e) {
+                        log.error("Failed to transfer report conversation on delegation accept: {}", e.getMessage());
+                }
 
                 delegation.setStatus(EDelegationStatus.ACCEPTED);
                 delegation.setRespondedAt(LocalDateTime.now());

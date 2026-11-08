@@ -30,6 +30,16 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     List<User> findByRoleIn(java.util.Collection<ERole> roles);
 
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.position " +
+            "WHERE u.role = :role AND u.id <> :excludeUserId AND u.status = 'active' " +
+            "AND (LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    List<User> searchActiveUsersByRole(@Param("role") ERole role, @Param("excludeUserId") String excludeUserId, @Param("keyword") String keyword, Pageable pageable);
+
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.position " +
+            "WHERE u.role IN ('staff', 'admin') AND u.id <> :excludeUserId AND u.status = 'active' " +
+            "AND (LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+    List<User> searchActiveStaffAndAdmins(@Param("excludeUserId") String excludeUserId, @Param("keyword") String keyword, Pageable pageable);
+
     // Search and Filter Staff
     @Query(value = "SELECT u FROM User u LEFT JOIN FETCH u.position WHERE u.role = :role " +
             "AND (:status IS NULL OR u.status = :status) " +

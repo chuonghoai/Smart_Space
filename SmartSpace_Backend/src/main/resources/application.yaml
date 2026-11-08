@@ -22,6 +22,10 @@ spring:
         type:
           json_format_mapper: com.vn.smart_space.configuration.CustomHibernateJsonFormatter
 
+  jackson:
+    mapper:
+      accept-case-insensitive-enums: true
+
   # Redis Config
   data:
     redis:
