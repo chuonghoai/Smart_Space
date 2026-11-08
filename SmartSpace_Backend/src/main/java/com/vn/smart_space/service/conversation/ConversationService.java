@@ -120,11 +120,22 @@ public class ConversationService implements IConversationService {
             User u1 = participantInfos.get(0);
             User u2 = participantInfos.get(1);
 
-            // Rule: Staff and Client cannot chat privately outside of a report
+            // Rule 1: Two clients cannot chat privately with each other
+            if (u1.getRole() == ERole.client && u2.getRole() == ERole.client) {
+                throw new BadRequestException("conversation.client_client_forbidden");
+            }
+
+            // Rule 2: Staff and Client cannot chat privately outside of a report
             boolean hasStaff = u1.getRole() == ERole.staff || u2.getRole() == ERole.staff;
             boolean hasClient = u1.getRole() == ERole.client || u2.getRole() == ERole.client;
             if (hasStaff && hasClient) {
                 throw new BadRequestException("conversation.client_staff_must_have_report");
+            }
+
+            // Rule 3: Admin and Client cannot chat privately outside of a report
+            boolean hasAdmin = u1.getRole() == ERole.admin || u2.getRole() == ERole.admin;
+            if (hasAdmin && hasClient) {
+                throw new BadRequestException("conversation.admin_client_direct_forbidden");
             }
 
             participantHash = participantInfos.stream()
@@ -137,6 +148,10 @@ public class ConversationService implements IConversationService {
                 return ConversationMapper.toConversationResponse(creatorId, existing.get());
             }
         } else if (conversationType == EConversationType.GROUP) {
+            boolean anyClient = participantInfos.stream().anyMatch(u -> u.getRole() == ERole.client);
+            if (anyClient) {
+                throw new BadRequestException("conversation.client_group_forbidden");
+            }
             if (request.name() == null || request.name().trim().isEmpty()) {
                 throw new BadRequestException("conversation.group.name_required");
             }
