@@ -430,5 +430,14 @@
   "staffNoPosition": "No position",
   "rehandlingBadge": "Re-handling",
   "roleClient": "Resident",
-  "refresh": "Refresh"
+  "refresh": "Refresh",
+  "contextIdentified": "Identified",
+  "contextAnonymous": "Anonymous",
+  "contextIdentifiedTag": "Identified",
+  "contextAnonymousTag": "Anonymous",
+  "noIdentifiedReports": "No active identified reports",
+  "noAnonymousReports": "No active anonymous reports",
+  "anonymousProtectionBanner": "Anonymous discussion. Your personal identity is strictly protected.",
+  "contextIdentifiedTooltip": "Identified reports conversation",
+  "contextAnonymousTooltip": "Anonymous reports conversation"
 }

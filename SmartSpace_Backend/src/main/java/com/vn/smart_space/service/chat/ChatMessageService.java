@@ -34,6 +34,7 @@ import com.vn.smart_space.repository.ConversationParticipantRepository;
 import com.vn.smart_space.repository.ConversationRepository;
 import com.vn.smart_space.repository.ReportRepository;
 import com.vn.smart_space.repository.UserRepository;
+import com.vn.smart_space.service.conversation.IConversationService;
 import com.vn.smart_space.service.notification.IFCMService;
 
 import lombok.RequiredArgsConstructor;
@@ -53,6 +54,7 @@ public class ChatMessageService implements IChatMessageService {
     private final ChatPresenceService chatPresenceService;
     private final IFCMService fcmService;
     private final MessageSource messageSource;
+    private final IConversationService conversationService;
 
     @Transactional(rollbackFor = Exception.class)
     @Override
@@ -152,7 +154,17 @@ public class ChatMessageService implements IChatMessageService {
 
             // Broadcast updated conversation item to recipient's conversation list queue
             try {
-                ConversationDetailResponse convResponse = ConversationMapper.toConversationDetailResponse(recipient.getId(), conversation);
+                ConversationDetailResponse convResponse;
+                User convPartner = conversation.getParticipants().stream()
+                        .map(ConversationParticipant::getUser)
+                        .filter(u -> !u.getId().equals(recipient.getId()))
+                        .findFirst()
+                        .orElse(null);
+                if (recipient.getRole() == ERole.client && convPartner != null && convPartner.getRole() == ERole.staff) {
+                    convResponse = conversationService.getMergedClientConversation(recipient.getId(), convPartner, conversation);
+                } else {
+                    convResponse = ConversationMapper.toConversationDetailResponse(recipient.getId(), conversation);
+                }
                 messagingTemplate.convertAndSendToUser(recipient.getId(), "/queue/conversations", convResponse);
             } catch (Exception e) {
                 log.warn("Failed to broadcast conversation update to user {}: {}", recipient.getId(), e.getMessage());
@@ -215,7 +227,9 @@ public class ChatMessageService implements IChatMessageService {
             // Determine sender display name for recipient
             String senderDisplayName = sender.getFullName();
             Report report = conversation.getReport();
-            if (report != null && Boolean.TRUE.equals(report.getIsAnonymous()) && sender.getRole() == ERole.client) {
+            boolean isAnon = Boolean.TRUE.equals(conversation.getIsAnonymous())
+                    || (report != null && Boolean.TRUE.equals(report.getIsAnonymous()));
+            if (isAnon && sender.getRole() == ERole.client) {
                 senderDisplayName = messageSource.getMessage("chat.anonymous_user", null, "Người dùng ẩn danh", recipientLocale);
             }
 

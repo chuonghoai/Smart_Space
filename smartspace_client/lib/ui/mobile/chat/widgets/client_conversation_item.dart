@@ -119,6 +119,8 @@ class ClientConversationItem extends StatelessWidget {
                     const SizedBox(height: 4),
                     Row(
                       children: [
+                        if (conv.lastMessageContext != null)
+                          _buildContextBadge(theme, l10n, conv.lastMessageContext!),
                         Expanded(
                           child: Text(
                             conv.lastMessageContent ?? '',
@@ -158,6 +160,44 @@ class ClientConversationItem extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildContextBadge(ThemeData theme, AppLocalizations l10n, String contextType) {
+    final isAnonymous = contextType == 'ANONYMOUS';
+    final bg = isAnonymous
+        ? theme.colorScheme.secondaryContainer.withValues(alpha: 0.8)
+        : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.8);
+    final fg = isAnonymous
+        ? theme.colorScheme.onSecondaryContainer
+        : theme.colorScheme.onSurfaceVariant;
+
+    return Container(
+      margin: const EdgeInsets.only(right: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1.5),
+      decoration: BoxDecoration(
+        color: bg,
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            isAnonymous ? Icons.shield_outlined : Icons.person_outline_rounded,
+            size: 11,
+            color: fg,
+          ),
+          const SizedBox(width: 3),
+          Text(
+            isAnonymous ? l10n.contextAnonymousTag : l10n.contextIdentifiedTag,
+            style: theme.textTheme.labelSmall?.copyWith(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: fg,
+            ),
+          ),
+        ],
       ),
     );
   }

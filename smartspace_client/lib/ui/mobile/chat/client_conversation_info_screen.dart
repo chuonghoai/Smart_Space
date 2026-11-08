@@ -211,7 +211,7 @@ class _ClientConversationInfoScreenState
           const SizedBox(height: 24),
 
           // 3. Section: Active Linked Reports
-          _buildActiveReportsSection(context, theme, l10n, state),
+          _buildActiveReportsSection(context, theme, l10n, info, state),
 
           const SizedBox(height: 24),
 
@@ -390,10 +390,13 @@ class _ClientConversationInfoScreenState
     BuildContext context,
     ThemeData theme,
     AppLocalizations l10n,
+    ConversationInfoModel info,
     ConversationReportsState state,
   ) {
     final reports = state.reports;
     final isDark = theme.brightness == Brightness.dark;
+    final hasBothContexts =
+        info.hasIdentifiedContext && info.hasAnonymousContext;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -427,7 +430,93 @@ class _ClientConversationInfoScreenState
         ),
         const SizedBox(height: 12),
 
-        if (reports.isEmpty)
+        if (hasBothContexts) ...[
+          Container(
+            height: 40,
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.all(3),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainerHighest
+                  .withValues(alpha: 0.5),
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: Row(
+              children: [
+                Expanded(
+                  child: _buildReportFilterTab(
+                    theme: theme,
+                    title: l10n.contextIdentified,
+                    icon: Icons.person_outline_rounded,
+                    isSelected: state.isAnonymousFilter != true,
+                    onTap: () {
+                      ref
+                          .read(conversationReportsProvider(widget.conversationId)
+                              .notifier)
+                          .setAnonymousFilter(false);
+                    },
+                  ),
+                ),
+                Expanded(
+                  child: _buildReportFilterTab(
+                    theme: theme,
+                    title: l10n.contextAnonymous,
+                    icon: Icons.shield_outlined,
+                    isSelected: state.isAnonymousFilter == true,
+                    onTap: () {
+                      ref
+                          .read(conversationReportsProvider(widget.conversationId)
+                              .notifier)
+                          .setAnonymousFilter(true);
+                    },
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
+
+        if (state.isAnonymousFilter == true ||
+            (info.isAnonymous && !hasBothContexts))
+          Container(
+            margin: const EdgeInsets.only(bottom: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.secondaryContainer
+                  .withValues(alpha: 0.35),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+                width: 0.5,
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.shield_outlined,
+                  size: 16,
+                  color: theme.colorScheme.secondary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.anonymousProtectionBanner,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSecondaryContainer,
+                      fontSize: 12,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+
+        if (state.isLoading)
+          const Padding(
+            padding: EdgeInsets.symmetric(vertical: 24),
+            child: Center(child: CircularProgressIndicator()),
+          )
+        else if (reports.isEmpty)
           Container(
             padding: const EdgeInsets.symmetric(vertical: 24, horizontal: 16),
             decoration: BoxDecoration(
@@ -447,7 +536,11 @@ class _ClientConversationInfoScreenState
                 const SizedBox(width: 12),
                 Expanded(
                   child: Text(
-                    l10n.allReportsProcessed,
+                    state.isAnonymousFilter == true
+                        ? l10n.noAnonymousReports
+                        : (state.isAnonymousFilter == false
+                            ? l10n.noIdentifiedReports
+                            : l10n.allReportsProcessed),
                     style: theme.textTheme.bodyMedium?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                       fontWeight: FontWeight.w500,
@@ -483,6 +576,66 @@ class _ClientConversationInfoScreenState
           ],
         ],
       ],
+    );
+  }
+
+  Widget _buildReportFilterTab({
+    required ThemeData theme,
+    required String title,
+    required IconData icon,
+    required bool isSelected,
+    required VoidCallback onTap,
+  }) {
+    final activeBg = theme.colorScheme.surface;
+    final activeFg = theme.colorScheme.primary;
+    final inactiveFg = theme.colorScheme.onSurfaceVariant;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(17),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: isSelected ? activeBg : Colors.transparent,
+            borderRadius: BorderRadius.circular(17),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withValues(
+                        alpha: theme.brightness == Brightness.dark
+                            ? 0.25
+                            : 0.06,
+                      ),
+                      blurRadius: 4,
+                      offset: const Offset(0, 1),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 15,
+                color: isSelected ? activeFg : inactiveFg,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                title,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                  color: isSelected ? activeFg : inactiveFg,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
     );
   }
 
@@ -749,3 +902,4 @@ class _ClientConversationInfoScreenState
     );
   }
 }
+

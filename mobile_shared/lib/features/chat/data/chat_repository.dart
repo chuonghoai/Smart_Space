@@ -70,6 +70,7 @@ abstract class ChatRepository {
 
   Future<ApiResponse<List<LinkedReportModel>>> getConversationReports(
     String conversationId, {
+    bool? isAnonymous,
     int page = 1,
     int size = 10,
   });
@@ -211,10 +212,11 @@ class ChatRepositoryImpl implements ChatRepository {
   @override
   Future<ApiResponse<List<LinkedReportModel>>> getConversationReports(
     String conversationId, {
+    bool? isAnonymous,
     int page = 1,
     int size = 10,
   }) {
-    return _apiService.getConversationReports(conversationId, page: page, size: size);
+    return _apiService.getConversationReports(conversationId, isAnonymous: isAnonymous, page: page, size: size);
   }
 }
 

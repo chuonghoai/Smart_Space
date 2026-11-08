@@ -143,6 +143,13 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
     _repository.markAsRead(conversationId);
   }
 
+  Future<void> markAsRead() async {
+    if (state.isDraft) return;
+    try {
+      await _repository.markAsRead(conversationId);
+    } catch (_) {}
+  }
+
   Future<void> loadInitial() async {
     if (state.isDraft) return;
 

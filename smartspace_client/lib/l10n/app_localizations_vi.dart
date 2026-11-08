@@ -1113,4 +1113,33 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get roleClient => 'Cư dân';
+
+  @override
+  String get contextIdentified => 'Không ẩn danh';
+
+  @override
+  String get contextAnonymous => 'Ẩn danh';
+
+  @override
+  String get contextIdentifiedTag => 'Không ẩn danh';
+
+  @override
+  String get contextAnonymousTag => 'Ẩn danh';
+
+  @override
+  String get noIdentifiedReports =>
+      'Không có phản ánh không ẩn danh nào đang xử lý';
+
+  @override
+  String get noAnonymousReports => 'Không có phản ánh ẩn danh nào đang xử lý';
+
+  @override
+  String get anonymousProtectionBanner =>
+      'Đang trao đổi ẩn danh. Danh tính của bạn được bảo vệ tuyệt đối.';
+
+  @override
+  String get contextIdentifiedTooltip => 'Hội thoại phản ánh công khai';
+
+  @override
+  String get contextAnonymousTooltip => 'Hội thoại phản ánh ẩn danh';
 }

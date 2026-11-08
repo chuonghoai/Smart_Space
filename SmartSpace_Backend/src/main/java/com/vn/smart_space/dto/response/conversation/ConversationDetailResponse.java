@@ -34,6 +34,15 @@ public class ConversationDetailResponse {
     private String partnerPosition;
     private Boolean isAnonymous;
 
+    // Context-based messaging for Client
+    private String identifiedConversationId;
+    private String anonymousConversationId;
+    private Boolean hasIdentifiedContext;
+    private Boolean hasAnonymousContext;
+    private String lastMessageContext; // "IDENTIFIED" or "ANONYMOUS"
+    private Integer identifiedUnreadCount;
+    private Integer anonymousUnreadCount;
+
     // Report context (if attached)
     private String reportId;
     private String reportTitle;

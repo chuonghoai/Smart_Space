@@ -34,6 +34,8 @@ public interface IConversationService {
 
     com.vn.smart_space.dto.response.conversation.ConversationInfoResponse getConversationInfo(String userId, String conversationId);
 
-    PageResponse<com.vn.smart_space.dto.response.conversation.LinkedReportResponse> getConversationReports(String userId, String conversationId, int page, int size);
+    ConversationDetailResponse getMergedClientConversation(String clientId, User partner, Conversation baseConv);
+
+    PageResponse<com.vn.smart_space.dto.response.conversation.LinkedReportResponse> getConversationReports(String userId, String conversationId, Boolean isAnonymous, int page, int size);
 
 }

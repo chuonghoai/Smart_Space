@@ -107,12 +107,13 @@ public class ConversationController {
     public ResponseEntity<ApiResponse> getConversationReports(
             @AuthenticationPrincipal Jwt jwt,
             @PathVariable String id,
+            @RequestParam(required = false) Boolean isAnonymous,
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int size) {
 
         var userId = jwt.getClaim("userId").toString();
         com.vn.smart_space.dto.PageResponse<com.vn.smart_space.dto.response.conversation.LinkedReportResponse> data =
-                conversationService.getConversationReports(userId, id, page, size);
+                conversationService.getConversationReports(userId, id, isAnonymous, page, size);
 
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)

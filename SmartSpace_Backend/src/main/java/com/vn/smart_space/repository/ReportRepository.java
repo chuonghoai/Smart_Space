@@ -343,4 +343,27 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                 @Param("staffId") String staffId,
                 org.springframework.data.domain.Pageable pageable);
 
+        boolean existsByUserIdAndAssignedStaffIdAndIsAnonymous(String userId, String staffId, Boolean isAnonymous);
+
+        @Query("SELECT r FROM Report r WHERE r.user.id = :clientId AND r.assignedStaff.id = :staffId " +
+               "AND (:isAnonymous IS NULL OR r.isAnonymous = :isAnonymous) " +
+               "AND (r.status = com.vn.smart_space.consts.EReportStatus.processing " +
+               "     OR (r.status = com.vn.smart_space.consts.EReportStatus.processed AND r.isReviewResolved = false)) " +
+               "ORDER BY r.createdAt DESC")
+        List<Report> findActiveReportsByClientAndStaffAndAnonymous(
+                @Param("clientId") String clientId,
+                @Param("staffId") String staffId,
+                @Param("isAnonymous") Boolean isAnonymous);
+
+        @Query("SELECT r FROM Report r WHERE r.user.id = :clientId AND r.assignedStaff.id = :staffId " +
+               "AND (:isAnonymous IS NULL OR r.isAnonymous = :isAnonymous) " +
+               "AND (r.status = com.vn.smart_space.consts.EReportStatus.processing " +
+               "     OR (r.status = com.vn.smart_space.consts.EReportStatus.processed AND r.isReviewResolved = false)) " +
+               "ORDER BY r.createdAt DESC")
+        org.springframework.data.domain.Page<Report> findActiveReportsByClientAndStaffAndAnonymous(
+                @Param("clientId") String clientId,
+                @Param("staffId") String staffId,
+                @Param("isAnonymous") Boolean isAnonymous,
+                org.springframework.data.domain.Pageable pageable);
+
 }

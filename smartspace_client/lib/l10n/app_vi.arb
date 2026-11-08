@@ -430,5 +430,14 @@
   "staffNoPosition": "Chưa có chức vụ",
   "rehandlingBadge": "Xử lý lại",
   "roleClient": "Cư dân",
-  "refresh": "Làm mới"
+  "refresh": "Làm mới",
+  "contextIdentified": "Không ẩn danh",
+  "contextAnonymous": "Ẩn danh",
+  "contextIdentifiedTag": "Không ẩn danh",
+  "contextAnonymousTag": "Ẩn danh",
+  "noIdentifiedReports": "Không có phản ánh không ẩn danh nào đang xử lý",
+  "noAnonymousReports": "Không có phản ánh ẩn danh nào đang xử lý",
+  "anonymousProtectionBanner": "Đang trao đổi ẩn danh. Danh tính của bạn được bảo vệ tuyệt đối.",
+  "contextIdentifiedTooltip": "Hội thoại phản ánh công khai",
+  "contextAnonymousTooltip": "Hội thoại phản ánh ẩn danh"
 }

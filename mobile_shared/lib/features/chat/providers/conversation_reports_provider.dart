@@ -13,6 +13,7 @@ class ConversationReportsState {
   final int page;
   final bool hasMore;
   final String? errorMessage;
+  final bool? isAnonymousFilter;
 
   const ConversationReportsState({
     this.info,
@@ -23,6 +24,7 @@ class ConversationReportsState {
     this.page = 1,
     this.hasMore = true,
     this.errorMessage,
+    this.isAnonymousFilter,
   });
 
   ConversationReportsState copyWith({
@@ -34,6 +36,8 @@ class ConversationReportsState {
     int? page,
     bool? hasMore,
     String? errorMessage,
+    bool? isAnonymousFilter,
+    bool clearAnonymousFilter = false,
   }) {
     return ConversationReportsState(
       info: info ?? this.info,
@@ -44,6 +48,7 @@ class ConversationReportsState {
       page: page ?? this.page,
       hasMore: hasMore ?? this.hasMore,
       errorMessage: errorMessage,
+      isAnonymousFilter: clearAnonymousFilter ? null : (isAnonymousFilter ?? this.isAnonymousFilter),
     );
   }
 }
@@ -64,18 +69,64 @@ class ConversationReportsNotifier
     loadInitial();
   }
 
-  Future<void> loadInitial() async {
+  Future<void> loadInitial({bool? filter}) async {
     state = state.copyWith(isLoading: true, errorMessage: null);
     try {
       final infoRes = await _repository.getConversationInfo(conversationId);
-      final reportsRes =
-          await _repository.getConversationReports(conversationId, page: 1, size: 10);
-
       final info = infoRes.data;
+
+      bool? effectiveFilter = filter ?? state.isAnonymousFilter;
+      if (effectiveFilter == null && info != null) {
+        if (info.hasIdentifiedContext && info.hasAnonymousContext) {
+          effectiveFilter = info.activeContext == 'ANONYMOUS';
+        } else if (info.hasAnonymousContext && !info.hasIdentifiedContext) {
+          effectiveFilter = true;
+        } else if (info.hasIdentifiedContext && !info.hasAnonymousContext) {
+          effectiveFilter = false;
+        }
+      }
+
+      final reportsRes = await _repository.getConversationReports(
+        conversationId,
+        isAnonymous: effectiveFilter,
+        page: 1,
+        size: 10,
+      );
+
       final reports = reportsRes.data ?? [];
 
       state = state.copyWith(
         info: info,
+        reports: reports,
+        isAnonymousFilter: effectiveFilter,
+        isLoading: false,
+        page: 1,
+        hasMore: reports.length >= 10,
+      );
+    } catch (e) {
+      state = state.copyWith(
+        isLoading: false,
+        errorMessage: e.toString(),
+      );
+    }
+  }
+
+  Future<void> setAnonymousFilter(bool? isAnonymous) async {
+    if (state.isAnonymousFilter == isAnonymous && !state.isLoading) return;
+    state = state.copyWith(
+      isAnonymousFilter: isAnonymous,
+      isLoading: true,
+      errorMessage: null,
+    );
+    try {
+      final reportsRes = await _repository.getConversationReports(
+        conversationId,
+        isAnonymous: isAnonymous,
+        page: 1,
+        size: 10,
+      );
+      final reports = reportsRes.data ?? [];
+      state = state.copyWith(
         reports: reports,
         isLoading: false,
         page: 1,
@@ -95,8 +146,12 @@ class ConversationReportsNotifier
     state = state.copyWith(isLoadingMore: true);
     final nextPage = state.page + 1;
     try {
-      final res = await _repository.getConversationReports(conversationId,
-          page: nextPage, size: 10);
+      final res = await _repository.getConversationReports(
+        conversationId,
+        isAnonymous: state.isAnonymousFilter,
+        page: nextPage,
+        size: 10,
+      );
       final newItems = res.data ?? [];
 
       final existingIds = state.reports.map((e) => e.id).toSet();
@@ -119,8 +174,12 @@ class ConversationReportsNotifier
     try {
       // 1. Refresh Info & Reports Page 1
       final infoRes = await _repository.getConversationInfo(conversationId);
-      final reportsRes =
-          await _repository.getConversationReports(conversationId, page: 1, size: 10);
+      final reportsRes = await _repository.getConversationReports(
+        conversationId,
+        isAnonymous: state.isAnonymousFilter,
+        page: 1,
+        size: 10,
+      );
 
       // 2. Refresh Latest Messages and save to Local Storage
       final msgRes =
@@ -157,3 +216,4 @@ final conversationReportsProvider = StateNotifierProvider.family<
     localStorageService: storage,
   );
 });
+

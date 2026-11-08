@@ -183,12 +183,14 @@ class ChatApiService {
 
   Future<ApiResponse<List<LinkedReportModel>>> getConversationReports(
     String conversationId, {
+    bool? isAnonymous,
     int page = 1,
     int size = 10,
   }) async {
     return apiClient.get<List<LinkedReportModel>>(
       '/conversations/$conversationId/reports',
       queryParameters: {
+        if (isAnonymous != null) 'isAnonymous': isAnonymous,
         'page': page,
         'size': size,
       },

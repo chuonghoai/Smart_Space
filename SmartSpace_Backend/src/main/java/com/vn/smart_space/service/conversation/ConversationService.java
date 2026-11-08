@@ -387,9 +387,35 @@ public class ConversationService implements IConversationService {
             }
         }
 
-        List<ConversationDetailResponse> responses = conversationPage.getContent().stream()
-                .map(c -> ConversationMapper.toConversationDetailResponse(userId, c))
-                .toList();
+        User currentUser = userRepository.findById(userId).orElse(null);
+        boolean isClient = currentUser != null && currentUser.getRole() == ERole.client;
+
+        List<ConversationDetailResponse> responses;
+        if (isClient) {
+            java.util.Set<String> processedStaffIds = new java.util.HashSet<>();
+            List<ConversationDetailResponse> mergedList = new java.util.ArrayList<>();
+
+            for (Conversation c : conversationPage.getContent()) {
+                User partner = c.getParticipants().stream()
+                        .map(ConversationParticipant::getUser)
+                        .filter(u -> !u.getId().equals(userId))
+                        .findFirst()
+                        .orElse(null);
+
+                if (partner != null && partner.getRole() == ERole.staff) {
+                    if (processedStaffIds.add(partner.getId())) {
+                        mergedList.add(getMergedClientConversation(userId, partner, c));
+                    }
+                } else {
+                    mergedList.add(ConversationMapper.toConversationDetailResponse(userId, c));
+                }
+            }
+            responses = mergedList;
+        } else {
+            responses = conversationPage.getContent().stream()
+                    .map(c -> ConversationMapper.toConversationDetailResponse(userId, c))
+                    .toList();
+        }
 
         return PageResponse.<ConversationDetailResponse>builder()
                 .currentPage(page)
@@ -398,6 +424,89 @@ public class ConversationService implements IConversationService {
                 .totalElements(conversationPage.getTotalElements())
                 .content(responses)
                 .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ConversationDetailResponse getMergedClientConversation(String clientId, User partner, Conversation baseConv) {
+        String sortedUsers = Stream.of(partner.getId(), clientId).sorted().collect(Collectors.joining("_"));
+        Optional<Conversation> identOpt = conversationRepository.findByParticipantHash("user_" + sortedUsers);
+        Optional<Conversation> anonOpt = conversationRepository.findByParticipantHash("anon_" + sortedUsers);
+
+        Conversation identConv = identOpt.orElse(null);
+        Conversation anonConv = anonOpt.orElse(null);
+
+        boolean hasIdentReports = identConv != null || reportRepository.existsByUserIdAndAssignedStaffIdAndIsAnonymous(clientId, partner.getId(), false);
+        boolean hasAnonReports = anonConv != null || reportRepository.existsByUserIdAndAssignedStaffIdAndIsAnonymous(clientId, partner.getId(), true);
+
+        int identUnread = 0;
+        if (identConv != null) {
+            identUnread = identConv.getParticipants().stream()
+                    .filter(p -> p.getUser().getId().equals(clientId))
+                    .findFirst()
+                    .map(p -> p.getUnreadCount() != null ? p.getUnreadCount() : 0)
+                    .orElse(0);
+        }
+
+        int anonUnread = 0;
+        if (anonConv != null) {
+            anonUnread = anonConv.getParticipants().stream()
+                    .filter(p -> p.getUser().getId().equals(clientId))
+                    .findFirst()
+                    .map(p -> p.getUnreadCount() != null ? p.getUnreadCount() : 0)
+                    .orElse(0);
+        }
+
+        // Determine which conversation has the latest message
+        Conversation latestConv = null;
+        String lastMessageContext = null;
+
+        if (identConv != null && anonConv != null) {
+            LocalDateTime tIdent = identConv.getLastMessageTime();
+            LocalDateTime tAnon = anonConv.getLastMessageTime();
+
+            if (tIdent != null && tAnon != null) {
+                if (tAnon.isAfter(tIdent)) {
+                    latestConv = anonConv;
+                    lastMessageContext = "ANONYMOUS";
+                } else {
+                    latestConv = identConv;
+                    lastMessageContext = "IDENTIFIED";
+                }
+            } else if (tAnon != null) {
+                latestConv = anonConv;
+                lastMessageContext = "ANONYMOUS";
+            } else if (tIdent != null) {
+                latestConv = identConv;
+                lastMessageContext = "IDENTIFIED";
+            } else {
+                latestConv = identConv;
+            }
+        } else if (anonConv != null) {
+            latestConv = anonConv;
+            if (anonConv.getLastMessageTime() != null) {
+                lastMessageContext = "ANONYMOUS";
+            }
+        } else if (identConv != null) {
+            latestConv = identConv;
+            if (identConv.getLastMessageTime() != null) {
+                lastMessageContext = "IDENTIFIED";
+            }
+        } else {
+            latestConv = baseConv;
+        }
+
+        ConversationDetailResponse res = ConversationMapper.toConversationDetailResponse(clientId, latestConv);
+        res.setIdentifiedConversationId(identConv != null ? identConv.getId() : null);
+        res.setAnonymousConversationId(anonConv != null ? anonConv.getId() : null);
+        res.setHasIdentifiedContext(hasIdentReports);
+        res.setHasAnonymousContext(hasAnonReports);
+        res.setLastMessageContext(lastMessageContext);
+        res.setIdentifiedUnreadCount(identUnread);
+        res.setAnonymousUnreadCount(anonUnread);
+        res.setUnreadCount(identUnread + anonUnread);
+
+        return res;
     }
 
     @Override
@@ -436,6 +545,17 @@ public class ConversationService implements IConversationService {
         Conversation conversation = conversationRepository.findByIdAndMember(conversationId, userId)
                 .orElseThrow(() -> new BadRequestException("conversation.not_found"));
 
+        User currentUser = userRepository.findById(userId).orElse(null);
+        User partner = conversation.getParticipants().stream()
+                .map(ConversationParticipant::getUser)
+                .filter(u -> !u.getId().equals(userId))
+                .findFirst()
+                .orElse(null);
+
+        if (currentUser != null && currentUser.getRole() == ERole.client && partner != null && partner.getRole() == ERole.staff) {
+            return getMergedClientConversation(userId, partner, conversation);
+        }
+
         return ConversationMapper.toConversationDetailResponse(userId, conversation);
     }
 
@@ -453,8 +573,19 @@ public class ConversationService implements IConversationService {
             // Broadcast updated conversation to user's conversation list queue
             try {
                 Conversation conversation = participant.getConversation();
-                messagingTemplate.convertAndSendToUser(userId, "/queue/conversations",
-                        ConversationMapper.toConversationDetailResponse(userId, conversation));
+                User user = participant.getUser();
+                User partner = conversation.getParticipants().stream()
+                        .map(ConversationParticipant::getUser)
+                        .filter(u -> !u.getId().equals(userId))
+                        .findFirst()
+                        .orElse(null);
+                ConversationDetailResponse convRes;
+                if (user != null && user.getRole() == ERole.client && partner != null && partner.getRole() == ERole.staff) {
+                    convRes = getMergedClientConversation(userId, partner, conversation);
+                } else {
+                    convRes = ConversationMapper.toConversationDetailResponse(userId, conversation);
+                }
+                messagingTemplate.convertAndSendToUser(userId, "/queue/conversations", convRes);
             } catch (Exception ignored) {
             }
         }
@@ -513,6 +644,61 @@ public class ConversationService implements IConversationService {
         ERole partnerRole = null;
         String partnerPosition = null;
 
+        String identifiedConversationId = null;
+        String anonymousConversationId = null;
+        Boolean hasIdentifiedContext = null;
+        Boolean hasAnonymousContext = null;
+        String activeContext = null;
+        Integer identifiedUnreadCount = null;
+        Integer anonymousUnreadCount = null;
+        Boolean canSendIdentifiedMessage = null;
+        Boolean canSendAnonymousMessage = null;
+
+        if (currentUser != null && currentUser.getRole() == ERole.client && partner != null && partner.getRole() == ERole.staff) {
+            String sortedUsers = Stream.of(partner.getId(), userId).sorted().collect(Collectors.joining("_"));
+            Optional<Conversation> identOpt = conversationRepository.findByParticipantHash("user_" + sortedUsers);
+            Optional<Conversation> anonOpt = conversationRepository.findByParticipantHash("anon_" + sortedUsers);
+
+            Conversation identConv = identOpt.orElse(null);
+            Conversation anonConv = anonOpt.orElse(null);
+
+            boolean hasIdentReports = identConv != null || reportRepository.existsByUserIdAndAssignedStaffIdAndIsAnonymous(userId, partner.getId(), false);
+            boolean hasAnonReports = anonConv != null || reportRepository.existsByUserIdAndAssignedStaffIdAndIsAnonymous(userId, partner.getId(), true);
+
+            hasIdentifiedContext = hasIdentReports;
+            hasAnonymousContext = hasAnonReports;
+            identifiedConversationId = identConv != null ? identConv.getId() : null;
+            anonymousConversationId = anonConv != null ? anonConv.getId() : null;
+
+            activeContext = (anonConv != null && anonConv.getId().equals(conversation.getId())) ? "ANONYMOUS" : "IDENTIFIED";
+
+            int identUnread = 0;
+            if (identConv != null) {
+                identUnread = identConv.getParticipants().stream()
+                        .filter(p -> p.getUser().getId().equals(userId))
+                        .findFirst()
+                        .map(p -> p.getUnreadCount() != null ? p.getUnreadCount() : 0)
+                        .orElse(0);
+            }
+
+            int anonUnread = 0;
+            if (anonConv != null) {
+                anonUnread = anonConv.getParticipants().stream()
+                        .filter(p -> p.getUser().getId().equals(userId))
+                        .findFirst()
+                        .map(p -> p.getUnreadCount() != null ? p.getUnreadCount() : 0)
+                        .orElse(0);
+            }
+            identifiedUnreadCount = identUnread;
+            anonymousUnreadCount = anonUnread;
+
+            List<Report> activeIdentReports = reportRepository.findActiveReportsByClientAndStaffAndAnonymous(userId, partner.getId(), false);
+            List<Report> activeAnonReports = reportRepository.findActiveReportsByClientAndStaffAndAnonymous(userId, partner.getId(), true);
+
+            canSendIdentifiedMessage = !activeIdentReports.isEmpty();
+            canSendAnonymousMessage = !activeAnonReports.isEmpty();
+        }
+
         if (partner != null) {
             partnerRole = partner.getRole();
             if (partner.getPosition() != null) {
@@ -566,12 +752,21 @@ public class ConversationService implements IConversationService {
                 .canSendMessage(canSendMessage)
                 .activeReports(reportResponses)
                 .createdAt(conversation.getCreatedAt())
+                .identifiedConversationId(identifiedConversationId)
+                .anonymousConversationId(anonymousConversationId)
+                .hasIdentifiedContext(hasIdentifiedContext)
+                .hasAnonymousContext(hasAnonymousContext)
+                .activeContext(activeContext)
+                .identifiedUnreadCount(identifiedUnreadCount)
+                .anonymousUnreadCount(anonymousUnreadCount)
+                .canSendIdentifiedMessage(canSendIdentifiedMessage)
+                .canSendAnonymousMessage(canSendAnonymousMessage)
                 .build();
     }
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<LinkedReportResponse> getConversationReports(String userId, String conversationId, int page, int size) {
+    public PageResponse<LinkedReportResponse> getConversationReports(String userId, String conversationId, Boolean isAnonymous, int page, int size) {
         Conversation conversation = conversationRepository.findByIdAndMember(conversationId, userId)
                 .orElseThrow(() -> new BadRequestException("conversation.not_found"));
 
@@ -588,7 +783,11 @@ public class ConversationService implements IConversationService {
 
         org.springframework.data.domain.Page<Report> reportPage;
         if (currentUser != null && currentUser.getRole() == ERole.client && partner != null && partner.getRole() == ERole.staff) {
-            reportPage = reportRepository.findActiveReportsByClientAndStaff(userId, partner.getId(), pageable);
+            if (isAnonymous != null) {
+                reportPage = reportRepository.findActiveReportsByClientAndStaffAndAnonymous(userId, partner.getId(), isAnonymous, pageable);
+            } else {
+                reportPage = reportRepository.findActiveReportsByClientAndStaff(userId, partner.getId(), pageable);
+            }
         } else {
             reportPage = reportRepository.findActiveReportsByConversationId(conversationId, pageable);
         }

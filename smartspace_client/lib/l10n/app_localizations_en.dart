@@ -1122,4 +1122,32 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get roleClient => 'Resident';
+
+  @override
+  String get contextIdentified => 'Identified';
+
+  @override
+  String get contextAnonymous => 'Anonymous';
+
+  @override
+  String get contextIdentifiedTag => 'Identified';
+
+  @override
+  String get contextAnonymousTag => 'Anonymous';
+
+  @override
+  String get noIdentifiedReports => 'No active identified reports';
+
+  @override
+  String get noAnonymousReports => 'No active anonymous reports';
+
+  @override
+  String get anonymousProtectionBanner =>
+      'Anonymous discussion. Your personal identity is strictly protected.';
+
+  @override
+  String get contextIdentifiedTooltip => 'Identified reports conversation';
+
+  @override
+  String get contextAnonymousTooltip => 'Anonymous reports conversation';
 }

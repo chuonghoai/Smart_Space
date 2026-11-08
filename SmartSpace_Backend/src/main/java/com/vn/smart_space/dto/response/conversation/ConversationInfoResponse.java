@@ -36,6 +36,17 @@ public class ConversationInfoResponse {
     @Builder.Default
     private Boolean canSendMessage = true;
 
+    // Context-based messaging for Client
+    private String identifiedConversationId;
+    private String anonymousConversationId;
+    private Boolean hasIdentifiedContext;
+    private Boolean hasAnonymousContext;
+    private String activeContext; // "IDENTIFIED" or "ANONYMOUS"
+    private Integer identifiedUnreadCount;
+    private Integer anonymousUnreadCount;
+    private Boolean canSendIdentifiedMessage;
+    private Boolean canSendAnonymousMessage;
+
     // Active reports currently in 'processing' status
     @Builder.Default
     private List<LinkedReportResponse> activeReports = new ArrayList<>();

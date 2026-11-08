@@ -20,63 +20,75 @@ class ClientChatDetailScreen extends ConsumerStatefulWidget {
   });
 
   @override
-  ConsumerState<ClientChatDetailScreen> createState() => _ClientChatDetailScreenState();
+  ConsumerState<ClientChatDetailScreen> createState() =>
+      _ClientChatDetailScreenState();
 }
 
-class _ClientChatDetailScreenState extends ConsumerState<ClientChatDetailScreen> {
-  final TextEditingController _textController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
-  bool _canSend = false;
+class _ClientChatDetailScreenState
+    extends ConsumerState<ClientChatDetailScreen> {
+  late final PageController _pageController;
+  int _selectedTabIndex = 0;
+  bool _tabInitialized = false;
 
   @override
   void initState() {
     super.initState();
-    _textController.addListener(_onTextChanged);
-    _scrollController.addListener(_onScroll);
+    _pageController = PageController();
   }
 
   @override
   void dispose() {
-    _textController.removeListener(_onTextChanged);
-    _scrollController.removeListener(_onScroll);
-    _textController.dispose();
-    _scrollController.dispose();
+    _pageController.dispose();
     super.dispose();
   }
 
-  void _onTextChanged() {
-    final hasText = _textController.text.trim().isNotEmpty;
-    if (hasText != _canSend) {
-      setState(() {
-        _canSend = hasText;
-      });
+  void _switchTab(int index, String? targetConvId) {
+    if (_selectedTabIndex == index) return;
+    setState(() {
+      _selectedTabIndex = index;
+    });
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 250),
+      curve: Curves.easeInOut,
+    );
+    if (targetConvId != null) {
+      ref.read(chatDetailProvider(targetConvId).notifier).markAsRead();
     }
-  }
-
-  void _onScroll() {
-    if (_scrollController.position.pixels >=
-        _scrollController.position.maxScrollExtent - 200) {
-      ref.read(chatDetailProvider(widget.conversationId).notifier).loadOlder();
-    }
-  }
-
-  void _sendMessage() {
-    final text = _textController.text.trim();
-    if (text.isEmpty) return;
-
-    ref.read(chatDetailProvider(widget.conversationId).notifier).sendMessage(text);
-    _textController.clear();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
-    final state = ref.watch(chatDetailProvider(widget.conversationId));
-    final conv = state.conversation;
+    final baseState = ref.watch(chatDetailProvider(widget.conversationId));
+    final conv = baseState.conversation;
+
+    final hasBothContexts = conv != null &&
+        conv.hasIdentifiedContext &&
+        conv.hasAnonymousContext &&
+        conv.identifiedConversationId != null &&
+        conv.anonymousConversationId != null;
+
+    final identConvId = conv?.identifiedConversationId;
+    final anonConvId = conv?.anonymousConversationId;
+
+    if (hasBothContexts && !_tabInitialized) {
+      _tabInitialized = true;
+      if (widget.conversationId == anonConvId ||
+          (widget.conversationId != identConvId &&
+              conv.lastMessageContext == 'ANONYMOUS')) {
+        _selectedTabIndex = 1;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (_pageController.hasClients) {
+            _pageController.jumpToPage(1);
+          }
+        });
+      }
+    }
 
     final initialPartner = widget.initialPartner;
-    final displayName = conv?.isAnonymous == true
+    final displayName = conv?.isAnonymous == true && !hasBothContexts
         ? l10n.anonymousPerson
         : (conv?.partnerName?.isNotEmpty == true
             ? conv!.partnerName!
@@ -89,6 +101,12 @@ class _ClientChatDetailScreenState extends ConsumerState<ClientChatDetailScreen>
                         : l10n.supportStaff))));
 
     final partnerRole = conv?.partnerRole ?? initialPartner?.role;
+    final activeConvId = hasBothContexts
+        ? (_selectedTabIndex == 1 ? anonConvId! : identConvId!)
+        : widget.conversationId;
+
+    final identUnread = conv?.identifiedUnreadCount ?? 0;
+    final anonUnread = conv?.anonymousUnreadCount ?? 0;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -100,7 +118,7 @@ class _ClientChatDetailScreenState extends ConsumerState<ClientChatDetailScreen>
         titleSpacing: 0,
         title: Row(
           children: [
-            _buildAppBarAvatar(theme, conv),
+            _buildAppBarAvatar(theme, conv, hasBothContexts),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
@@ -124,19 +142,6 @@ class _ClientChatDetailScreenState extends ConsumerState<ClientChatDetailScreen>
                         position: conv?.partnerPosition,
                         isCompact: true,
                       ),
-                      if (conv?.reportTitle != null && conv!.reportTitle!.isNotEmpty) ...[
-                        const SizedBox(width: 6),
-                        Flexible(
-                          child: Text(
-                            conv.reportTitle!,
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        ),
-                      ],
                     ],
                   ),
                 ],
@@ -149,27 +154,68 @@ class _ClientChatDetailScreenState extends ConsumerState<ClientChatDetailScreen>
             icon: const Icon(Icons.more_vert_rounded),
             tooltip: l10n.conversationInfoTitle,
             onPressed: () {
-              context.push(RouterPath.conversationInfoWithId(widget.conversationId));
+              context.push(RouterPath.conversationInfoWithId(activeConvId));
             },
           ),
           const SizedBox(width: 4),
         ],
       ),
       body: SafeArea(
-        child: Column(
-          children: [
-            Expanded(
-              child: _buildMessagesList(context, theme, l10n, state),
-            ),
-            _buildBottomArea(theme, l10n, state),
-          ],
-        ),
+        child: hasBothContexts
+            ? Column(
+                children: [
+                  _buildContextTabBar(
+                    theme,
+                    l10n,
+                    identConvId!,
+                    anonConvId!,
+                    identUnread,
+                    anonUnread,
+                  ),
+                  Expanded(
+                    child: PageView(
+                      controller: _pageController,
+                      onPageChanged: (index) {
+                        setState(() {
+                          _selectedTabIndex = index;
+                        });
+                        final targetId =
+                            index == 1 ? anonConvId : identConvId;
+                        ref
+                            .read(chatDetailProvider(targetId).notifier)
+                            .markAsRead();
+                      },
+                      children: [
+                        _ContextChatPane(
+                          key: ValueKey('ident_$identConvId'),
+                          conversationId: identConvId,
+                          isAnonymous: false,
+                        ),
+                        _ContextChatPane(
+                          key: ValueKey('anon_$anonConvId'),
+                          conversationId: anonConvId,
+                          isAnonymous: true,
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              )
+            : _ContextChatPane(
+                key: ValueKey('single_${widget.conversationId}'),
+                conversationId: widget.conversationId,
+                isAnonymous: conv?.isAnonymous == true,
+              ),
       ),
     );
   }
 
-  Widget _buildAppBarAvatar(ThemeData theme, ConversationModel? conv) {
-    if (conv?.isAnonymous == true) {
+  Widget _buildAppBarAvatar(
+    ThemeData theme,
+    ConversationModel? conv,
+    bool hasBothContexts,
+  ) {
+    if (conv?.isAnonymous == true && !hasBothContexts) {
       return CircleAvatar(
         radius: 19,
         backgroundColor: theme.colorScheme.surfaceContainerHighest,
@@ -181,7 +227,8 @@ class _ClientChatDetailScreenState extends ConsumerState<ClientChatDetailScreen>
       );
     }
 
-    final avatarUrl = conv?.partnerAvatarUrl ?? widget.initialPartner?.avatarUrl;
+    final avatarUrl =
+        conv?.partnerAvatarUrl ?? widget.initialPartner?.avatarUrl;
     final name = (conv?.partnerName?.isNotEmpty == true
             ? conv!.partnerName
             : widget.initialPartner?.name) ??
@@ -222,6 +269,249 @@ class _ClientChatDetailScreenState extends ConsumerState<ClientChatDetailScreen>
     );
   }
 
+  Widget _buildContextTabBar(
+    ThemeData theme,
+    AppLocalizations l10n,
+    String identConvId,
+    String anonConvId,
+    int identUnread,
+    int anonUnread,
+  ) {
+    return Container(
+      height: 42,
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+      padding: const EdgeInsets.all(3),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+        borderRadius: BorderRadius.circular(22),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _buildContextTabItem(
+              theme: theme,
+              title: l10n.contextIdentified,
+              icon: Icons.person_outline_rounded,
+              isSelected: _selectedTabIndex == 0,
+              unreadCount: identUnread,
+              onTap: () => _switchTab(0, identConvId),
+            ),
+          ),
+          Expanded(
+            child: _buildContextTabItem(
+              theme: theme,
+              title: l10n.contextAnonymous,
+              icon: Icons.shield_outlined,
+              isSelected: _selectedTabIndex == 1,
+              unreadCount: anonUnread,
+              onTap: () => _switchTab(1, anonConvId),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildContextTabItem({
+    required ThemeData theme,
+    required String title,
+    required IconData icon,
+    required bool isSelected,
+    required int unreadCount,
+    required VoidCallback onTap,
+  }) {
+    final activeBg = theme.colorScheme.surface;
+    final activeFg = theme.colorScheme.primary;
+    final inactiveFg = theme.colorScheme.onSurfaceVariant;
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(19),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeInOut,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: isSelected ? activeBg : Colors.transparent,
+            borderRadius: BorderRadius.circular(19),
+            boxShadow: isSelected
+                ? [
+                    BoxShadow(
+                      color: Colors.black.withValues(
+                        alpha: theme.brightness == Brightness.dark ? 0.25 : 0.06,
+                      ),
+                      blurRadius: 4,
+                      offset: const Offset(0, 1),
+                    ),
+                  ]
+                : null,
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
+                size: 15,
+                color: isSelected ? activeFg : inactiveFg,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                title,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: isSelected ? FontWeight.bold : FontWeight.w500,
+                  color: isSelected ? activeFg : inactiveFg,
+                ),
+              ),
+              if (unreadCount > 0) ...[
+                const SizedBox(width: 6),
+                Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary,
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Text(
+                    unreadCount > 99 ? '99+' : unreadCount.toString(),
+                    style: TextStyle(
+                      color: theme.colorScheme.onPrimary,
+                      fontSize: 9,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _ContextChatPane extends ConsumerStatefulWidget {
+  final String conversationId;
+  final bool isAnonymous;
+
+  const _ContextChatPane({
+    super.key,
+    required this.conversationId,
+    required this.isAnonymous,
+  });
+
+  @override
+  ConsumerState<_ContextChatPane> createState() => _ContextChatPaneState();
+}
+
+class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
+    with AutomaticKeepAliveClientMixin {
+  final TextEditingController _textController = TextEditingController();
+  final ScrollController _scrollController = ScrollController();
+  bool _canSend = false;
+
+  @override
+  bool get wantKeepAlive => true;
+
+  @override
+  void initState() {
+    super.initState();
+    _textController.addListener(_onTextChanged);
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _textController.removeListener(_onTextChanged);
+    _scrollController.removeListener(_onScroll);
+    _textController.dispose();
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onTextChanged() {
+    final hasText = _textController.text.trim().isNotEmpty;
+    if (hasText != _canSend) {
+      setState(() {
+        _canSend = hasText;
+      });
+    }
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      ref
+          .read(chatDetailProvider(widget.conversationId).notifier)
+          .loadOlder();
+    }
+  }
+
+  void _sendMessage() {
+    final text = _textController.text.trim();
+    if (text.isEmpty) return;
+
+    ref
+        .read(chatDetailProvider(widget.conversationId).notifier)
+        .sendMessage(text);
+    _textController.clear();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    super.build(context);
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final state = ref.watch(chatDetailProvider(widget.conversationId));
+
+    return Column(
+      children: [
+        if (widget.isAnonymous) _buildPrivacyBanner(theme, l10n),
+        Expanded(
+          child: _buildMessagesList(context, theme, l10n, state),
+        ),
+        _buildBottomArea(theme, l10n, state),
+      ],
+    );
+  }
+
+  Widget _buildPrivacyBanner(ThemeData theme, AppLocalizations l10n) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.fromLTRB(16, 8, 16, 4),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.35),
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+          width: 0.5,
+        ),
+      ),
+      child: Row(
+        children: [
+          Icon(
+            Icons.shield_outlined,
+            size: 17,
+            color: theme.colorScheme.secondary,
+          ),
+          const SizedBox(width: 8),
+          Expanded(
+            child: Text(
+              l10n.anonymousProtectionBanner,
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: theme.colorScheme.onSecondaryContainer,
+                fontSize: 12,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   Widget _buildMessagesList(
     BuildContext context,
     ThemeData theme,
@@ -237,12 +527,18 @@ class _ClientChatDetailScreenState extends ConsumerState<ClientChatDetailScreen>
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline_rounded, size: 40, color: theme.colorScheme.error),
+            Icon(
+              Icons.error_outline_rounded,
+              size: 40,
+              color: theme.colorScheme.error,
+            ),
             const SizedBox(height: 8),
             Text(l10n.errorLoadMessages),
             const SizedBox(height: 12),
             ElevatedButton(
-              onPressed: () => ref.read(chatDetailProvider(widget.conversationId).notifier).loadInitial(),
+              onPressed: () => ref
+                  .read(chatDetailProvider(widget.conversationId).notifier)
+                  .loadInitial(),
               child: Text(l10n.retry),
             ),
           ],
@@ -291,7 +587,9 @@ class _ClientChatDetailScreenState extends ConsumerState<ClientChatDetailScreen>
           key: ValueKey(msg.id ?? msg.tempId ?? index.toString()),
           message: msg,
           isMe: isMe,
-          onRetry: () => ref.read(chatDetailProvider(widget.conversationId).notifier).retryMessage(msg),
+          onRetry: () => ref
+              .read(chatDetailProvider(widget.conversationId).notifier)
+              .retryMessage(msg),
         );
       },
     );
@@ -302,7 +600,6 @@ class _ClientChatDetailScreenState extends ConsumerState<ClientChatDetailScreen>
     AppLocalizations l10n,
     ChatDetailState state,
   ) {
-    // If messaging is locked (e.g. report completed)
     if (!state.canSendMessage) {
       return Container(
         width: double.infinity,
@@ -338,7 +635,6 @@ class _ClientChatDetailScreenState extends ConsumerState<ClientChatDetailScreen>
       );
     }
 
-    // Normal active messaging input
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
@@ -356,7 +652,8 @@ class _ClientChatDetailScreenState extends ConsumerState<ClientChatDetailScreen>
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 14),
               decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                color: theme.colorScheme.surfaceContainerHighest
+                    .withValues(alpha: 0.5),
                 borderRadius: BorderRadius.circular(24),
               ),
               child: TextField(
@@ -368,7 +665,8 @@ class _ClientChatDetailScreenState extends ConsumerState<ClientChatDetailScreen>
                 decoration: InputDecoration(
                   hintText: l10n.chatInputHint,
                   hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                    color: theme.colorScheme.onSurfaceVariant
+                        .withValues(alpha: 0.7),
                   ),
                   border: InputBorder.none,
                   contentPadding: const EdgeInsets.symmetric(vertical: 10),
@@ -391,4 +689,3 @@ class _ClientChatDetailScreenState extends ConsumerState<ClientChatDetailScreen>
     );
   }
 }
-

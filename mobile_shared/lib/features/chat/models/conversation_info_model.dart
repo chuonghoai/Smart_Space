@@ -13,6 +13,15 @@ class ConversationInfoModel {
   final bool canSendMessage;
   final List<LinkedReportModel> activeReports;
   final DateTime? createdAt;
+  final String? identifiedConversationId;
+  final String? anonymousConversationId;
+  final bool hasIdentifiedContext;
+  final bool hasAnonymousContext;
+  final String? activeContext;
+  final int identifiedUnreadCount;
+  final int anonymousUnreadCount;
+  final bool canSendIdentifiedMessage;
+  final bool canSendAnonymousMessage;
 
   const ConversationInfoModel({
     required this.id,
@@ -27,6 +36,15 @@ class ConversationInfoModel {
     this.canSendMessage = true,
     this.activeReports = const [],
     this.createdAt,
+    this.identifiedConversationId,
+    this.anonymousConversationId,
+    this.hasIdentifiedContext = false,
+    this.hasAnonymousContext = false,
+    this.activeContext,
+    this.identifiedUnreadCount = 0,
+    this.anonymousUnreadCount = 0,
+    this.canSendIdentifiedMessage = true,
+    this.canSendAnonymousMessage = true,
   });
 
   factory ConversationInfoModel.fromJson(Map<String, dynamic> json) {
@@ -50,6 +68,15 @@ class ConversationInfoModel {
       createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'].toString())
           : null,
+      identifiedConversationId: json['identifiedConversationId'] as String? ?? json['identified_conversation_id'] as String?,
+      anonymousConversationId: json['anonymousConversationId'] as String? ?? json['anonymous_conversation_id'] as String?,
+      hasIdentifiedContext: json['hasIdentifiedContext'] as bool? ?? json['has_identified_context'] as bool? ?? false,
+      hasAnonymousContext: json['hasAnonymousContext'] as bool? ?? json['has_anonymous_context'] as bool? ?? false,
+      activeContext: json['activeContext'] as String? ?? json['active_context'] as String?,
+      identifiedUnreadCount: (json['identifiedUnreadCount'] as num?)?.toInt() ?? (json['identified_unread_count'] as num?)?.toInt() ?? 0,
+      anonymousUnreadCount: (json['anonymousUnreadCount'] as num?)?.toInt() ?? (json['anonymous_unread_count'] as num?)?.toInt() ?? 0,
+      canSendIdentifiedMessage: json['canSendIdentifiedMessage'] as bool? ?? json['can_send_identified_message'] as bool? ?? true,
+      canSendAnonymousMessage: json['canSendAnonymousMessage'] as bool? ?? json['can_send_anonymous_message'] as bool? ?? true,
     );
   }
 }

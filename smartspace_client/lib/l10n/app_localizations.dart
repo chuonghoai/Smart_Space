@@ -2203,6 +2203,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Resident'**
   String get roleClient;
+
+  /// No description provided for @contextIdentified.
+  ///
+  /// In en, this message translates to:
+  /// **'Identified'**
+  String get contextIdentified;
+
+  /// No description provided for @contextAnonymous.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous'**
+  String get contextAnonymous;
+
+  /// No description provided for @contextIdentifiedTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Identified'**
+  String get contextIdentifiedTag;
+
+  /// No description provided for @contextAnonymousTag.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous'**
+  String get contextAnonymousTag;
+
+  /// No description provided for @noIdentifiedReports.
+  ///
+  /// In en, this message translates to:
+  /// **'No active identified reports'**
+  String get noIdentifiedReports;
+
+  /// No description provided for @noAnonymousReports.
+  ///
+  /// In en, this message translates to:
+  /// **'No active anonymous reports'**
+  String get noAnonymousReports;
+
+  /// No description provided for @anonymousProtectionBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous discussion. Your personal identity is strictly protected.'**
+  String get anonymousProtectionBanner;
+
+  /// No description provided for @contextIdentifiedTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Identified reports conversation'**
+  String get contextIdentifiedTooltip;
+
+  /// No description provided for @contextAnonymousTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous reports conversation'**
+  String get contextAnonymousTooltip;
 }
 
 class _AppLocalizationsDelegate
