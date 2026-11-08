@@ -413,5 +413,22 @@
   "chatDisabledNotice": "The report has been resolved. Chat is currently in read-only history mode.",
   "chatWithStaff": "Message staff",
   "viewStaffChat": "View support messages",
-  "cannotStartChat": "Unable to start conversation, please try again later"
+  "cannotStartChat": "Unable to start conversation, please try again later",
+  "routeConversationInfo": "Conversation Info",
+  "conversationInfoTitle": "Conversation Info",
+  "activeReportsSection": "Active Reports",
+  "allReportsProcessed": "All reports have been processed",
+  "conversationClosedNotice": "Conversation closed as all reports have been processed",
+  "conversationActiveNotice": "Conversation is currently active",
+  "callButtonLabel": "Call",
+  "videoCallButtonLabel": "Video call",
+  "videoCallComingSoon": "Video call feature is under development",
+  "conversationRefreshed": "Conversation info and messages refreshed successfully",
+  "conversationRefreshFailed": "Could not refresh conversation, please try again later",
+  "cannotMakePhoneCall": "Cannot make phone call",
+  "noPhoneNumber": "No phone number available",
+  "staffNoPosition": "No position",
+  "rehandlingBadge": "Re-handling",
+  "roleClient": "Resident",
+  "refresh": "Refresh"
 }

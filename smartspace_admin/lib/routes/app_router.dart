@@ -35,6 +35,7 @@ import 'package:smartspace_admin/ui/screen/news/admin_news_detail_screen.dart';
 import 'package:smartspace_admin/ui/screen/home/admin_all_activities_screen.dart';
 import 'package:smartspace_admin/ui/screen/chat/admin_conversations_screen.dart';
 import 'package:smartspace_admin/ui/screen/chat/admin_chat_detail_screen.dart';
+import 'package:smartspace_admin/ui/screen/chat/admin_conversation_info_screen.dart';
 
 /// Re-export for convenience so existing callers of navigatorKey still compile.
 final GlobalKey<NavigatorState> navigatorKey = sharedNavigatorKey;
@@ -63,6 +64,15 @@ final appRouter = GoRouter(
         return AdminChatDetailScreen(
           conversationId: conversationId,
           partner: partner,
+        );
+      },
+    ),
+    GoRoute(
+      path: RouterPath.conversationInfo,
+      builder: (context, state) {
+        final conversationId = state.pathParameters['id'] ?? '';
+        return AdminConversationInfoScreen(
+          conversationId: conversationId,
         );
       },
     ),

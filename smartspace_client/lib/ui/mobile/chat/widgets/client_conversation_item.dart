@@ -114,29 +114,6 @@ class ClientConversationItem extends StatelessWidget {
                           role: conv.partnerRole,
                           isCompact: true,
                         ),
-                        if (conv.partnerRole?.isNotEmpty == true)
-                          const SizedBox(width: 6),
-                        if (conv.reportTitle != null && conv.reportTitle!.isNotEmpty) ...[
-                          Flexible(
-                            child: Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                                borderRadius: BorderRadius.circular(4),
-                              ),
-                              child: Text(
-                                conv.reportTitle!,
-                                style: theme.textTheme.labelSmall?.copyWith(
-                                  color: theme.colorScheme.onSurfaceVariant,
-                                  fontSize: 10,
-                                ),
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 6),
-                        ],
                       ],
                     ),
                     const SizedBox(height: 4),

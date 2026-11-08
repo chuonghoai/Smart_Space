@@ -85,7 +85,7 @@ public class StaffChatIntegrationTest {
 
         HttpResponse<String> convResponse = client.send(getMyConvRequest, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         assertEquals(200, convResponse.statusCode());
-        assertTrue(convResponse.body().contains("system.success") || convResponse.body().contains("conversation.get.success"));
+        assertTrue(convResponse.body().contains("\"success\":true"));
 
         // 2. Lấy số lượng tin nhắn chưa đọc
         HttpRequest getUnreadRequest = HttpRequest.newBuilder()

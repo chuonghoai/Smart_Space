@@ -161,6 +161,24 @@ class AdminConversationsNotifier extends StateNotifier<AdminConversationsState> 
     });
   }
 
+  void markAsReadLocally(String conversationId) {
+    if (_isDisposed) return;
+    final currentList = List<ConversationModel>.from(state.conversations);
+    final index = currentList.indexWhere((c) => c.id == conversationId);
+    if (index >= 0) {
+      final old = currentList[index];
+      if (old.unreadCount > 0) {
+        final decremented = old.unreadCount;
+        currentList[index] = old.copyWith(unreadCount: 0);
+        final newTotal = (state.totalUnreadCount - decremented).clamp(0, 999999);
+        state = state.copyWith(
+          conversations: currentList,
+          totalUnreadCount: newTotal,
+        );
+      }
+    }
+  }
+
   Future<void> loadInitial(String filter) async {
     state = state.copyWith(
       isLoading: true,

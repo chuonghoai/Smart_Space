@@ -30,17 +30,22 @@ public interface ConversationRepository extends JpaRepository<Conversation, Stri
             "ORDER BY c.lastMessageTime DESC NULLS LAST")
     Page<Conversation> findAllByUserId(@Param("userId") String userId, Pageable pageable);
 
-    // Get Page Conversation - All with search query (Name, Phone, Email, Content)
+    // Get Page Conversation - All with search query (Name, Phone, Email, Content, Role, Position, Report Title)
     @EntityGraph(attributePaths = { "participants", "participants.user", "participants.user.position", "report" })
     @Query("SELECT DISTINCT c FROM Conversation c JOIN c.participants p " +
             "WHERE p.user.id = :userId " +
             "AND (c.report IS NOT NULL OR c.reports IS NOT EMPTY OR c.lastMessageContent IS NOT NULL OR c.lastMessageTime IS NOT NULL) " +
             "AND (LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
             "     OR LOWER(c.lastMessageContent) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "     OR (c.report IS NOT NULL AND LOWER(c.report.title) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+            "     OR EXISTS (SELECT r FROM c.reports r WHERE LOWER(r.title) LIKE LOWER(CONCAT('%', :query, '%'))) " +
             "     OR EXISTS (SELECT p2 FROM c.participants p2 WHERE p2.user.id <> :userId " +
             "                AND (LOWER(p2.user.fullName) LIKE LOWER(CONCAT('%', :query, '%')) " +
             "                     OR LOWER(p2.user.phone) LIKE LOWER(CONCAT('%', :query, '%')) " +
-            "                     OR LOWER(p2.user.email) LIKE LOWER(CONCAT('%', :query, '%'))))) " +
+            "                     OR LOWER(p2.user.email) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "                     OR (p2.user.position IS NOT NULL AND LOWER(p2.user.position.name) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+            "                     OR (p2.user.role = com.vn.smart_space.consts.ERole.staff AND (LOWER(:query) LIKE '%nhân%' OR LOWER(:query) LIKE '%staff%')) " +
+            "                     OR (p2.user.role = com.vn.smart_space.consts.ERole.admin AND (LOWER(:query) LIKE '%quản%' OR LOWER(:query) LIKE '%admin%'))))) " +
             "ORDER BY c.lastMessageTime DESC NULLS LAST")
     Page<Conversation> findAllByUserIdAndQuery(@Param("userId") String userId, @Param("query") String query, Pageable pageable);
 
@@ -66,7 +71,12 @@ public interface ConversationRepository extends JpaRepository<Conversation, Stri
             "                 OR LOWER(p2.user.fullName) LIKE LOWER(CONCAT('%', :query, '%')) " +
             "                 OR LOWER(p2.user.phone) LIKE LOWER(CONCAT('%', :query, '%')) " +
             "                 OR LOWER(p2.user.email) LIKE LOWER(CONCAT('%', :query, '%')) " +
-            "                 OR LOWER(c.lastMessageContent) LIKE LOWER(CONCAT('%', :query, '%')))) " +
+            "                 OR (p2.user.position IS NOT NULL AND LOWER(p2.user.position.name) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+            "                 OR (p2.user.role = com.vn.smart_space.consts.ERole.staff AND (LOWER(:query) LIKE '%nhân%' OR LOWER(:query) LIKE '%staff%')) " +
+            "                 OR (p2.user.role = com.vn.smart_space.consts.ERole.admin AND (LOWER(:query) LIKE '%quản%' OR LOWER(:query) LIKE '%admin%')) " +
+            "                 OR LOWER(c.lastMessageContent) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "                 OR (c.report IS NOT NULL AND LOWER(c.report.title) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+            "                 OR EXISTS (SELECT r FROM c.reports r WHERE LOWER(r.title) LIKE LOWER(CONCAT('%', :query, '%'))))) " +
             "ORDER BY c.lastMessageTime DESC NULLS LAST")
     Page<Conversation> findAllByUserIdAndRoleAndPositionsAndQuery(
             @Param("userId") String userId,
@@ -87,7 +97,12 @@ public interface ConversationRepository extends JpaRepository<Conversation, Stri
             "            AND (LOWER(p2.user.fullName) LIKE LOWER(CONCAT('%', :query, '%')) " +
             "                 OR LOWER(p2.user.phone) LIKE LOWER(CONCAT('%', :query, '%')) " +
             "                 OR LOWER(p2.user.email) LIKE LOWER(CONCAT('%', :query, '%')) " +
-            "                 OR LOWER(c.lastMessageContent) LIKE LOWER(CONCAT('%', :query, '%')))) " +
+            "                 OR (p2.user.position IS NOT NULL AND LOWER(p2.user.position.name) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+            "                 OR (p2.user.role = com.vn.smart_space.consts.ERole.staff AND (LOWER(:query) LIKE '%nhân%' OR LOWER(:query) LIKE '%staff%')) " +
+            "                 OR (p2.user.role = com.vn.smart_space.consts.ERole.admin AND (LOWER(:query) LIKE '%quản%' OR LOWER(:query) LIKE '%admin%')) " +
+            "                 OR LOWER(c.lastMessageContent) LIKE LOWER(CONCAT('%', :query, '%')) " +
+            "                 OR (c.report IS NOT NULL AND LOWER(c.report.title) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+            "                 OR EXISTS (SELECT r FROM c.reports r WHERE LOWER(r.title) LIKE LOWER(CONCAT('%', :query, '%'))))) " +
             "ORDER BY c.lastMessageTime DESC NULLS LAST")
     Page<Conversation> findAllByUserIdAndRoleAndQuery(@Param("userId") String userId, @Param("role") ERole role, @Param("query") String query, Pageable pageable);
 

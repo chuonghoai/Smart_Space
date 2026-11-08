@@ -2029,4 +2029,62 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get messageReporter => 'Nhắn tin cho người phản ánh';
+
+  @override
+  String get routeConversationInfo => 'Thông tin hội thoại';
+
+  @override
+  String get conversationInfoTitle => 'Thông tin hội thoại';
+
+  @override
+  String get activeReportsSection => 'Phản ánh đang xử lý';
+
+  @override
+  String get allReportsProcessed => 'Tất cả phản ánh đã được xử lý xong';
+
+  @override
+  String get conversationClosedNotice =>
+      'Cuộc hội thoại đã đóng do toàn bộ phản ánh đã hoàn tất';
+
+  @override
+  String get conversationActiveNotice => 'Cuộc hội thoại đang hoạt động';
+
+  @override
+  String get callButtonLabel => 'Gọi điện';
+
+  @override
+  String get videoCallButtonLabel => 'Video call';
+
+  @override
+  String get videoCallComingSoon => 'Tính năng gọi video call đang phát triển';
+
+  @override
+  String get anonymousUserProtectionNote =>
+      'Thông tin người dùng ẩn danh được bảo vệ';
+
+  @override
+  String get conversationRefreshed =>
+      'Đã làm mới thông tin và tin nhắn hội thoại';
+
+  @override
+  String get conversationRefreshFailed =>
+      'Không thể làm mới hội thoại, vui lòng thử lại sau';
+
+  @override
+  String get anonymousPerson => 'Người dùng ẩn danh';
+
+  @override
+  String get otherUsers => 'Người dùng khác';
+
+  @override
+  String get cannotMakePhoneCall => 'Không thể thực hiện cuộc gọi';
+
+  @override
+  String get noPhoneNumber => 'Chưa cập nhật số điện thoại';
+
+  @override
+  String get staffNoPosition => 'Chưa có chức vụ';
+
+  @override
+  String get cannotStartChat => 'Không thể bắt đầu cuộc trò chuyện';
 }

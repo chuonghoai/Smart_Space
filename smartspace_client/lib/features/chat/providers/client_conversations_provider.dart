@@ -95,6 +95,26 @@ class ClientConversationsNotifier extends StateNotifier<ClientConversationsState
     } catch (_) {}
   }
 
+  void markAsReadLocally(String conversationId) {
+    if (_isDisposed) return;
+    int unreadToSubtract = 0;
+    final updatedList = state.conversations.map((c) {
+      if (c.id == conversationId && c.unreadCount > 0) {
+        unreadToSubtract = c.unreadCount;
+        return c.copyWith(unreadCount: 0);
+      }
+      return c;
+    }).toList();
+
+    if (unreadToSubtract > 0) {
+      final newTotal = (state.totalUnreadCount - unreadToSubtract).clamp(0, 9999);
+      state = state.copyWith(
+        conversations: updatedList,
+        totalUnreadCount: newTotal,
+      );
+    }
+  }
+
   Future<void> loadInitial() async {
     state = state.copyWith(isLoading: true, errorMessage: null, page: 1, hasMore: true);
 

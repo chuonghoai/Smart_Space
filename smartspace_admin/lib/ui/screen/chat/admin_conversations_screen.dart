@@ -108,35 +108,41 @@ class _AdminConversationsScreenState extends ConsumerState<AdminConversationsScr
           ),
         ),
 
-        // Role Filter Tabs & Position Filter
+        // Role Filter Tabs
         SingleChildScrollView(
           scrollDirection: Axis.horizontal,
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           child: Row(
-            children: [
-              ...filterTabs.map((tab) {
-                final isSelected = state.activeFilter == tab['key'];
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: FilterChip(
-                    label: Text(tab['label']!),
-                    selected: isSelected,
-                    onSelected: (_) => notifier.setFilter(tab['key']!),
-                    showCheckmark: false,
-                    labelStyle: TextStyle(
-                      color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface,
-                      fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                      fontSize: 13,
-                    ),
-                    backgroundColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-                    selectedColor: theme.colorScheme.primary,
-                    side: BorderSide.none,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+            children: filterTabs.map((tab) {
+              final isSelected = state.activeFilter == tab['key'];
+              return Padding(
+                padding: const EdgeInsets.only(right: 8),
+                child: FilterChip(
+                  label: Text(tab['label']!),
+                  selected: isSelected,
+                  onSelected: (_) => notifier.setFilter(tab['key']!),
+                  showCheckmark: false,
+                  labelStyle: TextStyle(
+                    color: isSelected ? theme.colorScheme.onPrimary : theme.colorScheme.onSurface,
+                    fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                    fontSize: 13,
                   ),
-                );
-              }),
-              if (state.activeFilter == 'staff' || state.activeFilter == 'all') ...[
-                const SizedBox(width: 4),
+                  backgroundColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+                  selectedColor: theme.colorScheme.primary,
+                  side: BorderSide.none,
+                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+                ),
+              );
+            }).toList(),
+          ),
+        ),
+
+        // Position Filter right below the 4 tabs
+        if (state.activeFilter == 'staff' || state.activeFilter == 'all')
+          Padding(
+            padding: const EdgeInsets.fromLTRB(16, 4, 16, 6),
+            child: Row(
+              children: [
                 ActionChip(
                   avatar: Icon(
                     Icons.filter_list_rounded,
@@ -160,10 +166,21 @@ class _AdminConversationsScreenState extends ConsumerState<AdminConversationsScr
                   onPressed: () => _openPositionFilter(context, state),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 ),
+                if (state.selectedPositionIds.isNotEmpty) ...[
+                  const SizedBox(width: 8),
+                  GestureDetector(
+                    onTap: notifier.clearPositions,
+                    child: Text(
+                      l10n.clearFilters,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.error,
+                      ),
+                    ),
+                  ),
+                ],
               ],
-            ],
+            ),
           ),
-        ),
         const Divider(height: 1),
 
         // Conversations List
@@ -229,6 +246,7 @@ class _AdminConversationsScreenState extends ConsumerState<AdminConversationsScr
                             conversation: conversation,
                             isSelected: isSelected,
                             onTap: () {
+                              notifier.markAsReadLocally(conversation.id);
                               if (isDesktop) {
                                 setState(() => _selectedConversationId = conversation.id);
                               } else {
@@ -287,7 +305,30 @@ class _AdminConversationsScreenState extends ConsumerState<AdminConversationsScr
       content = listPane;
     }
 
+    final mobileAppBar = AppBar(
+      title: Text(
+        l10n.conversations,
+        style: theme.textTheme.titleMedium?.copyWith(
+          fontWeight: FontWeight.bold,
+        ),
+      ),
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back),
+        onPressed: () {
+          if (context.canPop()) {
+            context.pop();
+          } else {
+            context.go(RouterPath.home);
+          }
+        },
+      ),
+      elevation: 0,
+      backgroundColor: theme.scaffoldBackgroundColor,
+    );
+
     return AppLayout(
+      showAppBar: false,
+      customAppBar: isDesktop ? null : mobileAppBar,
       child: content,
     );
   }

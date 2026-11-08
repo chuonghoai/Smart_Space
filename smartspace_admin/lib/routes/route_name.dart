@@ -282,6 +282,12 @@ class RouteName {
     icon: Icons.chat_outlined,
     isHiddenInSearch: true,
   );
+  static const conversationInfo = AppRouteInfo(
+    path: '/chat/:id/info',
+    nameKey: 'routeConversationInfo',
+    icon: Icons.info_outline_rounded,
+    isHiddenInSearch: true,
+  );
 
   static const List<AppRouteInfo> allRoutes = [
     splash,
@@ -289,6 +295,7 @@ class RouteName {
     home,
     conversations,
     chatDetail,
+    conversationInfo,
     reportDetail,
     completeProfile,
     forgotPassword,

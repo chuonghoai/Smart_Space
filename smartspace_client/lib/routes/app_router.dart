@@ -27,6 +27,7 @@ import 'package:smartspace_client/ui/mobile/news/client_news_list_screen.dart';
 import 'package:mobile_shared/features/chat/models/conversation_model.dart';
 import 'package:smartspace_client/ui/mobile/chat/client_conversations_screen.dart';
 import 'package:smartspace_client/ui/mobile/chat/client_chat_detail_screen.dart';
+import 'package:smartspace_client/ui/mobile/chat/client_conversation_info_screen.dart';
 import 'package:flutter/material.dart';
 
 /// Re-export for convenience so existing callers of navigatorKey still compile.
@@ -146,6 +147,15 @@ final appRouter = GoRouter(
         return ClientChatDetailScreen(
           conversationId: convId,
           initialPartner: partner,
+        );
+      },
+    ),
+    GoRoute(
+      path: RouterPath.conversationInfo,
+      builder: (context, state) {
+        final convId = state.pathParameters['id'] ?? '';
+        return ClientConversationInfoScreen(
+          conversationId: convId,
         );
       },
     ),

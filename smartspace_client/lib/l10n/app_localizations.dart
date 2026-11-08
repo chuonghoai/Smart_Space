@@ -2107,6 +2107,102 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unable to start conversation, please try again later'**
   String get cannotStartChat;
+
+  /// No description provided for @routeConversationInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation Info'**
+  String get routeConversationInfo;
+
+  /// No description provided for @conversationInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation Info'**
+  String get conversationInfoTitle;
+
+  /// No description provided for @activeReportsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Reports'**
+  String get activeReportsSection;
+
+  /// No description provided for @allReportsProcessed.
+  ///
+  /// In en, this message translates to:
+  /// **'All reports have been processed'**
+  String get allReportsProcessed;
+
+  /// No description provided for @conversationClosedNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation closed as all reports have been processed'**
+  String get conversationClosedNotice;
+
+  /// No description provided for @conversationActiveNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation is currently active'**
+  String get conversationActiveNotice;
+
+  /// No description provided for @callButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get callButtonLabel;
+
+  /// No description provided for @videoCallButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Video call'**
+  String get videoCallButtonLabel;
+
+  /// No description provided for @videoCallComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Video call feature is under development'**
+  String get videoCallComingSoon;
+
+  /// No description provided for @conversationRefreshed.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation info and messages refreshed successfully'**
+  String get conversationRefreshed;
+
+  /// No description provided for @conversationRefreshFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not refresh conversation, please try again later'**
+  String get conversationRefreshFailed;
+
+  /// No description provided for @cannotMakePhoneCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot make phone call'**
+  String get cannotMakePhoneCall;
+
+  /// No description provided for @noPhoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'No phone number available'**
+  String get noPhoneNumber;
+
+  /// No description provided for @staffNoPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'No position'**
+  String get staffNoPosition;
+
+  /// No description provided for @rehandlingBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-handling'**
+  String get rehandlingBadge;
+
+  /// No description provided for @roleClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Resident'**
+  String get roleClient;
 }
 
 class _AppLocalizationsDelegate

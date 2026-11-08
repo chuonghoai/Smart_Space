@@ -328,4 +328,19 @@ public interface ReportRepository extends JpaRepository<Report, String> {
         @Query("SELECT COUNT(r) FROM Report r WHERE r.conversation.id = :conversationId AND (r.status = com.vn.smart_space.consts.EReportStatus.processing OR (r.status = com.vn.smart_space.consts.EReportStatus.processed AND r.isReviewResolved = false))")
         long countActiveReportsByConversationId(@Param("conversationId") String conversationId);
 
+        @Query("SELECT r FROM Report r WHERE r.user.id = :clientId AND r.assignedStaff.id = :staffId " +
+               "AND (r.status = com.vn.smart_space.consts.EReportStatus.processing " +
+               "     OR (r.status = com.vn.smart_space.consts.EReportStatus.processed AND r.isReviewResolved = false)) " +
+               "ORDER BY r.createdAt DESC")
+        List<Report> findActiveReportsByClientAndStaff(@Param("clientId") String clientId, @Param("staffId") String staffId);
+
+        @Query("SELECT r FROM Report r WHERE r.user.id = :clientId AND r.assignedStaff.id = :staffId " +
+               "AND (r.status = com.vn.smart_space.consts.EReportStatus.processing " +
+               "     OR (r.status = com.vn.smart_space.consts.EReportStatus.processed AND r.isReviewResolved = false)) " +
+               "ORDER BY r.createdAt DESC")
+        org.springframework.data.domain.Page<Report> findActiveReportsByClientAndStaff(
+                @Param("clientId") String clientId,
+                @Param("staffId") String staffId,
+                org.springframework.data.domain.Pageable pageable);
+
 }

@@ -207,10 +207,18 @@ public class ConversationService implements IConversationService {
 
             conversation.addParticipants(assignedStaff);
             conversation.addParticipants(clientUser);
-            conversation = conversationRepository.save(conversation);
         }
 
-        // Associate report with this conversation (N-1)
+        // Associate report with this conversation (both sides)
+        conversation.setReport(report);
+        if (conversation.getReports() == null) {
+            conversation.setReports(new ArrayList<>());
+        }
+        if (!conversation.getReports().contains(report)) {
+            conversation.getReports().add(report);
+        }
+        conversation = conversationRepository.save(conversation);
+
         report.setConversation(conversation);
         reportRepository.save(report);
 
@@ -441,6 +449,14 @@ public class ConversationService implements IConversationService {
             participant.setUnreadCount(0);
             participant.setLastReadAt(LocalDateTime.now());
             conversationParticipantRepository.save(participant);
+
+            // Broadcast updated conversation to user's conversation list queue
+            try {
+                Conversation conversation = participant.getConversation();
+                messagingTemplate.convertAndSendToUser(userId, "/queue/conversations",
+                        ConversationMapper.toConversationDetailResponse(userId, conversation));
+            } catch (Exception ignored) {
+            }
         }
     }
 
@@ -462,8 +478,13 @@ public class ConversationService implements IConversationService {
                 .findFirst()
                 .orElse(null);
 
-        List<Report> activeProcessingReports = reportRepository
-                .findActiveReportsByConversationId(conversationId);
+        User currentUser = userRepository.findById(userId).orElse(null);
+        List<Report> activeProcessingReports;
+        if (currentUser != null && currentUser.getRole() == ERole.client && partner != null && partner.getRole() == ERole.staff) {
+            activeProcessingReports = reportRepository.findActiveReportsByClientAndStaff(userId, partner.getId());
+        } else {
+            activeProcessingReports = reportRepository.findActiveReportsByConversationId(conversationId);
+        }
 
         List<Report> allLinkedReports = reportRepository
                 .findByConversationIdOrderByCreatedAtDesc(conversationId);
@@ -551,14 +572,26 @@ public class ConversationService implements IConversationService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<LinkedReportResponse> getConversationReports(String userId, String conversationId, int page, int size) {
-        conversationRepository.findByIdAndMember(conversationId, userId)
+        Conversation conversation = conversationRepository.findByIdAndMember(conversationId, userId)
                 .orElseThrow(() -> new BadRequestException("conversation.not_found"));
 
         int safePage = Math.max(0, page - 1);
         int safeSize = Math.max(1, Math.min(size, 50));
         org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(safePage, safeSize);
 
-        org.springframework.data.domain.Page<Report> reportPage = reportRepository.findActiveReportsByConversationId(conversationId, pageable);
+        User currentUser = userRepository.findById(userId).orElse(null);
+        User partner = conversation.getParticipants().stream()
+                .map(ConversationParticipant::getUser)
+                .filter(u -> !u.getId().equals(userId))
+                .findFirst()
+                .orElse(null);
+
+        org.springframework.data.domain.Page<Report> reportPage;
+        if (currentUser != null && currentUser.getRole() == ERole.client && partner != null && partner.getRole() == ERole.staff) {
+            reportPage = reportRepository.findActiveReportsByClientAndStaff(userId, partner.getId(), pageable);
+        } else {
+            reportPage = reportRepository.findActiveReportsByConversationId(conversationId, pageable);
+        }
 
         List<LinkedReportResponse> content = reportPage.getContent().stream()
                 .map(r -> {

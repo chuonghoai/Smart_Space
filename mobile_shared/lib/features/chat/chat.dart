@@ -8,5 +8,6 @@ export 'data/chat_repository.dart';
 export 'services/chat_ws_service.dart';
 export 'services/chat_local_storage_service.dart';
 export 'providers/chat_detail_provider.dart';
+export 'providers/conversation_reports_provider.dart';
 export 'widgets/chat_message_bubble.dart';
 

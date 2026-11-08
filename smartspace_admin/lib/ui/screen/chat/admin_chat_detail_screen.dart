@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
+import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -161,14 +163,13 @@ class _AdminChatDetailScreenState extends ConsumerState<AdminChatDetailScreen> {
         ),
         actions: [
           IconButton(
-            icon: const Icon(Icons.phone_outlined),
-            tooltip: l10n.callUser,
+            icon: const Icon(Icons.more_vert_rounded),
+            tooltip: l10n.conversationInfoTitle,
             onPressed: () {
-              // Partner phone from conversation or details
-              _handlePhoneCall(null);
+              context.push(RouterPath.conversationInfoWithId(widget.conversationId));
             },
           ),
-          const SizedBox(width: 8),
+          const SizedBox(width: 4),
         ],
       ),
       body: Column(

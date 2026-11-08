@@ -28,6 +28,7 @@ class _ClientConversationsScreenState extends ConsumerState<ClientConversationsS
     WidgetsBinding.instance.addObserver(this);
     _scrollController.addListener(_onScroll);
     _enterListPresence();
+    _searchController.text = ref.read(clientConversationsProvider).searchQuery;
   }
 
   @override
@@ -223,7 +224,13 @@ class _ClientConversationsScreenState extends ConsumerState<ClientConversationsS
     }
 
     return RefreshIndicator(
-      onRefresh: () => ref.read(clientConversationsProvider.notifier).refresh(),
+      onRefresh: () async {
+        if (_searchController.text.trim().isEmpty && state.searchQuery.isNotEmpty) {
+          ref.read(clientConversationsProvider.notifier).search('');
+        } else {
+          await ref.read(clientConversationsProvider.notifier).refresh();
+        }
+      },
       child: ListView.builder(
         controller: _scrollController,
         physics: const AlwaysScrollableScrollPhysics(),
@@ -246,6 +253,7 @@ class _ClientConversationsScreenState extends ConsumerState<ClientConversationsS
           return ClientConversationItem(
             conversation: conv,
             onTap: () {
+              ref.read(clientConversationsProvider.notifier).markAsReadLocally(conv.id);
               context.push(RouterPath.chatDetailWithId(conv.id));
             },
           );

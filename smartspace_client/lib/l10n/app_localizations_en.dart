@@ -1071,4 +1071,55 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get cannotStartChat =>
       'Unable to start conversation, please try again later';
+
+  @override
+  String get routeConversationInfo => 'Conversation Info';
+
+  @override
+  String get conversationInfoTitle => 'Conversation Info';
+
+  @override
+  String get activeReportsSection => 'Active Reports';
+
+  @override
+  String get allReportsProcessed => 'All reports have been processed';
+
+  @override
+  String get conversationClosedNotice =>
+      'Conversation closed as all reports have been processed';
+
+  @override
+  String get conversationActiveNotice => 'Conversation is currently active';
+
+  @override
+  String get callButtonLabel => 'Call';
+
+  @override
+  String get videoCallButtonLabel => 'Video call';
+
+  @override
+  String get videoCallComingSoon => 'Video call feature is under development';
+
+  @override
+  String get conversationRefreshed =>
+      'Conversation info and messages refreshed successfully';
+
+  @override
+  String get conversationRefreshFailed =>
+      'Could not refresh conversation, please try again later';
+
+  @override
+  String get cannotMakePhoneCall => 'Cannot make phone call';
+
+  @override
+  String get noPhoneNumber => 'No phone number available';
+
+  @override
+  String get staffNoPosition => 'No position';
+
+  @override
+  String get rehandlingBadge => 'Re-handling';
+
+  @override
+  String get roleClient => 'Resident';
 }

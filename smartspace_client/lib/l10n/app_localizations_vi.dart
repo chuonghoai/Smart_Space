@@ -632,7 +632,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get filterReports => 'Bộ lọc báo cáo';
 
   @override
-  String get refresh => 'Tải lại';
+  String get refresh => 'Làm mới';
 
   @override
   String get filter => 'Bộ lọc';
@@ -1062,4 +1062,55 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get cannotStartChat =>
       'Không thể kết nối trò chuyện, vui lòng thử lại sau';
+
+  @override
+  String get routeConversationInfo => 'Thông tin hội thoại';
+
+  @override
+  String get conversationInfoTitle => 'Thông tin hội thoại';
+
+  @override
+  String get activeReportsSection => 'Phản ánh đang xử lý';
+
+  @override
+  String get allReportsProcessed => 'Tất cả phản ánh đã được xử lý xong';
+
+  @override
+  String get conversationClosedNotice =>
+      'Cuộc hội thoại đã đóng do toàn bộ phản ánh đã hoàn tất';
+
+  @override
+  String get conversationActiveNotice => 'Cuộc hội thoại đang hoạt động';
+
+  @override
+  String get callButtonLabel => 'Gọi điện';
+
+  @override
+  String get videoCallButtonLabel => 'Video call';
+
+  @override
+  String get videoCallComingSoon => 'Tính năng gọi video call đang phát triển';
+
+  @override
+  String get conversationRefreshed =>
+      'Đã làm mới thông tin và tin nhắn hội thoại';
+
+  @override
+  String get conversationRefreshFailed =>
+      'Không thể làm mới hội thoại, vui lòng thử lại sau';
+
+  @override
+  String get cannotMakePhoneCall => 'Không thể thực hiện cuộc gọi';
+
+  @override
+  String get noPhoneNumber => 'Chưa cập nhật số điện thoại';
+
+  @override
+  String get staffNoPosition => 'Chưa có chức vụ';
+
+  @override
+  String get rehandlingBadge => 'Xử lý lại';
+
+  @override
+  String get roleClient => 'Cư dân';
 }

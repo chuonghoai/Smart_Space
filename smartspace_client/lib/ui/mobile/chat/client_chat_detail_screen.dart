@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:mobile_shared/features/chat/models/conversation_model.dart';
 import 'package:mobile_shared/features/chat/providers/chat_detail_provider.dart';
 import 'package:mobile_shared/features/chat/widgets/chat_message_bubble.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
+import 'package:smartspace_client/routes/router_path.dart';
 import 'package:smartspace_client/ui/mobile/chat/widgets/client_chat_role_badge.dart';
 import 'package:smartspace_client/ui/shared/image/app_network_image.dart';
 
@@ -119,6 +121,7 @@ class _ClientChatDetailScreenState extends ConsumerState<ClientChatDetailScreen>
                     children: [
                       ClientChatRoleBadge(
                         role: partnerRole,
+                        position: conv?.partnerPosition,
                         isCompact: true,
                       ),
                       if (conv?.reportTitle != null && conv!.reportTitle!.isNotEmpty) ...[
@@ -141,6 +144,16 @@ class _ClientChatDetailScreenState extends ConsumerState<ClientChatDetailScreen>
             ),
           ],
         ),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.more_vert_rounded),
+            tooltip: l10n.conversationInfoTitle,
+            onPressed: () {
+              context.push(RouterPath.conversationInfoWithId(widget.conversationId));
+            },
+          ),
+          const SizedBox(width: 4),
+        ],
       ),
       body: SafeArea(
         child: Column(
