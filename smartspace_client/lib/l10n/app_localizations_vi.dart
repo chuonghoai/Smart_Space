@@ -1142,4 +1142,33 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get contextAnonymousTooltip => 'Hội thoại phản ánh ẩn danh';
+
+  @override
+  String get youCreatedThisReportAnonymously =>
+      'Bạn đã tạo phản ánh này dưới hình thức ẩn danh';
+
+  @override
+  String get callOptionsTitle => 'Tùy chọn cuộc gọi';
+
+  @override
+  String get cellularCall => 'Gọi điện qua di động';
+
+  @override
+  String get cellularCallDesc => 'Mở ứng dụng gọi điện mặc định';
+
+  @override
+  String get freeCall => 'Gọi miễn phí qua ứng dụng';
+
+  @override
+  String get featureUnderDevelopment => 'Tính năng đang được phát triển';
+
+  @override
+  String get comingSoon => 'Sắp ra mắt';
+
+  @override
+  String get phoneNotAvailable => 'Số điện thoại không khả dụng';
+
+  @override
+  String get freeCallComingSoon =>
+      'Tính năng gọi miễn phí qua internet đang được phát triển';
 }

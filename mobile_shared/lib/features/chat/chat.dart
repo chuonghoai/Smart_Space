@@ -10,4 +10,5 @@ export 'services/chat_local_storage_service.dart';
 export 'providers/chat_detail_provider.dart';
 export 'providers/conversation_reports_provider.dart';
 export 'widgets/chat_message_bubble.dart';
+export 'widgets/chat_call_bottom_sheet.dart';
 

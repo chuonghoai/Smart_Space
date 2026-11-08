@@ -606,5 +606,13 @@
   "conversationRefreshFailed": "Không thể làm mới hội thoại, vui lòng thử lại sau",
   "noActiveReportsInConversation": "Không có phản ánh nào đang xử lý",
   "yesterday": "Hôm qua",
-  "conversationLockedBadge": "Đã khóa"
+  "conversationLockedBadge": "Đã khóa",
+  "callOptionsTitle": "Tùy chọn cuộc gọi",
+  "cellularCall": "Gọi điện qua di động",
+  "cellularCallDesc": "Mở ứng dụng gọi điện mặc định",
+  "freeCall": "Gọi miễn phí qua ứng dụng",
+  "featureUnderDevelopment": "Tính năng đang được phát triển",
+  "comingSoon": "Sắp ra mắt",
+  "phoneNotAvailable": "Số điện thoại không khả dụng",
+  "freeCallComingSoon": "Tính năng gọi miễn phí qua internet đang được phát triển"
 }

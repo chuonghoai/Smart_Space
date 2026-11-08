@@ -32,12 +32,12 @@ public interface ConversationRepository extends JpaRepository<Conversation, Stri
 
     // Get Page Conversation - All with search query (Name, Phone, Email, Content, Role, Position, Report Title)
     @EntityGraph(attributePaths = { "participants", "participants.user", "participants.user.position", "report" })
-    @Query("SELECT DISTINCT c FROM Conversation c JOIN c.participants p " +
+    @Query("SELECT DISTINCT c FROM Conversation c JOIN c.participants p LEFT JOIN c.report rep " +
             "WHERE p.user.id = :userId " +
             "AND (c.report IS NOT NULL OR c.reports IS NOT EMPTY OR c.lastMessageContent IS NOT NULL OR c.lastMessageTime IS NOT NULL) " +
             "AND (LOWER(c.name) LIKE LOWER(CONCAT('%', :query, '%')) " +
             "     OR LOWER(c.lastMessageContent) LIKE LOWER(CONCAT('%', :query, '%')) " +
-            "     OR (c.report IS NOT NULL AND LOWER(c.report.title) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+            "     OR (rep IS NOT NULL AND LOWER(rep.title) LIKE LOWER(CONCAT('%', :query, '%'))) " +
             "     OR EXISTS (SELECT r FROM c.reports r WHERE LOWER(r.title) LIKE LOWER(CONCAT('%', :query, '%'))) " +
             "     OR EXISTS (SELECT p2 FROM c.participants p2 WHERE p2.user.id <> :userId " +
             "                AND (LOWER(p2.user.fullName) LIKE LOWER(CONCAT('%', :query, '%')) " +
@@ -62,7 +62,7 @@ public interface ConversationRepository extends JpaRepository<Conversation, Stri
     // Get Page Conversation - Filtered by partner role, optional positionIds and search query (Name, Phone, Email, Content)
     @EntityGraph(attributePaths = { "participants", "participants.user", "participants.user.position", "report" })
     @Query("SELECT DISTINCT c FROM Conversation c " +
-            "JOIN c.participants p " +
+            "JOIN c.participants p LEFT JOIN c.report rep " +
             "WHERE p.user.id = :userId " +
             "AND (c.report IS NOT NULL OR c.reports IS NOT EMPTY OR c.lastMessageContent IS NOT NULL OR c.lastMessageTime IS NOT NULL) " +
             "AND EXISTS (SELECT p2 FROM c.participants p2 WHERE p2.user.id <> :userId AND p2.user.role = :role " +
@@ -75,7 +75,7 @@ public interface ConversationRepository extends JpaRepository<Conversation, Stri
             "                 OR (p2.user.role = com.vn.smart_space.consts.ERole.staff AND (LOWER(:query) LIKE '%nhân%' OR LOWER(:query) LIKE '%staff%')) " +
             "                 OR (p2.user.role = com.vn.smart_space.consts.ERole.admin AND (LOWER(:query) LIKE '%quản%' OR LOWER(:query) LIKE '%admin%')) " +
             "                 OR LOWER(c.lastMessageContent) LIKE LOWER(CONCAT('%', :query, '%')) " +
-            "                 OR (c.report IS NOT NULL AND LOWER(c.report.title) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+            "                 OR (rep IS NOT NULL AND LOWER(rep.title) LIKE LOWER(CONCAT('%', :query, '%'))) " +
             "                 OR EXISTS (SELECT r FROM c.reports r WHERE LOWER(r.title) LIKE LOWER(CONCAT('%', :query, '%'))))) " +
             "ORDER BY c.lastMessageTime DESC NULLS LAST")
     Page<Conversation> findAllByUserIdAndRoleAndPositionsAndQuery(
@@ -90,7 +90,7 @@ public interface ConversationRepository extends JpaRepository<Conversation, Stri
     // Get Page Conversation - Filtered by partner role and search query
     @EntityGraph(attributePaths = { "participants", "participants.user", "participants.user.position", "report" })
     @Query("SELECT DISTINCT c FROM Conversation c " +
-            "JOIN c.participants p " +
+            "JOIN c.participants p LEFT JOIN c.report rep " +
             "WHERE p.user.id = :userId " +
             "AND (c.report IS NOT NULL OR c.reports IS NOT EMPTY OR c.lastMessageContent IS NOT NULL OR c.lastMessageTime IS NOT NULL) " +
             "AND EXISTS (SELECT p2 FROM c.participants p2 WHERE p2.user.id <> :userId AND p2.user.role = :role " +
@@ -101,7 +101,7 @@ public interface ConversationRepository extends JpaRepository<Conversation, Stri
             "                 OR (p2.user.role = com.vn.smart_space.consts.ERole.staff AND (LOWER(:query) LIKE '%nhân%' OR LOWER(:query) LIKE '%staff%')) " +
             "                 OR (p2.user.role = com.vn.smart_space.consts.ERole.admin AND (LOWER(:query) LIKE '%quản%' OR LOWER(:query) LIKE '%admin%')) " +
             "                 OR LOWER(c.lastMessageContent) LIKE LOWER(CONCAT('%', :query, '%')) " +
-            "                 OR (c.report IS NOT NULL AND LOWER(c.report.title) LIKE LOWER(CONCAT('%', :query, '%'))) " +
+            "                 OR (rep IS NOT NULL AND LOWER(rep.title) LIKE LOWER(CONCAT('%', :query, '%'))) " +
             "                 OR EXISTS (SELECT r FROM c.reports r WHERE LOWER(r.title) LIKE LOWER(CONCAT('%', :query, '%'))))) " +
             "ORDER BY c.lastMessageTime DESC NULLS LAST")
     Page<Conversation> findAllByUserIdAndRoleAndQuery(@Param("userId") String userId, @Param("role") ERole role, @Param("query") String query, Pageable pageable);

@@ -1150,4 +1150,33 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get contextAnonymousTooltip => 'Anonymous reports conversation';
+
+  @override
+  String get youCreatedThisReportAnonymously =>
+      'You created this report anonymously';
+
+  @override
+  String get callOptionsTitle => 'Call options';
+
+  @override
+  String get cellularCall => 'Cellular call';
+
+  @override
+  String get cellularCallDesc => 'Open default phone app';
+
+  @override
+  String get freeCall => 'Free in-app voice call';
+
+  @override
+  String get featureUnderDevelopment => 'Feature under development';
+
+  @override
+  String get comingSoon => 'Coming soon';
+
+  @override
+  String get phoneNotAvailable => 'Phone number is not available';
+
+  @override
+  String get freeCallComingSoon =>
+      'Free in-app voice call feature is under development';
 }

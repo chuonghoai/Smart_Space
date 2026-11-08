@@ -56,9 +56,22 @@ public class ChatMessageService implements IChatMessageService {
     private final MessageSource messageSource;
     private final IConversationService conversationService;
 
+    private static final Map<String, IdempotentRecord> IDEMPOTENT_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
+
+    private record IdempotentRecord(ChatMessageResponse response, LocalDateTime expiresAt) {}
+
     @Transactional(rollbackFor = Exception.class)
     @Override
     public ChatMessageResponse sendMessage(String senderId, ChatMessageRequest request) {
+        // 0. Idempotency Check (prevent duplicate message when network is lagging / retry)
+        if (request.tempId() != null && !request.tempId().isBlank()) {
+            IdempotentRecord cached = IDEMPOTENT_CACHE.get(request.tempId());
+            if (cached != null && cached.expiresAt().isAfter(LocalDateTime.now())) {
+                log.info("Idempotent hit for tempId: {}. Returning cached response without duplicate creation.", request.tempId());
+                return cached.response();
+            }
+        }
+
         // 1. Validate Exists User
         User sender = userRepository.findById(senderId)
                 .orElseThrow(() -> new BadRequestException("user.not_found"));
@@ -169,6 +182,15 @@ public class ChatMessageService implements IChatMessageService {
             } catch (Exception e) {
                 log.warn("Failed to broadcast conversation update to user {}: {}", recipient.getId(), e.getMessage());
             }
+        }
+
+        // Cache response for idempotency check (TTL: 5 minutes)
+        if (request.tempId() != null && !request.tempId().isBlank()) {
+            if (IDEMPOTENT_CACHE.size() > 500) {
+                LocalDateTime now = LocalDateTime.now();
+                IDEMPOTENT_CACHE.entrySet().removeIf(entry -> entry.getValue().expiresAt().isBefore(now));
+            }
+            IDEMPOTENT_CACHE.put(request.tempId(), new IdempotentRecord(response, LocalDateTime.now().plusMinutes(5)));
         }
 
         return response;

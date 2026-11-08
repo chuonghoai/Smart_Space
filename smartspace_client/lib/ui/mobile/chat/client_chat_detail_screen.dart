@@ -4,6 +4,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mobile_shared/features/chat/models/conversation_model.dart';
 import 'package:mobile_shared/features/chat/providers/chat_detail_provider.dart';
 import 'package:mobile_shared/features/chat/widgets/chat_message_bubble.dart';
+import 'package:mobile_shared/features/chat/widgets/chat_call_bottom_sheet.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/routes/router_path.dart';
 import 'package:smartspace_client/ui/mobile/chat/widgets/client_chat_role_badge.dart';
@@ -150,6 +151,27 @@ class _ClientChatDetailScreenState
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.call_outlined),
+            tooltip: l10n.callOptionsTitle,
+            onPressed: () {
+              final activeState = ref.read(chatDetailProvider(activeConvId));
+              final partnerPhone = activeState.conversation?.partnerPhone;
+              ChatCallBottomSheet.show(
+                context,
+                partnerName: displayName,
+                partnerPhone: partnerPhone,
+                titleText: l10n.callOptionsTitle,
+                cellularCallTitle: l10n.cellularCall,
+                cellularCallDesc: l10n.cellularCallDesc,
+                freeCallTitle: l10n.freeCall,
+                freeCallDesc: l10n.featureUnderDevelopment,
+                comingSoonText: l10n.comingSoon,
+                phoneNotAvailableText: l10n.phoneNotAvailable,
+                freeCallComingSoonText: l10n.freeCallComingSoon,
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.more_vert_rounded),
             tooltip: l10n.conversationInfoTitle,

@@ -2257,6 +2257,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Anonymous reports conversation'**
   String get contextAnonymousTooltip;
+
+  /// No description provided for @youCreatedThisReportAnonymously.
+  ///
+  /// In en, this message translates to:
+  /// **'You created this report anonymously'**
+  String get youCreatedThisReportAnonymously;
+
+  /// No description provided for @callOptionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Call options'**
+  String get callOptionsTitle;
+
+  /// No description provided for @cellularCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Cellular call'**
+  String get cellularCall;
+
+  /// No description provided for @cellularCallDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Open default phone app'**
+  String get cellularCallDesc;
+
+  /// No description provided for @freeCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Free in-app voice call'**
+  String get freeCall;
+
+  /// No description provided for @featureUnderDevelopment.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature under development'**
+  String get featureUnderDevelopment;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get comingSoon;
+
+  /// No description provided for @phoneNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number is not available'**
+  String get phoneNotAvailable;
+
+  /// No description provided for @freeCallComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Free in-app voice call feature is under development'**
+  String get freeCallComingSoon;
 }
 
 class _AppLocalizationsDelegate

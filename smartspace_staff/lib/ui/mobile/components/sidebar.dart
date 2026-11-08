@@ -7,6 +7,7 @@ import 'package:mobile_shared/features/auth/services/auth_service.dart';
 import 'package:smartspace_staff/features/notifications/providers/notification_provider.dart';
 import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
+import 'package:smartspace_staff/features/app_services/root_scope.dart';
 import 'package:smartspace_staff/routes/app_router.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
 import 'package:smartspace_staff/ui/mobile/home/home_controller.dart';
@@ -224,6 +225,7 @@ class Sidebar extends ConsumerWidget {
                 onTap: () async {
                   Navigator.pop(context);
                   await authService.logout();
+                  resetRootProviderScope();
                   appRouter.go(RouterPath.login);
                 },
               ),

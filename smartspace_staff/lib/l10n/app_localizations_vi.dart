@@ -1450,4 +1450,26 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get conversationLockedBadge => 'Đã khóa';
+
+  @override
+  String get callOptionsTitle => 'Tùy chọn cuộc gọi';
+
+  @override
+  String get cellularCall => 'Gọi điện qua di động';
+
+  @override
+  String get cellularCallDesc => 'Mở ứng dụng gọi điện mặc định';
+
+  @override
+  String get freeCall => 'Gọi miễn phí qua ứng dụng';
+
+  @override
+  String get comingSoon => 'Sắp ra mắt';
+
+  @override
+  String get phoneNotAvailable => 'Số điện thoại không khả dụng';
+
+  @override
+  String get freeCallComingSoon =>
+      'Tính năng gọi miễn phí qua internet đang được phát triển';
 }

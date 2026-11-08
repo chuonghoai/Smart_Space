@@ -439,5 +439,14 @@
   "noAnonymousReports": "Không có phản ánh ẩn danh nào đang xử lý",
   "anonymousProtectionBanner": "Đang trao đổi ẩn danh. Danh tính của bạn được bảo vệ tuyệt đối.",
   "contextIdentifiedTooltip": "Hội thoại phản ánh công khai",
-  "contextAnonymousTooltip": "Hội thoại phản ánh ẩn danh"
+  "contextAnonymousTooltip": "Hội thoại phản ánh ẩn danh",
+  "youCreatedThisReportAnonymously": "Bạn đã tạo phản ánh này dưới hình thức ẩn danh",
+  "callOptionsTitle": "Tùy chọn cuộc gọi",
+  "cellularCall": "Gọi điện qua di động",
+  "cellularCallDesc": "Mở ứng dụng gọi điện mặc định",
+  "freeCall": "Gọi miễn phí qua ứng dụng",
+  "featureUnderDevelopment": "Tính năng đang được phát triển",
+  "comingSoon": "Sắp ra mắt",
+  "phoneNotAvailable": "Số điện thoại không khả dụng",
+  "freeCallComingSoon": "Tính năng gọi miễn phí qua internet đang được phát triển"
 }

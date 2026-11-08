@@ -48,6 +48,9 @@ class _AdminConversationsScreenState extends ConsumerState<AdminConversationsScr
   }
 
   void _openPositionFilter(BuildContext context, AdminConversationsState state) {
+    if (state.availablePositions.isEmpty && !state.isLoadingPositions) {
+      ref.read(adminConversationsProvider.notifier).loadPositions();
+    }
     PositionFilterSheet.show(
       context: context,
       positions: state.availablePositions,

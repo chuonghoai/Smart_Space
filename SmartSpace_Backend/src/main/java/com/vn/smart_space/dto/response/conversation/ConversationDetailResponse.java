@@ -32,6 +32,7 @@ public class ConversationDetailResponse {
     private String partnerAvatarUrl;
     private ERole partnerRole;
     private String partnerPosition;
+    private String partnerPhone;
     private Boolean isAnonymous;
 
     // Context-based messaging for Client

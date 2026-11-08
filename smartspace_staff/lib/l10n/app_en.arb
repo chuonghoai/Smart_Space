@@ -606,5 +606,13 @@
   "conversationRefreshFailed": "Could not refresh conversation, please try again later",
   "noActiveReportsInConversation": "No active reports in this conversation",
   "yesterday": "Yesterday",
-  "conversationLockedBadge": "Locked"
+  "conversationLockedBadge": "Locked",
+  "callOptionsTitle": "Call options",
+  "cellularCall": "Cellular call",
+  "cellularCallDesc": "Open default phone app",
+  "freeCall": "Free in-app voice call",
+  "featureUnderDevelopment": "Feature under development",
+  "comingSoon": "Coming soon",
+  "phoneNotAvailable": "Phone number is not available",
+  "freeCallComingSoon": "Free in-app voice call feature is under development"
 }

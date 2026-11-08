@@ -8,6 +8,7 @@ import 'package:smartspace_staff/routes/router_path.dart';
 import 'package:smartspace_staff/ui/mobile/chat/widgets/chat_message_bubble.dart';
 import 'package:smartspace_staff/ui/mobile/chat/widgets/chat_role_badge.dart';
 import 'package:smartspace_staff/ui/shared/image/app_network_image.dart';
+import 'package:mobile_shared/features/chat/widgets/chat_call_bottom_sheet.dart';
 
 class ChatDetailScreen extends ConsumerStatefulWidget {
   final String conversationId;
@@ -86,8 +87,11 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
                     ? initialPartner!.name
                     : l10n.conversations)));
 
+    final isAnonymous = conv?.isAnonymous ?? false;
     final partnerRole = conv?.partnerRole ?? initialPartner?.role;
     final partnerPosition = conv?.partnerPosition ?? initialPartner?.position;
+    final isClient = partnerRole?.toLowerCase() == 'client';
+    final canCall = isClient ? !isAnonymous : true;
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
@@ -130,6 +134,27 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen> {
           ],
         ),
         actions: [
+          if (canCall)
+            IconButton(
+              icon: const Icon(Icons.call_outlined),
+              tooltip: l10n.callOptionsTitle,
+              onPressed: () {
+                final partnerPhone = conv?.partnerPhone;
+                ChatCallBottomSheet.show(
+                  context,
+                  partnerName: displayName,
+                  partnerPhone: partnerPhone,
+                  titleText: l10n.callOptionsTitle,
+                  cellularCallTitle: l10n.cellularCall,
+                  cellularCallDesc: l10n.cellularCallDesc,
+                  freeCallTitle: l10n.freeCall,
+                  freeCallDesc: l10n.featureUnderDevelopment,
+                  comingSoonText: l10n.comingSoon,
+                  phoneNotAvailableText: l10n.phoneNotAvailable,
+                  freeCallComingSoonText: l10n.freeCallComingSoon,
+                );
+              },
+            ),
           IconButton(
             icon: const Icon(Icons.more_vert_rounded),
             onPressed: () {

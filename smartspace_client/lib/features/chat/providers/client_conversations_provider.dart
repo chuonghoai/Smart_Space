@@ -75,12 +75,37 @@ class ClientConversationsNotifier extends StateNotifier<ClientConversationsState
     if (_isDisposed) return;
 
     final currentList = List<ConversationModel>.from(state.conversations);
-    final index = currentList.indexWhere((c) => c.id == updatedConv.id);
+    // Match by ID or partnerId or context IDs to merge identified & anonymous contexts
+    final index = currentList.indexWhere((c) =>
+        c.id == updatedConv.id ||
+        (c.partnerId != null && c.partnerId == updatedConv.partnerId) ||
+        (c.identifiedConversationId != null &&
+            (c.identifiedConversationId == updatedConv.identifiedConversationId ||
+             c.identifiedConversationId == updatedConv.id)) ||
+        (c.anonymousConversationId != null &&
+            (c.anonymousConversationId == updatedConv.anonymousConversationId ||
+             c.anonymousConversationId == updatedConv.id)));
 
     if (index >= 0) {
-      currentList.removeAt(index);
+      final existing = currentList[index];
+      // Check if this update actually contains a new message
+      final hasNewMessage = updatedConv.lastMessageId != null &&
+          (existing.lastMessageId == null ||
+           updatedConv.lastMessageId != existing.lastMessageId ||
+           (updatedConv.lastMessageTime != null &&
+            existing.lastMessageTime != null &&
+            updatedConv.lastMessageTime!.isAfter(existing.lastMessageTime!)));
+
+      if (hasNewMessage) {
+        currentList.removeAt(index);
+        currentList.insert(0, updatedConv);
+      } else {
+        // Read receipt / unread count update: update in-place without moving to top
+        currentList[index] = updatedConv;
+      }
+    } else {
+      currentList.insert(0, updatedConv);
     }
-    currentList.insert(0, updatedConv);
 
     state = state.copyWith(conversations: currentList);
     _fetchUnreadCount();

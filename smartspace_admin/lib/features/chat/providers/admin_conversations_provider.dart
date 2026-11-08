@@ -86,6 +86,7 @@ class AdminConversationsNotifier extends StateNotifier<AdminConversationsState> 
         super(const AdminConversationsState()) {
     _wsService.addConversationListener(_handleWsConversationUpdate);
     loadInitial('all');
+    loadPositions();
     refreshUnreadCount();
   }
 
@@ -279,12 +280,26 @@ class AdminConversationsNotifier extends StateNotifier<AdminConversationsState> 
     final list = List<ConversationModel>.from(state.conversations);
 
     if (existingIndex >= 0) {
-      list.removeAt(existingIndex);
-      list.insert(0, updatedConv);
-      state = state.copyWith(
-        conversations: list,
-        pulseHighlightId: updatedConv.id,
-      );
+      final existing = state.conversations[existingIndex];
+      final hasNewMessage = updatedConv.lastMessageId != null &&
+          (existing.lastMessageId == null ||
+           updatedConv.lastMessageId != existing.lastMessageId ||
+           (updatedConv.lastMessageTime != null &&
+            existing.lastMessageTime != null &&
+            updatedConv.lastMessageTime!.isAfter(existing.lastMessageTime!)));
+
+      if (hasNewMessage) {
+        list.removeAt(existingIndex);
+        list.insert(0, updatedConv);
+        state = state.copyWith(
+          conversations: list,
+          pulseHighlightId: updatedConv.id,
+        );
+      } else {
+        // Read receipt / metadata update: update in-place without reordering
+        list[existingIndex] = updatedConv;
+        state = state.copyWith(conversations: list);
+      }
     } else {
       list.insert(0, updatedConv);
       state = state.copyWith(

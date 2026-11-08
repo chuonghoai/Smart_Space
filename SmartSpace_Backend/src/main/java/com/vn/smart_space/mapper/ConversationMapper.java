@@ -61,6 +61,7 @@ public final class ConversationMapper {
                 .partnerAvatarUrl(partnerInfo.avatarUrl)
                 .partnerRole(partnerInfo.role)
                 .partnerPosition(partnerInfo.position)
+                .partnerPhone(partnerInfo.phone)
                 .isAnonymous(partnerInfo.isAnonymous)
                 .reportId(reportId)
                 .reportTitle(reportTitle)
@@ -121,6 +122,7 @@ public final class ConversationMapper {
                 .partnerAvatarUrl(partnerInfo.avatarUrl)
                 .partnerRole(partnerInfo.role)
                 .partnerPosition(partnerInfo.position)
+                .partnerPhone(partnerInfo.phone)
                 .isAnonymous(partnerInfo.isAnonymous)
                 .reportId(reportId)
                 .reportTitle(reportTitle)
@@ -181,9 +183,11 @@ public final class ConversationMapper {
         if (isAnon) {
             info.name = "Người dùng ẩn danh";
             info.avatarUrl = null;
+            info.phone = null;
         } else {
             info.name = partner.getFullName();
             info.avatarUrl = partner.getAvatarUrl();
+            info.phone = partner.getPhone();
         }
 
         if (partner.getRole() == ERole.staff) {
@@ -199,6 +203,7 @@ public final class ConversationMapper {
         String avatarUrl;
         ERole role;
         String position;
+        String phone;
         boolean isAnonymous = false;
     }
 }

@@ -674,7 +674,10 @@ class _ClientConversationInfoScreenState
         child: InkWell(
           borderRadius: BorderRadius.circular(16),
           onTap: () {
-            context.push(RouterPath.reportDetailWithId(report.id));
+            context.push(
+              RouterPath.reportDetailWithId(report.id),
+              extra: {'fromChat': true},
+            );
           },
           child: Padding(
             padding: const EdgeInsets.all(12),

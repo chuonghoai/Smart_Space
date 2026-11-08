@@ -2094,4 +2094,26 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cannotStartChat => 'Cannot start conversation';
+
+  @override
+  String get callOptionsTitle => 'Call options';
+
+  @override
+  String get cellularCall => 'Cellular call';
+
+  @override
+  String get cellularCallDesc => 'Open default phone app';
+
+  @override
+  String get freeCall => 'Free in-app voice call';
+
+  @override
+  String get featureUnderDevelopment => 'Feature under development';
+
+  @override
+  String get comingSoon => 'Coming soon';
+
+  @override
+  String get freeCallComingSoon =>
+      'Free in-app voice call feature is under development';
 }

@@ -4,7 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
-import 'package:mobile_shared/features/chat/data/chat_repository.dart';
+import 'package:mobile_shared/features/chat/models/conversation_model.dart';
 import 'package:mobile_shared/util/media_upload.dart';
 import 'package:smartspace_admin/features/staff/application/staff_providers.dart';
 import 'package:smartspace_admin/features/staff/models/staff_list_response.dart';
@@ -1029,33 +1029,17 @@ void showStaffDetailSheet(
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
-                    onPressed: () async {
+                    onPressed: () {
                       Navigator.pop(context); // Đóng bottom sheet
-                      try {
-                        final repo = ref.read(chatRepositoryProvider);
-                        final res = await repo.createOrGetConversation(
-                          participantIds: [staff.id],
-                        );
-                        if (res.success && res.data != null && context.mounted) {
-                          context.push(RouterPath.chatDetailWithId(res.data!.id));
-                        } else if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(
-                              content: Text(
-                                res.message.isNotEmpty
-                                    ? res.message
-                                    : l10n.cannotStartChat,
-                              ),
-                            ),
-                          );
-                        }
-                      } catch (e) {
-                        if (context.mounted) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            SnackBar(content: Text(e.toString())),
-                          );
-                        }
-                      }
+                      context.push(
+                        RouterPath.chatDetailWithId('new_${staff.id}'),
+                        extra: ParticipantModel(
+                          userId: staff.id,
+                          name: staff.fullName,
+                          avatarUrl: staff.avatarUrl,
+                          role: 'staff',
+                        ),
+                      );
                     },
                     icon: const Icon(Icons.chat_outlined),
                     label: Text(l10n.messageStaff),

@@ -4027,6 +4027,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Cannot start conversation'**
   String get cannotStartChat;
+
+  /// No description provided for @callOptionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Call options'**
+  String get callOptionsTitle;
+
+  /// No description provided for @cellularCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Cellular call'**
+  String get cellularCall;
+
+  /// No description provided for @cellularCallDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Open default phone app'**
+  String get cellularCallDesc;
+
+  /// No description provided for @freeCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Free in-app voice call'**
+  String get freeCall;
+
+  /// No description provided for @featureUnderDevelopment.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature under development'**
+  String get featureUnderDevelopment;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get comingSoon;
+
+  /// No description provided for @freeCallComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Free in-app voice call feature is under development'**
+  String get freeCallComingSoon;
 }
 
 class _AppLocalizationsDelegate

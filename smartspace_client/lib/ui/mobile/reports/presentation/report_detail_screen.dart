@@ -25,8 +25,13 @@ import 'package:mobile_shared/features/chat/models/conversation_model.dart';
 
 class ReportDetailScreen extends ConsumerStatefulWidget {
   final String reportId;
+  final bool fromChat;
 
-  const ReportDetailScreen({super.key, required this.reportId});
+  const ReportDetailScreen({
+    super.key,
+    required this.reportId,
+    this.fromChat = false,
+  });
 
   @override
   ConsumerState<ReportDetailScreen> createState() => _ReportDetailScreenState();
@@ -61,15 +66,23 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
       Navigator.of(context, rootNavigator: true).pop(); // pop loading
 
       if (res.success && res.data != null) {
-        context.push(
-          RouterPath.chatDetailWithId(res.data!.id),
-          extra: ParticipantModel(
-            userId: report.assignedStaffId ?? '',
-            name: report.assignedStaffName ?? l10n.supportStaff,
-            avatarUrl: report.assignedStaffAvatarUrl,
-            role: 'staff',
-          ),
-        );
+        if (widget.fromChat) {
+          // Break navigation loop: pop ReportDetail and Info screen back to the existing Chat
+          Navigator.of(context).pop(); // Pop ReportDetail
+          if (mounted) {
+            Navigator.of(context).pop(); // Pop ConversationInfo
+          }
+        } else {
+          context.push(
+            RouterPath.chatDetailWithId(res.data!.id),
+            extra: ParticipantModel(
+              userId: report.assignedStaffId ?? '',
+              name: report.assignedStaffName ?? l10n.supportStaff,
+              avatarUrl: report.assignedStaffAvatarUrl,
+              role: 'staff',
+            ),
+          );
+        }
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
@@ -570,7 +583,7 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
                               ),
                             ),
 
-                            // My Report Badge ("Bạn là người tạo phản ánh này")
+                            // My Report Badge ("Bạn là người tạo phản ánh này" / "Bạn đã tạo phản ánh này dưới hình thức ẩn danh")
                             if (isMyReport)
                               Container(
                                 padding: const EdgeInsets.symmetric(
@@ -578,25 +591,25 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                                  color: (report.isAnonymous ? theme.colorScheme.secondary : theme.colorScheme.primary).withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
-                                    color: theme.colorScheme.primary.withValues(alpha: 0.35),
+                                    color: (report.isAnonymous ? theme.colorScheme.secondary : theme.colorScheme.primary).withValues(alpha: 0.35),
                                   ),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Icon(
-                                      Icons.person_pin_circle_outlined,
+                                      report.isAnonymous ? Icons.shield_outlined : Icons.person_pin_circle_outlined,
                                       size: 14,
-                                      color: theme.colorScheme.primary,
+                                      color: report.isAnonymous ? theme.colorScheme.secondary : theme.colorScheme.primary,
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
-                                      l10n.youCreatedThisReport,
+                                      report.isAnonymous ? l10n.youCreatedThisReportAnonymously : l10n.youCreatedThisReport,
                                       style: theme.textTheme.labelSmall?.copyWith(
-                                        color: theme.colorScheme.primary,
+                                        color: report.isAnonymous ? theme.colorScheme.secondary : theme.colorScheme.primary,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),

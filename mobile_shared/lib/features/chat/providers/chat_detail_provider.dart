@@ -310,12 +310,12 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
         // WebSocket not connected or send failed -> Fallback to REST API immediately
         await _sendViaRest(targetConvId, trimmed, tempId);
       } else {
-        // Sent via WS -> Start a 5-second confirmation timer
-        Timer(const Duration(seconds: 5), () {
+        // Sent via WS -> Start a 15-second safety timer: mark failed only if no ack received
+        Timer(const Duration(seconds: 15), () {
           if (_isDisposed) return;
           final msgStillSending = state.messages.any((m) => m.tempId == tempId && m.isSending);
           if (msgStillSending) {
-            _sendViaRest(targetConvId, trimmed, tempId);
+            _markMessageFailed(tempId);
           }
         });
       }

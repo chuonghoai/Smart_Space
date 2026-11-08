@@ -65,25 +65,18 @@ class _AdminReportDetailScreenState
     }
   }
 
-  Future<void> _handleMessageStaff(String? staffId) async {
+  void _handleMessageStaff(String? staffId, {String? staffName, String? staffAvatar}) {
     if (staffId == null || staffId.isEmpty) return;
-    try {
-      final res = await chatRepository.createOrGetConversation(participantIds: [staffId]);
-      if (!mounted) return;
-      if (res.success && res.data != null) {
-        context.push(RouterPath.chatDetailWithId(res.data!.id));
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(res.message.isNotEmpty ? res.message : 'Error starting conversation')),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(e.toString())),
-        );
-      }
-    }
+    final l10n = AppLocalizations.of(context);
+    context.push(
+      RouterPath.chatDetailWithId('new_$staffId'),
+      extra: ParticipantModel(
+        userId: staffId,
+        name: staffName ?? l10n?.filterRoleStaff ?? 'Nhân viên',
+        avatarUrl: staffAvatar,
+        role: 'staff',
+      ),
+    );
   }
 
   void _handleMessageReporter() {
@@ -1602,7 +1595,11 @@ class _AdminReportDetailScreenState
                 IconButton.outlined(
                   icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
                   tooltip: l10n.messageStaff,
-                  onPressed: () => _handleMessageStaff(report.assignedStaffId),
+                  onPressed: () => _handleMessageStaff(
+                    report.assignedStaffId,
+                    staffName: report.assignedStaffName,
+                    staffAvatar: report.assignedStaffAvatarUrl,
+                  ),
                   constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
                   padding: EdgeInsets.zero,
                 ),

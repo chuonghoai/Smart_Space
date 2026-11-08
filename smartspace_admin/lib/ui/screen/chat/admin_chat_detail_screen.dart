@@ -5,7 +5,6 @@ import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AdminChatDetailScreen extends ConsumerStatefulWidget {
   final String conversationId;
@@ -58,32 +57,6 @@ class _AdminChatDetailScreenState extends ConsumerState<AdminChatDetailScreen> {
 
     _textController.clear();
     ref.read(chatDetailProvider(widget.conversationId).notifier).sendMessage(text);
-  }
-
-  Future<void> _handlePhoneCall(String? phone) async {
-    final l10n = AppLocalizations.of(context)!;
-    if (phone == null || phone.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.phoneNotAvailable)),
-      );
-      return;
-    }
-
-    final cleanPhone = phone.replaceAll(RegExp(r'\s+'), '');
-    final uri = Uri.parse('tel:$cleanPhone');
-    try {
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri);
-      } else {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      }
-    } catch (_) {
-      if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.cannotLaunchPhone)),
-        );
-      }
-    }
   }
 
   @override
@@ -162,6 +135,26 @@ class _AdminChatDetailScreenState extends ConsumerState<AdminChatDetailScreen> {
           ],
         ),
         actions: [
+          IconButton(
+            icon: const Icon(Icons.call_outlined),
+            tooltip: l10n.callOptionsTitle,
+            onPressed: () {
+              final phone = conversation?.partnerPhone;
+              ChatCallBottomSheet.show(
+                context,
+                partnerName: partnerName,
+                partnerPhone: phone,
+                titleText: l10n.callOptionsTitle,
+                cellularCallTitle: l10n.cellularCall,
+                cellularCallDesc: l10n.cellularCallDesc,
+                freeCallTitle: l10n.freeCall,
+                freeCallDesc: l10n.featureUnderDevelopment,
+                comingSoonText: l10n.comingSoon,
+                phoneNotAvailableText: l10n.phoneNotAvailable,
+                freeCallComingSoonText: l10n.freeCallComingSoon,
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.more_vert_rounded),
             tooltip: l10n.conversationInfoTitle,

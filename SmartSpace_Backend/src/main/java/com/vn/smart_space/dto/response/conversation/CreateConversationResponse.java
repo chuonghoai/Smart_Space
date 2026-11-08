@@ -31,6 +31,7 @@ public class CreateConversationResponse {
     private String partnerAvatarUrl;
     private ERole partnerRole;
     private String partnerPosition;
+    private String partnerPhone;
     private Boolean isAnonymous;
 
     private String reportId;

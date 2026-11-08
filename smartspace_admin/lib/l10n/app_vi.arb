@@ -846,7 +846,7 @@
   "myLocation": "Vị trí của tôi",
   "locationPermissionDenied": "Quyền truy cập vị trí bị từ chối",
   "locationServiceDisabled": "Dịch vụ định vị đang tắt",
-  "routeConversations": "Hội thoại",
+  "routeConversations": "Tin nhắn",
   "routeChatDetail": "Chi tiết tin nhắn",
   "conversations": "Hội thoại",
   "messages": "Tin nhắn",
@@ -897,5 +897,13 @@
   "noPhoneNumber": "Chưa cập nhật số điện thoại",
   "staffNoPosition": "Chưa có chức vụ",
   "rehandlingBadge": "Xử lý lại",
-  "cannotStartChat": "Không thể bắt đầu cuộc trò chuyện"
+  "cannotStartChat": "Không thể bắt đầu cuộc trò chuyện",
+  "callOptionsTitle": "Tùy chọn cuộc gọi",
+  "cellularCall": "Gọi điện qua di động",
+  "cellularCallDesc": "Mở ứng dụng gọi điện mặc định",
+  "freeCall": "Gọi miễn phí qua ứng dụng",
+  "featureUnderDevelopment": "Tính năng đang được phát triển",
+  "comingSoon": "Sắp ra mắt",
+  "phoneNotAvailable": "Số điện thoại không khả dụng",
+  "freeCallComingSoon": "Tính năng gọi miễn phí qua internet đang được phát triển"
 }

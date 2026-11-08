@@ -8,6 +8,7 @@ class ConversationModel {
   final String? partnerAvatarUrl;
   final String? partnerRole;
   final String? partnerPosition;
+  final String? partnerPhone;
   final bool isAnonymous;
   final String? reportId;
   final String? reportTitle;
@@ -36,6 +37,7 @@ class ConversationModel {
     this.partnerAvatarUrl,
     this.partnerRole,
     this.partnerPosition,
+    this.partnerPhone,
     this.isAnonymous = false,
     this.reportId,
     this.reportTitle,
@@ -70,6 +72,7 @@ class ConversationModel {
       partnerAvatarUrl: json['partnerAvatarUrl'] as String? ?? json['partner_avatar_url'] as String?,
       partnerRole: json['partnerRole'] as String? ?? json['partner_role'] as String?,
       partnerPosition: json['partnerPosition'] as String? ?? json['partner_position'] as String?,
+      partnerPhone: json['partnerPhone'] as String? ?? json['partner_phone'] as String?,
       isAnonymous: json['isAnonymous'] as bool? ?? json['is_anonymous'] as bool? ?? false,
       reportId: json['reportId'] as String? ?? json['report_id'] as String?,
       reportTitle: json['reportTitle'] as String? ?? json['report_title'] as String?,
@@ -105,6 +108,7 @@ class ConversationModel {
       'partnerAvatarUrl': partnerAvatarUrl,
       'partnerRole': partnerRole,
       'partnerPosition': partnerPosition,
+      'partnerPhone': partnerPhone,
       'isAnonymous': isAnonymous,
       'reportId': reportId,
       'reportTitle': reportTitle,
@@ -135,6 +139,7 @@ class ConversationModel {
     String? partnerAvatarUrl,
     String? partnerRole,
     String? partnerPosition,
+    String? partnerPhone,
     bool? isAnonymous,
     String? reportId,
     String? reportTitle,
@@ -163,6 +168,7 @@ class ConversationModel {
       partnerAvatarUrl: partnerAvatarUrl ?? this.partnerAvatarUrl,
       partnerRole: partnerRole ?? this.partnerRole,
       partnerPosition: partnerPosition ?? this.partnerPosition,
+      partnerPhone: partnerPhone ?? this.partnerPhone,
       isAnonymous: isAnonymous ?? this.isAnonymous,
       reportId: reportId ?? this.reportId,
       reportTitle: reportTitle ?? this.reportTitle,

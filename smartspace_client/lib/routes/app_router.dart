@@ -99,8 +99,14 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: RouterPath.reportDetail,
-      builder: (context, state) =>
-          ReportDetailScreen(reportId: state.pathParameters['id']!),
+      builder: (context, state) {
+        final extra = state.extra;
+        final fromChat = (extra is Map && extra['fromChat'] == true);
+        return ReportDetailScreen(
+          reportId: state.pathParameters['id']!,
+          fromChat: fromChat,
+        );
+      },
     ),
     GoRoute(
       path: RouterPath.notifications,

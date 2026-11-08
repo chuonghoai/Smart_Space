@@ -36,5 +36,17 @@ class ChatLocalStorageService {
       await prefs.remove('$_messagesPrefix$conversationId');
     } catch (_) {}
   }
+
+  Future<void> clearAll() async {
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      final keys = prefs.getKeys().where((k) => k.startsWith(_messagesPrefix)).toList();
+      for (final k in keys) {
+        await prefs.remove(k);
+      }
+    } catch (_) {}
+  }
 }
+
+final chatLocalStorageService = ChatLocalStorageService();
 

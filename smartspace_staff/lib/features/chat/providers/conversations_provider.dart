@@ -353,12 +353,22 @@ class ConversationsNotifier extends StateNotifier<ConversationsState> {
 
     final existingIndex = state.conversations.indexWhere((c) => c.id == updated.id);
 
-    if (existingIndex == 0) {
-      final list = List<ConversationModel>.from(state.conversations);
-      list[0] = updated;
-      state = state.copyWith(conversations: list);
-      refreshUnreadCount();
-      return;
+    if (existingIndex >= 0) {
+      final existing = state.conversations[existingIndex];
+      final hasNewMessage = updated.lastMessageId != null &&
+          (existing.lastMessageId == null ||
+           updated.lastMessageId != existing.lastMessageId ||
+           (updated.lastMessageTime != null &&
+            existing.lastMessageTime != null &&
+            updated.lastMessageTime!.isAfter(existing.lastMessageTime!)));
+
+      if (existingIndex == 0 || !hasNewMessage) {
+        final list = List<ConversationModel>.from(state.conversations);
+        list[existingIndex] = updated;
+        state = state.copyWith(conversations: list);
+        refreshUnreadCount();
+        return;
+      }
     }
 
     if (existingIndex > 0) {
