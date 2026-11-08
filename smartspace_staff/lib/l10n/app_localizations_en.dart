@@ -1375,7 +1375,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get noPhoneNumber => 'No phone number available';
 
   @override
-  String get searchConversations => 'Search...';
+  String get searchConversations => 'Search by name, phone, email...';
 
   @override
   String get otherUsers => 'Other users';
@@ -1385,4 +1385,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noUsersFound => 'No users found';
+
+  @override
+  String get filterPosition => 'Positions';
+
+  @override
+  String get filterByPosition => 'Filter by position';
+
+  @override
+  String get apply => 'Apply';
+
+  @override
+  String get clearFilter => 'Clear filter';
+
+  @override
+  String get noPositionsAvailable => 'No positions available';
+
+  @override
+  String positionSelectedCount(int count) {
+    return '$count positions';
+  }
 }

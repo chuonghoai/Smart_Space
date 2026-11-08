@@ -564,8 +564,22 @@
   "sendAction": "Send",
   "callClient": "Call",
   "noPhoneNumber": "No phone number available",
-  "searchConversations": "Search...",
+  "searchConversations": "Search by name, phone, email...",
   "otherUsers": "Other users",
   "startConversation": "Start conversation",
-  "noUsersFound": "No users found"
+  "noUsersFound": "No users found",
+  "filterPosition": "Positions",
+  "filterByPosition": "Filter by position",
+  "apply": "Apply",
+  "cancel": "Cancel",
+  "clearFilter": "Clear filter",
+  "noPositionsAvailable": "No positions available",
+  "positionSelectedCount": "{count} positions",
+  "@positionSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

@@ -1,5 +1,7 @@
 package com.vn.smart_space.controller.conversation;
 
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.oauth2.jwt.Jwt;
@@ -17,6 +19,7 @@ import com.vn.smart_space.dto.response.conversation.ConversationDetailResponse;
 import com.vn.smart_space.dto.response.conversation.CreateConversationResponse;
 import com.vn.smart_space.service.chat.ChatPresenceService;
 import com.vn.smart_space.service.conversation.IConversationService;
+import com.vn.smart_space.service.position.IPositionService;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -28,6 +31,7 @@ public class ConversationController {
 
     private final IConversationService conversationService;
     private final ChatPresenceService chatPresenceService;
+    private final IPositionService positionService;
 
     // 1. Create or Get Conversation
     @PostMapping("")
@@ -45,17 +49,18 @@ public class ConversationController {
                 .build());
     }
 
-    // 2. Get My Conversation list with optional role filter and search query
+    // 2. Get My Conversation list with optional role filter, position filter, and search query
     @GetMapping("/my-conversation")
     public ResponseEntity<ApiResponse> getMyConversation(
             @AuthenticationPrincipal Jwt jwt,
             @RequestParam(required = false, defaultValue = "1") int page,
             @RequestParam(required = false, defaultValue = "10") int size,
             @RequestParam(required = false, defaultValue = "all") String role,
+            @RequestParam(required = false) List<String> positionIds,
             @RequestParam(required = false) String query) {
 
         var userId = jwt.getClaim("userId").toString();
-        var data = conversationService.getMyConversation(userId, page, size, role, query);
+        var data = conversationService.getMyConversation(userId, page, size, role, positionIds, query);
 
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
@@ -158,15 +163,26 @@ public class ConversationController {
     public ResponseEntity<ApiResponse> searchUsersForChat(
             @AuthenticationPrincipal Jwt jwt,
             @RequestParam(required = false, defaultValue = "all") String role,
+            @RequestParam(required = false) List<String> positionIds,
             @RequestParam(required = false) String query) {
 
         var userId = jwt.getClaim("userId").toString();
-        var data = conversationService.searchUsersForChat(userId, role, query);
+        var data = conversationService.searchUsersForChat(userId, role, positionIds, query);
 
         return ResponseEntity.ok(ApiResponse.builder()
                 .success(true)
                 .data(data)
                 .message("conversation.search_users.success")
+                .build());
+    }
+
+    // 10. Get Active Positions for Staff Filter
+    @GetMapping("/positions")
+    public ResponseEntity<ApiResponse> getPositions() {
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .data(positionService.getPositions(true))
+                .message("position.list.success")
                 .build());
     }
 }

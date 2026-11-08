@@ -564,8 +564,22 @@
   "sendAction": "Gửi",
   "callClient": "Gọi điện",
   "noPhoneNumber": "Người dùng không cung cấp số điện thoại",
-  "searchConversations": "Tìm kiếm...",
+  "searchConversations": "Tìm kiếm theo tên, SĐT, email...",
   "otherUsers": "Người dùng khác",
   "startConversation": "Bắt đầu cuộc trò chuyện",
-  "noUsersFound": "Không tìm thấy người dùng phù hợp"
+  "noUsersFound": "Không tìm thấy người dùng phù hợp",
+  "filterPosition": "Chức vụ",
+  "filterByPosition": "Lọc theo chức vụ",
+  "apply": "Áp dụng",
+  "cancel": "Hủy",
+  "clearFilter": "Xóa bộ lọc",
+  "noPositionsAvailable": "Không có chức vụ nào",
+  "positionSelectedCount": "{count} chức vụ",
+  "@positionSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  }
 }

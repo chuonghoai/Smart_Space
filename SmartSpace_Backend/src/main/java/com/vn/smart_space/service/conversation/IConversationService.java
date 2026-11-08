@@ -16,7 +16,7 @@ public interface IConversationService {
 
     CreateConversationResponse createConversation(String creatorId, CreateConversationRequest request);
 
-    PageResponse<ConversationDetailResponse> getMyConversation(String userId, int page, int size, String role, String query);
+    PageResponse<ConversationDetailResponse> getMyConversation(String userId, int page, int size, String role, List<String> positionIds, String query);
 
     ConversationDetailResponse getConversationDetail(String userId, String conversationId);
 
@@ -30,6 +30,6 @@ public interface IConversationService {
 
     void transferReportConversation(Report report, User oldStaff, User newStaff);
 
-    List<ParticipantResponse> searchUsersForChat(String userId, String role, String query);
+    List<ParticipantResponse> searchUsersForChat(String userId, String role, List<String> positionIds, String query);
 
 }

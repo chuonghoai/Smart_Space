@@ -3,6 +3,7 @@ import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:smartspace_staff/features/chat/data/chat_api_service.dart';
 import 'package:smartspace_staff/features/chat/models/chat_message_model.dart';
 import 'package:smartspace_staff/features/chat/models/conversation_model.dart';
+import 'package:smartspace_staff/features/chat/models/position_model.dart';
 import 'package:smartspace_staff/features/chat/services/chat_ws_service.dart';
 
 abstract class ChatRepository {
@@ -10,6 +11,7 @@ abstract class ChatRepository {
     int page = 1,
     int size = 15,
     String role = 'all',
+    List<String>? positionIds,
     String? query,
   });
 
@@ -57,7 +59,10 @@ abstract class ChatRepository {
   Future<ApiResponse<List<ParticipantModel>>> searchUsers({
     required String role,
     required String query,
+    List<String>? positionIds,
   });
+
+  Future<ApiResponse<List<PositionModel>>> getPositions();
 }
 
 class ChatRepositoryImpl implements ChatRepository {
@@ -71,9 +76,16 @@ class ChatRepositoryImpl implements ChatRepository {
     int page = 1,
     int size = 15,
     String role = 'all',
+    List<String>? positionIds,
     String? query,
   }) {
-    return _apiService.getConversations(page: page, size: size, role: role, query: query);
+    return _apiService.getConversations(
+      page: page,
+      size: size,
+      role: role,
+      positionIds: positionIds,
+      query: query,
+    );
   }
 
   @override
@@ -167,8 +179,18 @@ class ChatRepositoryImpl implements ChatRepository {
   Future<ApiResponse<List<ParticipantModel>>> searchUsers({
     required String role,
     required String query,
+    List<String>? positionIds,
   }) {
-    return _apiService.searchUsers(role: role, query: query);
+    return _apiService.searchUsers(
+      role: role,
+      query: query,
+      positionIds: positionIds,
+    );
+  }
+
+  @override
+  Future<ApiResponse<List<PositionModel>>> getPositions() {
+    return _apiService.getPositions();
   }
 }
 

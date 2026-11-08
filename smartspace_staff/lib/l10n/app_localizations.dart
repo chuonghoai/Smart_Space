@@ -2621,7 +2621,7 @@ abstract class AppLocalizations {
   /// No description provided for @searchConversations.
   ///
   /// In en, this message translates to:
-  /// **'Search...'**
+  /// **'Search by name, phone, email...'**
   String get searchConversations;
 
   /// No description provided for @otherUsers.
@@ -2641,6 +2641,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No users found'**
   String get noUsersFound;
+
+  /// No description provided for @filterPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Positions'**
+  String get filterPosition;
+
+  /// No description provided for @filterByPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by position'**
+  String get filterByPosition;
+
+  /// No description provided for @apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get apply;
+
+  /// No description provided for @clearFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filter'**
+  String get clearFilter;
+
+  /// No description provided for @noPositionsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No positions available'**
+  String get noPositionsAvailable;
+
+  /// No description provided for @positionSelectedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} positions'**
+  String positionSelectedCount(int count);
 }
 
 class _AppLocalizationsDelegate

@@ -1359,7 +1359,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get noPhoneNumber => 'Người dùng không cung cấp số điện thoại';
 
   @override
-  String get searchConversations => 'Tìm kiếm...';
+  String get searchConversations => 'Tìm kiếm theo tên, SĐT, email...';
 
   @override
   String get otherUsers => 'Người dùng khác';
@@ -1369,4 +1369,24 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get noUsersFound => 'Không tìm thấy người dùng phù hợp';
+
+  @override
+  String get filterPosition => 'Chức vụ';
+
+  @override
+  String get filterByPosition => 'Lọc theo chức vụ';
+
+  @override
+  String get apply => 'Áp dụng';
+
+  @override
+  String get clearFilter => 'Xóa bộ lọc';
+
+  @override
+  String get noPositionsAvailable => 'Không có chức vụ nào';
+
+  @override
+  String positionSelectedCount(int count) {
+    return '$count chức vụ';
+  }
 }

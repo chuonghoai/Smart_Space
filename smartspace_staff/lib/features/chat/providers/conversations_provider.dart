@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartspace_staff/features/chat/data/chat_repository.dart';
 import 'package:smartspace_staff/features/chat/models/conversation_model.dart';
+import 'package:smartspace_staff/features/chat/models/position_model.dart';
 import 'package:smartspace_staff/features/chat/services/chat_ws_service.dart';
 
 class ConversationsState {
@@ -19,6 +20,9 @@ class ConversationsState {
   final String searchQuery;
   final List<ParticipantModel> searchedUsers;
   final bool isSearchingUsers;
+  final List<PositionModel> availablePositions;
+  final Set<String> selectedPositionIds;
+  final bool isLoadingPositions;
 
   const ConversationsState({
     this.conversations = const [],
@@ -35,6 +39,9 @@ class ConversationsState {
     this.searchQuery = '',
     this.searchedUsers = const [],
     this.isSearchingUsers = false,
+    this.availablePositions = const [],
+    this.selectedPositionIds = const {},
+    this.isLoadingPositions = false,
   });
 
   ConversationsState copyWith({
@@ -52,6 +59,9 @@ class ConversationsState {
     String? searchQuery,
     List<ParticipantModel>? searchedUsers,
     bool? isSearchingUsers,
+    List<PositionModel>? availablePositions,
+    Set<String>? selectedPositionIds,
+    bool? isLoadingPositions,
     bool clearSlidingOut = false,
     bool clearSlidingIn = false,
     bool clearPulse = false,
@@ -71,6 +81,9 @@ class ConversationsState {
       searchQuery: searchQuery ?? this.searchQuery,
       searchedUsers: searchedUsers ?? this.searchedUsers,
       isSearchingUsers: isSearchingUsers ?? this.isSearchingUsers,
+      availablePositions: availablePositions ?? this.availablePositions,
+      selectedPositionIds: selectedPositionIds ?? this.selectedPositionIds,
+      isLoadingPositions: isLoadingPositions ?? this.isLoadingPositions,
     );
   }
 }
@@ -109,12 +122,39 @@ class ConversationsNotifier extends StateNotifier<ConversationsState> {
     } catch (_) {}
   }
 
+  Future<void> loadPositions() async {
+    if (state.isLoadingPositions || state.availablePositions.isNotEmpty) return;
+    state = state.copyWith(isLoadingPositions: true);
+    try {
+      final res = await _repository.getPositions();
+      if (_isDisposed) return;
+      if (res.success && res.data != null) {
+        state = state.copyWith(
+          availablePositions: res.data!,
+          isLoadingPositions: false,
+        );
+      } else {
+        state = state.copyWith(isLoadingPositions: false);
+      }
+    } catch (_) {
+      if (!_isDisposed) {
+        state = state.copyWith(isLoadingPositions: false);
+      }
+    }
+  }
+
   Future<void> setFilter(String filter) async {
     if (state.activeFilter == filter) return;
     state = state.copyWith(activeFilter: filter, searchedUsers: []);
-    await loadInitial(filter, query: state.searchQuery);
+    if (filter == 'staff') {
+      loadPositions();
+    }
+    final posIds = (filter == 'staff' && state.selectedPositionIds.isNotEmpty)
+        ? state.selectedPositionIds.toList()
+        : null;
+    await loadInitial(filter, query: state.searchQuery, positionIds: posIds);
     if (state.searchQuery.trim().isNotEmpty && filter != 'client') {
-      _fetchOtherUsers(filter, state.searchQuery);
+      _fetchOtherUsers(filter, state.searchQuery, positionIds: posIds);
     }
   }
 
@@ -123,19 +163,53 @@ class ConversationsNotifier extends StateNotifier<ConversationsState> {
     _searchDebounce?.cancel();
     _searchDebounce = Timer(const Duration(milliseconds: 350), () {
       if (_isDisposed) return;
-      loadInitial(state.activeFilter, query: query);
+      final posIds = (state.activeFilter == 'staff' && state.selectedPositionIds.isNotEmpty)
+          ? state.selectedPositionIds.toList()
+          : null;
+      loadInitial(state.activeFilter, query: query, positionIds: posIds);
       if (query.trim().isNotEmpty && state.activeFilter != 'client') {
-        _fetchOtherUsers(state.activeFilter, query);
+        _fetchOtherUsers(state.activeFilter, query, positionIds: posIds);
       } else {
         state = state.copyWith(searchedUsers: [], isSearchingUsers: false);
       }
     });
   }
 
-  Future<void> _fetchOtherUsers(String role, String query) async {
+  Future<void> applyPositions(Set<String> positionIds) async {
+    state = state.copyWith(selectedPositionIds: positionIds);
+    final posIds = positionIds.isNotEmpty ? positionIds.toList() : null;
+    await loadInitial(state.activeFilter, query: state.searchQuery, positionIds: posIds);
+    if (state.searchQuery.trim().isNotEmpty && state.activeFilter != 'client') {
+      _fetchOtherUsers(state.activeFilter, state.searchQuery, positionIds: posIds);
+    }
+  }
+
+  Future<void> removePosition(String positionId) async {
+    final newSet = Set<String>.from(state.selectedPositionIds)..remove(positionId);
+    state = state.copyWith(selectedPositionIds: newSet);
+    final posIds = newSet.isNotEmpty ? newSet.toList() : null;
+    await loadInitial(state.activeFilter, query: state.searchQuery, positionIds: posIds);
+    if (state.searchQuery.trim().isNotEmpty && state.activeFilter != 'client') {
+      _fetchOtherUsers(state.activeFilter, state.searchQuery, positionIds: posIds);
+    }
+  }
+
+  Future<void> clearPositions() async {
+    state = state.copyWith(selectedPositionIds: const {});
+    await loadInitial(state.activeFilter, query: state.searchQuery, positionIds: null);
+    if (state.searchQuery.trim().isNotEmpty && state.activeFilter != 'client') {
+      _fetchOtherUsers(state.activeFilter, state.searchQuery, positionIds: null);
+    }
+  }
+
+  Future<void> _fetchOtherUsers(String role, String query, {List<String>? positionIds}) async {
     state = state.copyWith(isSearchingUsers: true);
     try {
-      final res = await _repository.searchUsers(role: role, query: query);
+      final posIds = positionIds ??
+          ((role == 'staff' && state.selectedPositionIds.isNotEmpty)
+              ? state.selectedPositionIds.toList()
+              : null);
+      final res = await _repository.searchUsers(role: role, query: query, positionIds: posIds);
       if (_isDisposed) return;
       if (res.success && res.data != null) {
         // Exclude users who already appear in existing conversations
@@ -157,7 +231,7 @@ class ConversationsNotifier extends StateNotifier<ConversationsState> {
     }
   }
 
-  Future<void> loadInitial(String role, {String? query}) async {
+  Future<void> loadInitial(String role, {String? query, List<String>? positionIds}) async {
     state = state.copyWith(
       isLoading: true,
       errorMessage: null,
@@ -166,10 +240,15 @@ class ConversationsNotifier extends StateNotifier<ConversationsState> {
     );
 
     try {
+      final posIds = positionIds ??
+          ((role == 'staff' && state.selectedPositionIds.isNotEmpty)
+              ? state.selectedPositionIds.toList()
+              : null);
       final res = await _repository.getConversations(
         page: 1,
         size: 15,
         role: role,
+        positionIds: posIds,
         query: query,
       );
 
@@ -206,10 +285,14 @@ class ConversationsNotifier extends StateNotifier<ConversationsState> {
     final nextPage = state.page + 1;
 
     try {
+      final posIds = (state.activeFilter == 'staff' && state.selectedPositionIds.isNotEmpty)
+          ? state.selectedPositionIds.toList()
+          : null;
       final res = await _repository.getConversations(
         page: nextPage,
         size: 15,
         role: state.activeFilter,
+        positionIds: posIds,
         query: state.searchQuery,
       );
 
@@ -237,9 +320,12 @@ class ConversationsNotifier extends StateNotifier<ConversationsState> {
   }
 
   Future<void> refresh() async {
-    await loadInitial(state.activeFilter, query: state.searchQuery);
+    final posIds = (state.activeFilter == 'staff' && state.selectedPositionIds.isNotEmpty)
+        ? state.selectedPositionIds.toList()
+        : null;
+    await loadInitial(state.activeFilter, query: state.searchQuery, positionIds: posIds);
     if (state.searchQuery.trim().isNotEmpty && state.activeFilter != 'client') {
-      _fetchOtherUsers(state.activeFilter, state.searchQuery);
+      _fetchOtherUsers(state.activeFilter, state.searchQuery, positionIds: posIds);
     }
     await refreshUnreadCount();
   }

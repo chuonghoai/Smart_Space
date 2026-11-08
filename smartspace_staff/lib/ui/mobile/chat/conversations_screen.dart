@@ -7,6 +7,7 @@ import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
 import 'package:smartspace_staff/ui/mobile/chat/widgets/chat_role_badge.dart';
 import 'package:smartspace_staff/ui/mobile/chat/widgets/conversation_item.dart';
+import 'package:smartspace_staff/ui/mobile/chat/widgets/position_filter_sheet.dart';
 import 'package:smartspace_staff/ui/shared/image/app_network_image.dart';
 
 class ConversationsScreen extends ConsumerStatefulWidget {
@@ -66,10 +67,149 @@ class _ConversationsScreenState extends ConsumerState<ConversationsScreen> {
       ),
       body: Column(
         children: [
+          if (state.activeFilter == 'staff')
+            _buildPositionFilterBar(theme, l10n, state),
           _buildSearchBar(theme, l10n),
           Expanded(
             child: _buildBody(context, theme, l10n, state),
           ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildPositionFilterBar(
+    ThemeData theme,
+    AppLocalizations l10n,
+    ConversationsState state,
+  ) {
+    final selectedCount = state.selectedPositionIds.length;
+    final hasSelection = selectedCount > 0;
+
+    final selectedPositions = state.availablePositions
+        .where((p) => state.selectedPositionIds.contains(p.id))
+        .toList();
+
+    return Container(
+      height: 42,
+      padding: const EdgeInsets.fromLTRB(16, 6, 16, 2),
+      child: Row(
+        children: [
+          // Filter Button on the far left
+          InkWell(
+            onTap: () async {
+              final newSelected = await PositionFilterSheet.show(
+                context,
+                positions: state.availablePositions,
+                initialSelected: state.selectedPositionIds,
+              );
+              if (newSelected != null) {
+                ref.read(conversationsProvider.notifier).applyPositions(newSelected);
+              }
+            },
+            borderRadius: BorderRadius.circular(10),
+            child: Container(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              decoration: BoxDecoration(
+                color: hasSelection
+                    ? theme.colorScheme.primaryContainer.withValues(alpha: 0.8)
+                    : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
+                borderRadius: BorderRadius.circular(10),
+                border: Border.all(
+                  color: hasSelection
+                      ? theme.colorScheme.primary.withValues(alpha: 0.5)
+                      : theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+                  width: 1,
+                ),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Icon(
+                    Icons.tune_rounded,
+                    size: 16,
+                    color: hasSelection
+                        ? theme.colorScheme.onPrimaryContainer
+                        : theme.colorScheme.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: 5),
+                  Text(
+                    hasSelection
+                        ? '${l10n.filterPosition} ($selectedCount)'
+                        : l10n.filterPosition,
+                    style: theme.textTheme.labelMedium?.copyWith(
+                      color: hasSelection
+                          ? theme.colorScheme.onPrimaryContainer
+                          : theme.colorScheme.onSurfaceVariant,
+                      fontWeight: hasSelection ? FontWeight.bold : FontWeight.w500,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+
+          // Divider between button and chips if selection exists
+          if (hasSelection) ...[
+            const SizedBox(width: 8),
+            Container(
+              width: 1,
+              height: 20,
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+            ),
+            const SizedBox(width: 8),
+          ],
+
+          // Horizontal list of selected position chips with "X" dismiss button
+          if (hasSelection)
+            Expanded(
+              child: ListView.separated(
+                scrollDirection: Axis.horizontal,
+                itemCount: selectedPositions.length,
+                separatorBuilder: (_, __) => const SizedBox(width: 6),
+                itemBuilder: (context, index) {
+                  final pos = selectedPositions[index];
+                  return Container(
+                    padding: const EdgeInsets.fromLTRB(10, 4, 4, 4),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.6),
+                      borderRadius: BorderRadius.circular(16),
+                      border: Border.all(
+                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.3),
+                        width: 0.8,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(
+                          pos.name,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            color: theme.colorScheme.onSecondaryContainer,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        const SizedBox(width: 2),
+                        InkWell(
+                          onTap: () {
+                            ref.read(conversationsProvider.notifier).removePosition(pos.id);
+                          },
+                          borderRadius: BorderRadius.circular(12),
+                          child: Padding(
+                            padding: const EdgeInsets.all(2.0),
+                            child: Icon(
+                              Icons.close_rounded,
+                              size: 14,
+                              color: theme.colorScheme.onSecondaryContainer.withValues(alpha: 0.8),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
         ],
       ),
     );

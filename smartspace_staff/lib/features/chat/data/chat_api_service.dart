@@ -2,18 +2,22 @@ import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:smartspace_staff/features/chat/models/chat_message_model.dart';
 import 'package:smartspace_staff/features/chat/models/conversation_model.dart';
+import 'package:smartspace_staff/features/chat/models/position_model.dart';
 
 class ChatApiService {
   Future<ApiResponse<List<ConversationModel>>> getConversations({
     int page = 1,
     int size = 15,
     String role = 'all',
+    List<String>? positionIds,
     String? query,
   }) async {
     final queryParams = <String, dynamic>{
       'page': page,
       'size': size,
       'role': role,
+      if (positionIds != null && positionIds.isNotEmpty)
+        'positionIds': positionIds.join(','),
       if (query != null && query.trim().isNotEmpty) 'query': query.trim(),
     };
     return apiClient.get<List<ConversationModel>>(
@@ -133,12 +137,15 @@ class ChatApiService {
   Future<ApiResponse<List<ParticipantModel>>> searchUsers({
     required String role,
     required String query,
+    List<String>? positionIds,
   }) async {
     return apiClient.get<List<ParticipantModel>>(
       '/conversations/search-users',
       queryParameters: {
         'role': role,
         'query': query,
+        if (positionIds != null && positionIds.isNotEmpty)
+          'positionIds': positionIds.join(','),
       },
       decoder: (json) {
         if (json is List) {
@@ -147,6 +154,20 @@ class ChatApiService {
               .toList();
         }
         return <ParticipantModel>[];
+      },
+    );
+  }
+
+  Future<ApiResponse<List<PositionModel>>> getPositions() async {
+    return apiClient.get<List<PositionModel>>(
+      '/conversations/positions',
+      decoder: (json) {
+        if (json is List) {
+          return json
+              .map((e) => PositionModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        }
+        return <PositionModel>[];
       },
     );
   }

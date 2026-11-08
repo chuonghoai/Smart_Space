@@ -13,38 +13,14 @@ class ChatRoleBadge extends StatelessWidget {
     this.isCompact = false,
   });
 
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final l10n = AppLocalizations.of(context)!;
-    final r = role?.toLowerCase() ?? '';
-
-    String label;
-    Color bgColor;
-    Color textColor;
-    IconData icon;
-
-    if (r == 'admin') {
-      label = l10n.roleAdmin;
-      bgColor = theme.colorScheme.tertiaryContainer;
-      textColor = theme.colorScheme.onTertiaryContainer;
-      icon = Icons.admin_panel_settings_outlined;
-    } else if (r == 'staff') {
-      final pos = (position != null && position!.trim().isNotEmpty)
-          ? position!.trim()
-          : l10n.staffNoPosition;
-      label = isCompact ? l10n.roleStaff : '${l10n.roleStaff} • $pos';
-      bgColor = theme.colorScheme.primaryContainer.withOpacity(0.7);
-      textColor = theme.colorScheme.onPrimaryContainer;
-      icon = Icons.badge_outlined;
-    } else {
-      // Default to resident / client
-      label = l10n.roleClient;
-      bgColor = theme.colorScheme.secondaryContainer.withOpacity(0.6);
-      textColor = theme.colorScheme.onSecondaryContainer;
-      icon = Icons.person_outline_rounded;
-    }
-
+  Widget _buildPill({
+    required ThemeData theme,
+    required String label,
+    required IconData icon,
+    required Color bgColor,
+    required Color textColor,
+    Border? border,
+  }) {
     return Container(
       padding: EdgeInsets.symmetric(
         horizontal: isCompact ? 6 : 8,
@@ -53,6 +29,7 @@ class ChatRoleBadge extends StatelessWidget {
       decoration: BoxDecoration(
         color: bgColor,
         borderRadius: BorderRadius.circular(6),
+        border: border,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -75,5 +52,63 @@ class ChatRoleBadge extends StatelessWidget {
       ),
     );
   }
-}
 
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    final r = role?.toLowerCase() ?? '';
+
+    if (r == 'admin') {
+      return _buildPill(
+        theme: theme,
+        label: l10n.roleAdmin,
+        icon: Icons.admin_panel_settings_outlined,
+        bgColor: theme.colorScheme.tertiaryContainer,
+        textColor: theme.colorScheme.onTertiaryContainer,
+      );
+    } else if (r == 'staff') {
+      final pos = (position != null && position!.trim().isNotEmpty)
+          ? position!.trim()
+          : l10n.staffNoPosition;
+
+      return Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          // 1. Role Badge "Nhân viên"
+          _buildPill(
+            theme: theme,
+            label: l10n.roleStaff,
+            icon: Icons.badge_outlined,
+            bgColor: theme.colorScheme.primaryContainer.withValues(alpha: 0.7),
+            textColor: theme.colorScheme.onPrimaryContainer,
+          ),
+          const SizedBox(width: 5),
+          // 2. Separate Position Badge
+          Flexible(
+            child: _buildPill(
+              theme: theme,
+              label: pos,
+              icon: Icons.work_outline_rounded,
+              bgColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.8),
+              textColor: theme.colorScheme.onSurfaceVariant,
+              border: Border.all(
+                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+                width: 0.8,
+              ),
+            ),
+          ),
+        ],
+      );
+    } else {
+      // Default to resident / client
+      return _buildPill(
+        theme: theme,
+        label: l10n.roleClient,
+        icon: Icons.person_outline_rounded,
+        bgColor: theme.colorScheme.secondaryContainer.withValues(alpha: 0.6),
+        textColor: theme.colorScheme.onSecondaryContainer,
+      );
+    }
+  }
+}

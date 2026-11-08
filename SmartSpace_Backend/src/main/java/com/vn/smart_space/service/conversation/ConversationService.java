@@ -322,10 +322,11 @@ public class ConversationService implements IConversationService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<ConversationDetailResponse> getMyConversation(String userId, int page, int size, String role, String query) {
+    public PageResponse<ConversationDetailResponse> getMyConversation(String userId, int page, int size, String role, List<String> positionIds, String query) {
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
         boolean hasQuery = query != null && !query.trim().isEmpty();
         String q = hasQuery ? query.trim() : null;
+        boolean hasPositions = positionIds != null && !positionIds.isEmpty();
 
         Page<Conversation> conversationPage;
         if (role == null || role.trim().isEmpty() || "all".equalsIgnoreCase(role)) {
@@ -335,9 +336,14 @@ public class ConversationService implements IConversationService {
         } else {
             try {
                 ERole eRole = ERole.valueOf(role.trim().toLowerCase());
-                conversationPage = hasQuery
-                        ? conversationRepository.findAllByUserIdAndRoleAndQuery(userId, eRole, q, pageable)
-                        : conversationRepository.findAllByUserIdAndRole(userId, eRole, pageable);
+                if (eRole == ERole.staff && hasPositions) {
+                    conversationPage = conversationRepository.findAllByUserIdAndRoleAndPositionsAndQuery(
+                            userId, eRole, true, positionIds, hasQuery, q, pageable);
+                } else {
+                    conversationPage = hasQuery
+                            ? conversationRepository.findAllByUserIdAndRoleAndQuery(userId, eRole, q, pageable)
+                            : conversationRepository.findAllByUserIdAndRole(userId, eRole, pageable);
+                }
             } catch (IllegalArgumentException e) {
                 conversationPage = hasQuery
                         ? conversationRepository.findAllByUserIdAndQuery(userId, q, pageable)
@@ -360,16 +366,19 @@ public class ConversationService implements IConversationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ParticipantResponse> searchUsersForChat(String userId, String role, String query) {
+    public List<ParticipantResponse> searchUsersForChat(String userId, String role, List<String> positionIds, String query) {
         if (query == null || query.trim().isEmpty()) {
             return List.of();
         }
         String q = query.trim().toLowerCase();
         Pageable limit = PageRequest.of(0, 20);
+        boolean hasPositions = positionIds != null && !positionIds.isEmpty();
 
         List<User> users;
         if ("staff".equalsIgnoreCase(role)) {
-            users = userRepository.searchActiveUsersByRole(ERole.staff, userId, q, limit);
+            users = hasPositions
+                    ? userRepository.searchActiveUsersByRoleAndPositions(ERole.staff, userId, true, positionIds, q, limit)
+                    : userRepository.searchActiveUsersByRole(ERole.staff, userId, q, limit);
         } else if ("admin".equalsIgnoreCase(role)) {
             users = userRepository.searchActiveUsersByRole(ERole.admin, userId, q, limit);
         } else if ("client".equalsIgnoreCase(role)) {

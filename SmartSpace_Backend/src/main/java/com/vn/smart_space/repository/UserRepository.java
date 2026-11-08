@@ -32,12 +32,30 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.position " +
             "WHERE u.role = :role AND u.id <> :excludeUserId AND u.status = 'active' " +
-            "AND (LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+            "AND (LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "     OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "     OR u.phone LIKE CONCAT('%', :keyword, '%'))")
     List<User> searchActiveUsersByRole(@Param("role") ERole role, @Param("excludeUserId") String excludeUserId, @Param("keyword") String keyword, Pageable pageable);
 
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.position " +
+            "WHERE u.role = :role AND u.id <> :excludeUserId AND u.status = 'active' " +
+            "AND (:hasPositions = false OR u.position.id IN :positionIds) " +
+            "AND (LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "     OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "     OR u.phone LIKE CONCAT('%', :keyword, '%'))")
+    List<User> searchActiveUsersByRoleAndPositions(
+            @Param("role") ERole role,
+            @Param("excludeUserId") String excludeUserId,
+            @Param("hasPositions") boolean hasPositions,
+            @Param("positionIds") java.util.List<String> positionIds,
+            @Param("keyword") String keyword,
+            Pageable pageable);
+
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.position " +
             "WHERE u.role IN ('staff', 'admin') AND u.id <> :excludeUserId AND u.status = 'active' " +
-            "AND (LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')))")
+            "AND (LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "     OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "     OR u.phone LIKE CONCAT('%', :keyword, '%'))")
     List<User> searchActiveStaffAndAdmins(@Param("excludeUserId") String excludeUserId, @Param("keyword") String keyword, Pageable pageable);
 
     // Search and Filter Staff
