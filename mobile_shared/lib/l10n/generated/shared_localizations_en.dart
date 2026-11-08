@@ -12,4 +12,10 @@ class SharedLocalizationsEn extends SharedLocalizations {
   String distanceFromYou(String value, String unit) {
     return '$value $unit away';
   }
+
+  @override
+  String get sendMessageFailed => 'Failed to send message, tap to retry';
+
+  @override
+  String get sendingMessage => 'Sending message...';
 }

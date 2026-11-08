@@ -22,6 +22,7 @@ export 'core/theme/app_semantic_colors.dart';
 export 'core/toast/toast_service.dart';
 export 'util/device_info_util.dart';
 export 'core/websocket/websocket_service.dart';
+export 'core/websocket/ws_feature_service.dart';
 export 'core/widgets/confirm_dialog.dart';
 export 'core/widgets/fullscreen_image_viewer.dart';
 
@@ -31,6 +32,7 @@ export 'util/media_upload.dart';
 export 'features/news/models/news_model.dart';
 export 'features/news/data/news_repository.dart';
 export 'features/news/application/news_providers.dart';
+export 'features/chat/chat.dart';
 
 export 'l10n/generated/shared_localizations.dart';
 export 'util/distance_formatter.dart';

@@ -12,4 +12,10 @@ class SharedLocalizationsVi extends SharedLocalizations {
   String distanceFromYou(String value, String unit) {
     return 'Cách bạn $value $unit';
   }
+
+  @override
+  String get sendMessageFailed => 'Gửi tin nhắn thất bại, bấm để thử lại';
+
+  @override
+  String get sendingMessage => 'Đang gửi tin nhắn...';
 }

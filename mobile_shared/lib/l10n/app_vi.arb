@@ -9,5 +9,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sendMessageFailed": "Gửi tin nhắn thất bại, bấm để thử lại",
+  "sendingMessage": "Đang gửi tin nhắn..."
 }
