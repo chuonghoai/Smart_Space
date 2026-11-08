@@ -77,6 +77,7 @@ public class ReportServiceImpl implements IReportService {
     private final IWalletConfigService walletConfigService;
     private final IReportDensityService reportDensityService;
     private final IReportDelegationService delegationService;
+    private final com.vn.smart_space.service.conversation.IConversationService conversationService;
 
     private static final int MAP_DEFAULT_LIMIT = 300;
     private static final int MAP_MAX_LIMIT = 500;
@@ -611,6 +612,26 @@ public class ReportServiceImpl implements IReportService {
         report.setAssignedAt(new java.util.Date());
         report = reportRepository.save(report);
 
+        // Auto-create chat conversation between staff & client and post initial system message
+        try {
+            com.vn.smart_space.model.Conversation conv = conversationService.getOrCreateReportConversation(report);
+            if (conv != null && report.getUser() != null) {
+                User clientUser = report.getUser();
+                java.util.Locale clientLocale = java.util.Locale.forLanguageTag(
+                        clientUser.getLanguage() != null ? clientUser.getLanguage() : "vi");
+                String staffN = staff.getFullName() != null && !staff.getFullName().trim().isEmpty()
+                        ? staff.getFullName().trim()
+                        : (staff.getEmail() != null ? staff.getEmail().trim() : "Nhân viên");
+                String sysMsg = messageSource.getMessage("chat.system.report_assigned",
+                        new Object[]{ staffN, report.getTitle() },
+                        String.format("%s đã tiếp nhận phản ánh '%s'", staffN, report.getTitle()),
+                        clientLocale);
+                conversationService.sendSystemMessage(conv, sysMsg, clientUser);
+            }
+        } catch (Exception e) {
+            log.error("Failed to create conversation or send system message on assign report: {}", e.getMessage());
+        }
+
         // Phân công cho người khác → yêu cầu nhờ làm giùm cũ không còn ý nghĩa, hoàn bonus
         if (assigneeChanged) {
             delegationService.onReportUnassigned(report);
@@ -773,6 +794,29 @@ public class ReportServiceImpl implements IReportService {
 
         report = reportRepository.save(report);
 
+        // Send system message to report conversation that report is resolved
+        try {
+            com.vn.smart_space.model.Conversation conv = report.getConversation();
+            if (conv == null) {
+                conv = conversationService.getOrCreateReportConversation(report);
+            }
+            if (conv != null && report.getUser() != null) {
+                User clientUser = report.getUser();
+                java.util.Locale clientLocale = java.util.Locale.forLanguageTag(
+                        clientUser.getLanguage() != null ? clientUser.getLanguage() : "vi");
+                String staffN = staff.getFullName() != null && !staff.getFullName().trim().isEmpty()
+                        ? staff.getFullName().trim()
+                        : (staff.getEmail() != null ? staff.getEmail().trim() : "Nhân viên");
+                String sysMsg = messageSource.getMessage("chat.system.report_resolved",
+                        new Object[]{ staffN, report.getTitle() },
+                        String.format("%s đã hoàn tất việc xử lý phản ánh '%s'", staffN, report.getTitle()),
+                        clientLocale);
+                conversationService.sendSystemMessage(conv, sysMsg, clientUser);
+            }
+        } catch (Exception e) {
+            log.error("Failed to send system message on resolve report: {}", e.getMessage());
+        }
+
         // Nhờ làm giùm: trả bonus cho người làm giùm / thu hồi yêu cầu còn chờ.
         // Không nuốt lỗi — tiền đã giữ phải được xử lý cùng transaction với việc hoàn tất.
         // Chạy trước hoa hồng để khoá yêu cầu trước ví (report → yêu cầu → ví), cùng thứ tự với từ chối / huỷ / hết hạn.
@@ -861,7 +905,14 @@ public class ReportServiceImpl implements IReportService {
                 NotificationRequest clientNotif = new NotificationRequest(
                         clientTitle, clientMessage,
                         Map.of("type", "REPORT_DETAIL", "payload", "{\"reportId\":\"" + report.getId() + "\"}"));
-                fcmService.sendToUser(report.getUser().getId(), clientNotif);
+                final String clientUserId = report.getUser().getId();
+                java.util.concurrent.CompletableFuture.runAsync(() -> {
+                    try {
+                        fcmService.sendToUser(clientUserId, clientNotif);
+                    } catch (Exception ex) {
+                        log.warn("[FCM] Failed to send client FCM notification: {}", ex.getMessage());
+                    }
+                });
             } catch (Exception ignored) {
             }
         }
@@ -893,7 +944,14 @@ public class ReportServiceImpl implements IReportService {
                 NotificationRequest staffNotif = new NotificationRequest(
                         staffTitle, staffMessage,
                         Map.of("type", "REPORT_DETAIL", "payload", "{\"reportId\":\"" + report.getId() + "\"}"));
-                fcmService.sendToUser(staff.getId(), staffNotif);
+                final String staffUserId = staff.getId();
+                java.util.concurrent.CompletableFuture.runAsync(() -> {
+                    try {
+                        fcmService.sendToUser(staffUserId, staffNotif);
+                    } catch (Exception ex) {
+                        log.warn("[FCM] Failed to send staff FCM notification: {}", ex.getMessage());
+                    }
+                });
             } catch (Exception ex) {
                 log.warn("[Notify Staff] Failed to notify staff {}: {}", staff.getId(), ex.getMessage());
             }
@@ -1456,7 +1514,38 @@ public class ReportServiceImpl implements IReportService {
         report.setReviewedAt(new java.util.Date());
         Report saved = reportRepository.save(report);
 
+        // Send system message to report conversation for staff
+        try {
+            com.vn.smart_space.model.Conversation conv = conversationService.getOrCreateReportConversation(saved);
+            User assignedStaff = saved.getAssignedStaff();
+            if (conv != null && assignedStaff != null) {
+                User clientUser = saved.getUser();
+                java.util.Locale staffLocale = java.util.Locale.forLanguageTag(
+                        assignedStaff.getLanguage() != null ? assignedStaff.getLanguage() : "vi");
+                String clientName;
+                if (Boolean.TRUE.equals(saved.getIsAnonymous())) {
+                    clientName = messageSource.getMessage("chat.anonymous_user", null, "Người dùng ẩn danh", staffLocale);
+                } else {
+                    clientName = (clientUser != null && clientUser.getFullName() != null)
+                            ? clientUser.getFullName() : "Cư dân";
+                }
 
+                String sysMsgKey = Boolean.TRUE.equals(saved.getIsReviewResolved())
+                        ? "chat.system.review_resolved"
+                        : "chat.system.review_unresolved";
+                String fallbackMsg = Boolean.TRUE.equals(saved.getIsReviewResolved())
+                        ? String.format("%s đã đánh giá phản ánh '%s' là đã xử lý thỏa đáng", clientName, saved.getTitle())
+                        : String.format("%s đã đánh giá phản ánh '%s' là chưa được xử lý thỏa đáng", clientName, saved.getTitle());
+                String sysMsg = messageSource.getMessage(sysMsgKey,
+                        new Object[]{ clientName, saved.getTitle() },
+                        fallbackMsg,
+                        staffLocale);
+
+                conversationService.sendSystemMessage(conv, sysMsg, assignedStaff);
+            }
+        } catch (Exception e) {
+            log.error("Failed to send system message on review report: {}", e.getMessage());
+        }
 
         // When client submits unresolved review, notify all Admins via WebSocket + DB
         // notification + FCM

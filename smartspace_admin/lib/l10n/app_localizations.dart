@@ -1127,7 +1127,7 @@ abstract class AppLocalizations {
   /// No description provided for @anonymousUser.
   ///
   /// In en, this message translates to:
-  /// **'Anonymous'**
+  /// **'Anonymous User'**
   String get anonymousUser;
 
   /// No description provided for @anonymousDescription.
@@ -1547,7 +1547,7 @@ abstract class AppLocalizations {
   /// No description provided for @activeStaff.
   ///
   /// In en, this message translates to:
-  /// **'Active'**
+  /// **'Staff'**
   String get activeStaff;
 
   /// No description provided for @blockedStaff.
@@ -3739,6 +3739,336 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Location services disabled'**
   String get locationServiceDisabled;
+
+  /// No description provided for @routeConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversations'**
+  String get routeConversations;
+
+  /// No description provided for @routeChatDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat Detail'**
+  String get routeChatDetail;
+
+  /// No description provided for @conversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversations'**
+  String get conversations;
+
+  /// No description provided for @messages.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get messages;
+
+  /// No description provided for @noConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations yet'**
+  String get noConversations;
+
+  /// No description provided for @noConversationsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'New conversations will appear here when chats begin.'**
+  String get noConversationsSub;
+
+  /// No description provided for @searchConversationsPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name or content...'**
+  String get searchConversationsPlaceholder;
+
+  /// No description provided for @filterRoleAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterRoleAll;
+
+  /// No description provided for @filterRoleClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Resident'**
+  String get filterRoleClient;
+
+  /// No description provided for @filterRoleStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get filterRoleStaff;
+
+  /// No description provided for @filterRoleAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get filterRoleAdmin;
+
+  /// No description provided for @filterPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Position'**
+  String get filterPosition;
+
+  /// No description provided for @filterPositionAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All positions'**
+  String get filterPositionAll;
+
+  /// No description provided for @filterPositionSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by Staff Position'**
+  String get filterPositionSheetTitle;
+
+  /// No description provided for @applyFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get applyFilter;
+
+  /// No description provided for @resetFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get resetFilter;
+
+  /// No description provided for @cannotMessageClientTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot Message Resident Directly'**
+  String get cannotMessageClientTitle;
+
+  /// No description provided for @cannotMessageClientMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Administrators cannot initiate direct messages with residents outside the report resolution workflow. You may call the resident directly or communicate via the assigned staff.'**
+  String get cannotMessageClientMessage;
+
+  /// No description provided for @phoneNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number is not available'**
+  String get phoneNotAvailable;
+
+  /// No description provided for @cannotLaunchPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot launch phone dialer'**
+  String get cannotLaunchPhone;
+
+  /// No description provided for @chatWithUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get chatWithUser;
+
+  /// No description provided for @callUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get callUser;
+
+  /// No description provided for @conversationLockedNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'This conversation has ended because the report has been completed. The chat is in read-only mode.'**
+  String get conversationLockedNotice;
+
+  /// No description provided for @messageInputPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a message...'**
+  String get messageInputPlaceholder;
+
+  /// No description provided for @systemNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'System notification'**
+  String get systemNotification;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
+  /// No description provided for @callStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Call staff'**
+  String get callStaff;
+
+  /// No description provided for @messageStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Message staff'**
+  String get messageStaff;
+
+  /// No description provided for @callReporter.
+  ///
+  /// In en, this message translates to:
+  /// **'Call reporter'**
+  String get callReporter;
+
+  /// No description provided for @messageReporter.
+  ///
+  /// In en, this message translates to:
+  /// **'Message reporter'**
+  String get messageReporter;
+
+  /// No description provided for @routeConversationInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation Info'**
+  String get routeConversationInfo;
+
+  /// No description provided for @conversationInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation Info'**
+  String get conversationInfoTitle;
+
+  /// No description provided for @activeReportsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Reports'**
+  String get activeReportsSection;
+
+  /// No description provided for @allReportsProcessed.
+  ///
+  /// In en, this message translates to:
+  /// **'All reports have been processed'**
+  String get allReportsProcessed;
+
+  /// No description provided for @conversationClosedNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation closed as all reports have been processed'**
+  String get conversationClosedNotice;
+
+  /// No description provided for @conversationActiveNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation is currently active'**
+  String get conversationActiveNotice;
+
+  /// No description provided for @callButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get callButtonLabel;
+
+  /// No description provided for @videoCallButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Video call'**
+  String get videoCallButtonLabel;
+
+  /// No description provided for @videoCallComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Video call feature is under development'**
+  String get videoCallComingSoon;
+
+  /// No description provided for @anonymousUserProtectionNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact info is protected for anonymous users'**
+  String get anonymousUserProtectionNote;
+
+  /// No description provided for @conversationRefreshed.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation info and messages refreshed successfully'**
+  String get conversationRefreshed;
+
+  /// No description provided for @conversationRefreshFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not refresh conversation, please try again later'**
+  String get conversationRefreshFailed;
+
+  /// No description provided for @anonymousPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous User'**
+  String get anonymousPerson;
+
+  /// No description provided for @otherUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Other User'**
+  String get otherUsers;
+
+  /// No description provided for @cannotMakePhoneCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot make phone call'**
+  String get cannotMakePhoneCall;
+
+  /// No description provided for @noPhoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'No phone number available'**
+  String get noPhoneNumber;
+
+  /// No description provided for @staffNoPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'No position'**
+  String get staffNoPosition;
+
+  /// No description provided for @cannotStartChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot start conversation'**
+  String get cannotStartChat;
+
+  /// No description provided for @callOptionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Call options'**
+  String get callOptionsTitle;
+
+  /// No description provided for @cellularCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Cellular call'**
+  String get cellularCall;
+
+  /// No description provided for @cellularCallDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Open default phone app'**
+  String get cellularCallDesc;
+
+  /// No description provided for @freeCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Free in-app voice call'**
+  String get freeCall;
+
+  /// No description provided for @featureUnderDevelopment.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature under development'**
+  String get featureUnderDevelopment;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get comingSoon;
+
+  /// No description provided for @freeCallComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Free in-app voice call feature is under development'**
+  String get freeCallComingSoon;
 }
 
 class _AppLocalizationsDelegate

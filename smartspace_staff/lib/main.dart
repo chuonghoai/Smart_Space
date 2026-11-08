@@ -12,8 +12,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_shared/mobile_shared.dart';
 import 'firebase_options.dart';
 import 'features/app_services/app_services_initializer.dart';
+import 'features/app_services/root_scope.dart';
 import 'package:smartspace_staff/features/app_services/ws_services_registry.dart';
 import 'package:smartspace_staff/features/notifications/services/notification_ws_service.dart';
+import 'package:smartspace_staff/features/chat/services/chat_ws_service.dart';
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
 
 
@@ -32,6 +34,7 @@ void main() async {
   await FirebaseService.initialize(DefaultFirebaseOptions.currentPlatform);
   
   ErrorInterceptor.unauthenticatedStream.stream.listen((String reason) {
+    resetRootProviderScope();
     appRouter.go(RouterPath.login);
     final context = navigatorKey.currentContext;
     if (context != null && reason == 'session_expired') {
@@ -45,8 +48,19 @@ void main() async {
   });
 
   WsServicesRegistry.register(NotificationWsService());
+  WsServicesRegistry.register(chatWsService);
 
-  runApp(const ProviderScope(child: SmartSpaceStaffApp()));
+  runApp(
+    ValueListenableBuilder<Key>(
+      valueListenable: rootProviderScopeKeyNotifier,
+      builder: (context, key, _) {
+        return ProviderScope(
+          key: key,
+          child: const SmartSpaceStaffApp(),
+        );
+      },
+    ),
+  );
 }
 
 class SmartSpaceStaffApp extends StatefulWidget {

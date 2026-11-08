@@ -5,7 +5,6 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_client/features/notifications/services/notification_router.dart';
 import 'package:smartspace_client/features/notifications/models/notification_action.dart';
-import 'package:smartspace_client/features/app_services/ws_services_registry.dart';
 import 'package:smartspace_client/features/reports/providers/nearby_reports_alert_provider.dart';
 
 /// Global widget that initializes app-level services once and keeps them alive

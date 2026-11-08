@@ -44,6 +44,19 @@ class NotificationRouter {
         debugPrint('[NotificationRouter] Navigating to $path');
         GoRouter.of(ctx).push(path);
         break;
+      case 'CHAT':
+      case 'CHAT_DETAIL':
+        final conversationId = (action.payload['conversationId'] ?? action.payload['id']) as String?;
+        if (conversationId != null && conversationId.isNotEmpty) {
+          final path = RouterPath.chatDetailWithId(conversationId);
+          debugPrint('[NotificationRouter] Navigating to chat detail: $path');
+          GoRouter.of(ctx).push(path);
+        } else {
+          final path = RouterPath.conversations;
+          debugPrint('[NotificationRouter] Navigating to conversations list: $path');
+          GoRouter.of(ctx).push(path);
+        }
+        break;
       // Add other feature cases here, e.g. INVOICE_DETAIL, CHAT_MESSAGE
       default:
         debugPrint('[NotificationRouter] Unhandled action type: ${action.type}');

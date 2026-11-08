@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_shared/core/auth/user_storage_service.dart';
 import 'package:mobile_shared/features/auth/services/auth_service.dart';
 import 'package:mobile_shared/mobile_shared.dart';
+import 'package:smartspace_staff/features/app_services/root_scope.dart';
 import 'package:smartspace_staff/routes/app_router.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
 
@@ -25,6 +26,7 @@ class SettingsController extends ChangeNotifier {
     notifyListeners();
     try {
       await authService.logout();
+      resetRootProviderScope();
       appRouter.go(RouterPath.login);
     } finally {
       _isLoading = false;

@@ -632,7 +632,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get filterReports => 'Bộ lọc báo cáo';
 
   @override
-  String get refresh => 'Tải lại';
+  String get refresh => 'Làm mới';
 
   @override
   String get filter => 'Bộ lọc';
@@ -1004,4 +1004,171 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get timeframe12Months => '12 tháng';
+
+  @override
+  String get routeConversations => 'Hội thoại';
+
+  @override
+  String get routeChatDetail => 'Chi tiết tin nhắn';
+
+  @override
+  String get conversations => 'Tin nhắn';
+
+  @override
+  String get noConversations => 'Chưa có cuộc trò chuyện nào';
+
+  @override
+  String get noConversationsSub =>
+      'Bạn có thể gửi tin nhắn hỗ trợ từ chi tiết các phản ánh đang xử lý.';
+
+  @override
+  String get searchConversationsPlaceholder =>
+      'Tìm kiếm theo tên hoặc nội dung...';
+
+  @override
+  String get roleStaff => 'Nhân viên';
+
+  @override
+  String get roleAdmin => 'Quản trị viên';
+
+  @override
+  String get chatInputHint => 'Nhập tin nhắn...';
+
+  @override
+  String get emptyMessages => 'Chưa có tin nhắn nào. Bắt đầu trò chuyện ngay!';
+
+  @override
+  String get errorLoadMessages => 'Không thể tải tin nhắn';
+
+  @override
+  String get anonymousPerson => 'Người dùng ẩn danh';
+
+  @override
+  String get supportStaff => 'Nhân viên hỗ trợ';
+
+  @override
+  String get managementBoard => 'Ban quản lý';
+
+  @override
+  String get chatDisabledNotice =>
+      'Phản ánh đã hoàn tất xử lý. Khung chat hiện ở chế độ xem lại lịch sử.';
+
+  @override
+  String get chatWithStaff => 'Nhắn tin cho nhân viên';
+
+  @override
+  String get viewStaffChat => 'Xem tin nhắn hỗ trợ';
+
+  @override
+  String get cannotStartChat =>
+      'Không thể kết nối trò chuyện, vui lòng thử lại sau';
+
+  @override
+  String get routeConversationInfo => 'Thông tin hội thoại';
+
+  @override
+  String get conversationInfoTitle => 'Thông tin hội thoại';
+
+  @override
+  String get activeReportsSection => 'Phản ánh đang xử lý';
+
+  @override
+  String get allReportsProcessed => 'Tất cả phản ánh đã được xử lý xong';
+
+  @override
+  String get conversationClosedNotice =>
+      'Cuộc hội thoại đã đóng do toàn bộ phản ánh đã hoàn tất';
+
+  @override
+  String get conversationActiveNotice => 'Cuộc hội thoại đang hoạt động';
+
+  @override
+  String get callButtonLabel => 'Gọi điện';
+
+  @override
+  String get videoCallButtonLabel => 'Video call';
+
+  @override
+  String get videoCallComingSoon => 'Tính năng gọi video call đang phát triển';
+
+  @override
+  String get conversationRefreshed =>
+      'Đã làm mới thông tin và tin nhắn hội thoại';
+
+  @override
+  String get conversationRefreshFailed =>
+      'Không thể làm mới hội thoại, vui lòng thử lại sau';
+
+  @override
+  String get cannotMakePhoneCall => 'Không thể thực hiện cuộc gọi';
+
+  @override
+  String get noPhoneNumber => 'Chưa cập nhật số điện thoại';
+
+  @override
+  String get staffNoPosition => 'Chưa có chức vụ';
+
+  @override
+  String get rehandlingBadge => 'Xử lý lại';
+
+  @override
+  String get roleClient => 'Cư dân';
+
+  @override
+  String get contextIdentified => 'Không ẩn danh';
+
+  @override
+  String get contextAnonymous => 'Ẩn danh';
+
+  @override
+  String get contextIdentifiedTag => 'Không ẩn danh';
+
+  @override
+  String get contextAnonymousTag => 'Ẩn danh';
+
+  @override
+  String get noIdentifiedReports =>
+      'Không có phản ánh không ẩn danh nào đang xử lý';
+
+  @override
+  String get noAnonymousReports => 'Không có phản ánh ẩn danh nào đang xử lý';
+
+  @override
+  String get anonymousProtectionBanner =>
+      'Đang trao đổi ẩn danh. Danh tính của bạn được bảo vệ tuyệt đối.';
+
+  @override
+  String get contextIdentifiedTooltip => 'Hội thoại phản ánh công khai';
+
+  @override
+  String get contextAnonymousTooltip => 'Hội thoại phản ánh ẩn danh';
+
+  @override
+  String get youCreatedThisReportAnonymously =>
+      'Bạn đã tạo phản ánh này dưới hình thức ẩn danh';
+
+  @override
+  String get callOptionsTitle => 'Tùy chọn cuộc gọi';
+
+  @override
+  String get cellularCall => 'Gọi điện qua di động';
+
+  @override
+  String get cellularCallDesc => 'Mở ứng dụng gọi điện mặc định';
+
+  @override
+  String get freeCall => 'Gọi miễn phí qua ứng dụng';
+
+  @override
+  String get featureUnderDevelopment => 'Tính năng đang được phát triển';
+
+  @override
+  String get comingSoon => 'Sắp ra mắt';
+
+  @override
+  String get phoneNotAvailable => 'Số điện thoại không khả dụng';
+
+  @override
+  String get freeCallComingSoon =>
+      'Tính năng gọi miễn phí qua internet đang được phát triển';
 }

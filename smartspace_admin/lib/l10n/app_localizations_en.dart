@@ -538,7 +538,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reporterInfoSection => 'Reporter';
 
   @override
-  String get anonymousUser => 'Anonymous';
+  String get anonymousUser => 'Anonymous User';
 
   @override
   String get anonymousDescription =>
@@ -756,7 +756,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get workloadChart => 'Workload Distribution';
 
   @override
-  String get activeStaff => 'Active';
+  String get activeStaff => 'Staff';
 
   @override
   String get blockedStaff => 'Blocked';
@@ -1943,4 +1943,177 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get locationServiceDisabled => 'Location services disabled';
+
+  @override
+  String get routeConversations => 'Conversations';
+
+  @override
+  String get routeChatDetail => 'Chat Detail';
+
+  @override
+  String get conversations => 'Conversations';
+
+  @override
+  String get messages => 'Messages';
+
+  @override
+  String get noConversations => 'No conversations yet';
+
+  @override
+  String get noConversationsSub =>
+      'New conversations will appear here when chats begin.';
+
+  @override
+  String get searchConversationsPlaceholder => 'Search by name or content...';
+
+  @override
+  String get filterRoleAll => 'All';
+
+  @override
+  String get filterRoleClient => 'Resident';
+
+  @override
+  String get filterRoleStaff => 'Staff';
+
+  @override
+  String get filterRoleAdmin => 'Admin';
+
+  @override
+  String get filterPosition => 'Position';
+
+  @override
+  String get filterPositionAll => 'All positions';
+
+  @override
+  String get filterPositionSheetTitle => 'Filter by Staff Position';
+
+  @override
+  String get applyFilter => 'Apply';
+
+  @override
+  String get resetFilter => 'Reset';
+
+  @override
+  String get cannotMessageClientTitle => 'Cannot Message Resident Directly';
+
+  @override
+  String get cannotMessageClientMessage =>
+      'Administrators cannot initiate direct messages with residents outside the report resolution workflow. You may call the resident directly or communicate via the assigned staff.';
+
+  @override
+  String get phoneNotAvailable => 'Phone number is not available';
+
+  @override
+  String get cannotLaunchPhone => 'Cannot launch phone dialer';
+
+  @override
+  String get chatWithUser => 'Message';
+
+  @override
+  String get callUser => 'Call';
+
+  @override
+  String get conversationLockedNotice =>
+      'This conversation has ended because the report has been completed. The chat is in read-only mode.';
+
+  @override
+  String get messageInputPlaceholder => 'Type a message...';
+
+  @override
+  String get systemNotification => 'System notification';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get callStaff => 'Call staff';
+
+  @override
+  String get messageStaff => 'Message staff';
+
+  @override
+  String get callReporter => 'Call reporter';
+
+  @override
+  String get messageReporter => 'Message reporter';
+
+  @override
+  String get routeConversationInfo => 'Conversation Info';
+
+  @override
+  String get conversationInfoTitle => 'Conversation Info';
+
+  @override
+  String get activeReportsSection => 'Active Reports';
+
+  @override
+  String get allReportsProcessed => 'All reports have been processed';
+
+  @override
+  String get conversationClosedNotice =>
+      'Conversation closed as all reports have been processed';
+
+  @override
+  String get conversationActiveNotice => 'Conversation is currently active';
+
+  @override
+  String get callButtonLabel => 'Call';
+
+  @override
+  String get videoCallButtonLabel => 'Video call';
+
+  @override
+  String get videoCallComingSoon => 'Video call feature is under development';
+
+  @override
+  String get anonymousUserProtectionNote =>
+      'Contact info is protected for anonymous users';
+
+  @override
+  String get conversationRefreshed =>
+      'Conversation info and messages refreshed successfully';
+
+  @override
+  String get conversationRefreshFailed =>
+      'Could not refresh conversation, please try again later';
+
+  @override
+  String get anonymousPerson => 'Anonymous User';
+
+  @override
+  String get otherUsers => 'Other User';
+
+  @override
+  String get cannotMakePhoneCall => 'Cannot make phone call';
+
+  @override
+  String get noPhoneNumber => 'No phone number available';
+
+  @override
+  String get staffNoPosition => 'No position';
+
+  @override
+  String get cannotStartChat => 'Cannot start conversation';
+
+  @override
+  String get callOptionsTitle => 'Call options';
+
+  @override
+  String get cellularCall => 'Cellular call';
+
+  @override
+  String get cellularCallDesc => 'Open default phone app';
+
+  @override
+  String get freeCall => 'Free in-app voice call';
+
+  @override
+  String get featureUnderDevelopment => 'Feature under development';
+
+  @override
+  String get comingSoon => 'Coming soon';
+
+  @override
+  String get freeCallComingSoon =>
+      'Free in-app voice call feature is under development';
 }

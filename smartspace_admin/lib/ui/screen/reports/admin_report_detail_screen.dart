@@ -16,6 +16,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/shared/report_status/report_status_style.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class AdminReportDetailScreen extends ConsumerStatefulWidget {
   final String reportId;
@@ -38,6 +39,63 @@ class _AdminReportDetailScreenState
   bool _isReopening = false;
   StaffModel? _selectedStaff;
   String _selectedSeverity = 'low';
+
+  Future<void> _handlePhoneCall(String? phone) async {
+    final l10n = AppLocalizations.of(context)!;
+    if (phone == null || phone.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.phoneNotAvailable)),
+      );
+      return;
+    }
+    final cleanPhone = phone.replaceAll(RegExp(r'\s+'), '');
+    final uri = Uri.parse('tel:$cleanPhone');
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      } else {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.cannotLaunchPhone)),
+        );
+      }
+    }
+  }
+
+  void _handleMessageStaff(String? staffId, {String? staffName, String? staffAvatar}) {
+    if (staffId == null || staffId.isEmpty) return;
+    final l10n = AppLocalizations.of(context);
+    context.push(
+      RouterPath.chatDetailWithId('new_$staffId'),
+      extra: ParticipantModel(
+        userId: staffId,
+        name: staffName ?? l10n?.filterRoleStaff ?? 'Nhân viên',
+        avatarUrl: staffAvatar,
+        role: 'staff',
+      ),
+    );
+  }
+
+  void _handleMessageReporter() {
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        icon: Icon(Icons.info_outline_rounded, color: Theme.of(ctx).colorScheme.primary, size: 28),
+        title: Text(l10n.cannotMessageClientTitle),
+        content: Text(l10n.cannotMessageClientMessage),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.closeAction),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -732,6 +790,23 @@ class _AdminReportDetailScreenState
                     ],
                   ),
                 ),
+                if (!report.isAnonymous) ...[
+                  IconButton.outlined(
+                    icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
+                    tooltip: l10n.messageReporter,
+                    onPressed: _handleMessageReporter,
+                    constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                    padding: EdgeInsets.zero,
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton.filledTonal(
+                    icon: const Icon(Icons.phone_outlined, size: 18),
+                    tooltip: l10n.callReporter,
+                    onPressed: () => _handlePhoneCall(report.userPhone),
+                    constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                    padding: EdgeInsets.zero,
+                  ),
+                ],
               ],
             ),
             if (report.isAnonymous) ...[
@@ -1516,6 +1591,25 @@ class _AdminReportDetailScreenState
                         ),
                     ],
                   ),
+                ),
+                IconButton.outlined(
+                  icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
+                  tooltip: l10n.messageStaff,
+                  onPressed: () => _handleMessageStaff(
+                    report.assignedStaffId,
+                    staffName: report.assignedStaffName,
+                    staffAvatar: report.assignedStaffAvatarUrl,
+                  ),
+                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                  padding: EdgeInsets.zero,
+                ),
+                const SizedBox(width: 8),
+                IconButton.filledTonal(
+                  icon: const Icon(Icons.phone_outlined, size: 18),
+                  tooltip: l10n.callStaff,
+                  onPressed: () => _handlePhoneCall(report.assignedStaffPhone),
+                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                  padding: EdgeInsets.zero,
                 ),
               ],
             ),

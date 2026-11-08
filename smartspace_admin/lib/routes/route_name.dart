@@ -270,11 +270,32 @@ class RouteName {
     icon: Icons.handshake_outlined,
     isHiddenInSearch: true,
   );
+  static const conversations = AppRouteInfo(
+    path: '/conversations',
+    nameKey: 'routeConversations',
+    icon: Icons.chat_bubble_outline_rounded,
+    priority: 4,
+  );
+  static const chatDetail = AppRouteInfo(
+    path: '/chat/:id',
+    nameKey: 'routeChatDetail',
+    icon: Icons.chat_outlined,
+    isHiddenInSearch: true,
+  );
+  static const conversationInfo = AppRouteInfo(
+    path: '/chat/:id/info',
+    nameKey: 'routeConversationInfo',
+    icon: Icons.info_outline_rounded,
+    isHiddenInSearch: true,
+  );
 
   static const List<AppRouteInfo> allRoutes = [
     splash,
     login,
     home,
+    conversations,
+    chatDetail,
+    conversationInfo,
     reportDetail,
     completeProfile,
     forgotPassword,

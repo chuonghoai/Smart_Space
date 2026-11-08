@@ -12,6 +12,7 @@ class ReportModel {
   final DateTime createdAt;
   final double? distanceInMeters;
   final DateTime? assignedAt;
+  final String? userId;
   final String? userName;
   final String? userAvatarUrl;
   final bool isAnonymous;
@@ -29,6 +30,7 @@ class ReportModel {
     required this.createdAt,
     this.distanceInMeters,
     this.assignedAt,
+    this.userId,
     this.userName,
     this.userAvatarUrl,
     this.isAnonymous = false,
@@ -58,6 +60,7 @@ class ReportModel {
       assignedAt: (json['assigned_at'] ?? json['assignedAt']) != null
           ? DateTime.tryParse((json['assigned_at'] ?? json['assignedAt']).toString())
           : null,
+      userId: (json['userId'] ?? json['user_id']) as String?,
       userName: json['userName'] as String? ?? json['user_name'] as String?,
       userAvatarUrl: json['userAvatarUrl'] as String? ?? json['user_avatar_url'] as String?,
       isAnonymous: json['isAnonymous'] as bool? ?? json['is_anonymous'] as bool? ?? false,
@@ -77,6 +80,7 @@ class ReportModel {
       'status': _statusToString(status),
       'created_at': createdAt.toIso8601String(),
       'assigned_at': assignedAt?.toIso8601String(),
+      'userId': userId,
       'userName': userName,
       'userAvatarUrl': userAvatarUrl,
       'is_anonymous': isAnonymous,
@@ -95,6 +99,7 @@ class ReportModel {
     ReportStatus? status,
     DateTime? createdAt,
     double? distanceInMeters,
+    String? userId,
   }) {
     return ReportModel(
       id: id ?? this.id,
@@ -106,6 +111,13 @@ class ReportModel {
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
       distanceInMeters: distanceInMeters ?? this.distanceInMeters,
+      assignedAt: assignedAt,
+      userId: userId ?? this.userId,
+      userName: userName,
+      userAvatarUrl: userAvatarUrl,
+      isAnonymous: isAnonymous,
+      severity: severity,
+      isReviewResolved: isReviewResolved,
     );
   }
 

@@ -9,7 +9,6 @@ import 'package:smartspace_client/features/notifications/services/notification_r
 import 'package:smartspace_client/features/notifications/providers/notification_provider.dart';
 import 'package:smartspace_client/features/reports/providers/nearby_reports_alert_provider.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
-import 'package:smartspace_client/features/app_services/ws_services_registry.dart';
 
 class NotificationWsService implements WsFeatureService {
   StompUnsubscribe? _wsSubscription;

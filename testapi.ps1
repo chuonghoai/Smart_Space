@@ -81,6 +81,10 @@ $TestRegistry = @{
         TestClass   = "com.vn.smart_space.controller.staff.StaffDelegationTest"
         Description = "Nho lam gium: giu bonus, nhan/tu choi/huy/thu hoi hoan tien, nguoi lam gium nhan hoa hong + bonus va chiu phat khi mo lai, phan quyen, cau hinh ty le admin"
     }
+    "StaffChat" = @{
+        TestClass   = "com.vn.smart_space.controller.chat.StaffChatIntegrationTest"
+        Description = "Kiem tra toan bo luong Chat & Messaging cho Staff: Danh sach hoi thoai, bo loc role, presence va tin nhan"
+    }
     "SendTestNotification" = @{
         TestClass   = "com.vn.smart_space.controller.notification.SendTestNotificationTest"
         Description = "Kich hoat Backend gui thong bao fake kiem thu da ngon ngu (VI/EN theo DB) toi toan bo Admin, Staff va Client"

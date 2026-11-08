@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mobile_shared/core/auth/user_storage_service.dart';
 import 'package:mobile_shared/features/auth/services/auth_service.dart';
 import 'package:smartspace_client/features/notifications/providers/notification_provider.dart';
+import 'package:smartspace_client/features/chat/providers/client_conversations_provider.dart';
 import 'package:mobile_shared/core/auth/models/user_model.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/routes/app_router.dart';
@@ -21,6 +22,7 @@ class Sidebar extends ConsumerWidget {
     final theme = Theme.of(context);
     final notificationState = ref.watch(notificationProvider);
     final unreadCount = notificationState.countModel?.notifNumber ?? 0;
+    final chatUnreadCount = ref.watch(clientChatTotalUnreadProvider);
 
     return Drawer(
       child: SafeArea(
@@ -117,6 +119,33 @@ class Sidebar extends ConsumerWidget {
                     onTap: () {
                       Navigator.pop(context);
                       context.push(RouterPath.notifications);
+                    },
+                  ),
+                  _SidebarItem(
+                    icon: Icons.chat_bubble_outline_rounded,
+                    label: l10n.conversations,
+                    trailing: chatUnreadCount > 0
+                        ? Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.error,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              chatUnreadCount > 99 ? '99+' : chatUnreadCount.toString(),
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.onError,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          )
+                        : null,
+                    onTap: () {
+                      Navigator.pop(context);
+                      context.push(RouterPath.conversations);
                     },
                   ),
                   _SidebarItem(

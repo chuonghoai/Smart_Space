@@ -24,6 +24,10 @@ import 'package:smartspace_client/ui/mobile/search/search_screen.dart';
 import 'package:smartspace_client/ui/mobile/notifications/notification_screen.dart';
 import 'package:smartspace_client/ui/mobile/news/client_news_detail_screen.dart';
 import 'package:smartspace_client/ui/mobile/news/client_news_list_screen.dart';
+import 'package:mobile_shared/features/chat/models/conversation_model.dart';
+import 'package:smartspace_client/ui/mobile/chat/client_conversations_screen.dart';
+import 'package:smartspace_client/ui/mobile/chat/client_chat_detail_screen.dart';
+import 'package:smartspace_client/ui/mobile/chat/client_conversation_info_screen.dart';
 import 'package:flutter/material.dart';
 
 /// Re-export for convenience so existing callers of navigatorKey still compile.
@@ -95,8 +99,14 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: RouterPath.reportDetail,
-      builder: (context, state) =>
-          ReportDetailScreen(reportId: state.pathParameters['id']!),
+      builder: (context, state) {
+        final extra = state.extra;
+        final fromChat = (extra is Map && extra['fromChat'] == true);
+        return ReportDetailScreen(
+          reportId: state.pathParameters['id']!,
+          fromChat: fromChat,
+        );
+      },
     ),
     GoRoute(
       path: RouterPath.notifications,
@@ -129,6 +139,30 @@ final appRouter = GoRouter(
       builder: (context, state) {
         final newsId = state.pathParameters['id'] ?? '';
         return ClientNewsDetailScreen(newsId: newsId);
+      },
+    ),
+    GoRoute(
+      path: RouterPath.conversations,
+      builder: (context, state) => const ClientConversationsScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.chatDetail,
+      builder: (context, state) {
+        final convId = state.pathParameters['id'] ?? '';
+        final partner = state.extra as ParticipantModel?;
+        return ClientChatDetailScreen(
+          conversationId: convId,
+          initialPartner: partner,
+        );
+      },
+    ),
+    GoRoute(
+      path: RouterPath.conversationInfo,
+      builder: (context, state) {
+        final convId = state.pathParameters['id'] ?? '';
+        return ClientConversationInfoScreen(
+          conversationId: convId,
+        );
       },
     ),
   ],

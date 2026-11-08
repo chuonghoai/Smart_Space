@@ -9,5 +9,7 @@
         "type": "String"
       }
     }
-  }
+  },
+  "sendMessageFailed": "Failed to send message, tap to retry",
+  "sendingMessage": "Sending message..."
 }

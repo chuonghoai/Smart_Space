@@ -14,6 +14,7 @@ import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_staff/ui/mobile/news/widgets/news_card.dart';
 import 'package:intl/intl.dart';
 import 'package:smartspace_staff/features/wallet/providers/staff_wallet_provider.dart';
+import 'package:smartspace_staff/features/chat/providers/conversations_provider.dart';
 
 class MobileHomeScreen extends ConsumerWidget {
   const MobileHomeScreen({super.key});
@@ -114,7 +115,7 @@ class MobileHomeScreen extends ConsumerWidget {
                     const SizedBox(height: 24),
 
                     // Quick Access Section
-                    _buildQuickAccessButtonRow(context, theme, l10n),
+                    _buildQuickAccessButtonRow(context, theme, l10n, ref),
                     const SizedBox(height: 24),
 
                     // Staff Wallet Section (Below Quick Access, Above My Work)
@@ -505,50 +506,68 @@ class MobileHomeScreen extends ConsumerWidget {
     BuildContext context,
     ThemeData theme,
     AppLocalizations l10n,
+    WidgetRef ref,
   ) {
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        _buildQuickAccessItem(
-          context,
-          theme,
-          Icons.map_outlined,
-          l10n.quickAccessMap,
-          () {
-            context.push(RouterPath.map);
-          },
-        ),
-        const SizedBox(width: 8),
-        _buildQuickAccessItem(
-          context,
-          theme,
-          Icons.newspaper_outlined,
-          l10n.quickAccessNews,
-          () {
-            context.push(RouterPath.news);
-          },
-        ),
-        const SizedBox(width: 8),
-        _buildQuickAccessItem(
-          context,
-          theme,
-          Icons.settings_outlined,
-          l10n.quickAccessSettings,
-          () {
-            context.push(RouterPath.settings);
-          },
-        ),
-        const SizedBox(width: 8),
-        _buildQuickAccessItem(
-          context,
-          theme,
-          Icons.menu_book_outlined,
-          l10n.quickAccessGuide,
-          () {
-            /* TODO */
-          },
-        ),
-      ],
+    final unreadChatCount = ref.watch(conversationsProvider.select((s) => s.totalUnreadCount));
+
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      physics: const BouncingScrollPhysics(),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          _buildQuickAccessItem(
+            context,
+            theme,
+            Icons.map_outlined,
+            l10n.quickAccessMap,
+            () {
+              context.push(RouterPath.map);
+            },
+          ),
+          const SizedBox(width: 8),
+          _buildQuickAccessItem(
+            context,
+            theme,
+            Icons.newspaper_outlined,
+            l10n.quickAccessNews,
+            () {
+              context.push(RouterPath.news);
+            },
+          ),
+          const SizedBox(width: 8),
+          _buildQuickAccessItem(
+            context,
+            theme,
+            Icons.settings_outlined,
+            l10n.quickAccessSettings,
+            () {
+              context.push(RouterPath.settings);
+            },
+          ),
+          const SizedBox(width: 8),
+          _buildQuickAccessItem(
+            context,
+            theme,
+            Icons.chat_bubble_outline_rounded,
+            l10n.quickAccessChat,
+            () {
+              context.push(RouterPath.conversations);
+            },
+            badgeCount: unreadChatCount,
+          ),
+          const SizedBox(width: 8),
+          _buildQuickAccessItem(
+            context,
+            theme,
+            Icons.handshake_outlined,
+            l10n.routeDelegations,
+            () {
+              context.push(RouterPath.delegations);
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -557,28 +576,58 @@ class MobileHomeScreen extends ConsumerWidget {
     ThemeData theme,
     IconData icon,
     String label,
-    VoidCallback onTap,
-  ) {
-    return Expanded(
+    VoidCallback onTap, {
+    int badgeCount = 0,
+  }) {
+    return SizedBox(
+      width: 76,
       child: InkWell(
         onTap: onTap,
         borderRadius: BorderRadius.circular(12),
         child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 4.0),
+          padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 2.0),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primaryContainer,
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  icon,
-                  color: theme.colorScheme.onPrimaryContainer,
-                  size: 24,
-                ),
+              Stack(
+                clipBehavior: Clip.none,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.all(12),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primaryContainer,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      icon,
+                      color: theme.colorScheme.onPrimaryContainer,
+                      size: 24,
+                    ),
+                  ),
+                  if (badgeCount > 0)
+                    Positioned(
+                      top: -2,
+                      right: -4,
+                      child: Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.error,
+                          borderRadius: BorderRadius.circular(10),
+                          border: Border.all(color: theme.colorScheme.surface, width: 1.5),
+                        ),
+                        constraints: const BoxConstraints(minWidth: 18, minHeight: 18),
+                        child: Text(
+                          badgeCount > 99 ? '99+' : badgeCount.toString(),
+                          style: TextStyle(
+                            color: theme.colorScheme.onError,
+                            fontSize: 10,
+                            fontWeight: FontWeight.bold,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                      ),
+                    ),
+                ],
               ),
               const SizedBox(height: 8),
               Text(

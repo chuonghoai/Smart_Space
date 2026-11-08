@@ -1084,10 +1084,10 @@ class AppLocalizationsVi extends AppLocalizations {
       'Yêu cầu rút tiền này đã được hủy và số tiền tạm giữ đã được hoàn trả lại ví của bạn.';
 
   @override
-  String get routeDelegations => 'Việc nhờ làm giùm';
+  String get routeDelegations => 'Việc nhờ làm hộ';
 
   @override
-  String get delegationScreenTitle => 'Việc nhờ làm giùm';
+  String get delegationScreenTitle => 'Việc nhờ làm hộ';
 
   @override
   String get delegationTabReceived => 'Được nhờ';
@@ -1096,19 +1096,19 @@ class AppLocalizationsVi extends AppLocalizations {
   String get delegationTabSent => 'Đã nhờ';
 
   @override
-  String get delegationEmptyReceived => 'Chưa có ai nhờ bạn làm giùm';
+  String get delegationEmptyReceived => 'Chưa có ai nhờ bạn làm hộ';
 
   @override
-  String get delegationEmptySent => 'Bạn chưa nhờ ai làm giùm';
+  String get delegationEmptySent => 'Bạn chưa nhờ ai làm hộ';
 
   @override
-  String get delegationLoadFailed => 'Không tải được danh sách nhờ làm giùm';
+  String get delegationLoadFailed => 'Không tải được danh sách nhờ làm hộ';
 
   @override
-  String get delegationRequestAction => 'Nhờ làm giùm';
+  String get delegationRequestAction => 'Nhờ làm hộ';
 
   @override
-  String get delegationSheetTitle => 'Nhờ đồng nghiệp làm giùm';
+  String get delegationSheetTitle => 'Nhờ đồng nghiệp làm hộ';
 
   @override
   String get delegationSearchHint => 'Tìm đồng nghiệp theo tên';
@@ -1153,26 +1153,26 @@ class AppLocalizationsVi extends AppLocalizations {
   String get delegationSendAction => 'Gửi yêu cầu';
 
   @override
-  String get delegationSentSuccess => 'Đã gửi yêu cầu nhờ làm giùm';
+  String get delegationSentSuccess => 'Đã gửi yêu cầu nhờ làm hộ';
 
   @override
   String delegationPendingRequesterBanner(String name) {
-    return 'Đang chờ $name nhận làm giùm';
+    return 'Đang chờ $name nhận làm hộ';
   }
 
   @override
   String delegationAcceptedRequesterBanner(String name) {
-    return '$name đang làm giùm bạn phản ánh này';
+    return '$name đang làm hộ bạn phản ánh này';
   }
 
   @override
   String delegationPendingHelperBanner(String name) {
-    return '$name nhờ bạn làm giùm phản ánh này';
+    return '$name nhờ bạn làm hộ phản ánh này';
   }
 
   @override
   String delegationAcceptedHelperBanner(String name) {
-    return 'Bạn đang làm giùm $name';
+    return 'Bạn đang làm hộ $name';
   }
 
   @override
@@ -1187,17 +1187,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String commissionExpectedWithBonusNotice(String commission, String bonus) {
-    return 'Bạn sẽ nhận được $commissionđ + $bonusđ bonus làm giùm sau khi hoàn tất xử lý phản ánh này.';
+    return 'Bạn sẽ nhận được $commissionđ + $bonusđ bonus làm hộ sau khi hoàn tất xử lý phản ánh này.';
   }
 
   @override
   String delegationBonusReceivedLine(String name, String amount) {
-    return 'Bonus làm giùm từ $name: +$amountđ';
+    return 'Bonus làm hộ từ $name: +$amountđ';
   }
 
   @override
   String delegationBonusPaidNotice(String amount, String name) {
-    return 'Bạn đã trả $amountđ bonus cho $name làm giùm phản ánh này.';
+    return 'Bạn đã trả $amountđ bonus cho $name làm hộ phản ánh này.';
   }
 
   @override
@@ -1215,7 +1215,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get delegationCancelAction => 'Huỷ yêu cầu';
 
   @override
-  String get delegationAcceptConfirmTitle => 'Nhận làm giùm phản ánh này?';
+  String get delegationAcceptConfirmTitle => 'Nhận làm hộ phản ánh này?';
 
   @override
   String get delegationAcceptConfirmMessage =>
@@ -1230,14 +1230,14 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String get delegationCancelConfirmTitle => 'Huỷ yêu cầu nhờ làm giùm?';
+  String get delegationCancelConfirmTitle => 'Huỷ yêu cầu nhờ làm hộ?';
 
   @override
   String get delegationCancelConfirmMessage =>
       'Bonus đã giữ sẽ được hoàn lại vào ví của bạn.';
 
   @override
-  String get delegationAcceptedSuccess => 'Bạn đã nhận làm giùm';
+  String get delegationAcceptedSuccess => 'Bạn đã nhận làm hộ';
 
   @override
   String get delegationDeclinedSuccess => 'Đã từ chối yêu cầu';
@@ -1265,7 +1265,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get delegationStatusPending => 'Chờ phản hồi';
 
   @override
-  String get delegationStatusAccepted => 'Đang làm giùm';
+  String get delegationStatusAccepted => 'Đang làm hộ';
 
   @override
   String get delegationStatusDeclined => 'Đã từ chối';
@@ -1281,4 +1281,195 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get delegationStatusRevoked => 'Đã thu hồi';
+
+  @override
+  String get routeConversations => 'Tin nhắn';
+
+  @override
+  String get routeChatDetail => 'Cuộc trò chuyện';
+
+  @override
+  String get conversations => 'Tin nhắn';
+
+  @override
+  String get quickAccessChat => 'Tin nhắn';
+
+  @override
+  String get roleClient => 'Cư dân';
+
+  @override
+  String get roleStaff => 'Nhân viên';
+
+  @override
+  String get roleAdmin => 'Quản trị viên';
+
+  @override
+  String get staffNoPosition => 'Nhân viên chưa có chức vụ';
+
+  @override
+  String get chatInputHint => 'Nhập tin nhắn...';
+
+  @override
+  String chatDisabledNotice(String name) {
+    return 'Bạn hiện không thể nhắn tin cho người dùng $name';
+  }
+
+  @override
+  String get messageReporter => 'Nhắn tin';
+
+  @override
+  String get emptyConversations => 'Chưa có cuộc trò chuyện nào';
+
+  @override
+  String get emptyConversationsDesc =>
+      'Các cuộc trò chuyện với cư dân và đồng nghiệp sẽ hiển thị tại đây.';
+
+  @override
+  String get emptyMessages => 'Chưa có tin nhắn nào. Bắt đầu trò chuyện ngay!';
+
+  @override
+  String get errorLoadConversations =>
+      'Không thể tải danh sách cuộc trò chuyện';
+
+  @override
+  String get errorLoadMessages => 'Không thể tải tin nhắn';
+
+  @override
+  String get sendMessageFailed => 'Gửi tin nhắn thất bại, chạm để thử lại';
+
+  @override
+  String get anonymousPerson => 'Người dùng ẩn danh';
+
+  @override
+  String get filterClient => 'Cư dân';
+
+  @override
+  String get filterStaff => 'Nhân viên';
+
+  @override
+  String get filterAdmin => 'Quản trị viên';
+
+  @override
+  String get sendAction => 'Gửi';
+
+  @override
+  String get callClient => 'Gọi điện';
+
+  @override
+  String get noPhoneNumber => 'Người dùng không cung cấp số điện thoại';
+
+  @override
+  String get searchConversations => 'Tìm kiếm theo tên, SĐT, email...';
+
+  @override
+  String get otherUsers => 'Người dùng khác';
+
+  @override
+  String get startConversation => 'Bắt đầu cuộc trò chuyện';
+
+  @override
+  String get noUsersFound => 'Không tìm thấy người dùng phù hợp';
+
+  @override
+  String get filterPosition => 'Chức vụ';
+
+  @override
+  String get filterByPosition => 'Lọc theo chức vụ';
+
+  @override
+  String get apply => 'Áp dụng';
+
+  @override
+  String get clearFilter => 'Xóa bộ lọc';
+
+  @override
+  String get noPositionsAvailable => 'Không có chức vụ nào';
+
+  @override
+  String positionSelectedCount(int count) {
+    return '$count chức vụ';
+  }
+
+  @override
+  String get routeConversationInfo => 'Thông tin hội thoại';
+
+  @override
+  String get conversationInfoTitle => 'Thông tin hội thoại';
+
+  @override
+  String get activeReportsSection => 'Phản ánh đang xử lý';
+
+  @override
+  String activeReportsCount(int count) {
+    return '$count phản ánh đang xử lý';
+  }
+
+  @override
+  String get allReportsProcessed => 'Tất cả phản ánh đã được xử lý xong';
+
+  @override
+  String get conversationClosedNotice =>
+      'Cuộc hội thoại đã đóng do toàn bộ phản ánh đã hoàn tất';
+
+  @override
+  String get conversationActiveNotice => 'Cuộc hội thoại đang hoạt động';
+
+  @override
+  String get callButtonLabel => 'Gọi điện';
+
+  @override
+  String get videoCallButtonLabel => 'Video call';
+
+  @override
+  String get videoCallComingSoon => 'Tính năng gọi video call đang phát triển';
+
+  @override
+  String get cannotMakePhoneCall => 'Không thể thực hiện cuộc gọi';
+
+  @override
+  String get viewReportDetail => 'Xem chi tiết';
+
+  @override
+  String get anonymousUserProtectionNote =>
+      'Thông tin người đăng bài ẩn danh được bảo vệ tuyệt đối';
+
+  @override
+  String get conversationRefreshed =>
+      'Đã làm mới thông tin và tin nhắn hội thoại';
+
+  @override
+  String get conversationRefreshFailed =>
+      'Không thể làm mới hội thoại, vui lòng thử lại sau';
+
+  @override
+  String get noActiveReportsInConversation =>
+      'Không có phản ánh nào đang xử lý';
+
+  @override
+  String get yesterday => 'Hôm qua';
+
+  @override
+  String get conversationLockedBadge => 'Đã khóa';
+
+  @override
+  String get callOptionsTitle => 'Tùy chọn cuộc gọi';
+
+  @override
+  String get cellularCall => 'Gọi điện qua di động';
+
+  @override
+  String get cellularCallDesc => 'Mở ứng dụng gọi điện mặc định';
+
+  @override
+  String get freeCall => 'Gọi miễn phí qua ứng dụng';
+
+  @override
+  String get comingSoon => 'Sắp ra mắt';
+
+  @override
+  String get phoneNotAvailable => 'Số điện thoại không khả dụng';
+
+  @override
+  String get freeCallComingSoon =>
+      'Tính năng gọi miễn phí qua internet đang được phát triển';
 }

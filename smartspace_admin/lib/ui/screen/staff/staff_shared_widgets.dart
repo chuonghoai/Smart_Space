@@ -1,14 +1,17 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
+import 'package:mobile_shared/features/chat/models/conversation_model.dart';
 import 'package:mobile_shared/util/media_upload.dart';
 import 'package:smartspace_admin/features/staff/application/staff_providers.dart';
 import 'package:smartspace_admin/features/staff/models/staff_list_response.dart';
 import 'package:smartspace_admin/features/position/application/position_providers.dart';
 import 'package:smartspace_admin/features/staff/models/staff_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
+import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/shared/position/position_widgets.dart';
 
 /// Card nhân viên — hiển thị avatar, tên, email, trạng thái
@@ -1020,21 +1023,27 @@ void showStaffDetailSheet(
           const Divider(height: 1),
           Padding(
             padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
-            child: Row(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
               children: [
-                // Nút Chỉnh sửa
-                Expanded(
-                  child: OutlinedButton.icon(
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
                     onPressed: () {
                       Navigator.pop(context); // Đóng bottom sheet
-                      showStaffFormDialog(context, l10n, theme, ref,
-                          editingStaff: staff);
+                      context.push(
+                        RouterPath.chatDetailWithId('new_${staff.id}'),
+                        extra: ParticipantModel(
+                          userId: staff.id,
+                          name: staff.fullName,
+                          avatarUrl: staff.avatarUrl,
+                          role: 'staff',
+                        ),
+                      );
                     },
-                    icon: const Icon(Icons.edit_outlined),
-                    label: Text(l10n.editInfo),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: theme.colorScheme.primary,
-                      side: BorderSide(color: theme.colorScheme.primary),
+                    icon: const Icon(Icons.chat_outlined),
+                    label: Text(l10n.messageStaff),
+                    style: FilledButton.styleFrom(
                       padding: const EdgeInsets.symmetric(vertical: 12),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8),
@@ -1042,35 +1051,60 @@ void showStaffDetailSheet(
                     ),
                   ),
                 ),
-                const SizedBox(width: 12),
-                // Nút Khoá/Mở khoá
-                Expanded(
-                  child: OutlinedButton.icon(
-                    onPressed: () {
-                      Navigator.pop(context); // Đóng bottom sheet
-                      confirmToggleStaffStatus(context, l10n, theme, staff, ref);
-                    },
-                    icon: Icon(
-                      staff.isActive ? Icons.lock_outline : Icons.lock_open,
-                    ),
-                    label: Text(
-                      staff.isActive ? l10n.lockAccount : l10n.unlockAccount,
-                    ),
-                    style: OutlinedButton.styleFrom(
-                      foregroundColor: staff.isActive
-                          ? theme.colorScheme.error
-                          : theme.colorScheme.primary,
-                      side: BorderSide(
-                        color: staff.isActive
-                            ? theme.colorScheme.error
-                            : theme.colorScheme.primary,
-                      ),
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
+                const SizedBox(height: 12),
+                Row(
+                  children: [
+                    // Nút Chỉnh sửa
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context); // Đóng bottom sheet
+                          showStaffFormDialog(context, l10n, theme, ref,
+                              editingStaff: staff);
+                        },
+                        icon: const Icon(Icons.edit_outlined),
+                        label: Text(l10n.editInfo),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: theme.colorScheme.primary,
+                          side: BorderSide(color: theme.colorScheme.primary),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
                       ),
                     ),
-                  ),
+                    const SizedBox(width: 12),
+                    // Nút Khoá/Mở khoá
+                    Expanded(
+                      child: OutlinedButton.icon(
+                        onPressed: () {
+                          Navigator.pop(context); // Đóng bottom sheet
+                          confirmToggleStaffStatus(context, l10n, theme, staff, ref);
+                        },
+                        icon: Icon(
+                          staff.isActive ? Icons.lock_outline : Icons.lock_open,
+                        ),
+                        label: Text(
+                          staff.isActive ? l10n.lockAccount : l10n.unlockAccount,
+                        ),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: staff.isActive
+                              ? theme.colorScheme.error
+                              : theme.colorScheme.primary,
+                          side: BorderSide(
+                            color: staff.isActive
+                                ? theme.colorScheme.error
+                                : theme.colorScheme.primary,
+                          ),
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
             ),

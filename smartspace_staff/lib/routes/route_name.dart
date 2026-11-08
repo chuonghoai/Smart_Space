@@ -45,6 +45,12 @@ class AppRouteInfo {
         return l10n.routeStaffWithdrawalDetail;
       case 'routeStaffBankAccounts':
         return l10n.routeStaffBankAccounts;
+      case 'routeConversations':
+        return l10n.routeConversations;
+      case 'routeChatDetail':
+        return l10n.routeChatDetail;
+      case 'routeConversationInfo':
+        return l10n.routeConversationInfo;
       // Add more routes here as needed
       default:
         return nameKey;
@@ -207,6 +213,28 @@ class RouteName {
     priority: 5,
   );
 
+  static const conversations = AppRouteInfo(
+    path: '/conversations',
+    nameKey: 'routeConversations',
+    icon: Icons.chat_bubble_outline_rounded,
+    isHiddenInSearch: false,
+    priority: 4,
+  );
+
+  static const chatDetail = AppRouteInfo(
+    path: '/conversations/:id',
+    nameKey: 'routeChatDetail',
+    icon: Icons.chat_outlined,
+    isHiddenInSearch: true,
+  );
+
+  static const conversationInfo = AppRouteInfo(
+    path: '/conversations/:id/info',
+    nameKey: 'routeConversationInfo',
+    icon: Icons.info_outline_rounded,
+    isHiddenInSearch: true,
+  );
+
   static const List<AppRouteInfo> allRoutes = [
     splash,
     login,
@@ -230,6 +258,9 @@ class RouteName {
     staffWithdrawalDetail,
     staffBankAccounts,
     delegations,
+    conversations,
+    chatDetail,
+    conversationInfo,
   ];
 
   static List<AppRouteInfo> get searchableRoutes {

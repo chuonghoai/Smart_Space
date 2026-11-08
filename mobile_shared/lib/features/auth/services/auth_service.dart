@@ -14,6 +14,7 @@ import 'package:mobile_shared/features/auth/repositories/auth_repo.dart';
 import 'package:mobile_shared/features/auth/repositories/auth_repo_api.dart';
 import 'package:mobile_shared/features/auth/repositories/auth_repo_mock.dart';
 import 'package:mobile_shared/core/auth/models/user_model.dart';
+import 'package:mobile_shared/features/chat/services/chat_local_storage_service.dart';
 
 class AuthService {
   final AuthRepo authRepo;
@@ -107,6 +108,7 @@ class AuthService {
       // Xóa token
       await TokenStorage.clearAuth();
       userStorageService.clear();
+      await chatLocalStorageService.clearAll();
       connectionManager.stopAllAndCleanUp();
     }
   }

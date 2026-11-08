@@ -8,6 +8,7 @@ import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/screen/users/user_shared_widgets.dart';
 import 'package:smartspace_admin/ui/shared/image/person_avatar.dart';
 import 'package:smartspace_admin/ui/shared/report_status/report_status_style.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 /// Mở chi tiết người dùng: Dialog (màn rộng) hoặc bottom sheet (màn hẹp).
 void showUserDetail(BuildContext context, String userId) {
@@ -139,6 +140,49 @@ class _UserDetailBody extends StatelessWidget {
 
   const _UserDetailBody({required this.user, required this.onReportTap});
 
+  Future<void> _handlePhoneCall(BuildContext context, String? phone) async {
+    final l10n = AppLocalizations.of(context)!;
+    if (phone == null || phone.trim().isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(l10n.phoneNotAvailable)),
+      );
+      return;
+    }
+    final cleanPhone = phone.replaceAll(RegExp(r'\s+'), '');
+    final uri = Uri.parse('tel:$cleanPhone');
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      } else {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+    } catch (_) {
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.cannotLaunchPhone)),
+        );
+      }
+    }
+  }
+
+  Future<void> _handleStartChat(BuildContext context, UserDetailModel user) async {
+    final l10n = AppLocalizations.of(context)!;
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        icon: Icon(Icons.info_outline_rounded, color: Theme.of(ctx).colorScheme.primary, size: 28),
+        title: Text(l10n.cannotMessageClientTitle),
+        content: Text(l10n.cannotMessageClientMessage),
+        actions: [
+          FilledButton(
+            onPressed: () => Navigator.of(ctx).pop(),
+            child: Text(l10n.closeAction),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -189,7 +233,29 @@ class _UserDetailBody extends StatelessWidget {
             ),
           ],
         ),
-        const SizedBox(height: 20),
+        const SizedBox(height: 16),
+
+        // Action buttons: Nhắn tin & Gọi điện
+        Row(
+          children: [
+            Expanded(
+              child: FilledButton.tonalIcon(
+                icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
+                label: Text(l10n.chatWithUser),
+                onPressed: () => _handleStartChat(context, user),
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: OutlinedButton.icon(
+                icon: const Icon(Icons.phone_outlined, size: 18),
+                label: Text(l10n.callUser),
+                onPressed: () => _handlePhoneCall(context, user.phoneNumber),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 16),
 
         // Thông tin cá nhân
         _InfoRow(

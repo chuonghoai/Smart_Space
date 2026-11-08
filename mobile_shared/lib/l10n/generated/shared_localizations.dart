@@ -103,6 +103,18 @@ abstract class SharedLocalizations {
   /// In vi, this message translates to:
   /// **'Cách bạn {value} {unit}'**
   String distanceFromYou(String value, String unit);
+
+  /// No description provided for @sendMessageFailed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi tin nhắn thất bại, bấm để thử lại'**
+  String get sendMessageFailed;
+
+  /// No description provided for @sendingMessage.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang gửi tin nhắn...'**
+  String get sendingMessage;
 }
 
 class _SharedLocalizationsDelegate

@@ -16,7 +16,6 @@ import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
 import 'firebase_options.dart';
 import 'features/app_services/app_services_initializer.dart';
-import 'package:smartspace_client/features/app_services/ws_services_registry.dart';
 import 'package:smartspace_client/features/notifications/services/notification_ws_service.dart';
 
 void main() async {
@@ -48,6 +47,7 @@ void main() async {
   });
 
   WsServicesRegistry.register(NotificationWsService());
+  WsServicesRegistry.register(chatWsService);
 
   runApp(const ProviderScope(child: SmartSpaceApp()));
 }

@@ -20,11 +20,18 @@ import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/routes/router_path.dart';
 import 'package:smartspace_client/ui/mobile/reports/presentation/widgets/fullscreen_image_viewer.dart';
 import 'package:smartspace_client/ui/mobile/reports/presentation/widgets/report_review_dialog.dart';
+import 'package:mobile_shared/features/chat/data/chat_repository.dart';
+import 'package:mobile_shared/features/chat/models/conversation_model.dart';
 
 class ReportDetailScreen extends ConsumerStatefulWidget {
   final String reportId;
+  final bool fromChat;
 
-  const ReportDetailScreen({super.key, required this.reportId});
+  const ReportDetailScreen({
+    super.key,
+    required this.reportId,
+    this.fromChat = false,
+  });
 
   @override
   ConsumerState<ReportDetailScreen> createState() => _ReportDetailScreenState();
@@ -43,6 +50,57 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
         ref.read(reportDetailProvider(widget.reportId).notifier).refresh();
       },
     );
+  }
+
+  Future<void> _openStaffChat(ReportDetailModel report) async {
+    final l10n = AppLocalizations.of(context)!;
+    try {
+      showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => const Center(child: CircularProgressIndicator()),
+      );
+
+      final res = await chatRepository.createOrGetConversation(reportId: report.id);
+      if (!mounted) return;
+      Navigator.of(context, rootNavigator: true).pop(); // pop loading
+
+      if (res.success && res.data != null) {
+        if (widget.fromChat) {
+          // Break navigation loop: pop ReportDetail and Info screen back to the existing Chat
+          Navigator.of(context).pop(); // Pop ReportDetail
+          if (mounted) {
+            Navigator.of(context).pop(); // Pop ConversationInfo
+          }
+        } else {
+          context.push(
+            RouterPath.chatDetailWithId(res.data!.id),
+            extra: ParticipantModel(
+              userId: report.assignedStaffId ?? '',
+              name: report.assignedStaffName ?? l10n.supportStaff,
+              avatarUrl: report.assignedStaffAvatarUrl,
+              role: 'staff',
+            ),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(res.message.isNotEmpty ? res.message : l10n.cannotStartChat),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      Navigator.of(context, rootNavigator: true).pop();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(l10n.cannotStartChat),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
   }
 
   Future<void> _handleEditReport(ReportDetailModel report) async {
@@ -525,7 +583,7 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
                               ),
                             ),
 
-                            // My Report Badge ("Bạn là người tạo phản ánh này")
+                            // My Report Badge ("Bạn là người tạo phản ánh này" / "Bạn đã tạo phản ánh này dưới hình thức ẩn danh")
                             if (isMyReport)
                               Container(
                                 padding: const EdgeInsets.symmetric(
@@ -533,25 +591,25 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
                                   vertical: 4,
                                 ),
                                 decoration: BoxDecoration(
-                                  color: theme.colorScheme.primary.withValues(alpha: 0.12),
+                                  color: (report.isAnonymous ? theme.colorScheme.secondary : theme.colorScheme.primary).withValues(alpha: 0.12),
                                   borderRadius: BorderRadius.circular(8),
                                   border: Border.all(
-                                    color: theme.colorScheme.primary.withValues(alpha: 0.35),
+                                    color: (report.isAnonymous ? theme.colorScheme.secondary : theme.colorScheme.primary).withValues(alpha: 0.35),
                                   ),
                                 ),
                                 child: Row(
                                   mainAxisSize: MainAxisSize.min,
                                   children: [
                                     Icon(
-                                      Icons.person_pin_circle_outlined,
+                                      report.isAnonymous ? Icons.shield_outlined : Icons.person_pin_circle_outlined,
                                       size: 14,
-                                      color: theme.colorScheme.primary,
+                                      color: report.isAnonymous ? theme.colorScheme.secondary : theme.colorScheme.primary,
                                     ),
                                     const SizedBox(width: 4),
                                     Text(
-                                      l10n.youCreatedThisReport,
+                                      report.isAnonymous ? l10n.youCreatedThisReportAnonymously : l10n.youCreatedThisReport,
                                       style: theme.textTheme.labelSmall?.copyWith(
-                                        color: theme.colorScheme.primary,
+                                        color: report.isAnonymous ? theme.colorScheme.secondary : theme.colorScheme.primary,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -736,6 +794,25 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
                                       ),
                                     ),
                                   ],
+                                ),
+                                const SizedBox(height: 12),
+                                SizedBox(
+                                  width: double.infinity,
+                                  child: OutlinedButton.icon(
+                                    icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
+                                    label: Text(
+                                      (report.status == ReportStatus.processing)
+                                          ? l10n.chatWithStaff
+                                          : l10n.viewStaffChat,
+                                    ),
+                                    style: OutlinedButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(vertical: 10),
+                                      shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(10),
+                                      ),
+                                    ),
+                                    onPressed: () => _openStaffChat(report),
+                                  ),
                                 ),
                               ],
                             ),

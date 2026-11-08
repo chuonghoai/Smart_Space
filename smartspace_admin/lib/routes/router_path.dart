@@ -41,4 +41,11 @@ class RouterPath {
   static String get commissionConfig => RouteName.commissionConfig.path;
   static String get penaltyRateConfig => RouteName.penaltyRateConfig.path;
   static String get delegationRateConfig => RouteName.delegationRateConfig.path;
+  static String get conversations => RouteName.conversations.path;
+  static String get chatDetail => RouteName.chatDetail.path;
+  static String chatDetailWithId(String id) =>
+      RouteName.chatDetail.path.replaceAll(':id', id);
+  static String get conversationInfo => RouteName.conversationInfo.path;
+  static String conversationInfoWithId(String id) =>
+      RouteName.conversationInfo.path.replaceAll(':id', id);
 }

@@ -9,6 +9,7 @@ import 'package:intl/intl.dart';
 
 import 'package:go_router/go_router.dart';
 import 'package:smartspace_staff/features/reports/models/report_model.dart';
+import 'package:smartspace_staff/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_staff/features/reports/providers/report_detail_provider.dart';
 import 'package:smartspace_staff/features/reports/services/handle_report_background_service.dart';
 import 'package:smartspace_staff/features/reports/utils/report_status_ext.dart';
@@ -22,6 +23,9 @@ import 'package:smartspace_staff/features/delegation/providers/delegation_provid
 import 'package:smartspace_staff/ui/mobile/delegation/widgets/delegation_section.dart';
 import 'package:smartspace_staff/ui/mobile/delegation/widgets/delegation_common.dart';
 import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
+import 'package:smartspace_staff/features/chat/data/chat_repository.dart';
+import 'package:smartspace_staff/features/chat/models/conversation_model.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class ReportDetailScreen extends ConsumerStatefulWidget {
   final String reportId;
@@ -103,6 +107,80 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
     context.push(RouterPath.mapWithFocus(
       MapFocusTarget(reportId: widget.reportId, latitude: lat, longitude: lng),
     ));
+  }
+
+  bool _isOpeningChat = false;
+
+  Future<void> _openChatWithReporter() async {
+    if (_isOpeningChat) return;
+    setState(() => _isOpeningChat = true);
+    try {
+      final res = await ref.read(chatRepositoryProvider).createOrGetConversation(
+        reportId: widget.reportId,
+      );
+      if (!mounted) return;
+      if (res.success && res.data != null) {
+        final convId = res.data!.id;
+        final reportData = ref.read(reportDetailProvider(widget.reportId)).asData?.value;
+        final isAnon = reportData?.isAnonymous ?? false;
+        final partner = ParticipantModel(
+          userId: reportData?.userId ?? '',
+          name: isAnon ? AppLocalizations.of(context)!.anonymousPerson : (reportData?.userName ?? ''),
+          avatarUrl: isAnon ? null : reportData?.userAvatarUrl,
+          role: 'client',
+        );
+        context.push(RouterPath.chatDetailWithId(convId), extra: partner);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(res.message.isNotEmpty ? res.message : 'Cannot open conversation'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    } finally {
+      if (mounted) {
+        setState(() => _isOpeningChat = false);
+      }
+    }
+  }
+
+  Future<void> _callReporter(ReportDetailModel? report) async {
+    final phone = report?.userPhone;
+    if (phone == null || phone.trim().isEmpty) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(AppLocalizations.of(context)!.noPhoneNumber),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+      return;
+    }
+    final uri = Uri.parse('tel:${phone.trim()}');
+    try {
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri);
+      } else {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: Theme.of(context).colorScheme.error,
+        ),
+      );
+    }
   }
 
   @override
@@ -756,82 +834,107 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                                     ),
                                     const SizedBox(width: 8),
                                     Text(
-                                      report.isAnonymous ? l10n.anonymousUser : l10n.reporter,
+                                      l10n.reporter,
                                       style: theme.textTheme.titleSmall?.copyWith(
                                         fontWeight: FontWeight.bold,
                                         color: theme.colorScheme.primary,
                                       ),
                                     ),
-                                    if (report.isAnonymous) ...[
-                                      const Spacer(),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
-                                        decoration: BoxDecoration(
-                                          color: theme.colorScheme.errorContainer.withOpacity(0.5),
-                                          borderRadius: BorderRadius.circular(8),
-                                        ),
-                                        child: Row(
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Icon(
-                                              Icons.visibility_off_outlined,
-                                              size: 13,
-                                              color: theme.colorScheme.onErrorContainer,
-                                            ),
-                                            const SizedBox(width: 4),
-                                            Text(
-                                              l10n.anonymousUser,
-                                              style: TextStyle(
-                                                fontSize: 11,
-                                                fontWeight: FontWeight.bold,
-                                                color: theme.colorScheme.onErrorContainer,
-                                              ),
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ],
                                   ],
                                 ),
-                                if (!report.isAnonymous) ...[
-                                  const Divider(height: 20),
-                                  Row(
-                                    children: [
-                                      CircleAvatar(
-                                        radius: 22,
-                                        backgroundImage: report.userAvatarUrl != null && report.userAvatarUrl!.isNotEmpty
-                                            ? NetworkImage(report.userAvatarUrl!)
-                                            : null,
-                                        child: (report.userAvatarUrl == null || report.userAvatarUrl!.isEmpty)
-                                            ? Icon(Icons.person, color: theme.colorScheme.onSurfaceVariant)
-                                            : null,
-                                      ),
-                                      const SizedBox(width: 12),
-                                      Expanded(
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          children: [
+                                const Divider(height: 20),
+                                Row(
+                                  children: [
+                                    CircleAvatar(
+                                      radius: 22,
+                                      backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                                      backgroundImage: (!report.isAnonymous &&
+                                              report.userAvatarUrl != null &&
+                                              report.userAvatarUrl!.isNotEmpty)
+                                          ? NetworkImage(report.userAvatarUrl!)
+                                          : null,
+                                      child: (report.isAnonymous ||
+                                              report.userAvatarUrl == null ||
+                                              report.userAvatarUrl!.isEmpty)
+                                          ? Icon(
+                                              report.isAnonymous
+                                                  ? Icons.person_off_outlined
+                                                  : Icons.person,
+                                              color: theme.colorScheme.onSurfaceVariant,
+                                            )
+                                          : null,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            report.isAnonymous
+                                                ? l10n.anonymousUser
+                                                : (report.userName?.isNotEmpty == true
+                                                    ? report.userName!
+                                                    : 'Unknown'),
+                                            style: theme.textTheme.bodyLarge?.copyWith(
+                                              fontWeight: FontWeight.bold,
+                                            ),
+                                          ),
+                                          if (!report.isAnonymous &&
+                                              report.userPhone != null &&
+                                              report.userPhone!.isNotEmpty) ...[
+                                            const SizedBox(height: 2),
                                             Text(
-                                              report.userName?.isNotEmpty == true ? report.userName! : 'Unknown',
-                                              style: theme.textTheme.bodyLarge?.copyWith(
-                                                fontWeight: FontWeight.bold,
+                                              report.userPhone!,
+                                              style: theme.textTheme.bodySmall?.copyWith(
+                                                color: theme.colorScheme.onSurfaceVariant,
                                               ),
                                             ),
-                                            if (report.userPhone != null && report.userPhone!.isNotEmpty) ...[
-                                              const SizedBox(height: 2),
-                                              Text(
-                                                report.userPhone!,
-                                                style: theme.textTheme.bodySmall?.copyWith(
-                                                  color: theme.colorScheme.onSurfaceVariant,
-                                                ),
-                                              ),
-                                            ],
                                           ],
+                                        ],
+                                      ),
+                                    ),
+                                    const SizedBox(width: 8),
+                                    // 2 circular buttons on the far right: Call (if not anonymous) and Message
+                                    if (!report.isAnonymous) ...[
+                                      Material(
+                                        color: theme.colorScheme.primaryContainer,
+                                        shape: const CircleBorder(),
+                                        clipBehavior: Clip.antiAlias,
+                                        child: IconButton(
+                                          icon: const Icon(Icons.phone_rounded, size: 20),
+                                          color: theme.colorScheme.onPrimaryContainer,
+                                          tooltip: l10n.callClient,
+                                          onPressed: () => _callReporter(report),
+                                          constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                                          padding: EdgeInsets.zero,
                                         ),
                                       ),
+                                      const SizedBox(width: 8),
                                     ],
-                                  ),
-                                ],
+                                    Material(
+                                      color: theme.colorScheme.primaryContainer,
+                                      shape: const CircleBorder(),
+                                      clipBehavior: Clip.antiAlias,
+                                      child: IconButton(
+                                        icon: _isOpeningChat
+                                            ? SizedBox(
+                                                width: 18,
+                                                height: 18,
+                                                child: CircularProgressIndicator(
+                                                  strokeWidth: 2,
+                                                  color: theme.colorScheme.onPrimaryContainer,
+                                                ),
+                                              )
+                                            : const Icon(Icons.chat_bubble_outline_rounded, size: 20),
+                                        color: theme.colorScheme.onPrimaryContainer,
+                                        tooltip: l10n.messageReporter,
+                                        onPressed: _isOpeningChat ? null : _openChatWithReporter,
+                                        constraints: const BoxConstraints(minWidth: 40, minHeight: 40),
+                                        padding: EdgeInsets.zero,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ],
                             ),
                           ),

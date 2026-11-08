@@ -27,6 +27,10 @@ import 'package:smartspace_staff/ui/mobile/wallet/staff_withdrawal_history_scree
 import 'package:smartspace_staff/features/wallet/models/staff_withdrawal_model.dart';
 import 'package:smartspace_staff/features/delegation/models/delegation_model.dart';
 import 'package:smartspace_staff/ui/mobile/delegation/delegations_screen.dart';
+import 'package:smartspace_staff/features/chat/models/conversation_model.dart';
+import 'package:smartspace_staff/ui/mobile/chat/conversations_screen.dart';
+import 'package:smartspace_staff/ui/mobile/chat/chat_detail_screen.dart';
+import 'package:smartspace_staff/ui/mobile/chat/conversation_info_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = sharedNavigatorKey;
 
@@ -152,6 +156,28 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.staffBankAccounts,
       builder: (context, state) => const StaffBankAccountsScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.conversations,
+      builder: (context, state) => const ConversationsScreen(),
+    ),
+    GoRoute(
+      path: '/conversations/:id',
+      builder: (context, state) {
+        final conversationId = state.pathParameters['id'] ?? '';
+        final initialPartner = state.extra as ParticipantModel?;
+        return ChatDetailScreen(
+          conversationId: conversationId,
+          initialPartner: initialPartner,
+        );
+      },
+    ),
+    GoRoute(
+      path: '/conversations/:id/info',
+      builder: (context, state) {
+        final conversationId = state.pathParameters['id'] ?? '';
+        return ConversationInfoScreen(conversationId: conversationId);
+      },
     ),
   ],
 );

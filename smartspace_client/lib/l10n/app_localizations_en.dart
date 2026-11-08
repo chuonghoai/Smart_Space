@@ -1014,4 +1014,169 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get timeframe12Months => '12 months';
+
+  @override
+  String get routeConversations => 'Conversations';
+
+  @override
+  String get routeChatDetail => 'Chat Detail';
+
+  @override
+  String get conversations => 'Messages';
+
+  @override
+  String get noConversations => 'No conversations yet';
+
+  @override
+  String get noConversationsSub =>
+      'You can message support staff from the detail of your active reports.';
+
+  @override
+  String get searchConversationsPlaceholder => 'Search by name or content...';
+
+  @override
+  String get roleStaff => 'Staff';
+
+  @override
+  String get roleAdmin => 'Admin';
+
+  @override
+  String get chatInputHint => 'Type a message...';
+
+  @override
+  String get emptyMessages => 'No messages yet. Start chatting!';
+
+  @override
+  String get errorLoadMessages => 'Failed to load messages';
+
+  @override
+  String get anonymousPerson => 'Anonymous User';
+
+  @override
+  String get supportStaff => 'Support Staff';
+
+  @override
+  String get managementBoard => 'Management';
+
+  @override
+  String get chatDisabledNotice =>
+      'The report has been resolved. Chat is currently in read-only history mode.';
+
+  @override
+  String get chatWithStaff => 'Message staff';
+
+  @override
+  String get viewStaffChat => 'View support messages';
+
+  @override
+  String get cannotStartChat =>
+      'Unable to start conversation, please try again later';
+
+  @override
+  String get routeConversationInfo => 'Conversation Info';
+
+  @override
+  String get conversationInfoTitle => 'Conversation Info';
+
+  @override
+  String get activeReportsSection => 'Active Reports';
+
+  @override
+  String get allReportsProcessed => 'All reports have been processed';
+
+  @override
+  String get conversationClosedNotice =>
+      'Conversation closed as all reports have been processed';
+
+  @override
+  String get conversationActiveNotice => 'Conversation is currently active';
+
+  @override
+  String get callButtonLabel => 'Call';
+
+  @override
+  String get videoCallButtonLabel => 'Video call';
+
+  @override
+  String get videoCallComingSoon => 'Video call feature is under development';
+
+  @override
+  String get conversationRefreshed =>
+      'Conversation info and messages refreshed successfully';
+
+  @override
+  String get conversationRefreshFailed =>
+      'Could not refresh conversation, please try again later';
+
+  @override
+  String get cannotMakePhoneCall => 'Cannot make phone call';
+
+  @override
+  String get noPhoneNumber => 'No phone number available';
+
+  @override
+  String get staffNoPosition => 'No position';
+
+  @override
+  String get rehandlingBadge => 'Re-handling';
+
+  @override
+  String get roleClient => 'Resident';
+
+  @override
+  String get contextIdentified => 'Identified';
+
+  @override
+  String get contextAnonymous => 'Anonymous';
+
+  @override
+  String get contextIdentifiedTag => 'Identified';
+
+  @override
+  String get contextAnonymousTag => 'Anonymous';
+
+  @override
+  String get noIdentifiedReports => 'No active identified reports';
+
+  @override
+  String get noAnonymousReports => 'No active anonymous reports';
+
+  @override
+  String get anonymousProtectionBanner =>
+      'Anonymous discussion. Your personal identity is strictly protected.';
+
+  @override
+  String get contextIdentifiedTooltip => 'Identified reports conversation';
+
+  @override
+  String get contextAnonymousTooltip => 'Anonymous reports conversation';
+
+  @override
+  String get youCreatedThisReportAnonymously =>
+      'You created this report anonymously';
+
+  @override
+  String get callOptionsTitle => 'Call options';
+
+  @override
+  String get cellularCall => 'Cellular call';
+
+  @override
+  String get cellularCallDesc => 'Open default phone app';
+
+  @override
+  String get freeCall => 'Free in-app voice call';
+
+  @override
+  String get featureUnderDevelopment => 'Feature under development';
+
+  @override
+  String get comingSoon => 'Coming soon';
+
+  @override
+  String get phoneNotAvailable => 'Phone number is not available';
+
+  @override
+  String get freeCallComingSoon =>
+      'Free in-app voice call feature is under development';
 }

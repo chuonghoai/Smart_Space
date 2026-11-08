@@ -1298,4 +1298,194 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get delegationStatusRevoked => 'Revoked';
+
+  @override
+  String get routeConversations => 'Messages';
+
+  @override
+  String get routeChatDetail => 'Conversation';
+
+  @override
+  String get conversations => 'Messages';
+
+  @override
+  String get quickAccessChat => 'Messages';
+
+  @override
+  String get roleClient => 'Resident';
+
+  @override
+  String get roleStaff => 'Staff';
+
+  @override
+  String get roleAdmin => 'Admin';
+
+  @override
+  String get staffNoPosition => 'Staff with no assigned position';
+
+  @override
+  String get chatInputHint => 'Type a message...';
+
+  @override
+  String chatDisabledNotice(String name) {
+    return 'You cannot message $name at this time';
+  }
+
+  @override
+  String get messageReporter => 'Message';
+
+  @override
+  String get emptyConversations => 'No conversations yet';
+
+  @override
+  String get emptyConversationsDesc =>
+      'Conversations with residents and colleagues will appear here.';
+
+  @override
+  String get emptyMessages => 'No messages yet. Start chatting!';
+
+  @override
+  String get errorLoadConversations => 'Could not load conversations';
+
+  @override
+  String get errorLoadMessages => 'Could not load messages';
+
+  @override
+  String get sendMessageFailed => 'Failed to send message, tap to retry';
+
+  @override
+  String get anonymousPerson => 'Anonymous User';
+
+  @override
+  String get filterClient => 'Resident';
+
+  @override
+  String get filterStaff => 'Staff';
+
+  @override
+  String get filterAdmin => 'Admin';
+
+  @override
+  String get sendAction => 'Send';
+
+  @override
+  String get callClient => 'Call';
+
+  @override
+  String get noPhoneNumber => 'No phone number available';
+
+  @override
+  String get searchConversations => 'Search by name, phone, email...';
+
+  @override
+  String get otherUsers => 'Other users';
+
+  @override
+  String get startConversation => 'Start conversation';
+
+  @override
+  String get noUsersFound => 'No users found';
+
+  @override
+  String get filterPosition => 'Positions';
+
+  @override
+  String get filterByPosition => 'Filter by position';
+
+  @override
+  String get apply => 'Apply';
+
+  @override
+  String get clearFilter => 'Clear filter';
+
+  @override
+  String get noPositionsAvailable => 'No positions available';
+
+  @override
+  String positionSelectedCount(int count) {
+    return '$count positions';
+  }
+
+  @override
+  String get routeConversationInfo => 'Conversation Info';
+
+  @override
+  String get conversationInfoTitle => 'Conversation Info';
+
+  @override
+  String get activeReportsSection => 'Active Reports';
+
+  @override
+  String activeReportsCount(int count) {
+    return '$count active reports';
+  }
+
+  @override
+  String get allReportsProcessed => 'All reports have been processed';
+
+  @override
+  String get conversationClosedNotice =>
+      'Conversation closed as all reports have been processed';
+
+  @override
+  String get conversationActiveNotice => 'Conversation is currently active';
+
+  @override
+  String get callButtonLabel => 'Call';
+
+  @override
+  String get videoCallButtonLabel => 'Video call';
+
+  @override
+  String get videoCallComingSoon => 'Video call feature is under development';
+
+  @override
+  String get cannotMakePhoneCall => 'Cannot initiate phone call';
+
+  @override
+  String get viewReportDetail => 'View Details';
+
+  @override
+  String get anonymousUserProtectionNote =>
+      'Contact info is protected for anonymous reports';
+
+  @override
+  String get conversationRefreshed =>
+      'Conversation info and messages refreshed successfully';
+
+  @override
+  String get conversationRefreshFailed =>
+      'Could not refresh conversation, please try again later';
+
+  @override
+  String get noActiveReportsInConversation =>
+      'No active reports in this conversation';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get conversationLockedBadge => 'Locked';
+
+  @override
+  String get callOptionsTitle => 'Call options';
+
+  @override
+  String get cellularCall => 'Cellular call';
+
+  @override
+  String get cellularCallDesc => 'Open default phone app';
+
+  @override
+  String get freeCall => 'Free in-app voice call';
+
+  @override
+  String get comingSoon => 'Coming soon';
+
+  @override
+  String get phoneNotAvailable => 'Phone number is not available';
+
+  @override
+  String get freeCallComingSoon =>
+      'Free in-app voice call feature is under development';
 }

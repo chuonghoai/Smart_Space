@@ -9,6 +9,7 @@ import 'package:smartspace_admin/ui/components/top_bar.dart';
 class AppLayout extends StatefulWidget {
   final Widget child;
   final PreferredSizeWidget? customAppBar;
+  final bool showAppBar;
   final bool showDrawer;
   final Widget? floatingActionButton;
   final Widget? bottomNavigationBar;
@@ -17,6 +18,7 @@ class AppLayout extends StatefulWidget {
     super.key,
     required this.child,
     this.customAppBar,
+    this.showAppBar = true,
     this.showDrawer = true,
     this.floatingActionButton,
     this.bottomNavigationBar,
@@ -40,7 +42,9 @@ class _AppLayoutState extends State<AppLayout>
     // Mobile hoặc Web thu nhỏ khung hình (< 850px) → Drawer layout giữ nguyên như Mobile
     if (!kIsWeb || !isDesktop) {
       return Scaffold(
-        appBar: widget.customAppBar ?? const TopBar(showMenuButton: true),
+        appBar: widget.showAppBar
+            ? (widget.customAppBar ?? const TopBar(showMenuButton: true))
+            : widget.customAppBar,
         drawer: widget.showDrawer ? const Sidebar() : null,
         floatingActionButton: widget.floatingActionButton,
         bottomNavigationBar: widget.bottomNavigationBar,
@@ -110,7 +114,8 @@ class _AppLayoutState extends State<AppLayout>
             child: Column(
               children: [
                 // Top bar
-                widget.customAppBar ?? const TopBar(showMenuButton: false),
+                if (widget.showAppBar)
+                  widget.customAppBar ?? const TopBar(showMenuButton: false),
                 // Content
                 Expanded(child: widget.child),
                 // Bottom navigation / action bar
