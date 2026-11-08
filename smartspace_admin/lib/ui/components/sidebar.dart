@@ -5,6 +5,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_shared/features/auth/services/auth_service.dart';
 import 'package:smartspace_admin/features/notifications/providers/notification_provider.dart';
+import 'package:smartspace_admin/features/chat/providers/admin_conversations_provider.dart';
 import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/app_router.dart';
@@ -28,6 +29,7 @@ class Sidebar extends ConsumerWidget {
     final theme = Theme.of(context);
     final notificationState = ref.watch(notificationProvider);
     final unreadCount = notificationState.countModel?.notifNumber ?? 0;
+    final chatUnreadCount = ref.watch(adminChatTotalUnreadProvider);
     final currentPath = _getCurrentPath(context);
 
     return Drawer(
@@ -130,6 +132,36 @@ class Sidebar extends ConsumerWidget {
                       Navigator.pop(context);
                       if (currentPath != RouterPath.notifications) {
                         context.push(RouterPath.notifications);
+                      }
+                    },
+                  ),
+                  _SidebarItem(
+                    icon: Icons.chat_bubble_outline_rounded,
+                    label: l10n.conversations,
+                    trailing: chatUnreadCount > 0
+                        ? Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              chatUnreadCount > 99 ? '99+' : chatUnreadCount.toString(),
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.onPrimary,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          )
+                        : null,
+                    isSelected: currentPath == RouterPath.conversations,
+                    onTap: () {
+                      Navigator.pop(context);
+                      if (currentPath != RouterPath.conversations) {
+                        context.push(RouterPath.conversations);
                       }
                     },
                   ),
@@ -359,6 +391,7 @@ class WebSidebar extends ConsumerWidget {
     final theme = Theme.of(context);
     final notificationState = ref.watch(notificationProvider);
     final unreadCount = notificationState.countModel?.notifNumber ?? 0;
+    final chatUnreadCount = ref.watch(adminChatTotalUnreadProvider);
     final currentPath = _getCurrentPath(context);
 
     return Column(
@@ -445,6 +478,18 @@ class WebSidebar extends ConsumerWidget {
                 onTap: () {
                   if (currentPath != RouterPath.notifications) {
                     context.push(RouterPath.notifications);
+                  }
+                },
+              ),
+              _WebSidebarItem(
+                icon: Icons.chat_bubble_outline_rounded,
+                label: l10n.conversations,
+                isExpanded: isExpanded,
+                isSelected: currentPath == RouterPath.conversations,
+                badge: chatUnreadCount > 0 ? chatUnreadCount : null,
+                onTap: () {
+                  if (currentPath != RouterPath.conversations) {
+                    context.push(RouterPath.conversations);
                   }
                 },
               ),

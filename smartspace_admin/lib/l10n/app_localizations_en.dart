@@ -538,7 +538,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get reporterInfoSection => 'Reporter';
 
   @override
-  String get anonymousUser => 'Anonymous';
+  String get anonymousUser => 'Anonymous User';
 
   @override
   String get anonymousDescription =>
@@ -756,7 +756,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get workloadChart => 'Workload Distribution';
 
   @override
-  String get activeStaff => 'Active';
+  String get activeStaff => 'Staff';
 
   @override
   String get blockedStaff => 'Blocked';
@@ -1943,4 +1943,97 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get locationServiceDisabled => 'Location services disabled';
+
+  @override
+  String get routeConversations => 'Conversations';
+
+  @override
+  String get routeChatDetail => 'Chat Detail';
+
+  @override
+  String get conversations => 'Conversations';
+
+  @override
+  String get messages => 'Messages';
+
+  @override
+  String get noConversations => 'No conversations yet';
+
+  @override
+  String get noConversationsSub =>
+      'New conversations will appear here when chats begin.';
+
+  @override
+  String get searchConversationsPlaceholder => 'Search by name or content...';
+
+  @override
+  String get filterRoleAll => 'All';
+
+  @override
+  String get filterRoleClient => 'Resident';
+
+  @override
+  String get filterRoleStaff => 'Staff';
+
+  @override
+  String get filterRoleAdmin => 'Admin';
+
+  @override
+  String get filterPosition => 'Position';
+
+  @override
+  String get filterPositionAll => 'All positions';
+
+  @override
+  String get filterPositionSheetTitle => 'Filter by Staff Position';
+
+  @override
+  String get applyFilter => 'Apply';
+
+  @override
+  String get resetFilter => 'Reset';
+
+  @override
+  String get cannotMessageClientTitle => 'Cannot Message Resident Directly';
+
+  @override
+  String get cannotMessageClientMessage =>
+      'Administrators cannot initiate direct messages with residents outside the report resolution workflow. You may call the resident directly or communicate via the assigned staff.';
+
+  @override
+  String get phoneNotAvailable => 'Phone number is not available';
+
+  @override
+  String get cannotLaunchPhone => 'Cannot launch phone dialer';
+
+  @override
+  String get chatWithUser => 'Message';
+
+  @override
+  String get callUser => 'Call';
+
+  @override
+  String get conversationLockedNotice =>
+      'This conversation has ended because the report has been completed. The chat is in read-only mode.';
+
+  @override
+  String get messageInputPlaceholder => 'Type a message...';
+
+  @override
+  String get systemNotification => 'System notification';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get callStaff => 'Call staff';
+
+  @override
+  String get messageStaff => 'Message staff';
+
+  @override
+  String get callReporter => 'Call reporter';
+
+  @override
+  String get messageReporter => 'Message reporter';
 }

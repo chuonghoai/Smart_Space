@@ -536,7 +536,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get reporterInfoSection => 'Người gửi';
 
   @override
-  String get anonymousUser => 'Ẩn danh';
+  String get anonymousUser => 'Người dùng ẩn danh';
 
   @override
   String get anonymousDescription =>
@@ -754,7 +754,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get workloadChart => 'Khối lượng công việc';
 
   @override
-  String get activeStaff => 'Đang hoạt động';
+  String get activeStaff => 'Nhân viên';
 
   @override
   String get blockedStaff => 'Đã khoá';
@@ -823,7 +823,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get clearFilters => 'Xóa bộ lọc';
 
   @override
-  String get reporter => 'Người gửi';
+  String get reporter => 'Người phản ánh';
 
   @override
   String get reportIdShort => 'Mã';
@@ -1935,4 +1935,98 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get locationServiceDisabled => 'Dịch vụ định vị đang tắt';
+
+  @override
+  String get routeConversations => 'Hội thoại';
+
+  @override
+  String get routeChatDetail => 'Chi tiết tin nhắn';
+
+  @override
+  String get conversations => 'Hội thoại';
+
+  @override
+  String get messages => 'Tin nhắn';
+
+  @override
+  String get noConversations => 'Chưa có hội thoại nào';
+
+  @override
+  String get noConversationsSub =>
+      'Hội thoại mới sẽ xuất hiện tại đây khi bắt đầu trao đổi.';
+
+  @override
+  String get searchConversationsPlaceholder =>
+      'Tìm kiếm theo tên hoặc nội dung...';
+
+  @override
+  String get filterRoleAll => 'Tất cả';
+
+  @override
+  String get filterRoleClient => 'Cư dân';
+
+  @override
+  String get filterRoleStaff => 'Nhân viên';
+
+  @override
+  String get filterRoleAdmin => 'Quản trị viên';
+
+  @override
+  String get filterPosition => 'Vị trí';
+
+  @override
+  String get filterPositionAll => 'Tất cả vị trí';
+
+  @override
+  String get filterPositionSheetTitle => 'Lọc theo chức vụ nhân viên';
+
+  @override
+  String get applyFilter => 'Áp dụng';
+
+  @override
+  String get resetFilter => 'Đặt lại';
+
+  @override
+  String get cannotMessageClientTitle => 'Không thể nhắn tin trực tiếp';
+
+  @override
+  String get cannotMessageClientMessage =>
+      'Quản trị viên không thể tự ý gửi tin nhắn riêng cho cư dân ngoài quy trình xử lý phản ánh. Bạn có thể gọi điện thoại trực tiếp hoặc trao đổi qua nhân viên xử lý.';
+
+  @override
+  String get phoneNotAvailable => 'Số điện thoại không khả dụng';
+
+  @override
+  String get cannotLaunchPhone => 'Không thể khởi chạy ứng dụng gọi điện thoại';
+
+  @override
+  String get chatWithUser => 'Nhắn tin';
+
+  @override
+  String get callUser => 'Gọi điện';
+
+  @override
+  String get conversationLockedNotice =>
+      'Hội thoại này đã kết thúc do phản ánh đã hoàn thành xử lý. Khung chat đang ở chế độ chỉ đọc.';
+
+  @override
+  String get messageInputPlaceholder => 'Nhập tin nhắn...';
+
+  @override
+  String get systemNotification => 'Thông báo hệ thống';
+
+  @override
+  String get yesterday => 'Hôm qua';
+
+  @override
+  String get callStaff => 'Gọi cho nhân viên';
+
+  @override
+  String get messageStaff => 'Nhắn tin cho nhân viên';
+
+  @override
+  String get callReporter => 'Gọi cho người phản ánh';
+
+  @override
+  String get messageReporter => 'Nhắn tin cho người phản ánh';
 }

@@ -49,6 +49,7 @@ void main() async {
 
   WsServicesRegistry.register(TestWsService());
   WsServicesRegistry.register(NotificationWsService());
+  WsServicesRegistry.register(chatWsService);
 
   runApp(const ProviderScope(child: SmartSpaceAdminApp()));
 }
