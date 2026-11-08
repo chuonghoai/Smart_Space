@@ -37,3 +37,4 @@ class ChatLocalStorageService {
     } catch (_) {}
   }
 }
+

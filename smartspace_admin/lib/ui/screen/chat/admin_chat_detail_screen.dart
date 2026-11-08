@@ -327,3 +327,4 @@ class _AdminChatDetailScreenState extends ConsumerState<AdminChatDetailScreen> {
     );
   }
 }
+

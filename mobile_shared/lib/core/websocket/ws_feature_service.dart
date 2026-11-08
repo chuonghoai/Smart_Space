@@ -50,3 +50,4 @@ class WsServicesRegistry {
     _services.clear();
   }
 }
+

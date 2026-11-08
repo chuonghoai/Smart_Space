@@ -210,3 +210,4 @@ class ChatApiService {
 }
 
 final chatApiService = ChatApiService();
+

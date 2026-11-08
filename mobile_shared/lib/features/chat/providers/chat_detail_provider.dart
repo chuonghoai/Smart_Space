@@ -430,3 +430,4 @@ final chatDetailProvider =
     return ChatDetailNotifier(conversationId: conversationId);
   },
 );
+

@@ -200,3 +200,4 @@ final clientConversationsProvider =
 final clientChatTotalUnreadProvider = Provider<int>((ref) {
   return ref.watch(clientConversationsProvider.select((s) => s.totalUnreadCount));
 });
+

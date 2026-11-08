@@ -56,3 +56,4 @@ class LinkedReportModel {
     'needsRehandling': needsRehandling,
   };
 }
+

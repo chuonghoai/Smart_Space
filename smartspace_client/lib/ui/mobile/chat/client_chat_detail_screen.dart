@@ -378,3 +378,4 @@ class _ClientChatDetailScreenState extends ConsumerState<ClientChatDetailScreen>
     );
   }
 }
+

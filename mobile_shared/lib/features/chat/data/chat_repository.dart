@@ -220,3 +220,4 @@ class ChatRepositoryImpl implements ChatRepository {
 
 final chatRepository = ChatRepositoryImpl();
 final chatRepositoryProvider = Provider<ChatRepository>((ref) => chatRepository);
+

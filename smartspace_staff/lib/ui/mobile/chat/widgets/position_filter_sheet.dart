@@ -146,9 +146,9 @@ class _PositionFilterSheetState extends State<PositionFilterSheet> {
                             color: theme.colorScheme.onSurface,
                           ),
                         ),
-                        subtitle: (pos.code != null && pos.code!.isNotEmpty)
+                        subtitle: (pos.code.isNotEmpty)
                             ? Text(
-                                pos.code!,
+                                pos.code,
                                 style: theme.textTheme.labelSmall?.copyWith(
                                   color: theme.colorScheme.onSurfaceVariant,
                                 ),
