@@ -1173,9 +1173,34 @@ class AppLocalizationsVi extends AppLocalizations {
       'Tính năng gọi miễn phí qua internet đang được phát triển';
 
   @override
-  String get searchMyReportsPlaceholder =>
+  String get searchReportsPlaceholder =>
       'Tìm theo tiêu đề, mô tả hoặc địa chỉ...';
 
   @override
   String get noMatchingReports => 'Không tìm thấy phản ánh phù hợp';
+
+  @override
+  String get sortLabel => 'Sắp xếp';
+
+  @override
+  String get clearFilters => 'Xoá lọc';
+
+  @override
+  String resultsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count kết quả',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get nearbyLocationUnavailable =>
+      'Không lấy được vị trí của bạn. Đang hiển thị phản ánh mới nhất.';
+
+  @override
+  String filterSelectedTooltip(Object label, Object value) {
+    return '$label: $value';
+  }
 }

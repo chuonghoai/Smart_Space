@@ -1181,9 +1181,35 @@ class AppLocalizationsEn extends AppLocalizations {
       'Free in-app voice call feature is under development';
 
   @override
-  String get searchMyReportsPlaceholder =>
+  String get searchReportsPlaceholder =>
       'Search by title, description or address...';
 
   @override
   String get noMatchingReports => 'No matching reports';
+
+  @override
+  String get sortLabel => 'Sort';
+
+  @override
+  String get clearFilters => 'Clear filters';
+
+  @override
+  String resultsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count results',
+      one: '1 result',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get nearbyLocationUnavailable =>
+      'Couldn\'t get your location. Showing the latest reports instead.';
+
+  @override
+  String filterSelectedTooltip(Object label, Object value) {
+    return '$label: $value';
+  }
 }

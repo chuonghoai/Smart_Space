@@ -2312,17 +2312,47 @@ abstract class AppLocalizations {
   /// **'Free in-app voice call feature is under development'**
   String get freeCallComingSoon;
 
-  /// No description provided for @searchMyReportsPlaceholder.
+  /// No description provided for @searchReportsPlaceholder.
   ///
   /// In en, this message translates to:
   /// **'Search by title, description or address...'**
-  String get searchMyReportsPlaceholder;
+  String get searchReportsPlaceholder;
 
   /// No description provided for @noMatchingReports.
   ///
   /// In en, this message translates to:
   /// **'No matching reports'**
   String get noMatchingReports;
+
+  /// No description provided for @sortLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort'**
+  String get sortLabel;
+
+  /// No description provided for @clearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filters'**
+  String get clearFilters;
+
+  /// No description provided for @resultsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 result} other{{count} results}}'**
+  String resultsCount(int count);
+
+  /// No description provided for @nearbyLocationUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t get your location. Showing the latest reports instead.'**
+  String get nearbyLocationUnavailable;
+
+  /// No description provided for @filterSelectedTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'{label}: {value}'**
+  String filterSelectedTooltip(Object label, Object value);
 }
 
 class _AppLocalizationsDelegate

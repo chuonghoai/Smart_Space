@@ -449,6 +449,24 @@
   "comingSoon": "Sắp ra mắt",
   "phoneNotAvailable": "Số điện thoại không khả dụng",
   "freeCallComingSoon": "Tính năng gọi miễn phí qua internet đang được phát triển",
-  "searchMyReportsPlaceholder": "Tìm theo tiêu đề, mô tả hoặc địa chỉ...",
-  "noMatchingReports": "Không tìm thấy phản ánh phù hợp"
+  "searchReportsPlaceholder": "Tìm theo tiêu đề, mô tả hoặc địa chỉ...",
+  "noMatchingReports": "Không tìm thấy phản ánh phù hợp",
+  "sortLabel": "Sắp xếp",
+  "clearFilters": "Xoá lọc",
+  "resultsCount": "{count, plural, other{{count} kết quả}}",
+  "@resultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nearbyLocationUnavailable": "Không lấy được vị trí của bạn. Đang hiển thị phản ánh mới nhất.",
+  "filterSelectedTooltip": "{label}: {value}",
+  "@filterSelectedTooltip": {
+    "placeholders": {
+      "label": {},
+      "value": {}
+    }
+  }
 }
