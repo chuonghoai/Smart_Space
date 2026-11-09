@@ -2365,6 +2365,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'A date range…'**
   String get pickDateRange;
+
+  /// No description provided for @notificationFilterUnread.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread'**
+  String get notificationFilterUnread;
+
+  /// No description provided for @notificationFilterUnreadCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Unread ({count})'**
+  String notificationFilterUnreadCount(String count);
+
+  /// No description provided for @allNotificationsRead.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re all caught up'**
+  String get allNotificationsRead;
+
+  /// No description provided for @viewAllNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'View all notifications'**
+  String get viewAllNotifications;
 }
 
 class _AppLocalizationsDelegate

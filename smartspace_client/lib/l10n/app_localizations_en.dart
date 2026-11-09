@@ -1218,4 +1218,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pickDateRange => 'A date range…';
+
+  @override
+  String get notificationFilterUnread => 'Unread';
+
+  @override
+  String notificationFilterUnreadCount(String count) {
+    return 'Unread ($count)';
+  }
+
+  @override
+  String get allNotificationsRead => 'You\'re all caught up';
+
+  @override
+  String get viewAllNotifications => 'View all notifications';
 }

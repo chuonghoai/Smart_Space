@@ -470,5 +470,16 @@
     }
   },
   "pickSingleDate": "A specific day…",
-  "pickDateRange": "A date range…"
+  "pickDateRange": "A date range…",
+  "notificationFilterUnread": "Unread",
+  "notificationFilterUnreadCount": "Unread ({count})",
+  "@notificationFilterUnreadCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "allNotificationsRead": "You're all caught up",
+  "viewAllNotifications": "View all notifications"
 }
