@@ -42,6 +42,7 @@ import com.vn.smart_space.repository.InvalidatedTokenRepository;
 import com.vn.smart_space.repository.RefreshTokenSessionRepository;
 import com.vn.smart_space.repository.UserRepository;
 import com.vn.smart_space.service.jwt.IJwtService;
+import com.vn.smart_space.service.jwt.JwtService;
 import com.vn.smart_space.service.mail.IMailService;
 import com.vn.smart_space.utils.OtpGenerator;
 
@@ -68,6 +69,15 @@ public class AuthenticationService implements IAuthenticationService {
     @Value("${google.client-id}")
     private String googleClientId;
 
+    /**
+     * Cờ Redis đánh dấu user bị khóa để từ chối ngay các access token đã cấp trước đó.
+     * Chỉ cần sống lâu hơn access token (refresh/login đã kiểm tra status từ DB),
+     * nên TTL = thời hạn access token + 1 phút dự phòng lệch đồng hồ.
+     */
+    private static final String BLOCKED_USER_KEY_PREFIX = "blocked_user:";
+    private static final Duration BLOCKED_USER_MARKER_TTL =
+            Duration.ofMinutes(JwtService.ACCESS_TOKEN_TTL_MINUTES + 1);
+
     // Introspect Token
     @Override
     public IntrospectResponse introspect(IntrospectRequest request) {
@@ -79,6 +89,12 @@ public class AuthenticationService implements IAuthenticationService {
             // Check blacklist
             String jwtId = signedJWT.getJWTClaimsSet().getJWTID();
             if (invalidatedTokenRepository.existsById(jwtId)) {
+                isValid = false;
+            }
+
+            // Check tài khoản vừa bị khóa (token cấp trước thời điểm khóa vẫn còn hạn)
+            Object userId = signedJWT.getJWTClaimsSet().getClaim("userId");
+            if (isValid && userId != null && isUserAccessRevoked(userId.toString())) {
                 isValid = false;
             }
         } catch (Exception e) {
@@ -100,6 +116,9 @@ public class AuthenticationService implements IAuthenticationService {
         if (!isPasswordMatch) {
             throw new BadRequestException("auth.invalid_credentials");
         }
+
+        // Kiểm tra sau mật khẩu để không tiết lộ trạng thái tài khoản cho người không có credentials
+        assertNotBlocked(user);
 
         if (request.getLanguage() != null && !request.getLanguage().isBlank()) {
             user.setLanguage(request.getLanguage());
@@ -158,6 +177,7 @@ public class AuthenticationService implements IAuthenticationService {
         // Find or create User
         User user = userRepository.findByEmailAndRole(email, request.getRole())
                 .map(existingUser -> {
+                    assertNotBlocked(existingUser);
                     if (request.getLanguage() != null && !request.getLanguage().isBlank()) {
                         existingUser.setLanguage(request.getLanguage());
                         return userRepository.save(existingUser);
@@ -251,6 +271,12 @@ public class AuthenticationService implements IAuthenticationService {
                             "user.not_found"));
 
             List<RefreshTokenSession> sessions = sessionRepository.findByUserId(user.getId());
+
+            // Tài khoản bị khóa → thu hồi toàn bộ phiên, không cấp token mới
+            if (user.getStatus() == EUserStatus.blocked) {
+                sessionRepository.deleteAll(sessions);
+                throw new UnauthorizedException("auth.account.blocked");
+            }
             RefreshTokenSession currentSession = sessions.stream()
                 .filter(s -> s.getRefreshToken().equals(refreshToken))
                 .findFirst()
@@ -302,6 +328,27 @@ public class AuthenticationService implements IAuthenticationService {
     public void revokeSession(String userId, String deviceId) {
         String key = userId + ":" + deviceId;
         sessionRepository.deleteById(key);
+    }
+
+    @Override
+    public void revokeUserAccess(String userId) {
+        sessionRepository.deleteAll(sessionRepository.findByUserId(userId));
+        stringRedisTemplate.opsForValue().set(BLOCKED_USER_KEY_PREFIX + userId, "1", BLOCKED_USER_MARKER_TTL);
+    }
+
+    @Override
+    public void restoreUserAccess(String userId) {
+        stringRedisTemplate.delete(BLOCKED_USER_KEY_PREFIX + userId);
+    }
+
+    private boolean isUserAccessRevoked(String userId) {
+        return Boolean.TRUE.equals(stringRedisTemplate.hasKey(BLOCKED_USER_KEY_PREFIX + userId));
+    }
+
+    private void assertNotBlocked(User user) {
+        if (user.getStatus() == EUserStatus.blocked) {
+            throw new BadRequestException("auth.account.blocked");
+        }
     }
 
     @Override

@@ -43,6 +43,7 @@ import com.vn.smart_space.repository.ActivityHistoryRepository;
 import com.vn.smart_space.repository.PositionRepository;
 import com.vn.smart_space.repository.ReportRepository;
 import com.vn.smart_space.repository.UserRepository;
+import com.vn.smart_space.service.auth.IAuthenticationService;
 import com.vn.smart_space.service.mail.IMailService;
 import com.vn.smart_space.utils.PasswordGenerator;
 import com.vn.smart_space.utils.TrendBucketHelper;
@@ -67,6 +68,7 @@ public class StaffServiceImpl implements IStaffService {
         PositionRepository positionRepository;
         PasswordEncoder passwordEncoder;
         IMailService mailService;
+        IAuthenticationService authenticationService;
 
         @Override
         public List<StaffResponse> getStaffs() {
@@ -174,6 +176,13 @@ public class StaffServiceImpl implements IStaffService {
 
                 user.setStatus(newStatus);
                 userRepository.save(user);
+
+                // Khóa → đá mọi phiên đăng nhập ngay lập tức; mở khóa → gỡ cờ chặn
+                if (newStatus == EUserStatus.blocked) {
+                        authenticationService.revokeUserAccess(user.getId());
+                } else {
+                        authenticationService.restoreUserAccess(user.getId());
+                }
 
                 // Ghi Log
                 User admin = findAdminOrNull(adminId);
