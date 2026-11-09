@@ -54,10 +54,35 @@ public interface ReportRepository extends JpaRepository<Report, String> {
 
         long countByStatus(EReportStatus status);
 
-        // Get My Reports For Client
-        List<Report> findByUserIdOrderByCreatedAtDesc(String userId, Limit limit);
-        List<Report> findByUserIdAndStatusOrderByCreatedAtDesc(String userId, EReportStatus status, Limit limit);
-        List<Report> findByUserIdAndIsReviewResolvedFalseOrderByCreatedAtDesc(String userId, Limit limit);
+        // Client "My reports": newest first, optional status / re-handling / keyword (title, description, address).
+        // status null = no status filter; rehandling = true keeps only reports the owner marked unresolved.
+        @Query(value = "SELECT r FROM Report r WHERE r.user.id = :userId " +
+                        "AND (:status IS NULL OR r.status = :status) " +
+                        "AND (:rehandling = false OR r.isReviewResolved = false) " +
+                        "AND (:search IS NULL OR " +
+                        "     LOWER(r.title) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+                        "     LOWER(r.description) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+                        "     LOWER(r.address) LIKE LOWER(CONCAT('%', :search, '%'))) " +
+                        "ORDER BY r.createdAt DESC, r.id DESC",
+                        countQuery = "SELECT COUNT(r) FROM Report r WHERE r.user.id = :userId " +
+                                        "AND (:status IS NULL OR r.status = :status) " +
+                                        "AND (:rehandling = false OR r.isReviewResolved = false) " +
+                                        "AND (:search IS NULL OR " +
+                                        "     LOWER(r.title) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+                                        "     LOWER(r.description) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+                                        "     LOWER(r.address) LIKE LOWER(CONCAT('%', :search, '%')))")
+        Page<Report> findMyReports(
+                        @Param("userId") String userId,
+                        @Param("status") EReportStatus status,
+                        @Param("rehandling") boolean rehandling,
+                        @Param("search") String search,
+                        Pageable pageable);
+
+        // Client "My reports" summary card: [status, count] over all of the owner's reports
+        @Query("SELECT r.status, COUNT(r) FROM Report r WHERE r.user.id = :userId GROUP BY r.status")
+        List<Object[]> countMyReportsGroupByStatus(@Param("userId") String userId);
+
+        long countByUserIdAndIsReviewResolvedFalse(String userId);
 
         // Count Report Processing For Staff
         @Query("SELECT r.assignedStaff.id, COUNT(r) FROM Report r " +

@@ -1171,4 +1171,11 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get freeCallComingSoon =>
       'Tính năng gọi miễn phí qua internet đang được phát triển';
+
+  @override
+  String get searchMyReportsPlaceholder =>
+      'Tìm theo tiêu đề, mô tả hoặc địa chỉ...';
+
+  @override
+  String get noMatchingReports => 'Không tìm thấy phản ánh phù hợp';
 }

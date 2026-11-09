@@ -4,6 +4,7 @@ import 'package:mobile_shared/core/constants/use_mock.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
 import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
 import 'package:smartspace_client/features/reports/models/map_reports_result.dart';
+import 'package:smartspace_client/features/reports/models/my_reports_page_model.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_client/features/reports/models/report_dto.dart';
@@ -26,8 +27,12 @@ class ReportService {
     return await reportRepo.getRecentReports();
   }
 
-  Future<ApiResponse<List<ReportModel>>> getMyReports({String? status, int limit = 50}) async {
-    return await reportRepo.getMyReports(status: status, limit: limit);
+  Future<ApiResponse<MyReportsPage>> getMyReports({String? status, String? search, int page = 1, int size = 20}) async {
+    return await reportRepo.getMyReports(status: status, search: search, page: page, size: size);
+  }
+
+  Future<ApiResponse<MyReportsSummary>> getMyReportsSummary() async {
+    return await reportRepo.getMyReportsSummary();
   }
 
   Future<ApiResponse<ReportModel>> createReport(ReportDto reportDto) async {

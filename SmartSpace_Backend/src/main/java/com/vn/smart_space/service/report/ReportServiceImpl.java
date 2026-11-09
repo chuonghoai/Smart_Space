@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -37,6 +38,7 @@ import com.vn.smart_space.dto.response.admin.ReportStatisticsResponse;
 import com.vn.smart_space.dto.response.admin.ReportTrendResponse;
 import com.vn.smart_space.dto.response.notification.NotificationEvent;
 import com.vn.smart_space.dto.response.report.MapReportsResponse;
+import com.vn.smart_space.dto.response.report.MyReportsSummaryResponse;
 import com.vn.smart_space.dto.response.report.NearbyReportItemResponse;
 import com.vn.smart_space.dto.response.report.ReportDetailResponse;
 import com.vn.smart_space.dto.response.report.ReportNearbyAlertResponse;
@@ -82,6 +84,8 @@ public class ReportServiceImpl implements IReportService {
     private static final int MAP_DEFAULT_LIMIT = 300;
     private static final int MAP_MAX_LIMIT = 500;
     private static final int MAP_PROCESSED_VISIBLE_DAYS = 30;
+    private static final int MY_REPORTS_MAX_PAGE_SIZE = 50;
+    private static final int MY_REPORTS_MAX_SEARCH_LENGTH = 100;
 
     @Override
     @Transactional(readOnly = true)
@@ -962,29 +966,59 @@ public class ReportServiceImpl implements IReportService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReportResponse> getMyReports(String userId, String status, int limit) {
-        int safeLimit = Math.max(1, Math.min(limit, 100));
-        EReportStatus reportStatus = null;
+    public PageResponse<ReportResponse> getMyReports(String userId, String status, String search, int page,
+            int size) {
+        int safePage = Math.max(1, page);
+        int safeSize = Math.max(1, Math.min(size, MY_REPORTS_MAX_PAGE_SIZE));
 
-        if (status != null && !status.trim().isEmpty()) {
+        // "rehandling" không phải EReportStatus: lọc theo is_review_resolved = false (mọi trạng thái)
+        String normalizedStatus = status != null ? status.trim().toLowerCase() : "";
+        boolean rehandling = "rehandling".equals(normalizedStatus);
+        EReportStatus reportStatus = null;
+        if (!rehandling && !normalizedStatus.isEmpty() && !"all".equals(normalizedStatus)) {
             try {
-                reportStatus = EReportStatus.valueOf(status.toLowerCase());
+                reportStatus = EReportStatus.valueOf(normalizedStatus);
             } catch (IllegalArgumentException e) {
                 log.warn("[MyReports] Invalid status filter: {}", status);
             }
         }
 
-        List<Report> reports;
-        if ("rehandling".equalsIgnoreCase(status)) {
-            reports = reportRepository.findByUserIdAndIsReviewResolvedFalseOrderByCreatedAtDesc(userId,
-                    Limit.of(safeLimit));
-        } else if (reportStatus == null) {
-            reports = reportRepository.findByUserIdOrderByCreatedAtDesc(userId, Limit.of(safeLimit));
-        } else {
-            reports = reportRepository.findByUserIdAndStatusOrderByCreatedAtDesc(userId, reportStatus,
-                    Limit.of(safeLimit));
+        String keyword = search != null ? search.trim() : "";
+        if (keyword.length() > MY_REPORTS_MAX_SEARCH_LENGTH) {
+            keyword = keyword.substring(0, MY_REPORTS_MAX_SEARCH_LENGTH);
         }
-        return reports.stream().map(this::mapToResponse).collect(Collectors.toList());
+
+        Page<Report> reportPage = reportRepository.findMyReports(userId, reportStatus, rehandling,
+                keyword.isEmpty() ? null : keyword, PageRequest.of(safePage - 1, safeSize));
+
+        return PageResponse.<ReportResponse>builder()
+                .currentPage(safePage)
+                .pageSize(safeSize)
+                .totalPages(reportPage.getTotalPages())
+                .totalElements(reportPage.getTotalElements())
+                .content(reportPage.getContent().stream().map(this::mapToResponse).collect(Collectors.toList()))
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MyReportsSummaryResponse getMyReportsSummary(String userId) {
+        Map<EReportStatus, Long> byStatus = new EnumMap<>(EReportStatus.class);
+        for (Object[] row : reportRepository.countMyReportsGroupByStatus(userId)) {
+            if (row[0] instanceof EReportStatus s && row[1] instanceof Number n) {
+                byStatus.put(s, n.longValue());
+            }
+        }
+        long total = byStatus.values().stream().mapToLong(Long::longValue).sum();
+
+        return MyReportsSummaryResponse.builder()
+                .total(total)
+                .pending(byStatus.getOrDefault(EReportStatus.pending, 0L))
+                .processing(byStatus.getOrDefault(EReportStatus.processing, 0L))
+                .processed(byStatus.getOrDefault(EReportStatus.processed, 0L))
+                .rejected(byStatus.getOrDefault(EReportStatus.rejected, 0L))
+                .rehandling(reportRepository.countByUserIdAndIsReviewResolvedFalse(userId))
+                .build();
     }
 
     @Override

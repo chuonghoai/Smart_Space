@@ -3,6 +3,7 @@ import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
 import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
 import 'package:smartspace_client/features/reports/models/map_reports_result.dart';
+import 'package:smartspace_client/features/reports/models/my_reports_page_model.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_client/features/reports/models/report_dto.dart';
@@ -146,9 +147,54 @@ class ReportRepoMock implements ReportRepo {
   }
 
   @override
-  Future<ApiResponse<List<ReportModel>>> getMyReports({String? status, int limit = 50}) async {
+  Future<ApiResponse<MyReportsPage>> getMyReports({String? status, String? search, int page = 1, int size = 20}) async {
     await Future.delayed(const Duration(seconds: 1));
-    List<ReportModel> mockData = [
+    var mockData = _myReportsMockData();
+
+    if (status == 'rehandling') {
+      mockData = mockData.where((r) => r.isReviewResolved == false).toList();
+    } else if (status != null) {
+      mockData = mockData.where((r) => r.status.name == status).toList();
+    }
+    final keyword = search?.trim().toLowerCase() ?? '';
+    if (keyword.isNotEmpty) {
+      mockData = mockData
+          .where((r) => r.title.toLowerCase().contains(keyword) || r.description.toLowerCase().contains(keyword))
+          .toList();
+    }
+
+    final totalPages = (mockData.length / size).ceil();
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: MyReportsPage(
+        items: mockData.skip((page - 1) * size).take(size).toList(),
+        totalPages: totalPages,
+      ),
+    );
+  }
+
+  @override
+  Future<ApiResponse<MyReportsSummary>> getMyReportsSummary() async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final data = _myReportsMockData();
+    int count(ReportStatus s) => data.where((r) => r.status == s).length;
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: MyReportsSummary(
+        total: data.length,
+        pending: count(ReportStatus.pending),
+        processing: count(ReportStatus.processing),
+        processed: count(ReportStatus.processed),
+        rejected: count(ReportStatus.rejected),
+        rehandling: data.where((r) => r.isReviewResolved == false).length,
+      ),
+    );
+  }
+
+  List<ReportModel> _myReportsMockData() {
+    return [
       ReportModel(
         id: 'm1',
         title: 'Đèn đường hỏng',
@@ -180,16 +226,6 @@ class ReportRepoMock implements ReportRepo {
         createdAt: DateTime.now().subtract(const Duration(days: 10)),
       ),
     ];
-
-    if (status != null) {
-      mockData = mockData.where((r) => r.status.name == status).toList();
-    }
-
-    return ApiResponse(
-      success: true,
-      message: 'Success',
-      data: mockData.take(limit).toList(),
-    );
   }
 
   @override

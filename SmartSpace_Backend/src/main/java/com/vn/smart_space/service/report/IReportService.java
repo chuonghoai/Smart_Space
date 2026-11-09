@@ -12,6 +12,7 @@ import com.vn.smart_space.dto.response.admin.ReportListResponse;
 import com.vn.smart_space.dto.response.admin.ReportStatisticsResponse;
 import com.vn.smart_space.dto.response.admin.ReportTrendResponse;
 import com.vn.smart_space.dto.response.report.MapReportsResponse;
+import com.vn.smart_space.dto.response.report.MyReportsSummaryResponse;
 import com.vn.smart_space.dto.response.report.ReportDetailResponse;
 import com.vn.smart_space.dto.response.report.ReportResponse;
 
@@ -44,7 +45,10 @@ public interface IReportService {
 
         ReportDetailResponse completeReport(String reportId, ReportCompleteRequest request, String staffId);
 
-        List<ReportResponse> getMyReports(String userId, String status, int limit);
+        // Client My Reports — paged, optional status ("rehandling" = owner marked unresolved) & keyword
+        PageResponse<ReportResponse> getMyReports(String userId, String status, String search, int page, int size);
+
+        MyReportsSummaryResponse getMyReportsSummary(String userId);
 
         // Dashboard statistics
         ReportStatisticsResponse getReportStatistics();

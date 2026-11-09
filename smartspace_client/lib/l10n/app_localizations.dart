@@ -2311,6 +2311,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Free in-app voice call feature is under development'**
   String get freeCallComingSoon;
+
+  /// No description provided for @searchMyReportsPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by title, description or address...'**
+  String get searchMyReportsPlaceholder;
+
+  /// No description provided for @noMatchingReports.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching reports'**
+  String get noMatchingReports;
 }
 
 class _AppLocalizationsDelegate

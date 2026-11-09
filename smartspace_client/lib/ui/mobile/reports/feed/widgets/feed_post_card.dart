@@ -57,7 +57,9 @@ class _FeedPostCardState extends State<FeedPostCard> {
                     backgroundColor: cs.secondaryContainer,
                     child: anonymous || widget.item.reporterAvatarUrl == null
                         ? Icon(
-                            anonymous ? Icons.visibility_off_outlined : Icons.person_outline,
+                            anonymous
+                                ? Icons.visibility_off_outlined
+                                : Icons.person_outline,
                             size: 20,
                             color: cs.onSecondaryContainer,
                           )
@@ -74,7 +76,9 @@ class _FeedPostCardState extends State<FeedPostCard> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          anonymous ? l10n.feedAnonymous : widget.item.reporterName!,
+                          anonymous
+                              ? l10n.feedAnonymous
+                              : widget.item.reporterName!,
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.titleSmall?.copyWith(
@@ -85,7 +89,9 @@ class _FeedPostCardState extends State<FeedPostCard> {
                         ),
                         Text(
                           _timeAgo(r.createdAt, l10n),
-                          style: theme.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: cs.onSurfaceVariant,
+                          ),
                         ),
                       ],
                     ),
@@ -135,7 +141,9 @@ class _FeedPostCardState extends State<FeedPostCard> {
                               r.description,
                               style: style,
                               maxLines: _expanded ? null : 3,
-                              overflow: _expanded ? null : TextOverflow.ellipsis,
+                              overflow: _expanded
+                                  ? null
+                                  : TextOverflow.ellipsis,
                             ),
                             if (!_expanded && tp.didExceedMaxLines)
                               GestureDetector(
@@ -179,7 +187,11 @@ class _FeedPostCardState extends State<FeedPostCard> {
                     if ((r.address ?? '').isNotEmpty) ...[
                       Padding(
                         padding: const EdgeInsets.only(top: 2),
-                        child: Icon(Icons.place_outlined, size: 16, color: cs.onSurfaceVariant),
+                        child: Icon(
+                          Icons.place_outlined,
+                          size: 16,
+                          color: cs.onSurfaceVariant,
+                        ),
                       ),
                       const SizedBox(width: 4),
                       Expanded(
@@ -187,7 +199,9 @@ class _FeedPostCardState extends State<FeedPostCard> {
                           r.address!,
                           maxLines: 2,
                           overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: cs.onSurfaceVariant,
+                          ),
                         ),
                       ),
                     ] else
@@ -195,7 +209,10 @@ class _FeedPostCardState extends State<FeedPostCard> {
                     if (r.distanceInMeters != null) ...[
                       const SizedBox(width: 8),
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 2,
+                        ),
                         decoration: BoxDecoration(
                           color: cs.secondaryContainer.withValues(alpha: 0.6),
                           borderRadius: BorderRadius.circular(8),
@@ -203,11 +220,17 @@ class _FeedPostCardState extends State<FeedPostCard> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.near_me_outlined, size: 12, color: cs.onSecondaryContainer),
+                            Icon(
+                              Icons.near_me_outlined,
+                              size: 12,
+                              color: cs.onSecondaryContainer,
+                            ),
                             const SizedBox(width: 4),
                             Text(
                               '${(r.distanceInMeters! / 1000).toStringAsFixed(1)} ${l10n.unitKilometer}',
-                              style: theme.textTheme.labelSmall?.copyWith(color: cs.onSecondaryContainer),
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: cs.onSecondaryContainer,
+                              ),
                             ),
                           ],
                         ),
@@ -216,8 +239,7 @@ class _FeedPostCardState extends State<FeedPostCard> {
                   ],
                 ),
               ),
-
-            // 5. Idea 2: Thanh tiến trình Segment Bar gọn nhẹ
+            // 5. Thanh tiến trình Segment Bar
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 14, 16, 8),
               child: _SegmentedProgressBar(status: r.status),
@@ -225,7 +247,7 @@ class _FeedPostCardState extends State<FeedPostCard> {
 
             Divider(height: 1, color: cs.outlineVariant.withValues(alpha: 0.5)),
 
-            // 6. Idea 3: Hàng nút tiện ích (Xem trên bản đồ & Chia sẻ)
+            // 6.Hàng nút tiện ích (Xem trên bản đồ & Chia sẻ)
             _CardUtilityBar(
               latitude: r.latitude,
               longitude: r.longitude,
@@ -271,9 +293,9 @@ class _SeverityChip extends StatelessWidget {
           Text(
             label,
             style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                  color: color,
-                  fontWeight: FontWeight.w600,
-                ),
+              color: color,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ],
       ),
@@ -281,7 +303,7 @@ class _SeverityChip extends StatelessWidget {
   }
 }
 
-/// Gallery ảnh chuẩn 16:9, hỗ trợ vuốt lướt ảnh và kèm huy hiệu kính mờ (Frosted Glass).
+/// Gallery ảnh 16:9
 class _Gallery16x9 extends StatefulWidget {
   final List<String> urls;
 
@@ -297,10 +319,8 @@ class _Gallery16x9State extends State<_Gallery16x9> {
   void _openViewer(int index) {
     Navigator.of(context).push(
       MaterialPageRoute(
-        builder: (_) => FullscreenImageViewer(
-          imageUrls: widget.urls,
-          initialIndex: index,
-        ),
+        builder: (_) =>
+            FullscreenImageViewer(imageUrls: widget.urls, initialIndex: index),
       ),
     );
   }
@@ -339,16 +359,24 @@ class _Gallery16x9State extends State<_Gallery16x9> {
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 4,
+                      ),
                       color: Colors.black.withValues(alpha: 0.4),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          const Icon(Icons.photo_library_outlined, size: 13, color: Colors.white),
+                          const Icon(
+                            Icons.photo_library_outlined,
+                            size: 13,
+                            color: Colors.white,
+                          ),
                           const SizedBox(width: 5),
                           Text(
                             '${_currentIndex + 1}/$total',
-                            style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                            style: Theme.of(context).textTheme.labelSmall
+                                ?.copyWith(
                                   color: Colors.white,
                                   fontWeight: FontWeight.w600,
                                 ),
@@ -370,14 +398,17 @@ class _Gallery16x9State extends State<_Gallery16x9> {
                   child: BackdropFilter(
                     filter: ImageFilter.blur(sigmaX: 8, sigmaY: 8),
                     child: Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 3,
+                      ),
                       color: Colors.black.withValues(alpha: 0.35),
                       child: Text(
                         l10n.feedPhotosCount(1),
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                              color: Colors.white70,
-                              fontSize: 10,
-                            ),
+                          color: Colors.white70,
+                          fontSize: 10,
+                        ),
                       ),
                     ),
                   ),
@@ -390,7 +421,7 @@ class _Gallery16x9State extends State<_Gallery16x9> {
   }
 }
 
-/// Thanh tiến trình Segment Bar gọn nhẹ (3 vạch ngang tinh tế + Trạng thái hiện tại).
+/// Thanh tiến trình Segment Bar (3 vạch ngang + Trạng thái hiện tại).
 class _SegmentedProgressBar extends StatelessWidget {
   final ReportStatus status;
 
@@ -428,13 +459,7 @@ class _SegmentedProgressBar extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Row(
-          children: [
-            buildSegment(1),
-            buildSegment(2),
-            buildSegment(3),
-          ],
-        ),
+        Row(children: [buildSegment(1), buildSegment(2), buildSegment(3)]),
         const SizedBox(height: 6),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -491,10 +516,15 @@ class _CardUtilityBar extends StatelessWidget {
   });
 
   Future<void> _openMap(BuildContext context) async {
-    final Uri url = Uri.parse('https://www.google.com/maps/search/?api=1&query=$latitude,$longitude');
+    final Uri url = Uri.parse(
+      'https://www.google.com/maps/search/?api=1&query=$latitude,$longitude',
+    );
     if (!await launchUrl(url, mode: LaunchMode.externalApplication)) {
       if (context.mounted) {
-        Toast.show(ToastType.warning, AppLocalizations.of(context)!.cannotOpenGoogleMapsError);
+        Toast.show(
+          ToastType.warning,
+          AppLocalizations.of(context)!.cannotOpenGoogleMapsError,
+        );
       }
     }
   }
@@ -537,7 +567,9 @@ class _CardUtilityBar extends StatelessWidget {
               ),
               style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
           ),
@@ -550,7 +582,11 @@ class _CardUtilityBar extends StatelessWidget {
           Expanded(
             child: TextButton.icon(
               onPressed: () => _shareReport(context),
-              icon: Icon(Icons.share_outlined, size: 18, color: cs.onSurfaceVariant),
+              icon: Icon(
+                Icons.share_outlined,
+                size: 18,
+                color: cs.onSurfaceVariant,
+              ),
               label: Text(
                 l10n.feedShare,
                 style: theme.textTheme.labelMedium?.copyWith(
@@ -560,7 +596,9 @@ class _CardUtilityBar extends StatelessWidget {
               ),
               style: TextButton.styleFrom(
                 padding: const EdgeInsets.symmetric(vertical: 8),
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
               ),
             ),
           ),

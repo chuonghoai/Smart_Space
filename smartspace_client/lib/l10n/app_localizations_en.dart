@@ -1179,4 +1179,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get freeCallComingSoon =>
       'Free in-app voice call feature is under development';
+
+  @override
+  String get searchMyReportsPlaceholder =>
+      'Search by title, description or address...';
+
+  @override
+  String get noMatchingReports => 'No matching reports';
 }
