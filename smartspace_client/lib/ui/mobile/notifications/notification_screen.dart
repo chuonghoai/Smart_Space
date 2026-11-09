@@ -4,6 +4,7 @@ import 'package:smartspace_client/features/notifications/providers/notification_
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/features/notifications/models/notification_model.dart';
 import 'package:smartspace_client/features/notifications/services/notification_router.dart';
+import 'package:smartspace_client/ui/mobile/notifications/widgets/notification_read_filter.dart';
 
 class NotificationScreen extends ConsumerStatefulWidget {
   const NotificationScreen({super.key});
@@ -152,29 +153,12 @@ class _NotificationScreenState extends ConsumerState<NotificationScreen> {
   /// Một hàng điều khiển: Tất cả / Chưa đọc. Số trên "Chưa đọc" là số badge — cùng tập thông báo
   /// mà bộ lọc trả về (thông báo cá nhân chưa đọc).
   Widget _buildReadFilter(BuildContext context, NotificationState state) {
-    final l10n = AppLocalizations.of(context)!;
-    final unread = state.countModel?.notifNumber ?? 0;
-
     return Padding(
       padding: const EdgeInsets.fromLTRB(16, 8, 16, 8),
-      child: Align(
-        alignment: AlignmentDirectional.centerStart,
-        child: SegmentedButton<bool>(
-          showSelectedIcon: false,
-          segments: [
-            ButtonSegment(value: false, label: Text(l10n.mapFilterAll)),
-            ButtonSegment(
-              value: true,
-              label: Text(
-                unread > 0
-                    ? l10n.notificationFilterUnreadCount(unread > 99 ? '99+' : '$unread')
-                    : l10n.notificationFilterUnread,
-              ),
-            ),
-          ],
-          selected: {state.unreadOnly},
-          onSelectionChanged: (selection) => ref.read(notificationProvider.notifier).setUnreadOnly(selection.first),
-        ),
+      child: NotificationReadFilter(
+        unreadOnly: state.unreadOnly,
+        unreadCount: state.countModel?.notifNumber ?? 0,
+        onChanged: ref.read(notificationProvider.notifier).setUnreadOnly,
       ),
     );
   }
