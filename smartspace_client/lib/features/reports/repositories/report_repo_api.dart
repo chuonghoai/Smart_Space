@@ -2,6 +2,7 @@ import 'package:smartspace_client/features/reports/models/report_density_model.d
 import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
+import 'package:smartspace_client/features/reports/models/feed_sort.dart';
 import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
 import 'package:smartspace_client/features/reports/models/map_reports_result.dart';
 import 'package:smartspace_client/features/reports/models/my_reports_page_model.dart';
@@ -71,7 +72,13 @@ class ReportRepoApi implements ReportRepo {
   }
 
   @override
-  Future<ApiResponse<MyReportsPage>> getMyReports({String? status, String? search, int page = 1, int size = 20}) async {
+  Future<ApiResponse<MyReportsPage>> getMyReports({
+    String? status,
+    EReportSeverity? severity,
+    String? search,
+    int page = 1,
+    int size = 20,
+  }) async {
     final keyword = search?.trim();
     return await apiClient.get<MyReportsPage>(
       '/reports/my-reports',
@@ -79,6 +86,7 @@ class ReportRepoApi implements ReportRepo {
         'page': page,
         'size': size,
         'status': ?status,
+        'severity': ?severity?.name,
         if (keyword != null && keyword.isNotEmpty) 'search': keyword,
       },
       decoder: (json) {
@@ -127,13 +135,26 @@ class ReportRepoApi implements ReportRepo {
   }
 
   @override
-  Future<ApiResponse<ReportFeedPage>> getFeed({String? status, int page = 1, int size = 10, double? lat, double? lng}) async {
+  Future<ApiResponse<ReportFeedPage>> getFeed({
+    String? status,
+    EReportSeverity? severity,
+    String? search,
+    FeedSort sort = FeedSort.latest,
+    int page = 1,
+    int size = 10,
+    double? lat,
+    double? lng,
+  }) async {
+    final keyword = search?.trim();
     return await apiClient.get<ReportFeedPage>(
       '/reports/feed',
       queryParameters: {
         'page': page,
         'size': size,
+        'sort': sort.name,
         'status': ?status,
+        'severity': ?severity?.name,
+        if (keyword != null && keyword.isNotEmpty) 'search': keyword,
         if (lat != null && lng != null) 'user_lat': lat,
         if (lat != null && lng != null) 'user_long': lng,
       },

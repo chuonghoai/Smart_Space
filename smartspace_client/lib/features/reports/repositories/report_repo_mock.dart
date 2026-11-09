@@ -1,6 +1,7 @@
 import 'package:smartspace_client/features/reports/models/report_density_model.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
+import 'package:smartspace_client/features/reports/models/feed_sort.dart';
 import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
 import 'package:smartspace_client/features/reports/models/map_reports_result.dart';
 import 'package:smartspace_client/features/reports/models/my_reports_page_model.dart';
@@ -147,7 +148,13 @@ class ReportRepoMock implements ReportRepo {
   }
 
   @override
-  Future<ApiResponse<MyReportsPage>> getMyReports({String? status, String? search, int page = 1, int size = 20}) async {
+  Future<ApiResponse<MyReportsPage>> getMyReports({
+    String? status,
+    EReportSeverity? severity,
+    String? search,
+    int page = 1,
+    int size = 20,
+  }) async {
     await Future.delayed(const Duration(seconds: 1));
     var mockData = _myReportsMockData();
 
@@ -155,6 +162,9 @@ class ReportRepoMock implements ReportRepo {
       mockData = mockData.where((r) => r.isReviewResolved == false).toList();
     } else if (status != null) {
       mockData = mockData.where((r) => r.status.name == status).toList();
+    }
+    if (severity != null) {
+      mockData = mockData.where((r) => r.severity == severity).toList();
     }
     final keyword = search?.trim().toLowerCase() ?? '';
     if (keyword.isNotEmpty) {
@@ -170,6 +180,7 @@ class ReportRepoMock implements ReportRepo {
       data: MyReportsPage(
         items: mockData.skip((page - 1) * size).take(size).toList(),
         totalPages: totalPages,
+        totalElements: mockData.length,
       ),
     );
   }
@@ -271,7 +282,16 @@ class ReportRepoMock implements ReportRepo {
   }
 
   @override
-  Future<ApiResponse<ReportFeedPage>> getFeed({String? status, int page = 1, int size = 10, double? lat, double? lng}) async {
+  Future<ApiResponse<ReportFeedPage>> getFeed({
+    String? status,
+    EReportSeverity? severity,
+    String? search,
+    FeedSort sort = FeedSort.latest,
+    int page = 1,
+    int size = 10,
+    double? lat,
+    double? lng,
+  }) async {
     final detail = (await getReportDetail('f$page')).data!;
     return ApiResponse(
       success: true,
@@ -279,6 +299,7 @@ class ReportRepoMock implements ReportRepo {
       data: ReportFeedPage(
         items: [ReportFeedItem(report: detail, reporterName: 'Mock User')],
         totalPages: 1,
+        totalElements: 1,
       ),
     );
   }
