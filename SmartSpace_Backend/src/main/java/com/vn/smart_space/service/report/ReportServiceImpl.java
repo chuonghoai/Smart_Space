@@ -85,7 +85,7 @@ public class ReportServiceImpl implements IReportService {
     private static final int MAP_MAX_LIMIT = 500;
     private static final int MAP_PROCESSED_VISIBLE_DAYS = 30;
     private static final int MY_REPORTS_MAX_PAGE_SIZE = 50;
-    private static final int MY_REPORTS_MAX_SEARCH_LENGTH = 100;
+    private static final int CLIENT_MAX_SEARCH_LENGTH = 100;
 
     @Override
     @Transactional(readOnly = true)
@@ -338,22 +338,36 @@ public class ReportServiceImpl implements IReportService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<ReportDetailResponse> getFeed(String status, int page, int size, Double userLat,
-            Double userLong) {
+    public PageResponse<ReportDetailResponse> getFeed(String status, String severity, String search, String sort,
+            int page, int size, Double userLat, Double userLong) {
         int safePage = Math.max(1, page);
         int safeSize = Math.max(1, Math.min(size, 20));
         EReportStatus filter = null;
         if (status != null && !status.isBlank() && !"all".equalsIgnoreCase(status)) {
             try {
-                filter = EReportStatus.valueOf(status.toLowerCase());
+                filter = EReportStatus.valueOf(status.trim().toLowerCase());
             } catch (IllegalArgumentException ignored) {
             }
         }
         if (filter == EReportStatus.rejected) {
             filter = null;
         }
-        Page<Report> reportPage = reportRepository.findFeed(EReportStatus.rejected, filter,
-                PageRequest.of(safePage - 1, safeSize));
+        EReportSeverity severityFilter = parseClientSeverity(severity);
+        String keyword = normalizeClientKeyword(search);
+        PageRequest pageable = PageRequest.of(safePage - 1, safeSize);
+
+        // "Gần tôi" chỉ khi có toạ độ hợp lệ; thiếu/sai toạ độ thì về "Mới nhất"
+        boolean nearby = "nearby".equalsIgnoreCase(sort != null ? sort.trim() : null)
+                && isValidCoordinate(userLat, userLong);
+        Page<Report> reportPage;
+        if (nearby) {
+            double cosLat = Math.cos(Math.toRadians(userLat));
+            reportPage = reportRepository.findFeedNearby(EReportStatus.rejected, filter, severityFilter, keyword,
+                    userLat, userLong, cosLat * cosLat, pageable);
+        } else {
+            reportPage = reportRepository.findFeed(EReportStatus.rejected, filter, severityFilter, keyword,
+                    pageable);
+        }
         List<ReportDetailResponse> content = reportPage.getContent().stream().map(r -> {
             ReportDetailResponse res = toPublic(toDetail(r));
             if (userLat != null && userLong != null && r.getLatitude() != null && r.getLongitude() != null) {
@@ -966,8 +980,8 @@ public class ReportServiceImpl implements IReportService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<ReportResponse> getMyReports(String userId, String status, String search, int page,
-            int size) {
+    public PageResponse<ReportResponse> getMyReports(String userId, String status, String severity, String search,
+            int page, int size) {
         int safePage = Math.max(1, page);
         int safeSize = Math.max(1, Math.min(size, MY_REPORTS_MAX_PAGE_SIZE));
 
@@ -983,13 +997,8 @@ public class ReportServiceImpl implements IReportService {
             }
         }
 
-        String keyword = search != null ? search.trim() : "";
-        if (keyword.length() > MY_REPORTS_MAX_SEARCH_LENGTH) {
-            keyword = keyword.substring(0, MY_REPORTS_MAX_SEARCH_LENGTH);
-        }
-
-        Page<Report> reportPage = reportRepository.findMyReports(userId, reportStatus, rehandling,
-                keyword.isEmpty() ? null : keyword, PageRequest.of(safePage - 1, safeSize));
+        Page<Report> reportPage = reportRepository.findMyReports(userId, reportStatus, parseClientSeverity(severity),
+                rehandling, normalizeClientKeyword(search), PageRequest.of(safePage - 1, safeSize));
 
         return PageResponse.<ReportResponse>builder()
                 .currentPage(safePage)
@@ -998,6 +1007,36 @@ public class ReportServiceImpl implements IReportService {
                 .totalElements(reportPage.getTotalElements())
                 .content(reportPage.getContent().stream().map(this::mapToResponse).collect(Collectors.toList()))
                 .build();
+    }
+
+    /** Mức độ lọc từ Client; rỗng / "all" / giá trị lạ = không lọc. */
+    private EReportSeverity parseClientSeverity(String severity) {
+        if (severity == null || severity.isBlank() || "all".equalsIgnoreCase(severity.trim())) {
+            return null;
+        }
+        try {
+            return EReportSeverity.valueOf(severity.trim().toLowerCase());
+        } catch (IllegalArgumentException e) {
+            log.warn("[ClientReports] Invalid severity filter: {}", severity);
+            return null;
+        }
+    }
+
+    /** Từ khoá tìm kiếm từ Client: trim, cắt độ dài tối đa; rỗng = null (không lọc). */
+    private String normalizeClientKeyword(String search) {
+        if (search == null) {
+            return null;
+        }
+        String keyword = search.trim();
+        if (keyword.length() > CLIENT_MAX_SEARCH_LENGTH) {
+            keyword = keyword.substring(0, CLIENT_MAX_SEARCH_LENGTH);
+        }
+        return keyword.isEmpty() ? null : keyword;
+    }
+
+    private boolean isValidCoordinate(Double lat, Double lng) {
+        return lat != null && lng != null && !lat.isNaN() && !lng.isNaN()
+                && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
     }
 
     @Override
