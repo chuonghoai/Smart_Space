@@ -123,6 +123,21 @@ public class ReportFeedTest {
         }
     }
 
+    @Test
+    @DisplayName("Loc theo ngay: from = to = mot ngay chi tra ve phan anh tao trong dung ngay do")
+    void testFeed_SingleDayFilter() throws Exception {
+        JsonNode latest = content(get("/reports/feed?size=1&page=1"));
+        assumeTrue(latest.size() > 0, "Can it nhat 1 phan anh trong Bang tin");
+        String day = latest.get(0).get("created_at").asText().substring(0, 10); // yyyy-MM-dd
+
+        JsonNode results = content(get("/reports/feed?size=20&page=1&from=" + day + "&to=" + day));
+        assertTrue(results.size() > 0, "Ngay cua phan anh moi nhat phai co ket qua");
+        for (JsonNode item : results) {
+            assertTrue(item.get("created_at").asText().startsWith(day),
+                    "Phan anh ngoai ngay " + day + ": " + item.get("created_at").asText());
+        }
+    }
+
     private static String clientToken() throws Exception {
         JWTClaimsSet claims = new JWTClaimsSet.Builder()
                 .subject("user@gmail.com")

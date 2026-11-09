@@ -338,8 +338,8 @@ public class ReportServiceImpl implements IReportService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<ReportDetailResponse> getFeed(String status, String severity, String search, String sort,
-            int page, int size, Double userLat, Double userLong) {
+    public PageResponse<ReportDetailResponse> getFeed(String status, String severity, String search, String from,
+            String to, String sort, int page, int size, Double userLat, Double userLong) {
         int safePage = Math.max(1, page);
         int safeSize = Math.max(1, Math.min(size, 20));
         EReportStatus filter = null;
@@ -354,6 +354,7 @@ public class ReportServiceImpl implements IReportService {
         }
         EReportSeverity severityFilter = parseClientSeverity(severity);
         String keyword = normalizeClientKeyword(search);
+        ClientDateRange dates = parseClientDateRange(from, to);
         PageRequest pageable = PageRequest.of(safePage - 1, safeSize);
 
         // "Gần tôi" chỉ khi có toạ độ hợp lệ; thiếu/sai toạ độ thì về "Mới nhất"
@@ -363,10 +364,10 @@ public class ReportServiceImpl implements IReportService {
         if (nearby) {
             double cosLat = Math.cos(Math.toRadians(userLat));
             reportPage = reportRepository.findFeedNearby(EReportStatus.rejected, filter, severityFilter, keyword,
-                    userLat, userLong, cosLat * cosLat, pageable);
+                    dates.from(), dates.toExclusive(), userLat, userLong, cosLat * cosLat, pageable);
         } else {
             reportPage = reportRepository.findFeed(EReportStatus.rejected, filter, severityFilter, keyword,
-                    pageable);
+                    dates.from(), dates.toExclusive(), pageable);
         }
         List<ReportDetailResponse> content = reportPage.getContent().stream().map(r -> {
             ReportDetailResponse res = toPublic(toDetail(r));
@@ -981,7 +982,7 @@ public class ReportServiceImpl implements IReportService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<ReportResponse> getMyReports(String userId, String status, String severity, String search,
-            int page, int size) {
+            String from, String to, int page, int size) {
         int safePage = Math.max(1, page);
         int safeSize = Math.max(1, Math.min(size, MY_REPORTS_MAX_PAGE_SIZE));
 
@@ -997,8 +998,10 @@ public class ReportServiceImpl implements IReportService {
             }
         }
 
+        ClientDateRange dates = parseClientDateRange(from, to);
         Page<Report> reportPage = reportRepository.findMyReports(userId, reportStatus, parseClientSeverity(severity),
-                rehandling, normalizeClientKeyword(search), PageRequest.of(safePage - 1, safeSize));
+                rehandling, normalizeClientKeyword(search), dates.from(), dates.toExclusive(),
+                PageRequest.of(safePage - 1, safeSize));
 
         return PageResponse.<ReportResponse>builder()
                 .currentPage(safePage)
@@ -1023,6 +1026,39 @@ public class ReportServiceImpl implements IReportService {
     }
 
     /** Từ khoá tìm kiếm từ Client: trim, cắt độ dài tối đa; rỗng = null (không lọc). */
+    /** Khoảng ngày tạo phản ánh: [from, toExclusive); mỗi đầu null = không giới hạn. */
+    private record ClientDateRange(LocalDateTime from, LocalDateTime toExclusive) {
+    }
+
+    /**
+     * Ngày Client chọn (yyyy-MM-dd, theo giờ server) → [đầu ngày from, đầu ngày sau to).
+     * Sai định dạng thì bỏ đầu đó; from sau to thì đảo lại để không trả về rỗng vô lý.
+     */
+    private ClientDateRange parseClientDateRange(String from, String to) {
+        LocalDate fromDate = parseClientDate(from);
+        LocalDate toDate = parseClientDate(to);
+        if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
+            LocalDate swap = fromDate;
+            fromDate = toDate;
+            toDate = swap;
+        }
+        return new ClientDateRange(
+                fromDate != null ? fromDate.atStartOfDay() : null,
+                toDate != null ? toDate.plusDays(1).atStartOfDay() : null);
+    }
+
+    private LocalDate parseClientDate(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        try {
+            return LocalDate.parse(value.trim());
+        } catch (java.time.format.DateTimeParseException e) {
+            log.warn("[ClientReports] Invalid date filter: {}", value);
+            return null;
+        }
+    }
+
     private String normalizeClientKeyword(String search) {
         if (search == null) {
             return null;

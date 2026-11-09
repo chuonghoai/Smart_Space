@@ -62,10 +62,16 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                      "     LOWER(r.description) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
                      "     LOWER(r.address) LIKE LOWER(CONCAT('%', :search, '%'))) ";
 
+       // Khoảng ngày tạo Client: [createdFrom, createdTo) — createdTo là đầu ngày sau ngày cuối
+       // người dùng chọn, nên trọn ngày cuối được tính. null = không giới hạn đầu/cuối đó.
+       String CLIENT_DATE_FILTER = "AND (:createdFrom IS NULL OR r.createdAt >= :createdFrom) " +
+                     "AND (:createdTo IS NULL OR r.createdAt < :createdTo) ";
+
        String MY_REPORTS_FILTER = "WHERE r.user.id = :userId " +
                      "AND (:status IS NULL OR r.status = :status) " +
                      "AND (:severity IS NULL OR r.severity = :severity) " +
                      "AND (:rehandling = false OR r.isReviewResolved = false) " +
+                     CLIENT_DATE_FILTER +
                      CLIENT_KEYWORD_FILTER;
 
        // Client "My reports": newest first, optional status / severity / re-handling /
@@ -79,6 +85,8 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                      @Param("severity") EReportSeverity severity,
                      @Param("rehandling") boolean rehandling,
                      @Param("search") String search,
+                     @Param("createdFrom") LocalDateTime createdFrom,
+                     @Param("createdTo") LocalDateTime createdTo,
                      Pageable pageable);
 
        // Client "My reports" summary card: [status, count] over all of the owner's
@@ -275,6 +283,7 @@ public interface ReportRepository extends JpaRepository<Report, String> {
        String FEED_FILTER = "WHERE r.status <> :excluded " +
                      "AND (:status IS NULL OR r.status = :status) " +
                      "AND (:severity IS NULL OR r.severity = :severity) " +
+                     CLIENT_DATE_FILTER +
                      CLIENT_KEYWORD_FILTER;
 
        String FEED_NEARBY_FILTER = FEED_FILTER + "AND r.latitude IS NOT NULL AND r.longitude IS NOT NULL ";
@@ -288,6 +297,8 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                      @Param("status") EReportStatus status,
                      @Param("severity") EReportSeverity severity,
                      @Param("search") String search,
+                     @Param("createdFrom") LocalDateTime createdFrom,
+                     @Param("createdTo") LocalDateTime createdTo,
                      Pageable pageable);
 
        // Nearest first ("Gần tôi"), sorted in the DB so paging stays correct. Order
@@ -307,6 +318,8 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                      @Param("status") EReportStatus status,
                      @Param("severity") EReportSeverity severity,
                      @Param("search") String search,
+                     @Param("createdFrom") LocalDateTime createdFrom,
+                     @Param("createdTo") LocalDateTime createdTo,
                      @Param("lat") Double lat,
                      @Param("lng") Double lng,
                      @Param("lngScale") Double lngScale,
