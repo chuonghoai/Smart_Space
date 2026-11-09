@@ -5,13 +5,17 @@ class MyReportsPage {
   final List<ReportModel> items;
   final int totalPages;
 
-  const MyReportsPage({required this.items, required this.totalPages});
+  /// Tổng số phản ánh khớp bộ lọc hiện tại (mọi trang).
+  final int totalElements;
+
+  const MyReportsPage({required this.items, required this.totalPages, this.totalElements = 0});
 
   factory MyReportsPage.fromJson(Map<String, dynamic> json) => MyReportsPage(
         items: (json['content'] as List? ?? [])
             .map((e) => ReportModel.fromJson(e as Map<String, dynamic>))
             .toList(),
         totalPages: (json['totalPages'] as num?)?.toInt() ?? 0,
+        totalElements: (json['totalElements'] as num?)?.toInt() ?? 0,
       );
 }
 

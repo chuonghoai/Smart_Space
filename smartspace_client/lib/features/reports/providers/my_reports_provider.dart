@@ -14,10 +14,14 @@ class MyReportsState {
 
   /// Giá trị `status` gửi lên API; null = Tất cả. Ngoài [ReportStatus] còn có 'rehandling'.
   final String? statusFilter;
+  final EReportSeverity? severityFilter;
   final String searchQuery;
 
   final int page;
   final bool hasMore;
+
+  /// Tổng số phản ánh khớp bộ lọc hiện tại (mọi trang).
+  final int totalElements;
 
   /// Đã hoàn tất lần tải đầu tiên (thành công hoặc lỗi).
   final bool hasLoaded;
@@ -33,25 +37,29 @@ class MyReportsState {
     this.summary = const MyReportsSummary(),
     this.reports = const [],
     this.statusFilter,
+    this.severityFilter,
     this.searchQuery = '',
     this.page = 0,
     this.hasMore = false,
+    this.totalElements = 0,
     this.hasLoaded = false,
     this.isLoading = false,
     this.isLoadingMore = false,
     this.error,
   });
 
-  bool get isFiltering => statusFilter != null || searchQuery.isNotEmpty;
+  bool get isFiltering => statusFilter != null || severityFilter != null || searchQuery.isNotEmpty;
 
-  /// [statusFilter] và [error] nhận function để có thể gán `null` tường minh.
+  /// [statusFilter], [severityFilter] và [error] nhận function để có thể gán `null` tường minh.
   MyReportsState copyWith({
     MyReportsSummary? summary,
     List<ReportModel>? reports,
     String? Function()? statusFilter,
+    EReportSeverity? Function()? severityFilter,
     String? searchQuery,
     int? page,
     bool? hasMore,
+    int? totalElements,
     bool? hasLoaded,
     bool? isLoading,
     bool? isLoadingMore,
@@ -61,9 +69,11 @@ class MyReportsState {
       summary: summary ?? this.summary,
       reports: reports ?? this.reports,
       statusFilter: statusFilter != null ? statusFilter() : this.statusFilter,
+      severityFilter: severityFilter != null ? severityFilter() : this.severityFilter,
       searchQuery: searchQuery ?? this.searchQuery,
       page: page ?? this.page,
       hasMore: hasMore ?? this.hasMore,
+      totalElements: totalElements ?? this.totalElements,
       hasLoaded: hasLoaded ?? this.hasLoaded,
       isLoading: isLoading ?? this.isLoading,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
@@ -129,6 +139,20 @@ class MyReportsNotifier extends StateNotifier<MyReportsState> {
     _loadFirstPage(clearList: true);
   }
 
+  void setSeverity(EReportSeverity? severity) {
+    if (severity == state.severityFilter) return;
+    state = state.copyWith(severityFilter: () => severity);
+    _loadFirstPage(clearList: true);
+  }
+
+  /// Bỏ trạng thái, mức độ và từ khoá.
+  void clearFilters() {
+    _debounce?.cancel();
+    if (!state.isFiltering) return;
+    state = state.copyWith(statusFilter: () => null, severityFilter: () => null, searchQuery: '');
+    _loadFirstPage(clearList: true);
+  }
+
   /// Tìm kiếm theo tiêu đề / mô tả / địa chỉ, debounce để không gọi API mỗi phím gõ.
   void search(String query) {
     _debounce?.cancel();
@@ -148,6 +172,7 @@ class MyReportsNotifier extends StateNotifier<MyReportsState> {
     try {
       final res = await _service.getMyReports(
         status: state.statusFilter,
+        severity: state.severityFilter,
         search: state.searchQuery,
         page: nextPage,
         size: _pageSize,
@@ -166,6 +191,7 @@ class MyReportsNotifier extends StateNotifier<MyReportsState> {
         ],
         page: nextPage,
         hasMore: nextPage < res.data!.totalPages,
+        totalElements: res.data!.totalElements,
         isLoadingMore: false,
       );
     } catch (_) {
@@ -198,6 +224,7 @@ class MyReportsNotifier extends StateNotifier<MyReportsState> {
     try {
       final res = await _service.getMyReports(
         status: state.statusFilter,
+        severity: state.severityFilter,
         search: state.searchQuery,
         page: 1,
         size: _pageSize,
@@ -211,6 +238,7 @@ class MyReportsNotifier extends StateNotifier<MyReportsState> {
         reports: res.data!.items,
         page: 1,
         hasMore: 1 < res.data!.totalPages,
+        totalElements: res.data!.totalElements,
         isLoading: false,
         hasLoaded: true,
       );

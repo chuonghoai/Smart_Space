@@ -4,6 +4,10 @@ import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/providers/my_reports_provider.dart';
 import 'package:smartspace_client/features/reports/services/report_service.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
+import 'package:smartspace_client/ui/components/report_filters/report_filter_bar.dart';
+import 'package:smartspace_client/ui/components/report_filters/report_filter_chip.dart';
+import 'package:smartspace_client/ui/components/report_filters/report_filter_options.dart';
+import 'package:smartspace_client/ui/components/report_filters/report_filter_sheet.dart';
 import 'package:smartspace_client/ui/mobile/reports/widgets/my_report_card.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smartspace_client/routes/router_path.dart';
@@ -60,59 +64,37 @@ class _MyReportsScreenState extends ConsumerState<MyReportsScreen> {
                 controller: _scrollController,
                 physics: const AlwaysScrollableScrollPhysics(),
                 keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-                padding: const EdgeInsets.all(16),
+                // Lề ngang đặt trên từng khối để hàng chip lọc cuộn được tới mép màn hình
+                padding: const EdgeInsets.symmetric(vertical: 16),
                 children: [
-                  _buildSummaryCard(context, state),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: _gutter),
+                    child: _buildSummaryCard(context, state),
+                  ),
                   const SizedBox(height: 16),
-                  _buildSearchBox(context, notifier),
+                  ReportFilterBar(
+                    searchController: _searchController,
+                    searchHint: l10n.searchReportsPlaceholder,
+                    onSearchChanged: notifier.search,
+                    isFiltering: state.isFiltering,
+                    onClearFilters: notifier.clearFilters,
+                    resultCount: state.isLoading ? null : state.totalElements,
+                    horizontalPadding: _gutter,
+                    chips: _buildFilterChips(context, state, notifier),
+                  ),
                   const SizedBox(height: 12),
-                  _buildFilterChips(context, state, notifier),
-                  const SizedBox(height: 16),
-                  ..._buildListContent(context, state, notifier),
+                  for (final widget in _buildListContent(context, state, notifier))
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: _gutter),
+                      child: widget,
+                    ),
                 ],
               ),
             ),
     );
   }
 
-  Widget _buildSearchBox(BuildContext context, MyReportsNotifier notifier) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-
-    return Container(
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: ValueListenableBuilder<TextEditingValue>(
-        valueListenable: _searchController,
-        builder: (context, value, _) => TextField(
-          controller: _searchController,
-          onChanged: notifier.search,
-          textInputAction: TextInputAction.search,
-          decoration: InputDecoration(
-            hintText: l10n.searchMyReportsPlaceholder,
-            hintStyle: theme.textTheme.bodyMedium?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-            ),
-            prefixIcon: Icon(Icons.search_rounded, color: theme.colorScheme.onSurfaceVariant),
-            suffixIcon: value.text.isNotEmpty
-                ? IconButton(
-                    icon: const Icon(Icons.clear_rounded, size: 18),
-                    tooltip: MaterialLocalizations.of(context).deleteButtonTooltip,
-                    onPressed: () {
-                      _searchController.clear();
-                      notifier.search('');
-                    },
-                  )
-                : null,
-            border: InputBorder.none,
-            contentPadding: const EdgeInsets.symmetric(vertical: 12),
-          ),
-        ),
-      ),
-    );
-  }
+  static const double _gutter = 16;
 
   /// Vùng danh sách: loading / lỗi / trống / danh sách nhóm theo thời gian + loader tải thêm.
   List<Widget> _buildListContent(BuildContext context, MyReportsState state, MyReportsNotifier notifier) {
@@ -240,49 +222,37 @@ class _MyReportsScreenState extends ConsumerState<MyReportsScreen> {
     );
   }
 
-  Widget _buildFilterChips(BuildContext context, MyReportsState state, MyReportsNotifier notifier) {
+  List<Widget> _buildFilterChips(BuildContext context, MyReportsState state, MyReportsNotifier notifier) {
     final l10n = AppLocalizations.of(context)!;
-    final filters = [
-      {'label': l10n.viewAll, 'value': null},
-      {'label': l10n.reportStatusPending, 'value': 'pending'},
-      {'label': l10n.reportStatusProcessing, 'value': 'processing'},
-      {'label': l10n.reportStatusProcessed, 'value': 'processed'},
-      {'label': l10n.rehandling, 'value': 'rehandling'},
-      {'label': l10n.reportStatusRejected, 'value': 'rejected'},
-    ];
+    final statusOptions = ReportFilterOptions.myReportStatuses(l10n);
+    final severityOptions = ReportFilterOptions.severities(l10n);
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: filters.map((f) {
-          final isSelected = state.statusFilter == f['value'];
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: FilterChip(
-              label: Text(f['label'] as String),
-              selected: isSelected,
-              onSelected: (_) => notifier.setFilter(f['value']),
-              showCheckmark: false,
-              selectedColor: Theme.of(context).colorScheme.primary,
-              labelStyle: TextStyle(
-                color: isSelected
-                    ? Theme.of(context).colorScheme.onPrimary
-                    : Theme.of(context).colorScheme.onSurface,
-              ),
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: BorderSide(
-                  color: isSelected
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.outlineVariant,
-                ),
-              ),
-            ),
-          );
-        }).toList(),
+    return [
+      ReportFilterChip(
+        label: l10n.statusLabel,
+        valueLabel: ReportFilterOptions.selectedLabel(statusOptions, state.statusFilter),
+        active: state.statusFilter != null,
+        onTap: () => showReportFilterSheet(
+          context: context,
+          title: l10n.statusLabel,
+          options: statusOptions,
+          selected: state.statusFilter,
+          onSelected: notifier.setFilter,
+        ),
       ),
-    );
+      ReportFilterChip(
+        label: l10n.severityLabel,
+        valueLabel: ReportFilterOptions.selectedLabel(severityOptions, state.severityFilter),
+        active: state.severityFilter != null,
+        onTap: () => showReportFilterSheet(
+          context: context,
+          title: l10n.severityLabel,
+          options: severityOptions,
+          selected: state.severityFilter,
+          onSelected: notifier.setSeverity,
+        ),
+      ),
+    ];
   }
 
   List<Widget> _buildGroupedList(BuildContext context, MyReportsState state) {
@@ -294,12 +264,24 @@ class _MyReportsScreenState extends ConsumerState<MyReportsScreen> {
       return [
         Padding(
           padding: const EdgeInsets.only(top: 40),
-          child: Center(
-            child: Text(
-              state.isFiltering ? l10n.noMatchingReports : l10n.noReportsYet,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-            ),
+          child: Column(
+            children: [
+              Text(
+                state.isFiltering ? l10n.noMatchingReports : l10n.noReportsYet,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              ),
+              if (state.isFiltering) ...[
+                const SizedBox(height: 16),
+                OutlinedButton(
+                  onPressed: () {
+                    _searchController.clear();
+                    ref.read(myReportsProvider.notifier).clearFilters();
+                  },
+                  child: Text(l10n.clearFilters),
+                ),
+              ],
+            ],
           ),
         )
       ];
