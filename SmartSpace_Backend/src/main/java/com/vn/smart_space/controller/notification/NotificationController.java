@@ -60,9 +60,10 @@ public class NotificationController {
     public ResponseEntity<ApiResponse> getMyNotifications(
             @AuthenticationPrincipal Jwt jwt,
             @RequestParam(defaultValue = "0") int page,
-            @RequestParam(defaultValue = "20") int size) {
+            @RequestParam(defaultValue = "20") int size,
+            @RequestParam(defaultValue = "false") boolean unread) {
         String userId = jwt.getClaim("userId").toString();
-        PageResponse<NotificationResponse> response = notificationService.getMyNotifications(userId, page, size);
+        PageResponse<NotificationResponse> response = notificationService.getMyNotifications(userId, page, size, unread);
         return ResponseEntity.ok(ApiResponse.success("system.success", response));
     }
 
