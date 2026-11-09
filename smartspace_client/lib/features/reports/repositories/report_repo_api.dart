@@ -3,6 +3,7 @@ import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
 import 'package:smartspace_client/features/reports/models/feed_sort.dart';
+import 'package:smartspace_client/features/reports/models/report_date_range.dart';
 import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
 import 'package:smartspace_client/features/reports/models/map_reports_result.dart';
 import 'package:smartspace_client/features/reports/models/my_reports_page_model.dart';
@@ -75,6 +76,7 @@ class ReportRepoApi implements ReportRepo {
   Future<ApiResponse<MyReportsPage>> getMyReports({
     String? status,
     EReportSeverity? severity,
+    ReportDateRange? dateRange,
     String? search,
     int page = 1,
     int size = 20,
@@ -87,6 +89,8 @@ class ReportRepoApi implements ReportRepo {
         'size': size,
         'status': ?status,
         'severity': ?severity?.name,
+        'from': ?dateRange?.fromQuery,
+        'to': ?dateRange?.toQuery,
         if (keyword != null && keyword.isNotEmpty) 'search': keyword,
       },
       decoder: (json) {
@@ -138,6 +142,7 @@ class ReportRepoApi implements ReportRepo {
   Future<ApiResponse<ReportFeedPage>> getFeed({
     String? status,
     EReportSeverity? severity,
+    ReportDateRange? dateRange,
     String? search,
     FeedSort sort = FeedSort.latest,
     int page = 1,
@@ -154,6 +159,8 @@ class ReportRepoApi implements ReportRepo {
         'sort': sort.name,
         'status': ?status,
         'severity': ?severity?.name,
+        'from': ?dateRange?.fromQuery,
+        'to': ?dateRange?.toQuery,
         if (keyword != null && keyword.isNotEmpty) 'search': keyword,
         if (lat != null && lng != null) 'user_lat': lat,
         if (lat != null && lng != null) 'user_long': lng,

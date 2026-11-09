@@ -468,5 +468,7 @@
       "label": {},
       "value": {}
     }
-  }
+  },
+  "pickSingleDate": "A specific day…",
+  "pickDateRange": "A date range…"
 }

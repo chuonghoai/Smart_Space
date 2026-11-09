@@ -1203,4 +1203,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String filterSelectedTooltip(Object label, Object value) {
     return '$label: $value';
   }
+
+  @override
+  String get pickSingleDate => 'Một ngày cụ thể…';
+
+  @override
+  String get pickDateRange => 'Khoảng ngày…';
 }

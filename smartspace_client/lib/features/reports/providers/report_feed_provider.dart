@@ -4,6 +4,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/util/location_service.dart';
 import 'package:smartspace_client/features/reports/models/feed_sort.dart';
+import 'package:smartspace_client/features/reports/models/report_date_range.dart';
 import 'package:smartspace_client/features/reports/models/report_feed_model.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/services/report_service.dart';
@@ -22,6 +23,9 @@ class ReportFeedState {
   final FeedSort sort;
   final ReportStatus? statusFilter;
   final EReportSeverity? severityFilter;
+
+  /// Khoảng ngày tạo; null = mọi thời gian.
+  final ReportDateRange? dateRangeFilter;
   final String searchQuery;
 
   /// Đã chọn "Gần tôi" nhưng không lấy được vị trí → đã quay về "Mới nhất". UI báo cho người dùng.
@@ -38,12 +42,14 @@ class ReportFeedState {
     this.sort = FeedSort.latest,
     this.statusFilter,
     this.severityFilter,
+    this.dateRangeFilter,
     this.searchQuery = '',
     this.nearbyUnavailable = false,
   });
 
   /// Đang thu hẹp kết quả (sắp xếp không tính là lọc).
-  bool get isFiltering => statusFilter != null || severityFilter != null || searchQuery.isNotEmpty;
+  bool get isFiltering =>
+      statusFilter != null || severityFilter != null || dateRangeFilter != null || searchQuery.isNotEmpty;
 
   /// Các field nullable nhận function để có thể gán `null` (Tất cả) tường minh.
   ReportFeedState copyWith({
@@ -57,6 +63,7 @@ class ReportFeedState {
     FeedSort? sort,
     ReportStatus? Function()? statusFilter,
     EReportSeverity? Function()? severityFilter,
+    ReportDateRange? Function()? dateRangeFilter,
     String? searchQuery,
     bool? nearbyUnavailable,
   }) =>
@@ -71,6 +78,7 @@ class ReportFeedState {
         sort: sort ?? this.sort,
         statusFilter: statusFilter != null ? statusFilter() : this.statusFilter,
         severityFilter: severityFilter != null ? severityFilter() : this.severityFilter,
+        dateRangeFilter: dateRangeFilter != null ? dateRangeFilter() : this.dateRangeFilter,
         searchQuery: searchQuery ?? this.searchQuery,
         nearbyUnavailable: nearbyUnavailable ?? this.nearbyUnavailable,
       );
@@ -137,11 +145,23 @@ class ReportFeedNotifier extends StateNotifier<ReportFeedState> {
     });
   }
 
-  /// Bỏ trạng thái, mức độ và từ khoá; giữ cách sắp xếp.
+  /// Khoảng ngày tạo (null = mọi thời gian).
+  void setDateRange(ReportDateRange? range) {
+    if (range == state.dateRangeFilter) return;
+    state = state.copyWith(dateRangeFilter: () => range);
+    _loadFirstPage(clearList: true);
+  }
+
+  /// Bỏ trạng thái, mức độ, khoảng ngày và từ khoá; giữ cách sắp xếp.
   void clearFilters() {
     _debounce?.cancel();
     if (!state.isFiltering) return;
-    state = state.copyWith(statusFilter: () => null, severityFilter: () => null, searchQuery: '');
+    state = state.copyWith(
+      statusFilter: () => null,
+      severityFilter: () => null,
+      dateRangeFilter: () => null,
+      searchQuery: '',
+    );
     _loadFirstPage(clearList: true);
   }
 
@@ -216,6 +236,7 @@ class ReportFeedNotifier extends StateNotifier<ReportFeedState> {
     return _service.getFeed(
       status: state.statusFilter?.name,
       severity: state.severityFilter,
+      dateRange: state.dateRangeFilter,
       search: state.searchQuery,
       sort: state.sort,
       page: page,

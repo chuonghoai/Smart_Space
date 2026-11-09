@@ -4,6 +4,7 @@ import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/providers/my_reports_provider.dart';
 import 'package:smartspace_client/features/reports/services/report_service.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
+import 'package:smartspace_client/ui/components/report_filters/report_date_range_filter_chip.dart';
 import 'package:smartspace_client/ui/components/report_filters/report_filter_bar.dart';
 import 'package:smartspace_client/ui/components/report_filters/report_filter_chip.dart';
 import 'package:smartspace_client/ui/components/report_filters/report_filter_options.dart';
@@ -251,6 +252,10 @@ class _MyReportsScreenState extends ConsumerState<MyReportsScreen> {
           selected: state.severityFilter,
           onSelected: notifier.setSeverity,
         ),
+      ),
+      ReportDateRangeFilterChip(
+        value: state.dateRangeFilter,
+        onChanged: notifier.setDateRange,
       ),
     ];
   }

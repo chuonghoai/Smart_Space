@@ -2353,6 +2353,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{label}: {value}'**
   String filterSelectedTooltip(Object label, Object value);
+
+  /// No description provided for @pickSingleDate.
+  ///
+  /// In en, this message translates to:
+  /// **'A specific day…'**
+  String get pickSingleDate;
+
+  /// No description provided for @pickDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'A date range…'**
+  String get pickDateRange;
 }
 
 class _AppLocalizationsDelegate

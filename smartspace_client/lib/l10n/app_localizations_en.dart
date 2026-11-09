@@ -1212,4 +1212,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String filterSelectedTooltip(Object label, Object value) {
     return '$label: $value';
   }
+
+  @override
+  String get pickSingleDate => 'A specific day…';
+
+  @override
+  String get pickDateRange => 'A date range…';
 }

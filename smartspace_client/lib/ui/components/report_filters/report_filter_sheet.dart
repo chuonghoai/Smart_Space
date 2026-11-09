@@ -11,6 +11,8 @@ class ReportFilterOption<T> {
 
 /// Bottom sheet chọn một giá trị cho một chiều lọc. Chạm vào lựa chọn là áp dụng và đóng sheet
 /// (không cần nút "Áp dụng"); đóng sheet bằng vuốt/chạm ngoài thì giữ nguyên lựa chọn cũ.
+/// [onSelected] được gọi cả khi chạm lại lựa chọn đang chọn (vd. "Khoảng ngày…" để đổi ngày);
+/// nơi nhận tự bỏ qua giá trị không đổi.
 Future<void> showReportFilterSheet<T>({
   required BuildContext context,
   required String title,
@@ -31,7 +33,7 @@ Future<void> showReportFilterSheet<T>({
       selected: selected,
       onSelected: (value) {
         Navigator.of(sheetContext).pop();
-        if (value != selected) onSelected(value);
+        onSelected(value);
       },
     ),
   );

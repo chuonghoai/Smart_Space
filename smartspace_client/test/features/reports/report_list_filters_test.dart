@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:smartspace_client/features/reports/models/feed_sort.dart';
 import 'package:smartspace_client/features/reports/models/my_reports_page_model.dart';
+import 'package:smartspace_client/features/reports/models/report_date_range.dart';
 import 'package:smartspace_client/features/reports/models/report_feed_model.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/providers/my_reports_provider.dart';
@@ -15,13 +16,23 @@ import 'package:smartspace_client/features/reports/services/report_service.dart'
 class _Call {
   final String? status;
   final EReportSeverity? severity;
+  final ReportDateRange? dateRange;
   final String? search;
   final FeedSort? sort;
   final int page;
   final double? lat;
   final double? lng;
 
-  _Call({this.status, this.severity, this.search, this.sort, required this.page, this.lat, this.lng});
+  _Call({
+    this.status,
+    this.severity,
+    this.dateRange,
+    this.search,
+    this.sort,
+    required this.page,
+    this.lat,
+    this.lng,
+  });
 }
 
 /// Repo giả: mỗi lần gọi trả về một Completer để test điều khiển thứ tự response.
@@ -35,6 +46,7 @@ class _FakeReportRepo implements ReportRepo {
   Future<ApiResponse<ReportFeedPage>> getFeed({
     String? status,
     EReportSeverity? severity,
+    ReportDateRange? dateRange,
     String? search,
     FeedSort sort = FeedSort.latest,
     int page = 1,
@@ -42,7 +54,16 @@ class _FakeReportRepo implements ReportRepo {
     double? lat,
     double? lng,
   }) {
-    feedCalls.add(_Call(status: status, severity: severity, search: search, sort: sort, page: page, lat: lat, lng: lng));
+    feedCalls.add(_Call(
+      status: status,
+      severity: severity,
+      dateRange: dateRange,
+      search: search,
+      sort: sort,
+      page: page,
+      lat: lat,
+      lng: lng,
+    ));
     final completer = Completer<ApiResponse<ReportFeedPage>>();
     feedPending.add(completer);
     return completer.future;
@@ -52,11 +73,12 @@ class _FakeReportRepo implements ReportRepo {
   Future<ApiResponse<MyReportsPage>> getMyReports({
     String? status,
     EReportSeverity? severity,
+    ReportDateRange? dateRange,
     String? search,
     int page = 1,
     int size = 20,
   }) {
-    myCalls.add(_Call(status: status, severity: severity, search: search, page: page));
+    myCalls.add(_Call(status: status, severity: severity, dateRange: dateRange, search: search, page: page));
     final completer = Completer<ApiResponse<MyReportsPage>>();
     myPending.add(completer);
     return completer.future;
@@ -85,6 +107,22 @@ ApiResponse<MyReportsPage> _myPage({int total = 0}) => ApiResponse(
 Future<void> _flush() => Future<void>.delayed(Duration.zero);
 
 void main() {
+  group('ReportDateRange', () {
+    test('bỏ giờ, đảo đầu-cuối nếu ngược, định dạng yyyy-MM-dd cho API', () {
+      final range = ReportDateRange(start: DateTime(2026, 3, 15, 18, 30), end: DateTime(2026, 3, 1, 7));
+      expect(range.fromQuery, '2026-03-01');
+      expect(range.toQuery, '2026-03-15');
+      expect(range.isSingleDay, isFalse);
+    });
+
+    test('một ngày cụ thể: start trùng end', () {
+      final day = ReportDateRange(start: DateTime(2026, 1, 9, 23, 59), end: DateTime(2026, 1, 9));
+      expect(day.isSingleDay, isTrue);
+      expect(day.fromQuery, day.toQuery);
+      expect(day, ReportDateRange(start: DateTime(2026, 1, 9), end: DateTime(2026, 1, 9)));
+    });
+  });
+
   group('ReportFeedNotifier', () {
     late _FakeReportRepo repo;
 
@@ -188,6 +226,50 @@ void main() {
       expect(call.search, isEmpty);
       expect(call.sort, FeedSort.nearby);
       expect(notifier.state.isFiltering, isFalse);
+    });
+  });
+
+  group('Lọc theo ngày', () {
+    late _FakeReportRepo repo;
+    final march = ReportDateRange(start: DateTime(2026, 3, 1), end: DateTime(2026, 3, 15));
+
+    setUp(() => repo = _FakeReportRepo());
+
+    test('Bảng tin: chọn ngày → tải trang 1 với dateRange; làm mới giữ; Xoá lọc bỏ', () async {
+      final notifier = ReportFeedNotifier(ReportService(reportRepo: repo), getPosition: () async => null);
+      await _flush();
+
+      notifier.setDateRange(march);
+      await _flush();
+      expect(repo.feedCalls.last.dateRange, march);
+      expect(repo.feedCalls.last.page, 1);
+      expect(notifier.state.isFiltering, isTrue);
+
+      unawaited(notifier.refresh());
+      await _flush();
+      expect(repo.feedCalls.last.dateRange, march);
+
+      notifier.clearFilters();
+      await _flush();
+      expect(repo.feedCalls.last.dateRange, isNull);
+      expect(notifier.state.dateRangeFilter, isNull);
+    });
+
+    test('Phản ánh của tôi: chọn lại đúng khoảng ngày cũ không gọi API thêm', () async {
+      final notifier = MyReportsNotifier(ReportService(reportRepo: repo));
+      await _flush();
+      notifier.setDateRange(march);
+      await _flush();
+      final callsAfterFirstPick = repo.myCalls.length;
+      expect(repo.myCalls.last.dateRange, march);
+
+      notifier.setDateRange(ReportDateRange(start: DateTime(2026, 3, 1), end: DateTime(2026, 3, 15)));
+      await _flush();
+      expect(repo.myCalls.length, callsAfterFirstPick);
+
+      notifier.setDateRange(null);
+      await _flush();
+      expect(repo.myCalls.last.dateRange, isNull);
     });
   });
 

@@ -468,5 +468,7 @@
       "label": {},
       "value": {}
     }
-  }
+  },
+  "pickSingleDate": "Một ngày cụ thể…",
+  "pickDateRange": "Khoảng ngày…"
 }

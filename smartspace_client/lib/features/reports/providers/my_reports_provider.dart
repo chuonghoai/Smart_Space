@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartspace_client/features/reports/models/my_reports_page_model.dart';
+import 'package:smartspace_client/features/reports/models/report_date_range.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/services/report_service.dart';
 
@@ -15,6 +16,9 @@ class MyReportsState {
   /// Giá trị `status` gửi lên API; null = Tất cả. Ngoài [ReportStatus] còn có 'rehandling'.
   final String? statusFilter;
   final EReportSeverity? severityFilter;
+
+  /// Khoảng ngày tạo; null = mọi thời gian.
+  final ReportDateRange? dateRangeFilter;
   final String searchQuery;
 
   final int page;
@@ -38,6 +42,7 @@ class MyReportsState {
     this.reports = const [],
     this.statusFilter,
     this.severityFilter,
+    this.dateRangeFilter,
     this.searchQuery = '',
     this.page = 0,
     this.hasMore = false,
@@ -48,14 +53,16 @@ class MyReportsState {
     this.error,
   });
 
-  bool get isFiltering => statusFilter != null || severityFilter != null || searchQuery.isNotEmpty;
+  bool get isFiltering =>
+      statusFilter != null || severityFilter != null || dateRangeFilter != null || searchQuery.isNotEmpty;
 
-  /// [statusFilter], [severityFilter] và [error] nhận function để có thể gán `null` tường minh.
+  /// Các field lọc nullable và [error] nhận function để có thể gán `null` tường minh.
   MyReportsState copyWith({
     MyReportsSummary? summary,
     List<ReportModel>? reports,
     String? Function()? statusFilter,
     EReportSeverity? Function()? severityFilter,
+    ReportDateRange? Function()? dateRangeFilter,
     String? searchQuery,
     int? page,
     bool? hasMore,
@@ -70,6 +77,7 @@ class MyReportsState {
       reports: reports ?? this.reports,
       statusFilter: statusFilter != null ? statusFilter() : this.statusFilter,
       severityFilter: severityFilter != null ? severityFilter() : this.severityFilter,
+      dateRangeFilter: dateRangeFilter != null ? dateRangeFilter() : this.dateRangeFilter,
       searchQuery: searchQuery ?? this.searchQuery,
       page: page ?? this.page,
       hasMore: hasMore ?? this.hasMore,
@@ -145,11 +153,23 @@ class MyReportsNotifier extends StateNotifier<MyReportsState> {
     _loadFirstPage(clearList: true);
   }
 
-  /// Bỏ trạng thái, mức độ và từ khoá.
+  /// Khoảng ngày tạo (null = mọi thời gian).
+  void setDateRange(ReportDateRange? range) {
+    if (range == state.dateRangeFilter) return;
+    state = state.copyWith(dateRangeFilter: () => range);
+    _loadFirstPage(clearList: true);
+  }
+
+  /// Bỏ trạng thái, mức độ, khoảng ngày và từ khoá.
   void clearFilters() {
     _debounce?.cancel();
     if (!state.isFiltering) return;
-    state = state.copyWith(statusFilter: () => null, severityFilter: () => null, searchQuery: '');
+    state = state.copyWith(
+      statusFilter: () => null,
+      severityFilter: () => null,
+      dateRangeFilter: () => null,
+      searchQuery: '',
+    );
     _loadFirstPage(clearList: true);
   }
 
@@ -173,6 +193,7 @@ class MyReportsNotifier extends StateNotifier<MyReportsState> {
       final res = await _service.getMyReports(
         status: state.statusFilter,
         severity: state.severityFilter,
+        dateRange: state.dateRangeFilter,
         search: state.searchQuery,
         page: nextPage,
         size: _pageSize,
@@ -225,6 +246,7 @@ class MyReportsNotifier extends StateNotifier<MyReportsState> {
       final res = await _service.getMyReports(
         status: state.statusFilter,
         severity: state.severityFilter,
+        dateRange: state.dateRangeFilter,
         search: state.searchQuery,
         page: 1,
         size: _pageSize,
