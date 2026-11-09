@@ -448,5 +448,38 @@
   "featureUnderDevelopment": "Feature under development",
   "comingSoon": "Coming soon",
   "phoneNotAvailable": "Phone number is not available",
-  "freeCallComingSoon": "Free in-app voice call feature is under development"
+  "freeCallComingSoon": "Free in-app voice call feature is under development",
+  "searchReportsPlaceholder": "Search by title, description or address...",
+  "noMatchingReports": "No matching reports",
+  "sortLabel": "Sort",
+  "clearFilters": "Clear filters",
+  "resultsCount": "{count, plural, =1{1 result} other{{count} results}}",
+  "@resultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nearbyLocationUnavailable": "Couldn't get your location. Showing the latest reports instead.",
+  "filterSelectedTooltip": "{label}: {value}",
+  "@filterSelectedTooltip": {
+    "placeholders": {
+      "label": {},
+      "value": {}
+    }
+  },
+  "pickSingleDate": "A specific day…",
+  "pickDateRange": "A date range…",
+  "notificationFilterUnread": "Unread",
+  "notificationFilterUnreadCount": "Unread ({count})",
+  "@notificationFilterUnreadCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "allNotificationsRead": "You're all caught up",
+  "viewAllNotifications": "View all notifications"
 }

@@ -4,55 +4,143 @@ import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/providers/my_reports_provider.dart';
 import 'package:smartspace_client/features/reports/services/report_service.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
+import 'package:smartspace_client/ui/components/report_filters/report_date_range_filter_chip.dart';
+import 'package:smartspace_client/ui/components/report_filters/report_filter_bar.dart';
+import 'package:smartspace_client/ui/components/report_filters/report_filter_chip.dart';
+import 'package:smartspace_client/ui/components/report_filters/report_filter_options.dart';
+import 'package:smartspace_client/ui/components/report_filters/report_filter_sheet.dart';
 import 'package:smartspace_client/ui/mobile/reports/widgets/my_report_card.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smartspace_client/routes/router_path.dart';
 
-class MyReportsScreen extends ConsumerWidget {
+class MyReportsScreen extends ConsumerStatefulWidget {
   const MyReportsScreen({super.key});
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
+  ConsumerState<MyReportsScreen> createState() => _MyReportsScreenState();
+}
+
+class _MyReportsScreenState extends ConsumerState<MyReportsScreen> {
+  final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
+
+  @override
+  void initState() {
+    super.initState();
+    // Provider sống xuyên màn hình → khôi phục từ khoá đang áp dụng
+    _searchController.text = ref.read(myReportsProvider).searchQuery;
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.extentAfter < 400) {
+      ref.read(myReportsProvider.notifier).loadMore();
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
     final state = ref.watch(myReportsProvider);
     final notifier = ref.read(myReportsProvider.notifier);
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(
         title: Text(l10n.myReports),
         centerTitle: true,
       ),
-      body: state.isLoading
+      body: !state.hasLoaded
           ? const Center(child: CircularProgressIndicator())
-          : state.error != null
-              ? Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(state.error!, style: TextStyle(color: theme.colorScheme.error)),
-                      const SizedBox(height: 16),
-                      ElevatedButton(
-                        onPressed: () => notifier.refresh(),
-                        child: Text(l10n.retryButton),
-                      ),
-                    ],
+          // Phần đầu (tổng hợp, tìm kiếm, chip) luôn hiển thị để ô tìm kiếm không mất focus khi tải lại
+          : RefreshIndicator(
+              onRefresh: notifier.refresh,
+              child: ListView(
+                controller: _scrollController,
+                physics: const AlwaysScrollableScrollPhysics(),
+                keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+                // Lề ngang đặt trên từng khối để hàng chip lọc cuộn được tới mép màn hình
+                padding: const EdgeInsets.symmetric(vertical: 16),
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: _gutter),
+                    child: _buildSummaryCard(context, state),
                   ),
-                )
-              : RefreshIndicator(
-                  onRefresh: () => notifier.refresh(),
-                  child: ListView(
-                    padding: const EdgeInsets.all(16),
-                    children: [
-                      _buildSummaryCard(context, state),
-                      const SizedBox(height: 16),
-                      _buildFilterChips(context, state, notifier),
-                      const SizedBox(height: 16),
-                      ..._buildGroupedList(context, state, ref),
-                    ],
+                  const SizedBox(height: 16),
+                  ReportFilterBar(
+                    searchController: _searchController,
+                    searchHint: l10n.searchReportsPlaceholder,
+                    onSearchChanged: notifier.search,
+                    isFiltering: state.isFiltering,
+                    onClearFilters: notifier.clearFilters,
+                    resultCount: state.isLoading ? null : state.totalElements,
+                    horizontalPadding: _gutter,
+                    chips: _buildFilterChips(context, state, notifier),
                   ),
-                ),
+                  const SizedBox(height: 12),
+                  for (final widget in _buildListContent(context, state, notifier))
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: _gutter),
+                      child: widget,
+                    ),
+                ],
+              ),
+            ),
     );
+  }
+
+  static const double _gutter = 16;
+
+  /// Vùng danh sách: loading / lỗi / trống / danh sách nhóm theo thời gian + loader tải thêm.
+  List<Widget> _buildListContent(BuildContext context, MyReportsState state, MyReportsNotifier notifier) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+
+    if (state.isLoading && state.reports.isEmpty) {
+      return const [
+        Padding(
+          padding: EdgeInsets.only(top: 40),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+      ];
+    }
+
+    if (state.error != null && state.reports.isEmpty) {
+      return [
+        Padding(
+          padding: const EdgeInsets.only(top: 40),
+          child: Column(
+            children: [
+              Text(
+                state.error!,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: theme.colorScheme.error),
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: notifier.refresh,
+                child: Text(l10n.retryButton),
+              ),
+            ],
+          ),
+        ),
+      ];
+    }
+
+    return [
+      ..._buildGroupedList(context, state),
+      if (state.isLoadingMore)
+        const Padding(
+          padding: EdgeInsets.all(16),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+    ];
   }
 
   Widget _buildSummaryCard(BuildContext context, MyReportsState state) {
@@ -80,7 +168,7 @@ class MyReportsScreen extends ConsumerWidget {
             ),
             const SizedBox(height: 8),
             Text(
-              '${state.totalCount}',
+              '${state.summary.total}',
               style: theme.textTheme.headlineMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: theme.colorScheme.primary,
@@ -93,7 +181,7 @@ class MyReportsScreen extends ConsumerWidget {
                   child: _buildSummaryItem(
                     context,
                     l10n.reportStatusProcessing,
-                    state.processingCount,
+                    state.summary.processing,
                     Colors.orange,
                   ),
                 ),
@@ -101,7 +189,7 @@ class MyReportsScreen extends ConsumerWidget {
                   child: _buildSummaryItem(
                     context,
                     l10n.reportStatusProcessed,
-                    state.processedCount,
+                    state.summary.processed,
                     Colors.green,
                   ),
                 ),
@@ -135,65 +223,70 @@ class MyReportsScreen extends ConsumerWidget {
     );
   }
 
-  Widget _buildFilterChips(BuildContext context, MyReportsState state, MyReportsNotifier notifier) {
+  List<Widget> _buildFilterChips(BuildContext context, MyReportsState state, MyReportsNotifier notifier) {
     final l10n = AppLocalizations.of(context)!;
-    final filters = [
-      {'label': l10n.viewAll, 'value': null},
-      {'label': l10n.reportStatusPending, 'value': 'pending'},
-      {'label': l10n.reportStatusProcessing, 'value': 'processing'},
-      {'label': l10n.reportStatusProcessed, 'value': 'processed'},
-      {'label': l10n.rehandling, 'value': 'rehandling'},
-      {'label': l10n.reportStatusRejected, 'value': 'rejected'},
-    ];
+    final statusOptions = ReportFilterOptions.myReportStatuses(l10n);
+    final severityOptions = ReportFilterOptions.severities(l10n);
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Row(
-        children: filters.map((f) {
-          final isSelected = state.currentFilter == f['value'];
-          return Padding(
-            padding: const EdgeInsets.only(right: 8),
-            child: FilterChip(
-              label: Text(f['label'] as String),
-              selected: isSelected,
-              onSelected: (_) => notifier.setFilter(f['value']),
-              showCheckmark: false,
-              selectedColor: Theme.of(context).colorScheme.primary,
-              labelStyle: TextStyle(
-                color: isSelected
-                    ? Theme.of(context).colorScheme.onPrimary
-                    : Theme.of(context).colorScheme.onSurface,
-              ),
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(16),
-                side: BorderSide(
-                  color: isSelected
-                      ? Theme.of(context).colorScheme.primary
-                      : Theme.of(context).colorScheme.outlineVariant,
-                ),
-              ),
-            ),
-          );
-        }).toList(),
+    return [
+      ReportFilterChip(
+        label: l10n.statusLabel,
+        valueLabel: ReportFilterOptions.selectedLabel(statusOptions, state.statusFilter),
+        active: state.statusFilter != null,
+        onTap: () => showReportFilterSheet(
+          context: context,
+          title: l10n.statusLabel,
+          options: statusOptions,
+          selected: state.statusFilter,
+          onSelected: notifier.setFilter,
+        ),
       ),
-    );
+      ReportFilterChip(
+        label: l10n.severityLabel,
+        valueLabel: ReportFilterOptions.selectedLabel(severityOptions, state.severityFilter),
+        active: state.severityFilter != null,
+        onTap: () => showReportFilterSheet(
+          context: context,
+          title: l10n.severityLabel,
+          options: severityOptions,
+          selected: state.severityFilter,
+          onSelected: notifier.setSeverity,
+        ),
+      ),
+      ReportDateRangeFilterChip(
+        value: state.dateRangeFilter,
+        onChanged: notifier.setDateRange,
+      ),
+    ];
   }
 
-  List<Widget> _buildGroupedList(BuildContext context, MyReportsState state, WidgetRef ref) {
+  List<Widget> _buildGroupedList(BuildContext context, MyReportsState state) {
     final groups = state.groupedReports;
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
-    if (state.displayReports.isEmpty) {
+    if (state.reports.isEmpty) {
       return [
         Padding(
           padding: const EdgeInsets.only(top: 40),
-          child: Center(
-            child: Text(
-              l10n.noReportsYet,
-              style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.onSurfaceVariant),
-            ),
+          child: Column(
+            children: [
+              Text(
+                state.isFiltering ? l10n.noMatchingReports : l10n.noReportsYet,
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyLarge?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+              ),
+              if (state.isFiltering) ...[
+                const SizedBox(height: 16),
+                OutlinedButton(
+                  onPressed: () {
+                    _searchController.clear();
+                    ref.read(myReportsProvider.notifier).clearFilters();
+                  },
+                  child: Text(l10n.clearFilters),
+                ),
+              ],
+            ],
           ),
         )
       ];

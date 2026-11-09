@@ -86,12 +86,17 @@ public class ReportController {
     @GetMapping("/feed")
     public ResponseEntity<ApiResponse> getFeed(
             @RequestParam(required = false) String status,
+            @RequestParam(required = false) String severity,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to,
+            @RequestParam(defaultValue = "latest") String sort,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "10") int size,
             @RequestParam(name = "user_lat", required = false) Double userLat,
             @RequestParam(name = "user_long", required = false) Double userLong) {
         return ResponseEntity.ok(ApiResponse.success("system.success",
-                reportService.getFeed(status, page, size, userLat, userLong)));
+                reportService.getFeed(status, severity, search, from, to, sort, page, size, userLat, userLong)));
     }
 
     @GetMapping("/map")
@@ -123,10 +128,22 @@ public class ReportController {
     public ResponseEntity<ApiResponse> getMyReports(
             @AuthenticationPrincipal Jwt jwt,
             @RequestParam(required = false) String status,
-            @RequestParam(defaultValue = "50") int limit) {
+            @RequestParam(required = false) String severity,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to,
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "20") int size) {
         String userId = jwt.getClaim("userId").toString();
-        List<ReportResponse> reports = reportService.getMyReports(userId, status, limit);
-        return ResponseEntity.ok(ApiResponse.success("system.success", reports));
+        return ResponseEntity.ok(ApiResponse.success("system.success",
+                reportService.getMyReports(userId, status, severity, search, from, to, page, size)));
+    }
+
+    @GetMapping("/my-reports/summary")
+    public ResponseEntity<ApiResponse> getMyReportsSummary(@AuthenticationPrincipal Jwt jwt) {
+        String userId = jwt.getClaim("userId").toString();
+        return ResponseEntity.ok(ApiResponse.success("system.success",
+                reportService.getMyReportsSummary(userId)));
     }
 
     @GetMapping("/staff/assigned")

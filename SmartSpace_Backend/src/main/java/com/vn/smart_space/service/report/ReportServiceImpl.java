@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.EnumMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -37,6 +38,7 @@ import com.vn.smart_space.dto.response.admin.ReportStatisticsResponse;
 import com.vn.smart_space.dto.response.admin.ReportTrendResponse;
 import com.vn.smart_space.dto.response.notification.NotificationEvent;
 import com.vn.smart_space.dto.response.report.MapReportsResponse;
+import com.vn.smart_space.dto.response.report.MyReportsSummaryResponse;
 import com.vn.smart_space.dto.response.report.NearbyReportItemResponse;
 import com.vn.smart_space.dto.response.report.ReportDetailResponse;
 import com.vn.smart_space.dto.response.report.ReportNearbyAlertResponse;
@@ -82,6 +84,8 @@ public class ReportServiceImpl implements IReportService {
     private static final int MAP_DEFAULT_LIMIT = 300;
     private static final int MAP_MAX_LIMIT = 500;
     private static final int MAP_PROCESSED_VISIBLE_DAYS = 30;
+    private static final int MY_REPORTS_MAX_PAGE_SIZE = 50;
+    private static final int CLIENT_MAX_SEARCH_LENGTH = 100;
 
     @Override
     @Transactional(readOnly = true)
@@ -334,22 +338,37 @@ public class ReportServiceImpl implements IReportService {
 
     @Override
     @Transactional(readOnly = true)
-    public PageResponse<ReportDetailResponse> getFeed(String status, int page, int size, Double userLat,
-            Double userLong) {
+    public PageResponse<ReportDetailResponse> getFeed(String status, String severity, String search, String from,
+            String to, String sort, int page, int size, Double userLat, Double userLong) {
         int safePage = Math.max(1, page);
         int safeSize = Math.max(1, Math.min(size, 20));
         EReportStatus filter = null;
         if (status != null && !status.isBlank() && !"all".equalsIgnoreCase(status)) {
             try {
-                filter = EReportStatus.valueOf(status.toLowerCase());
+                filter = EReportStatus.valueOf(status.trim().toLowerCase());
             } catch (IllegalArgumentException ignored) {
             }
         }
         if (filter == EReportStatus.rejected) {
             filter = null;
         }
-        Page<Report> reportPage = reportRepository.findFeed(EReportStatus.rejected, filter,
-                PageRequest.of(safePage - 1, safeSize));
+        EReportSeverity severityFilter = parseClientSeverity(severity);
+        String keyword = normalizeClientKeyword(search);
+        ClientDateRange dates = parseClientDateRange(from, to);
+        PageRequest pageable = PageRequest.of(safePage - 1, safeSize);
+
+        // "Gần tôi" chỉ khi có toạ độ hợp lệ; thiếu/sai toạ độ thì về "Mới nhất"
+        boolean nearby = "nearby".equalsIgnoreCase(sort != null ? sort.trim() : null)
+                && isValidCoordinate(userLat, userLong);
+        Page<Report> reportPage;
+        if (nearby) {
+            double cosLat = Math.cos(Math.toRadians(userLat));
+            reportPage = reportRepository.findFeedNearby(EReportStatus.rejected, filter, severityFilter, keyword,
+                    dates.from(), dates.toExclusive(), userLat, userLong, cosLat * cosLat, pageable);
+        } else {
+            reportPage = reportRepository.findFeed(EReportStatus.rejected, filter, severityFilter, keyword,
+                    dates.from(), dates.toExclusive(), pageable);
+        }
         List<ReportDetailResponse> content = reportPage.getContent().stream().map(r -> {
             ReportDetailResponse res = toPublic(toDetail(r));
             if (userLat != null && userLong != null && r.getLatitude() != null && r.getLongitude() != null) {
@@ -962,29 +981,119 @@ public class ReportServiceImpl implements IReportService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<ReportResponse> getMyReports(String userId, String status, int limit) {
-        int safeLimit = Math.max(1, Math.min(limit, 100));
-        EReportStatus reportStatus = null;
+    public PageResponse<ReportResponse> getMyReports(String userId, String status, String severity, String search,
+            String from, String to, int page, int size) {
+        int safePage = Math.max(1, page);
+        int safeSize = Math.max(1, Math.min(size, MY_REPORTS_MAX_PAGE_SIZE));
 
-        if (status != null && !status.trim().isEmpty()) {
+        // "rehandling" không phải EReportStatus: lọc theo is_review_resolved = false (mọi trạng thái)
+        String normalizedStatus = status != null ? status.trim().toLowerCase() : "";
+        boolean rehandling = "rehandling".equals(normalizedStatus);
+        EReportStatus reportStatus = null;
+        if (!rehandling && !normalizedStatus.isEmpty() && !"all".equals(normalizedStatus)) {
             try {
-                reportStatus = EReportStatus.valueOf(status.toLowerCase());
+                reportStatus = EReportStatus.valueOf(normalizedStatus);
             } catch (IllegalArgumentException e) {
                 log.warn("[MyReports] Invalid status filter: {}", status);
             }
         }
 
-        List<Report> reports;
-        if ("rehandling".equalsIgnoreCase(status)) {
-            reports = reportRepository.findByUserIdAndIsReviewResolvedFalseOrderByCreatedAtDesc(userId,
-                    Limit.of(safeLimit));
-        } else if (reportStatus == null) {
-            reports = reportRepository.findByUserIdOrderByCreatedAtDesc(userId, Limit.of(safeLimit));
-        } else {
-            reports = reportRepository.findByUserIdAndStatusOrderByCreatedAtDesc(userId, reportStatus,
-                    Limit.of(safeLimit));
+        ClientDateRange dates = parseClientDateRange(from, to);
+        Page<Report> reportPage = reportRepository.findMyReports(userId, reportStatus, parseClientSeverity(severity),
+                rehandling, normalizeClientKeyword(search), dates.from(), dates.toExclusive(),
+                PageRequest.of(safePage - 1, safeSize));
+
+        return PageResponse.<ReportResponse>builder()
+                .currentPage(safePage)
+                .pageSize(safeSize)
+                .totalPages(reportPage.getTotalPages())
+                .totalElements(reportPage.getTotalElements())
+                .content(reportPage.getContent().stream().map(this::mapToResponse).collect(Collectors.toList()))
+                .build();
+    }
+
+    /** Mức độ lọc từ Client; rỗng / "all" / giá trị lạ = không lọc. */
+    private EReportSeverity parseClientSeverity(String severity) {
+        if (severity == null || severity.isBlank() || "all".equalsIgnoreCase(severity.trim())) {
+            return null;
         }
-        return reports.stream().map(this::mapToResponse).collect(Collectors.toList());
+        try {
+            return EReportSeverity.valueOf(severity.trim().toLowerCase());
+        } catch (IllegalArgumentException e) {
+            log.warn("[ClientReports] Invalid severity filter: {}", severity);
+            return null;
+        }
+    }
+
+    /** Từ khoá tìm kiếm từ Client: trim, cắt độ dài tối đa; rỗng = null (không lọc). */
+    /** Khoảng ngày tạo phản ánh: [from, toExclusive); mỗi đầu null = không giới hạn. */
+    private record ClientDateRange(LocalDateTime from, LocalDateTime toExclusive) {
+    }
+
+    /**
+     * Ngày Client chọn (yyyy-MM-dd, theo giờ server) → [đầu ngày from, đầu ngày sau to).
+     * Sai định dạng thì bỏ đầu đó; from sau to thì đảo lại để không trả về rỗng vô lý.
+     */
+    private ClientDateRange parseClientDateRange(String from, String to) {
+        LocalDate fromDate = parseClientDate(from);
+        LocalDate toDate = parseClientDate(to);
+        if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
+            LocalDate swap = fromDate;
+            fromDate = toDate;
+            toDate = swap;
+        }
+        return new ClientDateRange(
+                fromDate != null ? fromDate.atStartOfDay() : null,
+                toDate != null ? toDate.plusDays(1).atStartOfDay() : null);
+    }
+
+    private LocalDate parseClientDate(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        try {
+            return LocalDate.parse(value.trim());
+        } catch (java.time.format.DateTimeParseException e) {
+            log.warn("[ClientReports] Invalid date filter: {}", value);
+            return null;
+        }
+    }
+
+    private String normalizeClientKeyword(String search) {
+        if (search == null) {
+            return null;
+        }
+        String keyword = search.trim();
+        if (keyword.length() > CLIENT_MAX_SEARCH_LENGTH) {
+            keyword = keyword.substring(0, CLIENT_MAX_SEARCH_LENGTH);
+        }
+        return keyword.isEmpty() ? null : keyword;
+    }
+
+    private boolean isValidCoordinate(Double lat, Double lng) {
+        return lat != null && lng != null && !lat.isNaN() && !lng.isNaN()
+                && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MyReportsSummaryResponse getMyReportsSummary(String userId) {
+        Map<EReportStatus, Long> byStatus = new EnumMap<>(EReportStatus.class);
+        for (Object[] row : reportRepository.countMyReportsGroupByStatus(userId)) {
+            if (row[0] instanceof EReportStatus s && row[1] instanceof Number n) {
+                byStatus.put(s, n.longValue());
+            }
+        }
+        long total = byStatus.values().stream().mapToLong(Long::longValue).sum();
+
+        return MyReportsSummaryResponse.builder()
+                .total(total)
+                .pending(byStatus.getOrDefault(EReportStatus.pending, 0L))
+                .processing(byStatus.getOrDefault(EReportStatus.processing, 0L))
+                .processed(byStatus.getOrDefault(EReportStatus.processed, 0L))
+                .rejected(byStatus.getOrDefault(EReportStatus.rejected, 0L))
+                .rehandling(reportRepository.countByUserIdAndIsReviewResolvedFalse(userId))
+                .build();
     }
 
     @Override

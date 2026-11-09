@@ -2,8 +2,11 @@ import 'package:smartspace_client/features/reports/models/report_density_model.d
 import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
+import 'package:smartspace_client/features/reports/models/feed_sort.dart';
+import 'package:smartspace_client/features/reports/models/report_date_range.dart';
 import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
 import 'package:smartspace_client/features/reports/models/map_reports_result.dart';
+import 'package:smartspace_client/features/reports/models/my_reports_page_model.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_client/features/reports/models/report_dto.dart';
@@ -70,20 +73,40 @@ class ReportRepoApi implements ReportRepo {
   }
 
   @override
-  Future<ApiResponse<List<ReportModel>>> getMyReports({String? status, int limit = 50}) async {
-    final Map<String, dynamic> queryParams = {'limit': limit};
-    if (status != null) queryParams['status'] = status;
-
-    return await apiClient.get<List<ReportModel>>(
+  Future<ApiResponse<MyReportsPage>> getMyReports({
+    String? status,
+    EReportSeverity? severity,
+    ReportDateRange? dateRange,
+    String? search,
+    int page = 1,
+    int size = 20,
+  }) async {
+    final keyword = search?.trim();
+    return await apiClient.get<MyReportsPage>(
       '/reports/my-reports',
-      queryParameters: queryParams,
+      queryParameters: {
+        'page': page,
+        'size': size,
+        'status': ?status,
+        'severity': ?severity?.name,
+        'from': ?dateRange?.fromQuery,
+        'to': ?dateRange?.toQuery,
+        if (keyword != null && keyword.isNotEmpty) 'search': keyword,
+      },
       decoder: (json) {
-        if (json is List) {
-          return json
-              .map((e) => ReportModel.fromJson(e as Map<String, dynamic>))
-              .toList();
-        }
-        return [];
+        if (json is Map<String, dynamic>) return MyReportsPage.fromJson(json);
+        throw Exception('Invalid response format');
+      },
+    );
+  }
+
+  @override
+  Future<ApiResponse<MyReportsSummary>> getMyReportsSummary() async {
+    return await apiClient.get<MyReportsSummary>(
+      '/reports/my-reports/summary',
+      decoder: (json) {
+        if (json is Map<String, dynamic>) return MyReportsSummary.fromJson(json);
+        throw Exception('Invalid response format');
       },
     );
   }
@@ -116,13 +139,29 @@ class ReportRepoApi implements ReportRepo {
   }
 
   @override
-  Future<ApiResponse<ReportFeedPage>> getFeed({String? status, int page = 1, int size = 10, double? lat, double? lng}) async {
+  Future<ApiResponse<ReportFeedPage>> getFeed({
+    String? status,
+    EReportSeverity? severity,
+    ReportDateRange? dateRange,
+    String? search,
+    FeedSort sort = FeedSort.latest,
+    int page = 1,
+    int size = 10,
+    double? lat,
+    double? lng,
+  }) async {
+    final keyword = search?.trim();
     return await apiClient.get<ReportFeedPage>(
       '/reports/feed',
       queryParameters: {
         'page': page,
         'size': size,
+        'sort': sort.name,
         'status': ?status,
+        'severity': ?severity?.name,
+        'from': ?dateRange?.fromQuery,
+        'to': ?dateRange?.toQuery,
+        if (keyword != null && keyword.isNotEmpty) 'search': keyword,
         if (lat != null && lng != null) 'user_lat': lat,
         if (lat != null && lng != null) 'user_long': lng,
       },

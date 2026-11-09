@@ -1179,4 +1179,57 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get freeCallComingSoon =>
       'Free in-app voice call feature is under development';
+
+  @override
+  String get searchReportsPlaceholder =>
+      'Search by title, description or address...';
+
+  @override
+  String get noMatchingReports => 'No matching reports';
+
+  @override
+  String get sortLabel => 'Sort';
+
+  @override
+  String get clearFilters => 'Clear filters';
+
+  @override
+  String resultsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count results',
+      one: '1 result',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get nearbyLocationUnavailable =>
+      'Couldn\'t get your location. Showing the latest reports instead.';
+
+  @override
+  String filterSelectedTooltip(Object label, Object value) {
+    return '$label: $value';
+  }
+
+  @override
+  String get pickSingleDate => 'A specific day…';
+
+  @override
+  String get pickDateRange => 'A date range…';
+
+  @override
+  String get notificationFilterUnread => 'Unread';
+
+  @override
+  String notificationFilterUnreadCount(String count) {
+    return 'Unread ($count)';
+  }
+
+  @override
+  String get allNotificationsRead => 'You\'re all caught up';
+
+  @override
+  String get viewAllNotifications => 'View all notifications';
 }

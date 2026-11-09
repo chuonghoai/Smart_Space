@@ -16,6 +16,10 @@ class NotificationState {
   final int currentPage;
   final bool hasMore;
 
+  /// Bộ lọc "Chưa đọc". Thông báo vừa được đọc trong chế độ này vẫn ở lại danh sách (hiển thị đã đọc)
+  /// tới lần tải lại kế tiếp, để danh sách không nhảy dưới tay người dùng.
+  final bool unreadOnly;
+
   NotificationState({
     this.countModel,
     this.isLoading = false,
@@ -26,8 +30,10 @@ class NotificationState {
     this.notificationsError,
     this.currentPage = 0,
     this.hasMore = true,
+    this.unreadOnly = false,
   });
 
+  /// [notificationsError] nhận function để có thể xoá lỗi (gán `null`) tường minh.
   NotificationState copyWith({
     NotificationCountModel? countModel,
     bool? isLoading,
@@ -35,9 +41,10 @@ class NotificationState {
     DateTime? lastFetched,
     List<NotificationModel>? notifications,
     bool? isLoadingNotifications,
-    String? notificationsError,
+    String? Function()? notificationsError,
     int? currentPage,
     bool? hasMore,
+    bool? unreadOnly,
   }) {
     return NotificationState(
       countModel: countModel ?? this.countModel,
@@ -46,15 +53,21 @@ class NotificationState {
       lastFetched: lastFetched ?? this.lastFetched,
       notifications: notifications ?? this.notifications,
       isLoadingNotifications: isLoadingNotifications ?? this.isLoadingNotifications,
-      notificationsError: notificationsError ?? this.notificationsError,
+      notificationsError: notificationsError != null ? notificationsError() : this.notificationsError,
       currentPage: currentPage ?? this.currentPage,
       hasMore: hasMore ?? this.hasMore,
+      unreadOnly: unreadOnly ?? this.unreadOnly,
     );
   }
 }
 
 class NotificationNotifier extends StateNotifier<NotificationState> {
+  static const int _pageSize = 20;
+
   final NotificationService _service;
+
+  /// Tăng mỗi lần tải lại trang đầu — response của lần tải cũ hơn (vd. bộ lọc trước) bị bỏ qua.
+  int _requestId = 0;
 
   NotificationNotifier(this._service) : super(NotificationState()) {
     fetchCount();
@@ -87,32 +100,50 @@ class NotificationNotifier extends StateNotifier<NotificationState> {
     }
   }
 
-  Future<void> fetchNotifications({bool loadMore = false}) async {
-    if (state.isLoadingNotifications || (!state.hasMore && loadMore)) return;
+  /// Đổi bộ lọc Tất cả / Chưa đọc → tải lại từ trang đầu, xoá danh sách của bộ lọc cũ.
+  Future<void> setUnreadOnly(bool unreadOnly) async {
+    if (unreadOnly == state.unreadOnly) return;
+    state = state.copyWith(unreadOnly: unreadOnly, notifications: const [], hasMore: true);
+    await fetchNotifications();
+  }
 
+  /// [loadMore] = false: tải lại trang đầu theo bộ lọc hiện tại (mở màn, kéo làm mới, đổi bộ lọc).
+  Future<void> fetchNotifications({bool loadMore = false}) async {
+    if (loadMore && (state.isLoadingNotifications || !state.hasMore)) return;
+
+    final requestId = loadMore ? _requestId : ++_requestId;
     final page = loadMore ? state.currentPage + 1 : 0;
-    state = state.copyWith(isLoadingNotifications: true, notificationsError: null);
+    state = state.copyWith(isLoadingNotifications: true, notificationsError: () => null);
 
     try {
-      final response = await _service.getMyNotifications(page: page);
+      final response = await _service.getMyNotifications(
+        page: page,
+        size: _pageSize,
+        unreadOnly: state.unreadOnly,
+      );
+      if (!mounted || requestId != _requestId) return;
       if (response.success && response.data != null) {
         final newItems = response.data!;
+        final loadedIds = loadMore ? state.notifications.map((n) => n.id).toSet() : const <String>{};
         state = state.copyWith(
           isLoadingNotifications: false,
-          notifications: loadMore ? [...state.notifications, ...newItems] : newItems,
+          notifications: loadMore
+              ? [...state.notifications, ...newItems.where((n) => !loadedIds.contains(n.id))]
+              : newItems,
           currentPage: page,
-          hasMore: newItems.length >= 20,
+          hasMore: newItems.length >= _pageSize,
         );
       } else {
         state = state.copyWith(
-          isLoadingNotifications: false, 
-          notificationsError: response.message,
+          isLoadingNotifications: false,
+          notificationsError: () => response.message,
         );
       }
     } catch (e) {
+      if (!mounted || requestId != _requestId) return;
       state = state.copyWith(
         isLoadingNotifications: false,
-        notificationsError: e.toString(),
+        notificationsError: () => e.toString(),
       );
     }
   }

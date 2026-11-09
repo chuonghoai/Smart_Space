@@ -12,6 +12,7 @@ import com.vn.smart_space.dto.response.admin.ReportListResponse;
 import com.vn.smart_space.dto.response.admin.ReportStatisticsResponse;
 import com.vn.smart_space.dto.response.admin.ReportTrendResponse;
 import com.vn.smart_space.dto.response.report.MapReportsResponse;
+import com.vn.smart_space.dto.response.report.MyReportsSummaryResponse;
 import com.vn.smart_space.dto.response.report.ReportDetailResponse;
 import com.vn.smart_space.dto.response.report.ReportResponse;
 
@@ -26,8 +27,10 @@ public interface IReportService {
 
         ReportDetailResponse getReportDetail(String reportId, String viewerId, String viewerScope);
 
-        PageResponse<ReportDetailResponse> getFeed(String status, int page, int size,
-                        Double userLat, Double userLong);
+        // Client feed — sort "nearby" (needs userLat/userLong) orders by distance in the DB, otherwise newest first
+        // from/to: yyyy-MM-dd, both ends inclusive, null = unbounded
+        PageResponse<ReportDetailResponse> getFeed(String status, String severity, String search, String from,
+                        String to, String sort, int page, int size, Double userLat, Double userLong);
 
         // Client Map — reports inside a viewport (bounding box), narrowed by filter & timeframe
         MapReportsResponse getReportsInBounds(String viewerId, Double minLat, Double maxLat, Double minLng,
@@ -44,7 +47,11 @@ public interface IReportService {
 
         ReportDetailResponse completeReport(String reportId, ReportCompleteRequest request, String staffId);
 
-        List<ReportResponse> getMyReports(String userId, String status, int limit);
+        // Client My Reports — paged, optional status ("rehandling" = owner marked unresolved), severity & keyword
+        PageResponse<ReportResponse> getMyReports(String userId, String status, String severity, String search,
+                        String from, String to, int page, int size);
+
+        MyReportsSummaryResponse getMyReportsSummary(String userId);
 
         // Dashboard statistics
         ReportStatisticsResponse getReportStatistics();

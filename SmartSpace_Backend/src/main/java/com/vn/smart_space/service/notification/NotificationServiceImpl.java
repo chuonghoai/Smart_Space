@@ -25,6 +25,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Slf4j
 public class NotificationServiceImpl implements INotificationService {
 
+    private static final int MY_NOTIFICATIONS_MAX_PAGE_SIZE = 50;
+
     private final NotificationRepository notificationRepository;
     private final UserNotificationStateRepository userNotificationStateRepository;
     private final UserRepository userRepository;
@@ -69,9 +71,13 @@ public class NotificationServiceImpl implements INotificationService {
 
     @Override
     @Transactional(readOnly = true)
-    public com.vn.smart_space.dto.PageResponse<com.vn.smart_space.dto.response.notification.NotificationResponse> getMyNotifications(String userId, int page, int size) {
-        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(page, size);
-        org.springframework.data.domain.Page<Notification> notifs = notificationRepository.findByUserIdOrUserIsNullOrderByCreatedAtDesc(userId, pageable);
+    public com.vn.smart_space.dto.PageResponse<com.vn.smart_space.dto.response.notification.NotificationResponse> getMyNotifications(String userId, int page, int size, boolean unreadOnly) {
+        // page 0-based (giữ nguyên hợp đồng API hiện tại); chặn size để tránh tải quá lớn
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(
+                Math.max(0, page), Math.max(1, Math.min(size, MY_NOTIFICATIONS_MAX_PAGE_SIZE)));
+        org.springframework.data.domain.Page<Notification> notifs = unreadOnly
+                ? notificationRepository.findUnreadPersonalByUserId(userId, pageable)
+                : notificationRepository.findByUserIdOrUserIsNullOrderByCreatedAtDesc(userId, pageable);
         
         java.util.List<com.vn.smart_space.dto.response.notification.NotificationResponse> content = notifs.getContent().stream()
                 .map(n -> {

@@ -1171,4 +1171,56 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get freeCallComingSoon =>
       'Tính năng gọi miễn phí qua internet đang được phát triển';
+
+  @override
+  String get searchReportsPlaceholder =>
+      'Tìm theo tiêu đề, mô tả hoặc địa chỉ...';
+
+  @override
+  String get noMatchingReports => 'Không tìm thấy phản ánh phù hợp';
+
+  @override
+  String get sortLabel => 'Sắp xếp';
+
+  @override
+  String get clearFilters => 'Xoá lọc';
+
+  @override
+  String resultsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count kết quả',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get nearbyLocationUnavailable =>
+      'Không lấy được vị trí của bạn. Đang hiển thị phản ánh mới nhất.';
+
+  @override
+  String filterSelectedTooltip(Object label, Object value) {
+    return '$label: $value';
+  }
+
+  @override
+  String get pickSingleDate => 'Một ngày cụ thể…';
+
+  @override
+  String get pickDateRange => 'Khoảng ngày…';
+
+  @override
+  String get notificationFilterUnread => 'Chưa đọc';
+
+  @override
+  String notificationFilterUnreadCount(String count) {
+    return 'Chưa đọc ($count)';
+  }
+
+  @override
+  String get allNotificationsRead => 'Bạn đã đọc hết thông báo';
+
+  @override
+  String get viewAllNotifications => 'Xem tất cả thông báo';
 }

@@ -2,8 +2,11 @@ import 'package:smartspace_client/features/reports/models/report_density_model.d
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/core/constants/use_mock.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
+import 'package:smartspace_client/features/reports/models/feed_sort.dart';
+import 'package:smartspace_client/features/reports/models/report_date_range.dart';
 import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
 import 'package:smartspace_client/features/reports/models/map_reports_result.dart';
+import 'package:smartspace_client/features/reports/models/my_reports_page_model.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_client/features/reports/models/report_dto.dart';
@@ -26,8 +29,19 @@ class ReportService {
     return await reportRepo.getRecentReports();
   }
 
-  Future<ApiResponse<List<ReportModel>>> getMyReports({String? status, int limit = 50}) async {
-    return await reportRepo.getMyReports(status: status, limit: limit);
+  Future<ApiResponse<MyReportsPage>> getMyReports({
+    String? status,
+    EReportSeverity? severity,
+    ReportDateRange? dateRange,
+    String? search,
+    int page = 1,
+    int size = 20,
+  }) async {
+    return await reportRepo.getMyReports(status: status, severity: severity, dateRange: dateRange, search: search, page: page, size: size);
+  }
+
+  Future<ApiResponse<MyReportsSummary>> getMyReportsSummary() async {
+    return await reportRepo.getMyReportsSummary();
   }
 
   Future<ApiResponse<ReportModel>> createReport(ReportDto reportDto) async {
@@ -38,8 +52,28 @@ class ReportService {
     return await reportRepo.getReportDetail(reportId);
   }
 
-  Future<ApiResponse<ReportFeedPage>> getFeed({String? status, int page = 1, int size = 10, double? lat, double? lng}) {
-    return reportRepo.getFeed(status: status, page: page, size: size, lat: lat, lng: lng);
+  Future<ApiResponse<ReportFeedPage>> getFeed({
+    String? status,
+    EReportSeverity? severity,
+    ReportDateRange? dateRange,
+    String? search,
+    FeedSort sort = FeedSort.latest,
+    int page = 1,
+    int size = 10,
+    double? lat,
+    double? lng,
+  }) {
+    return reportRepo.getFeed(
+      status: status,
+      severity: severity,
+      dateRange: dateRange,
+      search: search,
+      sort: sort,
+      page: page,
+      size: size,
+      lat: lat,
+      lng: lng,
+    );
   }
 
   Future<ApiResponse<MapReportsResult>> getReportsInBounds(

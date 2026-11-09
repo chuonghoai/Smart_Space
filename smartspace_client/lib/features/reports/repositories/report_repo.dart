@@ -1,8 +1,11 @@
 import 'package:smartspace_client/features/reports/models/report_density_model.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
+import 'package:smartspace_client/features/reports/models/feed_sort.dart';
+import 'package:smartspace_client/features/reports/models/report_date_range.dart';
 import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
 import 'package:smartspace_client/features/reports/models/map_reports_result.dart';
+import 'package:smartspace_client/features/reports/models/my_reports_page_model.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_client/features/reports/models/report_dto.dart';
@@ -14,9 +17,28 @@ abstract class ReportRepo {
   Future<ApiResponse<List<ReportModel>>> getDangerousReports();
   Future<ApiResponse<List<ReportModel>>> getRecentReports();
   Future<ApiResponse<ReportModel>> createReport(ReportDto reportDto);
-  Future<ApiResponse<List<ReportModel>>> getMyReports({String? status, int limit = 50});
+  Future<ApiResponse<MyReportsPage>> getMyReports({
+    String? status,
+    EReportSeverity? severity,
+    ReportDateRange? dateRange,
+    String? search,
+    int page = 1,
+    int size = 20,
+  });
+  Future<ApiResponse<MyReportsSummary>> getMyReportsSummary();
   Future<ApiResponse<ReportDetailModel>> getReportDetail(String reportId);
-  Future<ApiResponse<ReportFeedPage>> getFeed({String? status, int page = 1, int size = 10, double? lat, double? lng});
+  /// [sort] = [FeedSort.nearby] cần [lat]/[lng]; [lat]/[lng] cũng dùng để tính khoảng cách hiển thị.
+  Future<ApiResponse<ReportFeedPage>> getFeed({
+    String? status,
+    EReportSeverity? severity,
+    ReportDateRange? dateRange,
+    String? search,
+    FeedSort sort = FeedSort.latest,
+    int page = 1,
+    int size = 10,
+    double? lat,
+    double? lng,
+  });
   Future<ApiResponse<MapReportsResult>> getReportsInBounds(
     MapBounds bounds, {
     MapReportFilter filter = MapReportFilter.all,
