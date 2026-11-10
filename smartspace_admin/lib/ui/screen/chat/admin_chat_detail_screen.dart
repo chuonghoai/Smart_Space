@@ -4,9 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:mobile_shared/features/chat/widgets/chat_audio_recorder_bar.dart';
-import 'package:mobile_shared/features/chat/widgets/linked_report_picker_sheet.dart';
-import 'package:mobile_shared/features/chat/widgets/typing_indicator_widget.dart';
 import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
@@ -30,6 +27,7 @@ class _AdminChatDetailScreenState extends ConsumerState<AdminChatDetailScreen> {
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _canSend = false;
+  bool _isAudioMode = false;
   Timer? _typingTimer;
 
   @override
@@ -111,7 +109,10 @@ class _AdminChatDetailScreenState extends ConsumerState<AdminChatDetailScreen> {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
     final state = ref.read(chatDetailProvider(widget.conversationId));
-    final isAnonymous = state.conversation?.isAnonymous ?? false;
+    final conv = state.conversation;
+    final isAnonymous = conv?.isAnonymous ?? false;
+    final partnerRole = conv?.partnerRole?.toLowerCase() ?? widget.partner?.role.toLowerCase();
+    final isPartnerClient = partnerRole == 'client' || conv?.isClient == true;
 
     showModalBottomSheet<void>(
       context: context,
@@ -183,29 +184,30 @@ class _AdminChatDetailScreenState extends ConsumerState<AdminChatDetailScreen> {
                     _pickMedia(ImageSource.camera, isVideo: false);
                   },
                 ),
-                ListTile(
-                  leading: Container(
-                    width: 40,
-                    height: 40,
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.errorContainer.withValues(alpha: 0.4),
-                      shape: BoxShape.circle,
+                if (isPartnerClient)
+                  ListTile(
+                    leading: Container(
+                      width: 40,
+                      height: 40,
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.errorContainer.withValues(alpha: 0.4),
+                        shape: BoxShape.circle,
+                      ),
+                      child: Icon(Icons.assignment_outlined, color: theme.colorScheme.error, size: 22),
                     ),
-                    child: Icon(Icons.assignment_outlined, color: theme.colorScheme.error, size: 22),
+                    title: Text(l10n.attachReport),
+                    onTap: () async {
+                      Navigator.pop(ctx);
+                      final selected = await LinkedReportPickerSheet.show(
+                        context: context,
+                        conversationId: widget.conversationId,
+                        isAnonymous: isAnonymous,
+                      );
+                      if (selected != null && mounted) {
+                        ref.read(chatDetailProvider(widget.conversationId).notifier).sendReportMessage(selected);
+                      }
+                    },
                   ),
-                  title: Text(l10n.attachReport),
-                  onTap: () async {
-                    Navigator.pop(ctx);
-                    final selected = await LinkedReportPickerSheet.show(
-                      context: context,
-                      conversationId: widget.conversationId,
-                      isAnonymous: isAnonymous,
-                    );
-                    if (selected != null && mounted) {
-                      ref.read(chatDetailProvider(widget.conversationId).notifier).sendReportMessage(selected);
-                    }
-                  },
-                ),
               ],
             ),
           ),
@@ -449,53 +451,11 @@ class _AdminChatDetailScreenState extends ConsumerState<AdminChatDetailScreen> {
                         typingText: l10n.typingText,
                       ),
                     ),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                    decoration: BoxDecoration(
-                      color: theme.colorScheme.surface,
-                      border: Border(
-                        top: BorderSide(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4)),
-                      ),
-                    ),
-                    child: Row(
-                      children: [
-                        IconButton(
-                          onPressed: _showMoreOptionsSheet,
-                          icon: Icon(
-                            Icons.add_circle_outline_rounded,
-                            color: theme.colorScheme.primary,
-                            size: 26,
-                          ),
-                        ),
-                        Expanded(
-                          child: TextField(
-                            controller: _textController,
-                            textCapitalization: TextCapitalization.sentences,
-                            maxLines: 4,
-                            minLines: 1,
-                            decoration: InputDecoration(
-                              hintText: l10n.messageInputPlaceholder,
-                              hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                                color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
-                              ),
-                              filled: true,
-                              fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
-                              contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
-                              border: OutlineInputBorder(
-                                borderRadius: BorderRadius.circular(24),
-                                borderSide: BorderSide.none,
-                              ),
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 4),
-                        if (_canSend)
-                          IconButton.filled(
-                            onPressed: _sendMessage,
-                            icon: const Icon(Icons.send_rounded, size: 20),
-                          )
-                        else
-                          ChatAudioRecorderButton(
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 250),
+                    child: _isAudioMode
+                        ? ChatAudioRecorderBar(
+                            key: const ValueKey('audio_bar'),
                             onRecordingComplete: ({
                               required Uint8List bytes,
                               required String fileName,
@@ -509,9 +469,69 @@ class _AdminChatDetailScreenState extends ConsumerState<AdminChatDetailScreen> {
                                     localPath: localPath,
                                   );
                             },
+                            onClose: () {
+                              setState(() => _isAudioMode = false);
+                            },
+                          )
+                        : Container(
+                            key: const ValueKey('text_bar'),
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surface,
+                              border: Border(
+                                top: BorderSide(color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4)),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                IconButton(
+                                  onPressed: _showMoreOptionsSheet,
+                                  icon: Icon(
+                                    Icons.add_circle_outline_rounded,
+                                    color: theme.colorScheme.primary,
+                                    size: 26,
+                                  ),
+                                ),
+                                Expanded(
+                                  child: TextField(
+                                    controller: _textController,
+                                    textCapitalization: TextCapitalization.sentences,
+                                    maxLines: 4,
+                                    minLines: 1,
+                                    decoration: InputDecoration(
+                                      hintText: l10n.messageInputPlaceholder,
+                                      hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                                        color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.7),
+                                      ),
+                                      filled: true,
+                                      fillColor: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.45),
+                                      contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+                                      border: OutlineInputBorder(
+                                        borderRadius: BorderRadius.circular(24),
+                                        borderSide: BorderSide.none,
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                                const SizedBox(width: 4),
+                                if (_canSend)
+                                  IconButton.filled(
+                                    onPressed: _sendMessage,
+                                    icon: const Icon(Icons.send_rounded, size: 20),
+                                  )
+                                else
+                                  IconButton(
+                                    icon: Icon(
+                                      Icons.mic_none_rounded,
+                                      color: theme.colorScheme.onSurfaceVariant,
+                                    ),
+                                    onPressed: () {
+                                      setState(() => _isAudioMode = true);
+                                    },
+                                  ),
+                              ],
+                            ),
                           ),
-                      ],
-                    ),
                   ),
                 ],
               ),

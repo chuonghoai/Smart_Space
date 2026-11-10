@@ -204,6 +204,15 @@ public class ChatMessageService implements IChatMessageService {
                 } else {
                     convResponse = ConversationMapper.toConversationDetailResponse(recipient.getId(), conversation);
                 }
+
+                // Compute recipient's total unread count and attach to response & dedicated queue
+                Long totalUnread = conversationParticipantRepository.countTotalUnreadByUserId(recipient.getId());
+                if (totalUnread != null) {
+                    convResponse.setTotalUnreadCount(totalUnread.intValue());
+                    messagingTemplate.convertAndSendToUser(recipient.getId(), "/queue/chat.unread",
+                            Map.of("totalUnreadCount", totalUnread.intValue()));
+                }
+
                 messagingTemplate.convertAndSendToUser(recipient.getId(), "/queue/conversations", convResponse);
             } catch (Exception e) {
                 log.warn("Failed to broadcast conversation update to user {}: {}", recipient.getId(), e.getMessage());

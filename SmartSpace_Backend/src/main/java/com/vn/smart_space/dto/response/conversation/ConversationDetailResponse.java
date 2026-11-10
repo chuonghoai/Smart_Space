@@ -57,6 +57,9 @@ public class ConversationDetailResponse {
     @Builder.Default
     private Integer unreadCount = 0;
 
+    // Total unread count across all conversations for current user
+    private Integer totalUnreadCount;
+
     // Last message info
     private String lastMessageId;
     private String lastMessageContent;

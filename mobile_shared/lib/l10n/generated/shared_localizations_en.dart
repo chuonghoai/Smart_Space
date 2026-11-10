@@ -46,4 +46,43 @@ class SharedLocalizationsEn extends SharedLocalizations {
 
   @override
   String get tapToViewReport => 'Tap to view details';
+
+  @override
+  String get cannotPlayVideo => 'Cannot play video';
+
+  @override
+  String get downloadMedia => 'Download';
+
+  @override
+  String get downloadingMedia => 'Downloading...';
+
+  @override
+  String get downloadSuccess => 'Saved to device successfully';
+
+  @override
+  String get downloadFailed => 'Failed to download';
+
+  @override
+  String get holdToRecordPrompt => 'Press and hold to start recording';
+
+  @override
+  String get recordingAudio => 'Recording...';
+
+  @override
+  String get discardAudio => 'Discard';
+
+  @override
+  String get sendAudio => 'Send';
+
+  @override
+  String get mediaOptions => 'Media options';
+
+  @override
+  String get seekBack10s => 'Back 10 seconds';
+
+  @override
+  String get seekForward10s => 'Forward 10 seconds';
+
+  @override
+  String get playbackPreview => 'Audio playback preview';
 }

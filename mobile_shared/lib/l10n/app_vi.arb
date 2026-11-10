@@ -20,5 +20,18 @@
   "releaseToCancel": "Thả để hủy",
   "micPermissionRequired": "Vui lòng cấp quyền truy cập microphone để ghi âm",
   "attachedReport": "Phản ánh đính kèm",
-  "tapToViewReport": "Nhấn để xem chi tiết"
+  "tapToViewReport": "Nhấn để xem chi tiết",
+  "cannotPlayVideo": "Không thể phát video",
+  "downloadMedia": "Tải xuống",
+  "downloadingMedia": "Đang tải xuống...",
+  "downloadSuccess": "Đã lưu vào thiết bị thành công",
+  "downloadFailed": "Tải xuống thất bại",
+  "holdToRecordPrompt": "Nhấn giữ để bắt đầu thu âm",
+  "recordingAudio": "Đang thu âm...",
+  "discardAudio": "Hủy",
+  "sendAudio": "Gửi",
+  "mediaOptions": "Tùy chọn phương tiện",
+  "seekBack10s": "Lùi 10 giây",
+  "seekForward10s": "Tua tới 10 giây",
+  "playbackPreview": "Nghe lại âm thanh"
 }

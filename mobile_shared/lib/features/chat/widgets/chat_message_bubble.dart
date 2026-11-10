@@ -228,6 +228,15 @@ class ChatMessageBubble extends StatelessWidget {
     );
   }
 
+  String _getVideoThumbnailUrl(String url) {
+    if (url.isEmpty) return '';
+    // Cloudinary automatically returns a video poster frame when changing extension to .jpg
+    return url.replaceAll(
+      RegExp(r'\.(mp4|mov|avi|mkv|webm|3gp)(\?.*)?$', caseSensitive: false),
+      '.jpg',
+    );
+  }
+
   Widget _buildMediaBubble(BuildContext context, ThemeData theme) {
     final mediaUrl = message.messageMedia.isNotEmpty
         ? message.messageMedia.first.thumbnailUrl
@@ -236,7 +245,7 @@ class ChatMessageBubble extends StatelessWidget {
     final isVideo = message.isVideo;
 
     Widget imageWidget;
-    if (localPath != null && localPath.isNotEmpty && File(localPath).existsSync()) {
+    if (!isVideo && localPath != null && localPath.isNotEmpty && File(localPath).existsSync()) {
       imageWidget = Image.file(
         File(localPath),
         width: 240,
@@ -244,8 +253,9 @@ class ChatMessageBubble extends StatelessWidget {
         fit: BoxFit.cover,
       );
     } else if (mediaUrl.isNotEmpty) {
+      final effectiveUrl = isVideo ? _getVideoThumbnailUrl(mediaUrl) : mediaUrl;
       imageWidget = Image.network(
-        mediaUrl,
+        effectiveUrl,
         width: 240,
         height: 200,
         fit: BoxFit.cover,
@@ -268,8 +278,43 @@ class ChatMessageBubble extends StatelessWidget {
           width: 240,
           height: 200,
           color: Colors.black26,
-          child: const Center(
-            child: Icon(Icons.broken_image_rounded, size: 40, color: Colors.white70),
+          child: Center(
+            child: Icon(
+              isVideo ? Icons.videocam_outlined : Icons.broken_image_rounded,
+              size: 40,
+              color: Colors.white70,
+            ),
+          ),
+        ),
+      );
+    } else if (isVideo) {
+      // Local video placeholder during upload or preview
+      imageWidget = Container(
+        width: 240,
+        height: 200,
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest,
+          gradient: LinearGradient(
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+            colors: [
+              theme.colorScheme.surfaceContainerHighest,
+              theme.colorScheme.surfaceContainerHigh,
+            ],
+          ),
+        ),
+        child: Center(
+          child: Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.primary.withValues(alpha: 0.15),
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              Icons.videocam_rounded,
+              size: 32,
+              color: theme.colorScheme.primary,
+            ),
           ),
         ),
       );

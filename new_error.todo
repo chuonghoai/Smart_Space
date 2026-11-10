@@ -1,0 +1,83 @@
+{
+  "todotree": {
+    "tree": [
+      {
+        "key": 1794307534695,
+        "children": [],
+        "todo": {
+          "content": "Khi đang ở màn hình trang chủ mà có tin nhắn mới, con số badge unread count không cập nhật só lượng real time",
+          "id": 1794307534695,
+          "level": "default",
+          "done": true,
+          "start": 1794307534695
+        }
+      },
+      {
+        "key": 1794307622326,
+        "children": [],
+        "todo": {
+          "content": "Lỗi UI tin nhắn video: Khi đang ở màn hình tin nhắn và có tin nhắn loại video (chưa bấm vào để mở toàn màn hình), tin nhắn ko hiện ảnh thumbnail của video",
+          "id": 1794307622326,
+          "level": "default",
+          "done": true,
+          "start": 1794307622326
+        }
+      },
+      {
+        "key": 1794307664742,
+        "children": [],
+        "todo": {
+          "content": "Video hiện chỉ có 1 chức năng duy nhất là play/pause. Phải bố sung thêm tính năng thời lượng video, next/previous 10 giây",
+          "id": 1794307664742,
+          "level": "default",
+          "done": true,
+          "start": 1794307664742
+        }
+      },
+      {
+        "key": 1794307706294,
+        "children": [],
+        "todo": {
+          "content": "Bổ sung UI và tính năng: Trong giao diện toàn màn hình của image/vidoe của màn hình tin nhắn, bổ sung nút 3 chấm ở góc trên bên phải, khi bấm vào thì hiện bottom sheet cho phép tài media xuống thiết bị",
+          "id": 1794307706294,
+          "level": "default",
+          "done": true,
+          "start": 1794307706294
+        }
+      },
+      {
+        "key": 1794307790766,
+        "children": [],
+        "todo": {
+          "content": "Sửa UI tính năng gửi audio: Khi bấm vào nút audio, thay thế chat bar bằng audio bar, trong này hiện 1 nút có icon micro lớn, có hướng dẫn bấm giữ để bắt đầu thu âm, khi thả thay thì hiện nút gửi và thời lượng của audio vừa thu ấm, cho phép phát lại và tua nhanh thời lượng để nghe lại",
+          "id": 1794307790766,
+          "level": "default",
+          "done": true,
+          "start": 1794307790766
+        }
+      },
+      {
+        "key": 1794307906910,
+        "children": [],
+        "todo": {
+          "content": "Chức năng gửi tin nhắn đính kèm phản ánh chỉ khả dụng trong hội thoại của staff - client, còn staff - staff, staff - admin không hiện nút đính kèm phản ánh",
+          "id": 1794307906910,
+          "level": "default",
+          "done": true,
+          "start": 1794307906910
+        }
+      }
+    ],
+    "expandKeys": [],
+    "add_mode": "bottom",
+    "virtual": false,
+    "showLine": false,
+    "playFontSize": 24,
+    "title": "new_error",
+    "autoSort": false,
+    "showEndTime": false,
+    "simpleMode": false,
+    "lang": "en",
+    "version": "1794307943010"
+  }
+}

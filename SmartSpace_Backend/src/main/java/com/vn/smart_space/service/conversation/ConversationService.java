@@ -585,6 +585,15 @@ public class ConversationService implements IConversationService {
                 } else {
                     convRes = ConversationMapper.toConversationDetailResponse(userId, conversation);
                 }
+
+                // Compute total unread count and attach to response & dedicated queue
+                Long totalUnread = conversationParticipantRepository.countTotalUnreadByUserId(userId);
+                if (totalUnread != null) {
+                    convRes.setTotalUnreadCount(totalUnread.intValue());
+                    messagingTemplate.convertAndSendToUser(userId, "/queue/chat.unread",
+                            Map.of("totalUnreadCount", totalUnread.intValue()));
+                }
+
                 messagingTemplate.convertAndSendToUser(userId, "/queue/conversations", convRes);
             } catch (Exception ignored) {
             }

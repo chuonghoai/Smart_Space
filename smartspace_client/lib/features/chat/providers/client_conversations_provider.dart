@@ -61,6 +61,7 @@ class ClientConversationsNotifier extends StateNotifier<ClientConversationsState
         _wsService = wsService ?? chatWsService,
         super(const ClientConversationsState()) {
     _wsService.addConversationListener(_onConversationWsUpdate);
+    _wsService.addUnreadListener(_onTotalUnreadWsUpdate);
   }
 
   @override
@@ -68,7 +69,13 @@ class ClientConversationsNotifier extends StateNotifier<ClientConversationsState
     _isDisposed = true;
     _searchDebounce?.cancel();
     _wsService.removeConversationListener(_onConversationWsUpdate);
+    _wsService.removeUnreadListener(_onTotalUnreadWsUpdate);
     super.dispose();
+  }
+
+  void _onTotalUnreadWsUpdate(int totalUnread) {
+    if (_isDisposed) return;
+    state = state.copyWith(totalUnreadCount: totalUnread);
   }
 
   void _onConversationWsUpdate(ConversationModel updatedConv) {
@@ -107,8 +114,15 @@ class ClientConversationsNotifier extends StateNotifier<ClientConversationsState
       currentList.insert(0, updatedConv);
     }
 
-    state = state.copyWith(conversations: currentList);
-    _fetchUnreadCount();
+    if (updatedConv.totalUnreadCount != null) {
+      state = state.copyWith(
+        conversations: currentList,
+        totalUnreadCount: updatedConv.totalUnreadCount!,
+      );
+    } else {
+      state = state.copyWith(conversations: currentList);
+      _fetchUnreadCount();
+    }
   }
 
   Future<void> _fetchUnreadCount() async {

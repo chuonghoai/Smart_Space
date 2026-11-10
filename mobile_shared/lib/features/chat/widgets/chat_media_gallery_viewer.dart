@@ -1,6 +1,11 @@
+import 'dart:async';
+import 'dart:io';
+import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_shared/features/chat/data/chat_repository.dart';
 import 'package:mobile_shared/features/chat/models/chat_message_model.dart';
+import 'package:mobile_shared/l10n/generated/shared_localizations.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
 class MediaGalleryItem {
@@ -157,6 +162,128 @@ class _ChatMediaGalleryViewerState extends State<ChatMediaGalleryViewer> {
     }
   }
 
+  void _showOptionsBottomSheet() {
+    if (_items.isEmpty || _currentIndex >= _items.length) return;
+    final item = _items[_currentIndex];
+    final sharedL10n = SharedLocalizations.of(context);
+    final theme = Theme.of(context);
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: theme.colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Center(
+                  child: Container(
+                    width: 40,
+                    height: 4,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.outlineVariant,
+                      borderRadius: BorderRadius.circular(2),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ListTile(
+                  leading: Container(
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primaryContainer,
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(
+                      Icons.download_rounded,
+                      color: theme.colorScheme.onPrimaryContainer,
+                    ),
+                  ),
+                  title: Text(
+                    sharedL10n?.downloadMedia ?? 'Tải xuống',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  onTap: () {
+                    Navigator.of(sheetContext).pop();
+                    _downloadMedia(item);
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Future<void> _downloadMedia(MediaGalleryItem item) async {
+    final sharedL10n = SharedLocalizations.of(context);
+    final scaffoldMessenger = ScaffoldMessenger.of(context);
+
+    scaffoldMessenger.hideCurrentSnackBar();
+    scaffoldMessenger.showSnackBar(
+      SnackBar(
+        content: Text(sharedL10n?.downloadingMedia ?? 'Đang tải xuống...'),
+        duration: const Duration(seconds: 2),
+      ),
+    );
+
+    try {
+      final ext = item.isVideo ? 'mp4' : 'jpg';
+      final fileName = item.fileName ?? 'media_${DateTime.now().millisecondsSinceEpoch}.$ext';
+
+      Directory? dir;
+      if (Platform.isAndroid) {
+        dir = Directory('/storage/emulated/0/Download');
+        if (!dir.existsSync()) {
+          dir = await getExternalStorageDirectory();
+        }
+      } else {
+        dir = await getApplicationDocumentsDirectory();
+      }
+
+      final saveDir = dir ?? await getApplicationDocumentsDirectory();
+      final savePath = '${saveDir.path}/$fileName';
+
+      if (File(item.url).existsSync()) {
+        await File(item.url).copy(savePath);
+      } else {
+        final dio = Dio();
+        await dio.download(item.url, savePath);
+      }
+
+      if (mounted) {
+        scaffoldMessenger.hideCurrentSnackBar();
+        scaffoldMessenger.showSnackBar(
+          SnackBar(
+            content: Text(sharedL10n?.downloadSuccess ?? 'Đã lưu vào thiết bị thành công'),
+            backgroundColor: Colors.green.shade700,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('[ChatMediaGalleryViewer] Download failed: $e');
+      if (mounted) {
+        scaffoldMessenger.hideCurrentSnackBar();
+        scaffoldMessenger.showSnackBar(
+          SnackBar(
+            content: Text(sharedL10n?.downloadFailed ?? 'Tải xuống thất bại'),
+            backgroundColor: Theme.of(context).colorScheme.error,
+            duration: const Duration(seconds: 3),
+          ),
+        );
+      }
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -165,10 +292,7 @@ class _ChatMediaGalleryViewerState extends State<ChatMediaGalleryViewer> {
         children: [
           if (_items.isEmpty)
             const Center(
-              child: Text(
-                'Không tìm thấy media',
-                style: TextStyle(color: Colors.white70),
-              ),
+              child: SizedBox.shrink(),
             )
           else
             PageView.builder(
@@ -213,7 +337,7 @@ class _ChatMediaGalleryViewerState extends State<ChatMediaGalleryViewer> {
                     const Spacer(),
                     if (_isLoadingOlder)
                       const Padding(
-                        padding: EdgeInsets.only(right: 16),
+                        padding: EdgeInsets.only(right: 8),
                         child: SizedBox(
                           width: 16,
                           height: 16,
@@ -223,6 +347,10 @@ class _ChatMediaGalleryViewerState extends State<ChatMediaGalleryViewer> {
                           ),
                         ),
                       ),
+                    IconButton(
+                      icon: const Icon(Icons.more_vert_rounded, color: Colors.white),
+                      onPressed: _showOptionsBottomSheet,
+                    ),
                   ],
                 ),
               ),
@@ -276,41 +404,118 @@ class _VideoViewerItemState extends State<_VideoViewerItem> {
   late VideoPlayerController _controller;
   bool _isInitialized = false;
   bool _hasError = false;
+  bool _showControls = true;
+  Timer? _hideTimer;
+  Duration _position = Duration.zero;
+  Duration _duration = Duration.zero;
 
   @override
   void initState() {
     super.initState();
-    _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl))
-      ..initialize().then((_) {
-        if (mounted) {
-          setState(() {
-            _isInitialized = true;
-          });
-          _controller.play();
-        }
-      }).catchError((err) {
-        if (mounted) {
-          setState(() => _hasError = true);
-        }
+    final file = File(widget.videoUrl);
+    if (file.existsSync()) {
+      _controller = VideoPlayerController.file(file);
+    } else {
+      _controller = VideoPlayerController.networkUrl(Uri.parse(widget.videoUrl));
+    }
+
+    _controller.initialize().then((_) {
+      if (mounted) {
+        setState(() {
+          _isInitialized = true;
+          _duration = _controller.value.duration;
+        });
+        _controller.play();
+        _startHideTimer();
+      }
+    }).catchError((err) {
+      if (mounted) {
+        setState(() => _hasError = true);
+      }
+    });
+
+    _controller.addListener(_videoListener);
+  }
+
+  void _videoListener() {
+    if (!mounted || !_controller.value.isInitialized) return;
+    final newPos = _controller.value.position;
+    final newDur = _controller.value.duration;
+    if (newPos != _position || newDur != _duration) {
+      setState(() {
+        _position = newPos;
+        _duration = newDur;
       });
+    }
+    // If video reached the end, ensure controls stay visible
+    if (_controller.value.isInitialized && newPos >= newDur && !_controller.value.isPlaying) {
+      _hideTimer?.cancel();
+      if (!_showControls) {
+        setState(() => _showControls = true);
+      }
+    }
+  }
+
+  void _startHideTimer() {
+    _hideTimer?.cancel();
+    _hideTimer = Timer(const Duration(seconds: 3), () {
+      if (mounted && _controller.value.isPlaying) {
+        setState(() => _showControls = false);
+      }
+    });
+  }
+
+  void _toggleControls() {
+    setState(() {
+      _showControls = !_showControls;
+    });
+    if (_showControls && _controller.value.isPlaying) {
+      _startHideTimer();
+    }
+  }
+
+  void _seekRelative(int seconds) {
+    if (!_controller.value.isInitialized) return;
+    final target = _position + Duration(seconds: seconds);
+    final clamped = target < Duration.zero
+        ? Duration.zero
+        : (target > _duration ? _duration : target);
+    _controller.seekTo(clamped);
+    if (_controller.value.isPlaying) {
+      _startHideTimer();
+    }
+  }
+
+  String _formatDuration(Duration d) {
+    final m = d.inMinutes.remainder(60).toString().padLeft(2, '0');
+    final s = d.inSeconds.remainder(60).toString().padLeft(2, '0');
+    final h = d.inHours;
+    return h > 0 ? '$h:$m:$s' : '$m:$s';
   }
 
   @override
   void dispose() {
+    _hideTimer?.cancel();
+    _controller.removeListener(_videoListener);
     _controller.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final sharedL10n = SharedLocalizations.of(context);
+
     if (_hasError) {
-      return const Center(
+      return Center(
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.error_outline_rounded, color: Colors.white54, size: 56),
-            SizedBox(height: 12),
-            Text('Không thể phát video', style: TextStyle(color: Colors.white70)),
+            const Icon(Icons.error_outline_rounded, color: Colors.white54, size: 56),
+            const SizedBox(height: 12),
+            Text(
+              sharedL10n?.cannotPlayVideo ?? 'Không thể phát video',
+              style: const TextStyle(color: Colors.white70),
+            ),
           ],
         ),
       );
@@ -322,46 +527,147 @@ class _VideoViewerItemState extends State<_VideoViewerItem> {
       );
     }
 
-    return Center(
-      child: AspectRatio(
-        aspectRatio: _controller.value.aspectRatio,
-        child: Stack(
-          alignment: Alignment.center,
-          children: [
-            VideoPlayer(_controller),
-            GestureDetector(
-              onTap: () {
-                setState(() {
-                  _controller.value.isPlaying
-                      ? _controller.pause()
-                      : _controller.play();
-                });
-              },
-              child: Container(
-                color: Colors.transparent,
-                child: Center(
-                  child: AnimatedOpacity(
-                    opacity: _controller.value.isPlaying ? 0.0 : 0.8,
-                    duration: const Duration(milliseconds: 200),
-                    child: Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: const BoxDecoration(
-                        color: Colors.black54,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Icon(
-                        _controller.value.isPlaying
-                            ? Icons.pause_rounded
-                            : Icons.play_arrow_rounded,
-                        color: Colors.white,
-                        size: 48,
-                      ),
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: _toggleControls,
+      child: Center(
+        child: AspectRatio(
+          aspectRatio: _controller.value.aspectRatio,
+          child: Stack(
+            alignment: Alignment.center,
+            children: [
+              VideoPlayer(_controller),
+
+              // Animated Controls Overlay
+              AnimatedOpacity(
+                opacity: _showControls ? 1.0 : 0.0,
+                duration: const Duration(milliseconds: 200),
+                child: IgnorePointer(
+                  ignoring: !_showControls,
+                  child: Container(
+                    color: Colors.black38,
+                    child: Stack(
+                      children: [
+                        // Center Action Buttons (-10s, Play/Pause, +10s)
+                        Center(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                iconSize: 40,
+                                icon: const Icon(Icons.replay_10_rounded, color: Colors.white),
+                                tooltip: sharedL10n?.seekBack10s ?? 'Lùi 10 giây',
+                                onPressed: () => _seekRelative(-10),
+                              ),
+                              const SizedBox(width: 24),
+                              Container(
+                                padding: const EdgeInsets.all(4),
+                                decoration: const BoxDecoration(
+                                  color: Colors.black54,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: IconButton(
+                                  iconSize: 52,
+                                  icon: Icon(
+                                    _controller.value.isPlaying
+                                        ? Icons.pause_rounded
+                                        : Icons.play_arrow_rounded,
+                                    color: Colors.white,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      if (_controller.value.isPlaying) {
+                                        _controller.pause();
+                                        _hideTimer?.cancel();
+                                      } else {
+                                        _controller.play();
+                                        _startHideTimer();
+                                      }
+                                    });
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 24),
+                              IconButton(
+                                iconSize: 40,
+                                icon: const Icon(Icons.forward_10_rounded, color: Colors.white),
+                                tooltip: sharedL10n?.seekForward10s ?? 'Tua tới 10 giây',
+                                onPressed: () => _seekRelative(10),
+                              ),
+                            ],
+                          ),
+                        ),
+
+                        // Bottom Seeker & Time Bar
+                        Positioned(
+                          left: 12,
+                          right: 12,
+                          bottom: 12,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              SliderTheme(
+                                data: SliderTheme.of(context).copyWith(
+                                  thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+                                  overlayShape: const RoundSliderOverlayShape(overlayRadius: 14),
+                                  trackHeight: 3,
+                                  activeTrackColor: Colors.white,
+                                  inactiveTrackColor: Colors.white24,
+                                  thumbColor: Colors.white,
+                                ),
+                                child: Slider(
+                                  min: 0,
+                                  max: _duration.inMilliseconds.toDouble() > 0
+                                      ? _duration.inMilliseconds.toDouble()
+                                      : 1.0,
+                                  value: _position.inMilliseconds.toDouble().clamp(
+                                        0.0,
+                                        _duration.inMilliseconds.toDouble() > 0
+                                            ? _duration.inMilliseconds.toDouble()
+                                            : 1.0,
+                                      ),
+                                  onChanged: (val) {
+                                    _controller.seekTo(Duration(milliseconds: val.toInt()));
+                                    if (_controller.value.isPlaying) {
+                                      _startHideTimer();
+                                    }
+                                  },
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsets.symmetric(horizontal: 16),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      _formatDuration(_position),
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 12,
+                                        fontFamily: 'monospace',
+                                      ),
+                                    ),
+                                    Text(
+                                      _formatDuration(_duration),
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 12,
+                                        fontFamily: 'monospace',
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

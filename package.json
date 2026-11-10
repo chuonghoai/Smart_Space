@@ -35,7 +35,6 @@
     "flutter:clean": "cd smartspace_admin && flutter clean && cd ../smartspace_client && flutter clean && cd ../smartspace_staff && flutter clean && cd ../mobile_shared && flutter clean",
 
     "build:release": "powershell -ExecutionPolicy Bypass -File buildApkRelease.ps1",
-    "build-all:release": "powershell -ExecutionPolicy Bypass -File buildApkRelease.ps1",
     "install:release": "powershell -ExecutionPolicy Bypass -File installApkRelease.ps1"
   }
 }

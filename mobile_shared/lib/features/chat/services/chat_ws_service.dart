@@ -11,6 +11,7 @@ typedef OnTotalUnreadCallback = void Function(int totalUnread);
 
 class ChatWsService implements WsFeatureService {
   StompUnsubscribe? _conversationsSub;
+  StompUnsubscribe? _unreadSub;
   final List<OnConversationUpdateCallback> _conversationListeners = [];
   final List<OnTotalUnreadCallback> _unreadListeners = [];
 
@@ -18,7 +19,7 @@ class ChatWsService implements WsFeatureService {
     if (!_conversationListeners.contains(listener)) {
       _conversationListeners.add(listener);
     }
-    if (_conversationsSub == null && webSocketService.isConnected) {
+    if ((_conversationsSub == null || _unreadSub == null) && webSocketService.isConnected) {
       setup();
     }
   }
@@ -31,6 +32,9 @@ class ChatWsService implements WsFeatureService {
     if (!_unreadListeners.contains(listener)) {
       _unreadListeners.add(listener);
     }
+    if ((_conversationsSub == null || _unreadSub == null) && webSocketService.isConnected) {
+      setup();
+    }
   }
 
   void removeUnreadListener(OnTotalUnreadCallback listener) {
@@ -39,37 +43,64 @@ class ChatWsService implements WsFeatureService {
 
   @override
   void setup() {
-    if (_conversationsSub != null) {
-      debugPrint('[ChatWsService] Conversations listener already set up, skipping.');
-      return;
-    }
-
     if (!webSocketService.isConnected) {
       debugPrint('[ChatWsService] WebSocket not connected yet, skipping setup until connected.');
       return;
     }
 
-    debugPrint('[ChatWsService] Subscribing to /user/queue/conversations...');
-    try {
-      _conversationsSub = webSocketService.subscribe(
-        destination: '/user/queue/conversations',
-        callback: (frame) {
-          debugPrint('[ChatWsService] Received conversation update frame: ${frame.body}');
-          if (frame.body != null) {
-            try {
-              final data = dart_convert.jsonDecode(frame.body!) as Map<String, dynamic>;
-              final model = ConversationModel.fromJson(data);
-              for (final listener in List.of(_conversationListeners)) {
-                listener(model);
+    if (_conversationsSub == null) {
+      debugPrint('[ChatWsService] Subscribing to /user/queue/conversations...');
+      try {
+        _conversationsSub = webSocketService.subscribe(
+          destination: '/user/queue/conversations',
+          callback: (frame) {
+            debugPrint('[ChatWsService] Received conversation update frame: ${frame.body}');
+            if (frame.body != null) {
+              try {
+                final data = dart_convert.jsonDecode(frame.body!) as Map<String, dynamic>;
+                final model = ConversationModel.fromJson(data);
+                if (model.totalUnreadCount != null) {
+                  for (final unreadListener in List.of(_unreadListeners)) {
+                    unreadListener(model.totalUnreadCount!);
+                  }
+                }
+                for (final listener in List.of(_conversationListeners)) {
+                  listener(model);
+                }
+              } catch (e) {
+                debugPrint('[ChatWsService] Parse error in conversation update: $e');
               }
-            } catch (e) {
-              debugPrint('[ChatWsService] Parse error in conversation update: $e');
             }
-          }
-        },
-      );
-    } catch (e) {
-      debugPrint('[ChatWsService] subscribe() threw: $e');
+          },
+        );
+      } catch (e) {
+        debugPrint('[ChatWsService] subscribe() threw: $e');
+      }
+    }
+
+    if (_unreadSub == null) {
+      debugPrint('[ChatWsService] Subscribing to /user/queue/chat.unread...');
+      try {
+        _unreadSub = webSocketService.subscribe(
+          destination: '/user/queue/chat.unread',
+          callback: (frame) {
+            debugPrint('[ChatWsService] Received chat.unread frame: ${frame.body}');
+            if (frame.body != null) {
+              try {
+                final data = dart_convert.jsonDecode(frame.body!) as Map<String, dynamic>;
+                final count = (data['totalUnreadCount'] as num?)?.toInt() ?? 0;
+                for (final listener in List.of(_unreadListeners)) {
+                  listener(count);
+                }
+              } catch (e) {
+                debugPrint('[ChatWsService] Parse error in chat.unread: $e');
+              }
+            }
+          },
+        );
+      } catch (e) {
+        debugPrint('[ChatWsService] subscribe(chat.unread) threw: $e');
+      }
     }
   }
 
@@ -189,12 +220,16 @@ class ChatWsService implements WsFeatureService {
   void reset() {
     _conversationsSub?.call();
     _conversationsSub = null;
+    _unreadSub?.call();
+    _unreadSub = null;
   }
 
   @override
   void dispose() {
     _conversationsSub?.call();
     _conversationsSub = null;
+    _unreadSub?.call();
+    _unreadSub = null;
     _conversationListeners.clear();
     _unreadListeners.clear();
   }

@@ -537,6 +537,7 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _canSend = false;
+  bool _isAudioMode = false;
   Timer? _typingTimer;
 
   @override
@@ -923,64 +924,11 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
               typingText: l10n.typingText,
             ),
           ),
-        Container(
-          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-          decoration: BoxDecoration(
-            color: theme.colorScheme.surface,
-            border: Border(
-              top: BorderSide(
-                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
-                width: 1,
-              ),
-            ),
-          ),
-          child: Row(
-            children: [
-              IconButton(
-                onPressed: _showMoreOptionsSheet,
-                icon: Icon(
-                  Icons.add_circle_outline_rounded,
-                  color: theme.colorScheme.primary,
-                  size: 26,
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 14),
-                  decoration: BoxDecoration(
-                    color: theme.colorScheme.surfaceContainerHighest
-                        .withValues(alpha: 0.5),
-                    borderRadius: BorderRadius.circular(24),
-                  ),
-                  child: TextField(
-                    controller: _textController,
-                    textInputAction: TextInputAction.send,
-                    onSubmitted: (_) => _sendMessage(),
-                    maxLines: 4,
-                    minLines: 1,
-                    decoration: InputDecoration(
-                      hintText: l10n.chatInputHint,
-                      hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant
-                            .withValues(alpha: 0.7),
-                      ),
-                      border: InputBorder.none,
-                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
-                    ),
-                  ),
-                ),
-              ),
-              const SizedBox(width: 4),
-              if (_canSend)
-                IconButton(
-                  onPressed: _sendMessage,
-                  icon: Icon(
-                    Icons.send_rounded,
-                    color: theme.colorScheme.primary,
-                  ),
-                )
-              else
-                ChatAudioRecorderButton(
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          child: _isAudioMode
+              ? ChatAudioRecorderBar(
+                  key: const ValueKey('audio_bar'),
                   onRecordingComplete: ({
                     required Uint8List bytes,
                     required String fileName,
@@ -994,9 +942,80 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
                           localPath: localPath,
                         );
                   },
+                  onClose: () {
+                    setState(() => _isAudioMode = false);
+                  },
+                )
+              : Container(
+                  key: const ValueKey('text_bar'),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface,
+                    border: Border(
+                      top: BorderSide(
+                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+                        width: 1,
+                      ),
+                    ),
+                  ),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: _showMoreOptionsSheet,
+                        icon: Icon(
+                          Icons.add_circle_outline_rounded,
+                          color: theme.colorScheme.primary,
+                          size: 26,
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          child: TextField(
+                            controller: _textController,
+                            textInputAction: TextInputAction.send,
+                            onSubmitted: (_) => _sendMessage(),
+                            maxLines: 4,
+                            minLines: 1,
+                            decoration: InputDecoration(
+                              hintText: l10n.chatInputHint,
+                              hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant
+                                    .withValues(alpha: 0.7),
+                              ),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      if (_canSend)
+                        IconButton(
+                          onPressed: _sendMessage,
+                          icon: Icon(
+                            Icons.send_rounded,
+                            color: theme.colorScheme.primary,
+                          ),
+                        )
+                      else
+                        IconButton(
+                          icon: Icon(
+                            Icons.mic_none_rounded,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                          onPressed: () {
+                            setState(() => _isAudioMode = true);
+                          },
+                        ),
+                    ],
+                  ),
                 ),
-            ],
-          ),
         ),
       ],
     );

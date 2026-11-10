@@ -20,5 +20,18 @@
   "releaseToCancel": "Release to cancel",
   "micPermissionRequired": "Please grant microphone permission to record audio",
   "attachedReport": "Attached Report",
-  "tapToViewReport": "Tap to view details"
+  "tapToViewReport": "Tap to view details",
+  "cannotPlayVideo": "Cannot play video",
+  "downloadMedia": "Download",
+  "downloadingMedia": "Downloading...",
+  "downloadSuccess": "Saved to device successfully",
+  "downloadFailed": "Failed to download",
+  "holdToRecordPrompt": "Press and hold to start recording",
+  "recordingAudio": "Recording...",
+  "discardAudio": "Discard",
+  "sendAudio": "Send",
+  "mediaOptions": "Media options",
+  "seekBack10s": "Back 10 seconds",
+  "seekForward10s": "Forward 10 seconds",
+  "playbackPreview": "Audio playback preview"
 }

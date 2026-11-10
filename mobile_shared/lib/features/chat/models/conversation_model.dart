@@ -15,6 +15,7 @@ class ConversationModel {
   final String? reportStatus;
   final bool canSendMessage;
   final int unreadCount;
+  final int? totalUnreadCount;
   final String? lastMessageId;
   final String? lastMessageContent;
   final DateTime? lastMessageTime;
@@ -44,6 +45,7 @@ class ConversationModel {
     this.reportStatus,
     this.canSendMessage = true,
     this.unreadCount = 0,
+    this.totalUnreadCount,
     this.lastMessageId,
     this.lastMessageContent,
     this.lastMessageTime,
@@ -79,6 +81,7 @@ class ConversationModel {
       reportStatus: json['reportStatus'] as String? ?? json['report_status'] as String?,
       canSendMessage: json['canSendMessage'] as bool? ?? json['can_send_message'] as bool? ?? true,
       unreadCount: (json['unreadCount'] as num?)?.toInt() ?? (json['unread_count'] as num?)?.toInt() ?? 0,
+      totalUnreadCount: (json['totalUnreadCount'] as num?)?.toInt() ?? (json['total_unread_count'] as num?)?.toInt(),
       lastMessageId: json['lastMessageId'] as String? ?? json['last_message_id'] as String?,
       lastMessageContent: json['lastMessageContent'] as String? ?? json['last_message_content'] as String?,
       lastMessageTime: json['lastMessageTime'] != null || json['last_message_time'] != null
@@ -115,6 +118,7 @@ class ConversationModel {
       'reportStatus': reportStatus,
       'canSendMessage': canSendMessage,
       'unreadCount': unreadCount,
+      'totalUnreadCount': totalUnreadCount,
       'lastMessageId': lastMessageId,
       'lastMessageContent': lastMessageContent,
       'lastMessageTime': lastMessageTime?.toIso8601String(),
@@ -146,6 +150,7 @@ class ConversationModel {
     String? reportStatus,
     bool? canSendMessage,
     int? unreadCount,
+    int? totalUnreadCount,
     String? lastMessageId,
     String? lastMessageContent,
     DateTime? lastMessageTime,
@@ -175,6 +180,7 @@ class ConversationModel {
       reportStatus: reportStatus ?? this.reportStatus,
       canSendMessage: canSendMessage ?? this.canSendMessage,
       unreadCount: unreadCount ?? this.unreadCount,
+      totalUnreadCount: totalUnreadCount ?? this.totalUnreadCount,
       lastMessageId: lastMessageId ?? this.lastMessageId,
       lastMessageContent: lastMessageContent ?? this.lastMessageContent,
       lastMessageTime: lastMessageTime ?? this.lastMessageTime,
