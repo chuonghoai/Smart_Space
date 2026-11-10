@@ -25,6 +25,7 @@ import com.vn.smart_space.dto.PageResponse;
 import com.vn.smart_space.dto.request.conversation.CreateConversationRequest;
 import com.vn.smart_space.dto.request.notification.NotificationRequest;
 import com.vn.smart_space.dto.response.chat.ChatMessageResponse;
+import com.vn.smart_space.dto.response.chat.ChatReadReceiptResponse;
 import com.vn.smart_space.dto.response.conversation.ConversationDetailResponse;
 import com.vn.smart_space.dto.response.conversation.ConversationInfoResponse;
 import com.vn.smart_space.dto.response.conversation.CreateConversationResponse;
@@ -595,7 +596,6 @@ public class ConversationService implements IConversationService {
 
             // Broadcast updated conversation to user's conversation list queue
             try {
-                Conversation conversation = participant.getConversation();
                 User user = participant.getUser();
                 User partner = conversation.getParticipants().stream()
                         .map(ConversationParticipant::getUser)
@@ -623,13 +623,12 @@ public class ConversationService implements IConversationService {
 
             // Broadcast read receipt event to conversation topic so active participants see "Seen" / read status in realtime
             try {
-                Map<String, Object> readEvent = Map.of(
-                        "type", "READ_RECEIPT",
-                        "conversationId", conversationId,
-                        "readerId", userId,
-                        "readAt", participant.getLastReadAt() != null ? participant.getLastReadAt().toString() : LocalDateTime.now().toString()
+                ChatReadReceiptResponse readReceipt = ChatReadReceiptResponse.of(
+                        conversationId,
+                        userId,
+                        participant.getLastReadAt() != null ? participant.getLastReadAt().toString() : LocalDateTime.now().toString()
                 );
-                messagingTemplate.convertAndSend((String) ("/topic/conversation." + conversationId), (Object) readEvent);
+                messagingTemplate.convertAndSend("/topic/conversation." + conversationId, readReceipt);
             } catch (Exception ignored) {
             }
         }

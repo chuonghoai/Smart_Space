@@ -23,6 +23,7 @@ import com.vn.smart_space.dto.PageResponse;
 import com.vn.smart_space.dto.request.chat.ChatMessageRequest;
 import com.vn.smart_space.dto.request.notification.NotificationRequest;
 import com.vn.smart_space.dto.response.chat.ChatMessageResponse;
+import com.vn.smart_space.dto.response.chat.ChatReadReceiptResponse;
 import com.vn.smart_space.dto.response.chat.MessageMediaResponse;
 import com.vn.smart_space.dto.response.conversation.ConversationDetailResponse;
 import com.vn.smart_space.exception.BadRequestException;
@@ -209,13 +210,12 @@ public class ChatMessageService implements IChatMessageService {
 
                     // Broadcast READ_RECEIPT immediately to conversation topic so sender sees 2 ticks in realtime
                     try {
-                        Map<String, Object> readEvent = Map.of(
-                                "type", "READ_RECEIPT",
-                                "conversationId", conversation.getId(),
-                                "readerId", recipient.getId(),
-                                "readAt", message.getSentAt().toString()
+                        ChatReadReceiptResponse readReceipt = ChatReadReceiptResponse.of(
+                                conversation.getId(),
+                                recipient.getId(),
+                                message.getSentAt().toString()
                         );
-                        messagingTemplate.convertAndSend("/topic/conversation." + conversation.getId(), readEvent);
+                        messagingTemplate.convertAndSend("/topic/conversation." + conversation.getId(), readReceipt);
                     } catch (Exception ignored) {
                     }
                 }
