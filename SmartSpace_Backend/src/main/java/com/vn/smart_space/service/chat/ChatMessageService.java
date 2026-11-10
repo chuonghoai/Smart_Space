@@ -1,6 +1,7 @@
 package com.vn.smart_space.service.chat;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -106,17 +107,7 @@ public class ChatMessageService implements IChatMessageService {
             }
         }
 
-        // 4. Media & Report
-        List<MessageMedia> media = request.messageMedia() != null && !request.messageMedia().isEmpty()
-                ? request.messageMedia().stream()
-                        .map(messageMedia -> MessageMedia.builder()
-                                .fileName(messageMedia.fileName())
-                                .fileType(messageMedia.fileType())
-                                .thumbnailUrl(messageMedia.thumbnailUrl())
-                                .build())
-                        .toList()
-                : List.of();
-
+        // 4. Report & Effective content
         Report attachedReport = null;
         if (request.messageType() == EMessageType.report && request.reportId() != null && !request.reportId().isBlank()) {
             attachedReport = reportRepository.findById(request.reportId()).orElse(null);
@@ -145,8 +136,21 @@ public class ChatMessageService implements IChatMessageService {
                 .messageType(request.messageType())
                 .report(attachedReport)
                 .sentAt(LocalDateTime.now())
-                .mediaFiles(media)
+                .mediaFiles(new ArrayList<>())
                 .build();
+
+        // 6. Attach Media if provided
+        if (request.messageMedia() != null && !request.messageMedia().isEmpty()) {
+            for (var reqMedia : request.messageMedia()) {
+                MessageMedia media = MessageMedia.builder()
+                        .fileName(reqMedia.fileName())
+                        .fileType(reqMedia.fileType())
+                        .thumbnailUrl(reqMedia.thumbnailUrl())
+                        .uploadedAt(LocalDateTime.now())
+                        .build();
+                message.addMedia(media);
+            }
+        }
 
         chatMessageRepository.save(message);
 
@@ -251,14 +255,16 @@ public class ChatMessageService implements IChatMessageService {
                 .senderName(message.getSender() != null ? message.getSender().getFullName() : null)
                 .content(message.getContent())
                 .messageType(message.getMessageType())
-                .messageMedia(message.getMediaFiles().stream()
-                        .map(media -> MessageMediaResponse.builder()
-                                .fileName(media.getFileName())
-                                .fileType(media.getFileType())
-                                .thumbnailUrl(media.getThumbnailUrl())
-                                .uploadedAt(media.getUploadedAt())
-                                .build())
-                        .toList())
+                .messageMedia(message.getMediaFiles() != null
+                        ? message.getMediaFiles().stream()
+                                .map(media -> MessageMediaResponse.builder()
+                                        .fileName(media.getFileName())
+                                        .fileType(media.getFileType())
+                                        .thumbnailUrl(media.getThumbnailUrl())
+                                        .uploadedAt(media.getUploadedAt())
+                                        .build())
+                                .toList()
+                        : List.of())
                 .report(ConversationMapper.toLinkedReportResponse(message.getReport()))
                 .createdAt(message.getSentAt())
                 .build();

@@ -11,7 +11,7 @@ import com.vn.smart_space.model.ChatMessage;
 @Repository
 public interface ChatMessageRepository extends JpaRepository<ChatMessage, String> {
 
-    @EntityGraph(attributePaths = { "sender" })
+    @EntityGraph(attributePaths = { "sender", "report" })
     Page<ChatMessage> findByConversationIdOrderBySentAtDesc(String conversationId, Pageable pageable);
 
 }

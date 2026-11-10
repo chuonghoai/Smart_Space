@@ -3,6 +3,8 @@ package com.vn.smart_space.model;
 import com.vn.smart_space.consts.EMessageType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -45,5 +47,14 @@ public class ChatMessage {
 
     @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
+    @BatchSize(size = 20)
     private List<MessageMedia> mediaFiles = new ArrayList<>();
+
+    public void addMedia(MessageMedia media) {
+        if (this.mediaFiles == null) {
+            this.mediaFiles = new ArrayList<>();
+        }
+        this.mediaFiles.add(media);
+        media.setMessage(this);
+    }
 }
