@@ -642,5 +642,44 @@
       "label": {},
       "value": {}
     }
-  }
+  },
+  "searchNewsPlaceholder": "Tìm theo tiêu đề hoặc nội dung...",
+  "loadMoreNewsFailed": "Không tải thêm được tin tức",
+  "newsCount": "{count, plural, other{{count} tin tức}}",
+  "@newsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "newsLoadFailed": "Không tải được tin tức.",
+  "noNewsMatchingKeyword": "Không có tin nào khớp “{keyword}”",
+  "@noNewsMatchingKeyword": {
+    "placeholders": {
+      "keyword": {}
+    }
+  },
+  "noNewsInRange": "Không có tin nào trong {range}",
+  "@noNewsInRange": {
+    "placeholders": {
+      "range": {}
+    }
+  },
+  "noNewsMatchingKeywordInRange": "Không có tin nào khớp “{keyword}” trong {range}",
+  "@noNewsMatchingKeywordInRange": {
+    "placeholders": {
+      "keyword": {},
+      "range": {}
+    }
+  },
+  "allNewsShown": "{count, plural, other{Đã hiển thị hết {count} tin}}",
+  "@allNewsShown": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filterByDate": "Lọc theo ngày"
 }

@@ -1538,4 +1538,53 @@ class AppLocalizationsEn extends AppLocalizations {
   String filterSelectedTooltip(Object label, Object value) {
     return '$label: $value';
   }
+
+  @override
+  String get searchNewsPlaceholder => 'Search by title or content...';
+
+  @override
+  String get loadMoreNewsFailed => 'Couldn\'t load more news';
+
+  @override
+  String newsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count posts',
+      one: '1 post',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get newsLoadFailed => 'Couldn\'t load news.';
+
+  @override
+  String noNewsMatchingKeyword(Object keyword) {
+    return 'No posts match “$keyword”';
+  }
+
+  @override
+  String noNewsInRange(Object range) {
+    return 'No posts for $range';
+  }
+
+  @override
+  String noNewsMatchingKeywordInRange(Object keyword, Object range) {
+    return 'No posts match “$keyword” for $range';
+  }
+
+  @override
+  String allNewsShown(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'That\'s all $count posts',
+      one: 'That\'s the only post',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get filterByDate => 'Filter by date';
 }

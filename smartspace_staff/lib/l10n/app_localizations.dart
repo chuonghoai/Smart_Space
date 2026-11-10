@@ -2917,6 +2917,60 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'{label}: {value}'**
   String filterSelectedTooltip(Object label, Object value);
+
+  /// No description provided for @searchNewsPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by title or content...'**
+  String get searchNewsPlaceholder;
+
+  /// No description provided for @loadMoreNewsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load more news'**
+  String get loadMoreNewsFailed;
+
+  /// No description provided for @newsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 post} other{{count} posts}}'**
+  String newsCount(int count);
+
+  /// No description provided for @newsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load news.'**
+  String get newsLoadFailed;
+
+  /// No description provided for @noNewsMatchingKeyword.
+  ///
+  /// In en, this message translates to:
+  /// **'No posts match “{keyword}”'**
+  String noNewsMatchingKeyword(Object keyword);
+
+  /// No description provided for @noNewsInRange.
+  ///
+  /// In en, this message translates to:
+  /// **'No posts for {range}'**
+  String noNewsInRange(Object range);
+
+  /// No description provided for @noNewsMatchingKeywordInRange.
+  ///
+  /// In en, this message translates to:
+  /// **'No posts match “{keyword}” for {range}'**
+  String noNewsMatchingKeywordInRange(Object keyword, Object range);
+
+  /// No description provided for @allNewsShown.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{That\'s the only post} other{That\'s all {count} posts}}'**
+  String allNewsShown(int count);
+
+  /// No description provided for @filterByDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by date'**
+  String get filterByDate;
 }
 
 class _AppLocalizationsDelegate
