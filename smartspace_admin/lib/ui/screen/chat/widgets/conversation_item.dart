@@ -35,6 +35,15 @@ class AdminConversationItem extends StatelessWidget {
     }
   }
 
+  String _formatSnippet(String? content) {
+    if (content == null || content.isEmpty) return '';
+    final trimmed = content.trim();
+    if (trimmed == '[1]' || RegExp(r'^\d+$').hasMatch(trimmed) || RegExp(r'^\[\d+\]$').hasMatch(trimmed)) {
+      return '[tin nhắn thoại]';
+    }
+    return content;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -175,7 +184,9 @@ class AdminConversationItem extends StatelessWidget {
                       ],
                       Expanded(
                         child: Text(
-                          conversation.lastMessageContent ?? l10n.noConversationsSub,
+                          _formatSnippet(conversation.lastMessageContent).isNotEmpty
+                              ? _formatSnippet(conversation.lastMessageContent)
+                              : l10n.noConversationsSub,
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: hasUnread
                                 ? theme.colorScheme.onSurface

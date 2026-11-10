@@ -31,6 +31,15 @@ class ClientConversationItem extends StatelessWidget {
     }
   }
 
+  String _formatSnippet(String? content) {
+    if (content == null || content.isEmpty) return '';
+    final trimmed = content.trim();
+    if (trimmed == '[1]' || RegExp(r'^\d+$').hasMatch(trimmed) || RegExp(r'^\[\d+\]$').hasMatch(trimmed)) {
+      return '[tin nhắn thoại]';
+    }
+    return content;
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -126,7 +135,7 @@ class ClientConversationItem extends StatelessWidget {
                           _buildContextBadge(theme, l10n, conv.lastMessageContext!),
                         Expanded(
                           child: Text(
-                            conv.lastMessageContent ?? '',
+                            _formatSnippet(conv.lastMessageContent),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: hasUnread
                                   ? theme.colorScheme.onSurface

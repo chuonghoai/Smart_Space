@@ -75,16 +75,16 @@ class _ClientChatDetailScreenState
       if (_selectedTabIndex == 0) {
         _identifiedUnreadCount = 0;
         _anonymousUnreadCount = updatedConv.anonymousUnreadCount;
-        if (identId != null && (updatedConv.id == identId || updatedConv.identifiedConversationId == identId)) {
-          ref.read(chatDetailProvider(identId).notifier).markAsRead();
+        if (updatedConv.identifiedUnreadCount > 0 && identId != null) {
           ref.read(clientConversationsProvider.notifier).markContextAsReadLocally(identId, isAnonymous: false);
+          ref.read(chatDetailProvider(identId).notifier).markAsRead();
         }
       } else {
         _anonymousUnreadCount = 0;
         _identifiedUnreadCount = updatedConv.identifiedUnreadCount;
-        if (anonId != null && (updatedConv.id == anonId || updatedConv.anonymousConversationId == anonId)) {
-          ref.read(chatDetailProvider(anonId).notifier).markAsRead();
+        if (updatedConv.anonymousUnreadCount > 0 && anonId != null) {
           ref.read(clientConversationsProvider.notifier).markContextAsReadLocally(anonId, isAnonymous: true);
+          ref.read(chatDetailProvider(anonId).notifier).markAsRead();
         }
       }
     });
@@ -197,12 +197,11 @@ class _ClientChatDetailScreenState
       curve: Curves.easeInOut,
     );
     if (targetConvId != null) {
-      ref.read(chatDetailProvider(targetConvId).notifier).markAsRead();
       ref.read(clientConversationsProvider.notifier).markContextAsReadLocally(
             targetConvId,
             isAnonymous: index == 1,
           );
-      chatWsService.sendMarkAsRead(targetConvId);
+      ref.read(chatDetailProvider(targetConvId).notifier).markAsRead();
     }
   }
 
@@ -249,12 +248,11 @@ class _ClientChatDetailScreenState
       _anonymousUnreadCount = _selectedTabIndex == 1 ? 0 : initialAnonUnread;
 
       WidgetsBinding.instance.addPostFrameCallback((_) {
-        ref.read(chatDetailProvider(activeTargetId).notifier).markAsRead();
         ref.read(clientConversationsProvider.notifier).markContextAsReadLocally(
               activeTargetId,
               isAnonymous: _selectedTabIndex == 1,
             );
-        chatWsService.sendMarkAsRead(activeTargetId);
+        ref.read(chatDetailProvider(activeTargetId).notifier).markAsRead();
       });
     }
 
@@ -379,26 +377,27 @@ class _ClientChatDetailScreenState
                         final targetId =
                             index == 1 ? anonConvId : identConvId;
                         ref
-                            .read(chatDetailProvider(targetId).notifier)
-                            .markAsRead();
-                        ref
                             .read(clientConversationsProvider.notifier)
                             .markContextAsReadLocally(
                               targetId,
                               isAnonymous: index == 1,
                             );
-                        chatWsService.sendMarkAsRead(targetId);
+                        ref
+                            .read(chatDetailProvider(targetId).notifier)
+                            .markAsRead();
                       },
                       children: [
                         _ContextChatPane(
                           key: ValueKey('ident_$identConvId'),
                           conversationId: identConvId,
                           isAnonymous: false,
+                          isActive: _selectedTabIndex == 0,
                         ),
                         _ContextChatPane(
                           key: ValueKey('anon_$anonConvId'),
                           conversationId: anonConvId,
                           isAnonymous: true,
+                          isActive: _selectedTabIndex == 1,
                         ),
                       ],
                     ),
@@ -606,11 +605,13 @@ class _ClientChatDetailScreenState
 class _ContextChatPane extends ConsumerStatefulWidget {
   final String conversationId;
   final bool isAnonymous;
+  final bool isActive;
 
   const _ContextChatPane({
     super.key,
     required this.conversationId,
     required this.isAnonymous,
+    this.isActive = true,
   });
 
   @override
@@ -633,6 +634,23 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
     super.initState();
     _textController.addListener(_onTextChanged);
     _scrollController.addListener(_onScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref
+            .read(chatDetailProvider(widget.conversationId).notifier)
+            .setActive(widget.isActive);
+      }
+    });
+  }
+
+  @override
+  void didUpdateWidget(covariant _ContextChatPane oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isActive != widget.isActive) {
+      ref
+          .read(chatDetailProvider(widget.conversationId).notifier)
+          .setActive(widget.isActive);
+    }
   }
 
   @override

@@ -89,6 +89,19 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
   Timer? _typingTimer;
   StompUnsubscribe? _topicSub;
   bool _isDisposed = false;
+  bool _isActive = true;
+  bool get isActive => _isActive;
+
+  void setActive(bool active) {
+    if (_isActive == active) return;
+    _isActive = active;
+    if (_isActive) {
+      _repository.enterPresence(conversationId);
+      markAsRead();
+    } else {
+      _repository.leavePresence(conversationId);
+    }
+  }
 
   ChatDetailNotifier({
     required this.conversationId,
@@ -147,16 +160,17 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
       onTyping: _handleTyping,
     );
 
-    // Enter presence in Redis and start 30s heartbeat
-    _repository.enterPresence(conversationId);
+    // Enter presence in Redis and start 30s heartbeat if active
+    if (_isActive) {
+      _repository.enterPresence(conversationId);
+      markAsRead();
+    }
+
     _heartbeatTimer = Timer.periodic(const Duration(seconds: 30), (_) {
-      if (!_isDisposed) {
+      if (!_isDisposed && _isActive) {
         _repository.heartbeatPresence(conversationId);
       }
     });
-
-    // Mark as read in DB and broadcast via WebSocket
-    markAsRead();
   }
 
   Future<void> markAsRead() async {
@@ -781,7 +795,9 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
       state = state.copyWith(messages: [message, ...state.messages]);
     }
 
-    _repository.markAsRead(conversationId);
+    if (_isActive) {
+      _repository.markAsRead(conversationId);
+    }
   }
 }
 

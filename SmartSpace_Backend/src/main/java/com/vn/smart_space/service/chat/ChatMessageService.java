@@ -156,7 +156,17 @@ public class ChatMessageService implements IChatMessageService {
 
         // 6. Update lastMessage of conversation
         conversation.setLastMessageId(message.getId());
-        conversation.setLastMessageContent(message.getContent());
+        String snippet = message.getContent();
+        if (message.getMessageType() == EMessageType.audio) {
+            snippet = "[tin nhắn thoại]";
+        } else if (message.getMessageType() == EMessageType.image) {
+            snippet = "[hình ảnh]";
+        } else if (message.getMessageType() == EMessageType.video) {
+            snippet = "[video]";
+        } else if (message.getMessageType() == EMessageType.report) {
+            snippet = "[phản ánh đính kèm]";
+        }
+        conversation.setLastMessageContent(snippet);
         conversation.setLastMessageTime(message.getSentAt());
         conversationRepository.save(conversation);
 

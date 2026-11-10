@@ -566,6 +566,11 @@ public class ConversationService implements IConversationService {
                 .findByConversationIdAndUserId(conversationId, userId);
         if (participantOpt.isPresent()) {
             ConversationParticipant participant = participantOpt.get();
+            int currentUnread = participant.getUnreadCount() != null ? participant.getUnreadCount() : 0;
+            if (currentUnread == 0) {
+                // Already read, skip redundant update and broadcast to prevent cyclic loops
+                return;
+            }
             participant.setUnreadCount(0);
             participant.setLastReadAt(LocalDateTime.now());
             conversationParticipantRepository.save(participant);
