@@ -1223,4 +1223,51 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get viewAllNotifications => 'Xem tất cả thông báo';
+
+  @override
+  String get searchNewsPlaceholder => 'Tìm theo tiêu đề hoặc nội dung...';
+
+  @override
+  String get loadMoreNewsFailed => 'Không tải thêm được tin tức';
+
+  @override
+  String newsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count tin tức',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get newsLoadFailed => 'Không tải được tin tức.';
+
+  @override
+  String noNewsMatchingKeyword(Object keyword) {
+    return 'Không có tin nào khớp “$keyword”';
+  }
+
+  @override
+  String noNewsInRange(Object range) {
+    return 'Không có tin nào trong $range';
+  }
+
+  @override
+  String noNewsMatchingKeywordInRange(Object keyword, Object range) {
+    return 'Không có tin nào khớp “$keyword” trong $range';
+  }
+
+  @override
+  String allNewsShown(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Đã hiển thị hết $count tin',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get filterByDate => 'Lọc theo ngày';
 }
