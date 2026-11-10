@@ -132,6 +132,7 @@ public final class ConversationMapper {
                 .unreadCount(unreadCount)
                 .lastMessageId(conversation.getLastMessageId())
                 .lastMessageContent(conversation.getLastMessageContent())
+                .lastMessageType(conversation.getLastMessageType())
                 .lastMessageTime(conversation.getLastMessageTime())
                 .createdAt(conversation.getCreatedAt())
                 .build();

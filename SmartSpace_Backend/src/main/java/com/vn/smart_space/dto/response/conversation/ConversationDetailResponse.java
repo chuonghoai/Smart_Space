@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.vn.smart_space.consts.EConversationType;
+import com.vn.smart_space.consts.EMessageType;
 import com.vn.smart_space.consts.ERole;
 
 import lombok.AllArgsConstructor;
@@ -63,6 +64,7 @@ public class ConversationDetailResponse {
     // Last message info
     private String lastMessageId;
     private String lastMessageContent;
+    private EMessageType lastMessageType;
     private LocalDateTime lastMessageTime;
     private String lastMessageSenderId;
 

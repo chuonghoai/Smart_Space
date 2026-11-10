@@ -156,6 +156,7 @@ public class ChatMessageService implements IChatMessageService {
 
         // 6. Update lastMessage of conversation
         conversation.setLastMessageId(message.getId());
+        conversation.setLastMessageType(message.getMessageType());
         String snippet = message.getContent();
         if (message.getMessageType() == EMessageType.audio) {
             snippet = "[tin nhắn thoại]";

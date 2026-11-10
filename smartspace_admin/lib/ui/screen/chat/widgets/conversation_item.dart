@@ -36,15 +36,30 @@ class AdminConversationItem extends StatelessWidget {
     }
   }
 
-  String _formatSnippet(String? content, AppLocalizations l10n) {
+  String _formatSnippet(String? content, String? messageType, AppLocalizations l10n) {
+    if (messageType != null && messageType.isNotEmpty) {
+      final type = messageType.toUpperCase();
+      if (type == 'AUDIO') {
+        return '[${l10n.voiceMessageSnippet}]';
+      }
+      if (type == 'IMAGE') {
+        return '[${l10n.imageSnippet}]';
+      }
+      if (type == 'VIDEO') {
+        return '[${l10n.videoSnippet}]';
+      }
+      if (type == 'REPORT') {
+        return '[${l10n.attachedReportSnippet}]';
+      }
+      if (type == 'TEXT') {
+        return content ?? '';
+      }
+    }
+
     if (content == null || content.isEmpty) return '';
     final trimmed = content.trim();
     final lower = trimmed.toLowerCase();
-    if (trimmed == '[1]' ||
-        RegExp(r'^\d+$').hasMatch(trimmed) ||
-        RegExp(r'^\[\d+\]$').hasMatch(trimmed) ||
-        lower == '[tin nhắn thoại]' ||
-        lower == '[voice message]') {
+    if (lower == '[tin nhắn thoại]' || lower == '[voice message]') {
       return '[${l10n.voiceMessageSnippet}]';
     }
     if (lower == '[hình ảnh]' || lower == '[photo]' || lower == '[image]') {
@@ -202,8 +217,8 @@ class AdminConversationItem extends StatelessWidget {
                       ],
                       Expanded(
                         child: Text(
-                          _formatSnippet(conversation.lastMessageContent, l10n).isNotEmpty
-                              ? _formatSnippet(conversation.lastMessageContent, l10n)
+                          _formatSnippet(conversation.lastMessageContent, conversation.lastMessageType, l10n).isNotEmpty
+                              ? _formatSnippet(conversation.lastMessageContent, conversation.lastMessageType, l10n)
                               : l10n.noConversationsSub,
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: hasUnread

@@ -1,0 +1,41 @@
+{
+  "todotree": {
+    "tree": [
+      {
+        "key": 1794314903230,
+        "children": [],
+        "todo": {
+          "content": "Lỗi ở 3 app: Khi gửi tin nhắn là 1 chuỗi số (ví dụ: \"123\"), tin nhắn mới nhất ở ngoài màn hình danh sách hội thoại hiển thị là \"[tin nhắn thoại]\", trong khi tin nhắn mới nhất vừa gửi chỉ là 1 chuỗi số. Sửa lại để tách biệt rõ các loại tin nhắn với nhau để hiện đúng tin nhắn mới nhất ở ngoài màn hình danh sách hội thoại",
+          "id": 1794314903230,
+          "level": "default",
+          "done": true,
+          "start": 1794314903230,
+          "end": 1794315620000
+        }
+      },
+      {
+        "key": 1794315064278,
+        "children": [],
+        "todo": {
+          "content": "Ở cả 3 app, khi bấm tải image hay video, phải xóa sạch toàn bộ metadata trước cho phép tải về thiết bị (ví dụ như thời gian tạo, vị trí tạo...)",
+          "id": 1794315064278,
+          "level": "default",
+          "done": true,
+          "start": 1794315064278,
+          "end": 1794315621000
+        }
+      }
+    ],
+    "expandKeys": [],
+    "add_mode": "bottom",
+    "virtual": false,
+    "showLine": false,
+    "playFontSize": 24,
+    "title": "error",
+    "autoSort": false,
+    "showEndTime": false,
+    "simpleMode": false,
+    "lang": "en",
+    "version": "1794315621000"
+  }
+}

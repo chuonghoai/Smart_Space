@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.vn.smart_space.consts.EConversationType;
+import com.vn.smart_space.consts.EMessageType;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -55,6 +56,9 @@ public class Conversation {
     private String lastMessageId;
 
     private String lastMessageContent;
+
+    @Enumerated(EnumType.STRING)
+    private EMessageType lastMessageType;
 
     private LocalDateTime lastMessageTime;
 

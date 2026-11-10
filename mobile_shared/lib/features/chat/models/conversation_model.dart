@@ -18,6 +18,7 @@ class ConversationModel {
   final int? totalUnreadCount;
   final String? lastMessageId;
   final String? lastMessageContent;
+  final String? lastMessageType;
   final DateTime? lastMessageTime;
   final DateTime createdAt;
   final String? identifiedConversationId;
@@ -48,6 +49,7 @@ class ConversationModel {
     this.totalUnreadCount,
     this.lastMessageId,
     this.lastMessageContent,
+    this.lastMessageType,
     this.lastMessageTime,
     required this.createdAt,
     this.identifiedConversationId,
@@ -84,6 +86,7 @@ class ConversationModel {
       totalUnreadCount: (json['totalUnreadCount'] as num?)?.toInt() ?? (json['total_unread_count'] as num?)?.toInt(),
       lastMessageId: json['lastMessageId'] as String? ?? json['last_message_id'] as String?,
       lastMessageContent: json['lastMessageContent'] as String? ?? json['last_message_content'] as String?,
+      lastMessageType: json['lastMessageType'] as String? ?? json['last_message_type'] as String?,
       lastMessageTime: json['lastMessageTime'] != null || json['last_message_time'] != null
           ? DateTime.tryParse((json['lastMessageTime'] ?? json['last_message_time']).toString())
           : null,
@@ -121,6 +124,7 @@ class ConversationModel {
       'totalUnreadCount': totalUnreadCount,
       'lastMessageId': lastMessageId,
       'lastMessageContent': lastMessageContent,
+      'lastMessageType': lastMessageType,
       'lastMessageTime': lastMessageTime?.toIso8601String(),
       'createdAt': createdAt.toIso8601String(),
       'identifiedConversationId': identifiedConversationId,
@@ -153,6 +157,7 @@ class ConversationModel {
     int? totalUnreadCount,
     String? lastMessageId,
     String? lastMessageContent,
+    String? lastMessageType,
     DateTime? lastMessageTime,
     DateTime? createdAt,
     String? identifiedConversationId,
@@ -183,6 +188,7 @@ class ConversationModel {
       totalUnreadCount: totalUnreadCount ?? this.totalUnreadCount,
       lastMessageId: lastMessageId ?? this.lastMessageId,
       lastMessageContent: lastMessageContent ?? this.lastMessageContent,
+      lastMessageType: lastMessageType ?? this.lastMessageType,
       lastMessageTime: lastMessageTime ?? this.lastMessageTime,
       createdAt: createdAt ?? this.createdAt,
       identifiedConversationId: identifiedConversationId ?? this.identifiedConversationId,

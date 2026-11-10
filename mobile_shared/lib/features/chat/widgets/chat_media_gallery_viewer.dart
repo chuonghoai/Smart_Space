@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:mobile_shared/features/chat/data/chat_repository.dart';
 import 'package:mobile_shared/features/chat/models/chat_message_model.dart';
 import 'package:mobile_shared/l10n/generated/shared_localizations.dart';
+import 'package:mobile_shared/util/media_metadata_sanitizer.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:video_player/video_player.dart';
 
@@ -252,11 +253,23 @@ class _ChatMediaGalleryViewerState extends State<ChatMediaGalleryViewer> {
       final saveDir = dir ?? await getApplicationDocumentsDirectory();
       final savePath = '${saveDir.path}/$fileName';
 
+      // 1. Tải về file tạm trước khi lưu chính thức
+      final tempFile = File('${saveDir.path}/temp_${DateTime.now().microsecondsSinceEpoch}.$ext');
       if (File(item.url).existsSync()) {
-        await File(item.url).copy(savePath);
+        await File(item.url).copy(tempFile.path);
       } else {
         final dio = Dio();
-        await dio.download(item.url, savePath);
+        await dio.download(item.url, tempFile.path);
+      }
+
+      // 2. Xóa sạch toàn bộ siêu dữ liệu nhạy cảm (EXIF, GPS, timestamps, camera model, udta)
+      final cleanBytes = await MediaMetadataSanitizer.sanitizeFile(tempFile);
+      final finalFile = File(savePath);
+      await finalFile.writeAsBytes(cleanBytes, flush: true);
+
+      // 3. Dọn dẹp file tạm
+      if (await tempFile.exists()) {
+        await tempFile.delete();
       }
 
       if (mounted) {
