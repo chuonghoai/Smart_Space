@@ -172,6 +172,10 @@ foreach ($app in $selectedApps) {
         # Đổi thư mục làm việc sang app cần build
         Push-Location $appPath
 
+        # Đồng bộ dependencies trước khi build để tránh cache cũ bị thiếu package
+        Write-Host "[PRE-BUILD] Đang đồng bộ dependencies (flutter pub get)..." -ForegroundColor Gray
+        & flutter pub get
+
         try {
             if ([string]::IsNullOrWhiteSpace($ExtraArgs)) {
                 & flutter build apk
