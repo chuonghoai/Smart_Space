@@ -48,7 +48,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
 
   Future<void> _onRefresh() async {
     final currentTab = _tabs[_tabController.index];
-    ref.invalidate(newsListProvider);
+    ref.invalidate(latestNewsProvider);
     ref.invalidate(pendingWithdrawalCountProvider);
     final futures = <Future<void>>[
       userStorageService.getUser(),

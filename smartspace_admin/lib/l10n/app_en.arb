@@ -905,5 +905,44 @@
   "featureUnderDevelopment": "Feature under development",
   "comingSoon": "Coming soon",
   "phoneNotAvailable": "Phone number is not available",
-  "freeCallComingSoon": "Free in-app voice call feature is under development"
+  "freeCallComingSoon": "Free in-app voice call feature is under development",
+  "searchNewsPlaceholder": "Search by title or content...",
+  "loadMoreNewsFailed": "Couldn't load more news",
+  "newsCount": "{count, plural, =1{1 post} other{{count} posts}}",
+  "@newsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "newsLoadFailed": "Couldn't load news.",
+  "noNewsMatchingKeyword": "No posts match “{keyword}”",
+  "@noNewsMatchingKeyword": {
+    "placeholders": {
+      "keyword": {}
+    }
+  },
+  "noNewsInRange": "No posts for {range}",
+  "@noNewsInRange": {
+    "placeholders": {
+      "range": {}
+    }
+  },
+  "noNewsMatchingKeywordInRange": "No posts match “{keyword}” for {range}",
+  "@noNewsMatchingKeywordInRange": {
+    "placeholders": {
+      "keyword": {},
+      "range": {}
+    }
+  },
+  "allNewsShown": "{count, plural, =1{That's the only post} other{That's all {count} posts}}",
+  "@allNewsShown": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "filterByDate": "Filter by date"
 }

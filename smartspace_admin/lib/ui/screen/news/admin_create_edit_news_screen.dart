@@ -166,6 +166,7 @@ class _AdminCreateEditNewsScreenState
 
       // 3. Refresh providers and return
       ref.invalidate(newsListProvider);
+      ref.invalidate(latestNewsProvider);
       if (isEdit) {
         ref.invalidate(newsDetailProvider(widget.newsId!));
       }

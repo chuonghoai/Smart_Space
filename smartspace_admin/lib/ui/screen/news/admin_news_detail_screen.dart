@@ -73,6 +73,7 @@ class _AdminNewsDetailScreenState extends ConsumerState<AdminNewsDetailScreen> {
         if (!res.success) throw Exception(res.message);
 
         ref.invalidate(newsListProvider);
+        ref.invalidate(latestNewsProvider);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text(l10n.deleteNewsSuccess)),

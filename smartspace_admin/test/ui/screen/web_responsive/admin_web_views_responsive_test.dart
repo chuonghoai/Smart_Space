@@ -3,6 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/core/theme/app_theme.dart';
+import 'package:mobile_shared/features/news/data/news_repository.dart';
+import 'package:mobile_shared/features/news/models/news_page.dart';
 import 'package:smartspace_admin/features/news/application/news_providers.dart';
 import 'package:smartspace_admin/features/notifications/models/notification_count_model.dart';
 import 'package:smartspace_admin/features/notifications/models/notification_model.dart';
@@ -63,6 +65,21 @@ class _MockReportDetailNotifier extends ReportDetailNotifier {
   Future<ReportDetailModel> build(String arg) async {
     return model;
   }
+}
+
+/// Repo tin tức giả: luôn trả về trang rỗng.
+class _EmptyNewsRepository implements NewsRepository {
+  @override
+  Future<ApiResponse<NewsPage>> getNews({int page = 1, int size = 10, String? search, DateTime? from, DateTime? to}) async {
+    return ApiResponse(
+      success: true,
+      message: 'ok',
+      data: const NewsPage(items: [], currentPage: 1, totalPages: 0, totalElements: 0),
+    );
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 Widget _buildTestApp({
@@ -139,7 +156,7 @@ void main() {
       await tester.pumpWidget(
         _buildTestApp(
           extraOverrides: [
-            newsListProvider.overrideWith((ref) => []),
+            newsListProvider.overrideWith((ref) => NewsListNotifier(_EmptyNewsRepository())),
           ],
           child: const AdminNewsListScreen(),
         ),
