@@ -1,0 +1,83 @@
+{
+  "todotree": {
+    "tree": [
+      {
+        "key": 1794304247273,
+        "children": [],
+        "todo": {
+          "content": "Ở màn hình danh sách hội thoại, không nhận được tin nhắn mới realtime, phải refresh lại mới thấy được tin nhắn mới nhất",
+          "id": 1794304247273,
+          "level": "default",
+          "done": true,
+          "start": 1794304247273
+        }
+      },
+      {
+        "key": 1794304370385,
+        "children": [],
+        "todo": {
+          "content": "Khi gửi media bị lỗi, bấm gửi lại, hệ thống lập tức gửi đi tin nhắn loại medai nhưng không có đính kèm url media (hiện ảnh mặc định của ứng dụng)",
+          "id": 1794304370385,
+          "level": "default",
+          "done": true,
+          "start": 1794304370385
+        }
+      },
+      {
+        "key": 1794304499985,
+        "children": [],
+        "todo": {
+          "content": "nút bấm audio bên phải thanh chat bar không bấm được (bấm vào không có gì xảy ra), nghi ngờ nút bấm chưa được kết nối hàm chức năng hoặc nút bấm đang bị vô hiệu, lỗi màn hình thiết bị...",
+          "id": 1794304499985,
+          "level": "default",
+          "done": true,
+          "start": 1794304499985
+        }
+      },
+      {
+        "key": 1794304624529,
+        "children": [],
+        "todo": {
+          "content": "Lỗi gửi đính kèm phản ánh: A bấm gửi, B không nhận được. A thoát ra vào lại màn hình tin nhắn, tin nhắn đính kèm phản ánh ấy biến mất ngay lập tức. Nhưng B có nhận được thông báo firebase về tin nhắn đính kèm phản ánh ấy",
+          "id": 1794304624529,
+          "level": "default",
+          "done": true,
+          "start": 1794304624529
+        }
+      },
+      {
+        "key": 1794304693081,
+        "children": [],
+        "todo": {
+          "content": "Sửa UI của tin nhắn đính kèm phản ánh, phải có sự khác biệt rõ rệt về màu sắc và UI với các tin nhắn khác",
+          "id": 1794304693081,
+          "level": "default",
+          "done": true,
+          "start": 1794304693081
+        }
+      },
+      {
+        "key": 1794304864313,
+        "children": [],
+        "todo": {
+          "content": "Sửa UI của các bubble tin nhắn: Kích thước chiều rộng và chiều cao của bubble phải vừa khít với kích thước của tin nhắn bên trong (có giới hạn chiều rộng)",
+          "id": 1794304864313,
+          "level": "default",
+          "done": true,
+          "start": 1794304864313
+        }
+      }
+    ],
+    "expandKeys": [],
+    "add_mode": "bottom",
+    "virtual": false,
+    "showLine": false,
+    "playFontSize": 24,
+    "title": "error",
+    "autoSort": false,
+    "showEndTime": false,
+    "simpleMode": false,
+    "lang": "en",
+    "version": "1794304917398"
+  }
+}

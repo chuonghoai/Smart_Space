@@ -36,4 +36,14 @@ class SharedLocalizationsVi extends SharedLocalizations {
 
   @override
   String get releaseToCancel => 'Thả để hủy';
+
+  @override
+  String get micPermissionRequired =>
+      'Vui lòng cấp quyền truy cập microphone để ghi âm';
+
+  @override
+  String get attachedReport => 'Phản ánh đính kèm';
+
+  @override
+  String get tapToViewReport => 'Nhấn để xem chi tiết';
 }

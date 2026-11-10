@@ -17,5 +17,8 @@
   "typingText": "đang nhập...",
   "pressAndHoldToRecord": "Nhấn giữ để ghi âm",
   "slideLeftToCancel": "Trượt sang để hủy",
-  "releaseToCancel": "Thả để hủy"
+  "releaseToCancel": "Thả để hủy",
+  "micPermissionRequired": "Vui lòng cấp quyền truy cập microphone để ghi âm",
+  "attachedReport": "Phản ánh đính kèm",
+  "tapToViewReport": "Nhấn để xem chi tiết"
 }

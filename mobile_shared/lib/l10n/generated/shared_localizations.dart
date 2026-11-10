@@ -151,6 +151,24 @@ abstract class SharedLocalizations {
   /// In vi, this message translates to:
   /// **'Thả để hủy'**
   String get releaseToCancel;
+
+  /// No description provided for @micPermissionRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng cấp quyền truy cập microphone để ghi âm'**
+  String get micPermissionRequired;
+
+  /// No description provided for @attachedReport.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phản ánh đính kèm'**
+  String get attachedReport;
+
+  /// No description provided for @tapToViewReport.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhấn để xem chi tiết'**
+  String get tapToViewReport;
 }
 
 class _SharedLocalizationsDelegate

@@ -76,15 +76,26 @@ class ChatMessageBubble extends StatelessWidget {
 
     final timeStr = DateFormat('HH:mm').format(message.createdAt);
 
-    final bubbleBg = isMe
-        ? theme.colorScheme.primary
-        : theme.colorScheme.surfaceContainerHighest;
-    final textColor = isMe
-        ? theme.colorScheme.onPrimary
-        : theme.colorScheme.onSurfaceVariant;
-    final timeColor = isMe
-        ? theme.colorScheme.onPrimary.withValues(alpha: 0.7)
-        : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6);
+    final isReportMsg = message.isReport;
+    final bubbleBg = isReportMsg
+        ? (theme.brightness == Brightness.dark
+            ? theme.colorScheme.surfaceContainer
+            : theme.colorScheme.surface)
+        : (isMe
+            ? theme.colorScheme.primary
+            : theme.colorScheme.surfaceContainerHighest);
+
+    final textColor = isReportMsg
+        ? theme.colorScheme.onSurface
+        : (isMe
+            ? theme.colorScheme.onPrimary
+            : theme.colorScheme.onSurfaceVariant);
+
+    final timeColor = isReportMsg
+        ? theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.65)
+        : (isMe
+            ? theme.colorScheme.onPrimary.withValues(alpha: 0.7)
+            : theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6));
 
     final borderRadius = BorderRadius.only(
       topLeft: const Radius.circular(16),
@@ -92,6 +103,15 @@ class ChatMessageBubble extends StatelessWidget {
       bottomLeft: isMe ? const Radius.circular(16) : const Radius.circular(4),
       bottomRight: isMe ? const Radius.circular(4) : const Radius.circular(16),
     );
+
+    final bubbleBorder = isReportMsg
+        ? Border.all(
+            color: isMe
+                ? theme.colorScheme.primary.withValues(alpha: 0.4)
+                : theme.colorScheme.outlineVariant.withValues(alpha: 0.7),
+            width: 1.2,
+          )
+        : null;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -108,16 +128,26 @@ class ChatMessageBubble extends StatelessWidget {
           Flexible(
             child: Container(
               constraints: BoxConstraints(
-                maxWidth: MediaQuery.of(context).size.width * 0.78,
+                maxWidth: MediaQuery.of(context).size.width * 0.75,
               ),
               decoration: BoxDecoration(
                 color: bubbleBg,
                 borderRadius: borderRadius,
+                border: bubbleBorder,
+                boxShadow: isReportMsg
+                    ? [
+                        BoxShadow(
+                          color: Colors.black.withValues(alpha: 0.04),
+                          blurRadius: 6,
+                          offset: const Offset(0, 2),
+                        ),
+                      ]
+                    : null,
               ),
               child: ClipRRect(
                 borderRadius: borderRadius,
                 child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: isMe ? CrossAxisAlignment.end : CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     _buildContent(context, theme, textColor),
@@ -127,7 +157,6 @@ class ChatMessageBubble extends StatelessWidget {
                         mainAxisSize: MainAxisSize.min,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
-                          const Spacer(),
                           Text(
                             timeStr,
                             style: TextStyle(
@@ -152,7 +181,9 @@ class ChatMessageBubble extends StatelessWidget {
                                 Icon(
                                   Icons.done_all_rounded,
                                   size: 13,
-                                  color: isMe ? Colors.lightBlueAccent : theme.colorScheme.primary,
+                                  color: isMe && !isReportMsg
+                                      ? Colors.lightBlueAccent
+                                      : theme.colorScheme.primary,
                                 )
                               else
                                 Icon(
@@ -327,6 +358,18 @@ class ChatMessageBubble extends StatelessWidget {
     final reportTitle = report?.title ?? message.content;
     final reportStatus = report?.status ?? 'PROCESSING';
     final reportSeverity = report?.severity;
+    final address = report?.address;
+    final sharedL10n = SharedLocalizations.of(context);
+
+    // Accent color based on issue status
+    Color accentColor = theme.colorScheme.primary;
+    if (report?.isRehandling == true) {
+      accentColor = Colors.deepOrange;
+    } else if (reportStatus.toLowerCase() == 'processing') {
+      accentColor = Colors.amber.shade800;
+    } else if (reportStatus.toLowerCase() == 'processed' || reportStatus.toLowerCase() == 'resolved') {
+      accentColor = Colors.green.shade700;
+    }
 
     return InkWell(
       onTap: () {
@@ -335,99 +378,185 @@ class ChatMessageBubble extends StatelessWidget {
         }
       },
       child: Container(
+        constraints: const BoxConstraints(minWidth: 230),
         padding: const EdgeInsets.all(12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
-              children: [
-                Icon(
-                  Icons.assignment_outlined,
-                  size: 18,
-                  color: isMe ? theme.colorScheme.onPrimary : theme.colorScheme.primary,
-                ),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    'Phản ánh đính kèm',
-                    style: TextStyle(
-                      fontSize: 12,
-                      fontWeight: FontWeight.bold,
-                      color: isMe
-                          ? theme.colorScheme.onPrimary.withValues(alpha: 0.9)
-                          : theme.colorScheme.primary,
+        child: IntrinsicWidth(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Ticket Header Pill & Left Accent Tag
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Container(
+                    width: 3.5,
+                    height: 16,
+                    decoration: BoxDecoration(
+                      color: accentColor,
+                      borderRadius: BorderRadius.circular(2),
                     ),
                   ),
-                ),
-              ],
-            ),
-            const SizedBox(height: 6),
-            if (report?.imageUrl != null && report!.imageUrl!.isNotEmpty) ...[
-              ClipRRect(
-                borderRadius: BorderRadius.circular(8),
-                child: Image.network(
-                  report.imageUrl!,
-                  height: 120,
-                  width: double.infinity,
-                  fit: BoxFit.cover,
-                  errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
-                ),
-              ),
-              const SizedBox(height: 6),
-            ],
-            Text(
-              reportTitle,
-              style: TextStyle(
-                fontSize: 14,
-                fontWeight: FontWeight.bold,
-                color: textColor,
-              ),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
-            ),
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                  decoration: BoxDecoration(
-                    color: isMe
-                        ? Colors.white.withValues(alpha: 0.25)
-                        : theme.colorScheme.primaryContainer,
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: Text(
-                    reportStatus.toUpperCase(),
-                    style: TextStyle(
-                      fontSize: 10,
-                      fontWeight: FontWeight.bold,
-                      color: isMe ? Colors.white : theme.colorScheme.onPrimaryContainer,
-                    ),
-                  ),
-                ),
-                if (reportSeverity != null) ...[
                   const SizedBox(width: 6),
                   Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
                     decoration: BoxDecoration(
-                      color: isMe
-                          ? Colors.white.withValues(alpha: 0.2)
-                          : theme.colorScheme.secondaryContainer,
+                      color: accentColor.withValues(alpha: 0.12),
                       borderRadius: BorderRadius.circular(6),
                     ),
-                    child: Text(
-                      reportSeverity.toUpperCase(),
-                      style: TextStyle(
-                        fontSize: 10,
-                        fontWeight: FontWeight.w600,
-                        color: isMe ? Colors.white : theme.colorScheme.onSecondaryContainer,
-                      ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.assignment_rounded,
+                          size: 13,
+                          color: accentColor,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          sharedL10n?.attachedReport ?? 'Phản ánh đính kèm',
+                          style: TextStyle(
+                            fontSize: 10.5,
+                            fontWeight: FontWeight.bold,
+                            color: accentColor,
+                            letterSpacing: 0.2,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 8),
+
+              // Thumbnail (if available)
+              if (report?.imageUrl != null && report!.imageUrl!.isNotEmpty) ...[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(8),
+                  child: Image.network(
+                    report.imageUrl!,
+                    height: 110,
+                    width: double.infinity,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+                  ),
+                ),
+                const SizedBox(height: 8),
               ],
-            ),
-          ],
+
+              // Report Title
+              Text(
+                reportTitle,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: theme.colorScheme.onSurface,
+                  height: 1.25,
+                ),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+
+              // Address line (if available)
+              if (address != null && address.isNotEmpty) ...[
+                const SizedBox(height: 5),
+                Row(
+                  children: [
+                    Icon(
+                      Icons.place_outlined,
+                      size: 13,
+                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+                    ),
+                    const SizedBox(width: 3),
+                    Expanded(
+                      child: Text(
+                        address,
+                        style: TextStyle(
+                          fontSize: 11,
+                          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.85),
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ],
+
+              const SizedBox(height: 8),
+
+              // Status and Severity chips
+              Wrap(
+                spacing: 6,
+                runSpacing: 4,
+                children: [
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                    decoration: BoxDecoration(
+                      color: accentColor.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(5),
+                      border: Border.all(
+                        color: accentColor.withValues(alpha: 0.3),
+                        width: 0.7,
+                      ),
+                    ),
+                    child: Text(
+                      reportStatus.toUpperCase(),
+                      style: TextStyle(
+                        fontSize: 9.5,
+                        fontWeight: FontWeight.bold,
+                        color: accentColor,
+                      ),
+                    ),
+                  ),
+                  if (reportSeverity != null && reportSeverity.isNotEmpty)
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.surfaceContainerHighest,
+                        borderRadius: BorderRadius.circular(5),
+                      ),
+                      child: Text(
+                        reportSeverity.toUpperCase(),
+                        style: TextStyle(
+                          fontSize: 9.5,
+                          fontWeight: FontWeight.w600,
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+
+              const SizedBox(height: 8),
+              Divider(
+                height: 1,
+                thickness: 0.8,
+                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+              ),
+              const SizedBox(height: 6),
+
+              // Action link: Tap to view details
+              Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    sharedL10n?.tapToViewReport ?? 'Nhấn để xem chi tiết',
+                    style: TextStyle(
+                      fontSize: 11,
+                      fontWeight: FontWeight.w600,
+                      color: theme.colorScheme.primary,
+                    ),
+                  ),
+                  const SizedBox(width: 3),
+                  Icon(
+                    Icons.arrow_forward_rounded,
+                    size: 13,
+                    color: theme.colorScheme.primary,
+                  ),
+                ],
+              ),
+            ],
+          ),
         ),
       ),
     );

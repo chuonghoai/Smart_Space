@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_shared/core/auth/user_storage_service.dart';
@@ -409,13 +410,21 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
         resourceType: isVideo ? 'video' : 'image',
       );
 
-      final mediaDto = [
-        {
-          'fileName': fileName,
-          'fileType': isVideo ? 'video/mp4' : 'image/jpeg',
-          'thumbnailUrl': secureUrl,
+      final mediaModel = MessageMediaModel(
+        fileName: fileName,
+        fileType: isVideo ? 'video/mp4' : 'image/jpeg',
+        thumbnailUrl: secureUrl,
+      );
+      final mediaDto = [mediaModel.toJson()];
+
+      // Cập nhật optimisticMsg trong state với media vừa upload
+      final updatedList = state.messages.map((m) {
+        if (m.tempId == tempId) {
+          return m.copyWith(messageMedia: [mediaModel]);
         }
-      ];
+        return m;
+      }).toList();
+      state = state.copyWith(messages: updatedList);
 
       // 2. Send via WS / REST
       bool sentViaWs = false;
@@ -491,13 +500,21 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
         resourceType: 'video',
       );
 
-      final mediaDto = [
-        {
-          'fileName': fileName,
-          'fileType': 'audio/m4a',
-          'thumbnailUrl': secureUrl,
+      final audioModel = MessageMediaModel(
+        fileName: fileName,
+        fileType: 'audio/m4a',
+        thumbnailUrl: secureUrl,
+      );
+      final mediaDto = [audioModel.toJson()];
+
+      // Cập nhật optimisticMsg trong state với audio vừa upload
+      final updatedList = state.messages.map((m) {
+        if (m.tempId == tempId) {
+          return m.copyWith(messageMedia: [audioModel]);
         }
-      ];
+        return m;
+      }).toList();
+      state = state.copyWith(messages: updatedList);
 
       bool sentViaWs = false;
       if (_repository.isWsConnected) {
@@ -647,6 +664,45 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
 
     state = state.copyWith(messages: list);
 
+    List<Map<String, dynamic>> mediaDto = failedMsg.messageMedia.map((m) => m.toJson()).toList();
+
+    // Nếu messageMedia đang rỗng nhưng có file cục bộ (upload Cloudinary lần đầu thất bại):
+    if (mediaDto.isEmpty && failedMsg.localMediaPath != null && File(failedMsg.localMediaPath!).existsSync()) {
+      try {
+        final file = File(failedMsg.localMediaPath!);
+        final bytes = await file.readAsBytes();
+        final fileName = file.uri.pathSegments.last;
+        final isVideo = failedMsg.isVideo;
+        final isAudio = failedMsg.isAudio;
+        final resourceType = isVideo ? 'video' : (isAudio ? 'video' : 'image');
+        final secureUrl = await mediaUploadUtil.uploadMedia(
+          bytes,
+          fileName,
+          resourceType: resourceType,
+        );
+        final fileType = isAudio
+            ? 'audio/m4a'
+            : (isVideo ? 'video/mp4' : 'image/jpeg');
+        final model = MessageMediaModel(
+          fileName: fileName,
+          fileType: fileType,
+          thumbnailUrl: secureUrl,
+        );
+        mediaDto = [model.toJson()];
+        final updatedList = state.messages.map((m) {
+          if (m.tempId == tempId || m.id == tempId) {
+            return m.copyWith(messageMedia: [model]);
+          }
+          return m;
+        }).toList();
+        state = state.copyWith(messages: updatedList);
+      } catch (e) {
+        debugPrint('[ChatDetailProvider] retry upload failed: $e');
+        _markMessageFailed(tempId);
+        return;
+      }
+    }
+
     bool sentViaWs = false;
     if (_repository.isWsConnected) {
       sentViaWs = _repository.sendMessageWs(
@@ -654,7 +710,7 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
         content: failedMsg.content,
         tempId: tempId,
         messageType: failedMsg.messageType.toLowerCase(),
-        messageMedia: failedMsg.messageMedia.map((m) => m.toJson()).toList(),
+        messageMedia: mediaDto,
         reportId: failedMsg.report?.id,
       );
     }
@@ -665,7 +721,7 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
         failedMsg.content,
         tempId,
         messageType: failedMsg.messageType.toLowerCase(),
-        messageMedia: failedMsg.messageMedia.map((m) => m.toJson()).toList(),
+        messageMedia: mediaDto,
         reportId: failedMsg.report?.id,
       );
     } else {
@@ -678,7 +734,7 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
             failedMsg.content,
             tempId,
             messageType: failedMsg.messageType.toLowerCase(),
-            messageMedia: failedMsg.messageMedia.map((m) => m.toJson()).toList(),
+            messageMedia: mediaDto,
             reportId: failedMsg.report?.id,
           );
         }

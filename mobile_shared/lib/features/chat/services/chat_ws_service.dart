@@ -18,6 +18,9 @@ class ChatWsService implements WsFeatureService {
     if (!_conversationListeners.contains(listener)) {
       _conversationListeners.add(listener);
     }
+    if (_conversationsSub == null && webSocketService.isConnected) {
+      setup();
+    }
   }
 
   void removeConversationListener(OnConversationUpdateCallback listener) {
@@ -38,6 +41,11 @@ class ChatWsService implements WsFeatureService {
   void setup() {
     if (_conversationsSub != null) {
       debugPrint('[ChatWsService] Conversations listener already set up, skipping.');
+      return;
+    }
+
+    if (!webSocketService.isConnected) {
+      debugPrint('[ChatWsService] WebSocket not connected yet, skipping setup until connected.');
       return;
     }
 

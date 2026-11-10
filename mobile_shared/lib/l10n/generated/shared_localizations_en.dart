@@ -36,4 +36,14 @@ class SharedLocalizationsEn extends SharedLocalizations {
 
   @override
   String get releaseToCancel => 'Release to cancel';
+
+  @override
+  String get micPermissionRequired =>
+      'Please grant microphone permission to record audio';
+
+  @override
+  String get attachedReport => 'Attached Report';
+
+  @override
+  String get tapToViewReport => 'Tap to view details';
 }

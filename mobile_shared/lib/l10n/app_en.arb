@@ -17,5 +17,8 @@
   "typingText": "is typing...",
   "pressAndHoldToRecord": "Hold to record",
   "slideLeftToCancel": "Slide to cancel",
-  "releaseToCancel": "Release to cancel"
+  "releaseToCancel": "Release to cancel",
+  "micPermissionRequired": "Please grant microphone permission to record audio",
+  "attachedReport": "Attached Report",
+  "tapToViewReport": "Tap to view details"
 }

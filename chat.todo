@@ -8,7 +8,7 @@
           "content": "Triển khai tính năng gửi ảnh/video",
           "id": 1794145331691,
           "level": "default",
-          "done": true,
+          "done": false,
           "start": 1794145331691
         }
       },
@@ -19,7 +19,7 @@
           "content": "Triển khai tính năng gửi audio",
           "id": 1794145347219,
           "level": "default",
-          "done": true,
+          "done": false,
           "start": 1794145347219
         }
       },
@@ -30,7 +30,7 @@
           "content": "Triển khai tính năng gửi thông tin report dưới hình thức 1 tin nhắn",
           "id": 1794145377843,
           "level": "default",
-          "done": true,
+          "done": false,
           "start": 1794145377843
         }
       },
@@ -42,7 +42,9 @@
           "id": 1794145356883,
           "level": "default",
           "done": true,
-          "start": 1794145356883
+          "start": 1794145356883,
+          "focus": false,
+          "end": 1794304721169
         }
       },
       {
@@ -53,7 +55,9 @@
           "id": 1794145407659,
           "level": "default",
           "done": true,
-          "start": 1794145407659
+          "start": 1794145407659,
+          "focus": false,
+          "end": 1794304735960
         }
       },
       {
@@ -64,7 +68,9 @@
           "id": 1794147528386,
           "level": "default",
           "done": true,
-          "start": 1794147528386
+          "start": 1794147528386,
+          "focus": false,
+          "end": 1794304078345
         }
       },
       {
@@ -75,11 +81,15 @@
           "id": 1794299341892,
           "level": "default",
           "done": true,
-          "start": 1794299341892
+          "start": 1794299341892,
+          "focus": false,
+          "end": 1794304738473
         }
       }
     ],
-    "expandKeys": [],
+    "expandKeys": [
+      1794147528386
+    ],
     "add_mode": "bottom",
     "virtual": false,
     "showLine": false,
@@ -89,6 +99,6 @@
     "showEndTime": false,
     "simpleMode": false,
     "lang": "en",
-    "version": "1794299352472"
+    "version": "1794304738513"
   }
 }

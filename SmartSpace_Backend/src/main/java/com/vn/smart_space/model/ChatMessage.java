@@ -38,6 +38,7 @@ public class ChatMessage {
     private String content;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "message_type", length = 32, columnDefinition = "VARCHAR(32)")
     @Builder.Default
     private EMessageType messageType = EMessageType.text;
 

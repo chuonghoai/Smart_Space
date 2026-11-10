@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:record/record.dart';
+import 'package:mobile_shared/l10n/generated/shared_localizations.dart';
 
 typedef AudioRecordCallback = void Function({
   required Uint8List bytes,
@@ -65,6 +66,16 @@ class _ChatAudioRecorderButtonState extends State<ChatAudioRecorderButton>
   Future<void> _startRecording() async {
     try {
       if (!await _audioRecorder.hasPermission()) {
+        if (mounted) {
+          final l10n = SharedLocalizations.of(context);
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n?.micPermissionRequired ?? 'Vui lòng cấp quyền truy cập microphone để ghi âm'),
+              duration: const Duration(seconds: 2),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
+        }
         return;
       }
 
@@ -145,6 +156,7 @@ class _ChatAudioRecorderButtonState extends State<ChatAudioRecorderButton>
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final sharedL10n = SharedLocalizations.of(context);
 
     if (_isRecording) {
       return Row(
@@ -187,7 +199,9 @@ class _ChatAudioRecorderButtonState extends State<ChatAudioRecorderButton>
                 ),
                 const SizedBox(width: 10),
                 Text(
-                  _isCancelled ? 'Thả để hủy' : '← Trượt để hủy',
+                  _isCancelled
+                      ? (sharedL10n?.releaseToCancel ?? 'Thả để hủy')
+                      : '← ${sharedL10n?.slideLeftToCancel ?? 'Trượt để hủy'}',
                   style: theme.textTheme.bodySmall?.copyWith(
                     color: _isCancelled
                         ? theme.colorScheme.error
@@ -233,6 +247,17 @@ class _ChatAudioRecorderButtonState extends State<ChatAudioRecorderButton>
     }
 
     return GestureDetector(
+      onTap: () {
+        HapticFeedback.selectionClick();
+        ScaffoldMessenger.of(context).hideCurrentSnackBar();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(sharedL10n?.pressAndHoldToRecord ?? 'Nhấn giữ để ghi âm'),
+            duration: const Duration(seconds: 2),
+            behavior: SnackBarBehavior.floating,
+          ),
+        );
+      },
       onLongPressStart: (_) => _startRecording(),
       onLongPressMoveUpdate: (details) {
         final offset = details.offsetFromOrigin.dx;

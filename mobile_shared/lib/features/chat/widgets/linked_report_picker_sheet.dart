@@ -223,7 +223,7 @@ class _LinkedReportPickerSheetState extends State<LinkedReportPickerSheet> {
                       width: 56,
                       height: 56,
                       fit: BoxFit.cover,
-                      errorBuilder: (_, __, ___) => _buildPlaceholderIcon(theme),
+                      errorBuilder: (_, _, _) => _buildPlaceholderIcon(theme),
                     ),
                   )
                 else
