@@ -150,11 +150,17 @@ public class ReportController {
     public ResponseEntity<ApiResponse> getStaffAssignedReports(
             @AuthenticationPrincipal Jwt jwt,
             @RequestParam(defaultValue = "all") String status,
+            @RequestParam(required = false) String severity,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to,
+            @RequestParam(defaultValue = "latest") String sort,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int limit) {
         String staffId = jwt.getClaim("userId").toString();
-        return ResponseEntity.ok(ApiResponse.success("system.success", 
-                reportService.getStaffAssignedReports(staffId, status, page, limit)));
+        return ResponseEntity.ok(ApiResponse.success("system.success",
+                reportService.getStaffAssignedReports(staffId, status, severity, search, from, to, sort, page,
+                        limit)));
     }
 
     @GetMapping("/staff/statistics")

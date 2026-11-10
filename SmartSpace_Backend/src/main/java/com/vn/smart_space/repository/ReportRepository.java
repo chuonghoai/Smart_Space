@@ -62,8 +62,10 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                      "     LOWER(r.description) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
                      "     LOWER(r.address) LIKE LOWER(CONCAT('%', :search, '%'))) ";
 
-       // Khoảng ngày tạo Client: [createdFrom, createdTo) — createdTo là đầu ngày sau ngày cuối
-       // người dùng chọn, nên trọn ngày cuối được tính. null = không giới hạn đầu/cuối đó.
+       // Khoảng ngày tạo Client: [createdFrom, createdTo) — createdTo là đầu ngày sau
+       // ngày cuối
+       // người dùng chọn, nên trọn ngày cuối được tính. null = không giới hạn đầu/cuối
+       // đó.
        String CLIENT_DATE_FILTER = "AND (:createdFrom IS NULL OR r.createdAt >= :createdFrom) " +
                      "AND (:createdTo IS NULL OR r.createdAt < :createdTo) ";
 
@@ -114,10 +116,44 @@ public interface ReportRepository extends JpaRepository<Report, String> {
        List<Report> findByAssignedStaffIdAndStatusOrderByCreatedAtDesc(String staffId, EReportStatus status,
                      Limit limit);
 
-       // Fetch user + assignedStaff (to-one) cùng lúc để tránh N+1 khi map sang
-       // RecentReportResponse
+       // Staff "Việc được giao"
+       String STAFF_ASSIGNED_FILTER = "WHERE r.assignedStaff.id = :staffId " +
+                     "AND r.status IN :statuses " +
+                     "AND (:rehandlingOnly = false OR r.isReviewResolved = false) " +
+                     "AND (:severity IS NULL OR r.severity = :severity) " +
+                     CLIENT_DATE_FILTER +
+                     CLIENT_KEYWORD_FILTER;
+
+       // Thứ tự theo ngày tạo lấy từ Sort của pageable (mới nhất / cũ nhất).
        @EntityGraph(attributePaths = { "user", "assignedStaff" })
-       List<Report> findByAssignedStaffIdAndStatusInOrderByCreatedAtDesc(String staffId, List<EReportStatus> statuses,
+       @Query("SELECT r FROM Report r " + STAFF_ASSIGNED_FILTER)
+       List<Report> findStaffAssignedReports(
+                     @Param("staffId") String staffId,
+                     @Param("statuses") List<EReportStatus> statuses,
+                     @Param("rehandlingOnly") boolean rehandlingOnly,
+                     @Param("severity") EReportSeverity severity,
+                     @Param("search") String search,
+                     @Param("createdFrom") LocalDateTime createdFrom,
+                     @Param("createdTo") LocalDateTime createdTo,
+                     Pageable pageable);
+
+       // Nghiêm trọng nhất trước
+       @EntityGraph(attributePaths = { "user", "assignedStaff" })
+       @Query("SELECT r FROM Report r " + STAFF_ASSIGNED_FILTER +
+                     "ORDER BY CASE r.severity " +
+                     "WHEN com.vn.smart_space.consts.EReportSeverity.critical THEN 0 " +
+                     "WHEN com.vn.smart_space.consts.EReportSeverity.high THEN 1 " +
+                     "WHEN com.vn.smart_space.consts.EReportSeverity.medium THEN 2 " +
+                     "WHEN com.vn.smart_space.consts.EReportSeverity.low THEN 3 " +
+                     "ELSE 4 END, r.createdAt DESC, r.id DESC")
+       List<Report> findStaffAssignedReportsBySeverity(
+                     @Param("staffId") String staffId,
+                     @Param("statuses") List<EReportStatus> statuses,
+                     @Param("rehandlingOnly") boolean rehandlingOnly,
+                     @Param("severity") EReportSeverity severity,
+                     @Param("search") String search,
+                     @Param("createdFrom") LocalDateTime createdFrom,
+                     @Param("createdTo") LocalDateTime createdTo,
                      Pageable pageable);
 
        // Staff Dashboard: group by status for staff
@@ -133,12 +169,6 @@ public interface ReportRepository extends JpaRepository<Report, String> {
        @Query("SELECT r FROM Report r WHERE r.status = :status AND r.isReviewResolved = :isReviewResolved ORDER BY r.updatedAt DESC")
        List<Report> findReportsByStatusAndIsReviewResolved(@Param("status") EReportStatus status,
                      @Param("isReviewResolved") Boolean isReviewResolved);
-
-       @EntityGraph(attributePaths = { "user", "assignedStaff" })
-       @Query("SELECT r FROM Report r WHERE r.assignedStaff.id = :staffId AND r.status = :status AND r.isReviewResolved = :isReviewResolved ORDER BY r.updatedAt DESC")
-       List<Report> findStaffReportsByStatusAndIsReviewResolved(@Param("staffId") String staffId,
-                     @Param("status") EReportStatus status, @Param("isReviewResolved") Boolean isReviewResolved,
-                     Pageable pageable);
 
        // Dashboard: group by severity (exclude null)
        @Query("SELECT r.severity, COUNT(r) FROM Report r WHERE r.severity IS NOT NULL GROUP BY r.severity")
@@ -193,9 +223,6 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                      Pageable pageable);
 
        // Admin - User management
-       // Thống kê tổng hợp (aggregate) tính cả báo cáo ẩn danh; số liệu gắn với từng
-       // người dùng thì loại báo cáo ẩn danh để không lộ danh tính người báo cáo.
-
        @Query("SELECT COUNT(DISTINCT r.user.id) FROM Report r " +
                      "WHERE r.user.role = :role AND r.createdAt >= :from")
        long countDistinctReportersSince(
@@ -231,11 +258,6 @@ public interface ReportRepository extends JpaRepository<Report, String> {
        List<Report> findRecentPublicReportsByUser(@Param("userId") String userId, Limit limit);
 
        // Admin - Staff dashboard
-       // "Đã xử lý" = status processed + có nhân viên phụ trách. Thời điểm xử lý lấy
-       // theo
-       // updatedAt: processed là trạng thái cuối (updateReportStatus không cho chuyển
-       // tiếp)
-       // nên updatedAt không đổi sau khi xử lý xong.
 
        @Query("SELECT COUNT(r) FROM Report r " +
                      "WHERE r.status = :status AND r.assignedStaff IS NOT NULL " +
@@ -301,13 +323,7 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                      @Param("createdTo") LocalDateTime createdTo,
                      Pageable pageable);
 
-       // Nearest first ("Gần tôi"), sorted in the DB so paging stays correct. Order
-       // key is the
-       // equirectangular approximation (Δlat)² + (Δlng)²·cos²(lat) — same ranking as
-       // haversine at city
-       // scale, plain arithmetic so it stays JPQL (keeps JOIN FETCH, no N+1).
-       // :lngScale = cos²(:lat),
-       // computed by the caller. Reports without coordinates are excluded.
+       // Nearest first ("Gần tôi")
        @Query(value = "SELECT r FROM Report r LEFT JOIN FETCH r.user LEFT JOIN FETCH r.assignedStaff " +
                      FEED_NEARBY_FILTER +
                      "ORDER BY ((r.latitude - :lat) * (r.latitude - :lat) " +
@@ -325,10 +341,7 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                      @Param("lngScale") Double lngScale,
                      Pageable pageable);
 
-       // Admin map: same filters as the report list, optional lat/lng box (all bounds
-       // null = whole map),
-       // most severe first then newest. Reports without coordinates are excluded
-       // before the limit.
+       // Admin map
        @Query("SELECT r FROM Report r " +
                      "WHERE r.latitude IS NOT NULL AND r.longitude IS NOT NULL " +
                      "AND (:status IS NULL OR r.status = :status) " +
@@ -354,11 +367,7 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                      @Param("maxLng") Double maxLng,
                      Limit limit);
 
-       // Client map viewport: reports inside a lat/lng box, most severe first then
-       // newest.
-       // Processed reports are only visible to their owner (viewerId) and only while
-       // updatedAt >= processedSince.
-       // status / ownerId null = no restriction.
+       // Client map viewport
        @Query("SELECT r FROM Report r " +
                      "WHERE r.latitude BETWEEN :minLat AND :maxLat " +
                      "AND r.longitude BETWEEN :minLng AND :maxLng " +
@@ -432,7 +441,7 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                      "     OR (r.status = com.vn.smart_space.consts.EReportStatus.processed AND r.isReviewResolved = false)) "
                      +
                      "ORDER BY r.createdAt DESC")
-       org.springframework.data.domain.Page<Report> findActiveReportsByClientAndStaff(
+       Page<Report> findActiveReportsByClientAndStaff(
                      @Param("clientId") String clientId,
                      @Param("staffId") String staffId,
                      org.springframework.data.domain.Pageable pageable);
@@ -456,7 +465,7 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                      "     OR (r.status = com.vn.smart_space.consts.EReportStatus.processed AND r.isReviewResolved = false)) "
                      +
                      "ORDER BY r.createdAt DESC")
-       org.springframework.data.domain.Page<Report> findActiveReportsByClientAndStaffAndAnonymous(
+       Page<Report> findActiveReportsByClientAndStaffAndAnonymous(
                      @Param("clientId") String clientId,
                      @Param("staffId") String staffId,
                      @Param("isAnonymous") Boolean isAnonymous,

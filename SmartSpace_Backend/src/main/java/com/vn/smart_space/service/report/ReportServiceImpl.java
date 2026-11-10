@@ -16,6 +16,7 @@ import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -1422,89 +1423,87 @@ public class ReportServiceImpl implements IReportService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, int page, int limit) {
+    public List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, String severity,
+            String search, String from, String to, String sort, int page, int limit) {
         int safeLimit = Math.max(1, Math.min(limit, 100));
         int safePage = Math.max(0, page);
 
-        if ("rehandling".equalsIgnoreCase(status)) {
-            org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(safePage,
-                    safeLimit);
-            List<Report> reports = reportRepository.findStaffReportsByStatusAndIsReviewResolved(staffId,
-                    EReportStatus.processing, false, pageable);
-            return reports.stream().map(r -> {
-                User staff = r.getAssignedStaff();
-                User user = r.getUser();
-                boolean anon = Boolean.TRUE.equals(r.getIsAnonymous());
-                return RecentReportResponse.builder()
-                        .id(r.getId())
-                        .title(r.getTitle())
-                        .status(r.getStatus())
-                        .severity(r.getSeverity())
-                        .createdAt(r.getCreatedAt())
-                        .imageUrl(r.getImageUrls() != null && !r.getImageUrls().trim().isEmpty()
-                                ? r.getImageUrls().trim().replaceAll("^\\[|\\]$", "").replaceAll("\"", "").split(",")[0]
-                                        .trim()
-                                : r.getImageUrl())
-                        .address(r.getAddress() != null && !r.getAddress().trim().isEmpty() ? r.getAddress()
-                                : r.getLocationDescription())
-                        .assignedStaffName(staff != null ? staff.getFullName() : null)
-                        .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
-                        .latitude(r.getLatitude())
-                        .longitude(r.getLongitude())
-                        .userName(anon ? null : (user != null ? user.getFullName() : null))
-                        .userEmail(anon ? null : (user != null ? user.getEmail() : null))
-                        .userAvatarUrl(anon ? null : (user != null ? user.getAvatarUrl() : null))
-                        .description(r.getDescription())
-                        .isReviewResolved(r.getIsReviewResolved())
-                        .build();
-            }).collect(Collectors.toList());
-        }
+        // "rehandling" không phải EReportStatus: việc đang xử lý bị người dân đánh giá chưa giải quyết.
+        // "processing" vẫn gồm cả việc xử lý lại (khớp số đếm thống kê và bản đồ Staff).
+        String normalizedStatus = status != null ? status.trim().toLowerCase() : "";
+        boolean rehandlingOnly = "rehandling".equals(normalizedStatus);
+        List<EReportStatus> statuses = switch (normalizedStatus) {
+            case "rehandling", "processing" -> List.of(EReportStatus.processing);
+            case "resolved", "processed" -> List.of(EReportStatus.processed);
+            case "rejected" -> List.of(EReportStatus.rejected);
+            // "all" / rỗng / giá trị lạ: mọi việc Staff thấy được (không gồm pending)
+            default -> List.of(EReportStatus.processing, EReportStatus.processed);
+        };
 
-        List<EReportStatus> statuses;
-        if ("resolved".equalsIgnoreCase(status) || "processed".equalsIgnoreCase(status)) {
-            statuses = List.of(EReportStatus.processed);
-        } else if ("processing".equalsIgnoreCase(status)) {
-            statuses = List.of(EReportStatus.processing);
-        } else if ("rejected".equalsIgnoreCase(status)) {
-            statuses = List.of(EReportStatus.rejected);
+        EReportSeverity severityFilter = parseClientSeverity(severity);
+        String keyword = normalizeClientKeyword(search);
+        ClientDateRange dates = parseClientDateRange(from, to);
+
+        StaffAssignedSort order = StaffAssignedSort.from(sort);
+        List<Report> reports;
+        if (order == StaffAssignedSort.SEVERITY) {
+            reports = reportRepository.findStaffAssignedReportsBySeverity(staffId, statuses, rehandlingOnly,
+                    severityFilter, keyword, dates.from(), dates.toExclusive(),
+                    PageRequest.of(safePage, safeLimit));
         } else {
-            // "all" or invalid or null defaults to processing + processed for staff
-            // (pending removed)
-            statuses = List.of(EReportStatus.processing, EReportStatus.processed);
+            Sort.Direction direction = order == StaffAssignedSort.OLDEST
+                    ? Sort.Direction.ASC
+                    : Sort.Direction.DESC;
+            reports = reportRepository.findStaffAssignedReports(staffId, statuses, rehandlingOnly,
+                    severityFilter, keyword, dates.from(), dates.toExclusive(),
+                    PageRequest.of(safePage, safeLimit, Sort.by(direction, "createdAt", "id")));
         }
 
-        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(safePage,
-                safeLimit);
-        List<Report> reports = reportRepository.findByAssignedStaffIdAndStatusInOrderByCreatedAtDesc(staffId, statuses,
-                pageable);
+        return reports.stream().map(this::mapToStaffAssignedResponse).collect(Collectors.toList());
+    }
 
-        return reports.stream().map(r -> {
-            User staff = r.getAssignedStaff();
-            User user = r.getUser();
-            boolean anon = Boolean.TRUE.equals(r.getIsAnonymous());
-            return RecentReportResponse.builder()
-                    .id(r.getId())
-                    .title(r.getTitle())
-                    .status(r.getStatus())
-                    .severity(r.getSeverity())
-                    .createdAt(r.getCreatedAt())
-                    .imageUrl(r.getImageUrls() != null && !r.getImageUrls().trim().isEmpty()
-                            ? r.getImageUrls().trim().replaceAll("^\\[|\\]$", "").replaceAll("\"", "").split(",")[0]
-                                    .trim()
-                            : r.getImageUrl())
-                    .address(r.getAddress() != null && !r.getAddress().trim().isEmpty() ? r.getAddress()
-                            : r.getLocationDescription())
-                    .assignedStaffName(staff != null ? staff.getFullName() : null)
-                    .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
-                    .latitude(r.getLatitude())
-                    .longitude(r.getLongitude())
-                    .userName(anon ? null : (user != null ? user.getFullName() : null))
-                    .userEmail(anon ? null : (user != null ? user.getEmail() : null))
-                    .userAvatarUrl(anon ? null : (user != null ? user.getAvatarUrl() : null))
-                    .description(r.getDescription())
-                    .isReviewResolved(r.getIsReviewResolved())
-                    .build();
-        }).collect(Collectors.toList());
+    /** Thứ tự danh sách việc được giao; giá trị lạ / rỗng = mới nhất. */
+    private enum StaffAssignedSort {
+        LATEST, OLDEST, SEVERITY;
+
+        static StaffAssignedSort from(String value) {
+            if (value == null || value.isBlank()) {
+                return LATEST;
+            }
+            try {
+                return valueOf(value.trim().toUpperCase());
+            } catch (IllegalArgumentException e) {
+                return LATEST;
+            }
+        }
+    }
+
+    private RecentReportResponse mapToStaffAssignedResponse(Report r) {
+        User staff = r.getAssignedStaff();
+        User user = r.getUser();
+        boolean anon = Boolean.TRUE.equals(r.getIsAnonymous());
+        return RecentReportResponse.builder()
+                .id(r.getId())
+                .title(r.getTitle())
+                .status(r.getStatus())
+                .severity(r.getSeverity())
+                .createdAt(r.getCreatedAt())
+                .imageUrl(r.getImageUrls() != null && !r.getImageUrls().trim().isEmpty()
+                        ? r.getImageUrls().trim().replaceAll("^\\[|\\]$", "").replaceAll("\"", "").split(",")[0]
+                                .trim()
+                        : r.getImageUrl())
+                .address(r.getAddress() != null && !r.getAddress().trim().isEmpty() ? r.getAddress()
+                        : r.getLocationDescription())
+                .assignedStaffName(staff != null ? staff.getFullName() : null)
+                .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
+                .latitude(r.getLatitude())
+                .longitude(r.getLongitude())
+                .userName(anon ? null : (user != null ? user.getFullName() : null))
+                .userEmail(anon ? null : (user != null ? user.getEmail() : null))
+                .userAvatarUrl(anon ? null : (user != null ? user.getAvatarUrl() : null))
+                .description(r.getDescription())
+                .isReviewResolved(r.getIsReviewResolved())
+                .build();
     }
 
     @Override

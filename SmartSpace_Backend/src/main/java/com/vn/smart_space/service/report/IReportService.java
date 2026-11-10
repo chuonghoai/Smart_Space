@@ -76,7 +76,8 @@ public interface IReportService {
                         String from, String to, String timeframe, Double minLat, Double maxLat, Double minLng, Double maxLng,
                         int limit);
 
-        List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, int page, int limit);
+        List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, String severity,
+                        String search, String from, String to, String sort, int page, int limit);
 
         ReportStatisticsResponse getStaffReportStatistics(String staffId);
 
