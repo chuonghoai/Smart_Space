@@ -1,6 +1,6 @@
 ﻿# ==============================================================================
 # SMART SPACE - TỰ ĐỘNG BUILD APK RELEASE CHO CẢ 3 APP
-# (Tối ưu hóa RAM: Chạy tuần tự, tự động phát hiện lỗi và retry tối đa 1 lần)
+# (Tối ưu hóa RAM: Chạy tuần tự, tự động giám sát và retry tối đa 1 lần)
 # ==============================================================================
 
 param(
@@ -97,7 +97,7 @@ function Format-Duration([TimeSpan]$span) {
     }
 }
 
-# Hàm lấy dung lượng file đẹp
+# Hàm lấy dung lượng file
 function Format-FileSize([string]$filePath) {
     if (-not (Test-Path $filePath)) { return "" }
     $bytes = (Get-Item $filePath).Length
@@ -134,7 +134,7 @@ foreach ($app in $selectedApps) {
         continue
     }
 
-    # Xóa file APK cũ nếu có để tránh nhận nhầm file từ lần build trước
+    # Xóa file APK cũ nếu có để tránh nhận nhầm file cũ
     foreach ($p in $app.ApkPaths) {
         if (Test-Path $p) {
             Remove-Item $p -Force -ErrorAction SilentlyContinue
@@ -151,10 +151,9 @@ foreach ($app in $selectedApps) {
 
         if ($attempts -gt 1) {
             Write-Host ""
-            Write-Host ">>> [RETRY 1/1] ĐANG THỬ LẠI TIẾN TRÌNH BUILD CHO $($app.Name)..." -ForegroundColor Yellow
-            Write-Host ">>> Dọn dẹp cache Gradle daemon để giải phóng bộ nhớ RAM trước khi thử lại..." -ForegroundColor Gray
+            Write-Host "[RETRY 1/1] ĐANG THỬ LẠI TIẾN TRÌNH BUILD CHO $($app.Name)..." -ForegroundColor Yellow
+            Write-Host "[INFO] Đang dọn dẹp bộ nhớ Gradle daemon trước khi thử lại..." -ForegroundColor Gray
             
-            # Dọn dẹp nhẹ bộ nhớ: gọi gradle stop nếu có gradle wrapper
             $gradlew = Join-Path $appPath "android\gradlew.bat"
             if (Test-Path $gradlew) {
                 try {
@@ -167,7 +166,7 @@ foreach ($app in $selectedApps) {
             }
             Start-Sleep -Seconds 3
         } else {
-            Write-Host ">> Thực thi lệnh: flutter build apk $ExtraArgs" -ForegroundColor Gray
+            Write-Host "[RUN] Thực thi lệnh: flutter build apk $ExtraArgs" -ForegroundColor Gray
         }
 
         # Đổi thư mục làm việc sang app cần build
@@ -226,8 +225,10 @@ Write-Host ""
 Write-Host "================================================================================" -ForegroundColor Cyan
 Write-Host "                    TỔNG KẾT TIẾN TRÌNH BUILD APK RELEASE                       " -ForegroundColor Yellow -BackgroundColor Black
 Write-Host "================================================================================" -ForegroundColor Cyan
-Write-Host ("{0,-12} | {1,-14} | {2,-10} | {3,-10} | {4,-10} | {5}" -f "Ứng dụng", "Trạng thái", "Lần thử", "Thời gian", "Dung lượng", "Ghi chú") -ForegroundColor White
-Write-Host ("{0,-12}-|-{1,-14}-|-{2,-10}-|-{3,-10}-|-{4,-10}-|-{5}" -f ("-" * 12), ("-" * 14), ("-" * 10), ("-" * 10), ("-" * 10), ("-" * 20)) -ForegroundColor DarkGray
+$header = "{0,-12} | {1,-14} | {2,-10} | {3,-10} | {4,-10} | {5}" -f "Ứng dụng", "Trạng thái", "Lần thử", "Thời gian", "Dung lượng", "Ghi chú"
+Write-Host $header -ForegroundColor White
+$divider = "{0,-12}-|-{1,-14}-|-{2,-10}-|-{3,-10}-|-{4,-10}-|-{5}" -f ("-" * 12), ("-" * 14), ("-" * 10), ("-" * 10), ("-" * 10), ("-" * 20)
+Write-Host $divider -ForegroundColor DarkGray
 
 $successCount = 0
 $failCount = 0
@@ -251,15 +252,15 @@ Write-Host "====================================================================
 Write-Host "Tổng thời gian toàn bộ tiến trình: $(Format-Duration $totalWatch.Elapsed)" -ForegroundColor Cyan
 
 if ($failCount -eq 0) {
-    Write-Host ">>> TẤT CẢ $successCount ỨNG DỤNG ĐÃ ĐƯỢC BUILD THÀNH CÔNG! <<<" -ForegroundColor Green
+    Write-Host "[OK] TẤT CẢ $successCount ỨNG DỤNG ĐÃ ĐƯỢC BUILD THÀNH CÔNG!" -ForegroundColor Green
     Write-Host "Bạn có thể tiến hành cài đặt APK bằng lệnh: npm run install:release" -ForegroundColor Yellow
     Write-Host "================================================================================" -ForegroundColor Cyan
     Write-Host ""
     exit 0
 } else {
-    Write-Host ">>> CẢNH BÁO: Có $failCount/$totalCount ứng dụng build THẤT BẠI! <<<" -ForegroundColor Red
+    Write-Host "[!] CẢNH BÁO: Có $failCount/$totalCount ứng dụng build THẤT BẠI!" -ForegroundColor Red
     Write-Host "Vui lòng kiểm tra lại log chi tiết ở trên để xử lý lỗi." -ForegroundColor Yellow
     Write-Host "================================================================================" -ForegroundColor Cyan
     Write-Host ""
     exit 1
-}
+}
