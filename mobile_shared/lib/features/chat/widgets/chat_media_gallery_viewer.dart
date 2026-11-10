@@ -1,29 +1,11 @@
 import 'dart:async';
 import 'dart:io';
-import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_shared/features/chat/data/chat_repository.dart';
 import 'package:mobile_shared/features/chat/models/chat_message_model.dart';
 import 'package:mobile_shared/l10n/generated/shared_localizations.dart';
-import 'package:mobile_shared/util/media_metadata_sanitizer.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:mobile_shared/util/media_download_service.dart';
 import 'package:video_player/video_player.dart';
-
-class MediaGalleryItem {
-  final String url;
-  final bool isVideo;
-  final String? fileName;
-  final DateTime? createdAt;
-  final String? messageId;
-
-  const MediaGalleryItem({
-    required this.url,
-    required this.isVideo,
-    this.fileName,
-    this.createdAt,
-    this.messageId,
-  });
-}
 
 class ChatMediaGalleryViewer extends StatefulWidget {
   final String conversationId;
@@ -224,77 +206,14 @@ class _ChatMediaGalleryViewerState extends State<ChatMediaGalleryViewer> {
     );
   }
 
-  Future<void> _downloadMedia(MediaGalleryItem item) async {
+  void _downloadMedia(MediaGalleryItem item) {
     final sharedL10n = SharedLocalizations.of(context);
-    final scaffoldMessenger = ScaffoldMessenger.of(context);
-
-    scaffoldMessenger.hideCurrentSnackBar();
-    scaffoldMessenger.showSnackBar(
-      SnackBar(
-        content: Text(sharedL10n?.downloadingMedia ?? 'Đang tải xuống...'),
-        duration: const Duration(seconds: 2),
-      ),
+    mediaDownloadService.downloadMedia(
+      item,
+      downloadingText: sharedL10n?.downloadingMedia ?? 'Đang tải xuống...',
+      successText: sharedL10n?.downloadSuccess ?? 'Đã lưu vào thiết bị thành công',
+      failedText: sharedL10n?.downloadFailed ?? 'Tải xuống thất bại',
     );
-
-    try {
-      final ext = item.isVideo ? 'mp4' : 'jpg';
-      final fileName = item.fileName ?? 'media_${DateTime.now().millisecondsSinceEpoch}.$ext';
-
-      Directory? dir;
-      if (Platform.isAndroid) {
-        dir = Directory('/storage/emulated/0/Download');
-        if (!dir.existsSync()) {
-          dir = await getExternalStorageDirectory();
-        }
-      } else {
-        dir = await getApplicationDocumentsDirectory();
-      }
-
-      final saveDir = dir ?? await getApplicationDocumentsDirectory();
-      final savePath = '${saveDir.path}/$fileName';
-
-      // 1. Tải về file tạm trước khi lưu chính thức
-      final tempFile = File('${saveDir.path}/temp_${DateTime.now().microsecondsSinceEpoch}.$ext');
-      if (File(item.url).existsSync()) {
-        await File(item.url).copy(tempFile.path);
-      } else {
-        final dio = Dio();
-        await dio.download(item.url, tempFile.path);
-      }
-
-      // 2. Xóa sạch toàn bộ siêu dữ liệu nhạy cảm (EXIF, GPS, timestamps, camera model, udta)
-      final cleanBytes = await MediaMetadataSanitizer.sanitizeFile(tempFile);
-      final finalFile = File(savePath);
-      await finalFile.writeAsBytes(cleanBytes, flush: true);
-
-      // 3. Dọn dẹp file tạm
-      if (await tempFile.exists()) {
-        await tempFile.delete();
-      }
-
-      if (mounted) {
-        scaffoldMessenger.hideCurrentSnackBar();
-        scaffoldMessenger.showSnackBar(
-          SnackBar(
-            content: Text(sharedL10n?.downloadSuccess ?? 'Đã lưu vào thiết bị thành công'),
-            backgroundColor: Colors.green.shade700,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
-    } catch (e) {
-      debugPrint('[ChatMediaGalleryViewer] Download failed: $e');
-      if (mounted) {
-        scaffoldMessenger.hideCurrentSnackBar();
-        scaffoldMessenger.showSnackBar(
-          SnackBar(
-            content: Text(sharedL10n?.downloadFailed ?? 'Tải xuống thất bại'),
-            backgroundColor: Theme.of(context).colorScheme.error,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
-    }
   }
 
   @override

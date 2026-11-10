@@ -30,6 +30,7 @@ export 'util/distance_updater_provider.dart';
 export 'util/location_service.dart';
 export 'util/media_upload.dart';
 export 'util/media_metadata_sanitizer.dart';
+export 'util/media_download_service.dart';
 export 'features/news/models/news_model.dart';
 export 'features/news/data/news_repository.dart';
 export 'features/news/application/news_providers.dart';
