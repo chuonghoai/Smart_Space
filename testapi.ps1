@@ -65,6 +65,14 @@ $TestRegistry = @{
         TestClass   = "com.vn.smart_space.controller.news.NewsIntegrationTest"
         Description = "Kiem tra toan bo luong CRUD tin tuc (News) va kiem tra phan quyen role ADMIN vs CLIENT"
     }
+    "NewsList" = @{
+        TestClass   = "com.vn.smart_space.controller.news.NewsListTest"
+        Description = "Danh sach tin tuc: PageResponse phan trang (size toi da 50), tim theo tu khoa, loc khoang ngay, bo qua tham so sai"
+    }
+    "StaffAssignedFilter" = @{
+        TestClass   = "com.vn.smart_space.controller.staff.StaffAssignedFilterTest"
+        Description = "Viec duoc giao cua Staff: loc severity / tu khoa / khoang ngay, sap xep latest|oldest|severity, bo qua tham so sai"
+    }
     "NearbyReportsAlert" = @{
         TestClass   = "com.vn.smart_space.controller.report.NearbyReportsAlertTest"
         Description = "Mo phong Client kiem tra phan anh trong ban kinh 200m de kich hoat canh bao realtime/FCM/Modal"
