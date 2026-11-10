@@ -1,21 +1,34 @@
 import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
 import '../models/news_model.dart';
+import '../models/news_page.dart';
 
 class NewsRepository {
-  Future<ApiResponse<List<NewsModel>>> getAllNews() {
+  /// Tin tức mới nhất trước, phân trang ([page] bắt đầu từ 1).
+  /// [search] tìm trong tiêu đề / nội dung; [from] / [to] lọc theo ngày tạo (cả 2 đầu đều bao gồm).
+  Future<ApiResponse<NewsPage>> getNews({
+    int page = 1,
+    int size = 10,
+    String? search,
+    DateTime? from,
+    DateTime? to,
+  }) {
+    final keyword = search?.trim();
     return apiClient.get(
       '/news',
-      decoder: (json) {
-        if (json is List) {
-          return json
-              .map((e) => NewsModel.fromJson(e as Map<String, dynamic>))
-              .toList();
-        }
-        return <NewsModel>[];
+      queryParameters: {
+        'page': page,
+        'size': size,
+        if (keyword != null && keyword.isNotEmpty) 'search': keyword,
+        if (from != null) 'from': _isoDate(from),
+        if (to != null) 'to': _isoDate(to),
       },
+      decoder: NewsPage.fromJson,
     );
   }
+
+  static String _isoDate(DateTime d) =>
+      '${d.year.toString().padLeft(4, '0')}-${d.month.toString().padLeft(2, '0')}-${d.day.toString().padLeft(2, '0')}';
 
   Future<ApiResponse<NewsModel>> getNewsDetail(String id) {
     return apiClient.get(

@@ -30,8 +30,12 @@ export 'util/distance_updater_provider.dart';
 export 'util/location_service.dart';
 export 'util/media_upload.dart';
 export 'features/news/models/news_model.dart';
+export 'features/news/models/news_page.dart';
 export 'features/news/data/news_repository.dart';
 export 'features/news/application/news_providers.dart';
+export 'features/news/widgets/date_filter_icon_button.dart';
+export 'features/news/widgets/news_list_meta_row.dart';
+export 'features/news/widgets/news_list_skeleton.dart';
 export 'features/chat/chat.dart';
 
 export 'l10n/generated/shared_localizations.dart';
