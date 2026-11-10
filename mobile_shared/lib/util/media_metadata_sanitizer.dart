@@ -4,10 +4,14 @@ import 'package:flutter/foundation.dart';
 
 /// Tiện ích bóc tách và xóa sạch siêu dữ liệu (Metadata / EXIF / GPS / Timestamps)
 /// của hình ảnh (JPEG, PNG, WebP) và video (MP4, MOV) trước khi lưu về thiết bị.
+///
+/// ĐẶC BIỆT: Bảo toàn hướng hiển thị chuẩn (EXIF Tag 0x0112 - Orientation) để tránh
+/// tình trạng ảnh bị xoay -90 độ (hoặc 90/180/270 độ) khi mở trong ứng dụng xem ảnh của máy,
+/// trong khi vẫn xóa sạch 100% tọa độ GPS, ngày giờ chụp, tên thiết bị, serial number, XMP, IPTC.
 class MediaMetadataSanitizer {
   MediaMetadataSanitizer._();
 
-  /// Làm sạch file và trả về dữ liệu [Uint8List] đã xóa toàn bộ metadata.
+  /// Làm sạch file và trả về dữ liệu [Uint8List] đã xóa toàn bộ metadata nhạy cảm.
   static Future<Uint8List> sanitizeFile(File file) async {
     final bytes = await file.readAsBytes();
     final ext = file.path.split('.').last.toLowerCase();
@@ -38,27 +42,36 @@ class MediaMetadataSanitizer {
   }
 
   /// Xóa toàn bộ EXIF, IPTC, XMP và Comment trong file JPEG/JPG.
-  /// Bảo toàn 100% Huffman tables, Quantization tables và frame image data.
+  /// BẢO TOÀN Tag Orientation (0x0112) qua một segment APP1 siêu gọn (chỉ 36 bytes),
+  /// xóa sạch hoàn toàn GPS, DateTime, Make, Model, Serial, Thumbnail, XMP, IPTC.
   static Uint8List sanitizeJpeg(Uint8List bytes) {
     if (bytes.length < 4 || bytes[0] != 0xFF || bytes[1] != 0xD8) {
       return bytes; // Không phải định dạng JPEG hợp lệ
     }
+
+    // 1. Trích xuất Orientation gốc trước khi xóa toàn bộ metadata
+    final orientation = _extractJpegOrientation(bytes);
 
     final buffer = BytesBuilder();
     // Ghi SOI (Start of Image)
     buffer.addByte(0xFF);
     buffer.addByte(0xD8);
 
+    // 2. Nếu ảnh gốc có Orientation > 1 (ví dụ 6: xoay 90° CW, 8: xoay 270° CW),
+    // chèn phân đoạn APP1 tối giản (36 bytes) chỉ chứa duy nhất Tag Orientation
+    // để ảnh luôn hiển thị thẳng đứng đúng chiều trong thư viện máy.
+    if (orientation != null && orientation > 1 && orientation <= 8) {
+      buffer.add(_buildMinimalExifApp1(orientation));
+    }
+
     int i = 2;
     while (i < bytes.length) {
       if (bytes[i] != 0xFF) {
-        // Dữ liệu ngoài chuẩn, giữ nguyên
         buffer.addByte(bytes[i]);
         i++;
         continue;
       }
 
-      // Bỏ qua các byte 0xFF đệm
       while (i < bytes.length && bytes[i] == 0xFF) {
         i++;
       }
@@ -93,23 +106,22 @@ class MediaMetadataSanitizer {
       if (i + 1 >= bytes.length) break;
       final length = (bytes[i] << 8) | bytes[i + 1];
       if (length < 2 || i + length > bytes.length) {
-        // Dữ liệu lỗi cấu trúc length, giữ nguyên phần còn lại
         buffer.add(bytes.sublist(i - 2));
         break;
       }
 
-      // Các marker chứa metadata cần xóa sạch:
-      // 0xE1: APP1 (EXIF, GPS, Timestamps, Camera model, XMP)
+      // Các marker chứa metadata nhạy cảm cần xóa sạch:
+      // 0xE1: APP1 (EXIF gốc chứa GPS, Timestamps, Camera model, XMP)
       // 0xED: APP13 (Photoshop, IPTC metadata)
       // 0xFE: COM (Comments)
-      // 0xE3..0xEF: Các APP marker phụ khác (ngoại trừ APP0 JFIF và APP2 ICC)
+      // 0xE2..0xEF: Các APP marker phụ khác (ngoại trừ APP0 JFIF 0xE0)
       final isMetadataMarker = marker == 0xE1 ||
           marker == 0xED ||
           marker == 0xFE ||
-          (marker >= 0xE3 && marker <= 0xEF);
+          (marker >= 0xE2 && marker <= 0xEF);
 
       if (!isMetadataMarker) {
-        // Giữ lại marker và nội dung của nó (như DQT, DHT, SOF0, APP0 JFIF)
+        // Giữ lại marker và nội dung hiển thị đồ họa (như DQT, DHT, SOF0, APP0 JFIF)
         buffer.addByte(0xFF);
         buffer.addByte(marker);
         buffer.add(bytes.sublist(i, i + length));
@@ -118,6 +130,113 @@ class MediaMetadataSanitizer {
       i += length;
     }
 
+    return buffer.toBytes();
+  }
+
+  /// Trích xuất Tag Orientation (0x0112) từ phân đoạn APP1 của file JPEG (nếu có).
+  static int? _extractJpegOrientation(Uint8List bytes) {
+    if (bytes.length < 4 || bytes[0] != 0xFF || bytes[1] != 0xD8) return null;
+    int i = 2;
+    while (i < bytes.length) {
+      if (bytes[i] != 0xFF) {
+        i++;
+        continue;
+      }
+      while (i < bytes.length && bytes[i] == 0xFF) {
+        i++;
+      }
+      if (i >= bytes.length) break;
+      final marker = bytes[i];
+      i++;
+      if (marker == 0xD9 || marker == 0xDA) break;
+      if ((marker >= 0xD0 && marker <= 0xD7) || marker == 0x01) continue;
+
+      if (i + 1 >= bytes.length) break;
+      final length = (bytes[i] << 8) | bytes[i + 1];
+      if (length < 2 || i + length > bytes.length) break;
+
+      if (marker == 0xE1) {
+        final orientation = _parseOrientationFromExifPayload(bytes, i + 2, i + length);
+        if (orientation != null) return orientation;
+      }
+      i += length;
+    }
+    return null;
+  }
+
+  /// Phân tích dữ liệu EXIF để đọc Tag Orientation (0x0112).
+  /// Hỗ trợ cả Little Endian ('II') và Big Endian ('MM').
+  static int? _parseOrientationFromExifPayload(Uint8List bytes, int start, int end) {
+    if (start + 6 > end) return null;
+    // Kiểm tra tiền tố 'Exif\0\0'
+    final isExifHeader = bytes[start] == 0x45 &&
+        bytes[start + 1] == 0x78 &&
+        bytes[start + 2] == 0x69 &&
+        bytes[start + 3] == 0x66 &&
+        bytes[start + 4] == 0x00 &&
+        bytes[start + 5] == 0x00;
+
+    final tiffStart = isExifHeader ? start + 6 : start;
+    if (tiffStart + 8 > end) return null;
+
+    final isLittleEndian = bytes[tiffStart] == 0x49 && bytes[tiffStart + 1] == 0x49;
+    final isBigEndian = bytes[tiffStart] == 0x4D && bytes[tiffStart + 1] == 0x4D;
+    if (!isLittleEndian && !isBigEndian) return null;
+
+    int readUint16(int pos) {
+      if (isLittleEndian) {
+        return bytes[pos] | (bytes[pos + 1] << 8);
+      } else {
+        return (bytes[pos] << 8) | bytes[pos + 1];
+      }
+    }
+
+    int readUint32(int pos) {
+      if (isLittleEndian) {
+        return bytes[pos] |
+            (bytes[pos + 1] << 8) |
+            (bytes[pos + 2] << 16) |
+            (bytes[pos + 3] << 24);
+      } else {
+        return (bytes[pos] << 24) |
+            (bytes[pos + 1] << 16) |
+            (bytes[pos + 2] << 8) |
+            bytes[pos + 3];
+      }
+    }
+
+    final ifd0Offset = readUint32(tiffStart + 4);
+    final ifd0Start = tiffStart + ifd0Offset;
+    if (ifd0Start + 2 > end) return null;
+
+    final numEntries = readUint16(ifd0Start);
+    int entryOffset = ifd0Start + 2;
+
+    for (int i = 0; i < numEntries; i++) {
+      if (entryOffset + 12 > end) break;
+      final tag = readUint16(entryOffset);
+      if (tag == 0x0112) {
+        return readUint16(entryOffset + 8);
+      }
+      entryOffset += 12;
+    }
+    return null;
+  }
+
+  /// Xây dựng một segment APP1 tinh khiết (chỉ 36 bytes) chỉ chứa duy nhất Tag Orientation (0x0112).
+  /// Tuyệt đối không chứa GPS, thời gian, tên thiết bị, serial number hay thumbnail.
+  static Uint8List _buildMinimalExifApp1(int orientation) {
+    final buffer = BytesBuilder();
+    buffer.add([0xFF, 0xE1]);
+    const length = 34; // 2 len + 6 Exif\0\0 + 8 TIFF + 2 count + 12 entry + 4 next IFD
+    buffer.addByte((length >> 8) & 0xFF);
+    buffer.addByte(length & 0xFF);
+    buffer.add([0x45, 0x78, 0x69, 0x66, 0x00, 0x00]); // Exif\0\0
+    buffer.add([0x49, 0x49, 0x2A, 0x00, 0x08, 0x00, 0x00, 0x00]); // TIFF header (Little Endian, 42, IFD0 offset = 8)
+    buffer.add([0x01, 0x00]); // 1 entry
+    buffer.add([0x12, 0x01, 0x03, 0x00, 0x01, 0x00, 0x00, 0x00]); // Tag 0x0112, type 3 (SHORT), count 1
+    buffer.add([orientation & 0xFF, (orientation >> 8) & 0xFF, 0x00, 0x00]); // Value
+    buffer.add([0x00, 0x00, 0x00, 0x00]); // Next IFD offset = 0
     return buffer.toBytes();
   }
 
@@ -147,7 +266,6 @@ class MediaMetadataSanitizer {
       final totalChunkSize = 12 + length; // 4 len + 4 type + data + 4 crc
 
       if (offset + totalChunkSize > bytes.length) {
-        // Chunk bị cụt, copy nốt phần còn lại
         buffer.add(bytes.sublist(offset));
         break;
       }
@@ -193,7 +311,6 @@ class MediaMetadataSanitizer {
         }
       }
 
-      // WebP chunks are padded to even size
       final paddedSize = size + (size % 2);
       offset += 8 + paddedSize;
     }
@@ -204,8 +321,9 @@ class MediaMetadataSanitizer {
   /// Làm sạch file video MP4 / MOV / M4V:
   /// 1. Reset creation_time & modification_time trong mvhd, tkhd, mdhd về 0.
   /// 2. Chuyển đổi box 'udta' (User Data) và 'meta' thành box 'free' và zero payload
-  ///    để xóa sạch tọa độ GPS (©xyz), camera/device model, author tags
-  ///    mà không làm thay đổi độ dài byte hoặc phá vỡ bảng chunk offset stco/co64.
+  ///    để xóa sạch tọa độ GPS (©xyz), camera/device model, author tags.
+  ///    ĐẶC BIỆT: Ma trận góc quay video trong tkhd (matrix) hoàn toàn được bảo toàn
+  ///    để video không bị sai góc quay, đồng thời không làm lệch bảng offset stco/co64.
   static Uint8List sanitizeMp4(Uint8List bytes) {
     if (bytes.length < 8) return bytes;
     final output = Uint8List.fromList(bytes);
@@ -274,7 +392,7 @@ class MediaMetadataSanitizer {
           }
         }
       } else if (type == 'trak') {
-        // Track box: recursively sanitize tkhd, mdia
+        // Track box: recursively sanitize tkhd, mdia (matrix tại offset 48 được giữ nguyên)
         _sanitizeTrakBox(data, offset + 8, offset + size);
       } else if (type == 'udta' || type == 'meta') {
         // User Data / Metadata box chứa GPS (©xyz), camera tags, software:

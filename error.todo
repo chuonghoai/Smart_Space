@@ -10,7 +10,8 @@
           "level": "default",
           "done": true,
           "start": 1794314903230,
-          "end": 1794315620000
+          "end": 1794316307725,
+          "focus": false
         }
       },
       {
@@ -22,7 +23,7 @@
           "level": "default",
           "done": true,
           "start": 1794315064278,
-          "end": 1794315621000
+          "end": 1794316680000
         }
       }
     ],
@@ -36,6 +37,6 @@
     "showEndTime": false,
     "simpleMode": false,
     "lang": "en",
-    "version": "1794315621000"
+    "version": "1794316307749"
   }
 }
