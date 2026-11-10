@@ -506,6 +506,19 @@ public class ConversationService implements IConversationService {
         res.setAnonymousUnreadCount(anonUnread);
         res.setUnreadCount(identUnread + anonUnread);
 
+        // Get the latest read timestamp of the partner across contexts
+        java.time.LocalDateTime pReadIdent = identConv != null ? identConv.getParticipants().stream()
+                .filter(p -> p.getUser() != null && !p.getUser().getId().equals(clientId))
+                .findFirst().map(ConversationParticipant::getLastReadAt).orElse(null) : null;
+        java.time.LocalDateTime pReadAnon = anonConv != null ? anonConv.getParticipants().stream()
+                .filter(p -> p.getUser() != null && !p.getUser().getId().equals(clientId))
+                .findFirst().map(ConversationParticipant::getLastReadAt).orElse(null) : null;
+        java.time.LocalDateTime maxPartnerRead = java.util.stream.Stream.of(pReadIdent, pReadAnon)
+                .filter(java.util.Objects::nonNull).max(java.util.Comparator.naturalOrder()).orElse(res.getPartnerLastReadAt());
+        if (maxPartnerRead != null) {
+            res.setPartnerLastReadAt(maxPartnerRead);
+        }
+
         return res;
     }
 
@@ -567,12 +580,17 @@ public class ConversationService implements IConversationService {
         if (participantOpt.isPresent()) {
             ConversationParticipant participant = participantOpt.get();
             int currentUnread = participant.getUnreadCount() != null ? participant.getUnreadCount() : 0;
-            if (currentUnread == 0) {
-                // Already read, skip redundant update and broadcast to prevent cyclic loops
+            Conversation conversation = participant.getConversation();
+            java.time.LocalDateTime lastMsgTime = conversation != null ? conversation.getLastMessageTime() : null;
+            boolean hasNewerMessage = lastMsgTime != null &&
+                    (participant.getLastReadAt() == null || participant.getLastReadAt().isBefore(lastMsgTime));
+
+            if (currentUnread == 0 && !hasNewerMessage) {
+                // Already read all messages up to date, skip redundant update and broadcast to prevent cyclic loops
                 return;
             }
             participant.setUnreadCount(0);
-            participant.setLastReadAt(LocalDateTime.now());
+            participant.setLastReadAt(java.time.LocalDateTime.now());
             conversationParticipantRepository.save(participant);
 
             // Broadcast updated conversation to user's conversation list queue

@@ -1,6 +1,7 @@
 package com.vn.smart_space.dto.response.chat;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vn.smart_space.consts.EMessageType;
 import com.vn.smart_space.dto.response.conversation.LinkedReportResponse;
 import lombok.*;
@@ -27,4 +28,6 @@ public class ChatMessageResponse implements Serializable {
     private List<MessageMediaResponse> messageMedia;
     private LinkedReportResponse report;
     private LocalDateTime createdAt;
+    @JsonProperty("isRead")
+    private Boolean isRead;
 }

@@ -201,7 +201,8 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
     if (_isDisposed || readerId == state.currentUserId) return;
     final updated = state.messages.map((m) {
       if (m.senderId == state.currentUserId) {
-        return m.copyWith(isRead: true);
+        final isRead = m.isRead || !m.createdAt.isAfter(readAt);
+        return m.copyWith(isRead: isRead);
       }
       return m;
     }).toList();
@@ -239,8 +240,12 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
       if (_isDisposed) return;
 
       ConversationModel? conversation;
+      DateTime? partnerLastReadAt = state.partnerLastReadAt;
       if (convRes.success && convRes.data != null) {
         conversation = convRes.data!;
+        if (conversation.partnerLastReadAt != null) {
+          partnerLastReadAt = conversation.partnerLastReadAt;
+        }
       }
 
       // 2. Fetch initial messages
@@ -252,16 +257,27 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
       if (_isDisposed) return;
 
       if (msgRes.success && msgRes.data != null) {
+        final rawMessages = msgRes.data!;
+        final messages = rawMessages.map((m) {
+          if (m.senderId == state.currentUserId && partnerLastReadAt != null) {
+            final isRead = m.isRead || !m.createdAt.isAfter(partnerLastReadAt);
+            return m.copyWith(isRead: isRead);
+          }
+          return m;
+        }).toList();
+
         state = state.copyWith(
           conversation: conversation,
-          messages: msgRes.data!,
+          partnerLastReadAt: partnerLastReadAt,
+          messages: messages,
           isLoading: false,
           page: 1,
-          hasMore: msgRes.data!.length >= 20,
+          hasMore: rawMessages.length >= 20,
         );
       } else {
         state = state.copyWith(
           conversation: conversation,
+          partnerLastReadAt: partnerLastReadAt,
           isLoading: false,
           errorMessage: msgRes.message.isNotEmpty ? msgRes.message : 'errorLoadMessages',
         );
@@ -294,7 +310,13 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
       if (res.success && res.data != null) {
         final older = res.data!;
         final existingIds = state.messages.map((m) => m.id).whereType<String>().toSet();
-        final filteredOlder = older.where((m) => m.id == null || !existingIds.contains(m.id)).toList();
+        final filteredOlder = older.where((m) => m.id == null || !existingIds.contains(m.id)).map((m) {
+          if (m.senderId == state.currentUserId && state.partnerLastReadAt != null) {
+            final isRead = m.isRead || !m.createdAt.isAfter(state.partnerLastReadAt!);
+            return m.copyWith(isRead: isRead);
+          }
+          return m;
+        }).toList();
 
         state = state.copyWith(
           messages: [...state.messages, ...filteredOlder],

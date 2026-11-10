@@ -110,6 +110,13 @@ public final class ConversationMapper {
                 .map(p -> p.getUnreadCount() != null ? p.getUnreadCount() : 0)
                 .orElse(0);
 
+        // Get partner last read timestamp
+        java.time.LocalDateTime partnerLastReadAt = conversation.getParticipants().stream()
+                .filter(p -> p.getUser() != null && !p.getUser().getId().equals(currentUserId))
+                .findFirst()
+                .map(ConversationParticipant::getLastReadAt)
+                .orElse(null);
+
         return ConversationDetailResponse.builder()
                 .id(conversation.getId())
                 .conversationType(conversationType)
@@ -130,6 +137,7 @@ public final class ConversationMapper {
                 .reportStatus(reportStatus)
                 .canSendMessage(canSendMessage)
                 .unreadCount(unreadCount)
+                .partnerLastReadAt(partnerLastReadAt)
                 .lastMessageId(conversation.getLastMessageId())
                 .lastMessageContent(conversation.getLastMessageContent())
                 .lastMessageType(conversation.getLastMessageType())

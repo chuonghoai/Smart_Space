@@ -68,5 +68,8 @@ public class ConversationDetailResponse {
     private LocalDateTime lastMessageTime;
     private String lastMessageSenderId;
 
+    // Partner read receipt timestamp for 1-1 conversations
+    private LocalDateTime partnerLastReadAt;
+
     private LocalDateTime createdAt;
 }

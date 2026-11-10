@@ -100,7 +100,7 @@ class ChatMessageModel {
       isFailed: false,
       messageMedia: mediaList,
       report: reportModel,
-      isRead: json['isRead'] as bool? ?? false,
+      isRead: json['isRead'] as bool? ?? json['is_read'] as bool? ?? false,
     );
   }
 

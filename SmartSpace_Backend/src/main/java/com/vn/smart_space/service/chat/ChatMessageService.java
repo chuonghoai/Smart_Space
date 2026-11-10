@@ -2,9 +2,11 @@ package com.vn.smart_space.service.chat;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.Objects;
 
 import org.springframework.context.MessageSource;
 import org.springframework.data.domain.Page;
@@ -172,7 +174,7 @@ public class ChatMessageService implements IChatMessageService {
         conversationRepository.save(conversation);
 
         // 7. Map entity to response DTO
-        ChatMessageResponse response = toChatMessageResponse(message, request.tempId());
+        ChatMessageResponse response = toChatMessageResponse(message, request.tempId(), false);
 
         // 8. Realtime WebSocket Broadcast to Conversation Topic
         try {
@@ -198,6 +200,23 @@ public class ChatMessageService implements IChatMessageService {
                     // Send FCM notification only if not viewing the conversation AND not in the conversation list
                     if (!isViewingList) {
                         sendFcmNotification(recipient, sender, conversation, message);
+                    }
+                } else {
+                    // Recipient is actively viewing the conversation right now!
+                    participant.setLastReadAt(message.getSentAt());
+                    participant.setUnreadCount(0);
+                    conversationParticipantRepository.save(participant);
+
+                    // Broadcast READ_RECEIPT immediately to conversation topic so sender sees 2 ticks in realtime
+                    try {
+                        Map<String, Object> readEvent = Map.of(
+                                "type", "READ_RECEIPT",
+                                "conversationId", conversation.getId(),
+                                "readerId", recipient.getId(),
+                                "readAt", message.getSentAt().toString()
+                        );
+                        messagingTemplate.convertAndSend("/topic/conversation." + conversation.getId(), readEvent);
+                    } catch (Exception ignored) {
                     }
                 }
             }
@@ -246,14 +265,38 @@ public class ChatMessageService implements IChatMessageService {
     @Transactional(readOnly = true)
     public PageResponse<ChatMessageResponse> getMessagesByConversation(String userId, String conversationId, int page, int size) {
         // Validate user is a member of the conversation
-        conversationRepository.findByIdAndMember(conversationId, userId)
+        Conversation conversation = conversationRepository.findByIdAndMember(conversationId, userId)
                 .orElseThrow(() -> new BadRequestException("conversation.not_found"));
 
         Pageable pageable = PageRequest.of(Math.max(0, page - 1), size);
         Page<ChatMessage> messagePage = chatMessageRepository.findByConversationIdOrderBySentAtDesc(conversationId, pageable);
 
+        // Find partner's lastReadAt and current user's lastReadAt
+        LocalDateTime partnerLastReadAt = conversation.getParticipants().stream()
+                .filter(p -> p.getUser() != null && !p.getUser().getId().equals(userId))
+                .map(ConversationParticipant::getLastReadAt)
+                .filter(Objects::nonNull)
+                .max(Comparator.naturalOrder())
+                .orElse(null);
+
+        LocalDateTime currentUserLastReadAt = conversation.getParticipants().stream()
+                .filter(p -> p.getUser() != null && p.getUser().getId().equals(userId))
+                .map(ConversationParticipant::getLastReadAt)
+                .filter(Objects::nonNull)
+                .findFirst()
+                .orElse(null);
+
         List<ChatMessageResponse> responses = messagePage.getContent().stream()
-                .map(m -> toChatMessageResponse(m, null))
+                .map(m -> {
+                    boolean isMyMessage = m.getSender() != null && m.getSender().getId().equals(userId);
+                    boolean isRead;
+                    if (isMyMessage) {
+                        isRead = partnerLastReadAt != null && !m.getSentAt().isAfter(partnerLastReadAt);
+                    } else {
+                        isRead = currentUserLastReadAt != null && !m.getSentAt().isAfter(currentUserLastReadAt);
+                    }
+                    return toChatMessageResponse(m, null, isRead);
+                })
                 .toList();
 
         return PageResponse.<ChatMessageResponse>builder()
@@ -265,7 +308,7 @@ public class ChatMessageService implements IChatMessageService {
                 .build();
     }
 
-    private ChatMessageResponse toChatMessageResponse(ChatMessage message, String tempId) {
+    private ChatMessageResponse toChatMessageResponse(ChatMessage message, String tempId, Boolean isRead) {
         return ChatMessageResponse.builder()
                 .id(message.getId())
                 .tempId(tempId)
@@ -287,6 +330,7 @@ public class ChatMessageService implements IChatMessageService {
                         : List.of())
                 .report(ConversationMapper.toLinkedReportResponse(message.getReport()))
                 .createdAt(message.getSentAt())
+                .isRead(isRead != null ? isRead : false)
                 .build();
     }
 

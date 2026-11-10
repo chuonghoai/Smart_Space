@@ -28,6 +28,7 @@ class ConversationModel {
   final String? lastMessageContext;
   final int identifiedUnreadCount;
   final int anonymousUnreadCount;
+  final DateTime? partnerLastReadAt;
 
   const ConversationModel({
     required this.id,
@@ -59,6 +60,7 @@ class ConversationModel {
     this.lastMessageContext,
     this.identifiedUnreadCount = 0,
     this.anonymousUnreadCount = 0,
+    this.partnerLastReadAt,
   });
 
   bool get isClient => partnerRole?.toLowerCase() == 'client';
@@ -100,6 +102,9 @@ class ConversationModel {
       lastMessageContext: json['lastMessageContext'] as String? ?? json['last_message_context'] as String?,
       identifiedUnreadCount: (json['identifiedUnreadCount'] as num?)?.toInt() ?? (json['identified_unread_count'] as num?)?.toInt() ?? 0,
       anonymousUnreadCount: (json['anonymousUnreadCount'] as num?)?.toInt() ?? (json['anonymous_unread_count'] as num?)?.toInt() ?? 0,
+      partnerLastReadAt: json['partnerLastReadAt'] != null || json['partner_last_read_at'] != null
+          ? DateTime.tryParse((json['partnerLastReadAt'] ?? json['partner_last_read_at']).toString())
+          : null,
     );
   }
 
@@ -134,6 +139,7 @@ class ConversationModel {
       'lastMessageContext': lastMessageContext,
       'identifiedUnreadCount': identifiedUnreadCount,
       'anonymousUnreadCount': anonymousUnreadCount,
+      if (partnerLastReadAt != null) 'partnerLastReadAt': partnerLastReadAt!.toIso8601String(),
     };
   }
 
@@ -167,6 +173,7 @@ class ConversationModel {
     String? lastMessageContext,
     int? identifiedUnreadCount,
     int? anonymousUnreadCount,
+    DateTime? partnerLastReadAt,
   }) {
     return ConversationModel(
       id: id ?? this.id,
@@ -198,6 +205,7 @@ class ConversationModel {
       lastMessageContext: lastMessageContext ?? this.lastMessageContext,
       identifiedUnreadCount: identifiedUnreadCount ?? this.identifiedUnreadCount,
       anonymousUnreadCount: anonymousUnreadCount ?? this.anonymousUnreadCount,
+      partnerLastReadAt: partnerLastReadAt ?? this.partnerLastReadAt,
     );
   }
 }
