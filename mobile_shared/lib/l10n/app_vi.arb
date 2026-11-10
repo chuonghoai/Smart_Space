@@ -11,5 +11,11 @@
     }
   },
   "sendMessageFailed": "Gửi tin nhắn thất bại, bấm để thử lại",
-  "sendingMessage": "Đang gửi tin nhắn..."
+  "sendingMessage": "Đang gửi tin nhắn...",
+  "markAsRead": "Đánh dấu đã đọc",
+  "selectReportToAttach": "Chọn phản ánh để gửi",
+  "typingText": "đang nhập...",
+  "pressAndHoldToRecord": "Nhấn giữ để ghi âm",
+  "slideLeftToCancel": "Trượt sang để hủy",
+  "releaseToCancel": "Thả để hủy"
 }

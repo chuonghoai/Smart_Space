@@ -39,6 +39,8 @@ abstract class ChatRepository {
     required String content,
     required String tempId,
     String messageType = 'text',
+    List<Map<String, dynamic>>? messageMedia,
+    String? reportId,
   });
 
   Future<ApiResponse<ChatMessageModel>> sendMessage({
@@ -46,6 +48,8 @@ abstract class ChatRepository {
     required String content,
     String? tempId,
     String messageType = 'text',
+    List<Map<String, dynamic>>? messageMedia,
+    String? reportId,
   });
 
   Future<ApiResponse<void>> markAsRead(String conversationId);
@@ -137,12 +141,16 @@ class ChatRepositoryImpl implements ChatRepository {
     required String content,
     required String tempId,
     String messageType = 'text',
+    List<Map<String, dynamic>>? messageMedia,
+    String? reportId,
   }) {
     return chatWsService.sendMessage(
       conversationId: conversationId,
       content: content,
       tempId: tempId,
       messageType: messageType,
+      messageMedia: messageMedia,
+      reportId: reportId,
     );
   }
 
@@ -152,12 +160,16 @@ class ChatRepositoryImpl implements ChatRepository {
     required String content,
     String? tempId,
     String messageType = 'text',
+    List<Map<String, dynamic>>? messageMedia,
+    String? reportId,
   }) {
     return _apiService.sendMessage(
       conversationId: conversationId,
       content: content,
       tempId: tempId,
       messageType: messageType,
+      messageMedia: messageMedia,
+      reportId: reportId,
     );
   }
 

@@ -13,6 +13,7 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.vn.smart_space.consts.EMessageType;
 import com.vn.smart_space.consts.EReportStatus;
 import com.vn.smart_space.consts.ERole;
 import com.vn.smart_space.dto.PageResponse;
@@ -105,7 +106,7 @@ public class ChatMessageService implements IChatMessageService {
             }
         }
 
-        // 4. Media
+        // 4. Media & Report
         List<MessageMedia> media = request.messageMedia() != null && !request.messageMedia().isEmpty()
                 ? request.messageMedia().stream()
                         .map(messageMedia -> MessageMedia.builder()
@@ -116,12 +117,33 @@ public class ChatMessageService implements IChatMessageService {
                         .toList()
                 : List.of();
 
+        Report attachedReport = null;
+        if (request.messageType() == EMessageType.report && request.reportId() != null && !request.reportId().isBlank()) {
+            attachedReport = reportRepository.findById(request.reportId()).orElse(null);
+        }
+
+        String effectiveContent = request.content();
+        if (effectiveContent == null || effectiveContent.isBlank()) {
+            if (request.messageType() == EMessageType.report) {
+                effectiveContent = attachedReport != null ? "[Phản ánh: " + attachedReport.getTitle() + "]" : "[Phản ánh]";
+            } else if (request.messageType() == EMessageType.audio) {
+                effectiveContent = "[Tin nhắn thoại]";
+            } else if (request.messageType() == EMessageType.image) {
+                effectiveContent = "[Hình ảnh]";
+            } else if (request.messageType() == EMessageType.video) {
+                effectiveContent = "[Video]";
+            } else {
+                effectiveContent = "";
+            }
+        }
+
         // 5. Create chat message
         ChatMessage message = ChatMessage.builder()
                 .conversation(conversation)
                 .sender(sender)
-                .content(request.content())
+                .content(effectiveContent)
                 .messageType(request.messageType())
+                .report(attachedReport)
                 .sentAt(LocalDateTime.now())
                 .mediaFiles(media)
                 .build();
@@ -160,7 +182,7 @@ public class ChatMessageService implements IChatMessageService {
 
                     // Send FCM notification only if not viewing the conversation AND not in the conversation list
                     if (!isViewingList) {
-                        sendFcmNotification(recipient, sender, conversation, message.getContent());
+                        sendFcmNotification(recipient, sender, conversation, message);
                     }
                 }
             }
@@ -237,11 +259,12 @@ public class ChatMessageService implements IChatMessageService {
                                 .uploadedAt(media.getUploadedAt())
                                 .build())
                         .toList())
+                .report(ConversationMapper.toLinkedReportResponse(message.getReport()))
                 .createdAt(message.getSentAt())
                 .build();
     }
 
-    private void sendFcmNotification(User recipient, User sender, Conversation conversation, String content) {
+    private void sendFcmNotification(User recipient, User sender, Conversation conversation, ChatMessage message) {
         try {
             String recipientLang = recipient.getLanguage() != null ? recipient.getLanguage() : "vi";
             Locale recipientLocale = Locale.forLanguageTag(recipientLang);
@@ -255,7 +278,20 @@ public class ChatMessageService implements IChatMessageService {
                 senderDisplayName = messageSource.getMessage("chat.anonymous_user", null, "Người dùng ẩn danh", recipientLocale);
             }
 
-            String body = content != null ? content : "";
+            String body;
+            if (message.getMessageType() == EMessageType.audio) {
+                body = messageSource.getMessage("chat.audio_message", null, "[Tin nhắn thoại]", recipientLocale);
+            } else if (message.getMessageType() == EMessageType.image) {
+                body = messageSource.getMessage("chat.image_message", null, "[Hình ảnh]", recipientLocale);
+            } else if (message.getMessageType() == EMessageType.video) {
+                body = messageSource.getMessage("chat.video_message", null, "[Video]", recipientLocale);
+            } else if (message.getMessageType() == EMessageType.report) {
+                String reportTitle = message.getReport() != null ? message.getReport().getTitle() : message.getContent();
+                body = messageSource.getMessage("chat.report_message", null, "[Phản ánh]", recipientLocale) + ": " + reportTitle;
+            } else {
+                body = message.getContent() != null ? message.getContent() : "";
+            }
+
             if (body.length() > 120) {
                 body = body.substring(0, 117) + "...";
             }

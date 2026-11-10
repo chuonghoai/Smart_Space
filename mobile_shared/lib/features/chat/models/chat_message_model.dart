@@ -1,3 +1,37 @@
+import 'package:mobile_shared/features/chat/models/linked_report_model.dart';
+
+class MessageMediaModel {
+  final String fileName;
+  final String fileType;
+  final String thumbnailUrl;
+  final DateTime? uploadedAt;
+
+  const MessageMediaModel({
+    required this.fileName,
+    required this.fileType,
+    required this.thumbnailUrl,
+    this.uploadedAt,
+  });
+
+  factory MessageMediaModel.fromJson(Map<String, dynamic> json) {
+    return MessageMediaModel(
+      fileName: json['fileName'] as String? ?? json['file_name'] as String? ?? '',
+      fileType: json['fileType'] as String? ?? json['file_type'] as String? ?? '',
+      thumbnailUrl: json['thumbnailUrl'] as String? ?? json['thumbnail_url'] as String? ?? '',
+      uploadedAt: json['uploadedAt'] != null || json['uploaded_at'] != null
+          ? DateTime.tryParse((json['uploadedAt'] ?? json['uploaded_at']).toString())
+          : null,
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'fileName': fileName,
+    'fileType': fileType,
+    'thumbnailUrl': thumbnailUrl,
+    if (uploadedAt != null) 'uploadedAt': uploadedAt!.toIso8601String(),
+  };
+}
+
 class ChatMessageModel {
   final String? id;
   final String? tempId;
@@ -9,8 +43,16 @@ class ChatMessageModel {
   final DateTime createdAt;
   final bool isSending;
   final bool isFailed;
+  final List<MessageMediaModel> messageMedia;
+  final LinkedReportModel? report;
+  final String? localMediaPath;
+  final bool isRead;
 
   bool get isSystem => messageType.toUpperCase() == 'SYSTEM';
+  bool get isImage => messageType.toUpperCase() == 'IMAGE';
+  bool get isVideo => messageType.toUpperCase() == 'VIDEO';
+  bool get isAudio => messageType.toUpperCase() == 'AUDIO';
+  bool get isReport => messageType.toUpperCase() == 'REPORT';
 
   const ChatMessageModel({
     this.id,
@@ -23,9 +65,26 @@ class ChatMessageModel {
     required this.createdAt,
     this.isSending = false,
     this.isFailed = false,
+    this.messageMedia = const [],
+    this.report,
+    this.localMediaPath,
+    this.isRead = false,
   });
 
   factory ChatMessageModel.fromJson(Map<String, dynamic> json) {
+    var rawMedia = json['messageMedia'] ?? json['message_media'];
+    List<MessageMediaModel> mediaList = [];
+    if (rawMedia is List) {
+      mediaList = rawMedia
+          .map((m) => MessageMediaModel.fromJson(m as Map<String, dynamic>))
+          .toList();
+    }
+
+    LinkedReportModel? reportModel;
+    if (json['report'] != null && json['report'] is Map<String, dynamic>) {
+      reportModel = LinkedReportModel.fromJson(json['report'] as Map<String, dynamic>);
+    }
+
     return ChatMessageModel(
       id: json['id']?.toString(),
       tempId: json['tempId'] as String?,
@@ -39,6 +98,9 @@ class ChatMessageModel {
           : DateTime.now(),
       isSending: false,
       isFailed: false,
+      messageMedia: mediaList,
+      report: reportModel,
+      isRead: json['isRead'] as bool? ?? false,
     );
   }
 
@@ -52,6 +114,9 @@ class ChatMessageModel {
       'content': content,
       'messageType': messageType,
       'createdAt': createdAt.toIso8601String(),
+      if (messageMedia.isNotEmpty) 'messageMedia': messageMedia.map((m) => m.toJson()).toList(),
+      if (report != null) 'report': report!.toJson(),
+      'isRead': isRead,
     };
   }
 
@@ -66,6 +131,10 @@ class ChatMessageModel {
     DateTime? createdAt,
     bool? isSending,
     bool? isFailed,
+    List<MessageMediaModel>? messageMedia,
+    LinkedReportModel? report,
+    String? localMediaPath,
+    bool? isRead,
   }) {
     return ChatMessageModel(
       id: id ?? this.id,
@@ -78,6 +147,10 @@ class ChatMessageModel {
       createdAt: createdAt ?? this.createdAt,
       isSending: isSending ?? this.isSending,
       isFailed: isFailed ?? this.isFailed,
+      messageMedia: messageMedia ?? this.messageMedia,
+      report: report ?? this.report,
+      localMediaPath: localMediaPath ?? this.localMediaPath,
+      isRead: isRead ?? this.isRead,
     );
   }
 }

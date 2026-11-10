@@ -588,10 +588,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get evidencePhotos => 'Evidence Photos';
 
   @override
-  String get takePhoto => 'Take Photo';
+  String get takePhoto => 'Take photo';
 
   @override
-  String get chooseFromGallery => 'Gallery';
+  String get chooseFromGallery => 'Choose photo from gallery';
 
   @override
   String get resolutionNote => 'Resolution Note';
@@ -1488,4 +1488,28 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get freeCallComingSoon =>
       'Free in-app voice call feature is under development';
+
+  @override
+  String get chooseVideo => 'Choose video';
+
+  @override
+  String get attachReport => 'Attach report';
+
+  @override
+  String get markAsRead => 'Mark as read';
+
+  @override
+  String get typingText => 'typing...';
+
+  @override
+  String get pressAndHoldToRecord => 'Press and hold to record';
+
+  @override
+  String get slideLeftToCancel => 'Slide left to cancel';
+
+  @override
+  String get releaseToCancel => 'Release to cancel';
+
+  @override
+  String get selectReportToAttach => 'Select report to attach';
 }

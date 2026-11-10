@@ -1145,7 +1145,7 @@ abstract class AppLocalizations {
   /// No description provided for @takePhoto.
   ///
   /// In en, this message translates to:
-  /// **'Camera'**
+  /// **'Take photo'**
   String get takePhoto;
 
   /// No description provided for @reloadLocation.
@@ -2389,6 +2389,84 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View all notifications'**
   String get viewAllNotifications;
+
+  /// No description provided for @contextIdentifiedExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Identified: Staff will know that you created this report.'**
+  String get contextIdentifiedExplanation;
+
+  /// No description provided for @contextAnonymousExplanation.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous: Staff will definitely not know who created this report.'**
+  String get contextAnonymousExplanation;
+
+  /// No description provided for @contextExplanationTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation Context Info'**
+  String get contextExplanationTitle;
+
+  /// No description provided for @contextExplanationGotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get contextExplanationGotIt;
+
+  /// No description provided for @chooseFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose photo from gallery'**
+  String get chooseFromGallery;
+
+  /// No description provided for @chooseVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose video'**
+  String get chooseVideo;
+
+  /// No description provided for @attachReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach report'**
+  String get attachReport;
+
+  /// No description provided for @markAsRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as read'**
+  String get markAsRead;
+
+  /// No description provided for @typingText.
+  ///
+  /// In en, this message translates to:
+  /// **'typing...'**
+  String get typingText;
+
+  /// No description provided for @pressAndHoldToRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Press and hold to record'**
+  String get pressAndHoldToRecord;
+
+  /// No description provided for @slideLeftToCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Slide left to cancel'**
+  String get slideLeftToCancel;
+
+  /// No description provided for @releaseToCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Release to cancel'**
+  String get releaseToCancel;
+
+  /// No description provided for @selectReportToAttach.
+  ///
+  /// In en, this message translates to:
+  /// **'Select report to attach'**
+  String get selectReportToAttach;
 }
 
 class _AppLocalizationsDelegate

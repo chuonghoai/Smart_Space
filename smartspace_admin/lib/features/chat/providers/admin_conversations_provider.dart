@@ -148,6 +148,11 @@ class AdminConversationsNotifier extends StateNotifier<AdminConversationsState> 
     loadInitial(state.activeFilter);
   }
 
+  void applyPositions(Set<String> positions) {
+    state = state.copyWith(selectedPositionIds: Set<String>.from(positions));
+    loadInitial(state.activeFilter);
+  }
+
   void clearPositions() {
     if (state.selectedPositionIds.isEmpty) return;
     state = state.copyWith(selectedPositionIds: const {});

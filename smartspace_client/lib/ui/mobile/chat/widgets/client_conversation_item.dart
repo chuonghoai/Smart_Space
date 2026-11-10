@@ -8,11 +8,13 @@ import 'package:smartspace_client/ui/shared/image/app_network_image.dart';
 class ClientConversationItem extends StatelessWidget {
   final ConversationModel conversation;
   final VoidCallback onTap;
+  final VoidCallback? onLongPress;
 
   const ClientConversationItem({
     super.key,
     required this.conversation,
     required this.onTap,
+    this.onLongPress,
   });
 
   String _formatTime(DateTime? time) {
@@ -53,6 +55,7 @@ class ClientConversationItem extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
+        onLongPress: onLongPress,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(

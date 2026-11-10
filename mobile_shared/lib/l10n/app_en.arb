@@ -11,5 +11,11 @@
     }
   },
   "sendMessageFailed": "Failed to send message, tap to retry",
-  "sendingMessage": "Sending message..."
+  "sendingMessage": "Sending message...",
+  "markAsRead": "Mark as read",
+  "selectReportToAttach": "Select report to attach",
+  "typingText": "is typing...",
+  "pressAndHoldToRecord": "Hold to record",
+  "slideLeftToCancel": "Slide to cancel",
+  "releaseToCancel": "Release to cancel"
 }

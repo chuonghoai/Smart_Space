@@ -1235,13 +1235,13 @@ abstract class AppLocalizations {
   /// No description provided for @takePhoto.
   ///
   /// In en, this message translates to:
-  /// **'Take Photo'**
+  /// **'Take photo'**
   String get takePhoto;
 
   /// No description provided for @chooseFromGallery.
   ///
   /// In en, this message translates to:
-  /// **'Gallery'**
+  /// **'Choose photo from gallery'**
   String get chooseFromGallery;
 
   /// No description provided for @resolutionNote.
@@ -2827,6 +2827,54 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Free in-app voice call feature is under development'**
   String get freeCallComingSoon;
+
+  /// No description provided for @chooseVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose video'**
+  String get chooseVideo;
+
+  /// No description provided for @attachReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach report'**
+  String get attachReport;
+
+  /// No description provided for @markAsRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as read'**
+  String get markAsRead;
+
+  /// No description provided for @typingText.
+  ///
+  /// In en, this message translates to:
+  /// **'typing...'**
+  String get typingText;
+
+  /// No description provided for @pressAndHoldToRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Press and hold to record'**
+  String get pressAndHoldToRecord;
+
+  /// No description provided for @slideLeftToCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Slide left to cancel'**
+  String get slideLeftToCancel;
+
+  /// No description provided for @releaseToCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Release to cancel'**
+  String get releaseToCancel;
+
+  /// No description provided for @selectReportToAttach.
+  ///
+  /// In en, this message translates to:
+  /// **'Select report to attach'**
+  String get selectReportToAttach;
 }
 
 class _AppLocalizationsDelegate

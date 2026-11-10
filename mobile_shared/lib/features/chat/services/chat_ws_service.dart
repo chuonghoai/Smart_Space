@@ -68,6 +68,8 @@ class ChatWsService implements WsFeatureService {
   StompUnsubscribe? subscribeToConversationTopic({
     required String conversationId,
     required void Function(ChatMessageModel message) onMessage,
+    void Function(String readerId, DateTime readAt)? onReadReceipt,
+    void Function(String userId, bool isTyping)? onTyping,
   }) {
     final destination = '/topic/conversation.$conversationId';
     debugPrint('[ChatWsService] Subscribing to $destination...');
@@ -78,8 +80,19 @@ class ChatWsService implements WsFeatureService {
           if (frame.body != null) {
             try {
               final data = dart_convert.jsonDecode(frame.body!) as Map<String, dynamic>;
-              final model = ChatMessageModel.fromJson(data);
-              onMessage(model);
+              final type = data['type']?.toString();
+              if (type == 'READ_RECEIPT') {
+                final readerId = data['readerId']?.toString() ?? '';
+                final readAt = DateTime.tryParse(data['readAt']?.toString() ?? '') ?? DateTime.now();
+                onReadReceipt?.call(readerId, readAt);
+              } else if (type == 'TYPING') {
+                final userId = data['userId']?.toString() ?? '';
+                final isTyping = data['isTyping'] as bool? ?? false;
+                onTyping?.call(userId, isTyping);
+              } else {
+                final model = ChatMessageModel.fromJson(data);
+                onMessage(model);
+              }
             } catch (e) {
               debugPrint('[ChatWsService] Parse error in chat message frame: $e');
             }
@@ -99,6 +112,8 @@ class ChatWsService implements WsFeatureService {
     required String content,
     required String tempId,
     String messageType = 'text',
+    List<Map<String, dynamic>>? messageMedia,
+    String? reportId,
   }) {
     if (!webSocketService.isConnected) {
       debugPrint('[ChatWsService] WebSocket is not connected, cannot send via WS');
@@ -111,6 +126,8 @@ class ChatWsService implements WsFeatureService {
         'content': content,
         'tempId': tempId,
         'messageType': messageType,
+        if (messageMedia != null && messageMedia.isNotEmpty) 'messageMedia': messageMedia,
+        if (reportId != null && reportId.isNotEmpty) 'reportId': reportId,
       };
 
       debugPrint('[ChatWsService] Sending message via WS to /smartspace/chat.send: $payload');
@@ -121,6 +138,41 @@ class ChatWsService implements WsFeatureService {
       return true;
     } catch (e) {
       debugPrint('[ChatWsService] Error sending message via WS: $e');
+      return false;
+    }
+  }
+
+  bool sendMarkAsRead(String conversationId) {
+    if (!webSocketService.isConnected) {
+      return false;
+    }
+    try {
+      webSocketService.send(
+        destination: '/smartspace/chat.read',
+        body: dart_convert.jsonEncode({'conversationId': conversationId}),
+      );
+      return true;
+    } catch (e) {
+      debugPrint('[ChatWsService] Error sending mark as read via WS: $e');
+      return false;
+    }
+  }
+
+  bool sendTyping({required String conversationId, required bool isTyping}) {
+    if (!webSocketService.isConnected) {
+      return false;
+    }
+    try {
+      webSocketService.send(
+        destination: '/smartspace/chat.typing',
+        body: dart_convert.jsonEncode({
+          'conversationId': conversationId,
+          'isTyping': isTyping,
+        }),
+      );
+      return true;
+    } catch (e) {
+      debugPrint('[ChatWsService] Error sending typing via WS: $e');
       return false;
     }
   }

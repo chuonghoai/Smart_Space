@@ -7,6 +7,7 @@ import com.vn.smart_space.consts.EReportStatus;
 import com.vn.smart_space.consts.ERole;
 import com.vn.smart_space.dto.response.conversation.ConversationDetailResponse;
 import com.vn.smart_space.dto.response.conversation.CreateConversationResponse;
+import com.vn.smart_space.dto.response.conversation.LinkedReportResponse;
 import com.vn.smart_space.dto.response.conversation.ParticipantResponse;
 import com.vn.smart_space.model.Conversation;
 import com.vn.smart_space.model.ConversationParticipant;
@@ -195,6 +196,26 @@ public final class ConversationMapper {
         }
 
         return info;
+    }
+
+    public static LinkedReportResponse toLinkedReportResponse(Report r) {
+        if (r == null) {
+            return null;
+        }
+        boolean isRehandling = (r.getStatus() == EReportStatus.processing || r.getStatus() == EReportStatus.processed)
+                && Boolean.FALSE.equals(r.getIsReviewResolved());
+        return LinkedReportResponse.builder()
+                .id(r.getId())
+                .title(r.getTitle())
+                .description(r.getDescription())
+                .imageUrl(r.getImageUrl())
+                .status(r.getStatus() != null ? r.getStatus().name() : null)
+                .severity(r.getSeverity() != null ? r.getSeverity().name() : null)
+                .createdAt(r.getCreatedAt() != null ? r.getCreatedAt().toString() : null)
+                .address(r.getAddress())
+                .isReviewResolved(r.getIsReviewResolved())
+                .needsRehandling(isRehandling)
+                .build();
     }
 
     private static class PartnerInfo {

@@ -541,7 +541,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pickImage => 'Gallery';
 
   @override
-  String get takePhoto => 'Camera';
+  String get takePhoto => 'Take photo';
 
   @override
   String get reloadLocation => 'Reload Location';
@@ -1232,4 +1232,45 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get viewAllNotifications => 'View all notifications';
+
+  @override
+  String get contextIdentifiedExplanation =>
+      'Identified: Staff will know that you created this report.';
+
+  @override
+  String get contextAnonymousExplanation =>
+      'Anonymous: Staff will definitely not know who created this report.';
+
+  @override
+  String get contextExplanationTitle => 'Conversation Context Info';
+
+  @override
+  String get contextExplanationGotIt => 'Got it';
+
+  @override
+  String get chooseFromGallery => 'Choose photo from gallery';
+
+  @override
+  String get chooseVideo => 'Choose video';
+
+  @override
+  String get attachReport => 'Attach report';
+
+  @override
+  String get markAsRead => 'Mark as read';
+
+  @override
+  String get typingText => 'typing...';
+
+  @override
+  String get pressAndHoldToRecord => 'Press and hold to record';
+
+  @override
+  String get slideLeftToCancel => 'Slide left to cancel';
+
+  @override
+  String get releaseToCancel => 'Release to cancel';
+
+  @override
+  String get selectReportToAttach => 'Select report to attach';
 }

@@ -115,6 +115,42 @@ abstract class SharedLocalizations {
   /// In vi, this message translates to:
   /// **'Đang gửi tin nhắn...'**
   String get sendingMessage;
+
+  /// No description provided for @markAsRead.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đánh dấu đã đọc'**
+  String get markAsRead;
+
+  /// No description provided for @selectReportToAttach.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn phản ánh để gửi'**
+  String get selectReportToAttach;
+
+  /// No description provided for @typingText.
+  ///
+  /// In vi, this message translates to:
+  /// **'đang nhập...'**
+  String get typingText;
+
+  /// No description provided for @pressAndHoldToRecord.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhấn giữ để ghi âm'**
+  String get pressAndHoldToRecord;
+
+  /// No description provided for @slideLeftToCancel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trượt sang để hủy'**
+  String get slideLeftToCancel;
+
+  /// No description provided for @releaseToCancel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thả để hủy'**
+  String get releaseToCancel;
 }
 
 class _SharedLocalizationsDelegate

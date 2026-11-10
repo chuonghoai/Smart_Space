@@ -1,10 +1,16 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mobile_shared/features/chat/models/conversation_model.dart';
 import 'package:mobile_shared/features/chat/providers/chat_detail_provider.dart';
-import 'package:mobile_shared/features/chat/widgets/chat_message_bubble.dart';
+import 'package:mobile_shared/features/chat/widgets/chat_audio_recorder_bar.dart';
 import 'package:mobile_shared/features/chat/widgets/chat_call_bottom_sheet.dart';
+import 'package:mobile_shared/features/chat/widgets/chat_message_bubble.dart';
+import 'package:mobile_shared/features/chat/widgets/linked_report_picker_sheet.dart';
+import 'package:mobile_shared/features/chat/widgets/typing_indicator_widget.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/routes/router_path.dart';
 import 'package:smartspace_client/ui/mobile/chat/widgets/client_chat_role_badge.dart';
@@ -43,8 +49,99 @@ class _ClientChatDetailScreenState
     super.dispose();
   }
 
+  void _showContextExplanationSheet({
+    required BuildContext context,
+    required bool isAnonymous,
+  }) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: theme.colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: isAnonymous
+                        ? theme.colorScheme.secondaryContainer.withValues(alpha: 0.5)
+                        : theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    isAnonymous ? Icons.shield_outlined : Icons.person_outline_rounded,
+                    size: 30,
+                    color: isAnonymous ? theme.colorScheme.secondary : theme.colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  isAnonymous ? l10n.contextAnonymous : l10n.contextIdentified,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    isAnonymous
+                        ? l10n.contextAnonymousExplanation
+                        : l10n.contextIdentifiedExplanation,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      height: 1.4,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    child: Text(l10n.contextExplanationGotIt),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void _switchTab(int index, String? targetConvId) {
-    if (_selectedTabIndex == index) return;
+    if (_selectedTabIndex == index) {
+      _showContextExplanationSheet(
+        context: context,
+        isAnonymous: index == 1,
+      );
+      return;
+    }
     setState(() {
       _selectedTabIndex = index;
     });
@@ -386,6 +483,14 @@ class _ClientChatDetailScreenState
                   color: isSelected ? activeFg : inactiveFg,
                 ),
               ),
+              if (isSelected) ...[
+                const SizedBox(width: 2),
+                Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  size: 16,
+                  color: activeFg,
+                ),
+              ],
               if (unreadCount > 0) ...[
                 const SizedBox(width: 6),
                 Container(
@@ -432,6 +537,7 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _canSend = false;
+  Timer? _typingTimer;
 
   @override
   bool get wantKeepAlive => true;
@@ -445,6 +551,7 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
 
   @override
   void dispose() {
+    _typingTimer?.cancel();
     _textController.removeListener(_onTextChanged);
     _scrollController.removeListener(_onScroll);
     _textController.dispose();
@@ -458,6 +565,19 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
       setState(() {
         _canSend = hasText;
       });
+    }
+
+    if (hasText) {
+      ref.read(chatDetailProvider(widget.conversationId).notifier).sendTyping(true);
+      _typingTimer?.cancel();
+      _typingTimer = Timer(const Duration(seconds: 3), () {
+        if (mounted) {
+          ref.read(chatDetailProvider(widget.conversationId).notifier).sendTyping(false);
+        }
+      });
+    } else {
+      _typingTimer?.cancel();
+      ref.read(chatDetailProvider(widget.conversationId).notifier).sendTyping(false);
     }
   }
 
@@ -474,10 +594,139 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
     final text = _textController.text.trim();
     if (text.isEmpty) return;
 
+    _typingTimer?.cancel();
+    ref.read(chatDetailProvider(widget.conversationId).notifier).sendTyping(false);
     ref
         .read(chatDetailProvider(widget.conversationId).notifier)
         .sendMessage(text);
     _textController.clear();
+  }
+
+  Future<void> _pickMedia(ImageSource source, {required bool isVideo}) async {
+    try {
+      final picker = ImagePicker();
+      final XFile? file;
+      if (isVideo) {
+        file = await picker.pickVideo(source: source);
+      } else {
+        file = await picker.pickImage(source: source, imageQuality: 85);
+      }
+      if (file != null && mounted) {
+        final bytes = await file.readAsBytes();
+        ref.read(chatDetailProvider(widget.conversationId).notifier).sendMediaMessage(
+              bytes: bytes,
+              fileName: file.name,
+              isVideo: isVideo,
+              localPath: file.path,
+            );
+      }
+    } catch (e) {
+      debugPrint('[PickMedia] Error: $e');
+    }
+  }
+
+  void _showMoreOptionsSheet() {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: theme.colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ListTile(
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.image_outlined, color: theme.colorScheme.primary, size: 22),
+                  ),
+                  title: Text(l10n.chooseFromGallery),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _pickMedia(ImageSource.gallery, isVideo: false);
+                  },
+                ),
+                ListTile(
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.tertiaryContainer.withValues(alpha: 0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.videocam_outlined, color: theme.colorScheme.tertiary, size: 22),
+                  ),
+                  title: Text(l10n.chooseVideo),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _pickMedia(ImageSource.gallery, isVideo: true);
+                  },
+                ),
+                ListTile(
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.camera_alt_outlined, color: theme.colorScheme.secondary, size: 22),
+                  ),
+                  title: Text(l10n.takePhoto),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _pickMedia(ImageSource.camera, isVideo: false);
+                  },
+                ),
+                ListTile(
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.errorContainer.withValues(alpha: 0.4),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.assignment_outlined, color: theme.colorScheme.error, size: 22),
+                  ),
+                  title: Text(l10n.attachReport),
+                  onTap: () async {
+                    Navigator.pop(ctx);
+                    final selected = await LinkedReportPickerSheet.show(
+                      context: context,
+                      conversationId: widget.conversationId,
+                      isAnonymous: widget.isAnonymous,
+                    );
+                    if (selected != null && mounted) {
+                      ref.read(chatDetailProvider(widget.conversationId).notifier).sendReportMessage(selected);
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -609,9 +858,14 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
           key: ValueKey(msg.id ?? msg.tempId ?? index.toString()),
           message: msg,
           isMe: isMe,
+          conversationMessages: state.messages,
+          conversationId: widget.conversationId,
           onRetry: () => ref
               .read(chatDetailProvider(widget.conversationId).notifier)
               .retryMessage(msg),
+          onTapReport: (report) {
+            context.push(RouterPath.reportDetailWithId(report.id));
+          },
         );
       },
     );
@@ -657,57 +911,94 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
       );
     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        border: Border(
-          top: BorderSide(
-            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
-            width: 1,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (state.isPartnerTyping)
+          Padding(
+            padding: const EdgeInsets.only(left: 16, bottom: 4),
+            child: TypingIndicatorWidget(
+              partnerName: state.conversation?.partnerName,
+              typingText: l10n.typingText,
+            ),
           ),
-        ),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest
-                    .withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(24),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            border: Border(
+              top: BorderSide(
+                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+                width: 1,
               ),
-              child: TextField(
-                controller: _textController,
-                textInputAction: TextInputAction.send,
-                onSubmitted: (_) => _sendMessage(),
-                maxLines: 4,
-                minLines: 1,
-                decoration: InputDecoration(
-                  hintText: l10n.chatInputHint,
-                  hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant
-                        .withValues(alpha: 0.7),
-                  ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
+            ),
+          ),
+          child: Row(
+            children: [
+              IconButton(
+                onPressed: _showMoreOptionsSheet,
+                icon: Icon(
+                  Icons.add_circle_outline_rounded,
+                  color: theme.colorScheme.primary,
+                  size: 26,
                 ),
               ),
-            ),
+              Expanded(
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 14),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest
+                        .withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(24),
+                  ),
+                  child: TextField(
+                    controller: _textController,
+                    textInputAction: TextInputAction.send,
+                    onSubmitted: (_) => _sendMessage(),
+                    maxLines: 4,
+                    minLines: 1,
+                    decoration: InputDecoration(
+                      hintText: l10n.chatInputHint,
+                      hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant
+                            .withValues(alpha: 0.7),
+                      ),
+                      border: InputBorder.none,
+                      contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(width: 4),
+              if (_canSend)
+                IconButton(
+                  onPressed: _sendMessage,
+                  icon: Icon(
+                    Icons.send_rounded,
+                    color: theme.colorScheme.primary,
+                  ),
+                )
+              else
+                ChatAudioRecorderButton(
+                  onRecordingComplete: ({
+                    required Uint8List bytes,
+                    required String fileName,
+                    required int durationSeconds,
+                    required String localPath,
+                  }) {
+                    ref.read(chatDetailProvider(widget.conversationId).notifier).sendAudioMessage(
+                          bytes: bytes,
+                          fileName: fileName,
+                          durationSeconds: durationSeconds,
+                          localPath: localPath,
+                        );
+                  },
+                ),
+            ],
           ),
-          const SizedBox(width: 8),
-          IconButton(
-            onPressed: _canSend ? _sendMessage : null,
-            icon: Icon(
-              Icons.send_rounded,
-              color: _canSend
-                  ? theme.colorScheme.primary
-                  : theme.colorScheme.onSurface.withValues(alpha: 0.3),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

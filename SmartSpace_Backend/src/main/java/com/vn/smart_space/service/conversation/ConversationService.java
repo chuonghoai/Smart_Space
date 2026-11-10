@@ -588,6 +588,18 @@ public class ConversationService implements IConversationService {
                 messagingTemplate.convertAndSendToUser(userId, "/queue/conversations", convRes);
             } catch (Exception ignored) {
             }
+
+            // Broadcast read receipt event to conversation topic so active participants see "Seen" / read status in realtime
+            try {
+                Map<String, Object> readEvent = Map.of(
+                        "type", "READ_RECEIPT",
+                        "conversationId", conversationId,
+                        "readerId", userId,
+                        "readAt", participant.getLastReadAt() != null ? participant.getLastReadAt().toString() : LocalDateTime.now().toString()
+                );
+                messagingTemplate.convertAndSend((String) ("/topic/conversation." + conversationId), (Object) readEvent);
+            } catch (Exception ignored) {
+            }
         }
     }
 

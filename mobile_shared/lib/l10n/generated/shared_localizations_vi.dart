@@ -18,4 +18,22 @@ class SharedLocalizationsVi extends SharedLocalizations {
 
   @override
   String get sendingMessage => 'Đang gửi tin nhắn...';
+
+  @override
+  String get markAsRead => 'Đánh dấu đã đọc';
+
+  @override
+  String get selectReportToAttach => 'Chọn phản ánh để gửi';
+
+  @override
+  String get typingText => 'đang nhập...';
+
+  @override
+  String get pressAndHoldToRecord => 'Nhấn giữ để ghi âm';
+
+  @override
+  String get slideLeftToCancel => 'Trượt sang để hủy';
+
+  @override
+  String get releaseToCancel => 'Thả để hủy';
 }

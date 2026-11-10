@@ -7,12 +7,14 @@ import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
 class AdminConversationItem extends StatelessWidget {
   final ConversationModel conversation;
   final VoidCallback onTap;
+  final VoidCallback? onLongPress;
   final bool isSelected;
 
   const AdminConversationItem({
     super.key,
     required this.conversation,
     required this.onTap,
+    this.onLongPress,
     this.isSelected = false,
   });
 
@@ -71,6 +73,7 @@ class AdminConversationItem extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
+      onLongPress: onLongPress,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         color: containerColor,

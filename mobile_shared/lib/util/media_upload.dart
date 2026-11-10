@@ -36,14 +36,30 @@ class MediaUploadUtil {
     return _cachedSignature!;
   }
 
-  /// Upload file lên Cloudinary
-  Future<String> uploadMedia(Uint8List bytes, String fileName) async {
-    return _uploadMediaInternal(bytes, fileName, isRetry: false);
+  /// Upload file lên Cloudinary (image, video, audio)
+  Future<String> uploadMedia(
+    Uint8List bytes,
+    String fileName, {
+    String resourceType = 'auto',
+  }) async {
+    String resolvedType = resourceType;
+    if (resolvedType == 'auto') {
+      final lower = fileName.toLowerCase();
+      if (lower.endsWith('.mp4') || lower.endsWith('.mov') || lower.endsWith('.avi') || lower.endsWith('.mkv')) {
+        resolvedType = 'video';
+      } else if (lower.endsWith('.mp3') || lower.endsWith('.m4a') || lower.endsWith('.aac') || lower.endsWith('.wav')) {
+        resolvedType = 'video'; // Cloudinary manages audio under video resource type
+      } else {
+        resolvedType = 'image';
+      }
+    }
+    return _uploadMediaInternal(bytes, fileName, resourceType: resolvedType, isRetry: false);
   }
 
   Future<String> _uploadMediaInternal(
     Uint8List bytes,
     String fileName, {
+    required String resourceType,
     required bool isRetry,
   }) async {
     final sigData = await _getSignature(forceRefresh: isRetry);
@@ -63,7 +79,7 @@ class MediaUploadUtil {
       ),
     );
     final cloudinaryUrl =
-        'https://api.cloudinary.com/v1_1/$cloudName/image/upload';
+        'https://api.cloudinary.com/v1_1/$cloudName/$resourceType/upload';
     final formData = FormData.fromMap({
       'file': MultipartFile.fromBytes(bytes, filename: fileName),
       'api_key': apiKey,
@@ -99,7 +115,7 @@ class MediaUploadUtil {
 
       if (!isRetry && isSignatureError && hasSignatureKeyword) {
         debugPrint('▶ [MediaUpload] Signature lỗi/hết hạn. Retry fetch mới...');
-        return _uploadMediaInternal(bytes, fileName, isRetry: true);
+        return _uploadMediaInternal(bytes, fileName, resourceType: resourceType, isRetry: true);
       }
       rethrow; // Throw for other errors (network, other cloudinary errors, etc.)
     }
@@ -114,7 +130,7 @@ class MediaUploadUtil {
       data: {
         'publicId': publicId,
         'secureUrl': secureUrl,
-        'resourceType': 'image',
+        'resourceType': resourceType,
       },
     );
     debugPrint('▶ [MediaUpload] Confirm OK: secureUrl=$secureUrl');

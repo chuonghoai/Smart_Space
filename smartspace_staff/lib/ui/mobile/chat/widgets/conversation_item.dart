@@ -11,6 +11,7 @@ class ConversationItem extends StatefulWidget {
   final bool isSlidingIn;
   final bool isPulsing;
   final VoidCallback onTap;
+  final VoidCallback? onLongPress;
 
   const ConversationItem({
     super.key,
@@ -19,6 +20,7 @@ class ConversationItem extends StatefulWidget {
     this.isSlidingIn = false,
     this.isPulsing = false,
     required this.onTap,
+    this.onLongPress,
   });
 
   @override
@@ -121,6 +123,7 @@ class _ConversationItemState extends State<ConversationItem>
           color: Colors.transparent,
           child: InkWell(
             onTap: widget.onTap,
+            onLongPress: widget.onLongPress,
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
               child: Row(

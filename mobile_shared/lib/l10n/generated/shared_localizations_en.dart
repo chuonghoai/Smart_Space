@@ -18,4 +18,22 @@ class SharedLocalizationsEn extends SharedLocalizations {
 
   @override
   String get sendingMessage => 'Sending message...';
+
+  @override
+  String get markAsRead => 'Mark as read';
+
+  @override
+  String get selectReportToAttach => 'Select report to attach';
+
+  @override
+  String get typingText => 'is typing...';
+
+  @override
+  String get pressAndHoldToRecord => 'Hold to record';
+
+  @override
+  String get slideLeftToCancel => 'Slide to cancel';
+
+  @override
+  String get releaseToCancel => 'Release to cancel';
 }

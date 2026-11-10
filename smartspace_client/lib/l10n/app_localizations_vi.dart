@@ -1223,4 +1223,45 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get viewAllNotifications => 'Xem tất cả thông báo';
+
+  @override
+  String get contextIdentifiedExplanation =>
+      'Không ẩn danh: Nhân viên biết bạn là người tạo phản ánh này.';
+
+  @override
+  String get contextAnonymousExplanation =>
+      'Ẩn danh: Nhân viên tuyệt đối không biết bạn là người tạo phản ánh.';
+
+  @override
+  String get contextExplanationTitle => 'Thông tin ngữ cảnh hội thoại';
+
+  @override
+  String get contextExplanationGotIt => 'Đã hiểu';
+
+  @override
+  String get chooseFromGallery => 'Chọn ảnh từ thư viện';
+
+  @override
+  String get chooseVideo => 'Chọn video';
+
+  @override
+  String get attachReport => 'Đính kèm phản ánh';
+
+  @override
+  String get markAsRead => 'Đánh dấu đã đọc';
+
+  @override
+  String get typingText => 'đang nhập...';
+
+  @override
+  String get pressAndHoldToRecord => 'Nhấn giữ để ghi âm';
+
+  @override
+  String get slideLeftToCancel => 'Trượt sang để hủy';
+
+  @override
+  String get releaseToCancel => 'Thả để hủy';
+
+  @override
+  String get selectReportToAttach => 'Chọn phản ánh để gửi';
 }
