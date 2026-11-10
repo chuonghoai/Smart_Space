@@ -161,6 +161,17 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
 
   Future<void> markAsRead() async {
     if (state.isDraft) return;
+    if (state.conversation != null) {
+      final conv = state.conversation!;
+      final isAnon = conv.isAnonymous;
+      state = state.copyWith(
+        conversation: conv.copyWith(
+          unreadCount: 0,
+          identifiedUnreadCount: isAnon ? conv.identifiedUnreadCount : 0,
+          anonymousUnreadCount: isAnon ? 0 : conv.anonymousUnreadCount,
+        ),
+      );
+    }
     try {
       _wsService.sendMarkAsRead(conversationId);
       await _repository.markAsRead(conversationId);

@@ -138,9 +138,16 @@ class ClientConversationsNotifier extends StateNotifier<ClientConversationsState
     if (_isDisposed) return;
     int unreadToSubtract = 0;
     final updatedList = state.conversations.map((c) {
-      if (c.id == conversationId && c.unreadCount > 0) {
+      final matches = c.id == conversationId ||
+          (c.identifiedConversationId != null && c.identifiedConversationId == conversationId) ||
+          (c.anonymousConversationId != null && c.anonymousConversationId == conversationId);
+      if (matches && c.unreadCount > 0) {
         unreadToSubtract = c.unreadCount;
-        return c.copyWith(unreadCount: 0);
+        return c.copyWith(
+          unreadCount: 0,
+          identifiedUnreadCount: 0,
+          anonymousUnreadCount: 0,
+        );
       }
       return c;
     }).toList();
@@ -151,6 +158,43 @@ class ClientConversationsNotifier extends StateNotifier<ClientConversationsState
         conversations: updatedList,
         totalUnreadCount: newTotal,
       );
+    }
+  }
+
+  void markContextAsReadLocally(String conversationId, {required bool isAnonymous}) {
+    if (_isDisposed) return;
+    int unreadToSubtract = 0;
+    final updatedList = state.conversations.map((c) {
+      final matches = c.id == conversationId ||
+          (c.identifiedConversationId != null && c.identifiedConversationId == conversationId) ||
+          (c.anonymousConversationId != null && c.anonymousConversationId == conversationId);
+      if (!matches) return c;
+
+      if (isAnonymous) {
+        unreadToSubtract = c.anonymousUnreadCount;
+        final newUnread = (c.unreadCount - unreadToSubtract).clamp(0, 9999);
+        return c.copyWith(
+          anonymousUnreadCount: 0,
+          unreadCount: newUnread,
+        );
+      } else {
+        unreadToSubtract = c.identifiedUnreadCount;
+        final newUnread = (c.unreadCount - unreadToSubtract).clamp(0, 9999);
+        return c.copyWith(
+          identifiedUnreadCount: 0,
+          unreadCount: newUnread,
+        );
+      }
+    }).toList();
+
+    if (unreadToSubtract > 0) {
+      final newTotal = (state.totalUnreadCount - unreadToSubtract).clamp(0, 9999);
+      state = state.copyWith(
+        conversations: updatedList,
+        totalUnreadCount: newTotal,
+      );
+    } else {
+      state = state.copyWith(conversations: updatedList);
     }
   }
 

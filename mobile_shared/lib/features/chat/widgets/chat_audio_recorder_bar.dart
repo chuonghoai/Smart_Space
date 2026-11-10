@@ -16,8 +16,9 @@ typedef AudioRecordCallback = void Function({
 
 enum AudioBarMode { idle, recording, preview }
 
-/// Dedicated Audio Recording Bar replacing the text bar with tactile micro interactions,
-/// large center microphone button, press-and-hold recording, and full playback preview/scrubbing.
+/// Dedicated Audio Recording Bar with instant touch-and-hold recording (0 delay),
+/// local preview with seekable audio player, large send button, and immediate
+/// local file deletion on cancellation or screen dismissal.
 class ChatAudioRecorderBar extends StatefulWidget {
   final AudioRecordCallback onRecordingComplete;
   final VoidCallback onClose;
@@ -39,15 +40,21 @@ class _ChatAudioRecorderBarState extends State<ChatAudioRecorderBar>
   late final AnimationController _pulseController;
 
   AudioBarMode _mode = AudioBarMode.idle;
-  bool _isCancelled = false;
   int _recordDuration = 0;
   Timer? _recordTimer;
   String? _currentRecordingPath;
   Uint8List? _recordedBytes;
+  DateTime? _recordStartTime;
+  bool _wasSent = false;
+  bool _isStartingRecording = false;
+  bool _stopRequested = false;
 
   bool _isPlaying = false;
   Duration _playbackPosition = Duration.zero;
   Duration _playbackTotalDuration = Duration.zero;
+
+  String? _cachedTempDir;
+  bool _hasMicPermission = false;
 
   @override
   void initState() {
@@ -83,6 +90,18 @@ class _ChatAudioRecorderBarState extends State<ChatAudioRecorderBar>
         });
       }
     });
+
+    _preloadTempDirAndPermission();
+  }
+
+  Future<void> _preloadTempDirAndPermission() async {
+    try {
+      final dir = await getTemporaryDirectory();
+      _cachedTempDir = dir.path;
+      _hasMicPermission = await _audioRecorder.hasPermission();
+    } catch (e) {
+      debugPrint('[ChatAudioRecorderBar] preload error: $e');
+    }
   }
 
   @override
@@ -91,12 +110,16 @@ class _ChatAudioRecorderBarState extends State<ChatAudioRecorderBar>
     _pulseController.dispose();
     _audioPlayer.dispose();
     _audioRecorder.dispose();
-    if (_currentRecordingPath != null && _mode != AudioBarMode.preview) {
+
+    // If recording was not sent, immediately delete temporary file from local storage
+    if (!_wasSent && _currentRecordingPath != null) {
       final f = File(_currentRecordingPath!);
       if (f.existsSync()) {
         try {
           f.deleteSync();
-        } catch (_) {}
+        } catch (e) {
+          debugPrint('[ChatAudioRecorderBar] Temp file cleanup error: $e');
+        }
       }
     }
     super.dispose();
@@ -109,25 +132,41 @@ class _ChatAudioRecorderBarState extends State<ChatAudioRecorderBar>
   }
 
   Future<void> _startRecording() async {
+    if (_mode != AudioBarMode.idle || _isStartingRecording) return;
+    _isStartingRecording = true;
+    _stopRequested = false;
+
     try {
-      if (!await _audioRecorder.hasPermission()) {
-        if (mounted) {
-          final l10n = SharedLocalizations.of(context);
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-              content: Text(l10n?.micPermissionRequired ?? 'Vui lòng cấp quyền truy cập microphone để ghi âm'),
-              duration: const Duration(seconds: 2),
-              behavior: SnackBarBehavior.floating,
-            ),
-          );
+      if (!_hasMicPermission) {
+        final granted = await _audioRecorder.hasPermission();
+        _hasMicPermission = granted;
+        if (!granted) {
+          _isStartingRecording = false;
+          if (mounted) {
+            final l10n = SharedLocalizations.of(context);
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
+                  l10n?.micPermissionRequired ??
+                      'Vui lòng cấp quyền truy cập microphone để ghi âm',
+                ),
+                duration: const Duration(seconds: 2),
+                behavior: SnackBarBehavior.floating,
+              ),
+            );
+          }
+          return;
         }
-        return;
       }
 
-      final tempDir = await getTemporaryDirectory();
+      final tempDir = _cachedTempDir ?? (await getTemporaryDirectory()).path;
       final path =
-          '${tempDir.path}/voice_${DateTime.now().millisecondsSinceEpoch}.m4a';
+          '$tempDir/voice_${DateTime.now().millisecondsSinceEpoch}.m4a';
       _currentRecordingPath = path;
+      _recordDuration = 0;
+      _recordedBytes = null;
+      _wasSent = false;
+      _recordStartTime = DateTime.now();
 
       await _audioRecorder.start(
         const RecordConfig(
@@ -140,11 +179,11 @@ class _ChatAudioRecorderBarState extends State<ChatAudioRecorderBar>
 
       HapticFeedback.mediumImpact();
 
-      setState(() {
-        _mode = AudioBarMode.recording;
-        _isCancelled = false;
-        _recordDuration = 0;
-      });
+      if (mounted) {
+        setState(() {
+          _mode = AudioBarMode.recording;
+        });
+      }
 
       _recordTimer?.cancel();
       _recordTimer = Timer.periodic(const Duration(seconds: 1), (_) {
@@ -152,48 +191,96 @@ class _ChatAudioRecorderBarState extends State<ChatAudioRecorderBar>
           setState(() => _recordDuration++);
         }
       });
+
+      _isStartingRecording = false;
+
+      // Handle pointer lifted while start() was awaiting
+      if (_stopRequested) {
+        await _finishRecording();
+      }
     } catch (e) {
+      _isStartingRecording = false;
       debugPrint('[ChatAudioRecorderBar] Start recording error: $e');
     }
   }
 
-  Future<void> _stopRecording() async {
+  Future<void> _handlePointerUp() async {
+    if (_isStartingRecording) {
+      _stopRequested = true;
+      return;
+    }
+    if (_mode == AudioBarMode.recording) {
+      await _finishRecording();
+    }
+  }
+
+  Future<void> _finishRecording() async {
     _recordTimer?.cancel();
-    final wasCancelled = _isCancelled;
+    final startTime = _recordStartTime;
     final duration = _recordDuration;
+    final elapsedMs = startTime != null
+        ? DateTime.now().difference(startTime).inMilliseconds
+        : 0;
 
     try {
       final path = await _audioRecorder.stop();
       final filePath = path ?? _currentRecordingPath;
 
-      if (filePath == null || wasCancelled || duration < 1) {
+      // Check if recording was too brief (< 500ms or 0 duration)
+      if (filePath == null || elapsedMs < 500) {
         if (filePath != null) {
-          final file = File(filePath);
-          if (await file.exists()) {
-            await file.delete();
+          final f = File(filePath);
+          if (await f.exists()) {
+            await f.delete();
           }
         }
         if (mounted) {
           setState(() {
             _mode = AudioBarMode.idle;
-            _isCancelled = false;
             _recordDuration = 0;
             _currentRecordingPath = null;
           });
+          final l10n = SharedLocalizations.of(context);
+          ScaffoldMessenger.of(context).hideCurrentSnackBar();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(
+                l10n?.holdToRecordPrompt ?? 'Nhấn giữ để bắt đầu thu âm',
+              ),
+              duration: const Duration(seconds: 1),
+              behavior: SnackBarBehavior.floating,
+            ),
+          );
         }
         return;
       }
 
       final file = File(filePath);
-      if (await file.exists()) {
+      if (await file.exists() && await file.length() > 100) {
         final bytes = await file.readAsBytes();
         if (mounted) {
+          HapticFeedback.lightImpact();
           setState(() {
             _recordedBytes = bytes;
             _currentRecordingPath = filePath;
             _playbackPosition = Duration.zero;
-            _playbackTotalDuration = Duration(seconds: duration);
+            _playbackTotalDuration =
+                Duration(seconds: duration > 0 ? duration : 1);
             _mode = AudioBarMode.preview;
+          });
+        }
+      } else {
+        if (filePath.isNotEmpty) {
+          final f = File(filePath);
+          if (await f.exists()) {
+            await f.delete();
+          }
+        }
+        if (mounted) {
+          setState(() {
+            _mode = AudioBarMode.idle;
+            _currentRecordingPath = null;
+            _recordDuration = 0;
           });
         }
       }
@@ -230,12 +317,19 @@ class _ChatAudioRecorderBarState extends State<ChatAudioRecorderBar>
       _currentRecordingPath = null;
       _recordDuration = 0;
       _playbackPosition = Duration.zero;
+      _wasSent = false;
     });
+  }
+
+  void _handleClose() {
+    _discardRecording();
+    widget.onClose();
   }
 
   void _sendRecordedAudio() {
     if (_recordedBytes == null || _currentRecordingPath == null) return;
     _audioPlayer.stop();
+    _wasSent = true;
     final fileName = 'voice_${DateTime.now().millisecondsSinceEpoch}.m4a';
     widget.onRecordingComplete(
       bytes: _recordedBytes!,
@@ -269,218 +363,204 @@ class _ChatAudioRecorderBarState extends State<ChatAudioRecorderBar>
     );
   }
 
-  Widget _buildContent(BuildContext context, ThemeData theme, SharedLocalizations? sharedL10n) {
-    switch (_mode) {
-      case AudioBarMode.idle:
-        return Row(
-          key: const ValueKey('idle'),
-          children: [
-            IconButton(
-              icon: const Icon(Icons.close_rounded),
-              tooltip: sharedL10n?.discardAudio ?? 'Đóng',
-              onPressed: widget.onClose,
-            ),
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        HapticFeedback.selectionClick();
-                        ScaffoldMessenger.of(context).hideCurrentSnackBar();
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(
-                            content: Text(sharedL10n?.holdToRecordPrompt ?? 'Nhấn giữ để bắt đầu thu âm'),
-                            duration: const Duration(seconds: 2),
-                            behavior: SnackBarBehavior.floating,
-                          ),
-                        );
-                      },
-                      onLongPressStart: (_) => _startRecording(),
-                      onLongPressMoveUpdate: (details) {
-                        final offset = details.offsetFromOrigin.dx;
-                        setState(() {
-                          _isCancelled = offset < -60;
-                        });
-                      },
-                      onLongPressEnd: (_) => _stopRecording(),
-                      onLongPressCancel: () {
-                        _isCancelled = true;
-                        _stopRecording();
-                      },
-                      child: Container(
-                        width: 64,
-                        height: 64,
-                        decoration: BoxDecoration(
-                          color: theme.colorScheme.primaryContainer,
-                          shape: BoxShape.circle,
-                          boxShadow: [
-                            BoxShadow(
-                              color: theme.colorScheme.primary.withValues(alpha: 0.2),
-                              blurRadius: 10,
-                              spreadRadius: 2,
-                            ),
-                          ],
-                        ),
-                        child: Icon(
-                          Icons.mic_rounded,
-                          size: 32,
-                          color: theme.colorScheme.primary,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 6),
-                    Text(
-                      sharedL10n?.holdToRecordPrompt ?? 'Nhấn giữ để bắt đầu thu âm',
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-            const SizedBox(width: 48),
-          ],
-        );
+  Widget _buildContent(
+    BuildContext context,
+    ThemeData theme,
+    SharedLocalizations? sharedL10n,
+  ) {
+    if (_mode == AudioBarMode.preview) {
+      return _buildPreviewMode(context, theme, sharedL10n);
+    }
+    return _buildRecordOrIdleMode(context, theme, sharedL10n);
+  }
 
-      case AudioBarMode.recording:
-        return Row(
-          key: const ValueKey('recording'),
-          children: [
-            IconButton(
-              icon: const Icon(Icons.close_rounded),
-              onPressed: () {
-                _isCancelled = true;
-                _stopRecording();
-              },
-            ),
-            Expanded(
-              child: Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    GestureDetector(
-                      onLongPressMoveUpdate: (details) {
-                        final offset = details.offsetFromOrigin.dx;
-                        setState(() {
-                          _isCancelled = offset < -60;
-                        });
-                      },
-                      onLongPressEnd: (_) => _stopRecording(),
-                      onLongPressCancel: () {
-                        _isCancelled = true;
-                        _stopRecording();
-                      },
-                      child: ScaleTransition(
-                        scale: Tween<double>(begin: 1.0, end: 1.15).animate(
-                          CurvedAnimation(parent: _pulseController, curve: Curves.easeInOut),
-                        ),
-                        child: Container(
+  Widget _buildRecordOrIdleMode(
+    BuildContext context,
+    ThemeData theme,
+    SharedLocalizations? sharedL10n,
+  ) {
+    final isRecording = _mode == AudioBarMode.recording;
+
+    return Row(
+      key: ValueKey(isRecording ? 'recording' : 'idle'),
+      children: [
+        IconButton(
+          icon: const Icon(Icons.close_rounded),
+          tooltip: sharedL10n?.discardAudio ?? 'Đóng',
+          onPressed: _handleClose,
+        ),
+        Expanded(
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Listener(
+                  onPointerDown: (_) => _startRecording(),
+                  onPointerUp: (_) => _handlePointerUp(),
+                  onPointerCancel: (_) => _handlePointerUp(),
+                  child: isRecording
+                      ? ScaleTransition(
+                          scale: Tween<double>(begin: 1.0, end: 1.15).animate(
+                            CurvedAnimation(
+                              parent: _pulseController,
+                              curve: Curves.easeInOut,
+                            ),
+                          ),
+                          child: Container(
+                            width: 64,
+                            height: 64,
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary,
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                  color: theme.colorScheme.primary
+                                      .withValues(alpha: 0.4),
+                                  blurRadius: 16,
+                                  spreadRadius: 4,
+                                ),
+                              ],
+                            ),
+                            child: const Icon(
+                              Icons.mic_rounded,
+                              size: 32,
+                              color: Colors.white,
+                            ),
+                          ),
+                        )
+                      : Container(
                           width: 64,
                           height: 64,
                           decoration: BoxDecoration(
-                            color: _isCancelled ? theme.colorScheme.error : theme.colorScheme.primary,
+                            color: theme.colorScheme.primaryContainer,
                             shape: BoxShape.circle,
                             boxShadow: [
                               BoxShadow(
-                                color: (_isCancelled ? theme.colorScheme.error : theme.colorScheme.primary).withValues(alpha: 0.4),
-                                blurRadius: 16,
-                                spreadRadius: 4,
+                                color: theme.colorScheme.primary
+                                    .withValues(alpha: 0.2),
+                                blurRadius: 10,
+                                spreadRadius: 2,
                               ),
                             ],
                           ),
-                          child: const Icon(
+                          child: Icon(
                             Icons.mic_rounded,
                             size: 32,
-                            color: Colors.white,
+                            color: theme.colorScheme.primary,
+                          ),
+                        ),
+                ),
+                const SizedBox(height: 6),
+                if (isRecording)
+                  Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      FadeTransition(
+                        opacity: _pulseController,
+                        child: Container(
+                          width: 8,
+                          height: 8,
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.error,
+                            shape: BoxShape.circle,
                           ),
                         ),
                       ),
+                      const SizedBox(width: 6),
+                      Text(
+                        _formatDuration(_recordDuration),
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: theme.colorScheme.error,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        sharedL10n?.recordingAudio ?? 'Đang thu âm...',
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  )
+                else
+                  Text(
+                    sharedL10n?.holdToRecordPrompt ??
+                        'Nhấn giữ để bắt đầu thu âm',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
                     ),
-                    const SizedBox(height: 6),
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        FadeTransition(
-                          opacity: _pulseController,
-                          child: Container(
-                            width: 8,
-                            height: 8,
-                            decoration: BoxDecoration(
-                              color: _isCancelled ? theme.colorScheme.error : theme.colorScheme.error,
-                              shape: BoxShape.circle,
-                            ),
-                          ),
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          _formatDuration(_recordDuration),
-                          style: theme.textTheme.labelMedium?.copyWith(
-                            color: _isCancelled ? theme.colorScheme.error : theme.colorScheme.onSurface,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        const SizedBox(width: 10),
-                        Text(
-                          _isCancelled
-                              ? (sharedL10n?.releaseToCancel ?? 'Thả để hủy')
-                              : '← ${sharedL10n?.slideLeftToCancel ?? 'Trượt để hủy'}',
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: _isCancelled ? theme.colorScheme.error : theme.colorScheme.onSurfaceVariant,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
-              ),
+                  ),
+              ],
             ),
-            const SizedBox(width: 48),
-          ],
-        );
+          ),
+        ),
+        const SizedBox(width: 48),
+      ],
+    );
+  }
 
-      case AudioBarMode.preview:
-        return Row(
-          key: const ValueKey('preview'),
+  Widget _buildPreviewMode(
+    BuildContext context,
+    ThemeData theme,
+    SharedLocalizations? sharedL10n,
+  ) {
+    return Column(
+      key: const ValueKey('preview'),
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        // Audio Player Scrubber Bar
+        Row(
           children: [
             IconButton(
-              icon: Icon(Icons.delete_outline_rounded, color: theme.colorScheme.error),
+              icon: Icon(
+                Icons.delete_outline_rounded,
+                color: theme.colorScheme.error,
+              ),
               tooltip: sharedL10n?.discardAudio ?? 'Hủy',
               onPressed: _discardRecording,
             ),
-            const SizedBox(width: 4),
             IconButton.filledTonal(
-              icon: Icon(_isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded),
+              icon: Icon(
+                _isPlaying ? Icons.pause_rounded : Icons.play_arrow_rounded,
+              ),
               onPressed: _togglePlayPreview,
             ),
-            const SizedBox(width: 6),
+            const SizedBox(width: 8),
             Expanded(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   SliderTheme(
                     data: SliderTheme.of(context).copyWith(
-                      thumbShape: const RoundSliderThumbShape(enabledThumbRadius: 6),
+                      thumbShape:
+                          const RoundSliderThumbShape(enabledThumbRadius: 6),
                       trackHeight: 3,
                       activeTrackColor: theme.colorScheme.primary,
-                      inactiveTrackColor: theme.colorScheme.surfaceContainerHighest,
+                      inactiveTrackColor:
+                          theme.colorScheme.surfaceContainerHighest,
                       thumbColor: theme.colorScheme.primary,
-                      overlayShape: const RoundSliderOverlayShape(overlayRadius: 12),
+                      overlayShape:
+                          const RoundSliderOverlayShape(overlayRadius: 12),
                     ),
                     child: Slider(
                       min: 0,
                       max: _playbackTotalDuration.inMilliseconds > 0
                           ? _playbackTotalDuration.inMilliseconds.toDouble()
-                          : (_recordDuration * 1000).toDouble().clamp(1.0, double.infinity),
-                      value: _playbackPosition.inMilliseconds.toDouble().clamp(
+                          : (_recordDuration * 1000)
+                              .toDouble()
+                              .clamp(1.0, double.infinity),
+                      value: _playbackPosition.inMilliseconds
+                          .toDouble()
+                          .clamp(
                             0.0,
                             _playbackTotalDuration.inMilliseconds > 0
-                                ? _playbackTotalDuration.inMilliseconds.toDouble()
-                                : (_recordDuration * 1000).toDouble().clamp(1.0, double.infinity),
+                                ? _playbackTotalDuration.inMilliseconds
+                                    .toDouble()
+                                : (_recordDuration * 1000)
+                                    .toDouble()
+                                    .clamp(1.0, double.infinity),
                           ),
                       onChanged: (val) {
                         _audioPlayer.seek(Duration(milliseconds: val.toInt()));
@@ -500,7 +580,11 @@ class _ChatAudioRecorderBarState extends State<ChatAudioRecorderBar>
                           ),
                         ),
                         Text(
-                          _formatDuration(_recordDuration),
+                          _formatDuration(
+                            _recordDuration > 0
+                                ? _recordDuration
+                                : _playbackTotalDuration.inSeconds,
+                          ),
                           style: theme.textTheme.labelSmall?.copyWith(
                             color: theme.colorScheme.onSurfaceVariant,
                             fontFamily: 'monospace',
@@ -512,15 +596,56 @@ class _ChatAudioRecorderBarState extends State<ChatAudioRecorderBar>
                 ],
               ),
             ),
-            const SizedBox(width: 6),
-            IconButton.filled(
-              icon: const Icon(Icons.send_rounded),
-              tooltip: sharedL10n?.sendAudio ?? 'Gửi',
-              onPressed: _sendRecordedAudio,
-            ),
+            const SizedBox(width: 8),
           ],
-        );
-    }
+        ),
+        const SizedBox(height: 8),
+        // Large Center Send Button replacing the microphone button
+        Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap: _sendRecordedAudio,
+                  borderRadius: BorderRadius.circular(32),
+                  child: Ink(
+                    width: 64,
+                    height: 64,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primary,
+                      shape: BoxShape.circle,
+                      boxShadow: [
+                        BoxShadow(
+                          color: theme.colorScheme.primary
+                              .withValues(alpha: 0.35),
+                          blurRadius: 12,
+                          spreadRadius: 2,
+                        ),
+                      ],
+                    ),
+                    child: Icon(
+                      Icons.send_rounded,
+                      size: 30,
+                      color: theme.colorScheme.onPrimary,
+                    ),
+                  ),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                sharedL10n?.sendAudio ?? 'Gửi',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: theme.colorScheme.primary,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }
 
@@ -548,7 +673,8 @@ class ChatAudioRecorderButton extends StatelessWidget {
         width: 38,
         height: 38,
         decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          color:
+              theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
           shape: BoxShape.circle,
         ),
         child: Icon(

@@ -9,7 +9,9 @@
           "id": 1794307534695,
           "level": "default",
           "done": true,
-          "start": 1794307534695
+          "start": 1794307534695,
+          "focus": false,
+          "end": 1794311496304
         }
       },
       {
@@ -20,7 +22,9 @@
           "id": 1794307622326,
           "level": "default",
           "done": true,
-          "start": 1794307622326
+          "start": 1794307622326,
+          "focus": false,
+          "end": 1794311499536
         }
       },
       {
@@ -31,7 +35,9 @@
           "id": 1794307664742,
           "level": "default",
           "done": true,
-          "start": 1794307664742
+          "start": 1794307664742,
+          "focus": false,
+          "end": 1794311501704
         }
       },
       {
@@ -42,18 +48,9 @@
           "id": 1794307706294,
           "level": "default",
           "done": true,
-          "start": 1794307706294
-        }
-      },
-      {
-        "key": 1794307790766,
-        "children": [],
-        "todo": {
-          "content": "Sửa UI tính năng gửi audio: Khi bấm vào nút audio, thay thế chat bar bằng audio bar, trong này hiện 1 nút có icon micro lớn, có hướng dẫn bấm giữ để bắt đầu thu âm, khi thả thay thì hiện nút gửi và thời lượng của audio vừa thu ấm, cho phép phát lại và tua nhanh thời lượng để nghe lại",
-          "id": 1794307790766,
-          "level": "default",
-          "done": true,
-          "start": 1794307790766
+          "start": 1794307706294,
+          "focus": false,
+          "end": 1794311526256
         }
       },
       {
@@ -64,7 +61,35 @@
           "id": 1794307906910,
           "level": "default",
           "done": true,
-          "start": 1794307906910
+          "start": 1794307906910,
+          "focus": false,
+          "end": 1794311639312
+        }
+      },
+      {
+        "key": 1794307790766,
+        "children": [],
+        "todo": {
+          "content": "Sửa UI tính năng gửi audio: Khi bấm vào nút audio, thay thế chat bar bằng audio bar, trong này hiện 1 nút có icon micro lớn, có hướng dẫn bấm giữ để bắt đầu thu âm, khi thả thay thì hiện nút gửi và thời lượng của audio vừa thu ấm, cho phép phát lại và tua nhanh thời lượng để nghe lại",
+          "id": 1794307790766,
+          "level": "default",
+          "done": true,
+          "start": 1794307790766,
+          "focus": false,
+          "end": 1794312670000
+        }
+      },
+      {
+        "key": 1794311645272,
+        "children": [],
+        "todo": {
+          "content": "Lỗi client đọc tin nhắn: Khi nhân viên gửi tin nhắn cho client không ẩn danh, và client bấm vào hội thoại trong ngữ cảnh không ẩn danh, con số badge unread count trên tab \"không ẩn danh\" ko mất đi mà vẫn tồn tại, phải thoát ra vào lại màn hình tin nhắn thì con số badge unread count của ngữ cảnh \"không ẩn danh\" mới biến mất. Sửa lại để nếu client nhận được tin nhắn mới từ nhân viên (cả ẩn danh và không ẩn danh), thì khi mở ngữ cảnh tương ứng trong màn hình tin nhắn, phải update lại con số badge unread count trên 2 tab ngữ cảnh.",
+          "id": 1794311645272,
+          "level": "default",
+          "done": true,
+          "start": 1794311645272,
+          "focus": false,
+          "end": 1794312671000
         }
       }
     ],
@@ -78,6 +103,6 @@
     "showEndTime": false,
     "simpleMode": false,
     "lang": "en",
-    "version": "1794307943010"
+    "version": "1794311748563"
   }
 }

@@ -6,11 +6,13 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mobile_shared/features/chat/models/conversation_model.dart';
 import 'package:mobile_shared/features/chat/providers/chat_detail_provider.dart';
+import 'package:mobile_shared/features/chat/services/chat_ws_service.dart';
 import 'package:mobile_shared/features/chat/widgets/chat_audio_recorder_bar.dart';
 import 'package:mobile_shared/features/chat/widgets/chat_call_bottom_sheet.dart';
 import 'package:mobile_shared/features/chat/widgets/chat_message_bubble.dart';
 import 'package:mobile_shared/features/chat/widgets/linked_report_picker_sheet.dart';
 import 'package:mobile_shared/features/chat/widgets/typing_indicator_widget.dart';
+import 'package:smartspace_client/features/chat/providers/client_conversations_provider.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/routes/router_path.dart';
 import 'package:smartspace_client/ui/mobile/chat/widgets/client_chat_role_badge.dart';
@@ -36,17 +38,56 @@ class _ClientChatDetailScreenState
   late final PageController _pageController;
   int _selectedTabIndex = 0;
   bool _tabInitialized = false;
+  int? _identifiedUnreadCount;
+  int? _anonymousUnreadCount;
+  bool _initialMarkAsReadDone = false;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
+    chatWsService.addConversationListener(_onWsConversationUpdate);
   }
 
   @override
   void dispose() {
+    chatWsService.removeConversationListener(_onWsConversationUpdate);
     _pageController.dispose();
     super.dispose();
+  }
+
+  void _onWsConversationUpdate(ConversationModel updatedConv) {
+    if (!mounted) return;
+    final baseState = ref.read(chatDetailProvider(widget.conversationId));
+    final conv = baseState.conversation;
+    final identId = conv?.identifiedConversationId ?? updatedConv.identifiedConversationId;
+    final anonId = conv?.anonymousConversationId ?? updatedConv.anonymousConversationId;
+    final partnerId = conv?.partnerId ?? widget.initialPartner?.userId;
+
+    final matches = updatedConv.id == widget.conversationId ||
+        (identId != null && (updatedConv.id == identId || identId == widget.conversationId)) ||
+        (anonId != null && (updatedConv.id == anonId || anonId == widget.conversationId)) ||
+        (partnerId != null && updatedConv.partnerId == partnerId);
+
+    if (!matches) return;
+
+    setState(() {
+      if (_selectedTabIndex == 0) {
+        _identifiedUnreadCount = 0;
+        _anonymousUnreadCount = updatedConv.anonymousUnreadCount;
+        if (identId != null && (updatedConv.id == identId || updatedConv.identifiedConversationId == identId)) {
+          ref.read(chatDetailProvider(identId).notifier).markAsRead();
+          ref.read(clientConversationsProvider.notifier).markContextAsReadLocally(identId, isAnonymous: false);
+        }
+      } else {
+        _anonymousUnreadCount = 0;
+        _identifiedUnreadCount = updatedConv.identifiedUnreadCount;
+        if (anonId != null && (updatedConv.id == anonId || updatedConv.anonymousConversationId == anonId)) {
+          ref.read(chatDetailProvider(anonId).notifier).markAsRead();
+          ref.read(clientConversationsProvider.notifier).markContextAsReadLocally(anonId, isAnonymous: true);
+        }
+      }
+    });
   }
 
   void _showContextExplanationSheet({
@@ -144,6 +185,11 @@ class _ClientChatDetailScreenState
     }
     setState(() {
       _selectedTabIndex = index;
+      if (index == 0) {
+        _identifiedUnreadCount = 0;
+      } else {
+        _anonymousUnreadCount = 0;
+      }
     });
     _pageController.animateToPage(
       index,
@@ -152,6 +198,11 @@ class _ClientChatDetailScreenState
     );
     if (targetConvId != null) {
       ref.read(chatDetailProvider(targetConvId).notifier).markAsRead();
+      ref.read(clientConversationsProvider.notifier).markContextAsReadLocally(
+            targetConvId,
+            isAnonymous: index == 1,
+          );
+      chatWsService.sendMarkAsRead(targetConvId);
     }
   }
 
@@ -171,18 +222,40 @@ class _ClientChatDetailScreenState
     final identConvId = conv?.identifiedConversationId;
     final anonConvId = conv?.anonymousConversationId;
 
-    if (hasBothContexts && !_tabInitialized) {
-      _tabInitialized = true;
-      if (widget.conversationId == anonConvId ||
-          (widget.conversationId != identConvId &&
-              conv.lastMessageContext == 'ANONYMOUS')) {
-        _selectedTabIndex = 1;
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_pageController.hasClients) {
-            _pageController.jumpToPage(1);
-          }
-        });
+    if (conv != null && !_initialMarkAsReadDone) {
+      _initialMarkAsReadDone = true;
+      final initialIdentUnread = conv.identifiedUnreadCount;
+      final initialAnonUnread = conv.anonymousUnreadCount;
+
+      if (hasBothContexts && !_tabInitialized) {
+        _tabInitialized = true;
+        if (widget.conversationId == anonConvId ||
+            (widget.conversationId != identConvId &&
+                conv.lastMessageContext == 'ANONYMOUS')) {
+          _selectedTabIndex = 1;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_pageController.hasClients) {
+              _pageController.jumpToPage(1);
+            }
+          });
+        }
       }
+
+      final activeTargetId = _selectedTabIndex == 1
+          ? (anonConvId ?? widget.conversationId)
+          : (identConvId ?? widget.conversationId);
+
+      _identifiedUnreadCount = _selectedTabIndex == 0 ? 0 : initialIdentUnread;
+      _anonymousUnreadCount = _selectedTabIndex == 1 ? 0 : initialAnonUnread;
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(chatDetailProvider(activeTargetId).notifier).markAsRead();
+        ref.read(clientConversationsProvider.notifier).markContextAsReadLocally(
+              activeTargetId,
+              isAnonymous: _selectedTabIndex == 1,
+            );
+        chatWsService.sendMarkAsRead(activeTargetId);
+      });
     }
 
     final initialPartner = widget.initialPartner;
@@ -203,8 +276,8 @@ class _ClientChatDetailScreenState
         ? (_selectedTabIndex == 1 ? anonConvId! : identConvId!)
         : widget.conversationId;
 
-    final identUnread = conv?.identifiedUnreadCount ?? 0;
-    final anonUnread = conv?.anonymousUnreadCount ?? 0;
+    final identUnread = _identifiedUnreadCount ?? conv?.identifiedUnreadCount ?? 0;
+    final anonUnread = _anonymousUnreadCount ?? conv?.anonymousUnreadCount ?? 0;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -297,12 +370,24 @@ class _ClientChatDetailScreenState
                       onPageChanged: (index) {
                         setState(() {
                           _selectedTabIndex = index;
+                          if (index == 0) {
+                            _identifiedUnreadCount = 0;
+                          } else {
+                            _anonymousUnreadCount = 0;
+                          }
                         });
                         final targetId =
                             index == 1 ? anonConvId : identConvId;
                         ref
                             .read(chatDetailProvider(targetId).notifier)
                             .markAsRead();
+                        ref
+                            .read(clientConversationsProvider.notifier)
+                            .markContextAsReadLocally(
+                              targetId,
+                              isAnonymous: index == 1,
+                            );
+                        chatWsService.sendMarkAsRead(targetId);
                       },
                       children: [
                         _ContextChatPane(

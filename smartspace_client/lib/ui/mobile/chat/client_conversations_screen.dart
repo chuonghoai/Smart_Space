@@ -265,7 +265,17 @@ class _ClientConversationsScreenState extends ConsumerState<ClientConversationsS
           return ClientConversationItem(
             conversation: conv,
             onTap: () {
-              ref.read(clientConversationsProvider.notifier).markAsReadLocally(conv.id);
+              final hasBoth = conv.hasIdentifiedContext && conv.hasAnonymousContext;
+              final isAnon = conv.isAnonymous == true ||
+                  (hasBoth && conv.lastMessageContext == 'ANONYMOUS');
+              final activeId = isAnon
+                  ? (conv.anonymousConversationId ?? conv.id)
+                  : (conv.identifiedConversationId ?? conv.id);
+              ref.read(clientConversationsProvider.notifier).markContextAsReadLocally(
+                    activeId,
+                    isAnonymous: isAnon,
+                  );
+              chatWsService.sendMarkAsRead(activeId);
               context.push(RouterPath.chatDetailWithId(conv.id));
             },
             onLongPress: () {
