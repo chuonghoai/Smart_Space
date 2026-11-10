@@ -346,6 +346,8 @@ public class ChatMessageService implements IChatMessageService {
                     || (report != null && Boolean.TRUE.equals(report.getIsAnonymous()));
             if (isAnon && sender.getRole() == ERole.client) {
                 senderDisplayName = messageSource.getMessage("chat.anonymous_user", null, "Người dùng ẩn danh", recipientLocale);
+            } else if (senderDisplayName == null || senderDisplayName.isBlank()) {
+                senderDisplayName = messageSource.getMessage("chat.anonymous_user", null, "SmartSpace", recipientLocale);
             }
 
             String body;

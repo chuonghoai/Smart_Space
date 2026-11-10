@@ -619,7 +619,7 @@ class _ContextChatPane extends ConsumerStatefulWidget {
 }
 
 class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _canSend = false;
@@ -632,6 +632,7 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _textController.addListener(_onTextChanged);
     _scrollController.addListener(_onScroll);
     WidgetsBinding.instance.addPostFrameCallback((_) {
@@ -641,6 +642,22 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
             .setActive(widget.isActive);
       }
     });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (!mounted) return;
+    if (state == AppLifecycleState.resumed) {
+      if (widget.isActive) {
+        ref.read(chatDetailProvider(widget.conversationId).notifier).onAppResumed();
+      }
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.hidden) {
+      if (widget.isActive) {
+        ref.read(chatDetailProvider(widget.conversationId).notifier).onAppPaused();
+      }
+    }
   }
 
   @override
@@ -655,6 +672,7 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _typingTimer?.cancel();
     _textController.removeListener(_onTextChanged);
     _scrollController.removeListener(_onScroll);

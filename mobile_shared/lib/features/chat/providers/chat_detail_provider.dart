@@ -192,6 +192,91 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
     } catch (_) {}
   }
 
+  Future<void> onAppResumed() async {
+    if (_isDisposed || state.isDraft) return;
+    debugPrint('[ChatDetailNotifier] App resumed, syncing latest messages and presence for $conversationId');
+    if (_isActive) {
+      _repository.enterPresence(conversationId);
+      _heartbeatTimer?.cancel();
+      _heartbeatTimer = Timer.periodic(const Duration(seconds: 30), (_) {
+        if (!_isDisposed && _isActive) {
+          _repository.heartbeatPresence(conversationId);
+        }
+      });
+      markAsRead();
+    }
+    await syncLatestMessages();
+  }
+
+  void onAppPaused() {
+    if (_isDisposed || state.isDraft) return;
+    debugPrint('[ChatDetailNotifier] App paused, leaving presence for $conversationId');
+    _heartbeatTimer?.cancel();
+    _heartbeatTimer = null;
+    _repository.leavePresence(conversationId);
+  }
+
+  Future<void> syncLatestMessages() async {
+    if (_isDisposed || state.isDraft) return;
+    try {
+      final convRes = await _repository.getConversationDetail(conversationId);
+      DateTime? partnerLastReadAt = state.partnerLastReadAt;
+      if (convRes.success && convRes.data != null) {
+        if (convRes.data!.partnerLastReadAt != null) {
+          partnerLastReadAt = convRes.data!.partnerLastReadAt;
+        }
+      }
+
+      final msgRes = await _repository.getMessages(conversationId, page: 1, size: 20);
+      if (_isDisposed) return;
+
+      if (msgRes.success && msgRes.data != null) {
+        final incoming = msgRes.data!;
+        final currentMessages = List<ChatMessageModel>.from(state.messages);
+
+        for (final inc in incoming) {
+          final idx = currentMessages.indexWhere(
+            (m) => (inc.id != null && m.id == inc.id) || (inc.tempId != null && m.tempId == inc.tempId),
+          );
+          if (idx >= 0) {
+            currentMessages[idx] = inc.copyWith(
+              isSending: false,
+              isFailed: false,
+              isRead: inc.isRead ||
+                  (partnerLastReadAt != null &&
+                      inc.senderId == state.currentUserId &&
+                      !inc.createdAt.isAfter(partnerLastReadAt)),
+            );
+          } else {
+            currentMessages.insert(
+              0,
+              inc.copyWith(
+                isRead: inc.isRead ||
+                    (partnerLastReadAt != null &&
+                        inc.senderId == state.currentUserId &&
+                        !inc.createdAt.isAfter(partnerLastReadAt)),
+              ),
+            );
+          }
+        }
+
+        currentMessages.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+
+        state = state.copyWith(
+          conversation: convRes.data ?? state.conversation,
+          partnerLastReadAt: partnerLastReadAt,
+          messages: currentMessages,
+        );
+
+        if (_isActive) {
+          markAsRead();
+        }
+      }
+    } catch (e) {
+      debugPrint('[ChatDetailNotifier] Error syncing latest messages: $e');
+    }
+  }
+
   void sendTyping(bool isTyping) {
     if (state.isDraft) return;
     _wsService.sendTyping(conversationId: conversationId, isTyping: isTyping);
@@ -404,11 +489,11 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
       if (!sentViaWs) {
         await _sendViaRest(targetConvId, trimmed, tempId, messageType: 'text');
       } else {
-        Timer(const Duration(seconds: 15), () {
+        Timer(const Duration(seconds: 5), () {
           if (_isDisposed) return;
           final msgStillSending = state.messages.any((m) => m.tempId == tempId && m.isSending);
           if (msgStillSending) {
-            _markMessageFailed(tempId);
+            _sendViaRest(targetConvId, trimmed, tempId, messageType: 'text');
           }
         });
       }
@@ -494,11 +579,17 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
           messageMedia: mediaDto,
         );
       } else {
-        Timer(const Duration(seconds: 20), () {
+        Timer(const Duration(seconds: 5), () {
           if (_isDisposed) return;
           final msgStillSending = state.messages.any((m) => m.tempId == tempId && m.isSending);
           if (msgStillSending) {
-            _markMessageFailed(tempId);
+            _sendViaRest(
+              targetConvId,
+              fallbackContent,
+              tempId,
+              messageType: isVideo ? 'video' : 'image',
+              messageMedia: mediaDto,
+            );
           }
         });
       }
@@ -583,11 +674,17 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
           messageMedia: mediaDto,
         );
       } else {
-        Timer(const Duration(seconds: 20), () {
+        Timer(const Duration(seconds: 5), () {
           if (_isDisposed) return;
           final msgStillSending = state.messages.any((m) => m.tempId == tempId && m.isSending);
           if (msgStillSending) {
-            _markMessageFailed(tempId);
+            _sendViaRest(
+              targetConvId,
+              content,
+              tempId,
+              messageType: 'audio',
+              messageMedia: mediaDto,
+            );
           }
         });
       }
@@ -642,11 +739,17 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
           reportId: report.id,
         );
       } else {
-        Timer(const Duration(seconds: 15), () {
+        Timer(const Duration(seconds: 5), () {
           if (_isDisposed) return;
           final msgStillSending = state.messages.any((m) => m.tempId == tempId && m.isSending);
           if (msgStillSending) {
-            _markMessageFailed(tempId);
+            _sendViaRest(
+              targetConvId,
+              report.title,
+              tempId,
+              messageType: 'report',
+              reportId: report.id,
+            );
           }
         });
       }

@@ -9,11 +9,27 @@ import 'package:stomp_dart_client/stomp_dart_client.dart';
 typedef OnConversationUpdateCallback = void Function(ConversationModel conversation);
 typedef OnTotalUnreadCallback = void Function(int totalUnread);
 
+class _TopicSubscriptionEntry {
+  final String conversationId;
+  final void Function(ChatMessageModel message) onMessage;
+  final void Function(String readerId, DateTime readAt)? onReadReceipt;
+  final void Function(String userId, bool isTyping)? onTyping;
+  StompUnsubscribe? stompUnsubscribe;
+
+  _TopicSubscriptionEntry({
+    required this.conversationId,
+    required this.onMessage,
+    this.onReadReceipt,
+    this.onTyping,
+  });
+}
+
 class ChatWsService implements WsFeatureService {
   StompUnsubscribe? _conversationsSub;
   StompUnsubscribe? _unreadSub;
   final List<OnConversationUpdateCallback> _conversationListeners = [];
   final List<OnTotalUnreadCallback> _unreadListeners = [];
+  final Map<String, _TopicSubscriptionEntry> _topicSubscriptions = {};
 
   void addConversationListener(OnConversationUpdateCallback listener) {
     if (!_conversationListeners.contains(listener)) {
@@ -102,18 +118,20 @@ class ChatWsService implements WsFeatureService {
         debugPrint('[ChatWsService] subscribe(chat.unread) threw: $e');
       }
     }
+
+    // Automatically re-subscribe all active conversation topics on reconnect
+    for (final entry in _topicSubscriptions.values) {
+      _subscribeTopicInternal(entry);
+    }
   }
 
-  StompUnsubscribe? subscribeToConversationTopic({
-    required String conversationId,
-    required void Function(ChatMessageModel message) onMessage,
-    void Function(String readerId, DateTime readAt)? onReadReceipt,
-    void Function(String userId, bool isTyping)? onTyping,
-  }) {
-    final destination = '/topic/conversation.$conversationId';
-    debugPrint('[ChatWsService] Subscribing to $destination...');
+  void _subscribeTopicInternal(_TopicSubscriptionEntry entry) {
+    if (!webSocketService.isConnected) return;
+    final destination = '/topic/conversation.${entry.conversationId}';
+    debugPrint('[ChatWsService] Subscribing/Re-subscribing to $destination...');
     try {
-      return webSocketService.subscribe(
+      entry.stompUnsubscribe?.call();
+      entry.stompUnsubscribe = webSocketService.subscribe(
         destination: destination,
         callback: (frame) {
           if (frame.body != null) {
@@ -123,14 +141,14 @@ class ChatWsService implements WsFeatureService {
               if (type == 'READ_RECEIPT') {
                 final readerId = data['readerId']?.toString() ?? '';
                 final readAt = DateTime.tryParse(data['readAt']?.toString() ?? '') ?? DateTime.now();
-                onReadReceipt?.call(readerId, readAt);
+                entry.onReadReceipt?.call(readerId, readAt);
               } else if (type == 'TYPING') {
                 final userId = data['userId']?.toString() ?? '';
                 final isTyping = data['isTyping'] as bool? ?? false;
-                onTyping?.call(userId, isTyping);
+                entry.onTyping?.call(userId, isTyping);
               } else {
                 final model = ChatMessageModel.fromJson(data);
-                onMessage(model);
+                entry.onMessage(model);
               }
             } catch (e) {
               debugPrint('[ChatWsService] Parse error in chat message frame: $e');
@@ -140,8 +158,38 @@ class ChatWsService implements WsFeatureService {
       );
     } catch (e) {
       debugPrint('[ChatWsService] Error subscribing to conversation topic: $e');
-      return null;
+      entry.stompUnsubscribe = null;
     }
+  }
+
+  StompUnsubscribe? subscribeToConversationTopic({
+    required String conversationId,
+    required void Function(ChatMessageModel message) onMessage,
+    void Function(String readerId, DateTime readAt)? onReadReceipt,
+    void Function(String userId, bool isTyping)? onTyping,
+  }) {
+    // Unsubscribe existing if present
+    _topicSubscriptions[conversationId]?.stompUnsubscribe?.call();
+
+    final entry = _TopicSubscriptionEntry(
+      conversationId: conversationId,
+      onMessage: onMessage,
+      onReadReceipt: onReadReceipt,
+      onTyping: onTyping,
+    );
+    _topicSubscriptions[conversationId] = entry;
+
+    if (webSocketService.isConnected) {
+      _subscribeTopicInternal(entry);
+    }
+
+    return ({Map<String, String>? unsubscribeHeaders}) {
+      entry.stompUnsubscribe?.call(unsubscribeHeaders: unsubscribeHeaders);
+      entry.stompUnsubscribe = null;
+      if (_topicSubscriptions[conversationId] == entry) {
+        _topicSubscriptions.remove(conversationId);
+      }
+    };
   }
 
   bool get isConnected => webSocketService.isConnected;
@@ -222,6 +270,10 @@ class ChatWsService implements WsFeatureService {
     _conversationsSub = null;
     _unreadSub?.call();
     _unreadSub = null;
+    for (final entry in _topicSubscriptions.values) {
+      entry.stompUnsubscribe?.call();
+      entry.stompUnsubscribe = null;
+    }
   }
 
   @override
@@ -230,6 +282,11 @@ class ChatWsService implements WsFeatureService {
     _conversationsSub = null;
     _unreadSub?.call();
     _unreadSub = null;
+    for (final entry in _topicSubscriptions.values) {
+      entry.stompUnsubscribe?.call();
+      entry.stompUnsubscribe = null;
+    }
+    _topicSubscriptions.clear();
     _conversationListeners.clear();
     _unreadListeners.clear();
   }
