@@ -625,5 +625,22 @@
     }
   },
   "allNotificationsRead": "You're all caught up",
-  "viewAllNotifications": "View all notifications"
+  "viewAllNotifications": "View all notifications",
+  "searchAssignedReportsPlaceholder": "Search by title, description or address...",
+  "noMatchingAssignedReports": "No matching tasks",
+  "sortLabel": "Sort",
+  "sortLatest": "Newest",
+  "sortOldest": "Oldest",
+  "sortSeverity": "Most severe",
+  "filterTimeframe": "Timeframe",
+  "timeframeAll": "All time",
+  "pickSingleDate": "A specific day…",
+  "pickDateRange": "A date range…",
+  "filterSelectedTooltip": "{label}: {value}",
+  "@filterSelectedTooltip": {
+    "placeholders": {
+      "label": {},
+      "value": {}
+    }
+  }
 }

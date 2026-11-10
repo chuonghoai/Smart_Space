@@ -625,5 +625,22 @@
     }
   },
   "allNotificationsRead": "Bạn đã đọc hết thông báo",
-  "viewAllNotifications": "Xem tất cả thông báo"
+  "viewAllNotifications": "Xem tất cả thông báo",
+  "searchAssignedReportsPlaceholder": "Tìm theo tiêu đề, mô tả hoặc địa chỉ...",
+  "noMatchingAssignedReports": "Không tìm thấy việc phù hợp",
+  "sortLabel": "Sắp xếp",
+  "sortLatest": "Mới nhất",
+  "sortOldest": "Cũ nhất",
+  "sortSeverity": "Nghiêm trọng nhất",
+  "filterTimeframe": "Thời gian",
+  "timeframeAll": "Mọi thời gian",
+  "pickSingleDate": "Một ngày cụ thể…",
+  "pickDateRange": "Khoảng ngày…",
+  "filterSelectedTooltip": "{label}: {value}",
+  "@filterSelectedTooltip": {
+    "placeholders": {
+      "label": {},
+      "value": {}
+    }
+  }
 }

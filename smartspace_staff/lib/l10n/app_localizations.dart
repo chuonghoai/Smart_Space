@@ -2851,6 +2851,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View all notifications'**
   String get viewAllNotifications;
+
+  /// No description provided for @searchAssignedReportsPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by title, description or address...'**
+  String get searchAssignedReportsPlaceholder;
+
+  /// No description provided for @noMatchingAssignedReports.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching tasks'**
+  String get noMatchingAssignedReports;
+
+  /// No description provided for @sortLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort'**
+  String get sortLabel;
+
+  /// No description provided for @sortLatest.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest'**
+  String get sortLatest;
+
+  /// No description provided for @sortOldest.
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest'**
+  String get sortOldest;
+
+  /// No description provided for @sortSeverity.
+  ///
+  /// In en, this message translates to:
+  /// **'Most severe'**
+  String get sortSeverity;
+
+  /// No description provided for @filterTimeframe.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeframe'**
+  String get filterTimeframe;
+
+  /// No description provided for @timeframeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All time'**
+  String get timeframeAll;
+
+  /// No description provided for @pickSingleDate.
+  ///
+  /// In en, this message translates to:
+  /// **'A specific day…'**
+  String get pickSingleDate;
+
+  /// No description provided for @pickDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'A date range…'**
+  String get pickDateRange;
+
+  /// No description provided for @filterSelectedTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'{label}: {value}'**
+  String filterSelectedTooltip(Object label, Object value);
 }
 
 class _AppLocalizationsDelegate

@@ -1,7 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:mobile_shared/util/location_service.dart';
+import 'package:smartspace_staff/features/reports/models/report_model.dart';
+import 'package:smartspace_staff/features/reports/models/staff_report_sort.dart';
+import 'package:smartspace_staff/features/reports/utils/report_severity_ext.dart';
 import 'package:smartspace_staff/ui/mobile/reports/all_reports_controller.dart';
 import 'package:smartspace_staff/ui/mobile/reports/widgets/report_feed_item.dart';
+import 'package:smartspace_staff/ui/mobile/reports/widgets/report_filters/assigned_report_filter_options.dart';
+import 'package:smartspace_staff/ui/mobile/reports/widgets/report_filters/report_date_range_filter_chip.dart';
+import 'package:smartspace_staff/ui/mobile/reports/widgets/report_filters/report_filter_bar.dart';
+import 'package:smartspace_staff/ui/mobile/reports/widgets/report_filters/report_filter_chip.dart';
+import 'package:smartspace_staff/ui/mobile/reports/widgets/report_filters/report_filter_sheet.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
@@ -19,6 +27,7 @@ class AllReportsScreen extends StatefulWidget {
 class _AllReportsScreenState extends State<AllReportsScreen> {
   late final AllReportsController _controller;
   final ScrollController _scrollController = ScrollController();
+  final TextEditingController _searchController = TextEditingController();
   Position? _currentPosition;
 
   @override
@@ -43,6 +52,7 @@ class _AllReportsScreenState extends State<AllReportsScreen> {
   @override
   void dispose() {
     _scrollController.dispose();
+    _searchController.dispose();
     _controller.dispose();
     super.dispose();
   }
@@ -79,20 +89,15 @@ class _AllReportsScreenState extends State<AllReportsScreen> {
 
           return Column(
             children: [
-              // Filters
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-                child: Row(
-                  children: [
-                    _buildFilterChip(state, 'all', l10n.filterAll),
-                    const SizedBox(width: 8),
-                    _buildFilterChip(state, 'processing', l10n.reportStatusProcessing),
-                    const SizedBox(width: 8),
-                    _buildFilterChip(state, 'rehandling', l10n.rehandling),
-                    const SizedBox(width: 8),
-                    _buildFilterChip(state, 'resolved', l10n.reportStatusProcessed),
-                  ],
+              Padding(
+                padding: const EdgeInsets.only(top: 12, bottom: 4),
+                child: ReportFilterBar(
+                  searchController: _searchController,
+                  searchHint: l10n.searchAssignedReportsPlaceholder,
+                  onSearchChanged: _controller.setSearch,
+                  isFiltering: state.isFiltering,
+                  onClearFilters: _controller.clearFilters,
+                  chips: _buildFilterChips(context, state, l10n),
                 ),
               ),
               const Divider(height: 1),
@@ -127,11 +132,27 @@ class _AllReportsScreenState extends State<AllReportsScreen> {
                                       child: ConstrainedBox(
                                         constraints: BoxConstraints(minHeight: constraints.maxHeight),
                                         child: Center(
-                                          child: Text(
-                                            l10n.noReportsYet,
-                                            style: theme.textTheme.bodyMedium?.copyWith(
-                                              color: theme.colorScheme.onSurfaceVariant,
-                                            ),
+                                          child: Column(
+                                            mainAxisSize: MainAxisSize.min,
+                                            children: [
+                                              Text(
+                                                state.isFiltering ? l10n.noMatchingAssignedReports : l10n.noReportsYet,
+                                                textAlign: TextAlign.center,
+                                                style: theme.textTheme.bodyMedium?.copyWith(
+                                                  color: theme.colorScheme.onSurfaceVariant,
+                                                ),
+                                              ),
+                                              if (state.isFiltering) ...[
+                                                const SizedBox(height: 8),
+                                                TextButton(
+                                                  onPressed: () {
+                                                    _searchController.clear();
+                                                    _controller.clearFilters();
+                                                  },
+                                                  child: Text(l10n.clearFilter),
+                                                ),
+                                              ],
+                                            ],
                                           ),
                                         ),
                                       ),
@@ -173,32 +194,53 @@ class _AllReportsScreenState extends State<AllReportsScreen> {
     );
   }
 
-  Widget _buildFilterChip(AllReportsState state, String filterValue, String label) {
-    final isSelected = state.filter == filterValue;
-    String displayLabel = label;
-    
-    if (state.stats != null) {
-      int count = 0;
-      if (filterValue == 'all') {
-        count = state.stats!.total;
-      } else if (filterValue == 'processing') {
-        count = state.stats!.processing;
-      } else if (filterValue == 'rehandling') {
-        count = state.stats!.rehandling;
-      } else if (filterValue == 'resolved') {
-        count = state.stats!.resolved;
-      }
-      displayLabel = '$label ($count)';
-    }
+  List<Widget> _buildFilterChips(BuildContext context, AllReportsState state, AppLocalizations l10n) {
+    final statusActive = state.filter != AllReportsState.allStatus;
+    final severity = state.severity;
+    final sortActive = state.sort != StaffReportSort.latest;
 
-    return ChoiceChip(
-      label: Text(displayLabel),
-      selected: isSelected,
-      onSelected: (selected) {
-        if (selected) {
-          _controller.setFilter(filterValue);
-        }
-      },
-    );
+    return [
+      ReportFilterChip(
+        label: l10n.statusLabel,
+        valueLabel: statusActive ? AssignedReportFilterOptions.statusLabel(state.filter, l10n) : null,
+        active: statusActive,
+        onTap: () => showReportFilterSheet<String>(
+          context: context,
+          title: l10n.statusLabel,
+          options: AssignedReportFilterOptions.statuses(l10n, state.stats),
+          selected: state.filter,
+          onSelected: _controller.setFilter,
+        ),
+      ),
+      ReportFilterChip(
+        label: l10n.severityLabel,
+        valueLabel: severity?.getLocalizedText(l10n),
+        active: severity != null,
+        onTap: () => showReportFilterSheet<ReportSeverity?>(
+          context: context,
+          title: l10n.severityLabel,
+          options: AssignedReportFilterOptions.severities(l10n),
+          selected: severity,
+          onSelected: _controller.setSeverity,
+        ),
+      ),
+      ReportDateRangeFilterChip(
+        value: state.dateRange,
+        onChanged: _controller.setDateRange,
+      ),
+      ReportFilterChip(
+        label: l10n.sortLabel,
+        valueLabel: sortActive ? AssignedReportFilterOptions.sortLabel(state.sort, l10n) : null,
+        active: sortActive,
+        icon: AssignedReportFilterOptions.sortIcon(state.sort),
+        onTap: () => showReportFilterSheet<StaffReportSort>(
+          context: context,
+          title: l10n.sortLabel,
+          options: AssignedReportFilterOptions.sorts(l10n),
+          selected: state.sort,
+          onSelected: _controller.setSort,
+        ),
+      ),
+    ];
   }
 }

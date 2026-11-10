@@ -1486,4 +1486,40 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get viewAllNotifications => 'Xem tất cả thông báo';
+
+  @override
+  String get searchAssignedReportsPlaceholder =>
+      'Tìm theo tiêu đề, mô tả hoặc địa chỉ...';
+
+  @override
+  String get noMatchingAssignedReports => 'Không tìm thấy việc phù hợp';
+
+  @override
+  String get sortLabel => 'Sắp xếp';
+
+  @override
+  String get sortLatest => 'Mới nhất';
+
+  @override
+  String get sortOldest => 'Cũ nhất';
+
+  @override
+  String get sortSeverity => 'Nghiêm trọng nhất';
+
+  @override
+  String get filterTimeframe => 'Thời gian';
+
+  @override
+  String get timeframeAll => 'Mọi thời gian';
+
+  @override
+  String get pickSingleDate => 'Một ngày cụ thể…';
+
+  @override
+  String get pickDateRange => 'Khoảng ngày…';
+
+  @override
+  String filterSelectedTooltip(Object label, Object value) {
+    return '$label: $value';
+  }
 }

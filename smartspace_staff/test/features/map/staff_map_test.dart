@@ -3,7 +3,9 @@ import 'dart:async';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
+import 'package:smartspace_staff/features/reports/models/report_date_range.dart';
 import 'package:smartspace_staff/features/reports/models/report_model.dart';
+import 'package:smartspace_staff/features/reports/models/staff_report_sort.dart';
 import 'package:smartspace_staff/features/reports/providers/staff_map_reports_provider.dart';
 import 'package:smartspace_staff/features/reports/repositories/report_repo.dart';
 import 'package:smartspace_staff/features/reports/services/report_service.dart';
@@ -19,6 +21,10 @@ class _FakeReportRepo implements ReportRepo {
   @override
   Future<ApiResponse<List<ReportModel>>> getStaffAssignedReports({
     String status = 'all',
+    ReportSeverity? severity,
+    String? search,
+    ReportDateRange? dateRange,
+    StaffReportSort sort = StaffReportSort.latest,
     int page = 0,
     int limit = 10,
   }) {

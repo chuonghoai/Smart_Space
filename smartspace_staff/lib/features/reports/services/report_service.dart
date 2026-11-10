@@ -1,6 +1,8 @@
 import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/core/constants/use_mock.dart';
+import 'package:smartspace_staff/features/reports/models/report_date_range.dart';
 import 'package:smartspace_staff/features/reports/models/report_model.dart';
+import 'package:smartspace_staff/features/reports/models/staff_report_sort.dart';
 import 'package:smartspace_staff/features/reports/models/report_statistics_model.dart';
 import 'package:smartspace_staff/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_staff/features/reports/repositories/report_repo.dart';
@@ -12,8 +14,24 @@ class ReportService {
 
   const ReportService({required this.reportRepo});
 
-  Future<ApiResponse<List<ReportModel>>> getStaffAssignedReports({String status = 'all', int page = 0, int limit = 10}) async {
-    return await reportRepo.getStaffAssignedReports(status: status, page: page, limit: limit);
+  Future<ApiResponse<List<ReportModel>>> getStaffAssignedReports({
+    String status = 'all',
+    ReportSeverity? severity,
+    String? search,
+    ReportDateRange? dateRange,
+    StaffReportSort sort = StaffReportSort.latest,
+    int page = 0,
+    int limit = 10,
+  }) async {
+    return await reportRepo.getStaffAssignedReports(
+      status: status,
+      severity: severity,
+      search: search,
+      dateRange: dateRange,
+      sort: sort,
+      page: page,
+      limit: limit,
+    );
   }
 
   Future<ApiResponse<ReportStatisticsModel>> getStaffStatistics() async {

@@ -1502,4 +1502,40 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get viewAllNotifications => 'View all notifications';
+
+  @override
+  String get searchAssignedReportsPlaceholder =>
+      'Search by title, description or address...';
+
+  @override
+  String get noMatchingAssignedReports => 'No matching tasks';
+
+  @override
+  String get sortLabel => 'Sort';
+
+  @override
+  String get sortLatest => 'Newest';
+
+  @override
+  String get sortOldest => 'Oldest';
+
+  @override
+  String get sortSeverity => 'Most severe';
+
+  @override
+  String get filterTimeframe => 'Timeframe';
+
+  @override
+  String get timeframeAll => 'All time';
+
+  @override
+  String get pickSingleDate => 'A specific day…';
+
+  @override
+  String get pickDateRange => 'A date range…';
+
+  @override
+  String filterSelectedTooltip(Object label, Object value) {
+    return '$label: $value';
+  }
 }

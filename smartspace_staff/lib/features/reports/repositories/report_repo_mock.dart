@@ -1,12 +1,22 @@
 import 'package:mobile_shared/core/api/api_response.dart';
+import 'package:smartspace_staff/features/reports/models/report_date_range.dart';
 import 'package:smartspace_staff/features/reports/models/report_model.dart';
+import 'package:smartspace_staff/features/reports/models/staff_report_sort.dart';
 import 'package:smartspace_staff/features/reports/models/report_statistics_model.dart';
 import 'package:smartspace_staff/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_staff/features/reports/repositories/report_repo.dart';
 
 class ReportRepoMock implements ReportRepo {
   @override
-  Future<ApiResponse<List<ReportModel>>> getStaffAssignedReports({String status = 'all', int page = 0, int limit = 10}) async {
+  Future<ApiResponse<List<ReportModel>>> getStaffAssignedReports({
+    String status = 'all',
+    ReportSeverity? severity,
+    String? search,
+    ReportDateRange? dateRange,
+    StaffReportSort sort = StaffReportSort.latest,
+    int page = 0,
+    int limit = 10,
+  }) async {
     await Future.delayed(const Duration(seconds: 1));
     return ApiResponse(
       success: true,
