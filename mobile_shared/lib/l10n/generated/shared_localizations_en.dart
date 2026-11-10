@@ -85,4 +85,13 @@ class SharedLocalizationsEn extends SharedLocalizations {
 
   @override
   String get playbackPreview => 'Audio playback preview';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get noLinkedReportsAvailable => 'No linked reports available';
+
+  @override
+  String get errorLoadingReports => 'Failed to load reports';
 }

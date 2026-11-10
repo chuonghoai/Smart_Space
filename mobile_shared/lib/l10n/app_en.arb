@@ -33,5 +33,8 @@
   "mediaOptions": "Media options",
   "seekBack10s": "Back 10 seconds",
   "seekForward10s": "Forward 10 seconds",
-  "playbackPreview": "Audio playback preview"
+  "playbackPreview": "Audio playback preview",
+  "retry": "Retry",
+  "noLinkedReportsAvailable": "No linked reports available",
+  "errorLoadingReports": "Failed to load reports"
 }

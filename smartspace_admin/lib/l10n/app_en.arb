@@ -916,5 +916,9 @@
   "slideLeftToCancel": "Slide left to cancel",
   "releaseToCancel": "Release to cancel",
   "selectReportToAttach": "Select report to attach",
-  "noPositionsAvailable": "No positions available"
+  "noPositionsAvailable": "No positions available",
+  "voiceMessageSnippet": "Voice message",
+  "imageSnippet": "Photo",
+  "videoSnippet": "Video",
+  "attachedReportSnippet": "Attached report"
 }

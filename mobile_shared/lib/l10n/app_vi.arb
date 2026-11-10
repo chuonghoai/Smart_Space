@@ -33,5 +33,8 @@
   "mediaOptions": "Tùy chọn phương tiện",
   "seekBack10s": "Lùi 10 giây",
   "seekForward10s": "Tua tới 10 giây",
-  "playbackPreview": "Nghe lại âm thanh"
+  "playbackPreview": "Nghe lại âm thanh",
+  "retry": "Thử lại",
+  "noLinkedReportsAvailable": "Không có phản ánh liên kết khả dụng",
+  "errorLoadingReports": "Lỗi tải danh sách phản ánh"
 }

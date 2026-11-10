@@ -495,5 +495,9 @@
   "pressAndHoldToRecord": "Nhấn giữ để ghi âm",
   "slideLeftToCancel": "Trượt sang để hủy",
   "releaseToCancel": "Thả để hủy",
-  "selectReportToAttach": "Chọn phản ánh để gửi"
+  "selectReportToAttach": "Chọn phản ánh để gửi",
+  "voiceMessageSnippet": "Tin nhắn thoại",
+  "imageSnippet": "Hình ảnh",
+  "videoSnippet": "Video",
+  "attachedReportSnippet": "Phản ánh đính kèm"
 }

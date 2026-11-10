@@ -247,6 +247,24 @@ abstract class SharedLocalizations {
   /// In vi, this message translates to:
   /// **'Nghe lại âm thanh'**
   String get playbackPreview;
+
+  /// No description provided for @retry.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thử lại'**
+  String get retry;
+
+  /// No description provided for @noLinkedReportsAvailable.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có phản ánh liên kết khả dụng'**
+  String get noLinkedReportsAvailable;
+
+  /// No description provided for @errorLoadingReports.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lỗi tải danh sách phản ánh'**
+  String get errorLoadingReports;
 }
 
 class _SharedLocalizationsDelegate

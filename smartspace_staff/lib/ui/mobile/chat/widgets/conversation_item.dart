@@ -78,7 +78,7 @@ class _ConversationItemState extends State<ConversationItem>
     super.dispose();
   }
 
-  String _formatTime(AppLocalizations l10n, DateTime? time) {
+  String _formatTime(BuildContext context, AppLocalizations l10n, DateTime? time) {
     if (time == null) return '';
     final now = DateTime.now();
     final difference = now.difference(time);
@@ -88,17 +88,35 @@ class _ConversationItemState extends State<ConversationItem>
     } else if (difference.inDays < 2 && now.day - time.day == 1) {
       return l10n.yesterday;
     } else if (difference.inDays < 7) {
-      return DateFormat('E', 'vi').format(time);
+      final localeStr = Localizations.localeOf(context).languageCode;
+      return DateFormat('E', localeStr).format(time);
     } else {
       return DateFormat('dd/MM').format(time);
     }
   }
 
-  String _formatSnippet(String? content) {
+  String _formatSnippet(String? content, AppLocalizations l10n) {
     if (content == null || content.isEmpty) return '';
     final trimmed = content.trim();
-    if (trimmed == '[1]' || RegExp(r'^\d+$').hasMatch(trimmed) || RegExp(r'^\[\d+\]$').hasMatch(trimmed)) {
-      return '[tin nhắn thoại]';
+    final lower = trimmed.toLowerCase();
+    if (trimmed == '[1]' ||
+        RegExp(r'^\d+$').hasMatch(trimmed) ||
+        RegExp(r'^\[\d+\]$').hasMatch(trimmed) ||
+        lower == '[tin nhắn thoại]' ||
+        lower == '[voice message]') {
+      return '[${l10n.voiceMessageSnippet}]';
+    }
+    if (lower == '[hình ảnh]' || lower == '[photo]' || lower == '[image]') {
+      return '[${l10n.imageSnippet}]';
+    }
+    if (lower == '[video]') {
+      return '[${l10n.videoSnippet}]';
+    }
+    if (lower == '[phản ánh đính kèm]' ||
+        lower == '[phản ánh]' ||
+        lower == '[attached report]' ||
+        lower == '[report]') {
+      return '[${l10n.attachedReportSnippet}]';
     }
     return content;
   }
@@ -117,7 +135,7 @@ class _ConversationItemState extends State<ConversationItem>
             ? conv.partnerName!
             : (conv.name?.isNotEmpty == true ? conv.name! : l10n.conversations));
 
-    final timeStr = _formatTime(l10n, conv.lastMessageTime ?? conv.createdAt);
+    final timeStr = _formatTime(context, l10n, conv.lastMessageTime ?? conv.createdAt);
 
     return SlideTransition(
       position: _slideAnimation,
@@ -241,7 +259,7 @@ class _ConversationItemState extends State<ConversationItem>
                             Expanded(
                               child: Text(
                                 conv.lastMessageContent?.isNotEmpty == true
-                                    ? _formatSnippet(conv.lastMessageContent!)
+                                    ? _formatSnippet(conv.lastMessageContent!, l10n)
                                     : l10n.emptyMessages,
                                 style: theme.textTheme.bodySmall?.copyWith(
                                   color: hasUnread

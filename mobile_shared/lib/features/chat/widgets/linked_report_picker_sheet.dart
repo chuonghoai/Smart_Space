@@ -68,8 +68,11 @@ class _LinkedReportPickerSheetState extends State<LinkedReportPickerSheet> {
             _isLoading = false;
           });
         } else {
+          final fallbackError = mounted
+              ? (SharedLocalizations.of(context)?.errorLoadingReports ?? 'Lỗi tải danh sách phản ánh')
+              : 'Lỗi tải danh sách phản ánh';
           setState(() {
-            _errorMessage = res.message.isNotEmpty ? res.message : 'Lỗi tải danh sách phản ánh';
+            _errorMessage = res.message.isNotEmpty ? res.message : fallbackError;
             _isLoading = false;
           });
         }
@@ -146,6 +149,7 @@ class _LinkedReportPickerSheetState extends State<LinkedReportPickerSheet> {
   }
 
   Widget _buildContent(BuildContext context, ThemeData theme) {
+    final sharedL10n = SharedLocalizations.of(context);
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -163,7 +167,7 @@ class _LinkedReportPickerSheetState extends State<LinkedReportPickerSheet> {
               const SizedBox(height: 16),
               FilledButton.tonal(
                 onPressed: _loadReports,
-                child: const Text('Thử lại'),
+                child: Text(sharedL10n?.retry ?? 'Thử lại'),
               ),
             ],
           ),
@@ -181,7 +185,7 @@ class _LinkedReportPickerSheetState extends State<LinkedReportPickerSheet> {
               Icon(Icons.inbox_rounded, size: 48, color: theme.colorScheme.outlineVariant),
               const SizedBox(height: 12),
               Text(
-                'Không có phản ánh liên kết khả dụng',
+                sharedL10n?.noLinkedReportsAvailable ?? 'Không có phản ánh liên kết khả dụng',
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),

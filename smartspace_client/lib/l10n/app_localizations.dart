@@ -2467,6 +2467,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Select report to attach'**
   String get selectReportToAttach;
+
+  /// No description provided for @voiceMessageSnippet.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice message'**
+  String get voiceMessageSnippet;
+
+  /// No description provided for @imageSnippet.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get imageSnippet;
+
+  /// No description provided for @videoSnippet.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get videoSnippet;
+
+  /// No description provided for @attachedReportSnippet.
+  ///
+  /// In en, this message translates to:
+  /// **'Attached report'**
+  String get attachedReportSnippet;
 }
 
 class _AppLocalizationsDelegate

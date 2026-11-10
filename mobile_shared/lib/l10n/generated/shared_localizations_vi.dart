@@ -85,4 +85,13 @@ class SharedLocalizationsVi extends SharedLocalizations {
 
   @override
   String get playbackPreview => 'Nghe lại âm thanh';
+
+  @override
+  String get retry => 'Thử lại';
+
+  @override
+  String get noLinkedReportsAvailable => 'Không có phản ánh liên kết khả dụng';
+
+  @override
+  String get errorLoadingReports => 'Lỗi tải danh sách phản ánh';
 }

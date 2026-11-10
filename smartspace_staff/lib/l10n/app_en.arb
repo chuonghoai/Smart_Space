@@ -624,5 +624,9 @@
   "pressAndHoldToRecord": "Press and hold to record",
   "slideLeftToCancel": "Slide left to cancel",
   "releaseToCancel": "Release to cancel",
-  "selectReportToAttach": "Select report to attach"
+  "selectReportToAttach": "Select report to attach",
+  "voiceMessageSnippet": "Voice message",
+  "imageSnippet": "Photo",
+  "videoSnippet": "Video",
+  "attachedReportSnippet": "Attached report"
 }

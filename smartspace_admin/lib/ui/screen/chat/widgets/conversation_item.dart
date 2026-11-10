@@ -29,17 +29,35 @@ class AdminConversationItem extends StatelessWidget {
     } else if (diff.inDays == 1 || (diff.inDays == 0 && now.day != time.day)) {
       return l10n.yesterday;
     } else if (diff.inDays < 7) {
-      return DateFormat('EEE', 'vi').format(time);
+      final localeStr = Localizations.localeOf(context).languageCode;
+      return DateFormat('EEE', localeStr).format(time);
     } else {
       return DateFormat('dd/MM').format(time);
     }
   }
 
-  String _formatSnippet(String? content) {
+  String _formatSnippet(String? content, AppLocalizations l10n) {
     if (content == null || content.isEmpty) return '';
     final trimmed = content.trim();
-    if (trimmed == '[1]' || RegExp(r'^\d+$').hasMatch(trimmed) || RegExp(r'^\[\d+\]$').hasMatch(trimmed)) {
-      return '[tin nhắn thoại]';
+    final lower = trimmed.toLowerCase();
+    if (trimmed == '[1]' ||
+        RegExp(r'^\d+$').hasMatch(trimmed) ||
+        RegExp(r'^\[\d+\]$').hasMatch(trimmed) ||
+        lower == '[tin nhắn thoại]' ||
+        lower == '[voice message]') {
+      return '[${l10n.voiceMessageSnippet}]';
+    }
+    if (lower == '[hình ảnh]' || lower == '[photo]' || lower == '[image]') {
+      return '[${l10n.imageSnippet}]';
+    }
+    if (lower == '[video]') {
+      return '[${l10n.videoSnippet}]';
+    }
+    if (lower == '[phản ánh đính kèm]' ||
+        lower == '[phản ánh]' ||
+        lower == '[attached report]' ||
+        lower == '[report]') {
+      return '[${l10n.attachedReportSnippet}]';
     }
     return content;
   }
@@ -184,8 +202,8 @@ class AdminConversationItem extends StatelessWidget {
                       ],
                       Expanded(
                         child: Text(
-                          _formatSnippet(conversation.lastMessageContent).isNotEmpty
-                              ? _formatSnippet(conversation.lastMessageContent)
+                          _formatSnippet(conversation.lastMessageContent, l10n).isNotEmpty
+                              ? _formatSnippet(conversation.lastMessageContent, l10n)
                               : l10n.noConversationsSub,
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: hasUnread

@@ -916,5 +916,9 @@
   "slideLeftToCancel": "Trượt sang để hủy",
   "releaseToCancel": "Thả để hủy",
   "selectReportToAttach": "Chọn phản ánh để gửi",
-  "noPositionsAvailable": "Không có chức vụ nào"
+  "noPositionsAvailable": "Không có chức vụ nào",
+  "voiceMessageSnippet": "Tin nhắn thoại",
+  "imageSnippet": "Hình ảnh",
+  "videoSnippet": "Video",
+  "attachedReportSnippet": "Phản ánh đính kèm"
 }

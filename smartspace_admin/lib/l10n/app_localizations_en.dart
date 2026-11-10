@@ -2149,4 +2149,16 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noPositionsAvailable => 'No positions available';
+
+  @override
+  String get voiceMessageSnippet => 'Voice message';
+
+  @override
+  String get imageSnippet => 'Photo';
+
+  @override
+  String get videoSnippet => 'Video';
+
+  @override
+  String get attachedReportSnippet => 'Attached report';
 }

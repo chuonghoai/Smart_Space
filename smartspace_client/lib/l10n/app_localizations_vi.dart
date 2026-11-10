@@ -1264,4 +1264,16 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get selectReportToAttach => 'Chọn phản ánh để gửi';
+
+  @override
+  String get voiceMessageSnippet => 'Tin nhắn thoại';
+
+  @override
+  String get imageSnippet => 'Hình ảnh';
+
+  @override
+  String get videoSnippet => 'Video';
+
+  @override
+  String get attachedReportSnippet => 'Phản ánh đính kèm';
 }
