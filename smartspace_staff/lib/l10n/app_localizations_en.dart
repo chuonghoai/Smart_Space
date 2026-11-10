@@ -1488,4 +1488,18 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get freeCallComingSoon =>
       'Free in-app voice call feature is under development';
+
+  @override
+  String get notificationFilterUnread => 'Unread';
+
+  @override
+  String notificationFilterUnreadCount(String count) {
+    return 'Unread ($count)';
+  }
+
+  @override
+  String get allNotificationsRead => 'You\'re all caught up';
+
+  @override
+  String get viewAllNotifications => 'View all notifications';
 }

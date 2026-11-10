@@ -614,5 +614,16 @@
   "featureUnderDevelopment": "Feature under development",
   "comingSoon": "Coming soon",
   "phoneNotAvailable": "Phone number is not available",
-  "freeCallComingSoon": "Free in-app voice call feature is under development"
+  "freeCallComingSoon": "Free in-app voice call feature is under development",
+  "notificationFilterUnread": "Unread",
+  "notificationFilterUnreadCount": "Unread ({count})",
+  "@notificationFilterUnreadCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "allNotificationsRead": "You're all caught up",
+  "viewAllNotifications": "View all notifications"
 }

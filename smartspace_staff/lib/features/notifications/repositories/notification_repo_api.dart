@@ -14,9 +14,14 @@ class NotificationRepoApi implements NotificationRepo {
   }
 
   @override
-  Future<ApiResponse<List<NotificationModel>>> getMyNotifications({int page = 0, int size = 20}) async {
+  Future<ApiResponse<List<NotificationModel>>> getMyNotifications({int page = 0, int size = 20, bool unreadOnly = false}) async {
     return await apiClient.get<List<NotificationModel>>(
-      '/notifications/my?page=$page&size=$size',
+      '/notifications/my',
+      queryParameters: {
+        'page': page,
+        'size': size,
+        if (unreadOnly) 'unread': true,
+      },
       decoder: (json) {
         if (json['content'] != null && json['content'] is List) {
           return (json['content'] as List).map((e) => NotificationModel.fromJson(e)).toList();

@@ -15,8 +15,8 @@ class NotificationService {
     return await notificationRepo.getUnreadCount();
   }
 
-  Future<ApiResponse<List<NotificationModel>>> getMyNotifications({int page = 0, int size = 20}) async {
-    return await notificationRepo.getMyNotifications(page: page, size: size);
+  Future<ApiResponse<List<NotificationModel>>> getMyNotifications({int page = 0, int size = 20, bool unreadOnly = false}) async {
+    return await notificationRepo.getMyNotifications(page: page, size: size, unreadOnly: unreadOnly);
   }
 
   Future<ApiResponse<void>> markAllAsRead() async {

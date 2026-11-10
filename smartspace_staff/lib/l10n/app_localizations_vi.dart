@@ -1472,4 +1472,18 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get freeCallComingSoon =>
       'Tính năng gọi miễn phí qua internet đang được phát triển';
+
+  @override
+  String get notificationFilterUnread => 'Chưa đọc';
+
+  @override
+  String notificationFilterUnreadCount(String count) {
+    return 'Chưa đọc ($count)';
+  }
+
+  @override
+  String get allNotificationsRead => 'Bạn đã đọc hết thông báo';
+
+  @override
+  String get viewAllNotifications => 'Xem tất cả thông báo';
 }

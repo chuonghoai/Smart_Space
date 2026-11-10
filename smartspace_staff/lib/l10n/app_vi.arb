@@ -614,5 +614,16 @@
   "featureUnderDevelopment": "Tính năng đang được phát triển",
   "comingSoon": "Sắp ra mắt",
   "phoneNotAvailable": "Số điện thoại không khả dụng",
-  "freeCallComingSoon": "Tính năng gọi miễn phí qua internet đang được phát triển"
+  "freeCallComingSoon": "Tính năng gọi miễn phí qua internet đang được phát triển",
+  "notificationFilterUnread": "Chưa đọc",
+  "notificationFilterUnreadCount": "Chưa đọc ({count})",
+  "@notificationFilterUnreadCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "allNotificationsRead": "Bạn đã đọc hết thông báo",
+  "viewAllNotifications": "Xem tất cả thông báo"
 }

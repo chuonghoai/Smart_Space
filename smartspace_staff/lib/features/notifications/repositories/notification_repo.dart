@@ -4,7 +4,7 @@ import 'package:smartspace_staff/features/notifications/models/notification_mode
 
 abstract class NotificationRepo {
   Future<ApiResponse<NotificationCountModel>> getUnreadCount();
-  Future<ApiResponse<List<NotificationModel>>> getMyNotifications({int page = 0, int size = 20});
+  Future<ApiResponse<List<NotificationModel>>> getMyNotifications({int page = 0, int size = 20, bool unreadOnly = false});
   Future<ApiResponse<void>> markAllAsRead();
   Future<ApiResponse<void>> markAsRead(String id);
 }

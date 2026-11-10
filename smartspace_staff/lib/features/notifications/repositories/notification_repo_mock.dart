@@ -16,20 +16,21 @@ class NotificationRepoMock implements NotificationRepo {
   }
 
   @override
-  Future<ApiResponse<List<NotificationModel>>> getMyNotifications({int page = 0, int size = 20}) async {
+  Future<ApiResponse<List<NotificationModel>>> getMyNotifications({int page = 0, int size = 20, bool unreadOnly = false}) async {
     await Future.delayed(const Duration(seconds: 1));
+    final items = [
+      NotificationModel(
+        id: '1',
+        title: 'Test Notification',
+        message: 'This is a mock notification',
+        isRead: false,
+        createdAt: DateTime.now(),
+      ),
+    ];
     return ApiResponse(
       success: true,
       message: 'Success',
-      data: [
-        NotificationModel(
-          id: '1',
-          title: 'Test Notification',
-          message: 'This is a mock notification',
-          isRead: false,
-          createdAt: DateTime.now(),
-        ),
-      ],
+      data: (unreadOnly ? items.where((n) => !n.isRead) : items).skip(page * size).take(size).toList(),
     );
   }
 
