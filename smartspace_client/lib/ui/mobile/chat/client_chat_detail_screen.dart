@@ -1,10 +1,18 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:mobile_shared/features/chat/models/conversation_model.dart';
 import 'package:mobile_shared/features/chat/providers/chat_detail_provider.dart';
-import 'package:mobile_shared/features/chat/widgets/chat_message_bubble.dart';
+import 'package:mobile_shared/features/chat/services/chat_ws_service.dart';
+import 'package:mobile_shared/features/chat/widgets/chat_audio_recorder_bar.dart';
 import 'package:mobile_shared/features/chat/widgets/chat_call_bottom_sheet.dart';
+import 'package:mobile_shared/features/chat/widgets/chat_message_bubble.dart';
+import 'package:mobile_shared/features/chat/widgets/linked_report_picker_sheet.dart';
+import 'package:mobile_shared/features/chat/widgets/typing_indicator_widget.dart';
+import 'package:smartspace_client/features/chat/providers/client_conversations_provider.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/routes/router_path.dart';
 import 'package:smartspace_client/ui/mobile/chat/widgets/client_chat_role_badge.dart';
@@ -30,23 +38,158 @@ class _ClientChatDetailScreenState
   late final PageController _pageController;
   int _selectedTabIndex = 0;
   bool _tabInitialized = false;
+  int? _identifiedUnreadCount;
+  int? _anonymousUnreadCount;
+  bool _initialMarkAsReadDone = false;
 
   @override
   void initState() {
     super.initState();
     _pageController = PageController();
+    chatWsService.addConversationListener(_onWsConversationUpdate);
   }
 
   @override
   void dispose() {
+    chatWsService.removeConversationListener(_onWsConversationUpdate);
     _pageController.dispose();
     super.dispose();
   }
 
+  void _onWsConversationUpdate(ConversationModel updatedConv) {
+    if (!mounted) return;
+    final baseState = ref.read(chatDetailProvider(widget.conversationId));
+    final conv = baseState.conversation;
+    final identId = conv?.identifiedConversationId ?? updatedConv.identifiedConversationId;
+    final anonId = conv?.anonymousConversationId ?? updatedConv.anonymousConversationId;
+    final partnerId = conv?.partnerId ?? widget.initialPartner?.userId;
+
+    final matches = updatedConv.id == widget.conversationId ||
+        (identId != null && (updatedConv.id == identId || identId == widget.conversationId)) ||
+        (anonId != null && (updatedConv.id == anonId || anonId == widget.conversationId)) ||
+        (partnerId != null && updatedConv.partnerId == partnerId);
+
+    if (!matches) return;
+
+    setState(() {
+      if (_selectedTabIndex == 0) {
+        _identifiedUnreadCount = 0;
+        _anonymousUnreadCount = updatedConv.anonymousUnreadCount;
+        if (updatedConv.identifiedUnreadCount > 0 && identId != null) {
+          ref.read(clientConversationsProvider.notifier).markContextAsReadLocally(identId, isAnonymous: false);
+          ref.read(chatDetailProvider(identId).notifier).markAsRead();
+        }
+      } else {
+        _anonymousUnreadCount = 0;
+        _identifiedUnreadCount = updatedConv.identifiedUnreadCount;
+        if (updatedConv.anonymousUnreadCount > 0 && anonId != null) {
+          ref.read(clientConversationsProvider.notifier).markContextAsReadLocally(anonId, isAnonymous: true);
+          ref.read(chatDetailProvider(anonId).notifier).markAsRead();
+        }
+      }
+    });
+  }
+
+  void _showContextExplanationSheet({
+    required BuildContext context,
+    required bool isAnonymous,
+  }) {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: theme.colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(24, 16, 24, 24),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 40,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 20),
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    color: isAnonymous
+                        ? theme.colorScheme.secondaryContainer.withValues(alpha: 0.5)
+                        : theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Icon(
+                    isAnonymous ? Icons.shield_outlined : Icons.person_outline_rounded,
+                    size: 30,
+                    color: isAnonymous ? theme.colorScheme.secondary : theme.colorScheme.primary,
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  isAnonymous ? l10n.contextAnonymous : l10n.contextIdentified,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  padding: const EdgeInsets.all(14),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Text(
+                    isAnonymous
+                        ? l10n.contextAnonymousExplanation
+                        : l10n.contextIdentifiedExplanation,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      height: 1.4,
+                    ),
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                const SizedBox(height: 20),
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton(
+                    onPressed: () => Navigator.pop(ctx),
+                    child: Text(l10n.contextExplanationGotIt),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
   void _switchTab(int index, String? targetConvId) {
-    if (_selectedTabIndex == index) return;
+    if (_selectedTabIndex == index) {
+      _showContextExplanationSheet(
+        context: context,
+        isAnonymous: index == 1,
+      );
+      return;
+    }
     setState(() {
       _selectedTabIndex = index;
+      if (index == 0) {
+        _identifiedUnreadCount = 0;
+      } else {
+        _anonymousUnreadCount = 0;
+      }
     });
     _pageController.animateToPage(
       index,
@@ -54,6 +197,10 @@ class _ClientChatDetailScreenState
       curve: Curves.easeInOut,
     );
     if (targetConvId != null) {
+      ref.read(clientConversationsProvider.notifier).markContextAsReadLocally(
+            targetConvId,
+            isAnonymous: index == 1,
+          );
       ref.read(chatDetailProvider(targetConvId).notifier).markAsRead();
     }
   }
@@ -74,18 +221,39 @@ class _ClientChatDetailScreenState
     final identConvId = conv?.identifiedConversationId;
     final anonConvId = conv?.anonymousConversationId;
 
-    if (hasBothContexts && !_tabInitialized) {
-      _tabInitialized = true;
-      if (widget.conversationId == anonConvId ||
-          (widget.conversationId != identConvId &&
-              conv.lastMessageContext == 'ANONYMOUS')) {
-        _selectedTabIndex = 1;
-        WidgetsBinding.instance.addPostFrameCallback((_) {
-          if (_pageController.hasClients) {
-            _pageController.jumpToPage(1);
-          }
-        });
+    if (conv != null && !_initialMarkAsReadDone) {
+      _initialMarkAsReadDone = true;
+      final initialIdentUnread = conv.identifiedUnreadCount;
+      final initialAnonUnread = conv.anonymousUnreadCount;
+
+      if (hasBothContexts && !_tabInitialized) {
+        _tabInitialized = true;
+        if (widget.conversationId == anonConvId ||
+            (widget.conversationId != identConvId &&
+                conv.lastMessageContext == 'ANONYMOUS')) {
+          _selectedTabIndex = 1;
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (_pageController.hasClients) {
+              _pageController.jumpToPage(1);
+            }
+          });
+        }
       }
+
+      final activeTargetId = _selectedTabIndex == 1
+          ? (anonConvId ?? widget.conversationId)
+          : (identConvId ?? widget.conversationId);
+
+      _identifiedUnreadCount = _selectedTabIndex == 0 ? 0 : initialIdentUnread;
+      _anonymousUnreadCount = _selectedTabIndex == 1 ? 0 : initialAnonUnread;
+
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        ref.read(clientConversationsProvider.notifier).markContextAsReadLocally(
+              activeTargetId,
+              isAnonymous: _selectedTabIndex == 1,
+            );
+        ref.read(chatDetailProvider(activeTargetId).notifier).markAsRead();
+      });
     }
 
     final initialPartner = widget.initialPartner;
@@ -106,8 +274,8 @@ class _ClientChatDetailScreenState
         ? (_selectedTabIndex == 1 ? anonConvId! : identConvId!)
         : widget.conversationId;
 
-    final identUnread = conv?.identifiedUnreadCount ?? 0;
-    final anonUnread = conv?.anonymousUnreadCount ?? 0;
+    final identUnread = _identifiedUnreadCount ?? conv?.identifiedUnreadCount ?? 0;
+    final anonUnread = _anonymousUnreadCount ?? conv?.anonymousUnreadCount ?? 0;
 
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
@@ -200,9 +368,20 @@ class _ClientChatDetailScreenState
                       onPageChanged: (index) {
                         setState(() {
                           _selectedTabIndex = index;
+                          if (index == 0) {
+                            _identifiedUnreadCount = 0;
+                          } else {
+                            _anonymousUnreadCount = 0;
+                          }
                         });
                         final targetId =
                             index == 1 ? anonConvId : identConvId;
+                        ref
+                            .read(clientConversationsProvider.notifier)
+                            .markContextAsReadLocally(
+                              targetId,
+                              isAnonymous: index == 1,
+                            );
                         ref
                             .read(chatDetailProvider(targetId).notifier)
                             .markAsRead();
@@ -212,11 +391,13 @@ class _ClientChatDetailScreenState
                           key: ValueKey('ident_$identConvId'),
                           conversationId: identConvId,
                           isAnonymous: false,
+                          isActive: _selectedTabIndex == 0,
                         ),
                         _ContextChatPane(
                           key: ValueKey('anon_$anonConvId'),
                           conversationId: anonConvId,
                           isAnonymous: true,
+                          isActive: _selectedTabIndex == 1,
                         ),
                       ],
                     ),
@@ -386,6 +567,14 @@ class _ClientChatDetailScreenState
                   color: isSelected ? activeFg : inactiveFg,
                 ),
               ),
+              if (isSelected) ...[
+                const SizedBox(width: 2),
+                Icon(
+                  Icons.keyboard_arrow_down_rounded,
+                  size: 16,
+                  color: activeFg,
+                ),
+              ],
               if (unreadCount > 0) ...[
                 const SizedBox(width: 6),
                 Container(
@@ -416,11 +605,13 @@ class _ClientChatDetailScreenState
 class _ContextChatPane extends ConsumerStatefulWidget {
   final String conversationId;
   final bool isAnonymous;
+  final bool isActive;
 
   const _ContextChatPane({
     super.key,
     required this.conversationId,
     required this.isAnonymous,
+    this.isActive = true,
   });
 
   @override
@@ -428,10 +619,12 @@ class _ContextChatPane extends ConsumerStatefulWidget {
 }
 
 class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
-    with AutomaticKeepAliveClientMixin {
+    with AutomaticKeepAliveClientMixin, WidgetsBindingObserver {
   final TextEditingController _textController = TextEditingController();
   final ScrollController _scrollController = ScrollController();
   bool _canSend = false;
+  bool _isAudioMode = false;
+  Timer? _typingTimer;
 
   @override
   bool get wantKeepAlive => true;
@@ -439,12 +632,48 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
     _textController.addListener(_onTextChanged);
     _scrollController.addListener(_onScroll);
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (mounted) {
+        ref
+            .read(chatDetailProvider(widget.conversationId).notifier)
+            .setActive(widget.isActive);
+      }
+    });
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (!mounted) return;
+    if (state == AppLifecycleState.resumed) {
+      if (widget.isActive) {
+        ref.read(chatDetailProvider(widget.conversationId).notifier).onAppResumed();
+      }
+    } else if (state == AppLifecycleState.paused ||
+        state == AppLifecycleState.inactive ||
+        state == AppLifecycleState.hidden) {
+      if (widget.isActive) {
+        ref.read(chatDetailProvider(widget.conversationId).notifier).onAppPaused();
+      }
+    }
+  }
+
+  @override
+  void didUpdateWidget(covariant _ContextChatPane oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.isActive != widget.isActive) {
+      ref
+          .read(chatDetailProvider(widget.conversationId).notifier)
+          .setActive(widget.isActive);
+    }
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    _typingTimer?.cancel();
     _textController.removeListener(_onTextChanged);
     _scrollController.removeListener(_onScroll);
     _textController.dispose();
@@ -458,6 +687,19 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
       setState(() {
         _canSend = hasText;
       });
+    }
+
+    if (hasText) {
+      ref.read(chatDetailProvider(widget.conversationId).notifier).sendTyping(true);
+      _typingTimer?.cancel();
+      _typingTimer = Timer(const Duration(seconds: 3), () {
+        if (mounted) {
+          ref.read(chatDetailProvider(widget.conversationId).notifier).sendTyping(false);
+        }
+      });
+    } else {
+      _typingTimer?.cancel();
+      ref.read(chatDetailProvider(widget.conversationId).notifier).sendTyping(false);
     }
   }
 
@@ -474,10 +716,139 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
     final text = _textController.text.trim();
     if (text.isEmpty) return;
 
+    _typingTimer?.cancel();
+    ref.read(chatDetailProvider(widget.conversationId).notifier).sendTyping(false);
     ref
         .read(chatDetailProvider(widget.conversationId).notifier)
         .sendMessage(text);
     _textController.clear();
+  }
+
+  Future<void> _pickMedia(ImageSource source, {required bool isVideo}) async {
+    try {
+      final picker = ImagePicker();
+      final XFile? file;
+      if (isVideo) {
+        file = await picker.pickVideo(source: source);
+      } else {
+        file = await picker.pickImage(source: source, imageQuality: 85);
+      }
+      if (file != null && mounted) {
+        final bytes = await file.readAsBytes();
+        ref.read(chatDetailProvider(widget.conversationId).notifier).sendMediaMessage(
+              bytes: bytes,
+              fileName: file.name,
+              isVideo: isVideo,
+              localPath: file.path,
+            );
+      }
+    } catch (e) {
+      debugPrint('[PickMedia] Error: $e');
+    }
+  }
+
+  void _showMoreOptionsSheet() {
+    final theme = Theme.of(context);
+    final l10n = AppLocalizations.of(context)!;
+    showModalBottomSheet<void>(
+      context: context,
+      backgroundColor: theme.colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (ctx) {
+        return SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Container(
+                  width: 36,
+                  height: 4,
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                ListTile(
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primaryContainer.withValues(alpha: 0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.image_outlined, color: theme.colorScheme.primary, size: 22),
+                  ),
+                  title: Text(l10n.chooseFromGallery),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _pickMedia(ImageSource.gallery, isVideo: false);
+                  },
+                ),
+                ListTile(
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.tertiaryContainer.withValues(alpha: 0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.videocam_outlined, color: theme.colorScheme.tertiary, size: 22),
+                  ),
+                  title: Text(l10n.chooseVideo),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _pickMedia(ImageSource.gallery, isVideo: true);
+                  },
+                ),
+                ListTile(
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.5),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.camera_alt_outlined, color: theme.colorScheme.secondary, size: 22),
+                  ),
+                  title: Text(l10n.takePhoto),
+                  onTap: () {
+                    Navigator.pop(ctx);
+                    _pickMedia(ImageSource.camera, isVideo: false);
+                  },
+                ),
+                ListTile(
+                  leading: Container(
+                    width: 40,
+                    height: 40,
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.errorContainer.withValues(alpha: 0.4),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Icon(Icons.assignment_outlined, color: theme.colorScheme.error, size: 22),
+                  ),
+                  title: Text(l10n.attachReport),
+                  onTap: () async {
+                    Navigator.pop(ctx);
+                    final selected = await LinkedReportPickerSheet.show(
+                      context: context,
+                      conversationId: widget.conversationId,
+                      isAnonymous: widget.isAnonymous,
+                    );
+                    if (selected != null && mounted) {
+                      ref.read(chatDetailProvider(widget.conversationId).notifier).sendReportMessage(selected);
+                    }
+                  },
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -609,9 +980,14 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
           key: ValueKey(msg.id ?? msg.tempId ?? index.toString()),
           message: msg,
           isMe: isMe,
+          conversationMessages: state.messages,
+          conversationId: widget.conversationId,
           onRetry: () => ref
               .read(chatDetailProvider(widget.conversationId).notifier)
               .retryMessage(msg),
+          onTapReport: (report) {
+            context.push(RouterPath.reportDetailWithId(report.id));
+          },
         );
       },
     );
@@ -657,57 +1033,112 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
       );
     }
 
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surface,
-        border: Border(
-          top: BorderSide(
-            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
-            width: 1,
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        if (state.isPartnerTyping)
+          Padding(
+            padding: const EdgeInsets.only(left: 16, bottom: 4),
+            child: TypingIndicatorWidget(
+              partnerName: state.conversation?.partnerName,
+              typingText: l10n.typingText,
+            ),
           ),
-        ),
-      ),
-      child: Row(
-        children: [
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 14),
-              decoration: BoxDecoration(
-                color: theme.colorScheme.surfaceContainerHighest
-                    .withValues(alpha: 0.5),
-                borderRadius: BorderRadius.circular(24),
-              ),
-              child: TextField(
-                controller: _textController,
-                textInputAction: TextInputAction.send,
-                onSubmitted: (_) => _sendMessage(),
-                maxLines: 4,
-                minLines: 1,
-                decoration: InputDecoration(
-                  hintText: l10n.chatInputHint,
-                  hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                    color: theme.colorScheme.onSurfaceVariant
-                        .withValues(alpha: 0.7),
+        AnimatedSwitcher(
+          duration: const Duration(milliseconds: 250),
+          child: _isAudioMode
+              ? ChatAudioRecorderBar(
+                  key: const ValueKey('audio_bar'),
+                  onRecordingComplete: ({
+                    required Uint8List bytes,
+                    required String fileName,
+                    required int durationSeconds,
+                    required String localPath,
+                  }) {
+                    ref.read(chatDetailProvider(widget.conversationId).notifier).sendAudioMessage(
+                          bytes: bytes,
+                          fileName: fileName,
+                          durationSeconds: durationSeconds,
+                          localPath: localPath,
+                        );
+                  },
+                  onClose: () {
+                    setState(() => _isAudioMode = false);
+                  },
+                )
+              : Container(
+                  key: const ValueKey('text_bar'),
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.surface,
+                    border: Border(
+                      top: BorderSide(
+                        color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+                        width: 1,
+                      ),
+                    ),
                   ),
-                  border: InputBorder.none,
-                  contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                  child: Row(
+                    children: [
+                      IconButton(
+                        onPressed: _showMoreOptionsSheet,
+                        icon: Icon(
+                          Icons.add_circle_outline_rounded,
+                          color: theme.colorScheme.primary,
+                          size: 26,
+                        ),
+                      ),
+                      Expanded(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 14),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surfaceContainerHighest
+                                .withValues(alpha: 0.5),
+                            borderRadius: BorderRadius.circular(24),
+                          ),
+                          child: TextField(
+                            controller: _textController,
+                            textInputAction: TextInputAction.send,
+                            onSubmitted: (_) => _sendMessage(),
+                            maxLines: 4,
+                            minLines: 1,
+                            decoration: InputDecoration(
+                              hintText: l10n.chatInputHint,
+                              hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant
+                                    .withValues(alpha: 0.7),
+                              ),
+                              border: InputBorder.none,
+                              contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                            ),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 4),
+                      if (_canSend)
+                        IconButton(
+                          onPressed: _sendMessage,
+                          icon: Icon(
+                            Icons.send_rounded,
+                            color: theme.colorScheme.primary,
+                          ),
+                        )
+                      else
+                        IconButton(
+                          icon: Icon(
+                            Icons.mic_none_rounded,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                          onPressed: () {
+                            setState(() => _isAudioMode = true);
+                          },
+                        ),
+                    ],
+                  ),
                 ),
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-          IconButton(
-            onPressed: _canSend ? _sendMessage : null,
-            icon: Icon(
-              Icons.send_rounded,
-              color: _canSend
-                  ? theme.colorScheme.primary
-                  : theme.colorScheme.onSurface.withValues(alpha: 0.3),
-            ),
-          ),
-        ],
-      ),
+        ),
+      ],
     );
   }
 }

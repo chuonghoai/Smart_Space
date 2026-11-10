@@ -8,11 +8,13 @@ import 'package:smartspace_client/ui/shared/image/app_network_image.dart';
 class ClientConversationItem extends StatelessWidget {
   final ConversationModel conversation;
   final VoidCallback onTap;
+  final VoidCallback? onLongPress;
 
   const ClientConversationItem({
     super.key,
     required this.conversation,
     required this.onTap,
+    this.onLongPress,
   });
 
   String _formatTime(DateTime? time) {
@@ -27,6 +29,47 @@ class ClientConversationItem extends StatelessWidget {
     } else {
       return DateFormat('dd/MM/yyyy').format(time);
     }
+  }
+
+  String _formatSnippet(String? content, String? messageType, AppLocalizations l10n) {
+    if (messageType != null && messageType.isNotEmpty) {
+      final type = messageType.toUpperCase();
+      if (type == 'AUDIO') {
+        return '[${l10n.voiceMessageSnippet}]';
+      }
+      if (type == 'IMAGE') {
+        return '[${l10n.imageSnippet}]';
+      }
+      if (type == 'VIDEO') {
+        return '[${l10n.videoSnippet}]';
+      }
+      if (type == 'REPORT') {
+        return '[${l10n.attachedReportSnippet}]';
+      }
+      if (type == 'TEXT') {
+        return content ?? '';
+      }
+    }
+
+    if (content == null || content.isEmpty) return '';
+    final trimmed = content.trim();
+    final lower = trimmed.toLowerCase();
+    if (lower == '[tin nhắn thoại]' || lower == '[voice message]') {
+      return '[${l10n.voiceMessageSnippet}]';
+    }
+    if (lower == '[hình ảnh]' || lower == '[photo]' || lower == '[image]') {
+      return '[${l10n.imageSnippet}]';
+    }
+    if (lower == '[video]') {
+      return '[${l10n.videoSnippet}]';
+    }
+    if (lower == '[phản ánh đính kèm]' ||
+        lower == '[phản ánh]' ||
+        lower == '[attached report]' ||
+        lower == '[report]') {
+      return '[${l10n.attachedReportSnippet}]';
+    }
+    return content;
   }
 
   @override
@@ -53,6 +96,7 @@ class ClientConversationItem extends StatelessWidget {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
+        onLongPress: onLongPress,
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
           decoration: BoxDecoration(
@@ -123,7 +167,7 @@ class ClientConversationItem extends StatelessWidget {
                           _buildContextBadge(theme, l10n, conv.lastMessageContext!),
                         Expanded(
                           child: Text(
-                            conv.lastMessageContent ?? '',
+                            _formatSnippet(conv.lastMessageContent, conv.lastMessageType, l10n),
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: hasUnread
                                   ? theme.colorScheme.onSurface

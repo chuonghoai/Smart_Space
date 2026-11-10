@@ -15,8 +15,10 @@ class ConversationModel {
   final String? reportStatus;
   final bool canSendMessage;
   final int unreadCount;
+  final int? totalUnreadCount;
   final String? lastMessageId;
   final String? lastMessageContent;
+  final String? lastMessageType;
   final DateTime? lastMessageTime;
   final DateTime createdAt;
   final String? identifiedConversationId;
@@ -26,6 +28,7 @@ class ConversationModel {
   final String? lastMessageContext;
   final int identifiedUnreadCount;
   final int anonymousUnreadCount;
+  final DateTime? partnerLastReadAt;
 
   const ConversationModel({
     required this.id,
@@ -44,8 +47,10 @@ class ConversationModel {
     this.reportStatus,
     this.canSendMessage = true,
     this.unreadCount = 0,
+    this.totalUnreadCount,
     this.lastMessageId,
     this.lastMessageContent,
+    this.lastMessageType,
     this.lastMessageTime,
     required this.createdAt,
     this.identifiedConversationId,
@@ -55,6 +60,7 @@ class ConversationModel {
     this.lastMessageContext,
     this.identifiedUnreadCount = 0,
     this.anonymousUnreadCount = 0,
+    this.partnerLastReadAt,
   });
 
   bool get isClient => partnerRole?.toLowerCase() == 'client';
@@ -79,8 +85,10 @@ class ConversationModel {
       reportStatus: json['reportStatus'] as String? ?? json['report_status'] as String?,
       canSendMessage: json['canSendMessage'] as bool? ?? json['can_send_message'] as bool? ?? true,
       unreadCount: (json['unreadCount'] as num?)?.toInt() ?? (json['unread_count'] as num?)?.toInt() ?? 0,
+      totalUnreadCount: (json['totalUnreadCount'] as num?)?.toInt() ?? (json['total_unread_count'] as num?)?.toInt(),
       lastMessageId: json['lastMessageId'] as String? ?? json['last_message_id'] as String?,
       lastMessageContent: json['lastMessageContent'] as String? ?? json['last_message_content'] as String?,
+      lastMessageType: json['lastMessageType'] as String? ?? json['last_message_type'] as String?,
       lastMessageTime: json['lastMessageTime'] != null || json['last_message_time'] != null
           ? DateTime.tryParse((json['lastMessageTime'] ?? json['last_message_time']).toString())
           : null,
@@ -94,6 +102,9 @@ class ConversationModel {
       lastMessageContext: json['lastMessageContext'] as String? ?? json['last_message_context'] as String?,
       identifiedUnreadCount: (json['identifiedUnreadCount'] as num?)?.toInt() ?? (json['identified_unread_count'] as num?)?.toInt() ?? 0,
       anonymousUnreadCount: (json['anonymousUnreadCount'] as num?)?.toInt() ?? (json['anonymous_unread_count'] as num?)?.toInt() ?? 0,
+      partnerLastReadAt: json['partnerLastReadAt'] != null || json['partner_last_read_at'] != null
+          ? DateTime.tryParse((json['partnerLastReadAt'] ?? json['partner_last_read_at']).toString())
+          : null,
     );
   }
 
@@ -115,8 +126,10 @@ class ConversationModel {
       'reportStatus': reportStatus,
       'canSendMessage': canSendMessage,
       'unreadCount': unreadCount,
+      'totalUnreadCount': totalUnreadCount,
       'lastMessageId': lastMessageId,
       'lastMessageContent': lastMessageContent,
+      'lastMessageType': lastMessageType,
       'lastMessageTime': lastMessageTime?.toIso8601String(),
       'createdAt': createdAt.toIso8601String(),
       'identifiedConversationId': identifiedConversationId,
@@ -126,6 +139,7 @@ class ConversationModel {
       'lastMessageContext': lastMessageContext,
       'identifiedUnreadCount': identifiedUnreadCount,
       'anonymousUnreadCount': anonymousUnreadCount,
+      if (partnerLastReadAt != null) 'partnerLastReadAt': partnerLastReadAt!.toIso8601String(),
     };
   }
 
@@ -146,8 +160,10 @@ class ConversationModel {
     String? reportStatus,
     bool? canSendMessage,
     int? unreadCount,
+    int? totalUnreadCount,
     String? lastMessageId,
     String? lastMessageContent,
+    String? lastMessageType,
     DateTime? lastMessageTime,
     DateTime? createdAt,
     String? identifiedConversationId,
@@ -157,6 +173,7 @@ class ConversationModel {
     String? lastMessageContext,
     int? identifiedUnreadCount,
     int? anonymousUnreadCount,
+    DateTime? partnerLastReadAt,
   }) {
     return ConversationModel(
       id: id ?? this.id,
@@ -175,8 +192,10 @@ class ConversationModel {
       reportStatus: reportStatus ?? this.reportStatus,
       canSendMessage: canSendMessage ?? this.canSendMessage,
       unreadCount: unreadCount ?? this.unreadCount,
+      totalUnreadCount: totalUnreadCount ?? this.totalUnreadCount,
       lastMessageId: lastMessageId ?? this.lastMessageId,
       lastMessageContent: lastMessageContent ?? this.lastMessageContent,
+      lastMessageType: lastMessageType ?? this.lastMessageType,
       lastMessageTime: lastMessageTime ?? this.lastMessageTime,
       createdAt: createdAt ?? this.createdAt,
       identifiedConversationId: identifiedConversationId ?? this.identifiedConversationId,
@@ -186,6 +205,7 @@ class ConversationModel {
       lastMessageContext: lastMessageContext ?? this.lastMessageContext,
       identifiedUnreadCount: identifiedUnreadCount ?? this.identifiedUnreadCount,
       anonymousUnreadCount: anonymousUnreadCount ?? this.anonymousUnreadCount,
+      partnerLastReadAt: partnerLastReadAt ?? this.partnerLastReadAt,
     );
   }
 }

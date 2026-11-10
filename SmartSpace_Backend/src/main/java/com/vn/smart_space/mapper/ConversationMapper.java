@@ -7,6 +7,7 @@ import com.vn.smart_space.consts.EReportStatus;
 import com.vn.smart_space.consts.ERole;
 import com.vn.smart_space.dto.response.conversation.ConversationDetailResponse;
 import com.vn.smart_space.dto.response.conversation.CreateConversationResponse;
+import com.vn.smart_space.dto.response.conversation.LinkedReportResponse;
 import com.vn.smart_space.dto.response.conversation.ParticipantResponse;
 import com.vn.smart_space.model.Conversation;
 import com.vn.smart_space.model.ConversationParticipant;
@@ -109,6 +110,13 @@ public final class ConversationMapper {
                 .map(p -> p.getUnreadCount() != null ? p.getUnreadCount() : 0)
                 .orElse(0);
 
+        // Get partner last read timestamp
+        java.time.LocalDateTime partnerLastReadAt = conversation.getParticipants().stream()
+                .filter(p -> p.getUser() != null && !p.getUser().getId().equals(currentUserId))
+                .findFirst()
+                .map(ConversationParticipant::getLastReadAt)
+                .orElse(null);
+
         return ConversationDetailResponse.builder()
                 .id(conversation.getId())
                 .conversationType(conversationType)
@@ -129,8 +137,10 @@ public final class ConversationMapper {
                 .reportStatus(reportStatus)
                 .canSendMessage(canSendMessage)
                 .unreadCount(unreadCount)
+                .partnerLastReadAt(partnerLastReadAt)
                 .lastMessageId(conversation.getLastMessageId())
                 .lastMessageContent(conversation.getLastMessageContent())
+                .lastMessageType(conversation.getLastMessageType())
                 .lastMessageTime(conversation.getLastMessageTime())
                 .createdAt(conversation.getCreatedAt())
                 .build();
@@ -195,6 +205,26 @@ public final class ConversationMapper {
         }
 
         return info;
+    }
+
+    public static LinkedReportResponse toLinkedReportResponse(Report r) {
+        if (r == null) {
+            return null;
+        }
+        boolean isRehandling = (r.getStatus() == EReportStatus.processing || r.getStatus() == EReportStatus.processed)
+                && Boolean.FALSE.equals(r.getIsReviewResolved());
+        return LinkedReportResponse.builder()
+                .id(r.getId())
+                .title(r.getTitle())
+                .description(r.getDescription())
+                .imageUrl(r.getImageUrl())
+                .status(r.getStatus() != null ? r.getStatus().name() : null)
+                .severity(r.getSeverity() != null ? r.getSeverity().name() : null)
+                .createdAt(r.getCreatedAt() != null ? r.getCreatedAt().toString() : null)
+                .address(r.getAddress())
+                .isReviewResolved(r.getIsReviewResolved())
+                .needsRehandling(isRehandling)
+                .build();
     }
 
     private static class PartnerInfo {

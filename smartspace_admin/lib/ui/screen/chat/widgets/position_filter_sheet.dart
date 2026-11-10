@@ -2,55 +2,59 @@ import 'package:flutter/material.dart';
 import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 
-class PositionFilterSheet extends StatelessWidget {
+class PositionFilterSheet extends StatefulWidget {
   final List<PositionModel> positions;
-  final Set<String> selectedIds;
-  final ValueChanged<String> onToggle;
-  final VoidCallback onClear;
-  final VoidCallback onApply;
+  final Set<String> initialSelected;
 
   const PositionFilterSheet({
     super.key,
     required this.positions,
-    required this.selectedIds,
-    required this.onToggle,
-    required this.onClear,
-    required this.onApply,
+    required this.initialSelected,
   });
 
-  static Future<void> show({
-    required BuildContext context,
+  static Future<Set<String>?> show(
+    BuildContext context, {
     required List<PositionModel> positions,
-    required Set<String> selectedIds,
-    required ValueChanged<String> onToggle,
-    required VoidCallback onClear,
-    required VoidCallback onApply,
+    required Set<String> initialSelected,
   }) {
-    return showModalBottomSheet(
+    return showModalBottomSheet<Set<String>>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (ctx) => StatefulBuilder(
-        builder: (context, setModalState) {
-          return PositionFilterSheet(
-            positions: positions,
-            selectedIds: selectedIds,
-            onToggle: (id) {
-              onToggle(id);
-              setModalState(() {});
-            },
-            onClear: () {
-              onClear();
-              setModalState(() {});
-            },
-            onApply: () {
-              Navigator.pop(ctx);
-              onApply();
-            },
-          );
-        },
+      builder: (ctx) => PositionFilterSheet(
+        positions: positions,
+        initialSelected: initialSelected,
       ),
     );
+  }
+
+  @override
+  State<PositionFilterSheet> createState() => _PositionFilterSheetState();
+}
+
+class _PositionFilterSheetState extends State<PositionFilterSheet> {
+  late Set<String> _tempSelected;
+
+  @override
+  void initState() {
+    super.initState();
+    _tempSelected = Set<String>.from(widget.initialSelected);
+  }
+
+  void _toggle(String id) {
+    setState(() {
+      if (_tempSelected.contains(id)) {
+        _tempSelected.remove(id);
+      } else {
+        _tempSelected.add(id);
+      }
+    });
+  }
+
+  void _clearAll() {
+    setState(() {
+      _tempSelected.clear();
+    });
   }
 
   @override
@@ -60,7 +64,7 @@ class PositionFilterSheet extends StatelessWidget {
 
     return Container(
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.7,
+        maxHeight: MediaQuery.of(context).size.height * 0.75,
       ),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
@@ -96,10 +100,10 @@ class PositionFilterSheet extends StatelessWidget {
                       ),
                     ),
                   ),
-                  if (selectedIds.isNotEmpty)
+                  if (_tempSelected.isNotEmpty)
                     TextButton(
-                      onPressed: onClear,
-                      child: Text(l10n.resetFilter),
+                      onPressed: _clearAll,
+                      child: Text(l10n.clearFilters),
                     ),
                 ],
               ),
@@ -107,44 +111,81 @@ class PositionFilterSheet extends StatelessWidget {
             const Divider(height: 1),
             // Position list
             Flexible(
-              child: ListView.builder(
-                shrinkWrap: true,
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
-                itemCount: positions.length,
-                itemBuilder: (context, index) {
-                  final pos = positions[index];
-                  final isSelected = selectedIds.contains(pos.id);
-
-                  return CheckboxListTile(
-                    value: isSelected,
-                    title: Text(
-                      pos.name,
-                      style: theme.textTheme.bodyMedium?.copyWith(
-                        fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+              child: widget.positions.isEmpty
+                  ? Padding(
+                      padding: const EdgeInsets.all(32.0),
+                      child: Center(
+                        child: Text(
+                          l10n.noPositionsAvailable,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
                       ),
-                    ),
-                    subtitle: pos.description != null && pos.description!.isNotEmpty
-                        ? Text(
-                            pos.description!,
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.colorScheme.onSurfaceVariant,
+                    )
+                  : ListView.builder(
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+                      itemCount: widget.positions.length,
+                      itemBuilder: (context, index) {
+                        final pos = widget.positions[index];
+                        final isSelected = _tempSelected.contains(pos.id);
+
+                        return CheckboxListTile(
+                          value: isSelected,
+                          title: Text(
+                            pos.name,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                             ),
-                          )
-                        : null,
-                    activeColor: theme.colorScheme.primary,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    onChanged: (_) => onToggle(pos.id),
-                  );
-                },
-              ),
+                          ),
+                          subtitle: pos.description != null && pos.description!.isNotEmpty
+                              ? Text(
+                                  pos.description!,
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                )
+                              : null,
+                          activeColor: theme.colorScheme.primary,
+                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          onChanged: (_) => _toggle(pos.id),
+                        );
+                      },
+                    ),
             ),
             const Divider(height: 1),
-            // Apply button
+            // Actions: Hủy & Áp dụng
             Padding(
               padding: const EdgeInsets.all(16),
-              child: FilledButton(
-                onPressed: onApply,
-                child: Text(l10n.applyFilter),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton(
+                      onPressed: () => Navigator.pop(context),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(l10n.cancel),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: FilledButton(
+                      onPressed: () => Navigator.pop(context, _tempSelected),
+                      style: FilledButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 12),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                      ),
+                      child: Text(l10n.applyFilter),
+                    ),
+                  ),
+                ],
               ),
             ),
           ],
@@ -153,4 +194,3 @@ class PositionFilterSheet extends StatelessWidget {
     );
   }
 }
-

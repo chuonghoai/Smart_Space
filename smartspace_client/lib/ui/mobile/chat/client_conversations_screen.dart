@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_shared/features/chat/data/chat_repository.dart';
+import 'package:mobile_shared/features/chat/services/chat_ws_service.dart';
+import 'package:mobile_shared/features/chat/widgets/conversation_options_sheet.dart';
 import 'package:smartspace_client/features/chat/providers/client_conversations_provider.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/routes/router_path.dart';
@@ -250,11 +252,50 @@ class _ClientConversationsScreenState extends ConsumerState<ClientConversationsS
           }
 
           final conv = state.conversations[index];
+          final displayName = conv.isAnonymous
+              ? l10n.anonymousPerson
+              : (conv.partnerName?.isNotEmpty == true
+                  ? conv.partnerName!
+                  : (conv.name?.isNotEmpty == true
+                      ? conv.name!
+                      : (conv.partnerRole?.toLowerCase() == 'admin'
+                          ? l10n.managementBoard
+                          : l10n.supportStaff)));
+
           return ClientConversationItem(
             conversation: conv,
             onTap: () {
-              ref.read(clientConversationsProvider.notifier).markAsReadLocally(conv.id);
+              final hasBoth = conv.hasIdentifiedContext && conv.hasAnonymousContext;
+              final isAnon = conv.isAnonymous == true ||
+                  (hasBoth && conv.lastMessageContext == 'ANONYMOUS');
+              final activeId = isAnon
+                  ? (conv.anonymousConversationId ?? conv.id)
+                  : (conv.identifiedConversationId ?? conv.id);
+              ref.read(clientConversationsProvider.notifier).markContextAsReadLocally(
+                    activeId,
+                    isAnonymous: isAnon,
+                  );
+              chatWsService.sendMarkAsRead(activeId);
               context.push(RouterPath.chatDetailWithId(conv.id));
+            },
+            onLongPress: () {
+              ConversationOptionsSheet.show(
+                context: context,
+                conversation: conv,
+                partnerDisplayName: displayName,
+                onMarkAsRead: () {
+                  chatWsService.sendMarkAsRead(conv.id);
+                  if (conv.identifiedConversationId != null &&
+                      conv.identifiedConversationId != conv.id) {
+                    chatWsService.sendMarkAsRead(conv.identifiedConversationId!);
+                  }
+                  if (conv.anonymousConversationId != null &&
+                      conv.anonymousConversationId != conv.id) {
+                    chatWsService.sendMarkAsRead(conv.anonymousConversationId!);
+                  }
+                  ref.read(clientConversationsProvider.notifier).markAsReadLocally(conv.id);
+                },
+              );
             },
           );
         },

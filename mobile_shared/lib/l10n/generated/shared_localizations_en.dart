@@ -18,4 +18,80 @@ class SharedLocalizationsEn extends SharedLocalizations {
 
   @override
   String get sendingMessage => 'Sending message...';
+
+  @override
+  String get markAsRead => 'Mark as read';
+
+  @override
+  String get selectReportToAttach => 'Select report to attach';
+
+  @override
+  String get typingText => 'is typing...';
+
+  @override
+  String get pressAndHoldToRecord => 'Hold to record';
+
+  @override
+  String get slideLeftToCancel => 'Slide to cancel';
+
+  @override
+  String get releaseToCancel => 'Release to cancel';
+
+  @override
+  String get micPermissionRequired =>
+      'Please grant microphone permission to record audio';
+
+  @override
+  String get attachedReport => 'Attached Report';
+
+  @override
+  String get tapToViewReport => 'Tap to view details';
+
+  @override
+  String get cannotPlayVideo => 'Cannot play video';
+
+  @override
+  String get downloadMedia => 'Download';
+
+  @override
+  String get downloadingMedia => 'Downloading...';
+
+  @override
+  String get downloadSuccess => 'Saved to device successfully';
+
+  @override
+  String get downloadFailed => 'Failed to download';
+
+  @override
+  String get holdToRecordPrompt => 'Press and hold to start recording';
+
+  @override
+  String get recordingAudio => 'Recording...';
+
+  @override
+  String get discardAudio => 'Discard';
+
+  @override
+  String get sendAudio => 'Send';
+
+  @override
+  String get mediaOptions => 'Media options';
+
+  @override
+  String get seekBack10s => 'Back 10 seconds';
+
+  @override
+  String get seekForward10s => 'Forward 10 seconds';
+
+  @override
+  String get playbackPreview => 'Audio playback preview';
+
+  @override
+  String get retry => 'Retry';
+
+  @override
+  String get noLinkedReportsAvailable => 'No linked reports available';
+
+  @override
+  String get errorLoadingReports => 'Failed to load reports';
 }

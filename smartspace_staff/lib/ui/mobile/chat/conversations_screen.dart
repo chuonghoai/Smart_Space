@@ -2,8 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:smartspace_staff/features/chat/data/chat_repository.dart';
-import 'package:smartspace_staff/features/chat/models/conversation_model.dart';
+import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_staff/features/chat/providers/conversations_provider.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
@@ -519,6 +518,22 @@ class _ConversationsScreenState extends ConsumerState<ConversationsScreen>
                       if (mounted) {
                         _enterListPresence();
                       }
+                    },
+                    onLongPress: () {
+                      final displayName = conv.isAnonymous
+                          ? l10n.anonymousPerson
+                          : (conv.partnerName?.isNotEmpty == true
+                              ? conv.partnerName!
+                              : (conv.name?.isNotEmpty == true ? conv.name! : l10n.conversations));
+                      ConversationOptionsSheet.show(
+                        context: context,
+                        conversation: conv,
+                        partnerDisplayName: displayName,
+                        onMarkAsRead: () {
+                          chatWsService.sendMarkAsRead(conv.id);
+                          ref.read(conversationsProvider.notifier).markConversationRead(conv.id);
+                        },
+                      );
                     },
                   ),
                   Divider(
