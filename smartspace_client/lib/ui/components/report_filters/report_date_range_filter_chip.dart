@@ -30,7 +30,7 @@ class ReportDateRangeFilterChip extends StatelessWidget {
       valueLabel: range == null ? null : format(range, Localizations.localeOf(context).toLanguageTag()),
       active: range != null,
       icon: Icons.calendar_today_outlined,
-      onTap: () => _openOptions(context),
+      onTap: () => openOptions(context, value: value, onChanged: onChanged),
     );
   }
 
@@ -42,7 +42,12 @@ class ReportDateRangeFilterChip extends StatelessWidget {
     return '${startFormat.format(range.start)} – ${full.format(range.end)}';
   }
 
-  void _openOptions(BuildContext context) {
+  /// Mở sheet "Mọi thời gian / Một ngày / Khoảng ngày" rồi lịch tương ứng; dùng chung cho chip và nút lịch.
+  static void openOptions(
+    BuildContext context, {
+    required ReportDateRange? value,
+    required ValueChanged<ReportDateRange?> onChanged,
+  }) {
     final l10n = AppLocalizations.of(context)!;
     final range = value;
     showReportFilterSheet<_DateMode?>(
@@ -54,11 +59,16 @@ class ReportDateRangeFilterChip extends StatelessWidget {
         ReportFilterOption(value: _DateMode.range, label: l10n.pickDateRange, icon: Icons.date_range_outlined),
       ],
       selected: range == null ? null : (range.isSingleDay ? _DateMode.singleDay : _DateMode.range),
-      onSelected: (mode) => _apply(context, mode),
+      onSelected: (mode) => _apply(context, mode, value, onChanged),
     );
   }
 
-  Future<void> _apply(BuildContext context, _DateMode? mode) async {
+  static Future<void> _apply(
+    BuildContext context,
+    _DateMode? mode,
+    ReportDateRange? current,
+    ValueChanged<ReportDateRange?> onChanged,
+  ) async {
     if (mode == null) {
       onChanged(null);
       return;
@@ -67,7 +77,6 @@ class ReportDateRangeFilterChip extends StatelessWidget {
     final now = DateTime.now();
     final today = DateTime(now.year, now.month, now.day);
     final firstDate = DateTime(today.year - _yearsBack, 1, 1);
-    final current = value;
 
     switch (mode) {
       case _DateMode.singleDay:
