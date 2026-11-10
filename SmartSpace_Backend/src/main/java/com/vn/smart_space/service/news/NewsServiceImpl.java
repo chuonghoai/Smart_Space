@@ -5,9 +5,12 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.vn.smart_space.dto.PageResponse;
 import com.vn.smart_space.dto.request.news.NewsCreateRequest;
 import com.vn.smart_space.dto.request.news.NewsUpdateRequest;
 import com.vn.smart_space.dto.response.news.NewsResponse;
@@ -26,6 +29,7 @@ import com.vn.smart_space.repository.ActivityHistoryRepository;
 import com.vn.smart_space.repository.NewsRepository;
 import com.vn.smart_space.repository.UserRepository;
 import com.vn.smart_space.service.i18n.MessageService;
+import com.vn.smart_space.utils.ListQueryParams;
 import org.springframework.context.MessageSource;
 import java.util.Locale;
 
@@ -38,6 +42,9 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class NewsServiceImpl implements INewsService {
 
+    static int MAX_PAGE_SIZE = 50;
+    static int MAX_SEARCH_LENGTH = 100;
+
     NewsRepository newsRepository;
     UserRepository userRepository;
     ActivityHistoryRepository activityHistoryRepository;
@@ -48,10 +55,23 @@ public class NewsServiceImpl implements INewsService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<NewsResponse> getAllNews() {
-        return newsRepository.findAllByOrderByCreatedAtDesc().stream()
-                .map(this::toListResponse)
-                .collect(Collectors.toList());
+    public PageResponse<NewsResponse> getNews(int page, int size, String search, String from, String to) {
+        int safePage = Math.max(1, page);
+        int safeSize = Math.max(1, Math.min(size, MAX_PAGE_SIZE));
+        ListQueryParams.DateRange dates = ListQueryParams.parseDateRange(from, to);
+
+        Page<News> newsPage = newsRepository.searchNews(
+                ListQueryParams.normalizeKeyword(search, MAX_SEARCH_LENGTH),
+                dates.from(), dates.toExclusive(),
+                PageRequest.of(safePage - 1, safeSize));
+
+        return PageResponse.<NewsResponse>builder()
+                .currentPage(safePage)
+                .pageSize(safeSize)
+                .totalPages(newsPage.getTotalPages())
+                .totalElements(newsPage.getTotalElements())
+                .content(newsPage.getContent().stream().map(this::toListResponse).collect(Collectors.toList()))
+                .build();
     }
 
     @Override

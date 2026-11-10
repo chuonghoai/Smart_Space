@@ -1,7 +1,5 @@
 package com.vn.smart_space.controller.news;
 
-import java.util.List;
-
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,9 +12,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.vn.smart_space.dto.ApiResponse;
+import com.vn.smart_space.dto.PageResponse;
 import com.vn.smart_space.dto.request.news.NewsCreateRequest;
 import com.vn.smart_space.dto.request.news.NewsUpdateRequest;
 import com.vn.smart_space.dto.response.news.NewsResponse;
@@ -36,9 +36,14 @@ public class NewsController {
     INewsService newsService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse> getAllNews() {
-        List<NewsResponse> list = newsService.getAllNews();
-        return ResponseEntity.ok(ApiResponse.success("news.get_all.success", list));
+    public ResponseEntity<ApiResponse> getNews(
+            @RequestParam(defaultValue = "1") int page,
+            @RequestParam(defaultValue = "10") int size,
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) String from,
+            @RequestParam(required = false) String to) {
+        PageResponse<NewsResponse> news = newsService.getNews(page, size, search, from, to);
+        return ResponseEntity.ok(ApiResponse.success("news.get_all.success", news));
     }
 
     @GetMapping("/{id}")

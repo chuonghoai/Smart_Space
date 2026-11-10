@@ -3,6 +3,7 @@ package com.vn.smart_space.model;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
@@ -21,7 +22,10 @@ import lombok.experimental.FieldDefaults;
 @Entity
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "news")
+@Table(name = "news", indexes = {
+        // Danh sách tin tức phân trang theo ngày tạo mới nhất
+        @Index(name = "idx_news_created_at", columnList = "created_at")
+})
 public class News extends AbstractEntity {
 
     @Column(name = "title", nullable = false)
