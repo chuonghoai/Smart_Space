@@ -27,9 +27,17 @@
     "admin:build": "cd smartspace_admin && flutter build apk",
     "staff:build": "cd smartspace_staff && flutter build apk",
 
+    "client:build:debug": "cd smartspace_client && flutter build apk --debug",
+    "admin:build:debug": "cd smartspace_admin && flutter build apk --debug",
+    "staff:build:debug": "cd smartspace_staff && flutter build apk --debug",
+
     "admin:install": "powershell -ExecutionPolicy Bypass -File installApkRelease.ps1 admin",
     "client:install": "powershell -ExecutionPolicy Bypass -File installApkRelease.ps1 client",
     "staff:install": "powershell -ExecutionPolicy Bypass -File installApkRelease.ps1 staff",
+
+    "admin:install:debug": "powershell -ExecutionPolicy Bypass -File installApkDebug.ps1 admin",
+    "client:install:debug": "powershell -ExecutionPolicy Bypass -File installApkDebug.ps1 client",
+    "staff:install:debug": "powershell -ExecutionPolicy Bypass -File installApkDebug.ps1 staff",
     
     "client:analyze": "cd smartspace_client && flutter analyze",
     "admin:analyze": "cd smartspace_admin && flutter analyze",
