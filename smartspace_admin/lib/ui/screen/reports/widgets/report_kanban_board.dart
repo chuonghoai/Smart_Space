@@ -28,16 +28,16 @@ class ReportKanbanBoard extends ConsumerWidget {
 
   static const _columns = ['pending', 'processing', 'processed', 'rejected'];
 
-  static const _legend = [
-    ('Thấp', Color(0xFF4CAF50)),
-    ('Trung bình', Color(0xFFFF9800)),
-    ('Cao', Color(0xFFFF5722)),
-    ('Nghiêm trọng', Color(0xFFF44336)),
-  ];
-
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final legend = [
+      (l10n.severityLow, const Color(0xFF4CAF50)),
+      (l10n.severityMedium, const Color(0xFFFF9800)),
+      (l10n.severityHigh, const Color(0xFFFF5722)),
+      (l10n.severityCritical, const Color(0xFFF44336)),
+    ];
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -45,12 +45,12 @@ class ReportKanbanBoard extends ConsumerWidget {
         Row(
           children: [
             Text(
-              'Mức độ: ',
+              '${l10n.filterBySeverity}: ',
               style: theme.textTheme.labelSmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
             ),
-            ..._legend.map(
+            ...legend.map(
               (e) => Padding(
                 padding: const EdgeInsets.only(right: 12),
                 child: Row(
@@ -386,6 +386,11 @@ class _KanbanCard extends StatelessWidget {
                             ),
                         ],
                       ),
+                      // Rehandling badge
+                      if (item.isReviewResolved == false) ...[
+                        const SizedBox(height: 4),
+                        _buildRehandlingBadge(theme, l10n),
+                      ],
                       const SizedBox(height: 6),
 
                       // Date + severity dot row
@@ -471,4 +476,37 @@ class _KanbanCard extends StatelessWidget {
     'critical' => 'Nghiêm trọng',
     _ => s,
   };
+
+  Widget _buildRehandlingBadge(ThemeData theme, AppLocalizations l10n) {
+    final isDark = theme.brightness == Brightness.dark;
+    final badgeBg = isDark ? const Color(0xFF4A2800) : const Color(0xFFFFF3E0);
+    final badgeColor =
+        isDark ? const Color(0xFFFFB74D) : const Color(0xFFE65100);
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+      decoration: BoxDecoration(
+        color: badgeBg,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(
+          color: badgeColor.withValues(alpha: isDark ? 0.5 : 0.35),
+          width: 0.8,
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.refresh_rounded, size: 10, color: badgeColor),
+          const SizedBox(width: 3),
+          Text(
+            l10n.rehandlingBadge,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: badgeColor,
+              fontWeight: FontWeight.bold,
+              fontSize: 9,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 }
