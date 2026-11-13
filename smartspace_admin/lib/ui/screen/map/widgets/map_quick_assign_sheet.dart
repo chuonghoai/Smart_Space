@@ -49,17 +49,35 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
     final staffsAsync = ref.watch(mapStaffListProvider);
     final assignState = ref.watch(reportAssignProvider);
 
-    return Container(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.7,
-      ),
-      decoration: BoxDecoration(
-        color: cs.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
+    final mq = MediaQuery.of(context);
+    final bottomInset = mq.viewInsets.bottom;
+    final isKeyboardOpen = bottomInset > 0;
+    final topPadding = mq.padding.top;
+
+    final maxHeight = isKeyboardOpen
+        ? (mq.size.height - bottomInset - topPadding - 16)
+        : (mq.size.height * 0.75);
+
+    return AnimatedPadding(
+      padding: EdgeInsets.only(bottom: bottomInset),
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOutCubic,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOutCubic,
+        constraints: BoxConstraints(
+          maxHeight: maxHeight,
+        ),
+        decoration: BoxDecoration(
+          color: cs.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: SafeArea(
+          top: false,
+          bottom: !isKeyboardOpen,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
           // Handle bar
           Padding(
             padding: const EdgeInsets.only(top: 12, bottom: 4),
@@ -142,7 +160,7 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
             ),
           ),
 
-          const Divider(height: 20),
+          Divider(height: isKeyboardOpen ? 10 : 20),
 
           // Staff list
           Flexible(
@@ -253,7 +271,7 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
 
           // Severity selection
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            padding: EdgeInsets.fromLTRB(16, isKeyboardOpen ? 6 : 12, 16, 4),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(l10n.mapSelectSeverity,
@@ -285,7 +303,12 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
 
           // Confirm button
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.fromLTRB(
+              16,
+              isKeyboardOpen ? 8 : 16,
+              16,
+              isKeyboardOpen ? 8 : 16,
+            ),
             child: SizedBox(
               width: double.infinity,
               child: FilledButton.icon(
@@ -305,6 +328,8 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
             ),
           ),
         ],
+      ),
+        ),
       ),
     );
   }
