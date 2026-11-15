@@ -2109,4 +2109,84 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get freeCallComingSoon =>
       'Tính năng gọi miễn phí qua internet đang được phát triển';
+
+  @override
+  String get adminBoard => 'Hội đồng quản trị';
+
+  @override
+  String get routeAdminBoard => 'Hội đồng quản trị';
+
+  @override
+  String get addAdmin => 'Thêm quản trị viên';
+
+  @override
+  String get addNewAdmin => 'Thêm quản trị viên mới';
+
+  @override
+  String get createAdminAction => 'Tạo tài khoản';
+
+  @override
+  String get addAdminFailed => 'Không tạo được tài khoản quản trị viên';
+
+  @override
+  String get youBadge => 'Bạn';
+
+  @override
+  String lockAdminConfirm(String name) {
+    return 'Khoá tài khoản quản trị viên của $name? Người này sẽ bị đăng xuất khỏi mọi thiết bị ngay lập tức.';
+  }
+
+  @override
+  String unlockAdminConfirm(String name) {
+    return 'Mở khoá tài khoản quản trị viên của $name? Người này sẽ có thể đăng nhập lại.';
+  }
+
+  @override
+  String get cannotLockSelf => 'Bạn không thể khoá tài khoản của chính mình';
+
+  @override
+  String get cannotLockLastAdmin =>
+      'Hệ thống cần ít nhất một quản trị viên đang hoạt động';
+
+  @override
+  String get adminCreatedTitle => 'Đã tạo tài khoản quản trị viên';
+
+  @override
+  String get adminCreatedCheckInboxHint =>
+      'Nhắc quản trị viên mới kiểm tra hộp thư (kể cả mục Thư rác) và đổi mật khẩu sau lần đăng nhập đầu tiên.';
+
+  @override
+  String get noAdminFound => 'Không tìm thấy quản trị viên phù hợp';
+
+  @override
+  String get allAdminsLoaded => 'Đã hiển thị tất cả quản trị viên';
+
+  @override
+  String get loadMoreAdminsFailed => 'Không tải thêm được quản trị viên';
+
+  @override
+  String get invalidPhoneFormat =>
+      'Số điện thoại không hợp lệ (8–15 chữ số, có thể bắt đầu bằng +)';
+
+  @override
+  String get fullnameTooLong => 'Họ tên không được vượt quá 100 ký tự';
+
+  @override
+  String get selectAdminHint =>
+      'Chọn một quản trị viên để xem thông tin và hoạt động gần đây';
+
+  @override
+  String get activityLoadFailed => 'Không tải được hoạt động gần đây';
+
+  @override
+  String get activityHistory => 'Lịch sử hoạt động';
+
+  @override
+  String get adminTotalBadge => 'Tổng';
+
+  @override
+  String get loadMoreActivitiesFailed => 'Không tải thêm được hoạt động';
+
+  @override
+  String get allActivitiesLoaded => 'Đã hiển thị tất cả hoạt động';
 }

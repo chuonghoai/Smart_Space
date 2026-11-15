@@ -2116,4 +2116,84 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get freeCallComingSoon =>
       'Free in-app voice call feature is under development';
+
+  @override
+  String get adminBoard => 'Board of Administrators';
+
+  @override
+  String get routeAdminBoard => 'Board of Administrators';
+
+  @override
+  String get addAdmin => 'Add administrator';
+
+  @override
+  String get addNewAdmin => 'New administrator';
+
+  @override
+  String get createAdminAction => 'Create account';
+
+  @override
+  String get addAdminFailed => 'Could not create the administrator account';
+
+  @override
+  String get youBadge => 'You';
+
+  @override
+  String lockAdminConfirm(String name) {
+    return 'Lock the administrator account of $name? They will be signed out of every device immediately.';
+  }
+
+  @override
+  String unlockAdminConfirm(String name) {
+    return 'Unlock the administrator account of $name? They will be able to sign in again.';
+  }
+
+  @override
+  String get cannotLockSelf => 'You cannot lock your own account';
+
+  @override
+  String get cannotLockLastAdmin =>
+      'At least one active administrator is required';
+
+  @override
+  String get adminCreatedTitle => 'Administrator account created';
+
+  @override
+  String get adminCreatedCheckInboxHint =>
+      'Ask them to check their inbox (including Spam) and change the password after signing in for the first time.';
+
+  @override
+  String get noAdminFound => 'No administrators match your search';
+
+  @override
+  String get allAdminsLoaded => 'All administrators loaded';
+
+  @override
+  String get loadMoreAdminsFailed => 'Could not load more administrators';
+
+  @override
+  String get invalidPhoneFormat =>
+      'Invalid phone number (8–15 digits, may start with +)';
+
+  @override
+  String get fullnameTooLong => 'Full name must not exceed 100 characters';
+
+  @override
+  String get selectAdminHint =>
+      'Select an administrator to see their details and recent activity';
+
+  @override
+  String get activityLoadFailed => 'Couldn\'t load recent activity';
+
+  @override
+  String get activityHistory => 'Activity history';
+
+  @override
+  String get adminTotalBadge => 'Total';
+
+  @override
+  String get loadMoreActivitiesFailed => 'Couldn\'t load more activities';
+
+  @override
+  String get allActivitiesLoaded => 'All activities loaded';
 }

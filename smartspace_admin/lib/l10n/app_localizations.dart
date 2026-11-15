@@ -4069,6 +4069,150 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Free in-app voice call feature is under development'**
   String get freeCallComingSoon;
+
+  /// No description provided for @adminBoard.
+  ///
+  /// In en, this message translates to:
+  /// **'Board of Administrators'**
+  String get adminBoard;
+
+  /// No description provided for @routeAdminBoard.
+  ///
+  /// In en, this message translates to:
+  /// **'Board of Administrators'**
+  String get routeAdminBoard;
+
+  /// No description provided for @addAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Add administrator'**
+  String get addAdmin;
+
+  /// No description provided for @addNewAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'New administrator'**
+  String get addNewAdmin;
+
+  /// No description provided for @createAdminAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get createAdminAction;
+
+  /// No description provided for @addAdminFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not create the administrator account'**
+  String get addAdminFailed;
+
+  /// No description provided for @youBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get youBadge;
+
+  /// No description provided for @lockAdminConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock the administrator account of {name}? They will be signed out of every device immediately.'**
+  String lockAdminConfirm(String name);
+
+  /// No description provided for @unlockAdminConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock the administrator account of {name}? They will be able to sign in again.'**
+  String unlockAdminConfirm(String name);
+
+  /// No description provided for @cannotLockSelf.
+  ///
+  /// In en, this message translates to:
+  /// **'You cannot lock your own account'**
+  String get cannotLockSelf;
+
+  /// No description provided for @cannotLockLastAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'At least one active administrator is required'**
+  String get cannotLockLastAdmin;
+
+  /// No description provided for @adminCreatedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Administrator account created'**
+  String get adminCreatedTitle;
+
+  /// No description provided for @adminCreatedCheckInboxHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask them to check their inbox (including Spam) and change the password after signing in for the first time.'**
+  String get adminCreatedCheckInboxHint;
+
+  /// No description provided for @noAdminFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No administrators match your search'**
+  String get noAdminFound;
+
+  /// No description provided for @allAdminsLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'All administrators loaded'**
+  String get allAdminsLoaded;
+
+  /// No description provided for @loadMoreAdminsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load more administrators'**
+  String get loadMoreAdminsFailed;
+
+  /// No description provided for @invalidPhoneFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid phone number (8–15 digits, may start with +)'**
+  String get invalidPhoneFormat;
+
+  /// No description provided for @fullnameTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name must not exceed 100 characters'**
+  String get fullnameTooLong;
+
+  /// No description provided for @selectAdminHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select an administrator to see their details and recent activity'**
+  String get selectAdminHint;
+
+  /// No description provided for @activityLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load recent activity'**
+  String get activityLoadFailed;
+
+  /// No description provided for @activityHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity history'**
+  String get activityHistory;
+
+  /// No description provided for @adminTotalBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get adminTotalBadge;
+
+  /// No description provided for @loadMoreActivitiesFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load more activities'**
+  String get loadMoreActivitiesFailed;
+
+  /// No description provided for @allActivitiesLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'All activities loaded'**
+  String get allActivitiesLoaded;
 }
 
 class _AppLocalizationsDelegate
