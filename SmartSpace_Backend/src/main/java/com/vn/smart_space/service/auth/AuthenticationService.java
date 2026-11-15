@@ -42,6 +42,7 @@ import com.vn.smart_space.repository.InvalidatedTokenRepository;
 import com.vn.smart_space.repository.RefreshTokenSessionRepository;
 import com.vn.smart_space.repository.UserRepository;
 import com.vn.smart_space.service.jwt.IJwtService;
+import com.vn.smart_space.service.jwt.JwtService;
 import com.vn.smart_space.service.mail.IMailService;
 import com.vn.smart_space.utils.OtpGenerator;
 
@@ -68,6 +69,9 @@ public class AuthenticationService implements IAuthenticationService {
     @Value("${google.client-id}")
     private String googleClientId;
 
+    private static final String BLOCKED_USER_KEY_PREFIX = "blocked_user:";
+    private static final Duration BLOCKED_USER_MARKER_TTL = Duration.ofMinutes(JwtService.ACCESS_TOKEN_TTL_MINUTES + 1);
+
     // Introspect Token
     @Override
     public IntrospectResponse introspect(IntrospectRequest request) {
@@ -79,6 +83,12 @@ public class AuthenticationService implements IAuthenticationService {
             // Check blacklist
             String jwtId = signedJWT.getJWTClaimsSet().getJWTID();
             if (invalidatedTokenRepository.existsById(jwtId)) {
+                isValid = false;
+            }
+
+            // Check tài khoản vừa bị khóa )
+            Object userId = signedJWT.getJWTClaimsSet().getClaim("userId");
+            if (isValid && userId != null && isUserAccessRevoked(userId.toString())) {
                 isValid = false;
             }
         } catch (Exception e) {
@@ -101,6 +111,8 @@ public class AuthenticationService implements IAuthenticationService {
             throw new BadRequestException("auth.invalid_credentials");
         }
 
+        assertNotBlocked(user);
+
         if (request.getLanguage() != null && !request.getLanguage().isBlank()) {
             user.setLanguage(request.getLanguage());
             userRepository.save(user);
@@ -114,12 +126,11 @@ public class AuthenticationService implements IAuthenticationService {
         TokenPayload refreshToken = jwtService.generateRefreshToken(user, rememberMe);
 
         saveRefreshTokenToRedis(
-            user.getId(), refreshToken,
-            request.getDeviceId(),
-            request.getDeviceName(),
-            request.getPlatform(),
-            request.getIpAddress()
-        );
+                user.getId(), refreshToken,
+                request.getDeviceId(),
+                request.getDeviceName(),
+                request.getPlatform(),
+                request.getIpAddress());
 
         return LoginResponse.builder()
                 .accessToken(accessToken.getToken())
@@ -133,31 +144,15 @@ public class AuthenticationService implements IAuthenticationService {
     @Override
     @Transactional
     public LoginResponse loginGoogle(GoogleLoginRequest request) {
-        // Verify Google ID Token
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(),
-                GsonFactory.getDefaultInstance())
-                .setAudience(Collections.singletonList(googleClientId))
-                .build();
-
-        GoogleIdToken idToken;
-        try {
-            idToken = verifier.verify(request.getIdToken());
-        } catch (GeneralSecurityException | IOException e) {
-            throw new BadRequestException("auth.google_token.invalid");
-        }
-
-        if (idToken == null) {
-            throw new BadRequestException("auth.google_token.expired");
-        }
-
-        // Extract info user
-        GoogleIdToken.Payload payload = idToken.getPayload();
+        // Verify Google ID Token & extract info user
+        GoogleIdToken.Payload payload = verifyGoogleIdToken(request.getIdToken());
         String email = payload.getEmail();
         String fullName = (String) payload.get("name");
 
         // Find or create User
         User user = userRepository.findByEmailAndRole(email, request.getRole())
                 .map(existingUser -> {
+                    assertNotBlocked(existingUser);
                     if (request.getLanguage() != null && !request.getLanguage().isBlank()) {
                         existingUser.setLanguage(request.getLanguage());
                         return userRepository.save(existingUser);
@@ -165,6 +160,10 @@ public class AuthenticationService implements IAuthenticationService {
                     return existingUser;
                 })
                 .orElseGet(() -> {
+                    // Chỉ client được tự tạo tài khoản; admin/staff phải do quản trị viên cấp
+                    if (!request.getRole().isSelfRegistrable()) {
+                        throw new BadRequestException("auth.account.not_provisioned");
+                    }
                     User newUser = User.builder()
                             .email(email)
                             .fullName(fullName != null ? fullName : email.split("@")[0])
@@ -178,14 +177,13 @@ public class AuthenticationService implements IAuthenticationService {
         // Generate JWT tokens
         TokenPayload accessToken = jwtService.generateAccessToken(user, request.getDeviceId());
         TokenPayload refreshToken = jwtService.generateRefreshToken(user, true);
-        
+
         saveRefreshTokenToRedis(
-            user.getId(), refreshToken,
-            request.getDeviceId(),
-            request.getDeviceName(),
-            request.getPlatform(),
-            request.getIpAddress()
-        );
+                user.getId(), refreshToken,
+                request.getDeviceId(),
+                request.getDeviceName(),
+                request.getPlatform(),
+                request.getIpAddress());
 
         return LoginResponse.builder()
                 .accessToken(accessToken.getToken())
@@ -218,7 +216,7 @@ public class AuthenticationService implements IAuthenticationService {
             SignedJWT signedJWT = SignedJWT.parse(token);
             String userId = (String) signedJWT.getJWTClaimsSet().getClaim("userId");
             String deviceId = (String) signedJWT.getJWTClaimsSet().getClaim("deviceId");
-            
+
             userRepository.findById(userId).ifPresent(user -> {
                 if (deviceId != null) {
                     revokeSession(user.getId(), deviceId);
@@ -251,10 +249,17 @@ public class AuthenticationService implements IAuthenticationService {
                             "user.not_found"));
 
             List<RefreshTokenSession> sessions = sessionRepository.findByUserId(user.getId());
+
+            // Tài khoản bị khóa
+            if (user.getStatus() == EUserStatus.blocked) {
+                sessionRepository.deleteAll(sessions);
+                throw new UnauthorizedException("auth.account.blocked");
+            }
+
             RefreshTokenSession currentSession = sessions.stream()
-                .filter(s -> s.getRefreshToken().equals(refreshToken))
-                .findFirst()
-                .orElseThrow(() -> new UnauthorizedException("auth.token.invalid"));
+                    .filter(s -> s.getRefreshToken().equals(refreshToken))
+                    .findFirst()
+                    .orElseThrow(() -> new UnauthorizedException("auth.token.invalid"));
 
             TokenPayload newAccessToken = jwtService
                     .generateAccessToken(user, currentSession.getDeviceId());
@@ -265,13 +270,12 @@ public class AuthenticationService implements IAuthenticationService {
                     .generateRefreshToken(user, isRememberMe);
 
             saveRefreshTokenToRedis(
-                user.getId(), newRefreshToken,
-                currentSession.getDeviceId(),
-                currentSession.getDeviceName(),
-                currentSession.getPlatform(),
-                currentSession.getIpAddress()
-            );
-            
+                    user.getId(), newRefreshToken,
+                    currentSession.getDeviceId(),
+                    currentSession.getDeviceName(),
+                    currentSession.getPlatform(),
+                    currentSession.getIpAddress());
+
             return LoginResponse.builder()
                     .accessToken(newAccessToken.getToken())
                     .refreshToken(newRefreshToken.getToken())
@@ -293,8 +297,7 @@ public class AuthenticationService implements IAuthenticationService {
                 .ipAddress(s.getIpAddress())
                 .currentDevice(s.getDeviceId().equals(currentDeviceId))
                 .lastActiveAt(s.getLastActiveAt())
-                .build()
-        ).toList();
+                .build()).toList();
     }
 
     @Override
@@ -305,18 +308,68 @@ public class AuthenticationService implements IAuthenticationService {
     }
 
     @Override
+    public void revokeUserAccess(String userId) {
+        sessionRepository.deleteAll(sessionRepository.findByUserId(userId));
+        stringRedisTemplate.opsForValue().set(BLOCKED_USER_KEY_PREFIX + userId, "1", BLOCKED_USER_MARKER_TTL);
+    }
+
+    @Override
+    public void restoreUserAccess(String userId) {
+        stringRedisTemplate.delete(BLOCKED_USER_KEY_PREFIX + userId);
+    }
+
+    @Override
+    public void assertSelfRegistrableRole(ERole role) {
+        if (role == null || !role.isSelfRegistrable()) {
+            throw new BadRequestException("auth.role.invalid");
+        }
+    }
+
+    /** Xác thực Google ID token. */
+    GoogleIdToken.Payload verifyGoogleIdToken(String rawIdToken) {
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(),
+                GsonFactory.getDefaultInstance())
+                .setAudience(Collections.singletonList(googleClientId))
+                .build();
+
+        GoogleIdToken idToken;
+        try {
+            idToken = verifier.verify(rawIdToken);
+        } catch (GeneralSecurityException | IOException e) {
+            throw new BadRequestException("auth.google_token.invalid");
+        }
+
+        if (idToken == null) {
+            throw new BadRequestException("auth.google_token.expired");
+        }
+        return idToken.getPayload();
+    }
+
+    private boolean isUserAccessRevoked(String userId) {
+        return Boolean.TRUE.equals(stringRedisTemplate.hasKey(BLOCKED_USER_KEY_PREFIX + userId));
+    }
+
+    private void assertNotBlocked(User user) {
+        if (user.getStatus() == EUserStatus.blocked) {
+            throw new BadRequestException("auth.account.blocked");
+        }
+    }
+
+    @Override
     @Transactional
     public void revokeAllOtherSessions(String userId, String currentDeviceId) {
         List<RefreshTokenSession> sessions = sessionRepository.findByUserId(userId);
         sessions.stream()
-            .filter(s -> !s.getDeviceId().equals(currentDeviceId))
-            .forEach(s -> sessionRepository.deleteById(s.getId()));
+                .filter(s -> !s.getDeviceId().equals(currentDeviceId))
+                .forEach(s -> sessionRepository.deleteById(s.getId()));
     }
 
     // SEND OTP FOR REGISTRATION
     @Override
     @Transactional
     public void sendOtpRegister(String email, ERole role) {
+        // Chặn trước khi gửi mail để không tốn quota OTP cho role không được tự đăng ký
+        assertSelfRegistrableRole(role);
         if (userRepository.existsByEmailAndRole(email, role)) {
             throw new BadRequestException("auth.email.exists");
         }
@@ -326,13 +379,15 @@ public class AuthenticationService implements IAuthenticationService {
     // Send OTP Forgot password
     @Override
     public void sendOtpForgotPassword(String email) {
-        // Here we just send OTP for the email, ignoring role since we will ask for it in reset password
+        // Here we just send OTP for the email, ignoring role since we will ask for it
+        // in reset password
         sendOtp(email, "otp:forgot_password:", "cooldown:otp_forgot:");
     }
 
     @Override
     @Transactional
     public void verifyOtpRegister(String email, String otp, ERole role) {
+        assertSelfRegistrableRole(role);
 
         String otpKey = "otp:register:" + email + ":" + role.name();
         verifyOtp(otpKey, otp);
@@ -352,7 +407,7 @@ public class AuthenticationService implements IAuthenticationService {
             String userId, TokenPayload refreshToken,
             String deviceId, String deviceName,
             String platform, String ipAddress) {
-            
+
         long ttlSeconds = (refreshToken.getExpiryTime().getTime()
                 - System.currentTimeMillis()) / 1000;
 
@@ -374,7 +429,7 @@ public class AuthenticationService implements IAuthenticationService {
     @Override
     public ERegistrationStatus determineRegistrationStatus(User user) {
         if (user.getPhone() != null && !user.getPhone().isBlank()
-            && user.getFullName() != null && !user.getFullName().isBlank()) {
+                && user.getFullName() != null && !user.getFullName().isBlank()) {
             return ERegistrationStatus.complete;
         }
         return ERegistrationStatus.incomplete;

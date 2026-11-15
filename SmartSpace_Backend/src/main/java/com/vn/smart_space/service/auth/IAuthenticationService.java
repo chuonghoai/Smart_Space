@@ -36,6 +36,16 @@ public interface IAuthenticationService {
     void revokeSession(String userId, String deviceId);
     void revokeAllOtherSessions(String userId, String currentDeviceId);
 
+    // Account status enforcement
+    /** Thu hồi toàn bộ quyền truy cập ngay lập tức (gọi khi tài khoản bị khóa). */
+    void revokeUserAccess(String userId);
+
+    /** Gỡ cờ chặn truy cập (gọi khi tài khoản được mở khóa). */
+    void restoreUserAccess(String userId);
+
+    /** Chỉ role được phép tự đăng ký (client) mới đi qua luồng public; ngược lại ném auth.role.invalid. */
+    void assertSelfRegistrableRole(ERole role);
+
     // OTP for Registration
     void sendOtpRegister(String email, ERole role);
 
