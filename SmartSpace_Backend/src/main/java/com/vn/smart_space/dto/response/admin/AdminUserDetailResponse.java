@@ -34,6 +34,13 @@ public class AdminUserDetailResponse {
     LocalDateTime createdAt;
     ReportStats reportStats;
     List<RecentReport> recentReports;
+    /** Đề xuất khóa đang chờ biểu quyết của người dùng này (null nếu không có). */
+    String pendingLockRequestId;
+    /**
+     * Vì sao chưa thể đề xuất khóa: not_active | already_pending | not_enough_admins.
+     * null = được phép. Để UI vô hiệu hóa nút và giải thích TRƯỚC khi admin điền form.
+     */
+    String lockProposalBlockedReason;
 
     @Data
     @NoArgsConstructor

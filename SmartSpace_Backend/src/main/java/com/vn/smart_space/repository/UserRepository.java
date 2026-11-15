@@ -93,6 +93,11 @@ public interface UserRepository extends JpaRepository<User, String> {
     @Query("SELECT u FROM User u WHERE u.role = :role AND u.status = :status")
     List<User> lockByRoleAndStatus(@Param("role") ERole role, @Param("status") EUserStatus status);
 
+    /** Khóa ghi một tài khoản — tuần tự hóa việc tạo đề xuất khóa cho cùng người dùng. */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT u FROM User u WHERE u.id = :id")
+    Optional<User> findByIdForUpdate(@Param("id") String id);
+
     // Đếm số nhân viên đang giữ một chức vụ
     long countByPositionId(String positionId);
 
