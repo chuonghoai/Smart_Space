@@ -13,4 +13,11 @@ public interface IMailService {
     void sendStaffCredentialsEmail(String toEmail, String fullName, String rawPassword,
             String positionName, String language);
 
+    /**
+     * Gửi email HTML thông tin đăng nhập cho quản trị viên mới (Admin Portal).
+     *
+     * @param language "vi" | "en" (mặc định vi)
+     */
+    void sendAdminCredentialsEmail(String toEmail, String fullName, String rawPassword, String language);
+
 }

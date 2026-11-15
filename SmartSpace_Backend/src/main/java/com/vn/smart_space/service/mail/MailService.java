@@ -24,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class MailService implements IMailService {
 
     private static final String STAFF_CREDENTIALS_TEMPLATE = "mail/staff-credentials";
+    private static final String ADMIN_CREDENTIALS_TEMPLATE = "mail/admin-credentials";
 
     private final JavaMailSender mailSender;
     private final MessageSource messageSource;
@@ -40,6 +41,9 @@ public class MailService implements IMailService {
 
     @Value("${app.mail.staff-app-url:}")
     private String staffAppUrl;
+
+    @Value("${app.mail.admin-portal-url:}")
+    private String adminPortalUrl;
 
     @Value("${app.mail.support-email:}")
     private String supportEmail;
@@ -77,6 +81,32 @@ public class MailService implements IMailService {
         // Bản text thuần cho client không hiển thị HTML (cũng giúp giảm điểm spam)
         String plainText = messageSource.getMessage(
                 "mail.staff.credentials.body",
+                new Object[] { displayName, toEmail, rawPassword },
+                locale);
+
+        sendHtml(toEmail, subject, plainText, html);
+    }
+
+    @Override
+    public void sendAdminCredentialsEmail(String toEmail, String fullName, String rawPassword, String language) {
+        Locale locale = resolveLocale(language);
+        String displayName = (fullName != null && !fullName.isBlank()) ? fullName.trim() : toEmail;
+
+        Context context = new Context(locale);
+        context.setVariable("lang", locale.getLanguage());
+        context.setVariable("fullName", displayName);
+        context.setVariable("email", toEmail);
+        context.setVariable("password", rawPassword);
+        context.setVariable("logoUrl", blankToNull(logoUrl));
+        context.setVariable("adminPortalUrl", blankToNull(adminPortalUrl));
+        context.setVariable("supportEmail", blankToNull(supportEmail));
+        // Truyền String để MessageFormat không định dạng năm thành "2,026"
+        context.setVariable("year", String.valueOf(Year.now().getValue()));
+
+        String subject = messageSource.getMessage("mail.admin.credentials.subject", null, locale);
+        String html = templateEngine.process(ADMIN_CREDENTIALS_TEMPLATE, context);
+        String plainText = messageSource.getMessage(
+                "mail.admin.credentials.body",
                 new Object[] { displayName, toEmail, rawPassword },
                 locale);
 
