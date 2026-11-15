@@ -9,14 +9,34 @@ import 'package:stomp_dart_client/stomp_dart_client.dart';
 typedef OnConversationUpdateCallback = void Function(ConversationModel conversation);
 typedef OnTotalUnreadCallback = void Function(int totalUnread);
 
+class _TopicSubscriptionEntry {
+  final String conversationId;
+  final void Function(ChatMessageModel message) onMessage;
+  final void Function(String readerId, DateTime readAt)? onReadReceipt;
+  final void Function(String userId, bool isTyping)? onTyping;
+  StompUnsubscribe? stompUnsubscribe;
+
+  _TopicSubscriptionEntry({
+    required this.conversationId,
+    required this.onMessage,
+    this.onReadReceipt,
+    this.onTyping,
+  });
+}
+
 class ChatWsService implements WsFeatureService {
   StompUnsubscribe? _conversationsSub;
+  StompUnsubscribe? _unreadSub;
   final List<OnConversationUpdateCallback> _conversationListeners = [];
   final List<OnTotalUnreadCallback> _unreadListeners = [];
+  final Map<String, _TopicSubscriptionEntry> _topicSubscriptions = {};
 
   void addConversationListener(OnConversationUpdateCallback listener) {
     if (!_conversationListeners.contains(listener)) {
       _conversationListeners.add(listener);
+    }
+    if ((_conversationsSub == null || _unreadSub == null) && webSocketService.isConnected) {
+      setup();
     }
   }
 
@@ -28,6 +48,9 @@ class ChatWsService implements WsFeatureService {
     if (!_unreadListeners.contains(listener)) {
       _unreadListeners.add(listener);
     }
+    if ((_conversationsSub == null || _unreadSub == null) && webSocketService.isConnected) {
+      setup();
+    }
   }
 
   void removeUnreadListener(OnTotalUnreadCallback listener) {
@@ -36,50 +59,97 @@ class ChatWsService implements WsFeatureService {
 
   @override
   void setup() {
-    if (_conversationsSub != null) {
-      debugPrint('[ChatWsService] Conversations listener already set up, skipping.');
+    if (!webSocketService.isConnected) {
+      debugPrint('[ChatWsService] WebSocket not connected yet, skipping setup until connected.');
       return;
     }
 
-    debugPrint('[ChatWsService] Subscribing to /user/queue/conversations...');
-    try {
-      _conversationsSub = webSocketService.subscribe(
-        destination: '/user/queue/conversations',
-        callback: (frame) {
-          debugPrint('[ChatWsService] Received conversation update frame: ${frame.body}');
-          if (frame.body != null) {
-            try {
-              final data = dart_convert.jsonDecode(frame.body!) as Map<String, dynamic>;
-              final model = ConversationModel.fromJson(data);
-              for (final listener in List.of(_conversationListeners)) {
-                listener(model);
+    if (_conversationsSub == null) {
+      debugPrint('[ChatWsService] Subscribing to /user/queue/conversations...');
+      try {
+        _conversationsSub = webSocketService.subscribe(
+          destination: '/user/queue/conversations',
+          callback: (frame) {
+            debugPrint('[ChatWsService] Received conversation update frame: ${frame.body}');
+            if (frame.body != null) {
+              try {
+                final data = dart_convert.jsonDecode(frame.body!) as Map<String, dynamic>;
+                final model = ConversationModel.fromJson(data);
+                if (model.totalUnreadCount != null) {
+                  for (final unreadListener in List.of(_unreadListeners)) {
+                    unreadListener(model.totalUnreadCount!);
+                  }
+                }
+                for (final listener in List.of(_conversationListeners)) {
+                  listener(model);
+                }
+              } catch (e) {
+                debugPrint('[ChatWsService] Parse error in conversation update: $e');
               }
-            } catch (e) {
-              debugPrint('[ChatWsService] Parse error in conversation update: $e');
             }
-          }
-        },
-      );
-    } catch (e) {
-      debugPrint('[ChatWsService] subscribe() threw: $e');
+          },
+        );
+      } catch (e) {
+        debugPrint('[ChatWsService] subscribe() threw: $e');
+      }
+    }
+
+    if (_unreadSub == null) {
+      debugPrint('[ChatWsService] Subscribing to /user/queue/chat.unread...');
+      try {
+        _unreadSub = webSocketService.subscribe(
+          destination: '/user/queue/chat.unread',
+          callback: (frame) {
+            debugPrint('[ChatWsService] Received chat.unread frame: ${frame.body}');
+            if (frame.body != null) {
+              try {
+                final data = dart_convert.jsonDecode(frame.body!) as Map<String, dynamic>;
+                final count = (data['totalUnreadCount'] as num?)?.toInt() ?? 0;
+                for (final listener in List.of(_unreadListeners)) {
+                  listener(count);
+                }
+              } catch (e) {
+                debugPrint('[ChatWsService] Parse error in chat.unread: $e');
+              }
+            }
+          },
+        );
+      } catch (e) {
+        debugPrint('[ChatWsService] subscribe(chat.unread) threw: $e');
+      }
+    }
+
+    // Automatically re-subscribe all active conversation topics on reconnect
+    for (final entry in _topicSubscriptions.values) {
+      _subscribeTopicInternal(entry);
     }
   }
 
-  StompUnsubscribe? subscribeToConversationTopic({
-    required String conversationId,
-    required void Function(ChatMessageModel message) onMessage,
-  }) {
-    final destination = '/topic/conversation.$conversationId';
-    debugPrint('[ChatWsService] Subscribing to $destination...');
+  void _subscribeTopicInternal(_TopicSubscriptionEntry entry) {
+    if (!webSocketService.isConnected) return;
+    final destination = '/topic/conversation.${entry.conversationId}';
+    debugPrint('[ChatWsService] Subscribing/Re-subscribing to $destination...');
     try {
-      return webSocketService.subscribe(
+      entry.stompUnsubscribe?.call();
+      entry.stompUnsubscribe = webSocketService.subscribe(
         destination: destination,
         callback: (frame) {
           if (frame.body != null) {
             try {
               final data = dart_convert.jsonDecode(frame.body!) as Map<String, dynamic>;
-              final model = ChatMessageModel.fromJson(data);
-              onMessage(model);
+              final type = data['type']?.toString();
+              if (type == 'READ_RECEIPT') {
+                final readerId = data['readerId']?.toString() ?? '';
+                final readAt = DateTime.tryParse(data['readAt']?.toString() ?? '') ?? DateTime.now();
+                entry.onReadReceipt?.call(readerId, readAt);
+              } else if (type == 'TYPING') {
+                final userId = data['userId']?.toString() ?? '';
+                final isTyping = data['isTyping'] as bool? ?? false;
+                entry.onTyping?.call(userId, isTyping);
+              } else {
+                final model = ChatMessageModel.fromJson(data);
+                entry.onMessage(model);
+              }
             } catch (e) {
               debugPrint('[ChatWsService] Parse error in chat message frame: $e');
             }
@@ -88,8 +158,38 @@ class ChatWsService implements WsFeatureService {
       );
     } catch (e) {
       debugPrint('[ChatWsService] Error subscribing to conversation topic: $e');
-      return null;
+      entry.stompUnsubscribe = null;
     }
+  }
+
+  StompUnsubscribe? subscribeToConversationTopic({
+    required String conversationId,
+    required void Function(ChatMessageModel message) onMessage,
+    void Function(String readerId, DateTime readAt)? onReadReceipt,
+    void Function(String userId, bool isTyping)? onTyping,
+  }) {
+    // Unsubscribe existing if present
+    _topicSubscriptions[conversationId]?.stompUnsubscribe?.call();
+
+    final entry = _TopicSubscriptionEntry(
+      conversationId: conversationId,
+      onMessage: onMessage,
+      onReadReceipt: onReadReceipt,
+      onTyping: onTyping,
+    );
+    _topicSubscriptions[conversationId] = entry;
+
+    if (webSocketService.isConnected) {
+      _subscribeTopicInternal(entry);
+    }
+
+    return ({Map<String, String>? unsubscribeHeaders}) {
+      entry.stompUnsubscribe?.call(unsubscribeHeaders: unsubscribeHeaders);
+      entry.stompUnsubscribe = null;
+      if (_topicSubscriptions[conversationId] == entry) {
+        _topicSubscriptions.remove(conversationId);
+      }
+    };
   }
 
   bool get isConnected => webSocketService.isConnected;
@@ -99,6 +199,8 @@ class ChatWsService implements WsFeatureService {
     required String content,
     required String tempId,
     String messageType = 'text',
+    List<Map<String, dynamic>>? messageMedia,
+    String? reportId,
   }) {
     if (!webSocketService.isConnected) {
       debugPrint('[ChatWsService] WebSocket is not connected, cannot send via WS');
@@ -111,6 +213,8 @@ class ChatWsService implements WsFeatureService {
         'content': content,
         'tempId': tempId,
         'messageType': messageType,
+        if (messageMedia != null && messageMedia.isNotEmpty) 'messageMedia': messageMedia,
+        if (reportId != null && reportId.isNotEmpty) 'reportId': reportId,
       };
 
       debugPrint('[ChatWsService] Sending message via WS to /smartspace/chat.send: $payload');
@@ -125,16 +229,64 @@ class ChatWsService implements WsFeatureService {
     }
   }
 
+  bool sendMarkAsRead(String conversationId) {
+    if (!webSocketService.isConnected) {
+      return false;
+    }
+    try {
+      webSocketService.send(
+        destination: '/smartspace/chat.read',
+        body: dart_convert.jsonEncode({'conversationId': conversationId}),
+      );
+      return true;
+    } catch (e) {
+      debugPrint('[ChatWsService] Error sending mark as read via WS: $e');
+      return false;
+    }
+  }
+
+  bool sendTyping({required String conversationId, required bool isTyping}) {
+    if (!webSocketService.isConnected) {
+      return false;
+    }
+    try {
+      webSocketService.send(
+        destination: '/smartspace/chat.typing',
+        body: dart_convert.jsonEncode({
+          'conversationId': conversationId,
+          'isTyping': isTyping,
+        }),
+      );
+      return true;
+    } catch (e) {
+      debugPrint('[ChatWsService] Error sending typing via WS: $e');
+      return false;
+    }
+  }
+
   @override
   void reset() {
     _conversationsSub?.call();
     _conversationsSub = null;
+    _unreadSub?.call();
+    _unreadSub = null;
+    for (final entry in _topicSubscriptions.values) {
+      entry.stompUnsubscribe?.call();
+      entry.stompUnsubscribe = null;
+    }
   }
 
   @override
   void dispose() {
     _conversationsSub?.call();
     _conversationsSub = null;
+    _unreadSub?.call();
+    _unreadSub = null;
+    for (final entry in _topicSubscriptions.values) {
+      entry.stompUnsubscribe?.call();
+      entry.stompUnsubscribe = null;
+    }
+    _topicSubscriptions.clear();
     _conversationListeners.clear();
     _unreadListeners.clear();
   }

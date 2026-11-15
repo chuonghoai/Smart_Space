@@ -6,6 +6,7 @@ import 'package:mobile_shared/core/auth/token_storage.dart';
 import 'package:mobile_shared/core/config/env_config.dart';
 import 'package:mobile_shared/core/connection/connection_state_provider.dart';
 import 'package:mobile_shared/core/exceptions/connection_exception.dart';
+import 'package:mobile_shared/core/websocket/ws_feature_service.dart';
 import 'package:mobile_shared/features/auth/services/auth_service.dart';
 
 enum WebSocketStatus { disconnected, connecting, connected, error }
@@ -102,11 +103,14 @@ class WebSocketService extends ChangeNotifier {
     if (!(_connectionCompleter?.isCompleted ?? true)) {
       _connectionCompleter?.complete(true);
     }
+    // Kích hoạt toàn bộ feature services đã đăng ký lắng nghe STOMP destinations
+    WsServicesRegistry.setupAll();
   }
 
   void _onDisconnected(StompFrame frame) {
-    debugPrint('🔴 [WS] Dis connect!');
+    debugPrint('🔴 [WS] Disconnected!');
     _setStatus(WebSocketStatus.disconnected);
+    WsServicesRegistry.resetAll();
   }
 
   void _onError(StompFrame frame) {

@@ -100,6 +100,8 @@ class ChatApiService {
     required String content,
     String? tempId,
     String messageType = 'text',
+    List<Map<String, dynamic>>? messageMedia,
+    String? reportId,
   }) async {
     return apiClient.post<ChatMessageModel>(
       '/chat-messages',
@@ -108,6 +110,8 @@ class ChatApiService {
         'content': content,
         'tempId': tempId,
         'messageType': messageType,
+        if (messageMedia != null && messageMedia.isNotEmpty) 'messageMedia': messageMedia,
+        if (reportId != null && reportId.isNotEmpty) 'reportId': reportId,
       },
       decoder: (json) => ChatMessageModel.fromJson(json as Map<String, dynamic>),
     );

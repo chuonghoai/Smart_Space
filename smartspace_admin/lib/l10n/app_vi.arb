@@ -930,4 +930,19 @@
   "adminTotalBadge": "Tổng",
   "loadMoreActivitiesFailed": "Không tải thêm được hoạt động",
   "allActivitiesLoaded": "Đã hiển thị tất cả hoạt động"
+  "chooseFromGallery": "Chọn ảnh từ thư viện",
+  "chooseVideo": "Chọn video",
+  "takePhoto": "Chụp ảnh",
+  "attachReport": "Đính kèm phản ánh",
+  "markAsRead": "Đánh dấu đã đọc",
+  "typingText": "đang nhập...",
+  "pressAndHoldToRecord": "Nhấn giữ để ghi âm",
+  "slideLeftToCancel": "Trượt sang để hủy",
+  "releaseToCancel": "Thả để hủy",
+  "selectReportToAttach": "Chọn phản ánh để gửi",
+  "noPositionsAvailable": "Không có chức vụ nào",
+  "voiceMessageSnippet": "Tin nhắn thoại",
+  "imageSnippet": "Hình ảnh",
+  "videoSnippet": "Video",
+  "attachedReportSnippet": "Phản ánh đính kèm"
 }

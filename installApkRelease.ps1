@@ -1,14 +1,110 @@
-﻿# Bật bảng mã UTF-8 cho console để hiển thị đúng dấu tiếng Việt
+﻿# ==============================================================================
+# SMART SPACE - CÀI ĐẶT APK RELEASE VÀO THIẾT BỊ ANDROID (ADB)
+# Hỗ trợ tùy chọn 0 - 3 ứng dụng: client, admin, staff (mặc định: tất cả)
+# ==============================================================================
+
+[CmdletBinding()]
+param(
+    [Parameter(Position = 0, ValueFromRemainingArguments = $true)]
+    [string[]]$Apps
+)
+
+# Bật bảng mã UTF-8 cho console để hiển thị đúng dấu tiếng Việt
 chcp 65001 > $null
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
 [Console]::InputEncoding  = [System.Text.Encoding]::UTF8
 $OutputEncoding           = [System.Text.Encoding]::UTF8
 
+$rootPath = $PSScriptRoot
+
+# 1. Định nghĩa danh mục 3 ứng dụng
+$allAppDefinitions = @(
+    @{
+        Key   = "client"
+        Name  = "Client"
+        Paths = @(
+            "$rootPath\smartspace_client\build\app\outputs\flutter-apk\app-release.apk",
+            "$rootPath\smartspace_client\build\app\outputs\apk\release\app-release.apk"
+        )
+    },
+    @{
+        Key   = "admin"
+        Name  = "Admin"
+        Paths = @(
+            "$rootPath\smartspace_admin\build\app\outputs\flutter-apk\app-release.apk",
+            "$rootPath\smartspace_admin\build\app\outputs\apk\release\app-release.apk"
+        )
+    },
+    @{
+        Key   = "staff"
+        Name  = "Staff"
+        Paths = @(
+            "$rootPath\smartspace_staff\build\app\outputs\flutter-apk\app-release.apk",
+            "$rootPath\smartspace_staff\build\app\outputs\apk\release\app-release.apk"
+        )
+    }
+)
+
+$validKeys = @("client", "admin", "staff")
+
+# Phân tách và chuẩn hóa tham số đầu vào
+$rawTokens = @()
+if ($Apps) {
+    foreach ($item in $Apps) {
+        if (-not [string]::IsNullOrWhiteSpace($item)) {
+            $splitItems = $item -split '[,;\s]+'
+            foreach ($s in $splitItems) {
+                $t = $s.Trim().ToLower()
+                if ($t) {
+                    $rawTokens += $t
+                }
+            }
+        }
+    }
+}
+
+# Kiểm tra các token không hợp lệ (nếu có)
+$invalidTokens = $rawTokens | Where-Object { $_ -notin $validKeys -and $_ -ne "all" }
+if ($invalidTokens) {
+    Write-Host "[CẢNH BÁO] Bỏ qua các từ khóa không hợp lệ: $($invalidTokens -join ', ')" -ForegroundColor Yellow
+    Write-Host "Các từ khóa hợp lệ: client, admin, staff (hoặc all)" -ForegroundColor Gray
+}
+
+# Xác định danh sách app mục tiêu
+$targetKeys = @()
+if ($rawTokens.Count -eq 0 -or $rawTokens -contains "all") {
+    $targetKeys = $validKeys
+} else {
+    foreach ($token in $rawTokens) {
+        if ($token -in $validKeys -and $token -notin $targetKeys) {
+            $targetKeys += $token
+        }
+    }
+}
+
+if ($targetKeys.Count -eq 0) {
+    Write-Host "[LỖI] Không có ứng dụng hợp lệ nào được chọn để cài đặt!" -ForegroundColor Red
+    Write-Host "Vui lòng chỉ định một hoặc nhiều từ khóa hợp lệ: client, admin, staff (hoặc không truyền tham số để cài cả 3)." -ForegroundColor Yellow
+    exit 1
+}
+
+# Lọc danh sách app cần xử lý theo thứ tự chỉ định
+$appList = @()
+foreach ($key in $targetKeys) {
+    $match = $allAppDefinitions | Where-Object { $_.Key -eq $key }
+    if ($match) {
+        $appList += $match
+    }
+}
+
+$appNamesText = ($appList.Name) -join ", "
+
 Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host "    SMART SPACE - CÀI ĐẶT APK RELEASE" -ForegroundColor Cyan
 Write-Host "==========================================" -ForegroundColor Cyan
+Write-Host "Ứng dụng được chọn: $appNamesText" -ForegroundColor Yellow
 
-# 1. Kiểm tra lệnh adb
+# 2. Kiểm tra lệnh adb
 $adbExe = "adb"
 if (-not (Get-Command adb -ErrorAction SilentlyContinue)) {
     # Thử tìm trong thư mục Android SDK mặc định trên Windows
@@ -22,7 +118,7 @@ if (-not (Get-Command adb -ErrorAction SilentlyContinue)) {
     }
 }
 
-# 2. Quét danh sách thiết bị đang kết nối
+# 3. Quét danh sách thiết bị đang kết nối
 Write-Host ""
 Write-Host "Đang quét các thiết bị kết nối qua adb..." -ForegroundColor Gray
 $rawDevices = adb devices -l 2>&1
@@ -55,9 +151,16 @@ if ($devices.Count -eq 0) {
     exit 0
 }
 
-# 3. Hiển thị danh sách và hỏi người dùng muốn cài đặt cho thiết bị nào
+# 4. Hiển thị danh sách và hỏi người dùng muốn cài đặt cho thiết bị nào
 Write-Host ""
-Write-Host "Muốn tải 3 app release (admin, client và staff) cho thiết bị nào:" -ForegroundColor Green
+$promptTargetText = if ($appList.Count -eq 3) {
+    "cả 3 app release ($appNamesText)"
+} elseif ($appList.Count -eq 1) {
+    "app release $appNamesText"
+} else {
+    "$($appList.Count) app release ($appNamesText)"
+}
+Write-Host "Muốn cài đặt $promptTargetText cho thiết bị nào:" -ForegroundColor Green
 for ($i = 0; $i -lt $devices.Count; $i++) {
     $dev = $devices[$i]
     $num = $i + 1
@@ -99,35 +202,7 @@ if ($targetDevice.State -ne "device") {
 Write-Host ""
 Write-Host "Đã chọn thiết bị: $($targetDevice.Model) ($($targetDevice.Serial))" -ForegroundColor Cyan
 
-# 4. Kiểm tra sự tồn tại của 3 file APK release
-$rootPath = $PSScriptRoot
-$appList = @(
-    @{
-        Key   = "client"
-        Name  = "Client"
-        Paths = @(
-            "$rootPath\smartspace_client\build\app\outputs\flutter-apk\app-release.apk",
-            "$rootPath\smartspace_client\build\app\outputs\apk\release\app-release.apk"
-        )
-    },
-    @{
-        Key   = "admin"
-        Name  = "Admin"
-        Paths = @(
-            "$rootPath\smartspace_admin\build\app\outputs\flutter-apk\app-release.apk",
-            "$rootPath\smartspace_admin\build\app\outputs\apk\release\app-release.apk"
-        )
-    },
-    @{
-        Key   = "staff"
-        Name  = "Staff"
-        Paths = @(
-            "$rootPath\smartspace_staff\build\app\outputs\flutter-apk\app-release.apk",
-            "$rootPath\smartspace_staff\build\app\outputs\apk\release\app-release.apk"
-        )
-    }
-)
-
+# 5. Kiểm tra sự tồn tại của file APK release của các app đã chọn
 $foundApps = @()
 $missingApps = @()
 
@@ -144,6 +219,7 @@ foreach ($app in $appList) {
 
     if ($null -ne $existingPath) {
         $foundApps += [PSCustomObject]@{
+            Key  = $app.Key
             Name = $app.Name
             Path = $existingPath
         }
@@ -157,22 +233,23 @@ foreach ($app in $appList) {
 # Xử lý số lượng file tìm thấy
 if ($foundApps.Count -eq 0) {
     Write-Host ""
-    Write-Host "[LỖI] Không tìm thấy bất kỳ file APK release nào!" -ForegroundColor Red
-    Write-Host "Vui lòng thực hiện build release trước bằng lệnh: npm run build-all:release" -ForegroundColor Yellow
+    Write-Host "[LỖI] Không tìm thấy bất kỳ file APK release nào cho các ứng dụng đã chọn ($appNamesText)!" -ForegroundColor Red
+    $suggestBuild = if ($appList.Count -eq 1) { "npm run $($appList[0].Key):build (hoặc npm run build:release)" } else { "npm run build:release" }
+    Write-Host "Vui lòng thực hiện build release trước bằng lệnh: $suggestBuild" -ForegroundColor Yellow
     exit 1
-} elseif ($foundApps.Count -lt 3) {
+} elseif ($foundApps.Count -lt $appList.Count) {
     Write-Host ""
-    $confirm = Read-Host "hiện phát hiện $($foundApps.Count) file apk, có tiến hành cài đặt hay ko? (y/n)"
+    $confirm = Read-Host "Hiện chỉ tìm thấy $($foundApps.Count)/$($appList.Count) file APK, có tiến hành cài đặt hay ko? (y/n)"
     if ($confirm.Trim() -notmatch '^(y|yes)$') {
         Write-Host "Đã hủy tiến trình cài đặt." -ForegroundColor Yellow
         exit 0
     }
 } else {
     Write-Host ""
-    Write-Host "Đã tìm thấy đầy đủ 3/3 file APK release." -ForegroundColor Green
+    Write-Host "Đã tìm thấy đầy đủ $($foundApps.Count)/$($appList.Count) file APK release." -ForegroundColor Green
 }
 
-# 5. Tiến hành cài đặt các app vào thiết bị đã chọn với hiệu ứng xoay vòng
+# 6. Tiến hành cài đặt các app vào thiết bị đã chọn với hiệu ứng xoay vòng
 Write-Host ""
 Write-Host "==========================================" -ForegroundColor Cyan
 Write-Host "TIẾN HÀNH CÀI ĐẶT VÀO $($targetDevice.Model) ($($targetDevice.Serial))..." -ForegroundColor Cyan

@@ -115,6 +115,156 @@ abstract class SharedLocalizations {
   /// In vi, this message translates to:
   /// **'Đang gửi tin nhắn...'**
   String get sendingMessage;
+
+  /// No description provided for @markAsRead.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đánh dấu đã đọc'**
+  String get markAsRead;
+
+  /// No description provided for @selectReportToAttach.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn phản ánh để gửi'**
+  String get selectReportToAttach;
+
+  /// No description provided for @typingText.
+  ///
+  /// In vi, this message translates to:
+  /// **'đang nhập...'**
+  String get typingText;
+
+  /// No description provided for @pressAndHoldToRecord.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhấn giữ để ghi âm'**
+  String get pressAndHoldToRecord;
+
+  /// No description provided for @slideLeftToCancel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trượt sang để hủy'**
+  String get slideLeftToCancel;
+
+  /// No description provided for @releaseToCancel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thả để hủy'**
+  String get releaseToCancel;
+
+  /// No description provided for @micPermissionRequired.
+  ///
+  /// In vi, this message translates to:
+  /// **'Vui lòng cấp quyền truy cập microphone để ghi âm'**
+  String get micPermissionRequired;
+
+  /// No description provided for @attachedReport.
+  ///
+  /// In vi, this message translates to:
+  /// **'Phản ánh đính kèm'**
+  String get attachedReport;
+
+  /// No description provided for @tapToViewReport.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhấn để xem chi tiết'**
+  String get tapToViewReport;
+
+  /// No description provided for @cannotPlayVideo.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể phát video'**
+  String get cannotPlayVideo;
+
+  /// No description provided for @downloadMedia.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tải xuống'**
+  String get downloadMedia;
+
+  /// No description provided for @downloadingMedia.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang tải xuống...'**
+  String get downloadingMedia;
+
+  /// No description provided for @downloadSuccess.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã lưu vào thiết bị thành công'**
+  String get downloadSuccess;
+
+  /// No description provided for @downloadFailed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tải xuống thất bại'**
+  String get downloadFailed;
+
+  /// No description provided for @holdToRecordPrompt.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nhấn giữ để bắt đầu thu âm'**
+  String get holdToRecordPrompt;
+
+  /// No description provided for @recordingAudio.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang thu âm...'**
+  String get recordingAudio;
+
+  /// No description provided for @discardAudio.
+  ///
+  /// In vi, this message translates to:
+  /// **'Hủy'**
+  String get discardAudio;
+
+  /// No description provided for @sendAudio.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gửi'**
+  String get sendAudio;
+
+  /// No description provided for @mediaOptions.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tùy chọn phương tiện'**
+  String get mediaOptions;
+
+  /// No description provided for @seekBack10s.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lùi 10 giây'**
+  String get seekBack10s;
+
+  /// No description provided for @seekForward10s.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tua tới 10 giây'**
+  String get seekForward10s;
+
+  /// No description provided for @playbackPreview.
+  ///
+  /// In vi, this message translates to:
+  /// **'Nghe lại âm thanh'**
+  String get playbackPreview;
+
+  /// No description provided for @retry.
+  ///
+  /// In vi, this message translates to:
+  /// **'Thử lại'**
+  String get retry;
+
+  /// No description provided for @noLinkedReportsAvailable.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có phản ánh liên kết khả dụng'**
+  String get noLinkedReportsAvailable;
+
+  /// No description provided for @errorLoadingReports.
+  ///
+  /// In vi, this message translates to:
+  /// **'Lỗi tải danh sách phản ánh'**
+  String get errorLoadingReports;
 }
 
 class _SharedLocalizationsDelegate

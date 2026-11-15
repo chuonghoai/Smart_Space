@@ -47,18 +47,18 @@ class _AdminConversationsScreenState extends ConsumerState<AdminConversationsScr
     }
   }
 
-  void _openPositionFilter(BuildContext context, AdminConversationsState state) {
+  Future<void> _openPositionFilter(BuildContext context, AdminConversationsState state) async {
     if (state.availablePositions.isEmpty && !state.isLoadingPositions) {
       ref.read(adminConversationsProvider.notifier).loadPositions();
     }
-    PositionFilterSheet.show(
-      context: context,
+    final newSelected = await PositionFilterSheet.show(
+      context,
       positions: state.availablePositions,
-      selectedIds: state.selectedPositionIds,
-      onToggle: (id) => ref.read(adminConversationsProvider.notifier).togglePosition(id),
-      onClear: () => ref.read(adminConversationsProvider.notifier).clearPositions(),
-      onApply: () {},
+      initialSelected: state.selectedPositionIds,
     );
+    if (newSelected != null) {
+      ref.read(adminConversationsProvider.notifier).applyPositions(newSelected);
+    }
   }
 
   @override
@@ -142,42 +142,107 @@ class _AdminConversationsScreenState extends ConsumerState<AdminConversationsScr
 
         // Position Filter right below the 4 tabs
         if (state.activeFilter == 'staff' || state.activeFilter == 'all')
-          Padding(
+          Container(
+            height: 42,
             padding: const EdgeInsets.fromLTRB(16, 4, 16, 6),
             child: Row(
               children: [
-                ActionChip(
-                  avatar: Icon(
-                    Icons.filter_list_rounded,
-                    size: 16,
-                    color: state.selectedPositionIds.isNotEmpty
-                        ? theme.colorScheme.primary
-                        : theme.colorScheme.onSurfaceVariant,
-                  ),
-                  label: Text(
-                    state.selectedPositionIds.isEmpty
-                        ? l10n.filterPosition
-                        : '${l10n.filterPosition} (${state.selectedPositionIds.length})',
-                    style: TextStyle(
+                InkWell(
+                  onTap: () => _openPositionFilter(context, state),
+                  borderRadius: BorderRadius.circular(10),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                    decoration: BoxDecoration(
                       color: state.selectedPositionIds.isNotEmpty
-                          ? theme.colorScheme.primary
-                          : theme.colorScheme.onSurface,
-                      fontWeight: state.selectedPositionIds.isNotEmpty ? FontWeight.bold : FontWeight.normal,
-                      fontSize: 12,
+                          ? theme.colorScheme.primaryContainer.withValues(alpha: 0.8)
+                          : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
+                      borderRadius: BorderRadius.circular(10),
+                      border: Border.all(
+                        color: state.selectedPositionIds.isNotEmpty
+                            ? theme.colorScheme.primary.withValues(alpha: 0.5)
+                            : theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+                        width: 1,
+                      ),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.tune_rounded,
+                          size: 16,
+                          color: state.selectedPositionIds.isNotEmpty
+                              ? theme.colorScheme.onPrimaryContainer
+                              : theme.colorScheme.onSurfaceVariant,
+                        ),
+                        const SizedBox(width: 5),
+                        Text(
+                          state.selectedPositionIds.isNotEmpty
+                              ? '${l10n.filterPosition} (${state.selectedPositionIds.length})'
+                              : l10n.filterPosition,
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: state.selectedPositionIds.isNotEmpty
+                                ? theme.colorScheme.onPrimaryContainer
+                                : theme.colorScheme.onSurfaceVariant,
+                            fontWeight: state.selectedPositionIds.isNotEmpty ? FontWeight.bold : FontWeight.w500,
+                          ),
+                        ),
+                      ],
                     ),
                   ),
-                  onPressed: () => _openPositionFilter(context, state),
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
                 ),
                 if (state.selectedPositionIds.isNotEmpty) ...[
                   const SizedBox(width: 8),
-                  GestureDetector(
-                    onTap: notifier.clearPositions,
-                    child: Text(
-                      l10n.clearFilters,
-                      style: theme.textTheme.labelSmall?.copyWith(
-                        color: theme.colorScheme.error,
-                      ),
+                  Container(
+                    width: 1,
+                    height: 20,
+                    color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: ListView.separated(
+                      scrollDirection: Axis.horizontal,
+                      itemCount: state.availablePositions
+                          .where((p) => state.selectedPositionIds.contains(p.id))
+                          .length,
+                      separatorBuilder: (_, __) => const SizedBox(width: 6),
+                      itemBuilder: (context, idx) {
+                        final selectedPositions = state.availablePositions
+                            .where((p) => state.selectedPositionIds.contains(p.id))
+                            .toList();
+                        final pos = selectedPositions[idx];
+                        return Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.secondaryContainer.withValues(alpha: 0.6),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(
+                              color: theme.colorScheme.secondary.withValues(alpha: 0.3),
+                              width: 1,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                pos.name,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: theme.colorScheme.onSecondaryContainer,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              const SizedBox(width: 4),
+                              GestureDetector(
+                                onTap: () => notifier.togglePosition(pos.id),
+                                child: Icon(
+                                  Icons.close_rounded,
+                                  size: 14,
+                                  color: theme.colorScheme.onSecondaryContainer,
+                                ),
+                              ),
+                            ],
+                          ),
+                        );
+                      },
                     ),
                   ),
                 ],
@@ -244,6 +309,9 @@ class _AdminConversationsScreenState extends ConsumerState<AdminConversationsScr
 
                           final conversation = state.conversations[index];
                           final isSelected = isDesktop && _selectedConversationId == conversation.id;
+                          final displayName = conversation.isAnonymous
+                              ? l10n.anonymousUser
+                              : (conversation.partnerName ?? conversation.name ?? l10n.conversations);
 
                           return AdminConversationItem(
                             conversation: conversation,
@@ -255,6 +323,17 @@ class _AdminConversationsScreenState extends ConsumerState<AdminConversationsScr
                               } else {
                                 context.push(RouterPath.chatDetailWithId(conversation.id));
                               }
+                            },
+                            onLongPress: () {
+                              ConversationOptionsSheet.show(
+                                context: context,
+                                conversation: conversation,
+                                partnerDisplayName: displayName,
+                                onMarkAsRead: () {
+                                  chatWsService.sendMarkAsRead(conversation.id);
+                                  notifier.markAsReadLocally(conversation.id);
+                                },
+                              );
                             },
                           );
                         },

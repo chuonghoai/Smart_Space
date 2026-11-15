@@ -27,6 +27,11 @@ dependencies:
   uuid: ^4.4.0
   flutter_local_notifications: ^22.3.0
   url_launcher: ^6.3.2
+  path_provider: ^2.1.5
+  record: 6.2.1
+  audioplayers: 6.7.1
+  video_player: 2.11.1
+  gal: ^2.3.3
   # Chỉ dùng trong lib/features/map/cluster (không export qua mobile_shared.dart)
   mapbox_maps_flutter: ^2.30.0
 

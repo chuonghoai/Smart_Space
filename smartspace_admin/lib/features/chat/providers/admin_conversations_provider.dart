@@ -85,6 +85,7 @@ class AdminConversationsNotifier extends StateNotifier<AdminConversationsState> 
         _wsService = wsService ?? chatWsService,
         super(const AdminConversationsState()) {
     _wsService.addConversationListener(_handleWsConversationUpdate);
+    _wsService.addUnreadListener(_onTotalUnreadWsUpdate);
     loadInitial('all');
     loadPositions();
     refreshUnreadCount();
@@ -95,7 +96,13 @@ class AdminConversationsNotifier extends StateNotifier<AdminConversationsState> 
     _isDisposed = true;
     _searchDebounce?.cancel();
     _wsService.removeConversationListener(_handleWsConversationUpdate);
+    _wsService.removeUnreadListener(_onTotalUnreadWsUpdate);
     super.dispose();
+  }
+
+  void _onTotalUnreadWsUpdate(int totalUnread) {
+    if (_isDisposed) return;
+    state = state.copyWith(totalUnreadCount: totalUnread);
   }
 
   Future<void> refreshUnreadCount() async {
@@ -145,6 +152,11 @@ class AdminConversationsNotifier extends StateNotifier<AdminConversationsState> 
       next.add(positionId);
     }
     state = state.copyWith(selectedPositionIds: next);
+    loadInitial(state.activeFilter);
+  }
+
+  void applyPositions(Set<String> positions) {
+    state = state.copyWith(selectedPositionIds: Set<String>.from(positions));
     loadInitial(state.activeFilter);
   }
 
@@ -263,6 +275,12 @@ class AdminConversationsNotifier extends StateNotifier<AdminConversationsState> 
 
   void _handleWsConversationUpdate(ConversationModel updatedConv) {
     if (_isDisposed) return;
+
+    if (updatedConv.totalUnreadCount != null) {
+      state = state.copyWith(totalUnreadCount: updatedConv.totalUnreadCount!);
+    } else {
+      refreshUnreadCount();
+    }
 
     // Filter check: If activeFilter is specific, check if it matches
     final partnerRole = updatedConv.partnerRole?.toLowerCase();

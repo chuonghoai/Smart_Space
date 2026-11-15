@@ -1117,6 +1117,11 @@ public class ReportServiceImpl implements IReportService {
         }
         int total = byStatus.values().stream().mapToInt(Integer::intValue).sum();
 
+        // Count rehandling: processing + processed with isReviewResolved = false
+        long rehandlingCount = reportRepository.countByStatusAndIsReviewResolved(EReportStatus.processed, false)
+                + reportRepository.countByStatusAndIsReviewResolved(EReportStatus.processing, false);
+        byStatus.put("rehandling", (int) rehandlingCount);
+
         // Count by severity
         List<Object[]> severityRows = reportRepository.countGroupBySeverity();
         Map<String, Integer> bySeverity = new LinkedHashMap<>();
@@ -1163,10 +1168,15 @@ public class ReportServiceImpl implements IReportService {
 
         // 1. Parse enums (null = no filter)
         EReportStatus statusEnum = null;
+        Boolean isRehandling = null;
         if (status != null && !status.trim().isEmpty() && !"all".equalsIgnoreCase(status)) {
-            try {
-                statusEnum = EReportStatus.valueOf(status.toLowerCase());
-            } catch (Exception ignored) {
+            if ("rehandling".equalsIgnoreCase(status.trim()) || "reprocess".equalsIgnoreCase(status.trim())) {
+                isRehandling = true;
+            } else {
+                try {
+                    statusEnum = EReportStatus.valueOf(status.toLowerCase());
+                } catch (Exception ignored) {
+                }
             }
         }
         EReportSeverity severityEnum = null;
@@ -1198,7 +1208,7 @@ public class ReportServiceImpl implements IReportService {
         int safeSize = Math.max(1, Math.min(size, 100));
         PageRequest pageable = PageRequest.of(safePage - 1, safeSize);
         Page<Report> reportPage = reportRepository.findAllFiltered(
-                statusEnum, severityEnum, assigneeParam, fromDt, toDt, searchParam, pageable);
+                statusEnum, isRehandling, severityEnum, assigneeParam, fromDt, toDt, searchParam, pageable);
 
         // 5. Map Report -> RecentReportResponse (bổ sung userName, userEmail)
         List<RecentReportResponse> content = reportPage.getContent().stream().map(r -> {

@@ -22,6 +22,7 @@ class ReportFilterBar extends ConsumerWidget {
       'processing': l10n.processingStatus,
       'processed': l10n.resolvedReports,
       'rejected': l10n.rejectedReports,
+      'rehandling': l10n.rehandlingBadge,
     };
     final severityItems = {
       '': l10n.all,

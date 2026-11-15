@@ -30,8 +30,16 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
   StaffModel? _selectedStaff;
   String? _positionFilter;
   String _selectedSeverity = 'medium';
+  final _searchController = TextEditingController();
+  String _searchQuery = '';
 
   static const _severities = ['low', 'medium', 'high', 'critical'];
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -41,17 +49,35 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
     final staffsAsync = ref.watch(mapStaffListProvider);
     final assignState = ref.watch(reportAssignProvider);
 
-    return Container(
-      constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.7,
-      ),
-      decoration: BoxDecoration(
-        color: cs.surface,
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
+    final mq = MediaQuery.of(context);
+    final bottomInset = mq.viewInsets.bottom;
+    final isKeyboardOpen = bottomInset > 0;
+    final topPadding = mq.padding.top;
+
+    final maxHeight = isKeyboardOpen
+        ? (mq.size.height - bottomInset - topPadding - 16)
+        : (mq.size.height * 0.75);
+
+    return AnimatedPadding(
+      padding: EdgeInsets.only(bottom: bottomInset),
+      duration: const Duration(milliseconds: 180),
+      curve: Curves.easeOutCubic,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOutCubic,
+        constraints: BoxConstraints(
+          maxHeight: maxHeight,
+        ),
+        decoration: BoxDecoration(
+          color: cs.surface,
+          borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+        ),
+        child: SafeArea(
+          top: false,
+          bottom: !isKeyboardOpen,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
           // Handle bar
           Padding(
             padding: const EdgeInsets.only(top: 12, bottom: 4),
@@ -106,7 +132,35 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
             onChanged: (id) => setState(() => _positionFilter = id),
           ),
 
-          const Divider(height: 20),
+          // Search bar
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                isDense: true,
+                hintText: l10n.searchStaffHint,
+                prefixIcon: const Icon(Icons.search, size: 20),
+                suffixIcon: _searchQuery.isNotEmpty
+                    ? IconButton(
+                        icon: const Icon(Icons.clear, size: 18),
+                        onPressed: () {
+                          _searchController.clear();
+                          setState(() => _searchQuery = '');
+                        },
+                      )
+                    : null,
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 12, vertical: 8),
+              ),
+              onChanged: (v) => setState(() => _searchQuery = v),
+            ),
+          ),
+
+          Divider(height: isKeyboardOpen ? 10 : 20),
 
           // Staff list
           Flexible(
@@ -119,11 +173,16 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
                     style: TextStyle(color: cs.error, fontSize: 12)),
               ),
               data: (allStaffs) {
-                final staffs = _positionFilter == null
+                var staffs = _positionFilter == null
                     ? allStaffs
                     : allStaffs
                         .where((s) => s.positionId == _positionFilter)
                         .toList();
+                if (_searchQuery.trim().isNotEmpty) {
+                  staffs = staffs
+                      .where((s) => _ViSearchHelper.matches(s, _searchQuery))
+                      .toList();
+                }
                 if (staffs.isEmpty) {
                   return Padding(
                     padding: const EdgeInsets.all(24),
@@ -135,7 +194,7 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
                   shrinkWrap: true,
                   padding: const EdgeInsets.symmetric(horizontal: 8),
                   itemCount: staffs.length,
-                  separatorBuilder: (_, __) => const Divider(height: 1),
+                  separatorBuilder: (_, _) => const Divider(height: 1),
                   itemBuilder: (_, i) {
                     final staff = staffs[i];
                     final selected = _selectedStaff?.id == staff.id;
@@ -212,7 +271,7 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
 
           // Severity selection
           Padding(
-            padding: const EdgeInsets.fromLTRB(16, 12, 16, 4),
+            padding: EdgeInsets.fromLTRB(16, isKeyboardOpen ? 6 : 12, 16, 4),
             child: Align(
               alignment: Alignment.centerLeft,
               child: Text(l10n.mapSelectSeverity,
@@ -226,7 +285,7 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
               children: _severities.map((s) {
                 final selected = _selectedSeverity == s;
                 return ChoiceChip(
-                  label: Text(s.toUpperCase()),
+                  label: Text(_getSeverityLabel(s, l10n)),
                   selected: selected,
                   onSelected: (_) =>
                       setState(() => _selectedSeverity = s),
@@ -244,7 +303,12 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
 
           // Confirm button
           Padding(
-            padding: const EdgeInsets.all(16),
+            padding: EdgeInsets.fromLTRB(
+              16,
+              isKeyboardOpen ? 8 : 16,
+              16,
+              isKeyboardOpen ? 8 : 16,
+            ),
             child: SizedBox(
               width: double.infinity,
               child: FilledButton.icon(
@@ -264,6 +328,8 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
             ),
           ),
         ],
+      ),
+        ),
       ),
     );
   }
@@ -294,5 +360,43 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
       'high' || 'critical' => cs.error,
       _ => cs.outline,
     };
+  }
+
+  String _getSeverityLabel(String s, AppLocalizations l10n) =>
+      switch (s.toLowerCase()) {
+        'low' => l10n.severityLow,
+        'medium' => l10n.severityMedium,
+        'high' => l10n.severityHigh,
+        'critical' => l10n.severityCritical,
+        _ => s,
+      };
+}
+
+class _ViSearchHelper {
+  static const _d =
+      'àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđĐÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴÈÉẸẺẼÊỀẾỆỂỄÌÍỊỈĨÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠÙÚỤỦŨƯỪỨỰỬỮỲÝỴỶỸ';
+  static const _nd =
+      'aaaaaaaaaaaaaaaaaeeeeeeeeeeeiiiiiooooooooooooooooouuuuuuuuuuuyyyyydDAAAAAAAAAAAAAAAAAEEEEEEEEEEEIIIIIOOOOOOOOOOOOOOOOOUUUUUUUUUUUYYYYY';
+
+  static String strip(String s) {
+    var r = s;
+    for (int i = 0; i < _d.length; i++) {
+      r = r.replaceAll(_d[i], _nd[i]);
+    }
+    return r;
+  }
+
+  static bool matches(StaffModel staff, String q) {
+    if (q.trim().isEmpty) return true;
+    final qLow = q.trim().toLowerCase();
+    final qStrip = strip(qLow);
+    final name = staff.fullName.toLowerCase();
+    final nameStrip = strip(name);
+    final email = staff.email.toLowerCase();
+    final phone = (staff.phoneNumber ?? '').toLowerCase();
+    return name.contains(qLow) ||
+        nameStrip.contains(qStrip) ||
+        email.contains(qLow) ||
+        phone.contains(qLow);
   }
 }

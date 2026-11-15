@@ -15,6 +15,8 @@ public record ChatMessageRequest(
 
         @NotNull(message = "{chat.messageType.required}") EMessageType messageType, // TEXT hoặc MEDIA
 
-        List<MessageMediaRequest> messageMedia // Danh sách media files (optional)
+        List<MessageMediaRequest> messageMedia, // Danh sách media files (optional)
+
+        String reportId // ID của report đính kèm (nếu là tin nhắn loại REPORT)
 ) {
 }

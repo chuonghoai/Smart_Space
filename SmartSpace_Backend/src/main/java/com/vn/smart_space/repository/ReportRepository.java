@@ -171,6 +171,7 @@ public interface ReportRepository extends JpaRepository<Report, String> {
        // Report list: multi-filter + pageable
        @Query("SELECT r FROM Report r LEFT JOIN r.user u " +
                      "WHERE (:status IS NULL OR r.status = :status) " +
+                     "AND (:isRehandling IS NULL OR (:isRehandling = true AND r.isReviewResolved = false)) " +
                      "AND (:severity IS NULL OR r.severity = :severity) " +
                      "AND (:assigneeId IS NULL OR r.assignedStaff.id = :assigneeId) " +
                      "AND (:from IS NULL OR r.createdAt >= :from) " +
@@ -185,6 +186,7 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                      "ORDER BY r.createdAt DESC")
        Page<Report> findAllFiltered(
                      @Param("status") EReportStatus status,
+                     @Param("isRehandling") Boolean isRehandling,
                      @Param("severity") EReportSeverity severity,
                      @Param("assigneeId") String assigneeId,
                      @Param("from") LocalDateTime from,

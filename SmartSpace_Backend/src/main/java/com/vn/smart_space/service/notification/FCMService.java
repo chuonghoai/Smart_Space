@@ -41,12 +41,15 @@ public class FCMService implements IFCMService {
 
     @Override
     public void sendToToken(String fcmToken, NotificationRequest request) {
+        if (fcmToken == null || fcmToken.isBlank()) {
+            return;
+        }
         try {
             Message message = Message.builder()
                     .setToken(fcmToken)
                     .setNotification(Notification.builder()
-                            .setTitle(request.title())
-                            .setBody(request.body())
+                            .setTitle(request.title() != null ? request.title() : "")
+                            .setBody(request.body() != null ? request.body() : "")
                             .build())
                     .putAllData(request.data() != null ? request.data() : Map.of())
                     .build();
@@ -54,17 +57,24 @@ public class FCMService implements IFCMService {
             String response = FirebaseMessaging.getInstance().send(message);
             log.info("FCM sent: {}", response);
         } catch (FirebaseMessagingException e) {
-            log.error("FCM failed for token {}: {}", fcmToken.substring(0, 20), e.getMessage());
+            String tokenPrefix = fcmToken.length() > 20 ? fcmToken.substring(0, 20) : fcmToken;
+            log.error("FCM failed for token {}: {}", tokenPrefix, e.getMessage());
+        } catch (Exception e) {
+            String tokenPrefix = fcmToken.length() > 20 ? fcmToken.substring(0, 20) : fcmToken;
+            log.error("Unexpected FCM error for token {}: {}", tokenPrefix, e.getMessage());
         }
     }
 
     @Override
     public void sendToMultipleTokens(List<String> tokens, NotificationRequest request) {
+        if (tokens == null || tokens.isEmpty()) {
+            return;
+        }
         MulticastMessage message = MulticastMessage.builder()
                 .addAllTokens(tokens)
                 .setNotification(Notification.builder()
-                        .setTitle(request.title())
-                        .setBody(request.body())
+                        .setTitle(request.title() != null ? request.title() : "")
+                        .setBody(request.body() != null ? request.body() : "")
                         .build())
                 .putAllData(request.data() != null ? request.data() : Map.of())
                 .build();
@@ -75,6 +85,8 @@ public class FCMService implements IFCMService {
                     response.getSuccessCount(), response.getFailureCount());
         } catch (FirebaseMessagingException e) {
             log.error("FCM multicast failed: {}", e.getMessage());
+        } catch (Exception e) {
+            log.error("Unexpected FCM multicast error: {}", e.getMessage());
         }
     }
 }

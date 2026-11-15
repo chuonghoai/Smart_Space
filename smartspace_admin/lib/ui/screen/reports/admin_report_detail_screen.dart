@@ -1351,6 +1351,9 @@ class _AdminReportDetailScreenState
     ThemeData theme,
   ) {
     String? positionFilter;
+    String searchQuery = '';
+    final searchController = TextEditingController();
+
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1360,9 +1363,14 @@ class _AdminReportDetailScreenState
       builder: (bottomSheetContext) {
         return StatefulBuilder(
           builder: (context, setSheetState) {
-            final filtered = positionFilter == null
+            var filtered = positionFilter == null
                 ? staffs
                 : staffs.where((s) => s.positionId == positionFilter).toList();
+            if (searchQuery.trim().isNotEmpty) {
+              filtered = filtered
+                  .where((s) => _ViSearchHelper.matches(s, searchQuery))
+                  .toList();
+            }
 
             return ConstrainedBox(
               constraints: BoxConstraints(
@@ -1388,6 +1396,33 @@ class _AdminReportDetailScreenState
                       selectedId: positionFilter,
                       onChanged: (id) =>
                           setSheetState(() => positionFilter = id),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 16, vertical: 6),
+                      child: TextField(
+                        controller: searchController,
+                        decoration: InputDecoration(
+                          isDense: true,
+                          hintText: l10n.searchStaffHint,
+                          prefixIcon: const Icon(Icons.search, size: 20),
+                          suffixIcon: searchQuery.isNotEmpty
+                              ? IconButton(
+                                  icon: const Icon(Icons.clear, size: 18),
+                                  onPressed: () {
+                                    searchController.clear();
+                                    setSheetState(() => searchQuery = '');
+                                  },
+                                )
+                              : null,
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 8),
+                        ),
+                        onChanged: (v) => setSheetState(() => searchQuery = v),
+                      ),
                     ),
                     const Divider(),
                     if (filtered.isEmpty)
@@ -1496,7 +1531,7 @@ class _AdminReportDetailScreenState
           },
         );
       },
-    );
+    ).whenComplete(() => searchController.dispose());
   }
 
   Widget _buildAssignedStaffTwoColumnCard(
@@ -2437,5 +2472,34 @@ class _AdminReportDetailScreenState
               child: sliderWidget,
             ),
     );
+  }
+}
+
+class _ViSearchHelper {
+  static const _d =
+      'àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđĐÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴÈÉẸẺẼÊỀẾỆỂỄÌÍỊỈĨÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠÙÚỤỦŨƯỪỨỰỬỮỲÝỴỶỸ';
+  static const _nd =
+      'aaaaaaaaaaaaaaaaaeeeeeeeeeeeiiiiiooooooooooooooooouuuuuuuuuuuyyyyydDAAAAAAAAAAAAAAAAAEEEEEEEEEEEIIIIIOOOOOOOOOOOOOOOOOUUUUUUUUUUUYYYYY';
+
+  static String strip(String s) {
+    var r = s;
+    for (int i = 0; i < _d.length; i++) {
+      r = r.replaceAll(_d[i], _nd[i]);
+    }
+    return r;
+  }
+
+  static bool matches(StaffModel staff, String q) {
+    if (q.trim().isEmpty) return true;
+    final qLow = q.trim().toLowerCase();
+    final qStrip = strip(qLow);
+    final name = staff.fullName.toLowerCase();
+    final nameStrip = strip(name);
+    final email = staff.email.toLowerCase();
+    final phone = (staff.phoneNumber ?? '').toLowerCase();
+    return name.contains(qLow) ||
+        nameStrip.contains(qStrip) ||
+        email.contains(qLow) ||
+        phone.contains(qLow);
   }
 }

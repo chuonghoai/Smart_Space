@@ -2189,4 +2189,47 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get allActivitiesLoaded => 'Đã hiển thị tất cả hoạt động';
+  String get chooseFromGallery => 'Chọn ảnh từ thư viện';
+
+  @override
+  String get chooseVideo => 'Chọn video';
+
+  @override
+  String get takePhoto => 'Chụp ảnh';
+
+  @override
+  String get attachReport => 'Đính kèm phản ánh';
+
+  @override
+  String get markAsRead => 'Đánh dấu đã đọc';
+
+  @override
+  String get typingText => 'đang nhập...';
+
+  @override
+  String get pressAndHoldToRecord => 'Nhấn giữ để ghi âm';
+
+  @override
+  String get slideLeftToCancel => 'Trượt sang để hủy';
+
+  @override
+  String get releaseToCancel => 'Thả để hủy';
+
+  @override
+  String get selectReportToAttach => 'Chọn phản ánh để gửi';
+
+  @override
+  String get noPositionsAvailable => 'Không có chức vụ nào';
+
+  @override
+  String get voiceMessageSnippet => 'Tin nhắn thoại';
+
+  @override
+  String get imageSnippet => 'Hình ảnh';
+
+  @override
+  String get videoSnippet => 'Video';
+
+  @override
+  String get attachedReportSnippet => 'Phản ánh đính kèm';
 }

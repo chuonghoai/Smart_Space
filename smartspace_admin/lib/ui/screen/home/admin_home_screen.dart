@@ -6,6 +6,8 @@ import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_admin/features/home/application/home_providers.dart';
 import 'package:smartspace_admin/features/home/models/recent_report_model.dart';
 import 'package:smartspace_admin/features/notifications/providers/notification_provider.dart';
+import 'package:smartspace_admin/features/reports/application/report_list_providers.dart';
+import 'package:smartspace_admin/features/reports/models/report_filter_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/layout/app_layout.dart';
@@ -327,6 +329,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
                       Icons.people_outline,
                       theme,
                       Colors.blue,
+                      () => context.push(RouterPath.userManagement),
                     ),
                     _buildStatCard(
                       l10n.staff,
@@ -334,6 +337,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
                       Icons.badge_outlined,
                       theme,
                       Colors.indigo,
+                      () => context.push(RouterPath.staffManagement),
                     ),
                     _buildStatCard(
                       l10n.admins,
@@ -348,6 +352,11 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
                       Icons.warning_amber_rounded,
                       theme,
                       Colors.red,
+                      () {
+                        ref.read(reportFilterProvider.notifier).state =
+                            const ReportFilter(page: 1);
+                        context.push(RouterPath.reportDashboard);
+                      },
                     ),
                     _buildStatCard(
                       l10n.pendingIssues,
@@ -355,6 +364,12 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
                       Icons.hourglass_top_outlined,
                       theme,
                       Colors.orange,
+                      () {
+                        ref.read(reportFilterProvider.notifier).state =
+                            const ReportFilter(page: 1)
+                                .copyWith(status: 'pending');
+                        context.push(RouterPath.reportDashboard);
+                      },
                     ),
                     _buildStatCard(
                       l10n.processingIssues,
@@ -362,6 +377,12 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
                       Icons.autorenew_rounded,
                       theme,
                       Colors.teal,
+                      () {
+                        ref.read(reportFilterProvider.notifier).state =
+                            const ReportFilter(page: 1)
+                                .copyWith(status: 'processing');
+                        context.push(RouterPath.reportDashboard);
+                      },
                     ),
                   ],
                 );
@@ -593,9 +614,16 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
     IconData icon,
     ThemeData theme, [
     Color? customColor,
+    VoidCallback? onTap,
   ]) {
     final color = customColor ?? theme.primaryColor;
-    return Container(
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
         color: theme.cardColor,
@@ -651,6 +679,8 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
             ),
           ),
         ],
+      ),
+        ),
       ),
     );
   }

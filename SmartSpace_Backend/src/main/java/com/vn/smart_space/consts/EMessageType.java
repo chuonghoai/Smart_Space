@@ -7,6 +7,8 @@ public enum EMessageType {
     text, // Tin nhắn văn bản
     image, // Hình ảnh
     video, // Video
+    audio, // Tin nhắn ghi âm thoại
+    report, // Thẻ thông tin phản ánh
     file, // File đính kèm
     system; // Tin nhắn hệ thống (user joined, user left, etc.)
 

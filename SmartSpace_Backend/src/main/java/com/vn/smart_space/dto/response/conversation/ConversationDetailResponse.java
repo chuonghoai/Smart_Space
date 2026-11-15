@@ -5,6 +5,7 @@ import java.util.List;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.vn.smart_space.consts.EConversationType;
+import com.vn.smart_space.consts.EMessageType;
 import com.vn.smart_space.consts.ERole;
 
 import lombok.AllArgsConstructor;
@@ -57,11 +58,18 @@ public class ConversationDetailResponse {
     @Builder.Default
     private Integer unreadCount = 0;
 
+    // Total unread count across all conversations for current user
+    private Integer totalUnreadCount;
+
     // Last message info
     private String lastMessageId;
     private String lastMessageContent;
+    private EMessageType lastMessageType;
     private LocalDateTime lastMessageTime;
     private String lastMessageSenderId;
+
+    // Partner read receipt timestamp for 1-1 conversations
+    private LocalDateTime partnerLastReadAt;
 
     private LocalDateTime createdAt;
 }

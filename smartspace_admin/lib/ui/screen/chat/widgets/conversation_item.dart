@@ -7,12 +7,14 @@ import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
 class AdminConversationItem extends StatelessWidget {
   final ConversationModel conversation;
   final VoidCallback onTap;
+  final VoidCallback? onLongPress;
   final bool isSelected;
 
   const AdminConversationItem({
     super.key,
     required this.conversation,
     required this.onTap,
+    this.onLongPress,
     this.isSelected = false,
   });
 
@@ -27,10 +29,52 @@ class AdminConversationItem extends StatelessWidget {
     } else if (diff.inDays == 1 || (diff.inDays == 0 && now.day != time.day)) {
       return l10n.yesterday;
     } else if (diff.inDays < 7) {
-      return DateFormat('EEE', 'vi').format(time);
+      final localeStr = Localizations.localeOf(context).languageCode;
+      return DateFormat('EEE', localeStr).format(time);
     } else {
       return DateFormat('dd/MM').format(time);
     }
+  }
+
+  String _formatSnippet(String? content, String? messageType, AppLocalizations l10n) {
+    if (messageType != null && messageType.isNotEmpty) {
+      final type = messageType.toUpperCase();
+      if (type == 'AUDIO') {
+        return '[${l10n.voiceMessageSnippet}]';
+      }
+      if (type == 'IMAGE') {
+        return '[${l10n.imageSnippet}]';
+      }
+      if (type == 'VIDEO') {
+        return '[${l10n.videoSnippet}]';
+      }
+      if (type == 'REPORT') {
+        return '[${l10n.attachedReportSnippet}]';
+      }
+      if (type == 'TEXT') {
+        return content ?? '';
+      }
+    }
+
+    if (content == null || content.isEmpty) return '';
+    final trimmed = content.trim();
+    final lower = trimmed.toLowerCase();
+    if (lower == '[tin nhắn thoại]' || lower == '[voice message]') {
+      return '[${l10n.voiceMessageSnippet}]';
+    }
+    if (lower == '[hình ảnh]' || lower == '[photo]' || lower == '[image]') {
+      return '[${l10n.imageSnippet}]';
+    }
+    if (lower == '[video]') {
+      return '[${l10n.videoSnippet}]';
+    }
+    if (lower == '[phản ánh đính kèm]' ||
+        lower == '[phản ánh]' ||
+        lower == '[attached report]' ||
+        lower == '[report]') {
+      return '[${l10n.attachedReportSnippet}]';
+    }
+    return content;
   }
 
   @override
@@ -71,6 +115,7 @@ class AdminConversationItem extends StatelessWidget {
 
     return InkWell(
       onTap: onTap,
+      onLongPress: onLongPress,
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         color: containerColor,
@@ -172,7 +217,9 @@ class AdminConversationItem extends StatelessWidget {
                       ],
                       Expanded(
                         child: Text(
-                          conversation.lastMessageContent ?? l10n.noConversationsSub,
+                          _formatSnippet(conversation.lastMessageContent, conversation.lastMessageType, l10n).isNotEmpty
+                              ? _formatSnippet(conversation.lastMessageContent, conversation.lastMessageType, l10n)
+                              : l10n.noConversationsSub,
                           style: theme.textTheme.bodySmall?.copyWith(
                             color: hasUnread
                                 ? theme.colorScheme.onSurface

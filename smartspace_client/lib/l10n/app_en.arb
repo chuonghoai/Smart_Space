@@ -481,5 +481,23 @@
     }
   },
   "allNotificationsRead": "You're all caught up",
-  "viewAllNotifications": "View all notifications"
+  "viewAllNotifications": "View all notifications",
+  "contextIdentifiedExplanation": "Identified: Staff will know that you created this report.",
+  "contextAnonymousExplanation": "Anonymous: Staff will definitely not know who created this report.",
+  "contextExplanationTitle": "Conversation Context Info",
+  "contextExplanationGotIt": "Got it",
+  "chooseFromGallery": "Choose photo from gallery",
+  "chooseVideo": "Choose video",
+  "takePhoto": "Take photo",
+  "attachReport": "Attach report",
+  "markAsRead": "Mark as read",
+  "typingText": "typing...",
+  "pressAndHoldToRecord": "Press and hold to record",
+  "slideLeftToCancel": "Slide left to cancel",
+  "releaseToCancel": "Release to cancel",
+  "selectReportToAttach": "Select report to attach",
+  "voiceMessageSnippet": "Voice message",
+  "imageSnippet": "Photo",
+  "videoSnippet": "Video",
+  "attachedReportSnippet": "Attached report"
 }
