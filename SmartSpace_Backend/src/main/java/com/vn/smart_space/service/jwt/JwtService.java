@@ -34,6 +34,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class JwtService implements IJwtService {
 
+    /** Thời hạn access token — các cơ chế thu hồi tức thì (vd: khóa tài khoản) dựa vào giá trị này. */
+    public static final long ACCESS_TOKEN_TTL_MINUTES = 30;
+
     @NonFinal
     @Value("${jwt.signerKey}")
     protected String signerKey;
@@ -46,7 +49,7 @@ public class JwtService implements IJwtService {
 
         Date issueTime = new Date();
         Date expiryTime = new Date(Instant.ofEpochMilli(issueTime.getTime())
-                .plus(30, ChronoUnit.MINUTES) 
+                .plus(ACCESS_TOKEN_TTL_MINUTES, ChronoUnit.MINUTES)
                 .toEpochMilli());
         String jwtId = UUID.randomUUID().toString();
 
