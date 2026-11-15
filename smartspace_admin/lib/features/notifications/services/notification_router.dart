@@ -57,6 +57,12 @@ class NotificationRouter {
           GoRouter.of(ctx).push(path);
         }
         break;
+      case 'ACCOUNT_LOCK_REQUEST':
+        final requestId = (action.payload['requestId'] ?? action.payload['id']) as String?;
+        final path = RouterPath.adminBoardLockRequests(requestId);
+        debugPrint('[NotificationRouter] Navigating to $path');
+        GoRouter.of(ctx).push(path);
+        break;
       // Add other feature cases here, e.g. INVOICE_DETAIL, CHAT_MESSAGE
       default:
         debugPrint('[NotificationRouter] Unhandled action type: ${action.type}');
