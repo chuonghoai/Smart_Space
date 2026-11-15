@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<!--
+  Email: thông báo tài khoản người dùng đã bị khóa theo biểu quyết của Hội đồng quản trị.
+  - Layout bằng <table> + CSS inline để tương thích Gmail / Outlook / Apple Mail.
+  - Màu theo app_architecture/design/design.md (Light mặc định, Dark qua prefers-color-scheme).
+  - Mọi text lấy từ i18n (mail.account.locked.*); dữ liệu render bằng th:text (auto-escape).
+  - Chỉ hiển thị lý do, KHÔNG kèm bằng chứng.
+  Biến: fullName, reason, logoUrl?, supportEmail?, year, lang
+-->
+<html xmlns:th="http://www.thymeleaf.org" th:lang="${lang}" lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="color-scheme" content="light dark">
+  <meta name="supported-color-schemes" content="light dark">
+  <title th:text="#{mail.account.locked.subject}">SmartSpace</title>
+  <style>
+    body { margin: 0; padding: 0; width: 100% !important; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+    table { border-collapse: collapse; mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+    img { border: 0; outline: none; text-decoration: none; -ms-interpolation-mode: bicubic; }
+    a { text-decoration: none; }
+
+    @media only screen and (max-width: 620px) {
+      .container { width: 100% !important; }
+      .px { padding-left: 20px !important; padding-right: 20px !important; }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .bg-page { background-color: #0F1715 !important; }
+      .bg-surface { background-color: #17211E !important; }
+      .bg-variant { background-color: #1D2A26 !important; }
+      .bg-header { background-color: #004D40 !important; }
+      .text-primary { color: #E7EFEC !important; }
+      .text-secondary { color: #B4C2BE !important; }
+      .text-muted { color: #899A95 !important; }
+      .text-brand { color: #4DB6AC !important; }
+      .border { border-color: #30403B !important; }
+      .divider { border-top-color: #273631 !important; }
+      .error-bar { border-left-color: #EF5350 !important; }
+    }
+  </style>
+</head>
+<body class="bg-page" style="margin:0; padding:0; background-color:#F5F8F7;">
+
+  <div style="display:none; max-height:0; overflow:hidden; mso-hide:all; font-size:1px; line-height:1px; color:#F5F8F7; opacity:0;"
+       th:text="#{mail.account.locked.preheader}">Preheader</div>
+
+  <table role="presentation" class="bg-page" width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#F5F8F7;">
+    <tr>
+      <td align="center" style="padding:32px 12px;">
+
+        <table role="presentation" class="container" width="600" cellpadding="0" cellspacing="0" border="0"
+               style="width:600px; max-width:600px;">
+
+          <!-- ===== Header ===== -->
+          <tr>
+            <td class="bg-header px" align="left"
+                style="background-color:#00796B; border-radius:16px 16px 0 0; padding:24px 40px;">
+              <img th:if="${logoUrl}" th:src="${logoUrl}" src="" alt="SmartSpace" height="36"
+                   style="display:block; height:36px; width:auto;">
+              <span th:unless="${logoUrl}"
+                    style="font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif; font-size:22px; font-weight:700; letter-spacing:0.3px; color:#FFFFFF;">SmartSpace</span>
+            </td>
+          </tr>
+
+          <!-- ===== Body ===== -->
+          <tr>
+            <td class="bg-surface px border"
+                style="background-color:#FFFFFF; padding:36px 40px 8px 40px; border-left:1px solid #D8E2DF; border-right:1px solid #D8E2DF; font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+
+              <h1 class="text-primary" th:text="#{mail.account.locked.title}"
+                  style="margin:0 0 20px 0; font-size:24px; line-height:32px; font-weight:700; color:#17201E;">Account locked</h1>
+
+              <p class="text-primary" th:text="#{mail.account.locked.greeting(${fullName})}"
+                 style="margin:0 0 12px 0; font-size:16px; line-height:24px; font-weight:600; color:#17201E;">Hello,</p>
+
+              <p class="text-secondary" th:text="#{mail.account.locked.intro}"
+                 style="margin:0 0 24px 0; font-size:15px; line-height:24px; color:#52615D;">Intro</p>
+
+              <!-- Reason -->
+              <table role="presentation" class="bg-variant error-bar" width="100%" cellpadding="0" cellspacing="0" border="0"
+                     style="background-color:#EEF4F2; border-left:4px solid #C62828; border-radius:0 8px 8px 0;">
+                <tr>
+                  <td style="padding:16px 20px;">
+                    <p class="text-muted" th:text="#{mail.account.locked.reason_label}"
+                       style="margin:0 0 6px 0; font-size:13px; line-height:18px; font-weight:700; letter-spacing:0.6px; text-transform:uppercase; color:#7A8783;">Reason</p>
+                    <p class="text-primary" th:text="${reason}"
+                       style="margin:0; font-size:15px; line-height:23px; color:#17201E; white-space:pre-line; word-break:break-word;">Reason text</p>
+                  </td>
+                </tr>
+              </table>
+
+              <p class="text-secondary" th:text="#{mail.account.locked.next_steps}"
+                 style="margin:24px 0 28px 0; font-size:15px; line-height:24px; color:#52615D;">Next steps</p>
+            </td>
+          </tr>
+
+          <!-- ===== Footer ===== -->
+          <tr>
+            <td class="bg-surface px border"
+                style="background-color:#FFFFFF; border:1px solid #D8E2DF; border-top:0; border-radius:0 0 16px 16px; padding:0 40px 28px 40px; font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;">
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0">
+                <tr>
+                  <td class="divider" style="border-top:1px solid #E5ECEA; padding-top:20px;">
+                    <p th:if="${supportEmail}" class="text-muted"
+                       style="margin:0 0 8px 0; font-size:13px; line-height:20px; color:#7A8783;">
+                      <span th:text="#{mail.account.locked.support}">Need help? Contact</span>
+                      <a class="text-brand" th:href="'mailto:' + ${supportEmail}" th:text="${supportEmail}" href="#"
+                         style="color:#00796B; font-weight:600; text-decoration:none;">support@example.com</a>
+                    </p>
+                    <p class="text-muted" th:text="#{mail.account.locked.footer_auto}"
+                       style="margin:0 0 4px 0; font-size:12px; line-height:18px; color:#7A8783;">Automated</p>
+                    <p class="text-muted" th:text="#{mail.account.locked.footer_copyright(${year})}"
+                       style="margin:0; font-size:12px; line-height:18px; color:#7A8783;">© SmartSpace</p>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

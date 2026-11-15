@@ -26,6 +26,9 @@ import com.vn.smart_space.dto.response.admin.AdminUserStatisticsResponse;
 import com.vn.smart_space.dto.response.admin.AdminUserTrendResponse;
 import com.vn.smart_space.exception.ResourceNotFoundException;
 import com.vn.smart_space.model.User;
+import com.vn.smart_space.consts.EAccountLockRequestStatus;
+import com.vn.smart_space.model.AccountLockRequest;
+import com.vn.smart_space.repository.AccountLockRequestRepository;
 import com.vn.smart_space.repository.ReportRepository;
 import com.vn.smart_space.repository.UserRepository;
 import com.vn.smart_space.utils.TrendBucketHelper;
@@ -46,6 +49,8 @@ public class AdminUserServiceImpl implements IAdminUserService {
 
         UserRepository userRepository;
         ReportRepository reportRepository;
+        AccountLockRequestRepository lockRequestRepository;
+        IAccountLockRequestService lockRequestService;
 
         @Override
         @Transactional(readOnly = true)
@@ -207,6 +212,12 @@ public class AdminUserServiceImpl implements IAdminUserService {
                                 .createdAt(user.getCreatedAt())
                                 .reportStats(stats)
                                 .recentReports(recentReports)
+                                .pendingLockRequestId(lockRequestRepository
+                                                .findFirstByTargetIdAndStatus(user.getId(),
+                                                                EAccountLockRequestStatus.pending)
+                                                .map(AccountLockRequest::getId)
+                                                .orElse(null))
+                                .lockProposalBlockedReason(lockRequestService.proposalBlockedReason(user))
                                 .build();
         }
 

@@ -20,4 +20,12 @@ public interface IMailService {
      */
     void sendAdminCredentialsEmail(String toEmail, String fullName, String rawPassword, String language);
 
+    /**
+     * Báo cho người dùng biết tài khoản đã bị khóa theo biểu quyết của Hội đồng quản trị.
+     * Chỉ kèm lý do, KHÔNG kèm bằng chứng (có thể chứa thông tin của người khác).
+     *
+     * @param language "vi" | "en" (mặc định vi)
+     */
+    void sendAccountLockedEmail(String toEmail, String fullName, String reason, String language);
+
 }

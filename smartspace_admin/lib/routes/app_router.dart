@@ -168,7 +168,12 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: RouterPath.adminBoard,
-      builder: (context, state) => const AdminBoardScreen(),
+      builder: (context, state) => AdminBoardScreen(
+        // key theo query để mở lại đúng tab / đề xuất khi điều hướng từ thông báo
+        key: ValueKey(state.uri.query),
+        initialTab: state.uri.queryParameters['tab'],
+        initialRequestId: state.uri.queryParameters['requestId'],
+      ),
     ),
     GoRoute(
       path: RouterPath.reportDashboard,

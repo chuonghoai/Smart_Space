@@ -17,6 +17,14 @@ class RouterPath {
   static String get userManagement => RouteName.userManagement.path;
   static String get positionManagement => RouteName.positionManagement.path;
   static String get adminBoard => RouteName.adminBoard.path;
+  /// Mở tab "Đề xuất khoá" và (nếu có) một đề xuất cụ thể.
+  static String adminBoardLockRequests([String? requestId]) => Uri(
+        path: RouteName.adminBoard.path,
+        queryParameters: {
+          'tab': 'lock-requests',
+          if (requestId != null && requestId.isNotEmpty) 'requestId': requestId,
+        },
+      ).toString();
   static String get reportDashboard => RouteName.reportDashboard.path;
   static String get reportList => RouteName.reportList.path;
   static String get spaceMap => RouteName.spaceMap.path;

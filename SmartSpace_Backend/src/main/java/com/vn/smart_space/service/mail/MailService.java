@@ -25,6 +25,7 @@ public class MailService implements IMailService {
 
     private static final String STAFF_CREDENTIALS_TEMPLATE = "mail/staff-credentials";
     private static final String ADMIN_CREDENTIALS_TEMPLATE = "mail/admin-credentials";
+    private static final String ACCOUNT_LOCKED_TEMPLATE = "mail/account-locked";
 
     private final JavaMailSender mailSender;
     private final MessageSource messageSource;
@@ -108,6 +109,29 @@ public class MailService implements IMailService {
         String plainText = messageSource.getMessage(
                 "mail.admin.credentials.body",
                 new Object[] { displayName, toEmail, rawPassword },
+                locale);
+
+        sendHtml(toEmail, subject, plainText, html);
+    }
+
+    @Override
+    public void sendAccountLockedEmail(String toEmail, String fullName, String reason, String language) {
+        Locale locale = resolveLocale(language);
+        String displayName = (fullName != null && !fullName.isBlank()) ? fullName.trim() : toEmail;
+
+        Context context = new Context(locale);
+        context.setVariable("lang", locale.getLanguage());
+        context.setVariable("fullName", displayName);
+        context.setVariable("reason", reason);
+        context.setVariable("logoUrl", blankToNull(logoUrl));
+        context.setVariable("supportEmail", blankToNull(supportEmail));
+        context.setVariable("year", String.valueOf(Year.now().getValue()));
+
+        String subject = messageSource.getMessage("mail.account.locked.subject", null, locale);
+        String html = templateEngine.process(ACCOUNT_LOCKED_TEMPLATE, context);
+        String plainText = messageSource.getMessage(
+                "mail.account.locked.body",
+                new Object[] { displayName, reason },
                 locale);
 
         sendHtml(toEmail, subject, plainText, html);

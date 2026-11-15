@@ -12,6 +12,12 @@ class UserDetailModel {
   final UserReportStats reportStats;
   final List<UserRecentReport> recentReports;
 
+  /// Đề xuất khóa đang chờ biểu quyết (null nếu không có).
+  final String? pendingLockRequestId;
+
+  /// Vì sao chưa thể đề xuất khóa: 'not_active' | 'already_pending' | 'not_enough_admins'; null = được phép.
+  final String? lockProposalBlockedReason;
+
   const UserDetailModel({
     required this.id,
     required this.fullName,
@@ -25,6 +31,8 @@ class UserDetailModel {
     this.createdAt,
     required this.reportStats,
     required this.recentReports,
+    this.pendingLockRequestId,
+    this.lockProposalBlockedReason,
   });
 
   factory UserDetailModel.fromJson(Map<String, dynamic> json) {
@@ -46,10 +54,13 @@ class UserDetailModel {
       recentReports: recentList
           .map((e) => UserRecentReport.fromJson(e as Map<String, dynamic>))
           .toList(),
+      pendingLockRequestId: json['pendingLockRequestId'] as String?,
+      lockProposalBlockedReason: json['lockProposalBlockedReason'] as String?,
     );
   }
 
   bool get isBlocked => status == 'blocked';
+  bool get isActive => status == 'active';
 }
 
 class UserReportStats {
