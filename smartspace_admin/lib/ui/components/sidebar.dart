@@ -166,6 +166,17 @@ class Sidebar extends ConsumerWidget {
                     },
                   ),
                   _SidebarItem(
+                    icon: Icons.admin_panel_settings_outlined,
+                    label: l10n.adminBoard,
+                    isSelected: currentPath == RouterPath.adminBoard,
+                    onTap: () {
+                      Navigator.pop(context);
+                      if (currentPath != RouterPath.adminBoard) {
+                        context.push(RouterPath.adminBoard);
+                      }
+                    },
+                  ),
+                  _SidebarItem(
                     icon: Icons.report_outlined,
                     label: l10n.manageReports,
                     isSelected: currentPath == RouterPath.reportDashboard ||
@@ -490,6 +501,17 @@ class WebSidebar extends ConsumerWidget {
                 onTap: () {
                   if (currentPath != RouterPath.conversations) {
                     context.push(RouterPath.conversations);
+                  }
+                },
+              ),
+              _WebSidebarItem(
+                icon: Icons.admin_panel_settings_outlined,
+                label: l10n.adminBoard,
+                isExpanded: isExpanded,
+                isSelected: currentPath == RouterPath.adminBoard,
+                onTap: () {
+                  if (currentPath != RouterPath.adminBoard) {
+                    context.push(RouterPath.adminBoard);
                   }
                 },
               ),

@@ -28,11 +28,15 @@ class HomeRepository {
     int size = 15,
     String? role,
     String? topic,
+    String? actorId,
   }) async {
     final Map<String, dynamic> params = {
       'page': page,
       'size': size,
     };
+    if (actorId != null && actorId.isNotEmpty) {
+      params['actorId'] = actorId;
+    }
     if (role != null && role.isNotEmpty && role != 'all') {
       params['role'] = role;
     }

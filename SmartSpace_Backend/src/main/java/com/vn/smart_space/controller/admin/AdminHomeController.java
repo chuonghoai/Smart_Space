@@ -36,11 +36,12 @@ public class AdminHomeController {
             @RequestParam(defaultValue = "4") int limit,
             @RequestParam(required = false) String role,
             @RequestParam(required = false) String topic,
+            @RequestParam(required = false) String actorId,
             Locale locale) {
         if (page != null) {
             int pageSize = size != null ? size : 10;
             return ResponseEntity.ok(ApiResponse.success("system.success",
-                    adminHomeService.getPaginatedActivities(page, pageSize, role, topic, locale)));
+                    adminHomeService.getPaginatedActivities(page, pageSize, role, topic, actorId, locale)));
         }
         return ResponseEntity.ok(ApiResponse.success("system.success", adminHomeService.getRecentActivities(limit, locale)));
     }

@@ -247,5 +247,55 @@ void main() {
       );
       expect(overviewTile.selected, isFalse);
     });
+
+    testWidgets('Focuses Board of Administrators when on /admin-board', (tester) async {
+      await tester.binding.setSurfaceSize(const Size(800, 1200));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      final router = GoRouter(
+        initialLocation: RouterPath.adminBoard,
+        routes: [
+          GoRoute(
+            path: RouterPath.home,
+            builder: (context, state) => Scaffold(
+              drawer: const Sidebar(),
+              body: const Text('Home Screen'),
+            ),
+          ),
+          GoRoute(
+            path: RouterPath.adminBoard,
+            builder: (context, state) => Scaffold(
+              drawer: const Sidebar(),
+              body: const Text('Admin Board Screen'),
+            ),
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(_buildTestAppWithRouter(router));
+      await tester.pumpAndSettle();
+
+      final scaffoldState = tester.state<ScaffoldState>(find.byType(Scaffold));
+      scaffoldState.openDrawer();
+      await tester.pumpAndSettle();
+
+      final boardFinder = find.widgetWithText(ListTile, 'Hội đồng quản trị');
+      final boardTile = tester.widget<ListTile>(boardFinder);
+      expect(boardTile.selected, isTrue);
+
+      // Vị trí: ngay dưới "Hội thoại", trên "Quản lý phản ánh"
+      final conversationsY =
+          tester.getTopLeft(find.widgetWithText(ListTile, 'Hội thoại')).dy;
+      final boardY = tester.getTopLeft(boardFinder).dy;
+      final reportsY =
+          tester.getTopLeft(find.widgetWithText(ListTile, 'Quản lý phản ánh')).dy;
+      expect(conversationsY, lessThan(boardY));
+      expect(boardY, lessThan(reportsY));
+
+      final overviewTile = tester.widget<ListTile>(
+        find.widgetWithText(ListTile, 'Tổng quan'),
+      );
+      expect(overviewTile.selected, isFalse);
+    });
   });
 }

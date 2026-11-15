@@ -906,6 +906,44 @@
   "comingSoon": "Coming soon",
   "phoneNotAvailable": "Phone number is not available",
   "freeCallComingSoon": "Free in-app voice call feature is under development",
+  "adminBoard": "Board of Administrators",
+  "routeAdminBoard": "Board of Administrators",
+  "addAdmin": "Add administrator",
+  "addNewAdmin": "New administrator",
+  "createAdminAction": "Create account",
+  "addAdminFailed": "Could not create the administrator account",
+  "youBadge": "You",
+  "lockAdminConfirm": "Lock the administrator account of {name}? They will be signed out of every device immediately.",
+  "@lockAdminConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unlockAdminConfirm": "Unlock the administrator account of {name}? They will be able to sign in again.",
+  "@unlockAdminConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cannotLockSelf": "You cannot lock your own account",
+  "cannotLockLastAdmin": "At least one active administrator is required",
+  "adminCreatedTitle": "Administrator account created",
+  "adminCreatedCheckInboxHint": "Ask them to check their inbox (including Spam) and change the password after signing in for the first time.",
+  "noAdminFound": "No administrators match your search",
+  "allAdminsLoaded": "All administrators loaded",
+  "loadMoreAdminsFailed": "Could not load more administrators",
+  "invalidPhoneFormat": "Invalid phone number (8–15 digits, may start with +)",
+  "fullnameTooLong": "Full name must not exceed 100 characters",
+  "selectAdminHint": "Select an administrator to see their details and recent activity",
+  "activityLoadFailed": "Couldn't load recent activity",
+  "activityHistory": "Activity history",
+  "adminTotalBadge": "Total",
+  "loadMoreActivitiesFailed": "Couldn't load more activities",
+  "allActivitiesLoaded": "All activities loaded"
   "chooseFromGallery": "Choose photo from gallery",
   "chooseVideo": "Choose video",
   "takePhoto": "Take photo",

@@ -65,6 +65,8 @@ class AppRouteInfo {
         return l10n.routeStaffWalletDetail;
       case 'routeSystemConfig':
         return l10n.routeSystemConfig;
+      case 'routeAdminBoard':
+        return l10n.routeAdminBoard;
       case 'routeCommissionConfig':
         return l10n.routeCommissionConfig;
       case 'routePenaltyRateConfig':
@@ -148,6 +150,12 @@ class RouteName {
     path: '/position-management',
     nameKey: 'routePositionManagement',
     icon: Icons.workspace_premium,
+    priority: 2,
+  );
+  static const adminBoard = AppRouteInfo(
+    path: '/admin-board',
+    nameKey: 'routeAdminBoard',
+    icon: Icons.admin_panel_settings_outlined,
     priority: 2,
   );
   static const reportDashboard = AppRouteInfo(
@@ -313,6 +321,7 @@ class RouteName {
     staffManagement,
     userManagement,
     positionManagement,
+    adminBoard,
     reportDashboard,
     reportList,
     unsatisfactoryReports,
