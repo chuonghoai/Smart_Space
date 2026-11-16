@@ -792,6 +792,44 @@
   "comingSoon": "Coming soon",
   "phoneNotAvailable": "Phone number is not available",
   "freeCallComingSoon": "Free in-app voice call feature is under development",
+  "adminBoard": "Board of Administrators",
+  "routeAdminBoard": "Board of Administrators",
+  "addAdmin": "Add administrator",
+  "addNewAdmin": "New administrator",
+  "createAdminAction": "Create account",
+  "addAdminFailed": "Could not create the administrator account",
+  "youBadge": "You",
+  "lockAdminConfirm": "Lock the administrator account of {name}? They will be signed out of every device immediately.",
+  "@lockAdminConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unlockAdminConfirm": "Unlock the administrator account of {name}? They will be able to sign in again.",
+  "@unlockAdminConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cannotLockSelf": "You cannot lock your own account",
+  "cannotLockLastAdmin": "At least one active administrator is required",
+  "adminCreatedTitle": "Administrator account created",
+  "adminCreatedCheckInboxHint": "Ask them to check their inbox (including Spam) and change the password after signing in for the first time.",
+  "noAdminFound": "No administrators match your search",
+  "allAdminsLoaded": "All administrators loaded",
+  "loadMoreAdminsFailed": "Could not load more administrators",
+  "invalidPhoneFormat": "Invalid phone number (8–15 digits, may start with +)",
+  "fullnameTooLong": "Full name must not exceed 100 characters",
+  "selectAdminHint": "Select an administrator to see their details and recent activity",
+  "activityLoadFailed": "Couldn't load recent activity",
+  "activityHistory": "Activity history",
+  "adminTotalBadge": "Total",
+  "loadMoreActivitiesFailed": "Couldn't load more activities",
+  "allActivitiesLoaded": "All activities loaded",
   "chooseFromGallery": "Choose photo from gallery",
   "chooseVideo": "Choose video",
   "takePhoto": "Take photo",
@@ -857,5 +895,241 @@
   "rejectSuccessMessage": "Report rejected successfully",
   "rejectFailedMessage": "Could not reject report, please try again",
   "rejectedReasonTitle": "Rejection Reason",
-  "noRejectionReasonProvided": "Rejected by administrator."
+  "noRejectionReasonProvided": "Rejected by administrator.",
+  "lockRequestsTab": "Lock proposals",
+  "lockRequestsTitle": "Account lock proposals",
+  "lockFilterPending": "Pending",
+  "lockFilterResolved": "Resolved",
+  "noPendingLockRequests": "No proposals are awaiting votes",
+  "noResolvedLockRequests": "No resolved proposals yet",
+  "loadMoreLockRequestsFailed": "Couldn't load more proposals",
+  "allLockRequestsLoaded": "All proposals loaded",
+  "selectLockRequestHint": "Select a proposal to see its details and vote",
+  "lockStatusPending": "Awaiting votes",
+  "lockStatusApproved": "Approved",
+  "lockStatusRejected": "Rejected",
+  "lockStatusCancelled": "Cancelled",
+  "lockStatusExpired": "Expired",
+  "lockProposedBy": "Proposed by {name}",
+  "@lockProposedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lockDeadline": "Voting closes: {time}",
+  "@lockDeadline": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "lockResolvedAt": "Ended: {time}",
+  "@lockResolvedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "lockApprovalsProgress": "Endorsed {count}/{required}",
+  "@lockApprovalsProgress": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "lockRejectionsProgress": "Rejected {count}/{required}",
+  "@lockRejectionsProgress": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "lockAwaitingYourVote": "Needs your vote",
+  "lockReasonLabel": "Reason",
+  "lockEvidenceLabel": "Evidence",
+  "lockVotesLabel": "Votes",
+  "noVotesYet": "No votes yet",
+  "lockVoteApprove": "Endorse",
+  "lockVoteReject": "Reject",
+  "lockVoteApproveConfirmTitle": "Endorse this lock proposal?",
+  "lockVoteRejectConfirmTitle": "Reject this lock proposal?",
+  "lockVoteApproveConfirmMessage": "Once {required} administrators endorse it, the account of {name} will be locked immediately. Votes cannot be changed.",
+  "@lockVoteApproveConfirmMessage": {
+    "placeholders": {
+      "required": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lockVoteRejectConfirmMessage": "Once {required} administrators reject it, the proposal is dismissed. Votes cannot be changed.",
+  "@lockVoteRejectConfirmMessage": {
+    "placeholders": {
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "lockVoteCommentHint": "Comment (optional)",
+  "lockVoteSubmitted": "Your vote has been recorded",
+  "lockVoteBlockedProposer": "You proposed this lock, so you cannot vote on it",
+  "lockVoteBlockedAlreadyVoted": "You have already voted on this proposal",
+  "lockVoteBlockedClosed": "Voting on this proposal has ended",
+  "lockCancelAction": "Cancel proposal",
+  "lockCancelConfirm": "Cancel the lock proposal for {name}?",
+  "@lockCancelConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lockCancelled": "Proposal cancelled",
+  "lockActionFailed": "Couldn't complete the action. Please try again.",
+  "viewUserProfile": "View user",
+  "proposeLockAction": "Propose account lock",
+  "proposeLockSubtitle": "The account is locked only after {required} other administrators endorse it within {hours} hours.",
+  "@proposeLockSubtitle": {
+    "placeholders": {
+      "required": {
+        "type": "int"
+      },
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "lockReasonHint": "Describe the violation clearly: what happened, when, and how serious it is",
+  "lockReasonTooShort": "The reason must be at least 20 characters",
+  "lockEvidenceImages": "Evidence images (up to {max})",
+  "@lockEvidenceImages": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "lockAddImage": "Add image",
+  "lockRemoveImage": "Remove image",
+  "lockImageTooLarge": "Each image must be 5MB or smaller",
+  "lockEvidenceReports": "Related reports",
+  "lockNoPublicReports": "This user has no public reports",
+  "lockEvidenceRequired": "Add at least one piece of evidence: an image or a report",
+  "lockSubmitProposal": "Submit proposal",
+  "lockProposalSent": "Proposal sent to the Board of Administrators",
+  "lockPendingBanner": "This account has a lock proposal awaiting votes",
+  "viewLockProposal": "View proposal",
+  "unlockReasonHint": "Reason for unlocking (required)",
+  "unlockReasonTooShort": "The reason must be at least 10 characters",
+  "userUnlocked": "User account unlocked",
+  "lockFilterAwaitingMine": "Needs your vote",
+  "noAwaitingLockRequests": "Nothing needs your vote right now",
+  "lockFindingAwaiting": "{count} proposals need your vote · the nearest: {timeLeft}",
+  "@lockFindingAwaiting": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "timeLeft": { "type": "String" }
+    }
+  },
+  "lockFindingOthers": "Nothing needs your vote · {count} awaiting other administrators",
+  "@lockFindingOthers": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "lockUpdatedAt": "Updated {time}",
+  "@lockUpdatedAt": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "lockRefresh": "Refresh",
+  "lockTimeLeftHours": "{hours} h left",
+  "@lockTimeLeftHours": {
+    "placeholders": {
+      "hours": { "type": "int" }
+    }
+  },
+  "lockTimeLeftMinutes": "{minutes} min left",
+  "@lockTimeLeftMinutes": {
+    "placeholders": {
+      "minutes": { "type": "int" }
+    }
+  },
+  "lockTimeOverdue": "Voting time is up",
+  "lockBallotTitle": "Ballot",
+  "lockSeatEmpty": "Empty seat",
+  "lockOutcomeApproved": "Account locked at {time}",
+  "@lockOutcomeApproved": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "lockOutcomeRejected": "Rejected at {time}",
+  "@lockOutcomeRejected": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "lockOutcomeCancelled": "Cancelled at {time}",
+  "@lockOutcomeCancelled": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "lockOutcomeExpired": "Expired at {time} without enough votes",
+  "@lockOutcomeExpired": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "lockEvidenceSummary": "Evidence · {images} images · {reports} reports",
+  "@lockEvidenceSummary": {
+    "placeholders": {
+      "images": { "type": "int" },
+      "reports": { "type": "int" }
+    }
+  },
+  "lockVotesCast": "Votes cast",
+  "lockProposedByYou": "Proposed by you",
+  "lockMoreActions": "More actions",
+  "lockReasonHelper": "At least 20 characters. The user will receive this reason.",
+  "lockEvidenceHelper": "At least one image or one report",
+  "lockWhatHappensTitle": "What happens next",
+  "lockWhatHappensBody": "{required} other administrators must endorse within {hours} hours before the account is locked. The user receives the reason only, never the evidence.",
+  "@lockWhatHappensBody": {
+    "placeholders": {
+      "required": { "type": "int" },
+      "hours": { "type": "int" }
+    }
+  },
+  "lockProposalSentTitle": "Lock proposal sent",
+  "lockProposalSentBody": "The Board of Administrators has been notified. The account is locked once {required} other administrators endorse it within {hours} hours.",
+  "@lockProposalSentBody": {
+    "placeholders": {
+      "required": { "type": "int" },
+      "hours": { "type": "int" }
+    }
+  },
+  "lockBlockedNotEnoughAdmins": "At least {min} active administrators are needed to vote on a lock. Add an administrator in the Board of Administrators.",
+  "@lockBlockedNotEnoughAdmins": {
+    "placeholders": {
+      "min": { "type": "int" }
+    }
+  },
+  "lockBlockedNotActive": "Only active accounts can be proposed for locking"
 }

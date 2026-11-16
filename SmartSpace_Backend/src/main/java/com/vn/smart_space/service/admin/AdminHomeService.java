@@ -54,7 +54,7 @@ public class AdminHomeService {
     }
 
     public PageResponse<ActivityHistoryResponse> getPaginatedActivities(
-            int page, int size, String roleParam, String topicParam, Locale locale) {
+            int page, int size, String roleParam, String topicParam, String actorIdParam, Locale locale) {
         ERole role = null;
         if (roleParam != null && !roleParam.trim().isEmpty() && !"all".equalsIgnoreCase(roleParam.trim())) {
             try {
@@ -79,6 +79,9 @@ public class AdminHomeService {
                 case "report_process":
                     topicPrefix = "activity.report.completed";
                     break;
+                case "admin":
+                    topicPrefix = "activity.admin.";
+                    break;
                 default:
                     topicPrefix = null;
             }
@@ -86,7 +89,9 @@ public class AdminHomeService {
 
         int pageIndex = Math.max(0, page - 1);
         Pageable pageable = PageRequest.of(pageIndex, size);
-        Page<ActivityHistory> activityPage = activityHistoryRepository.findActivitiesWithFilter(role, topicPrefix, pageable);
+        String actorId = (actorIdParam != null && !actorIdParam.isBlank()) ? actorIdParam.trim() : null;
+        Page<ActivityHistory> activityPage = activityHistoryRepository.findActivitiesWithFilter(
+                role, actorId, topicPrefix, pageable);
 
         List<ActivityHistoryResponse> content = activityPage.getContent().stream()
                 .map(a -> mapToResponse(a, locale))

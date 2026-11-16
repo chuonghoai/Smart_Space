@@ -1883,6 +1883,86 @@ class AppLocalizationsEn extends AppLocalizations {
       'Free in-app voice call feature is under development';
 
   @override
+  String get adminBoard => 'Board of Administrators';
+
+  @override
+  String get routeAdminBoard => 'Board of Administrators';
+
+  @override
+  String get addAdmin => 'Add administrator';
+
+  @override
+  String get addNewAdmin => 'New administrator';
+
+  @override
+  String get createAdminAction => 'Create account';
+
+  @override
+  String get addAdminFailed => 'Could not create the administrator account';
+
+  @override
+  String get youBadge => 'You';
+
+  @override
+  String lockAdminConfirm(String name) {
+    return 'Lock the administrator account of $name? They will be signed out of every device immediately.';
+  }
+
+  @override
+  String unlockAdminConfirm(String name) {
+    return 'Unlock the administrator account of $name? They will be able to sign in again.';
+  }
+
+  @override
+  String get cannotLockSelf => 'You cannot lock your own account';
+
+  @override
+  String get cannotLockLastAdmin =>
+      'At least one active administrator is required';
+
+  @override
+  String get adminCreatedTitle => 'Administrator account created';
+
+  @override
+  String get adminCreatedCheckInboxHint =>
+      'Ask them to check their inbox (including Spam) and change the password after signing in for the first time.';
+
+  @override
+  String get noAdminFound => 'No administrators match your search';
+
+  @override
+  String get allAdminsLoaded => 'All administrators loaded';
+
+  @override
+  String get loadMoreAdminsFailed => 'Could not load more administrators';
+
+  @override
+  String get invalidPhoneFormat =>
+      'Invalid phone number (8–15 digits, may start with +)';
+
+  @override
+  String get fullnameTooLong => 'Full name must not exceed 100 characters';
+
+  @override
+  String get selectAdminHint =>
+      'Select an administrator to see their details and recent activity';
+
+  @override
+  String get activityLoadFailed => 'Couldn\'t load recent activity';
+
+  @override
+  String get activityHistory => 'Activity history';
+
+  @override
+  String get adminTotalBadge => 'Total';
+
+  @override
+  String get loadMoreActivitiesFailed => 'Couldn\'t load more activities';
+
+  @override
+  String get allActivitiesLoaded => 'All activities loaded';
+
+  @override
   String get chooseFromGallery => 'Choose photo from gallery';
 
   @override
@@ -2015,4 +2095,315 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noRejectionReasonProvided => 'Rejected by administrator.';
+
+  @override
+  String get lockRequestsTab => 'Lock proposals';
+
+  @override
+  String get lockRequestsTitle => 'Account lock proposals';
+
+  @override
+  String get lockFilterPending => 'Pending';
+
+  @override
+  String get lockFilterResolved => 'Resolved';
+
+  @override
+  String get noPendingLockRequests => 'No proposals are awaiting votes';
+
+  @override
+  String get noResolvedLockRequests => 'No resolved proposals yet';
+
+  @override
+  String get loadMoreLockRequestsFailed => 'Couldn\'t load more proposals';
+
+  @override
+  String get allLockRequestsLoaded => 'All proposals loaded';
+
+  @override
+  String get selectLockRequestHint =>
+      'Select a proposal to see its details and vote';
+
+  @override
+  String get lockStatusPending => 'Awaiting votes';
+
+  @override
+  String get lockStatusApproved => 'Approved';
+
+  @override
+  String get lockStatusRejected => 'Rejected';
+
+  @override
+  String get lockStatusCancelled => 'Cancelled';
+
+  @override
+  String get lockStatusExpired => 'Expired';
+
+  @override
+  String lockProposedBy(String name) {
+    return 'Proposed by $name';
+  }
+
+  @override
+  String lockDeadline(String time) {
+    return 'Voting closes: $time';
+  }
+
+  @override
+  String lockResolvedAt(String time) {
+    return 'Ended: $time';
+  }
+
+  @override
+  String lockApprovalsProgress(int count, int required) {
+    return 'Endorsed $count/$required';
+  }
+
+  @override
+  String lockRejectionsProgress(int count, int required) {
+    return 'Rejected $count/$required';
+  }
+
+  @override
+  String get lockAwaitingYourVote => 'Needs your vote';
+
+  @override
+  String get lockReasonLabel => 'Reason';
+
+  @override
+  String get lockEvidenceLabel => 'Evidence';
+
+  @override
+  String get lockVotesLabel => 'Votes';
+
+  @override
+  String get noVotesYet => 'No votes yet';
+
+  @override
+  String get lockVoteApprove => 'Endorse';
+
+  @override
+  String get lockVoteReject => 'Reject';
+
+  @override
+  String get lockVoteApproveConfirmTitle => 'Endorse this lock proposal?';
+
+  @override
+  String get lockVoteRejectConfirmTitle => 'Reject this lock proposal?';
+
+  @override
+  String lockVoteApproveConfirmMessage(int required, String name) {
+    return 'Once $required administrators endorse it, the account of $name will be locked immediately. Votes cannot be changed.';
+  }
+
+  @override
+  String lockVoteRejectConfirmMessage(int required) {
+    return 'Once $required administrators reject it, the proposal is dismissed. Votes cannot be changed.';
+  }
+
+  @override
+  String get lockVoteCommentHint => 'Comment (optional)';
+
+  @override
+  String get lockVoteSubmitted => 'Your vote has been recorded';
+
+  @override
+  String get lockVoteBlockedProposer =>
+      'You proposed this lock, so you cannot vote on it';
+
+  @override
+  String get lockVoteBlockedAlreadyVoted =>
+      'You have already voted on this proposal';
+
+  @override
+  String get lockVoteBlockedClosed => 'Voting on this proposal has ended';
+
+  @override
+  String get lockCancelAction => 'Cancel proposal';
+
+  @override
+  String lockCancelConfirm(String name) {
+    return 'Cancel the lock proposal for $name?';
+  }
+
+  @override
+  String get lockCancelled => 'Proposal cancelled';
+
+  @override
+  String get lockActionFailed =>
+      'Couldn\'t complete the action. Please try again.';
+
+  @override
+  String get viewUserProfile => 'View user';
+
+  @override
+  String get proposeLockAction => 'Propose account lock';
+
+  @override
+  String proposeLockSubtitle(int required, int hours) {
+    return 'The account is locked only after $required other administrators endorse it within $hours hours.';
+  }
+
+  @override
+  String get lockReasonHint =>
+      'Describe the violation clearly: what happened, when, and how serious it is';
+
+  @override
+  String get lockReasonTooShort => 'The reason must be at least 20 characters';
+
+  @override
+  String lockEvidenceImages(int max) {
+    return 'Evidence images (up to $max)';
+  }
+
+  @override
+  String get lockAddImage => 'Add image';
+
+  @override
+  String get lockRemoveImage => 'Remove image';
+
+  @override
+  String get lockImageTooLarge => 'Each image must be 5MB or smaller';
+
+  @override
+  String get lockEvidenceReports => 'Related reports';
+
+  @override
+  String get lockNoPublicReports => 'This user has no public reports';
+
+  @override
+  String get lockEvidenceRequired =>
+      'Add at least one piece of evidence: an image or a report';
+
+  @override
+  String get lockSubmitProposal => 'Submit proposal';
+
+  @override
+  String get lockProposalSent => 'Proposal sent to the Board of Administrators';
+
+  @override
+  String get lockPendingBanner =>
+      'This account has a lock proposal awaiting votes';
+
+  @override
+  String get viewLockProposal => 'View proposal';
+
+  @override
+  String get unlockReasonHint => 'Reason for unlocking (required)';
+
+  @override
+  String get unlockReasonTooShort =>
+      'The reason must be at least 10 characters';
+
+  @override
+  String get userUnlocked => 'User account unlocked';
+
+  @override
+  String get lockFilterAwaitingMine => 'Needs your vote';
+
+  @override
+  String get noAwaitingLockRequests => 'Nothing needs your vote right now';
+
+  @override
+  String lockFindingAwaiting(int count, String timeLeft) {
+    return '$count proposals need your vote · the nearest: $timeLeft';
+  }
+
+  @override
+  String lockFindingOthers(int count) {
+    return 'Nothing needs your vote · $count awaiting other administrators';
+  }
+
+  @override
+  String lockUpdatedAt(String time) {
+    return 'Updated $time';
+  }
+
+  @override
+  String get lockRefresh => 'Refresh';
+
+  @override
+  String lockTimeLeftHours(int hours) {
+    return '$hours h left';
+  }
+
+  @override
+  String lockTimeLeftMinutes(int minutes) {
+    return '$minutes min left';
+  }
+
+  @override
+  String get lockTimeOverdue => 'Voting time is up';
+
+  @override
+  String get lockBallotTitle => 'Ballot';
+
+  @override
+  String get lockSeatEmpty => 'Empty seat';
+
+  @override
+  String lockOutcomeApproved(String time) {
+    return 'Account locked at $time';
+  }
+
+  @override
+  String lockOutcomeRejected(String time) {
+    return 'Rejected at $time';
+  }
+
+  @override
+  String lockOutcomeCancelled(String time) {
+    return 'Cancelled at $time';
+  }
+
+  @override
+  String lockOutcomeExpired(String time) {
+    return 'Expired at $time without enough votes';
+  }
+
+  @override
+  String lockEvidenceSummary(int images, int reports) {
+    return 'Evidence · $images images · $reports reports';
+  }
+
+  @override
+  String get lockVotesCast => 'Votes cast';
+
+  @override
+  String get lockProposedByYou => 'Proposed by you';
+
+  @override
+  String get lockMoreActions => 'More actions';
+
+  @override
+  String get lockReasonHelper =>
+      'At least 20 characters. The user will receive this reason.';
+
+  @override
+  String get lockEvidenceHelper => 'At least one image or one report';
+
+  @override
+  String get lockWhatHappensTitle => 'What happens next';
+
+  @override
+  String lockWhatHappensBody(int required, int hours) {
+    return '$required other administrators must endorse within $hours hours before the account is locked. The user receives the reason only, never the evidence.';
+  }
+
+  @override
+  String get lockProposalSentTitle => 'Lock proposal sent';
+
+  @override
+  String lockProposalSentBody(int required, int hours) {
+    return 'The Board of Administrators has been notified. The account is locked once $required other administrators endorse it within $hours hours.';
+  }
+
+  @override
+  String lockBlockedNotEnoughAdmins(int min) {
+    return 'At least $min active administrators are needed to vote on a lock. Add an administrator in the Board of Administrators.';
+  }
+
+  @override
+  String get lockBlockedNotActive =>
+      'Only active accounts can be proposed for locking';
 }

@@ -17,6 +17,7 @@ import 'package:smartspace_admin/ui/screen/map/admin_map_screen.dart';
 import 'package:smartspace_admin/ui/screen/staff/staff_management_screen.dart';
 import 'package:smartspace_admin/ui/screen/users/user_management_screen.dart';
 import 'package:smartspace_admin/ui/screen/position/position_management_screen.dart';
+import 'package:smartspace_admin/ui/screen/admin_board/admin_board_screen.dart';
 import 'package:smartspace_admin/ui/shared/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_shared/mobile_shared.dart';
@@ -111,6 +112,15 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.positionManagement,
       builder: (context, state) => const PositionManagementScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.adminBoard,
+      builder: (context, state) => AdminBoardScreen(
+        // key theo query để mở lại đúng tab / đề xuất khi điều hướng từ thông báo
+        key: ValueKey(state.uri.query),
+        initialTab: state.uri.queryParameters['tab'],
+        initialRequestId: state.uri.queryParameters['requestId'],
+      ),
     ),
     GoRoute(
       path: RouterPath.reportDashboard,

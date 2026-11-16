@@ -19,7 +19,6 @@ import jakarta.servlet.http.HttpServletRequest;
 import java.util.List;
 
 import com.vn.smart_space.dto.ApiResponse;
-import com.vn.smart_space.dto.request.auth.DevCreateAccountRequest;
 import com.vn.smart_space.dto.request.auth.GoogleLoginRequest;
 import com.vn.smart_space.dto.request.auth.LoginRequest;
 import com.vn.smart_space.dto.request.auth.OtpRegisterRequest;
@@ -185,12 +184,7 @@ public class AuthController {
                 return ResponseEntity.ok(ApiResponse.success("user.profile.update.success", userResponse));
         }
 
-        // 9. API local: create USER directly without otp
-        @PostMapping("/dev-create-account")
-        public ResponseEntity<ApiResponse> devCreateAccount(@RequestBody @Valid DevCreateAccountRequest request) {
-                userService.devCreateAccount(request);
-                return ResponseEntity.ok(ApiResponse.success("auth.dev_account.success", null));
-        }
+        // 9. API local create account → DevAuthController (@Profile("dev"))
 
         // Change Password
         @PutMapping("/change-password")

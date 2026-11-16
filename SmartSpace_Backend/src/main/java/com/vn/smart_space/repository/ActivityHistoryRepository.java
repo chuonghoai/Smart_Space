@@ -19,13 +19,16 @@ public interface ActivityHistoryRepository extends JpaRepository<ActivityHistory
 
     @Query(value = "SELECT a FROM ActivityHistory a " +
             "WHERE (:role IS NULL OR a.actor.role = :role) " +
+            "AND (:actorId IS NULL OR a.actor.id = :actorId) " +
             "AND (:topicPrefix IS NULL OR a.i18nKey LIKE CONCAT(:topicPrefix, '%')) " +
             "ORDER BY a.createdAt DESC",
             countQuery = "SELECT count(a) FROM ActivityHistory a " +
             "WHERE (:role IS NULL OR a.actor.role = :role) " +
+            "AND (:actorId IS NULL OR a.actor.id = :actorId) " +
             "AND (:topicPrefix IS NULL OR a.i18nKey LIKE CONCAT(:topicPrefix, '%'))")
     Page<ActivityHistory> findActivitiesWithFilter(
             @Param("role") ERole role,
+            @Param("actorId") String actorId,
             @Param("topicPrefix") String topicPrefix,
             Pageable pageable
     );

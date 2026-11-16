@@ -3656,6 +3656,150 @@ abstract class AppLocalizations {
   /// **'Free in-app voice call feature is under development'**
   String get freeCallComingSoon;
 
+  /// No description provided for @adminBoard.
+  ///
+  /// In en, this message translates to:
+  /// **'Board of Administrators'**
+  String get adminBoard;
+
+  /// No description provided for @routeAdminBoard.
+  ///
+  /// In en, this message translates to:
+  /// **'Board of Administrators'**
+  String get routeAdminBoard;
+
+  /// No description provided for @addAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Add administrator'**
+  String get addAdmin;
+
+  /// No description provided for @addNewAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'New administrator'**
+  String get addNewAdmin;
+
+  /// No description provided for @createAdminAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get createAdminAction;
+
+  /// No description provided for @addAdminFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not create the administrator account'**
+  String get addAdminFailed;
+
+  /// No description provided for @youBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get youBadge;
+
+  /// No description provided for @lockAdminConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock the administrator account of {name}? They will be signed out of every device immediately.'**
+  String lockAdminConfirm(String name);
+
+  /// No description provided for @unlockAdminConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock the administrator account of {name}? They will be able to sign in again.'**
+  String unlockAdminConfirm(String name);
+
+  /// No description provided for @cannotLockSelf.
+  ///
+  /// In en, this message translates to:
+  /// **'You cannot lock your own account'**
+  String get cannotLockSelf;
+
+  /// No description provided for @cannotLockLastAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'At least one active administrator is required'**
+  String get cannotLockLastAdmin;
+
+  /// No description provided for @adminCreatedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Administrator account created'**
+  String get adminCreatedTitle;
+
+  /// No description provided for @adminCreatedCheckInboxHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask them to check their inbox (including Spam) and change the password after signing in for the first time.'**
+  String get adminCreatedCheckInboxHint;
+
+  /// No description provided for @noAdminFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No administrators match your search'**
+  String get noAdminFound;
+
+  /// No description provided for @allAdminsLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'All administrators loaded'**
+  String get allAdminsLoaded;
+
+  /// No description provided for @loadMoreAdminsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load more administrators'**
+  String get loadMoreAdminsFailed;
+
+  /// No description provided for @invalidPhoneFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid phone number (8–15 digits, may start with +)'**
+  String get invalidPhoneFormat;
+
+  /// No description provided for @fullnameTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name must not exceed 100 characters'**
+  String get fullnameTooLong;
+
+  /// No description provided for @selectAdminHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select an administrator to see their details and recent activity'**
+  String get selectAdminHint;
+
+  /// No description provided for @activityLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load recent activity'**
+  String get activityLoadFailed;
+
+  /// No description provided for @activityHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity history'**
+  String get activityHistory;
+
+  /// No description provided for @adminTotalBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get adminTotalBadge;
+
+  /// No description provided for @loadMoreActivitiesFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load more activities'**
+  String get loadMoreActivitiesFailed;
+
+  /// No description provided for @allActivitiesLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'All activities loaded'**
+  String get allActivitiesLoaded;
+
   /// No description provided for @chooseFromGallery.
   ///
   /// In en, this message translates to:
@@ -3901,6 +4045,516 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rejected by administrator.'**
   String get noRejectionReasonProvided;
+
+  /// No description provided for @lockRequestsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock proposals'**
+  String get lockRequestsTab;
+
+  /// No description provided for @lockRequestsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account lock proposals'**
+  String get lockRequestsTitle;
+
+  /// No description provided for @lockFilterPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get lockFilterPending;
+
+  /// No description provided for @lockFilterResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get lockFilterResolved;
+
+  /// No description provided for @noPendingLockRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No proposals are awaiting votes'**
+  String get noPendingLockRequests;
+
+  /// No description provided for @noResolvedLockRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No resolved proposals yet'**
+  String get noResolvedLockRequests;
+
+  /// No description provided for @loadMoreLockRequestsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load more proposals'**
+  String get loadMoreLockRequestsFailed;
+
+  /// No description provided for @allLockRequestsLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'All proposals loaded'**
+  String get allLockRequestsLoaded;
+
+  /// No description provided for @selectLockRequestHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a proposal to see its details and vote'**
+  String get selectLockRequestHint;
+
+  /// No description provided for @lockStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting votes'**
+  String get lockStatusPending;
+
+  /// No description provided for @lockStatusApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get lockStatusApproved;
+
+  /// No description provided for @lockStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get lockStatusRejected;
+
+  /// No description provided for @lockStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get lockStatusCancelled;
+
+  /// No description provided for @lockStatusExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get lockStatusExpired;
+
+  /// No description provided for @lockProposedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Proposed by {name}'**
+  String lockProposedBy(String name);
+
+  /// No description provided for @lockDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Voting closes: {time}'**
+  String lockDeadline(String time);
+
+  /// No description provided for @lockResolvedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Ended: {time}'**
+  String lockResolvedAt(String time);
+
+  /// No description provided for @lockApprovalsProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Endorsed {count}/{required}'**
+  String lockApprovalsProgress(int count, int required);
+
+  /// No description provided for @lockRejectionsProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected {count}/{required}'**
+  String lockRejectionsProgress(int count, int required);
+
+  /// No description provided for @lockAwaitingYourVote.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs your vote'**
+  String get lockAwaitingYourVote;
+
+  /// No description provided for @lockReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get lockReasonLabel;
+
+  /// No description provided for @lockEvidenceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence'**
+  String get lockEvidenceLabel;
+
+  /// No description provided for @lockVotesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Votes'**
+  String get lockVotesLabel;
+
+  /// No description provided for @noVotesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No votes yet'**
+  String get noVotesYet;
+
+  /// No description provided for @lockVoteApprove.
+  ///
+  /// In en, this message translates to:
+  /// **'Endorse'**
+  String get lockVoteApprove;
+
+  /// No description provided for @lockVoteReject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get lockVoteReject;
+
+  /// No description provided for @lockVoteApproveConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Endorse this lock proposal?'**
+  String get lockVoteApproveConfirmTitle;
+
+  /// No description provided for @lockVoteRejectConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject this lock proposal?'**
+  String get lockVoteRejectConfirmTitle;
+
+  /// No description provided for @lockVoteApproveConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Once {required} administrators endorse it, the account of {name} will be locked immediately. Votes cannot be changed.'**
+  String lockVoteApproveConfirmMessage(int required, String name);
+
+  /// No description provided for @lockVoteRejectConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Once {required} administrators reject it, the proposal is dismissed. Votes cannot be changed.'**
+  String lockVoteRejectConfirmMessage(int required);
+
+  /// No description provided for @lockVoteCommentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment (optional)'**
+  String get lockVoteCommentHint;
+
+  /// No description provided for @lockVoteSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Your vote has been recorded'**
+  String get lockVoteSubmitted;
+
+  /// No description provided for @lockVoteBlockedProposer.
+  ///
+  /// In en, this message translates to:
+  /// **'You proposed this lock, so you cannot vote on it'**
+  String get lockVoteBlockedProposer;
+
+  /// No description provided for @lockVoteBlockedAlreadyVoted.
+  ///
+  /// In en, this message translates to:
+  /// **'You have already voted on this proposal'**
+  String get lockVoteBlockedAlreadyVoted;
+
+  /// No description provided for @lockVoteBlockedClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Voting on this proposal has ended'**
+  String get lockVoteBlockedClosed;
+
+  /// No description provided for @lockCancelAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel proposal'**
+  String get lockCancelAction;
+
+  /// No description provided for @lockCancelConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel the lock proposal for {name}?'**
+  String lockCancelConfirm(String name);
+
+  /// No description provided for @lockCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Proposal cancelled'**
+  String get lockCancelled;
+
+  /// No description provided for @lockActionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t complete the action. Please try again.'**
+  String get lockActionFailed;
+
+  /// No description provided for @viewUserProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'View user'**
+  String get viewUserProfile;
+
+  /// No description provided for @proposeLockAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Propose account lock'**
+  String get proposeLockAction;
+
+  /// No description provided for @proposeLockSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The account is locked only after {required} other administrators endorse it within {hours} hours.'**
+  String proposeLockSubtitle(int required, int hours);
+
+  /// No description provided for @lockReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the violation clearly: what happened, when, and how serious it is'**
+  String get lockReasonHint;
+
+  /// No description provided for @lockReasonTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'The reason must be at least 20 characters'**
+  String get lockReasonTooShort;
+
+  /// No description provided for @lockEvidenceImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence images (up to {max})'**
+  String lockEvidenceImages(int max);
+
+  /// No description provided for @lockAddImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add image'**
+  String get lockAddImage;
+
+  /// No description provided for @lockRemoveImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove image'**
+  String get lockRemoveImage;
+
+  /// No description provided for @lockImageTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Each image must be 5MB or smaller'**
+  String get lockImageTooLarge;
+
+  /// No description provided for @lockEvidenceReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Related reports'**
+  String get lockEvidenceReports;
+
+  /// No description provided for @lockNoPublicReports.
+  ///
+  /// In en, this message translates to:
+  /// **'This user has no public reports'**
+  String get lockNoPublicReports;
+
+  /// No description provided for @lockEvidenceRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one piece of evidence: an image or a report'**
+  String get lockEvidenceRequired;
+
+  /// No description provided for @lockSubmitProposal.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit proposal'**
+  String get lockSubmitProposal;
+
+  /// No description provided for @lockProposalSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Proposal sent to the Board of Administrators'**
+  String get lockProposalSent;
+
+  /// No description provided for @lockPendingBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'This account has a lock proposal awaiting votes'**
+  String get lockPendingBanner;
+
+  /// No description provided for @viewLockProposal.
+  ///
+  /// In en, this message translates to:
+  /// **'View proposal'**
+  String get viewLockProposal;
+
+  /// No description provided for @unlockReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for unlocking (required)'**
+  String get unlockReasonHint;
+
+  /// No description provided for @unlockReasonTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'The reason must be at least 10 characters'**
+  String get unlockReasonTooShort;
+
+  /// No description provided for @userUnlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'User account unlocked'**
+  String get userUnlocked;
+
+  /// No description provided for @lockFilterAwaitingMine.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs your vote'**
+  String get lockFilterAwaitingMine;
+
+  /// No description provided for @noAwaitingLockRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing needs your vote right now'**
+  String get noAwaitingLockRequests;
+
+  /// No description provided for @lockFindingAwaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} proposals need your vote · the nearest: {timeLeft}'**
+  String lockFindingAwaiting(int count, String timeLeft);
+
+  /// No description provided for @lockFindingOthers.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing needs your vote · {count} awaiting other administrators'**
+  String lockFindingOthers(int count);
+
+  /// No description provided for @lockUpdatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated {time}'**
+  String lockUpdatedAt(String time);
+
+  /// No description provided for @lockRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get lockRefresh;
+
+  /// No description provided for @lockTimeLeftHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h left'**
+  String lockTimeLeftHours(int hours);
+
+  /// No description provided for @lockTimeLeftMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min left'**
+  String lockTimeLeftMinutes(int minutes);
+
+  /// No description provided for @lockTimeOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Voting time is up'**
+  String get lockTimeOverdue;
+
+  /// No description provided for @lockBallotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ballot'**
+  String get lockBallotTitle;
+
+  /// No description provided for @lockSeatEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty seat'**
+  String get lockSeatEmpty;
+
+  /// No description provided for @lockOutcomeApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Account locked at {time}'**
+  String lockOutcomeApproved(String time);
+
+  /// No description provided for @lockOutcomeRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected at {time}'**
+  String lockOutcomeRejected(String time);
+
+  /// No description provided for @lockOutcomeCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled at {time}'**
+  String lockOutcomeCancelled(String time);
+
+  /// No description provided for @lockOutcomeExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired at {time} without enough votes'**
+  String lockOutcomeExpired(String time);
+
+  /// No description provided for @lockEvidenceSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence · {images} images · {reports} reports'**
+  String lockEvidenceSummary(int images, int reports);
+
+  /// No description provided for @lockVotesCast.
+  ///
+  /// In en, this message translates to:
+  /// **'Votes cast'**
+  String get lockVotesCast;
+
+  /// No description provided for @lockProposedByYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Proposed by you'**
+  String get lockProposedByYou;
+
+  /// No description provided for @lockMoreActions.
+  ///
+  /// In en, this message translates to:
+  /// **'More actions'**
+  String get lockMoreActions;
+
+  /// No description provided for @lockReasonHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 20 characters. The user will receive this reason.'**
+  String get lockReasonHelper;
+
+  /// No description provided for @lockEvidenceHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'At least one image or one report'**
+  String get lockEvidenceHelper;
+
+  /// No description provided for @lockWhatHappensTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What happens next'**
+  String get lockWhatHappensTitle;
+
+  /// No description provided for @lockWhatHappensBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{required} other administrators must endorse within {hours} hours before the account is locked. The user receives the reason only, never the evidence.'**
+  String lockWhatHappensBody(int required, int hours);
+
+  /// No description provided for @lockProposalSentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock proposal sent'**
+  String get lockProposalSentTitle;
+
+  /// No description provided for @lockProposalSentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The Board of Administrators has been notified. The account is locked once {required} other administrators endorse it within {hours} hours.'**
+  String lockProposalSentBody(int required, int hours);
+
+  /// No description provided for @lockBlockedNotEnoughAdmins.
+  ///
+  /// In en, this message translates to:
+  /// **'At least {min} active administrators are needed to vote on a lock. Add an administrator in the Board of Administrators.'**
+  String lockBlockedNotEnoughAdmins(int min);
+
+  /// No description provided for @lockBlockedNotActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Only active accounts can be proposed for locking'**
+  String get lockBlockedNotActive;
 }
 
 class _AppLocalizationsDelegate

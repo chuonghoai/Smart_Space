@@ -48,6 +48,9 @@ public class UserService implements IUserService {
     @Transactional
     public LoginResponse createUser(RegisterRequest request) {
 
+        // Luồng đăng ký public chỉ dành cho client; admin/staff do quản trị viên cấp
+        authenticationService.assertSelfRegistrableRole(request.getRole());
+
         if (userRepository.existsByEmailAndRole(request.getEmail(), request.getRole())) {
             throw new BadRequestException("auth.email.exists");
         }

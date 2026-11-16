@@ -7,6 +7,7 @@ import java.util.Optional;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -14,6 +15,8 @@ import org.springframework.stereotype.Repository;
 import com.vn.smart_space.consts.ERole;
 import com.vn.smart_space.consts.EUserStatus;
 import com.vn.smart_space.model.User;
+
+import jakarta.persistence.LockModeType;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
@@ -80,6 +83,20 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     // Đếm theo role + status
     long countByRoleAndStatus(ERole role, EUserStatus status);
+
+    /**
+     * Khóa ghi (SELECT ... FOR UPDATE) các tài khoản theo role + status trong transaction hiện tại.
+     * Dùng để tuần tự hóa các thao tác khóa admin đồng thời, tránh trường hợp hai admin
+     * khóa nhau cùng lúc khiến hệ thống không còn admin nào hoạt động.
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT u FROM User u WHERE u.role = :role AND u.status = :status")
+    List<User> lockByRoleAndStatus(@Param("role") ERole role, @Param("status") EUserStatus status);
+
+    /** Khóa ghi một tài khoản — tuần tự hóa việc tạo đề xuất khóa cho cùng người dùng. */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT u FROM User u WHERE u.id = :id")
+    Optional<User> findByIdForUpdate(@Param("id") String id);
 
     // Đếm số nhân viên đang giữ một chức vụ
     long countByPositionId(String positionId);

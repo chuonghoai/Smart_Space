@@ -1876,6 +1876,86 @@ class AppLocalizationsVi extends AppLocalizations {
       'Tính năng gọi miễn phí qua internet đang được phát triển';
 
   @override
+  String get adminBoard => 'Hội đồng quản trị';
+
+  @override
+  String get routeAdminBoard => 'Hội đồng quản trị';
+
+  @override
+  String get addAdmin => 'Thêm quản trị viên';
+
+  @override
+  String get addNewAdmin => 'Thêm quản trị viên mới';
+
+  @override
+  String get createAdminAction => 'Tạo tài khoản';
+
+  @override
+  String get addAdminFailed => 'Không tạo được tài khoản quản trị viên';
+
+  @override
+  String get youBadge => 'Bạn';
+
+  @override
+  String lockAdminConfirm(String name) {
+    return 'Khoá tài khoản quản trị viên của $name? Người này sẽ bị đăng xuất khỏi mọi thiết bị ngay lập tức.';
+  }
+
+  @override
+  String unlockAdminConfirm(String name) {
+    return 'Mở khoá tài khoản quản trị viên của $name? Người này sẽ có thể đăng nhập lại.';
+  }
+
+  @override
+  String get cannotLockSelf => 'Bạn không thể khoá tài khoản của chính mình';
+
+  @override
+  String get cannotLockLastAdmin =>
+      'Hệ thống cần ít nhất một quản trị viên đang hoạt động';
+
+  @override
+  String get adminCreatedTitle => 'Đã tạo tài khoản quản trị viên';
+
+  @override
+  String get adminCreatedCheckInboxHint =>
+      'Nhắc quản trị viên mới kiểm tra hộp thư (kể cả mục Thư rác) và đổi mật khẩu sau lần đăng nhập đầu tiên.';
+
+  @override
+  String get noAdminFound => 'Không tìm thấy quản trị viên phù hợp';
+
+  @override
+  String get allAdminsLoaded => 'Đã hiển thị tất cả quản trị viên';
+
+  @override
+  String get loadMoreAdminsFailed => 'Không tải thêm được quản trị viên';
+
+  @override
+  String get invalidPhoneFormat =>
+      'Số điện thoại không hợp lệ (8–15 chữ số, có thể bắt đầu bằng +)';
+
+  @override
+  String get fullnameTooLong => 'Họ tên không được vượt quá 100 ký tự';
+
+  @override
+  String get selectAdminHint =>
+      'Chọn một quản trị viên để xem thông tin và hoạt động gần đây';
+
+  @override
+  String get activityLoadFailed => 'Không tải được hoạt động gần đây';
+
+  @override
+  String get activityHistory => 'Lịch sử hoạt động';
+
+  @override
+  String get adminTotalBadge => 'Tổng';
+
+  @override
+  String get loadMoreActivitiesFailed => 'Không tải thêm được hoạt động';
+
+  @override
+  String get allActivitiesLoaded => 'Đã hiển thị tất cả hoạt động';
+
+  @override
   String get chooseFromGallery => 'Chọn ảnh từ thư viện';
 
   @override
@@ -2011,4 +2091,315 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get noRejectionReasonProvided =>
       'Phản ánh đã bị quản trị viên từ chối.';
+
+  @override
+  String get lockRequestsTab => 'Đề xuất khoá';
+
+  @override
+  String get lockRequestsTitle => 'Đề xuất khoá tài khoản';
+
+  @override
+  String get lockFilterPending => 'Đang chờ';
+
+  @override
+  String get lockFilterResolved => 'Đã kết thúc';
+
+  @override
+  String get noPendingLockRequests =>
+      'Không có đề xuất nào đang chờ biểu quyết';
+
+  @override
+  String get noResolvedLockRequests => 'Chưa có đề xuất nào kết thúc';
+
+  @override
+  String get loadMoreLockRequestsFailed => 'Không tải thêm được đề xuất';
+
+  @override
+  String get allLockRequestsLoaded => 'Đã hiển thị tất cả đề xuất';
+
+  @override
+  String get selectLockRequestHint =>
+      'Chọn một đề xuất để xem chi tiết và biểu quyết';
+
+  @override
+  String get lockStatusPending => 'Đang chờ biểu quyết';
+
+  @override
+  String get lockStatusApproved => 'Đã thông qua';
+
+  @override
+  String get lockStatusRejected => 'Bị bác bỏ';
+
+  @override
+  String get lockStatusCancelled => 'Đã huỷ';
+
+  @override
+  String get lockStatusExpired => 'Hết hạn';
+
+  @override
+  String lockProposedBy(String name) {
+    return 'Đề xuất bởi $name';
+  }
+
+  @override
+  String lockDeadline(String time) {
+    return 'Hạn biểu quyết: $time';
+  }
+
+  @override
+  String lockResolvedAt(String time) {
+    return 'Kết thúc lúc: $time';
+  }
+
+  @override
+  String lockApprovalsProgress(int count, int required) {
+    return 'Bảo lãnh $count/$required';
+  }
+
+  @override
+  String lockRejectionsProgress(int count, int required) {
+    return 'Từ chối $count/$required';
+  }
+
+  @override
+  String get lockAwaitingYourVote => 'Cần bạn biểu quyết';
+
+  @override
+  String get lockReasonLabel => 'Lý do';
+
+  @override
+  String get lockEvidenceLabel => 'Bằng chứng';
+
+  @override
+  String get lockVotesLabel => 'Phiếu biểu quyết';
+
+  @override
+  String get noVotesYet => 'Chưa có phiếu nào';
+
+  @override
+  String get lockVoteApprove => 'Bảo lãnh';
+
+  @override
+  String get lockVoteReject => 'Từ chối';
+
+  @override
+  String get lockVoteApproveConfirmTitle => 'Bảo lãnh đề xuất khoá?';
+
+  @override
+  String get lockVoteRejectConfirmTitle => 'Từ chối đề xuất khoá?';
+
+  @override
+  String lockVoteApproveConfirmMessage(int required, String name) {
+    return 'Khi đủ $required quản trị viên bảo lãnh, tài khoản của $name sẽ bị khoá ngay. Phiếu đã bỏ không thể thay đổi.';
+  }
+
+  @override
+  String lockVoteRejectConfirmMessage(int required) {
+    return 'Khi đủ $required quản trị viên từ chối, đề xuất sẽ bị bác bỏ. Phiếu đã bỏ không thể thay đổi.';
+  }
+
+  @override
+  String get lockVoteCommentHint => 'Nhận xét (không bắt buộc)';
+
+  @override
+  String get lockVoteSubmitted => 'Đã ghi nhận phiếu của bạn';
+
+  @override
+  String get lockVoteBlockedProposer =>
+      'Bạn là người đề xuất nên không thể bỏ phiếu';
+
+  @override
+  String get lockVoteBlockedAlreadyVoted => 'Bạn đã bỏ phiếu cho đề xuất này';
+
+  @override
+  String get lockVoteBlockedClosed => 'Đề xuất đã kết thúc biểu quyết';
+
+  @override
+  String get lockCancelAction => 'Huỷ đề xuất';
+
+  @override
+  String lockCancelConfirm(String name) {
+    return 'Huỷ đề xuất khoá tài khoản của $name?';
+  }
+
+  @override
+  String get lockCancelled => 'Đã huỷ đề xuất';
+
+  @override
+  String get lockActionFailed =>
+      'Không thực hiện được thao tác. Vui lòng thử lại.';
+
+  @override
+  String get viewUserProfile => 'Xem người dùng';
+
+  @override
+  String get proposeLockAction => 'Đề xuất khoá tài khoản';
+
+  @override
+  String proposeLockSubtitle(int required, int hours) {
+    return 'Tài khoản chỉ bị khoá khi có $required quản trị viên khác bảo lãnh trong vòng $hours giờ.';
+  }
+
+  @override
+  String get lockReasonHint =>
+      'Mô tả rõ hành vi vi phạm: chuyện gì xảy ra, khi nào, mức độ ra sao';
+
+  @override
+  String get lockReasonTooShort => 'Lý do cần ít nhất 20 ký tự';
+
+  @override
+  String lockEvidenceImages(int max) {
+    return 'Ảnh bằng chứng (tối đa $max)';
+  }
+
+  @override
+  String get lockAddImage => 'Thêm ảnh';
+
+  @override
+  String get lockRemoveImage => 'Xoá ảnh';
+
+  @override
+  String get lockImageTooLarge => 'Mỗi ảnh không được vượt quá 5MB';
+
+  @override
+  String get lockEvidenceReports => 'Phản ánh liên quan';
+
+  @override
+  String get lockNoPublicReports => 'Người dùng chưa có phản ánh công khai nào';
+
+  @override
+  String get lockEvidenceRequired =>
+      'Cần ít nhất một bằng chứng: ảnh hoặc phản ánh';
+
+  @override
+  String get lockSubmitProposal => 'Gửi đề xuất';
+
+  @override
+  String get lockProposalSent => 'Đã gửi đề xuất tới Hội đồng quản trị';
+
+  @override
+  String get lockPendingBanner =>
+      'Tài khoản này đang có đề xuất khoá chờ biểu quyết';
+
+  @override
+  String get viewLockProposal => 'Xem đề xuất';
+
+  @override
+  String get unlockReasonHint => 'Lý do mở khoá (bắt buộc)';
+
+  @override
+  String get unlockReasonTooShort => 'Lý do cần ít nhất 10 ký tự';
+
+  @override
+  String get userUnlocked => 'Đã mở khoá tài khoản người dùng';
+
+  @override
+  String get lockFilterAwaitingMine => 'Cần bạn';
+
+  @override
+  String get noAwaitingLockRequests =>
+      'Hiện không có đề xuất nào cần bạn biểu quyết';
+
+  @override
+  String lockFindingAwaiting(int count, String timeLeft) {
+    return '$count đề xuất cần bạn biểu quyết · gần nhất: $timeLeft';
+  }
+
+  @override
+  String lockFindingOthers(int count) {
+    return 'Không có đề xuất nào cần bạn biểu quyết · $count đề xuất đang chờ các quản trị viên khác';
+  }
+
+  @override
+  String lockUpdatedAt(String time) {
+    return 'Cập nhật $time';
+  }
+
+  @override
+  String get lockRefresh => 'Làm mới';
+
+  @override
+  String lockTimeLeftHours(int hours) {
+    return 'còn $hours giờ';
+  }
+
+  @override
+  String lockTimeLeftMinutes(int minutes) {
+    return 'còn $minutes phút';
+  }
+
+  @override
+  String get lockTimeOverdue => 'Đã hết giờ biểu quyết';
+
+  @override
+  String get lockBallotTitle => 'Phiếu bầu';
+
+  @override
+  String get lockSeatEmpty => 'Ghế trống';
+
+  @override
+  String lockOutcomeApproved(String time) {
+    return 'Tài khoản đã bị khoá lúc $time';
+  }
+
+  @override
+  String lockOutcomeRejected(String time) {
+    return 'Bị bác bỏ lúc $time';
+  }
+
+  @override
+  String lockOutcomeCancelled(String time) {
+    return 'Đã huỷ lúc $time';
+  }
+
+  @override
+  String lockOutcomeExpired(String time) {
+    return 'Hết hạn lúc $time, không đủ phiếu';
+  }
+
+  @override
+  String lockEvidenceSummary(int images, int reports) {
+    return 'Bằng chứng · $images ảnh · $reports phản ánh';
+  }
+
+  @override
+  String get lockVotesCast => 'Phiếu đã bỏ';
+
+  @override
+  String get lockProposedByYou => 'Đề xuất bởi bạn';
+
+  @override
+  String get lockMoreActions => 'Thao tác khác';
+
+  @override
+  String get lockReasonHelper =>
+      'Tối thiểu 20 ký tự. Người dùng sẽ nhận được lý do này.';
+
+  @override
+  String get lockEvidenceHelper => 'Ít nhất 1 ảnh hoặc 1 phản ánh';
+
+  @override
+  String get lockWhatHappensTitle => 'Điều gì xảy ra tiếp theo';
+
+  @override
+  String lockWhatHappensBody(int required, int hours) {
+    return 'Cần $required quản trị viên khác bảo lãnh trong $hours giờ thì tài khoản mới bị khoá. Người dùng chỉ nhận được lý do, không nhận bằng chứng.';
+  }
+
+  @override
+  String get lockProposalSentTitle => 'Đã gửi đề xuất khoá';
+
+  @override
+  String lockProposalSentBody(int required, int hours) {
+    return 'Hội đồng quản trị đã được thông báo. Tài khoản sẽ bị khoá khi có $required quản trị viên khác bảo lãnh trong $hours giờ.';
+  }
+
+  @override
+  String lockBlockedNotEnoughAdmins(int min) {
+    return 'Cần ít nhất $min quản trị viên đang hoạt động để biểu quyết khoá. Hãy thêm quản trị viên trong Hội đồng quản trị.';
+  }
+
+  @override
+  String get lockBlockedNotActive =>
+      'Chỉ có thể đề xuất khoá tài khoản đang hoạt động';
 }

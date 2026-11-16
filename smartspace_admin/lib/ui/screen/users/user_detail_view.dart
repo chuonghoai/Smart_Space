@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
+import 'package:smartspace_admin/features/account_lock/application/account_lock_providers.dart';
 import 'package:smartspace_admin/features/users/application/user_providers.dart';
+import 'package:smartspace_admin/ui/screen/admin_board/lock_requests/lock_request_form.dart';
 import 'package:smartspace_admin/features/users/models/user_detail_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
@@ -255,6 +258,10 @@ class _UserDetailBody extends StatelessWidget {
             ),
           ],
         ),
+        const SizedBox(height: 12),
+
+        // Khóa / mở khóa (khóa chỉ qua biểu quyết của Hội đồng quản trị)
+        _AccountLockSection(user: user),
         const SizedBox(height: 16),
 
         // Thông tin cá nhân
@@ -352,6 +359,88 @@ class _UserDetailBody extends StatelessWidget {
         'en' => l10n.english,
         _ => l10n.notProvided,
       };
+}
+
+/// Trạng thái khóa của người dùng:
+/// - Có đề xuất chờ biểu quyết → banner + "Xem đề xuất".
+/// - Đã bị khóa → "Mở khoá tài khoản" (một admin, bắt buộc lý do).
+/// - Đang hoạt động → "Đề xuất khoá tài khoản".
+class _AccountLockSection extends StatelessWidget {
+  final UserDetailModel user;
+
+  const _AccountLockSection({required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final pendingId = user.pendingLockRequestId;
+
+    if (pendingId != null) {
+      final warning = AppSemanticColors.of(context).warning;
+      return Container(
+        padding: const EdgeInsets.fromLTRB(12, 8, 4, 8),
+        decoration: BoxDecoration(
+          color: warning.withValues(alpha: 0.12),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            Icon(Icons.how_to_vote_outlined, size: 20, color: warning),
+            const SizedBox(width: 10),
+            Expanded(child: Text(l10n.lockPendingBanner, style: theme.textTheme.bodySmall)),
+            TextButton(
+              onPressed: () {
+                final router = GoRouter.of(context);
+                Navigator.of(context).pop(); // đóng dialog / bottom sheet chi tiết
+                router.push(RouterPath.adminBoardLockRequests(pendingId));
+              },
+              child: Text(l10n.viewLockProposal),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (user.isBlocked) {
+      return OutlinedButton.icon(
+        icon: const Icon(Icons.lock_open, size: 18),
+        label: Text(l10n.unlockAccount),
+        onPressed: () => showUnlockUserDialog(context, user),
+      );
+    }
+
+    if (!user.isActive) return const SizedBox.shrink();
+
+    // Không đủ điều kiện → nút vẫn đọc được và nói rõ vì sao (không để admin điền form rồi mới bị từ chối)
+    final blockedText = switch (user.lockProposalBlockedReason) {
+      'not_enough_admins' => l10n.lockBlockedNotEnoughAdmins(kLockRequiredApprovals + 1),
+      'not_active' => l10n.lockBlockedNotActive,
+      _ => null,
+    };
+    final enabled = blockedText == null;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        OutlinedButton.icon(
+          icon: const Icon(Icons.lock_outline, size: 18),
+          label: Text(l10n.proposeLockAction),
+          style: OutlinedButton.styleFrom(
+            foregroundColor: cs.error,
+            disabledForegroundColor: cs.onSurfaceVariant,
+            side: BorderSide(color: enabled ? cs.error.withValues(alpha: 0.6) : theme.dividerColor),
+          ),
+          onPressed: enabled ? () => showLockRequestForm(context, user) : null,
+        ),
+        if (blockedText != null) ...[
+          const SizedBox(height: 6),
+          Text(blockedText, style: theme.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
+        ],
+      ],
+    );
+  }
 }
 
 class _InfoRow extends StatelessWidget {

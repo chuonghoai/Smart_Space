@@ -55,6 +55,8 @@ class AppRouteInfo {
         return l10n.routeEditNews;
       case 'routeAllActivities':
         return l10n.routeAllActivities;
+      case 'routeAdminBoard':
+        return l10n.routeAdminBoard;
       default:
         return nameKey;
     }
@@ -132,6 +134,12 @@ class RouteName {
     path: '/position-management',
     nameKey: 'routePositionManagement',
     icon: Icons.workspace_premium,
+    priority: 2,
+  );
+  static const adminBoard = AppRouteInfo(
+    path: '/admin-board',
+    nameKey: 'routeAdminBoard',
+    icon: Icons.admin_panel_settings_outlined,
     priority: 2,
   );
   static const reportDashboard = AppRouteInfo(
@@ -241,6 +249,7 @@ class RouteName {
     staffManagement,
     userManagement,
     positionManagement,
+    adminBoard,
     reportDashboard,
     reportList,
     unsatisfactoryReports,
