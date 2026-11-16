@@ -881,6 +881,9 @@ public class ReportServiceImpl implements IReportService {
         User staff = report.getAssignedStaff();
 
         report.setStatus(EReportStatus.processed);
+        if (report.getDeadline() == null) {
+            report.setDeadline(resolveDeadline(report));
+        }
         if (request.getNote() != null && !request.getNote().trim().isEmpty()) {
             report.setResolvedNote(request.getNote().trim());
         }
@@ -1341,6 +1344,9 @@ public class ReportServiceImpl implements IReportService {
 
         report.setStatus(next);
         if (next == EReportStatus.processed) {
+            if (report.getDeadline() == null) {
+                report.setDeadline(resolveDeadline(report));
+            }
             if (report.getResolvedAt() == null) {
                 report.setResolvedAt(new java.util.Date());
             }

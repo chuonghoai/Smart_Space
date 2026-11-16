@@ -11,6 +11,7 @@ import 'package:smartspace_admin/features/staff/models/staff_model.dart';
 import 'package:smartspace_admin/features/staff/models/staff_statistics_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/screen/reports/admin_report_detail_screen.dart';
+import 'package:smartspace_admin/ui/screen/reports/widgets/report_card_view.dart';
 import 'package:smartspace_admin/ui/screen/staff/staff_dashboard_widgets.dart';
 import 'package:smartspace_admin/ui/screen/staff/staff_shared_widgets.dart';
 
@@ -302,4 +303,67 @@ void main() {
       expect(container.read(reportFilterProvider).assigneeId, isNull);
     });
   });
+
+  group('ReportCardView no-image narrow layout Tests', () {
+    testWidgets('renders severity, status, rehandling and date without RIGHT OVERFLOWED on 320px width',
+        (tester) async {
+      await tester.binding.setSurfaceSize(const Size(320, 700));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      final past = DateTime(2026, 10, 1, 10, 0);
+      final report = ReportListItem(
+        id: 'rep-noimg-1',
+        title: 'Phản ánh không có hình ảnh với nhiều badge dài',
+        status: 'processing',
+        severity: 'critical',
+        createdAt: DateTime(2026, 11, 16, 10, 0),
+        isReviewResolved: false,
+        deadline: past,
+        userName: 'Nguyễn Văn A',
+        assignedStaffName: 'Nhân viên B',
+      );
+
+      for (final theme in [AppTheme.lightTheme, AppTheme.darkTheme]) {
+        await tester.pumpWidget(
+          ProviderScope(
+            overrides: [
+              reportListProvider.overrideWith(
+                () => _StubReportListNotifier(
+                  ReportListData(
+                    items: [report],
+                    currentPage: 1,
+                    totalPages: 1,
+                    totalElements: 1,
+                    pageSize: 20,
+                  ),
+                ),
+              ),
+            ],
+            child: MaterialApp(
+              theme: theme,
+              localizationsDelegates: AppLocalizations.localizationsDelegates,
+              supportedLocales: AppLocalizations.supportedLocales,
+              locale: const Locale('vi'),
+              home: const Scaffold(
+                body: SingleChildScrollView(child: ReportCardView()),
+              ),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('Xử lý lại'), findsOneWidget);
+        expect(find.text('Quá hạn'), findsOneWidget);
+        expect(find.text('Đang xử lý'), findsOneWidget);
+      }
+    });
+  });
+}
+
+class _StubReportListNotifier extends ReportListNotifier {
+  final ReportListData _data;
+  _StubReportListNotifier(this._data);
+
+  @override
+  Future<ReportListData> build() async => _data;
 }

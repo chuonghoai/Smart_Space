@@ -229,6 +229,8 @@ public interface ReportRepository extends JpaRepository<Report, String> {
        @Query("SELECT COUNT(r) FROM Report r WHERE " + OVERDUE_CONDITION)
        long countAdminOverdueReports(@Param("now") LocalDateTime now);
 
+       List<Report> findByDeadlineIsNullAndStatusNot(EReportStatus status);
+
        // Admin - User management
        // Thống kê tổng hợp (aggregate) tính cả báo cáo ẩn danh; số liệu gắn với từng
        // người dùng thì loại báo cáo ẩn danh để không lộ danh tính người báo cáo.

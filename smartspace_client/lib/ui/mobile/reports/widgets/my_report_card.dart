@@ -193,6 +193,50 @@ class MyReportCard extends StatelessWidget {
                           ),
                         ],
                       ),
+                      if (report.deadline != null &&
+                          report.status != ReportStatus.rejected) ...[
+                        const SizedBox(height: 6),
+                        Builder(
+                          builder: (context) {
+                            final remaining = report.remainingDays;
+                            final isOverdue = report.isOverdue;
+                            final deadlineColor = isOverdue
+                                ? theme.colorScheme.error
+                                : theme.colorScheme.onSurfaceVariant;
+                            final formatted = DateFormat('dd/MM/yyyy HH:mm')
+                                .format(report.deadline!.toLocal());
+                            final deadlineText = remaining != null && !isOverdue
+                                ? '${l10n.reportDeadlineLabel}: $formatted (${l10n.daysRemainingLabel(remaining)})'
+                                : '${l10n.reportDeadlineLabel}: $formatted';
+                            return Row(
+                              children: [
+                                Icon(
+                                  Icons.event_available_outlined,
+                                  size: 14,
+                                  color: deadlineColor,
+                                ),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    deadlineText,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: deadlineColor,
+                                      fontWeight: isOverdue
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                      fontFeatures: const [
+                                        FontFeature.tabularFigures(),
+                                      ],
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ],
                       const SizedBox(height: 8),
 
                       // Date and Status (Bottom Row)

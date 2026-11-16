@@ -561,6 +561,43 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
                                 ),
                               ),
 
+                            // Overdue badge
+                            if (report.isOverdue)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.errorContainer,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: theme.colorScheme.error
+                                        .withValues(alpha: 0.45),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.schedule_outlined,
+                                      size: 14,
+                                      color: theme.colorScheme.onErrorContainer,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      l10n.deadlineOverdueBadge,
+                                      style:
+                                          theme.textTheme.labelSmall?.copyWith(
+                                        color:
+                                            theme.colorScheme.onErrorContainer,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
                             // Severity Pill
                             Container(
                               padding: const EdgeInsets.symmetric(
@@ -649,11 +686,9 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
                                   : theme.colorScheme.onSurfaceVariant;
                               final formattedDeadline =
                                   DateFormat('dd/MM/yyyy HH:mm').format(report.deadline!.toLocal());
-                              final deadlineLine = isOverdue
-                                  ? '${l10n.reportDeadlineLabel}: $formattedDeadline (${l10n.deadlineOverdueBadge})'
-                                  : remainingDays != null
-                                      ? '${l10n.reportDeadlineLabel}: $formattedDeadline (${l10n.daysRemainingLabel(remainingDays)})'
-                                      : '${l10n.reportDeadlineLabel}: $formattedDeadline';
+                              final deadlineLine = !isOverdue && remainingDays != null
+                                  ? '${l10n.reportDeadlineLabel}: $formattedDeadline (${l10n.daysRemainingLabel(remainingDays)})'
+                                  : '${l10n.reportDeadlineLabel}: $formattedDeadline';
                               return Row(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
