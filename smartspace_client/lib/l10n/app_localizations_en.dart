@@ -1285,4 +1285,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get attachedReportSnippet => 'Attached report';
+
+  @override
+  String get reportDeadlineLabel => 'Resolution deadline';
+
+  @override
+  String get deadlineOverdueBadge => 'Overdue';
+
+  @override
+  String daysRemainingLabel(int days) {
+    return '$days days left';
+  }
+
+  @override
+  String get overdueOnlyFilter => 'Overdue';
+
+  @override
+  String get rejectedReasonTitle => 'Rejection Reason';
+
+  @override
+  String get noRejectionReasonProvided => 'Rejected by administrator.';
 }

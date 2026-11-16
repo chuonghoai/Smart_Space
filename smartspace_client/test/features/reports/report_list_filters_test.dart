@@ -75,6 +75,7 @@ class _FakeReportRepo implements ReportRepo {
     EReportSeverity? severity,
     ReportDateRange? dateRange,
     String? search,
+    bool overdueOnly = false,
     int page = 1,
     int size = 20,
   }) {

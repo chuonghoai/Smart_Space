@@ -85,16 +85,6 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
               ),
               const Divider(height: 1),
 
-              // Nhóm: Hệ thống
-              _buildSectionHeader(theme, l10n.systemSettingsSection),
-              _buildItem(
-                theme: theme,
-                icon: Icons.tune_outlined,
-                label: l10n.systemConfig,
-                onTap: () => context.push(RouterPath.systemConfig),
-              ),
-              const Divider(height: 1),
-
               // Nhóm 2: Ứng dụng
               _buildSectionHeader(theme, l10n.appSection),
               ListenableBuilder(

@@ -47,9 +47,14 @@ public interface IReportService {
 
         ReportDetailResponse completeReport(String reportId, ReportCompleteRequest request, String staffId);
 
-        // Client My Reports — paged, optional status ("rehandling" = owner marked unresolved), severity & keyword
+        // Client My Reports — paged, optional status ("rehandling" = owner marked unresolved), severity, overdue & keyword
+        default PageResponse<ReportResponse> getMyReports(String userId, String status, String severity, String search,
+                        String from, String to, int page, int size) {
+                return getMyReports(userId, status, severity, search, from, to, null, page, size);
+        }
+
         PageResponse<ReportResponse> getMyReports(String userId, String status, String severity, String search,
-                        String from, String to, int page, int size);
+                        String from, String to, Boolean overdue, int page, int size);
 
         MyReportsSummaryResponse getMyReportsSummary(String userId);
 
@@ -59,11 +64,20 @@ public interface IReportService {
         ReportTrendResponse getReportTrend(String period);
 
         // Admin Get List Report
+        default ReportListResponse getAdminReportList(int page, int size, String status, String severity, String assigneeId,
+                        String from, String to, String search) {
+                return getAdminReportList(page, size, status, severity, assigneeId, from, to, search, null);
+        }
+
         ReportListResponse getAdminReportList(int page, int size, String status, String severity, String assigneeId,
-                        String from, String to, String search);
+                        String from, String to, String search, Boolean overdue);
 
         // Admin Update Status Report
-        ReportDetailResponse updateReportStatus(String reportId, String newStatus, String adminId);
+        default ReportDetailResponse updateReportStatus(String reportId, String newStatus, String adminId) {
+                return updateReportStatus(reportId, newStatus, null, adminId);
+        }
+
+        ReportDetailResponse updateReportStatus(String reportId, String newStatus, String reason, String adminId);
 
         // Admin Map — lightweight list with lat/lng, optional viewport (all bounds null = whole map)
         default AdminMapReportsResponse getAdminMapReports(String status, String severity, String assigneeId,
@@ -76,7 +90,11 @@ public interface IReportService {
                         String from, String to, String timeframe, Double minLat, Double maxLat, Double minLng, Double maxLng,
                         int limit);
 
-        List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, int page, int limit);
+        default List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, int page, int limit) {
+                return getStaffAssignedReports(staffId, status, null, page, limit);
+        }
+
+        List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, Boolean overdue, int page, int limit);
 
         ReportStatisticsResponse getStaffReportStatistics(String staffId);
 

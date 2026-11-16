@@ -20,8 +20,16 @@ public interface IStaffService {
 
     StaffResponse updateStaff(String staffId, UpdateStaffRequest request, String adminId);
 
-    StaffStatisticsResponse getStatistics();
+    default StaffStatisticsResponse getStatistics() {
+        return getStatistics(null, null);
+    }
 
-    StaffTrendResponse getTrend(String period);
+    StaffStatisticsResponse getStatistics(Integer year, Integer month);
+
+    default StaffTrendResponse getTrend(String period) {
+        return getTrend(period, null, null);
+    }
+
+    StaffTrendResponse getTrend(String period, Integer year, Integer month);
 
 }

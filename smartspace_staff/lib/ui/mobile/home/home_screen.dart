@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:smartspace_staff/features/reports/models/report_model.dart';
 import 'package:smartspace_staff/features/reports/models/report_statistics_model.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
@@ -12,8 +13,6 @@ import 'package:smartspace_staff/ui/mobile/layout/app_layout.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_staff/ui/mobile/news/widgets/news_card.dart';
-import 'package:intl/intl.dart';
-import 'package:smartspace_staff/features/wallet/providers/staff_wallet_provider.dart';
 import 'package:smartspace_staff/features/chat/providers/conversations_provider.dart';
 
 class MobileHomeScreen extends ConsumerWidget {
@@ -32,7 +31,6 @@ class MobileHomeScreen extends ConsumerWidget {
           : RefreshIndicator(
               onRefresh: () async {
                 await controller.manualRefresh();
-                await ref.read(staffWalletProvider.notifier).refresh();
               },
               child: SingleChildScrollView(
                 physics: const AlwaysScrollableScrollPhysics(),
@@ -116,10 +114,6 @@ class MobileHomeScreen extends ConsumerWidget {
 
                     // Quick Access Section
                     _buildQuickAccessButtonRow(context, theme, l10n, ref),
-                    const SizedBox(height: 24),
-
-                    // Staff Wallet Section (Below Quick Access, Above My Work)
-                    _buildStaffWalletCard(context, theme, l10n, ref),
                     const SizedBox(height: 24),
 
                     // Dashboard Section
@@ -302,92 +296,6 @@ class MobileHomeScreen extends ConsumerWidget {
                 ),
               ),
             ),
-    );
-  }
-
-  Widget _buildStaffWalletCard(
-    BuildContext context,
-    ThemeData theme,
-    AppLocalizations l10n,
-    WidgetRef ref,
-  ) {
-    final walletState = ref.watch(staffWalletProvider);
-    final balance = walletState.wallet?.balance ?? 0.0;
-    final formatter = NumberFormat('#,###', 'vi_VN');
-    final formattedBalance = '${formatter.format(balance)} đ';
-    final isDark = theme.brightness == Brightness.dark;
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () {
-          context.push(RouterPath.staffWallet);
-        },
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            color: isDark
-                ? theme.colorScheme.surfaceContainerHighest.withOpacity(0.45)
-                : theme.colorScheme.primaryContainer.withOpacity(0.3),
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(
-              color: theme.colorScheme.outlineVariant.withOpacity(0.4),
-            ),
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.primary.withOpacity(0.12),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.account_balance_wallet_rounded,
-                  color: theme.colorScheme.primary,
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.staffWallet,
-                      style: theme.textTheme.labelMedium?.copyWith(
-                        color: theme.colorScheme.onSurfaceVariant,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    const SizedBox(height: 2),
-                    if (walletState.isLoading && walletState.wallet == null)
-                      const SizedBox(
-                        width: 16,
-                        height: 16,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                    else
-                      Text(
-                        formattedBalance,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: theme.colorScheme.onSurface,
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.chevron_right_rounded,
-                color: theme.colorScheme.onSurfaceVariant,
-                size: 22,
-              ),
-            ],
-          ),
-        ),
-      ),
     );
   }
 
@@ -919,6 +827,83 @@ class _ReportListItem extends StatelessWidget {
                       ),
                     ],
                   ),
+                  if (report.deadline != null &&
+                      report.status != ReportStatus.rejected) ...[
+                    const SizedBox(height: 6),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.event_available_outlined,
+                              size: 13,
+                              color: report.isOverdue
+                                  ? theme.colorScheme.error
+                                  : theme.colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${l10n.reportDeadlineLabel}: ${DateFormat('dd/MM/yyyy HH:mm').format(report.deadline!.toLocal())}',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: report.isOverdue
+                                    ? theme.colorScheme.error
+                                    : theme.colorScheme.onSurfaceVariant,
+                                fontWeight: report.isOverdue
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
+                                fontFeatures: const [
+                                  FontFeature.tabularFigures(),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (report.isOverdue)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.errorContainer,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              l10n.deadlineOverdueBadge,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.onErrorContainer,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          )
+                        else if (report.remainingDays != null)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              l10n.daysRemainingLabel(report.remainingDays!),
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                                fontWeight: FontWeight.w600,
+                                fontFeatures: const [
+                                  FontFeature.tabularFigures(),
+                                ],
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
                   if (distanceStr != null) ...[
                     const SizedBox(height: 4),
                     Row(

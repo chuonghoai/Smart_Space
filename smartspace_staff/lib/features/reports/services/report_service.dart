@@ -12,8 +12,18 @@ class ReportService {
 
   const ReportService({required this.reportRepo});
 
-  Future<ApiResponse<List<ReportModel>>> getStaffAssignedReports({String status = 'all', int page = 0, int limit = 10}) async {
-    return await reportRepo.getStaffAssignedReports(status: status, page: page, limit: limit);
+  Future<ApiResponse<List<ReportModel>>> getStaffAssignedReports({
+    String status = 'all',
+    bool overdueOnly = false,
+    int page = 0,
+    int limit = 10,
+  }) async {
+    return await reportRepo.getStaffAssignedReports(
+      status: status,
+      overdueOnly: overdueOnly,
+      page: page,
+      limit: limit,
+    );
   }
 
   Future<ApiResponse<ReportStatisticsModel>> getStaffStatistics() async {

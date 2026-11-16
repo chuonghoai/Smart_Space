@@ -1,3 +1,5 @@
+import 'package:mobile_shared/core/utils/report_deadline_helper.dart';
+
 enum ReportStatus { processed, processing, pending, rejected, unknown }
 enum ReportSeverity { low, medium, high, critical, unknown }
 
@@ -18,6 +20,10 @@ class ReportModel {
   final bool isAnonymous;
   final ReportSeverity severity;
   final bool? isReviewResolved;
+  final DateTime? deadline;
+  final DateTime? resolvedAt;
+  final bool? serverIsOverdue;
+  final int? serverRemainingDays;
 
   ReportModel({
     required this.id,
@@ -36,6 +42,10 @@ class ReportModel {
     this.isAnonymous = false,
     this.severity = ReportSeverity.unknown,
     this.isReviewResolved,
+    this.deadline,
+    this.resolvedAt,
+    this.serverIsOverdue,
+    this.serverRemainingDays,
   });
 
   bool get isDangerous =>
@@ -44,6 +54,21 @@ class ReportModel {
   /// Người dân đánh giá chưa thoả đáng → admin mở lại, staff phải xử lý lại.
   bool get needsRehandling =>
       status == ReportStatus.processing && isReviewResolved == false;
+
+  bool get isOverdue => ReportDeadlineHelper.isOverdue(
+        status: status.name,
+        deadline: deadline,
+        resolvedAt: resolvedAt,
+        serverIsOverdue: serverIsOverdue,
+      );
+
+  int? get remainingDays => ReportDeadlineHelper.remainingDays(
+        status: status.name,
+        deadline: deadline,
+        resolvedAt: resolvedAt,
+        serverIsOverdue: serverIsOverdue,
+        serverRemainingDays: serverRemainingDays,
+      );
 
   factory ReportModel.fromJson(Map<String, dynamic> json) {
     return ReportModel(
@@ -66,6 +91,14 @@ class ReportModel {
       isAnonymous: json['isAnonymous'] as bool? ?? json['is_anonymous'] as bool? ?? false,
       severity: mapSeverity(json['severity'] as String?),
       isReviewResolved: json['isReviewResolved'] as bool? ?? json['is_review_resolved'] as bool?,
+      deadline: (json['deadline'] ?? json['report_deadline']) != null
+          ? DateTime.tryParse((json['deadline'] ?? json['report_deadline']).toString())
+          : null,
+      resolvedAt: (json['resolvedAt'] ?? json['resolved_at']) != null
+          ? DateTime.tryParse((json['resolvedAt'] ?? json['resolved_at']).toString())
+          : null,
+      serverIsOverdue: (json['isOverdue'] ?? json['is_overdue']) as bool?,
+      serverRemainingDays: ((json['remainingDays'] ?? json['remaining_days']) as num?)?.toInt(),
     );
   }
 
@@ -86,6 +119,10 @@ class ReportModel {
       'is_anonymous': isAnonymous,
       'severity': severity.name,
       'isReviewResolved': isReviewResolved,
+      'deadline': deadline?.toIso8601String(),
+      'resolved_at': resolvedAt?.toIso8601String(),
+      'is_overdue': serverIsOverdue,
+      'remaining_days': serverRemainingDays,
     };
   }
 
@@ -100,6 +137,9 @@ class ReportModel {
     DateTime? createdAt,
     double? distanceInMeters,
     String? userId,
+    DateTime? resolvedAt,
+    bool? serverIsOverdue,
+    int? serverRemainingDays,
   }) {
     return ReportModel(
       id: id ?? this.id,
@@ -118,6 +158,10 @@ class ReportModel {
       isAnonymous: isAnonymous,
       severity: severity,
       isReviewResolved: isReviewResolved,
+      deadline: deadline,
+      resolvedAt: resolvedAt ?? this.resolvedAt,
+      serverIsOverdue: serverIsOverdue ?? this.serverIsOverdue,
+      serverRemainingDays: serverRemainingDays ?? this.serverRemainingDays,
     );
   }
 

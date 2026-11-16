@@ -9,9 +9,20 @@ import 'package:smartspace_staff/features/reports/repositories/report_repo.dart'
 class ReportRepoApi implements ReportRepo {
 
   @override
-  Future<ApiResponse<List<ReportModel>>> getStaffAssignedReports({String status = 'all', int page = 0, int limit = 10}) async {
+  Future<ApiResponse<List<ReportModel>>> getStaffAssignedReports({
+    String status = 'all',
+    bool overdueOnly = false,
+    int page = 0,
+    int limit = 10,
+  }) async {
     return await apiClient.get<List<ReportModel>>(
-      '/reports/staff/assigned?status=$status&page=$page&limit=$limit',
+      '/reports/staff/assigned',
+      queryParameters: {
+        'status': status,
+        'page': page,
+        'limit': limit,
+        if (overdueOnly) 'overdue': true,
+      },
       decoder: (json) {
         if (json is List) {
           return json

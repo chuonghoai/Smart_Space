@@ -102,6 +102,13 @@ class _MobileStaffViewState extends ConsumerState<MobileStaffView> {
                   ),
                   const SizedBox(height: 12),
 
+                  // Bộ chọn tháng thống kê
+                  const Align(
+                    alignment: Alignment.centerLeft,
+                    child: StaffStatsMonthSelector(),
+                  ),
+                  const SizedBox(height: 12),
+
                   // KPI 2x2
                   const StaffKpiGrid(compact: true),
                   const SizedBox(height: 8),
@@ -118,6 +125,8 @@ class _MobileStaffViewState extends ConsumerState<MobileStaffView> {
                               StaffFlowChart(chartHeight: 200),
                               SizedBox(height: 12),
                               StaffWorkloadChart(),
+                              SizedBox(height: 12),
+                              StaffDeadlinePerformanceCard(compact: true),
                               SizedBox(height: 4),
                             ],
                           )

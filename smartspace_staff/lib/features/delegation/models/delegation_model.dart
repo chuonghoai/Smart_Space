@@ -67,9 +67,6 @@ class DelegationModel {
   final ReportSeverity severity;
   final ColleagueModel requester;
   final ColleagueModel helper;
-  final double ratePercent;
-  final double commissionAmount;
-  final double bonusAmount;
   final String? note;
   final DateTime? expiresAt;
   final DateTime? createdAt;
@@ -84,16 +81,10 @@ class DelegationModel {
     required this.severity,
     required this.requester,
     required this.helper,
-    required this.ratePercent,
-    required this.commissionAmount,
-    required this.bonusAmount,
     this.note,
     this.expiresAt,
     this.createdAt,
   });
-
-  /// Tổng người làm giùm nhận khi hoàn tất.
-  double get helperTotal => commissionAmount + bonusAmount;
 
   bool isRequester(String? staffId) => staffId != null && requester.id == staffId;
   bool isHelper(String? staffId) => staffId != null && helper.id == staffId;
@@ -108,9 +99,6 @@ class DelegationModel {
         severity: ReportModel.mapSeverity(json['severity']?.toString()),
         requester: ColleagueModel.fromJson(_map(json['requester'])),
         helper: ColleagueModel.fromJson(_map(json['helper'])),
-        ratePercent: _double(json['rate_percent']),
-        commissionAmount: _double(json['commission_amount']),
-        bonusAmount: _double(json['bonus_amount']),
         note: _nonEmpty(json['note']),
         expiresAt: DateTime.tryParse(json['expires_at']?.toString() ?? ''),
         createdAt: DateTime.tryParse(json['created_at']?.toString() ?? ''),
@@ -122,10 +110,6 @@ class DelegationReportStateModel {
   final bool canRequest;
   final String? reasonCode;
   final String? reason;
-  final double commissionAmount;
-  final double ratePercent;
-  final double bonusAmount;
-  final double balance;
   final DelegationModel? activeDelegation;
 
   /// Yêu cầu đã hoàn tất mà staff tham gia (không đồng thời với [activeDelegation]).
@@ -136,48 +120,15 @@ class DelegationReportStateModel {
     required this.canRequest,
     this.reasonCode,
     this.reason,
-    required this.commissionAmount,
-    required this.ratePercent,
-    required this.bonusAmount,
-    required this.balance,
     this.activeDelegation,
     this.completedDelegation,
     this.viewerRole,
   });
 
-  /// Lý do duy nhất nên cho người dùng thấy (các lý do khác chỉ làm ẩn nút).
-  bool get isInsufficientBalance => reasonCode == 'delegation.insufficient_balance';
-
-  // Khung hoa hồng ở chi tiết report hiển thị theo người đang xem
-
-  /// Bonus người làm giùm sẽ nhận thêm khi hoàn tất (yêu cầu đang chờ / đã nhận), null nếu không áp dụng.
-  double? get upcomingBonusForViewer {
-    final active = activeDelegation;
-    if (viewerRole != DelegationViewerRole.helper || active == null || active.bonusAmount <= 0) return null;
-    return active.bonusAmount;
-  }
-
-  /// Yêu cầu đã hoàn tất mà người đang xem là người làm giùm → cộng bonus vào số tiền đã nhận.
-  DelegationModel? get bonusReceivedByViewer =>
-      viewerRole == DelegationViewerRole.helper ? completedDelegation : null;
-
-  /// Yêu cầu đã hoàn tất mà người đang xem là người nhờ → hiện bonus đã trả.
-  DelegationModel? get bonusPaidByViewer =>
-      viewerRole == DelegationViewerRole.requester ? completedDelegation : null;
-
-  /// Task đã chuyển cho người làm giùm → hoa hồng không thuộc về người nhờ, ẩn khung hoa hồng.
-  bool get hidesViewerCommission =>
-      viewerRole == DelegationViewerRole.requester &&
-      (activeDelegation?.status == DelegationStatus.accepted || completedDelegation != null);
-
   factory DelegationReportStateModel.fromJson(Map<String, dynamic> json) => DelegationReportStateModel(
         canRequest: json['can_request'] == true,
         reasonCode: _nonEmpty(json['reason_code']),
         reason: _nonEmpty(json['reason']),
-        commissionAmount: _double(json['commission_amount']),
-        ratePercent: _double(json['rate_percent']),
-        bonusAmount: _double(json['bonus_amount']),
-        balance: _double(json['balance']),
         activeDelegation: json['active_delegation'] is Map<String, dynamic>
             ? DelegationModel.fromJson(json['active_delegation'] as Map<String, dynamic>)
             : null,
@@ -213,7 +164,5 @@ String? _nonEmpty(dynamic value) {
   final text = value?.toString();
   return text == null || text.isEmpty ? null : text;
 }
-
-double _double(dynamic value) => (value as num?)?.toDouble() ?? 0.0;
 
 Map<String, dynamic> _map(dynamic value) => value is Map<String, dynamic> ? value : const {};

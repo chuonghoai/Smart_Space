@@ -691,70 +691,7 @@
   "viewOnMap": "View on map",
   "mapFocusedReportHidden": "This report doesn't match the current map filters",
   "locationDescriptionLabel": "Location description",
-  "routeWalletConfig": "Wallet Commission Config",
-  "walletConfigTitle": "Wallet Commission Config",
-  "walletConfigDescription": "Configure staff commission rates by severity and penalty deduction rates for re-handled reports.",
-  "commissionBySeverity": "Commission by Severity",
-  "commissionLow": "Low Severity (VND)",
-  "commissionMedium": "Medium Severity (VND)",
-  "commissionHigh": "High Severity (VND)",
-  "commissionCritical": "Critical Severity (VND)",
-  "penaltyRateSettings": "Re-handling Penalty Rates",
-  "penaltyRate1": "1st Re-handling Penalty (%)",
-  "penaltyRate2": "2nd Re-handling Penalty (%)",
-  "penaltyRate3": "3rd Re-handling Penalty (%)",
-  "penaltyRateNote": "From the 3rd re-handling onwards, up to 100% of the commission is deducted. Subsequent attempts will have no further changes.",
-  "saveWalletConfig": "Save Configuration",
-  "saveWalletConfigSuccess": "Wallet commission configuration updated successfully!",
-  "saveWalletConfigFailed": "Failed to save configuration, please try again.",
   "invalidNumber": "Invalid value",
-  "systemSettingsSection": "System",
-  "manageWalletConfig": "Wallet and Commission Config",
-  "manageStaffWallets": "Staff Wallet Management",
-  "routeManageStaffWallets": "Staff Wallet Management",
-  "withdrawalRequests": "Withdrawal Requests",
-  "routeWithdrawalRequests": "Withdrawal Requests",
-  "withdrawalRequestBadge": "Withdrawal Request",
-  "pendingWithdrawalBanner": "{count} withdrawal requests",
-  "@pendingWithdrawalBanner": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "staffWalletDetailTitle": "Staff Wallet: {name}",
-  "@staffWalletDetailTitle": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "routeStaffWalletDetail": "Staff Wallet Details",
-  "withdrawalDetailTitle": "Withdrawal Request Details",
-  "bankName": "Bank",
-  "bankAccountNumber": "Account Number",
-  "bankAccountName": "Account Holder",
-  "withdrawAmount": "Withdrawal Amount",
-  "quickScanQr": "Quick QR Scan",
-  "scanQrAutoFillNote": "Scan QR with your banking app to auto-fill payment details",
-  "approveAndTransfer": "Confirm & Approve",
-  "rejectWithdrawal": "Reject",
-  "rejectReasonPrompt": "Reason for rejecting withdrawal",
-  "rejectReasonRequired": "Please enter a rejection reason",
-  "confirmApprovalTitle": "Confirm Withdrawal Approval",
-  "confirmApprovalContent": "Are you sure you have transferred {amount} to staff {name}?",
-  "@confirmApprovalContent": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "copySuccess": "Copied to clipboard",
   "copy": "Copy",
   "note": "Note",
@@ -765,61 +702,10 @@
   "statusApproved": "Approved",
   "statusRejected": "Rejected",
   "filterAll": "All",
-  "noStaffWalletsFound": "No staff wallets found",
-  "noWithdrawalRequestsFound": "No withdrawal requests found",
-  "noTransactionsFound": "No transactions found",
   "searchStaffHint": "Search staff by name, email, phone...",
-  "staffWalletBalance": "Staff Wallet Balance",
-  "walletBalance": "Wallet Balance",
-  "transactionHistory": "Transaction History",
-  "relatedReport": "Report: {title}",
-  "@relatedReport": {
-    "placeholders": {
-      "title": {
-        "type": "String"
-      }
-    }
-  },
   "viewReportDetail": "View Report Details",
-  "processSuccess": "Withdrawal request processed successfully!",
-  "processFailed": "Failed to process request, please try again.",
-  "systemConfig": "System Configuration",
-  "routeSystemConfig": "System Configuration",
-  "commissionConfig": "Commission Configuration",
-  "routeCommissionConfig": "Commission Configuration",
-  "commissionConfigDescription": "Configure staff commission rates based on report severity level.",
-  "penaltyRateConfig": "Penalty Deduction Rate Configuration",
-  "routePenaltyRateConfig": "Penalty Deduction Rate Configuration",
-  "penaltyRateConfigDescription": "Configure commission deduction percentages when reports are marked unsatisfactory and require re-handling.",
-  "commissionConfigSummary": "4 severity levels: Low, Medium, High, Critical",
-  "penaltyRateConfigSummary": "3-turn penalty: Turn 1, Turn 2, Turn 3",
-  "saveCommissionSuccess": "Commission configuration updated successfully!",
-  "savePenaltyRateSuccess": "Penalty deduction rate updated successfully!",
   "copied": "Copied",
-  "homePendingWithdrawalBanner": "There are {count} withdrawal requests",
-  "@homePendingWithdrawalBanner": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "homePendingWithdrawalSubtitle": "Tap to review pending withdrawal requests",
   "statusCancelled": "Cancelled",
-  "delegationRateConfig": "Delegated Task Commission Configuration",
-  "routeDelegationRateConfig": "Delegated Task Commission Configuration",
-  "delegationRateConfigDescription": "Set the extra bonus a staff member earns when handling a task on behalf of a colleague, as a percentage of the task commission by severity. The bonus is paid from the requester's wallet.",
-  "delegationRateExample": "{rate}% × {commission}đ = {bonus}đ bonus",
-  "@delegationRateExample": {
-    "placeholders": {
-      "rate": { "type": "String" },
-      "commission": { "type": "String" },
-      "bonus": { "type": "String" }
-    }
-  },
-  "delegationRateNote": "The helper receives the task commission plus this bonus. Changes only apply to delegation requests sent after saving.",
-  "saveDelegationRateSuccess": "Delegated task commission rates updated successfully!",
-  "delegationRateLoadFailed": "Couldn't load the configuration",
   "connectionStable": "Stable connection",
   "connectionConnecting": "Connecting services...",
   "connectionDisconnected": "Connection lost. Click to reconnect.",
@@ -959,6 +845,57 @@
   "imageSnippet": "Photo",
   "videoSnippet": "Video",
   "attachedReportSnippet": "Attached report",
+  "reportDeadlineLabel": "Resolution deadline",
+  "deadlineOverdueBadge": "Overdue",
+  "expectedCompletionDate": "Est. completion: {date}",
+  "@expectedCompletionDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "staffDeadlinePerformanceTitle": "Deadline Performance",
+  "staffDeadlinePerformanceSubtitle": "Tracks overdue tasks and late vs. on-time completions by staff",
+  "noStaffMissedDeadline": "No staff members have missed a deadline",
+  "staffMissedDeadlineSummary": "{count} overdue active · {lateCount} completed late",
+  "@staffMissedDeadlineSummary": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "lateCount": { "type": "int" }
+    }
+  },
+  "onTimeRateLabel": "{rate}% on time",
+  "@onTimeRateLabel": {
+    "placeholders": {
+      "rate": { "type": "String" }
+    }
+  },
+  "overdueActiveLabel": "Overdue active",
+  "completedLateLabel": "Completed late",
+  "completedOnTimeLabel": "Completed on time",
+  "missedDeadlineBadge": "Missed deadline",
+  "onTimeBadge": "On time",
+  "noDeadlineRecordsYet": "No assigned deadline data yet",
+  "staffDeadlineStatsBreakdown": "{overdue} overdue · {late} late · {onTime} on time",
+  "@staffDeadlineStatsBreakdown": {
+    "placeholders": {
+      "overdue": { "type": "int" },
+      "late": { "type": "int" },
+      "onTime": { "type": "int" }
+    }
+  },
+  "rejectReportButton": "Reject report",
+  "rejectReportConfirmTitle": "Reject this report?",
+  "rejectReportConfirmMessage": "This action will mark the report as rejected and notify the reporter.",
+  "rejectReportReasonLabel": "Rejection reason",
+  "rejectReportReasonHint": "Explain why this report cannot be processed...",
+  "rejectReportReasonRequired": "Please enter a rejection reason",
+  "confirmRejectAction": "Confirm reject",
+  "rejectSuccessMessage": "Report rejected successfully",
+  "rejectFailedMessage": "Could not reject report, please try again",
+  "rejectedReasonTitle": "Rejection Reason",
+  "noRejectionReasonProvided": "Rejected by administrator.",
   "lockRequestsTab": "Lock proposals",
   "lockRequestsTitle": "Account lock proposals",
   "lockFilterPending": "Pending",
@@ -1194,5 +1131,61 @@
       "min": { "type": "int" }
     }
   },
-  "lockBlockedNotActive": "Only active accounts can be proposed for locking"
+  "lockBlockedNotActive": "Only active accounts can be proposed for locking",
+  "daysRemainingLabel": "{days}d remaining",
+  "@daysRemainingLabel": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "overdueOnlyFilter": "Overdue",
+  "excellentBadge": "Excellent",
+  "staffEfficiencyLabel": "Work efficiency: {rate}%",
+  "@staffEfficiencyLabel": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "staffEfficiencyNoData": "Work efficiency: —",
+  "statsMonthLabel": "Statistics month",
+  "resolvedInMonth": "Resolved this month",
+  "avgResolutionTimeInMonth": "Avg resolution time",
+  "resolvedMonthCount": "{count} resolved in month",
+  "@resolvedMonthCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "staffMonthlyWorkloadTitle": "Workload in {month}",
+  "@staffMonthlyWorkloadTitle": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "staffMonthlyWorkloadBreakdown": "{processing} in progress, {resolved} resolved, {overdue} overdue, {rehandling} rehandling",
+  "@staffMonthlyWorkloadBreakdown": {
+    "placeholders": {
+      "processing": {
+        "type": "int"
+      },
+      "resolved": {
+        "type": "int"
+      },
+      "overdue": {
+        "type": "int"
+      },
+      "rehandling": {
+        "type": "int"
+      }
+    }
+  },
+  "viewAssignedReportsAction": "View assigned reports"
 }

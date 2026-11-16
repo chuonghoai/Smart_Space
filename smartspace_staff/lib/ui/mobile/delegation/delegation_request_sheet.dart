@@ -3,9 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartspace_staff/features/delegation/models/delegation_model.dart';
 import 'package:smartspace_staff/features/delegation/providers/delegation_providers.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
-import 'package:smartspace_staff/ui/mobile/delegation/widgets/delegation_common.dart';
 
-/// Bottom sheet nhờ đồng nghiệp làm giùm: chọn người → xem tiền → gửi.
+/// Bottom sheet nhờ đồng nghiệp làm giùm: chọn người → ghi chú → gửi.
 /// Trả về true khi gửi thành công.
 class DelegationRequestSheet extends ConsumerStatefulWidget {
   final String reportId;
@@ -32,8 +31,6 @@ class _DelegationRequestSheetState extends ConsumerState<DelegationRequestSheet>
   ColleagueModel? _selected;
   bool _sending = false;
 
-  bool get _insufficient => widget.state.balance < widget.state.bonusAmount;
-
   @override
   void dispose() {
     _noteCtrl.dispose();
@@ -42,7 +39,7 @@ class _DelegationRequestSheetState extends ConsumerState<DelegationRequestSheet>
 
   Future<void> _send() async {
     final helper = _selected;
-    if (helper == null || _sending || _insufficient) return;
+    if (helper == null || _sending) return;
     setState(() => _sending = true);
 
     final error = await ref.read(delegationActionsProvider).request(
@@ -111,8 +108,6 @@ class _DelegationRequestSheetState extends ConsumerState<DelegationRequestSheet>
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  _MoneySummary(state: widget.state, insufficient: _insufficient),
-                  const SizedBox(height: 12),
                   TextField(
                     controller: _noteCtrl,
                     maxLength: 500,
@@ -124,13 +119,9 @@ class _DelegationRequestSheetState extends ConsumerState<DelegationRequestSheet>
                       border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
                     ),
                   ),
-                  Text(
-                    l10n.delegationHoldHint,
-                    style: theme.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
-                  ),
                   const SizedBox(height: 12),
                   FilledButton.icon(
-                    onPressed: _selected == null || _sending || _insufficient ? null : _send,
+                    onPressed: _selected == null || _sending ? null : _send,
                     style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(48)),
                     icon: _sending
                         ? SizedBox(
@@ -146,76 +137,6 @@ class _DelegationRequestSheetState extends ConsumerState<DelegationRequestSheet>
             ),
           ],
         ),
-      ),
-    );
-  }
-}
-
-/// Đồng nghiệp nhận bao nhiêu, ví mình bị trừ bao nhiêu, số dư hiện tại.
-class _MoneySummary extends StatelessWidget {
-  final DelegationReportStateModel state;
-  final bool insufficient;
-
-  const _MoneySummary({required this.state, required this.insufficient});
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final cs = theme.colorScheme;
-
-    Widget row(String label, String value, {Color? valueColor}) => Padding(
-          padding: const EdgeInsets.symmetric(vertical: 3),
-          child: Row(
-            children: [
-              Expanded(child: Text(label, style: theme.textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant))),
-              Text(
-                value,
-                style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600, color: valueColor ?? cs.onSurface),
-              ),
-            ],
-          ),
-        );
-
-    return Container(
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        color: cs.surfaceContainerHighest.withValues(alpha: 0.5),
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          row(
-            l10n.delegationHelperReceives,
-            l10n.delegationHelperReceivesValue(
-              formatDelegationMoney(state.commissionAmount),
-              formatDelegationMoney(state.bonusAmount),
-            ),
-          ),
-          row(l10n.delegationYouPay, '-${formatDelegationMoney(state.bonusAmount)}đ', valueColor: cs.error),
-          row(l10n.delegationCurrentBalance, '${formatDelegationMoney(state.balance)}đ'),
-          const SizedBox(height: 4),
-          Text(
-            l10n.delegationBonusRate(formatDelegationRate(state.ratePercent)),
-            style: theme.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
-          ),
-          if (insufficient) ...[
-            const SizedBox(height: 6),
-            Row(
-              children: [
-                Icon(Icons.error_outline, size: 16, color: cs.error),
-                const SizedBox(width: 6),
-                Expanded(
-                  child: Text(
-                    l10n.delegationInsufficientBalance,
-                    style: theme.textTheme.bodySmall?.copyWith(color: cs.error, fontWeight: FontWeight.w600),
-                  ),
-                ),
-              ],
-            ),
-          ],
-        ],
       ),
     );
   }

@@ -21,6 +21,10 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class StaffStatisticsResponse {
 
+    int selectedYear;
+    int selectedMonth;
+    List<AvailableMonthItem> availableMonths;
+
     long totalStaff;
     long activeStaff;
     long blockedStaff;
@@ -31,6 +35,24 @@ public class StaffStatisticsResponse {
     Long avgResolutionMinutesPrevious;
     List<WorkloadItem> workload;
 
+    boolean anyStaffMissedDeadline;
+    long overdueReports;
+    long completedOnTime;
+    long completedLate;
+    Double onTimeRate; // null khi chưa có báo cáo đã hoàn tất có deadline
+    List<DeadlinePerformanceItem> deadlinePerformance;
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    public static class AvailableMonthItem {
+        int year;
+        int month;
+        String label; // MM/yyyy
+    }
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -38,6 +60,24 @@ public class StaffStatisticsResponse {
     @FieldDefaults(level = AccessLevel.PRIVATE)
     public static class WorkloadItem {
         StaffResponse staff; // processingCount = số báo cáo đang xử lý
-        long resolvedCount; // số báo cáo đã xử lý trong 30 ngày
+        long resolvedCount; // số báo cáo đã xử lý trong tháng được chọn
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    public static class DeadlinePerformanceItem {
+        StaffResponse staff;
+        long overdueCount; // đang xử lý nhưng quá deadline
+        long completedLateCount; // đã hoàn tất sau deadline
+        long completedOnTimeCount; // đã hoàn tất đúng/trước deadline
+        long processingCount; // đang xử lý trong tháng
+        long resolvedCount; // đã xử lý trong tháng
+        long rehandlingCount; // yêu cầu xử lý lại trong tháng
+        long totalTasks; // tổng công việc trong tháng
+        Double efficiencyRate; // % công việc đúng hạn / tổng công việc đánh giá hạn
+        boolean hasMissedDeadline;
     }
 }

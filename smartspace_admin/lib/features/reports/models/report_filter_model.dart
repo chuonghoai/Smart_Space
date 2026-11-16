@@ -8,6 +8,7 @@ class ReportFilter {
   final DateTime? to;
   final String? search;
   final String? timeframe;
+  final bool overdueOnly;
   final int page;
   final int size;
 
@@ -19,6 +20,7 @@ class ReportFilter {
     this.to,
     this.search,
     this.timeframe,
+    this.overdueOnly = false,
     this.page = 1,
     this.size = 20,
   });
@@ -33,6 +35,7 @@ class ReportFilter {
       if (to != null) 'to': fmt.format(to!),
       if (search != null && search!.isNotEmpty) 'search': search,
       if (timeframe != null && timeframe!.isNotEmpty) 'timeframe': timeframe,
+      if (overdueOnly) 'overdue': true,
       'page': page,
       'size': size,
     };
@@ -46,6 +49,7 @@ class ReportFilter {
     DateTime? to,
     String? search,
     String? timeframe,
+    bool? overdueOnly,
     int? page,
     int? size,
     bool clearStatus = false,
@@ -63,6 +67,7 @@ class ReportFilter {
       to: clearDates ? null : (to ?? this.to),
       search: clearSearch ? null : (search ?? this.search),
       timeframe: clearTimeframe ? null : (timeframe ?? this.timeframe),
+      overdueOnly: overdueOnly ?? this.overdueOnly,
       page: page ?? this.page,
       size: size ?? this.size,
     );
@@ -75,5 +80,6 @@ class ReportFilter {
       from != null ||
       to != null ||
       (search != null && search!.isNotEmpty) ||
-      (timeframe != null && timeframe!.isNotEmpty && timeframe != 'all');
+      (timeframe != null && timeframe!.isNotEmpty && timeframe != 'all') ||
+      overdueOnly;
 }

@@ -1,5 +1,6 @@
 package com.vn.smart_space.service.report;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -54,10 +55,7 @@ import com.vn.smart_space.repository.ReportRepository;
 import com.vn.smart_space.repository.UserRepository;
 import com.vn.smart_space.service.notification.IFCMService;
 import com.vn.smart_space.service.notification.INotificationService;
-import com.vn.smart_space.model.WalletConfig;
 import com.vn.smart_space.service.delegation.IReportDelegationService;
-import com.vn.smart_space.service.wallet.IStaffWalletService;
-import com.vn.smart_space.service.wallet.IWalletConfigService;
 import org.springframework.security.access.AccessDeniedException;
 
 import lombok.RequiredArgsConstructor;
@@ -75,8 +73,6 @@ public class ReportServiceImpl implements IReportService {
     private final INotificationService notificationService;
     private final ActivityHistoryRepository activityHistoryRepository;
     private final MessageSource messageSource;
-    private final IStaffWalletService staffWalletService;
-    private final IWalletConfigService walletConfigService;
     private final IReportDensityService reportDensityService;
     private final IReportDelegationService delegationService;
     private final com.vn.smart_space.service.conversation.IConversationService conversationService;
@@ -120,7 +116,133 @@ public class ReportServiceImpl implements IReportService {
         }).collect(Collectors.toList());
     }
 
+    public static long deadlineDaysForSeverity(EReportSeverity severity) {
+        if (severity == null) {
+            return 3L;
+        }
+        return switch (severity) {
+            case low -> 3L;
+            case medium -> 5L;
+            case high -> 7L;
+            case critical -> 10L;
+        };
+    }
+
+    public static LocalDateTime resolveDeadline(Report report) {
+        if (report == null) {
+            return null;
+        }
+        if (report.getDeadline() != null) {
+            return report.getDeadline();
+        }
+        LocalDateTime base = report.getAssignedAt() != null
+                ? toLocalDateTime(report.getAssignedAt())
+                : report.getCreatedAt();
+        return base != null ? base.plusDays(deadlineDaysForSeverity(report.getSeverity())) : null;
+    }
+
+    public static boolean isReportOverdue(Report report, LocalDateTime now) {
+        if (report == null || report.getStatus() == EReportStatus.rejected) {
+            return false;
+        }
+        LocalDateTime deadline = resolveDeadline(report);
+        if (deadline == null) {
+            return false;
+        }
+        if (report.getStatus() == EReportStatus.processed) {
+            LocalDateTime resolvedTime = toLocalDateTime(report.getResolvedAt());
+            return resolvedTime != null && resolvedTime.isAfter(deadline);
+        }
+        if (report.getStatus() == EReportStatus.pending || report.getStatus() == EReportStatus.processing) {
+            LocalDateTime evalTime = now != null ? now : LocalDateTime.now();
+            return !deadline.isAfter(evalTime);
+        }
+        return false;
+    }
+
+    public static Long calculateRemainingDays(Report report, LocalDateTime now) {
+        if (report == null
+                || report.getStatus() == EReportStatus.rejected
+                || report.getStatus() == EReportStatus.processed) {
+            return null;
+        }
+        LocalDateTime deadline = resolveDeadline(report);
+        if (deadline == null) {
+            return null;
+        }
+        LocalDateTime evalTime = now != null ? now : LocalDateTime.now();
+        if (!deadline.isAfter(evalTime)) {
+            return null;
+        }
+        long seconds = Duration.between(evalTime, deadline).getSeconds();
+        return Math.max(1L, (long) Math.ceil(seconds / 86400.0));
+    }
+
+    private static LocalDateTime toLocalDateTime(java.util.Date date) {
+        return date == null
+                ? null
+                : date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    private static String formatIsoDateTime(LocalDateTime dt) {
+        return dt != null ? dt.format(DateTimeFormatter.ISO_DATE_TIME) : null;
+    }
+
+    private static String formatIsoDateTime(java.util.Date date) {
+        return formatIsoDateTime(toLocalDateTime(date));
+    }
+
+    private static String resolvePrimaryImageUrl(Report r) {
+        if (r.getImageUrls() != null && !r.getImageUrls().trim().isEmpty()) {
+            String first = r.getImageUrls().trim()
+                    .replaceAll("^\\[|\\]$", "")
+                    .replaceAll("\"", "")
+                    .split(",")[0]
+                    .trim();
+            if (!first.isEmpty()) {
+                return first;
+            }
+        }
+        return r.getImageUrl();
+    }
+
+    private RecentReportResponse toRecentReportResponse(Report r, boolean maskAnonymous, boolean includeDetails) {
+        User staff = r.getAssignedStaff();
+        User user = r.getUser();
+        boolean anon = Boolean.TRUE.equals(r.getIsAnonymous());
+        boolean hideReporter = maskAnonymous && anon;
+        String resolvedAddress = (r.getAddress() != null && !r.getAddress().trim().isEmpty())
+                ? r.getAddress()
+                : r.getLocationDescription();
+
+        LocalDateTime now = LocalDateTime.now();
+        return RecentReportResponse.builder()
+                .id(r.getId())
+                .title(r.getTitle())
+                .status(r.getStatus())
+                .severity(r.getSeverity())
+                .createdAt(r.getCreatedAt())
+                .imageUrl(resolvePrimaryImageUrl(r))
+                .address(resolvedAddress)
+                .assignedStaffName(staff != null ? staff.getFullName() : null)
+                .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
+                .latitude(includeDetails || maskAnonymous ? r.getLatitude() : null)
+                .longitude(includeDetails || maskAnonymous ? r.getLongitude() : null)
+                .isAnonymous(anon)
+                .userName(hideReporter ? null : (user != null ? user.getFullName() : null))
+                .userEmail(hideReporter ? null : (user != null ? user.getEmail() : null))
+                .userAvatarUrl(includeDetails && !hideReporter && user != null ? user.getAvatarUrl() : null)
+                .description(includeDetails ? r.getDescription() : null)
+                .isReviewResolved(r.getIsReviewResolved())
+                .deadline(resolveDeadline(r))
+                .resolvedAt(toLocalDateTime(r.getResolvedAt()))
+                .isOverdue(isReportOverdue(r, now))
+                .remainingDays(calculateRemainingDays(r, now))
+                .build();
+    }
+
     private ReportResponse mapToResponse(Report report) {
+        LocalDateTime now = LocalDateTime.now();
         return ReportResponse.builder()
                 .id(report.getId())
                 .title(report.getTitle())
@@ -130,13 +252,13 @@ public class ReportServiceImpl implements IReportService {
                 .longitude(report.getLongitude())
                 .status(report.getStatus().name())
                 .severity(report.getSeverity() != null ? report.getSeverity().name() : null)
-                .createdAt(report.getCreatedAt() != null ? report.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME)
-                        : null)
-                .assignedAt(report.getAssignedAt() != null
-                        ? report.getAssignedAt().toInstant().atZone(java.time.ZoneId.systemDefault())
-                                .format(DateTimeFormatter.ISO_DATE_TIME)
-                        : null)
+                .createdAt(formatIsoDateTime(report.getCreatedAt()))
+                .assignedAt(formatIsoDateTime(report.getAssignedAt()))
                 .isReviewResolved(report.getIsReviewResolved())
+                .deadline(formatIsoDateTime(resolveDeadline(report)))
+                .resolvedAt(formatIsoDateTime(report.getResolvedAt()))
+                .isOverdue(isReportOverdue(report, now))
+                .remainingDays(calculateRemainingDays(report, now))
                 .userId(report.getUser() != null ? report.getUser().getId() : null)
                 .build();
     }
@@ -177,6 +299,9 @@ public class ReportServiceImpl implements IReportService {
             report.setUser(user);
         }
 
+        report = reportRepository.saveAndFlush(report);
+        LocalDateTime createBase = report.getCreatedAt() != null ? report.getCreatedAt() : LocalDateTime.now();
+        report.setDeadline(createBase.plusDays(deadlineDaysForSeverity(report.getSeverity())));
         report = reportRepository.save(report);
 
         // Incremental update for map density
@@ -201,6 +326,7 @@ public class ReportServiceImpl implements IReportService {
             activityHistoryRepository.save(activity);
         }
 
+        LocalDateTime now = LocalDateTime.now();
         ReportDetailResponse response = ReportDetailResponse.builder()
                 .id(report.getId())
                 .title(report.getTitle())
@@ -215,10 +341,10 @@ public class ReportServiceImpl implements IReportService {
                 .locationDescription(report.getLocationDescription())
                 .createdAt(report.getCreatedAt() != null ? report.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME)
                         : null)
-                .assignedAt(report.getAssignedAt() != null
-                        ? report.getAssignedAt().toInstant().atZone(java.time.ZoneId.systemDefault())
-                                .format(DateTimeFormatter.ISO_DATE_TIME)
-                        : null)
+                .assignedAt(formatIsoDateTime(report.getAssignedAt()))
+                .deadline(formatIsoDateTime(resolveDeadline(report)))
+                .isOverdue(isReportOverdue(report, now))
+                .remainingDays(calculateRemainingDays(report, now))
                 .userId(userId)
                 .build();
 
@@ -495,24 +621,7 @@ public class ReportServiceImpl implements IReportService {
                     .collect(Collectors.toList());
         }
 
-        Double baseCommission = report.getBaseCommission();
-        Double deductedCommission = report.getTotalCommissionDeducted() != null ? report.getTotalCommissionDeducted() : 0.0;
-        Double finalCommission = baseCommission != null ? Math.max(0.0, baseCommission - deductedCommission) : null;
-        Double expectedCommission = null;
-        if (report.getStatus() == EReportStatus.processing && !Boolean.TRUE.equals(report.getCommissionAwarded())) {
-            try {
-                WalletConfig config = walletConfigService.getOrCreateDefaultConfig();
-                EReportSeverity sev = report.getSeverity() != null ? report.getSeverity() : EReportSeverity.low;
-                expectedCommission = switch (sev) {
-                    case low -> config.getCommissionLow();
-                    case medium -> config.getCommissionMedium();
-                    case high -> config.getCommissionHigh();
-                    case critical -> config.getCommissionCritical();
-                };
-            } catch (Exception ignored) {
-            }
-        }
-
+        LocalDateTime now = LocalDateTime.now();
         return ReportDetailResponse.builder()
                 .id(report.getId())
                 .title(report.getTitle())
@@ -525,12 +634,8 @@ public class ReportServiceImpl implements IReportService {
                 .isAnonymous(report.getIsAnonymous())
                 .address(report.getAddress())
                 .locationDescription(report.getLocationDescription())
-                .createdAt(report.getCreatedAt() != null ? report.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME)
-                        : null)
-                .assignedAt(report.getAssignedAt() != null
-                        ? report.getAssignedAt().toInstant().atZone(java.time.ZoneId.systemDefault())
-                                .format(DateTimeFormatter.ISO_DATE_TIME)
-                        : null)
+                .createdAt(formatIsoDateTime(report.getCreatedAt()))
+                .assignedAt(formatIsoDateTime(report.getAssignedAt()))
                 .userName(user != null ? user.getFullName() : null)
                 .userPhone(user != null ? user.getPhone() : null)
                 .userAvatarUrl(user != null ? user.getAvatarUrl() : null)
@@ -541,22 +646,18 @@ public class ReportServiceImpl implements IReportService {
                 .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
                 .resolvedNote(report.getResolvedNote())
                 .resolvedImageUrls(resolvedImages)
-                .resolvedAt(report.getResolvedAt() != null ? report.getResolvedAt().toInstant()
-                        .atZone(java.time.ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE_TIME) : null)
+                .resolvedAt(formatIsoDateTime(report.getResolvedAt()))
                 .isReviewResolved(report.getIsReviewResolved())
                 .rating(report.getRating())
                 .reviewNote(report.getReviewNote())
                 .reviewImageUrls(reviewImages)
-                .reviewedAt(report.getReviewedAt() != null ? report.getReviewedAt().toInstant()
-                        .atZone(java.time.ZoneId.systemDefault()).format(DateTimeFormatter.ISO_DATE_TIME) : null)
+                .reviewedAt(formatIsoDateTime(report.getReviewedAt()))
+                .deadline(formatIsoDateTime(resolveDeadline(report)))
+                .isOverdue(isReportOverdue(report, now))
+                .remainingDays(calculateRemainingDays(report, now))
+                .rejectedReason(report.getRejectedReason())
+                .rejectedAt(formatIsoDateTime(report.getRejectedAt()))
                 .userId(user != null ? user.getId() : null)
-                .baseCommission(baseCommission)
-                .deductedCommission(deductedCommission)
-                .finalCommission(finalCommission)
-                .expectedCommission(expectedCommission)
-                .commissionAwarded(report.getCommissionAwarded())
-                .rehandlingPenaltyCount(report.getRehandlingPenaltyCount())
-                .penaltyDeductions(staffWalletService.getPenaltyDeductionsForReport(report))
                 .build();
     }
 
@@ -578,29 +679,9 @@ public class ReportServiceImpl implements IReportService {
 
         List<Report> reports = reportRepository.findByStatusInOrderByCreatedAtDesc(statuses, PageRequest.of(0, limit));
 
-        return reports.stream().map(r -> {
-            User staff = r.getAssignedStaff();
-            User user = r.getUser();
-            boolean anon = Boolean.TRUE.equals(r.getIsAnonymous());
-            return RecentReportResponse.builder()
-                    .id(r.getId())
-                    .title(r.getTitle())
-                    .status(r.getStatus())
-                    .severity(r.getSeverity())
-                    .createdAt(r.getCreatedAt())
-                    .imageUrl((r.getImageUrls() != null && !r.getImageUrls().trim().isEmpty())
-                            ? r.getImageUrls().split(",")[0].trim()
-                            : r.getImageUrl())
-                    .address(r.getAddress() != null && !r.getAddress().trim().isEmpty() ? r.getAddress()
-                            : r.getLocationDescription())
-                    .assignedStaffName(staff != null ? staff.getFullName() : null)
-                    .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
-                    .isAnonymous(anon)
-                    .userName(user != null ? user.getFullName() : null)
-                    .userEmail(user != null ? user.getEmail() : null)
-                    .isReviewResolved(r.getIsReviewResolved())
-                    .build();
-        }).collect(Collectors.toList());
+        return reports.stream()
+                .map(r -> toRecentReportResponse(r, false, false))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -628,7 +709,12 @@ public class ReportServiceImpl implements IReportService {
 
         report.setAssignedStaff(staff);
         report.setStatus(EReportStatus.processing);
-        report.setAssignedAt(new java.util.Date());
+        java.util.Date assignedNow = new java.util.Date();
+        report.setAssignedAt(assignedNow);
+        LocalDateTime assignedLdt = toLocalDateTime(assignedNow);
+        report.setDeadline(assignedLdt != null
+                ? assignedLdt.plusDays(deadlineDaysForSeverity(report.getSeverity()))
+                : LocalDateTime.now().plusDays(deadlineDaysForSeverity(report.getSeverity())));
         report = reportRepository.save(report);
 
         // Auto-create chat conversation between staff & client and post initial system message
@@ -795,6 +881,9 @@ public class ReportServiceImpl implements IReportService {
         User staff = report.getAssignedStaff();
 
         report.setStatus(EReportStatus.processed);
+        if (report.getDeadline() == null) {
+            report.setDeadline(resolveDeadline(report));
+        }
         if (request.getNote() != null && !request.getNote().trim().isEmpty()) {
             report.setResolvedNote(request.getNote().trim());
         }
@@ -836,17 +925,8 @@ public class ReportServiceImpl implements IReportService {
             log.error("Failed to send system message on resolve report: {}", e.getMessage());
         }
 
-        // Nhờ làm giùm: trả bonus cho người làm giùm / thu hồi yêu cầu còn chờ.
-        // Không nuốt lỗi — tiền đã giữ phải được xử lý cùng transaction với việc hoàn tất.
-        // Chạy trước hoa hồng để khoá yêu cầu trước ví (report → yêu cầu → ví), cùng thứ tự với từ chối / huỷ / hết hạn.
+        // Nhờ làm giùm: cập nhật trạng thái hoàn tất / thu hồi yêu cầu còn chờ.
         delegationService.onReportCompleted(report);
-
-        // Process staff wallet commission
-        try {
-            staffWalletService.processReportCompletedCommission(report);
-        } catch (Exception ex) {
-            log.error("[Staff Wallet] Error processing commission for report {}: {}", report.getId(), ex.getMessage());
-        }
 
         // Save Activity History
         String staffName = staff != null && staff.getFullName() != null && !staff.getFullName().trim().isEmpty()
@@ -982,7 +1062,7 @@ public class ReportServiceImpl implements IReportService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<ReportResponse> getMyReports(String userId, String status, String severity, String search,
-            String from, String to, int page, int size) {
+            String from, String to, Boolean overdue, int page, int size) {
         int safePage = Math.max(1, page);
         int safeSize = Math.max(1, Math.min(size, MY_REPORTS_MAX_PAGE_SIZE));
 
@@ -998,10 +1078,11 @@ public class ReportServiceImpl implements IReportService {
             }
         }
 
+        boolean overdueOnly = Boolean.TRUE.equals(overdue);
         ClientDateRange dates = parseClientDateRange(from, to);
         Page<Report> reportPage = reportRepository.findMyReports(userId, reportStatus, parseClientSeverity(severity),
-                rehandling, normalizeClientKeyword(search), dates.from(), dates.toExclusive(),
-                PageRequest.of(safePage - 1, safeSize));
+                rehandling, overdueOnly, LocalDateTime.now(), normalizeClientKeyword(search),
+                dates.from(), dates.toExclusive(), PageRequest.of(safePage - 1, safeSize));
 
         return PageResponse.<ReportResponse>builder()
                 .currentPage(safePage)
@@ -1093,6 +1174,7 @@ public class ReportServiceImpl implements IReportService {
                 .processed(byStatus.getOrDefault(EReportStatus.processed, 0L))
                 .rejected(byStatus.getOrDefault(EReportStatus.rejected, 0L))
                 .rehandling(reportRepository.countByUserIdAndIsReviewResolvedFalse(userId))
+                .overdue(reportRepository.countMyOverdueReports(userId, LocalDateTime.now()))
                 .build();
     }
 
@@ -1121,6 +1203,7 @@ public class ReportServiceImpl implements IReportService {
         long rehandlingCount = reportRepository.countByStatusAndIsReviewResolved(EReportStatus.processed, false)
                 + reportRepository.countByStatusAndIsReviewResolved(EReportStatus.processing, false);
         byStatus.put("rehandling", (int) rehandlingCount);
+        byStatus.put("overdue", (int) reportRepository.countAdminOverdueReports(LocalDateTime.now()));
 
         // Count by severity
         List<Object[]> severityRows = reportRepository.countGroupBySeverity();
@@ -1164,7 +1247,7 @@ public class ReportServiceImpl implements IReportService {
     @Override
     @Transactional(readOnly = true)
     public ReportListResponse getAdminReportList(int page, int size, String status, String severity, String assigneeId,
-            String from, String to, String search) {
+            String from, String to, String search, Boolean overdue) {
 
         // 1. Parse enums (null = no filter)
         EReportStatus statusEnum = null;
@@ -1202,39 +1285,20 @@ public class ReportServiceImpl implements IReportService {
         // 3. Normalize search + assigneeId
         String searchParam = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
         String assigneeParam = (assigneeId != null && !assigneeId.trim().isEmpty()) ? assigneeId.trim() : null;
+        boolean overdueOnly = Boolean.TRUE.equals(overdue);
 
         // 4. Query
         int safePage = Math.max(1, page);
         int safeSize = Math.max(1, Math.min(size, 100));
         PageRequest pageable = PageRequest.of(safePage - 1, safeSize);
         Page<Report> reportPage = reportRepository.findAllFiltered(
-                statusEnum, isRehandling, severityEnum, assigneeParam, fromDt, toDt, searchParam, pageable);
+                statusEnum, isRehandling, overdueOnly, LocalDateTime.now(),
+                severityEnum, assigneeParam, fromDt, toDt, searchParam, pageable);
 
-        // 5. Map Report -> RecentReportResponse (bổ sung userName, userEmail)
-        List<RecentReportResponse> content = reportPage.getContent().stream().map(r -> {
-            User staff = r.getAssignedStaff();
-            User user = r.getUser();
-            boolean anon = Boolean.TRUE.equals(r.getIsAnonymous());
-            return RecentReportResponse.builder()
-                    .id(r.getId())
-                    .title(r.getTitle())
-                    .status(r.getStatus())
-                    .severity(r.getSeverity())
-                    .createdAt(r.getCreatedAt())
-                    .imageUrl(r.getImageUrl())
-                    .address(r.getAddress() != null && !r.getAddress().trim().isEmpty()
-                            ? r.getAddress()
-                            : r.getLocationDescription())
-                    .assignedStaffName(staff != null ? staff.getFullName() : null)
-                    .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
-                    .latitude(r.getLatitude())
-                    .longitude(r.getLongitude())
-                    .isAnonymous(anon)
-                    .userName(user != null ? user.getFullName() : null)
-                    .userEmail(user != null ? user.getEmail() : null)
-                    .isReviewResolved(r.getIsReviewResolved())
-                    .build();
-        }).collect(Collectors.toList());
+        // 5. Map Report -> RecentReportResponse (bổ sung userName, userEmail, deadline)
+        List<RecentReportResponse> content = reportPage.getContent().stream()
+                .map(r -> toRecentReportResponse(r, false, false))
+                .collect(Collectors.toList());
 
         // 6. Wrap in PageResponse
         PageResponse<RecentReportResponse> pageResp = PageResponse.<RecentReportResponse>builder()
@@ -1250,12 +1314,12 @@ public class ReportServiceImpl implements IReportService {
 
     @Override
     @Transactional
-    public ReportDetailResponse updateReportStatus(String reportId, String newStatus, String adminId) {
+    public ReportDetailResponse updateReportStatus(String reportId, String newStatus, String reason, String adminId) {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
         EReportStatus current = report.getStatus();
         EReportStatus next = EReportStatus.valueOf(newStatus.toLowerCase());
-        // Validate flow: pending -> processing -> processed, rejected from
+        // Validate flow: pending -> processing -> processed, rejected ONLY from
         // pending/processing, and processed -> processing (re-open)
         boolean valid = switch (current) {
             case pending -> next == EReportStatus.processing || next == EReportStatus.rejected;
@@ -1265,13 +1329,35 @@ public class ReportServiceImpl implements IReportService {
         };
         if (!valid)
             throw new BadRequestException("report.invalid.status.transition");
+
+        String trimmedReason = null;
+        if (next == EReportStatus.rejected) {
+            if (reason != null) {
+                trimmedReason = reason.trim();
+                if (trimmedReason.isEmpty()) {
+                    throw new BadRequestException("report.reject.reason_required");
+                }
+            }
+            report.setRejectedReason(trimmedReason);
+            report.setRejectedAt(new java.util.Date());
+        }
+
         report.setStatus(next);
         if (next == EReportStatus.processed) {
+            if (report.getDeadline() == null) {
+                report.setDeadline(resolveDeadline(report));
+            }
+            if (report.getResolvedAt() == null) {
+                report.setResolvedAt(new java.util.Date());
+            }
             report.setIsReviewResolved(null);
             report.setRating(null);
             report.setReviewNote(null);
             report.setReviewImageUrls(null);
             report.setReviewedAt(null);
+        } else if (current == EReportStatus.processed && next == EReportStatus.processing) {
+            LocalDateTime rehandleApprovedAt = LocalDateTime.now();
+            report.setDeadline(rehandleApprovedAt.plusDays(deadlineDaysForSeverity(report.getSeverity())));
         }
         Report saved = reportRepository.save(report);
 
@@ -1281,30 +1367,44 @@ public class ReportServiceImpl implements IReportService {
             } catch (Exception ex) {
                 log.warn("[ReportDensity] Error updating density for rejected report {}: {}", saved.getId(), ex.getMessage());
             }
-        }
 
-        if (next == EReportStatus.processed) {
-            // Admin hoàn tất thay → xử lý yêu cầu nhờ làm giùm như khi staff hoàn tất (trước hoa hồng: yêu cầu → ví)
-            delegationService.onReportCompleted(saved);
-            try {
-                staffWalletService.processReportCompletedCommission(saved);
-            } catch (Exception ex) {
-                log.error("[Staff Wallet] Error processing commission for report {}: {}", saved.getId(), ex.getMessage());
+            User admin = adminId != null ? userRepository.findById(adminId).orElse(null) : null;
+            String adminName = (admin != null && admin.getFullName() != null && !admin.getFullName().trim().isEmpty())
+                    ? admin.getFullName().trim()
+                    : (admin != null && admin.getEmail() != null ? admin.getEmail().trim() : "Quản trị viên");
+            String reportTitle = saved.getTitle() != null && !saved.getTitle().trim().isEmpty()
+                    ? saved.getTitle().trim()
+                    : "Phản ánh";
+            activityHistoryRepository.save(ActivityHistory.builder()
+                    .actor(admin)
+                    .i18nKey("activity.report.rejected|" + adminName + "|" + reportTitle)
+                    .targetId(saved.getId())
+                    .build());
+
+            notifyUserReportRejected(saved.getUser(), saved, trimmedReason, false);
+            if (current == EReportStatus.processing && saved.getAssignedStaff() != null) {
+                notifyUserReportRejected(saved.getAssignedStaff(), saved, trimmedReason, true);
             }
         }
 
-        // Admin từ chối report → thu hồi yêu cầu nhờ làm giùm đang hoạt động, hoàn bonus
+        if (next == EReportStatus.processed) {
+            delegationService.onReportCompleted(saved);
+        }
+
+        // Admin từ chối report → thu hồi yêu cầu nhờ làm giùm đang hoạt động
         if (next == EReportStatus.rejected) {
             delegationService.onReportUnassigned(saved);
         }
 
-        // When admin re-opens from processed back to processing, notify assigned Staff
+        // When admin re-opens from processed back to processing, notify assigned Staff and Admins with new deadline
         if (current == EReportStatus.processed && next == EReportStatus.processing) {
-            try {
-                staffWalletService.processReportReopenPenalty(saved);
-            } catch (Exception ex) {
-                log.error("[Staff Wallet] Error processing penalty for report {}: {}", saved.getId(), ex.getMessage());
-            }
+            LocalDateTime updatedDeadline = resolveDeadline(saved);
+            String formattedDeadline = updatedDeadline != null
+                    ? updatedDeadline.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                    : "";
+            String actionData = String.format(
+                    "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}", saved.getId());
+
             User staff = saved.getAssignedStaff();
             if (staff != null) {
                 try {
@@ -1317,13 +1417,11 @@ public class ReportServiceImpl implements IReportService {
                             staffLocale);
                     String message = messageSource.getMessage(
                             "notification.report.reopened.staff.message",
-                            new Object[] { saved.getTitle() },
+                            new Object[] { saved.getTitle(), formattedDeadline },
                             String.format(
-                                    "Phản ánh '%s' được đánh giá là chưa được xử lý thỏa đáng và cần được xử lý lại.",
-                                    saved.getTitle()),
+                                    "Phản ánh '%s' được đánh giá là chưa được xử lý thỏa đáng và cần được xử lý lại. Hạn xử lý mới: %s.",
+                                    saved.getTitle(), formattedDeadline),
                             staffLocale);
-                    String actionData = String.format(
-                            "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}", saved.getId());
 
                     notificationService.createNotification(staff.getId(), title, message, actionData,
                             saved.getImageUrl());
@@ -1331,6 +1429,9 @@ public class ReportServiceImpl implements IReportService {
                     Map<String, Object> staffExtra = new java.util.HashMap<>();
                     staffExtra.put("shouldRefresh", true);
                     staffExtra.put("stats", getStaffReportStatistics(staff.getId()));
+                    if (updatedDeadline != null) {
+                        staffExtra.put("deadline", formatIsoDateTime(updatedDeadline));
+                    }
                     NotificationEvent staffEvent = new NotificationEvent(title, message, actionData,
                             saved.getImageUrl(), staffExtra);
                     messagingTemplate.convertAndSendToUser(staff.getId(), "/queue/notifications", staffEvent);
@@ -1343,9 +1444,98 @@ public class ReportServiceImpl implements IReportService {
                     log.warn("[Notify Staff] Failed to notify staff {} on reopen: {}", staff.getId(), ex.getMessage());
                 }
             }
+
+            try {
+                List<User> admins = userRepository.findByRole(ERole.admin);
+                for (User a : admins) {
+                    try {
+                        java.util.Locale adminLocale = new java.util.Locale(
+                                a.getLanguage() != null ? a.getLanguage() : "vi");
+                        String adminTitle = messageSource.getMessage(
+                                "notification.report.reopened.admin.title",
+                                null,
+                                "Đã duyệt xử lý lại phản ánh",
+                                adminLocale);
+                        String adminMsg = messageSource.getMessage(
+                                "notification.report.reopened.admin.message",
+                                new Object[] { saved.getTitle(), formattedDeadline },
+                                String.format("Phản ánh '%s' đã được cập nhật hạn xử lý mới (%s) để xử lý lại.",
+                                        saved.getTitle(), formattedDeadline),
+                                adminLocale);
+                        notificationService.createNotification(a.getId(), adminTitle, adminMsg, actionData,
+                                saved.getImageUrl());
+                        Map<String, Object> adminExtra = new java.util.HashMap<>();
+                        adminExtra.put("shouldRefresh", true);
+                        if (updatedDeadline != null) {
+                            adminExtra.put("deadline", formatIsoDateTime(updatedDeadline));
+                        }
+                        messagingTemplate.convertAndSendToUser(
+                                a.getId(),
+                                "/queue/notifications",
+                                new NotificationEvent(adminTitle, adminMsg, actionData, saved.getImageUrl(), adminExtra));
+                    } catch (Exception ex) {
+                        log.warn("[Notify Admin] Failed to notify admin {} on reopen: {}", a.getId(), ex.getMessage());
+                    }
+                }
+            } catch (Exception ex) {
+                log.warn("[Notify Admins] Failed on reopen for report {}: {}", saved.getId(), ex.getMessage());
+            }
         }
 
         return toDetail(saved);
+    }
+
+    private void notifyUserReportRejected(User recipient, Report report, String reason, boolean isStaff) {
+        if (recipient == null) {
+            return;
+        }
+        try {
+            Locale locale = Locale.forLanguageTag(recipient.getLanguage() != null ? recipient.getLanguage() : "vi");
+            String titleKey = isStaff ? "notification.report.rejected.staff.title"
+                    : "notification.report.rejected.client.title";
+            String titleFallback = isStaff ? "Phản ánh đã bị từ chối" : "Phản ánh của bạn đã bị từ chối";
+            String title = messageSource.getMessage(titleKey, null, titleFallback, locale);
+
+            String message;
+            if (reason != null && !reason.isBlank()) {
+                String msgKey = isStaff ? "notification.report.rejected.staff.message_with_reason"
+                        : "notification.report.rejected.client.message_with_reason";
+                String fallback = isStaff
+                        ? String.format("Phản ánh '%s' bạn đang xử lý đã bị từ chối. Lý do: %s", report.getTitle(), reason)
+                        : String.format("Phản ánh '%s' của bạn đã bị từ chối. Lý do: %s", report.getTitle(), reason);
+                message = messageSource.getMessage(msgKey, new Object[] { report.getTitle(), reason }, fallback, locale);
+            } else {
+                String msgKey = isStaff ? "notification.report.rejected.staff.message"
+                        : "notification.report.rejected.client.message";
+                String fallback = isStaff
+                        ? String.format("Phản ánh '%s' bạn đang xử lý đã bị quản trị viên từ chối.", report.getTitle())
+                        : String.format("Phản ánh '%s' của bạn đã bị quản trị viên từ chối.", report.getTitle());
+                message = messageSource.getMessage(msgKey, new Object[] { report.getTitle() }, fallback, locale);
+            }
+
+            String actionData = String.format(
+                    "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}", report.getId());
+            notificationService.createNotification(recipient.getId(), title, message, actionData, report.getImageUrl());
+
+            Map<String, Object> extra = new java.util.HashMap<>();
+            extra.put("shouldRefresh", true);
+            if (isStaff) {
+                extra.put("stats", getStaffReportStatistics(recipient.getId()));
+            }
+            messagingTemplate.convertAndSendToUser(
+                    recipient.getId(),
+                    "/queue/notifications",
+                    new NotificationEvent(title, message, actionData, report.getImageUrl(), extra));
+
+            fcmService.sendToUser(
+                    recipient.getId(),
+                    new NotificationRequest(
+                            title,
+                            message,
+                            Map.of("type", "REPORT_DETAIL", "payload", "{\"reportId\":\"" + report.getId() + "\"}")));
+        } catch (Exception ex) {
+            log.warn("[Notify] Failed to notify {} on report reject {}: {}", recipient.getId(), report.getId(), ex.getMessage());
+        }
     }
 
     @Override
@@ -1432,89 +1622,31 @@ public class ReportServiceImpl implements IReportService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, int page, int limit) {
+    public List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, Boolean overdue, int page, int limit) {
         int safeLimit = Math.max(1, Math.min(limit, 100));
         int safePage = Math.max(0, page);
-
-        if ("rehandling".equalsIgnoreCase(status)) {
-            org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(safePage,
-                    safeLimit);
-            List<Report> reports = reportRepository.findStaffReportsByStatusAndIsReviewResolved(staffId,
-                    EReportStatus.processing, false, pageable);
-            return reports.stream().map(r -> {
-                User staff = r.getAssignedStaff();
-                User user = r.getUser();
-                boolean anon = Boolean.TRUE.equals(r.getIsAnonymous());
-                return RecentReportResponse.builder()
-                        .id(r.getId())
-                        .title(r.getTitle())
-                        .status(r.getStatus())
-                        .severity(r.getSeverity())
-                        .createdAt(r.getCreatedAt())
-                        .imageUrl(r.getImageUrls() != null && !r.getImageUrls().trim().isEmpty()
-                                ? r.getImageUrls().trim().replaceAll("^\\[|\\]$", "").replaceAll("\"", "").split(",")[0]
-                                        .trim()
-                                : r.getImageUrl())
-                        .address(r.getAddress() != null && !r.getAddress().trim().isEmpty() ? r.getAddress()
-                                : r.getLocationDescription())
-                        .assignedStaffName(staff != null ? staff.getFullName() : null)
-                        .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
-                        .latitude(r.getLatitude())
-                        .longitude(r.getLongitude())
-                        .userName(anon ? null : (user != null ? user.getFullName() : null))
-                        .userEmail(anon ? null : (user != null ? user.getEmail() : null))
-                        .userAvatarUrl(anon ? null : (user != null ? user.getAvatarUrl() : null))
-                        .description(r.getDescription())
-                        .isReviewResolved(r.getIsReviewResolved())
-                        .build();
-            }).collect(Collectors.toList());
-        }
+        boolean rehandling = "rehandling".equalsIgnoreCase(status);
+        boolean overdueOnly = Boolean.TRUE.equals(overdue);
 
         List<EReportStatus> statuses;
         if ("resolved".equalsIgnoreCase(status) || "processed".equalsIgnoreCase(status)) {
             statuses = List.of(EReportStatus.processed);
-        } else if ("processing".equalsIgnoreCase(status)) {
+        } else if ("processing".equalsIgnoreCase(status) || rehandling) {
             statuses = List.of(EReportStatus.processing);
         } else if ("rejected".equalsIgnoreCase(status)) {
             statuses = List.of(EReportStatus.rejected);
         } else {
-            // "all" or invalid or null defaults to processing + processed for staff
-            // (pending removed)
             statuses = List.of(EReportStatus.processing, EReportStatus.processed);
         }
 
         org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(safePage,
                 safeLimit);
-        List<Report> reports = reportRepository.findByAssignedStaffIdAndStatusInOrderByCreatedAtDesc(staffId, statuses,
-                pageable);
+        List<Report> reports = reportRepository.findStaffAssignedFiltered(
+                staffId, statuses, rehandling, overdueOnly, LocalDateTime.now(), pageable);
 
-        return reports.stream().map(r -> {
-            User staff = r.getAssignedStaff();
-            User user = r.getUser();
-            boolean anon = Boolean.TRUE.equals(r.getIsAnonymous());
-            return RecentReportResponse.builder()
-                    .id(r.getId())
-                    .title(r.getTitle())
-                    .status(r.getStatus())
-                    .severity(r.getSeverity())
-                    .createdAt(r.getCreatedAt())
-                    .imageUrl(r.getImageUrls() != null && !r.getImageUrls().trim().isEmpty()
-                            ? r.getImageUrls().trim().replaceAll("^\\[|\\]$", "").replaceAll("\"", "").split(",")[0]
-                                    .trim()
-                            : r.getImageUrl())
-                    .address(r.getAddress() != null && !r.getAddress().trim().isEmpty() ? r.getAddress()
-                            : r.getLocationDescription())
-                    .assignedStaffName(staff != null ? staff.getFullName() : null)
-                    .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
-                    .latitude(r.getLatitude())
-                    .longitude(r.getLongitude())
-                    .userName(anon ? null : (user != null ? user.getFullName() : null))
-                    .userEmail(anon ? null : (user != null ? user.getEmail() : null))
-                    .userAvatarUrl(anon ? null : (user != null ? user.getAvatarUrl() : null))
-                    .description(r.getDescription())
-                    .isReviewResolved(r.getIsReviewResolved())
-                    .build();
-        }).collect(Collectors.toList());
+        return reports.stream()
+                .map(r -> toRecentReportResponse(r, true, true))
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -1537,6 +1669,7 @@ public class ReportServiceImpl implements IReportService {
         long rehandlingCount = reportRepository.countStaffReportsByStatusAndIsReviewResolved(staffId,
                 EReportStatus.processing, false);
         byStatus.put("rehandling", (int) rehandlingCount);
+        byStatus.put("overdue", (int) reportRepository.countStaffOverdueReports(staffId, LocalDateTime.now()));
 
         int total = byStatus.getOrDefault("processing", 0) + byStatus.getOrDefault("resolved", 0);
 
@@ -1554,33 +1687,9 @@ public class ReportServiceImpl implements IReportService {
                 ? EReportStatus.processing
                 : EReportStatus.processed;
         List<Report> reports = reportRepository.findReportsByStatusAndIsReviewResolved(status, false);
-        return reports.stream().map(r -> {
-            User staff = r.getAssignedStaff();
-            User user = r.getUser();
-            boolean anon = Boolean.TRUE.equals(r.getIsAnonymous());
-            return RecentReportResponse.builder()
-                    .id(r.getId())
-                    .title(r.getTitle())
-                    .status(r.getStatus())
-                    .severity(r.getSeverity())
-                    .createdAt(r.getCreatedAt())
-                    .imageUrl(r.getImageUrls() != null && !r.getImageUrls().trim().isEmpty()
-                            ? r.getImageUrls().trim().replaceAll("^\\[|\\]$", "").replaceAll("\"", "").split(",")[0]
-                                    .trim()
-                            : r.getImageUrl())
-                    .address(r.getAddress() != null && !r.getAddress().trim().isEmpty() ? r.getAddress()
-                            : r.getLocationDescription())
-                    .assignedStaffName(staff != null ? staff.getFullName() : null)
-                    .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
-                    .latitude(r.getLatitude())
-                    .longitude(r.getLongitude())
-                    .userName(anon ? null : (user != null ? user.getFullName() : null))
-                    .userEmail(anon ? null : (user != null ? user.getEmail() : null))
-                    .userAvatarUrl(anon ? null : (user != null ? user.getAvatarUrl() : null))
-                    .description(r.getDescription())
-                    .isReviewResolved(r.getIsReviewResolved())
-                    .build();
-        }).collect(Collectors.toList());
+        return reports.stream()
+                .map(r -> toRecentReportResponse(r, true, true))
+                .collect(Collectors.toList());
     }
 
     @Override

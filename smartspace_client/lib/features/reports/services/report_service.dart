@@ -34,10 +34,19 @@ class ReportService {
     EReportSeverity? severity,
     ReportDateRange? dateRange,
     String? search,
+    bool overdueOnly = false,
     int page = 1,
     int size = 20,
   }) async {
-    return await reportRepo.getMyReports(status: status, severity: severity, dateRange: dateRange, search: search, page: page, size: size);
+    return await reportRepo.getMyReports(
+      status: status,
+      severity: severity,
+      dateRange: dateRange,
+      search: search,
+      overdueOnly: overdueOnly,
+      page: page,
+      size: size,
+    );
   }
 
   Future<ApiResponse<MyReportsSummary>> getMyReportsSummary() async {

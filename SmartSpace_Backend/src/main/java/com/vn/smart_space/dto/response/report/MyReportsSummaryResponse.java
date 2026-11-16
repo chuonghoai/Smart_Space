@@ -23,4 +23,5 @@ public class MyReportsSummaryResponse {
     long processed;
     long rejected;
     long rehandling;
+    long overdue;
 }

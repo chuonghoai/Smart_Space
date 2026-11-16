@@ -18,13 +18,6 @@ import 'package:smartspace_staff/ui/mobile/settings/change_password_screen.dart'
 import 'package:smartspace_staff/ui/mobile/settings/edit_profile_screen.dart';
 import 'package:smartspace_staff/ui/mobile/settings/manage_devices_screen.dart';
 import 'package:smartspace_staff/ui/mobile/settings/settings_screen.dart';
-import 'package:smartspace_staff/ui/mobile/wallet/staff_wallet_screen.dart';
-import 'package:smartspace_staff/ui/mobile/wallet/staff_wallet_transactions_screen.dart';
-import 'package:smartspace_staff/ui/mobile/settings/staff_bank_accounts_screen.dart';
-import 'package:smartspace_staff/ui/mobile/wallet/staff_withdraw_screen.dart';
-import 'package:smartspace_staff/ui/mobile/wallet/staff_withdrawal_detail_screen.dart';
-import 'package:smartspace_staff/ui/mobile/wallet/staff_withdrawal_history_screen.dart';
-import 'package:smartspace_staff/features/wallet/models/staff_withdrawal_model.dart';
 import 'package:smartspace_staff/features/delegation/models/delegation_model.dart';
 import 'package:smartspace_staff/ui/mobile/delegation/delegations_screen.dart';
 import 'package:smartspace_staff/features/chat/models/conversation_model.dart';
@@ -122,40 +115,6 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.manageDevices,
       builder: (context, state) => const MobileManageDevicesScreen(),
-    ),
-    GoRoute(
-      path: RouterPath.staffWallet,
-      builder: (context, state) => const StaffWalletScreen(),
-    ),
-    GoRoute(
-      path: RouterPath.staffWalletTransactions,
-      builder: (context, state) => const StaffWalletTransactionsScreen(),
-    ),
-    GoRoute(
-      path: RouterPath.staffWithdrawal,
-      builder: (context, state) => const StaffWithdrawScreen(),
-    ),
-    GoRoute(
-      path: RouterPath.staffWithdrawalHistory,
-      builder: (context, state) {
-        final filter = state.uri.queryParameters['filter'];
-        return StaffWithdrawalHistoryScreen(initialFilter: filter);
-      },
-    ),
-    GoRoute(
-      path: '/wallet/withdrawals/:id',
-      builder: (context, state) {
-        final withdrawalId = state.pathParameters['id'] ?? '';
-        final model = state.extra as StaffWithdrawalModel?;
-        return StaffWithdrawalDetailScreen(
-          withdrawalId: withdrawalId,
-          initialModel: model,
-        );
-      },
-    ),
-    GoRoute(
-      path: RouterPath.staffBankAccounts,
-      builder: (context, state) => const StaffBankAccountsScreen(),
     ),
     GoRoute(
       path: RouterPath.conversations,

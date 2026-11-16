@@ -320,121 +320,15 @@
   "citizenRating": "Citizen Rating",
   "citizenReviewReason": "Reason for Unsatisfactory",
   "citizenReviewPhotos": "Citizen Photos",
-  "staffWallet": "Staff Wallet",
-  "walletBalance": "Wallet Balance",
-  "withdrawMoney": "Withdraw",
-  "transactionHistory": "Transaction History",
-  "featureUnderDevelopment": "Feature under development",
-  "recentTransactions": "Recent Transactions",
-  "noTransactions": "No transactions yet",
-  "commissionExpectedNotice": "You will receive {amount} VND after completing this report.",
-  "@commissionExpectedNotice": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "commissionReceived": "You received {amount} VND",
-  "@commissionReceived": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "commissionPenaltyDeducted": "Rated poorly: -{amount} VND",
-  "@commissionPenaltyDeducted": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "commissionPenaltyDeductionTurn": "Bad review deduction turn {turn}: -{amount} VND",
-  "@commissionPenaltyDeductionTurn": {
-    "placeholders": {
-      "turn": {
-        "type": "int"
-      },
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "finalCommissionReceived": "Final amount received: {amount} VND",
-  "@finalCommissionReceived": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "rehandlingNoExtraCommission": "Re-handling will not receive additional commission.",
-  "routeStaffWallet": "Staff Wallet",
-  "routeStaffWalletTransactions": "Transaction History",
-  "commissionBreakdown": "Commission Breakdown",
-  "allTransactions": "All Transactions",
-  "routeStaffWithdrawal": "Withdraw",
-  "routeStaffWithdrawalHistory": "Withdrawal History",
-  "routeStaffWithdrawalDetail": "Request Details",
-  "routeStaffBankAccounts": "Bank Accounts Management",
-  "bankAccountsManagement": "Bank Accounts Management",
-  "withdrawalHistory": "Withdrawal History",
-  "withdrawalDetail": "Request Details",
-  "selectSavedBankAccount": "Select saved bank account",
-  "suggestSaveBankQuick": "Tip: Save bank account for faster withdrawals next time",
-  "saveBankModalTitle": "Save Bank Account",
-  "confirmSaveBankPrompt": "Do you want to save this account for next time?",
-  "saveAndContinue": "Save & Continue",
-  "continueWithoutSaving": "Continue without saving",
-  "bankName": "Bank Name",
-  "bankNameHint": "Select or enter bank name",
-  "bankAccountNumber": "Account Number",
-  "bankAccountNumberHint": "Enter account number",
-  "bankAccountOwner": "Account Holder Name",
-  "bankAccountOwnerHint": "NGUYEN VAN A",
-  "withdrawalAmount": "Withdrawal Amount",
-  "withdrawalAmountHint": "Enter withdrawal amount",
-  "submitWithdrawalRequest": "Submit Withdrawal Request",
-  "withdrawalRequestSuccess": "Withdrawal request submitted successfully",
-  "filterApproved": "Approved",
-  "filterRejected": "Cancelled",
-  "filterPending": "Pending",
   "statusPending": "Pending",
-  "statusApproved": "Approved",
-  "statusRejected": "Cancelled",
-  "additionalInfo": "Additional Information",
-  "cancellationReason": "Cancellation Reason",
-  "noCancellationReasonProvided": "No specific reason provided",
-  "emptyWithdrawalHistory": "No withdrawal requests found",
-  "emptyBankAccounts": "No saved bank accounts yet",
-  "addBankAccount": "Add Bank Account",
-  "deleteBankAccount": "Delete Account",
-  "deleteBankAccountConfirm": "Are you sure you want to delete this bank account?",
-  "amountExceedsBalance": "Withdrawal amount cannot exceed wallet balance",
-  "minWithdrawalAmountError": "Minimum withdrawal amount is 10,000 VND",
-  "bankInfoIncomplete": "Please fill in all bank details",
-  "savedBankAccounts": "Saved Bank Accounts",
   "saveSuccess": "Saved successfully",
   "deleteSuccess": "Deleted successfully",
   "confirmDelete": "Confirm Delete",
-  "bankAccount": "Bank Account",
   "createdDate": "Created Date",
   "save": "Save",
   "genericError": "An error occurred, please try again!",
-  "doNotSave": "Don't save",
-  "addNewBankAccount": "Add new bank account",
-  "heldWithdrawalNoticeTitle": "Amount is currently held",
-  "heldWithdrawalNoticeDesc": "The withdrawal amount has been held from your wallet balance. If the request is rejected, the amount will be refunded to your wallet.",
-  "refundedNoticeDesc": "The withdrawal amount has been refunded back to your wallet.",
-  "cancelWithdrawalRequest": "Cancel withdrawal request",
-  "confirmCancelWithdrawalTitle": "Confirm cancellation",
-  "confirmCancelWithdrawalContent": "Are you sure you want to cancel this withdrawal request? The held amount will be refunded to your wallet immediately.",
   "confirmCancel": "Cancel request",
-  "cancelWithdrawalSuccess": "Withdrawal request cancelled successfully, the amount has been refunded to your wallet.",
   "statusCancelled": "Cancelled",
-  "cancelledNoticeDesc": "This withdrawal request has been cancelled and the held amount has been refunded to your wallet.",
   "routeDelegations": "Delegated tasks",
   "delegationScreenTitle": "Delegated tasks",
   "delegationTabReceived": "Received",
@@ -447,19 +341,6 @@
   "delegationSearchHint": "Search colleagues by name",
   "delegationNoColleagues": "No matching colleagues",
   "delegationChooseColleague": "Choose a colleague",
-  "delegationHelperReceives": "Colleague receives",
-  "delegationHelperReceivesValue": "{commission}đ + {bonus}đ bonus",
-  "@delegationHelperReceivesValue": {
-    "placeholders": { "commission": { "type": "String" }, "bonus": { "type": "String" } }
-  },
-  "delegationYouPay": "Deducted from your wallet",
-  "delegationBonusRate": "Bonus = {rate}% of the task commission",
-  "@delegationBonusRate": {
-    "placeholders": { "rate": { "type": "String" } }
-  },
-  "delegationCurrentBalance": "Current balance",
-  "delegationInsufficientBalance": "Your wallet balance is not enough to pay this bonus",
-  "delegationHoldHint": "The bonus is held in your wallet and refunded if the request doesn't go through. Requests expire after 24 hours.",
   "delegationNoteLabel": "Message (optional)",
   "delegationSendAction": "Send request",
   "delegationSentSuccess": "Delegation request sent",
@@ -479,26 +360,6 @@
   "@delegationAcceptedHelperBanner": {
     "placeholders": { "name": { "type": "String" } }
   },
-  "delegationHelperEarns": "You'll receive {commission}đ + {bonus}đ bonus",
-  "@delegationHelperEarns": {
-    "placeholders": { "commission": { "type": "String" }, "bonus": { "type": "String" } }
-  },
-  "delegationBonusHeld": "{bonus}đ bonus held from your wallet",
-  "@delegationBonusHeld": {
-    "placeholders": { "bonus": { "type": "String" } }
-  },
-  "commissionExpectedWithBonusNotice": "You will receive {commission} VND + {bonus} VND delegation bonus after completing this report.",
-  "@commissionExpectedWithBonusNotice": {
-    "placeholders": { "commission": { "type": "String" }, "bonus": { "type": "String" } }
-  },
-  "delegationBonusReceivedLine": "Delegation bonus from {name}: +{amount} VND",
-  "@delegationBonusReceivedLine": {
-    "placeholders": { "name": { "type": "String" }, "amount": { "type": "String" } }
-  },
-  "delegationBonusPaidNotice": "You paid {name} a {amount} VND bonus for handling this report.",
-  "@delegationBonusPaidNotice": {
-    "placeholders": { "amount": { "type": "String" }, "name": { "type": "String" } }
-  },
   "delegationExpiresAt": "Expires at {time}",
   "@delegationExpiresAt": {
     "placeholders": { "time": { "type": "String" } }
@@ -507,17 +368,17 @@
   "delegationDeclineAction": "Decline",
   "delegationCancelAction": "Cancel request",
   "delegationAcceptConfirmTitle": "Accept this task?",
-  "delegationAcceptConfirmMessage": "The report will be assigned to you. You'll be responsible for it, including any re-handling and penalties.",
+  "delegationAcceptConfirmMessage": "The report will be assigned to you and you'll be responsible for resolving it.",
   "delegationDeclineConfirmTitle": "Decline this request?",
-  "delegationDeclineConfirmMessage": "{name} will get the held bonus back.",
+  "delegationDeclineConfirmMessage": "{name} will be notified that you declined.",
   "@delegationDeclineConfirmMessage": {
     "placeholders": { "name": { "type": "String" } }
   },
   "delegationCancelConfirmTitle": "Cancel this request?",
-  "delegationCancelConfirmMessage": "The held bonus will be refunded to your wallet.",
+  "delegationCancelConfirmMessage": "This delegation request will be cancelled.",
   "delegationAcceptedSuccess": "You accepted the task",
   "delegationDeclinedSuccess": "Request declined",
-  "delegationCancelledSuccess": "Request cancelled, bonus refunded",
+  "delegationCancelledSuccess": "Delegation request cancelled",
   "delegationFrom": "From {name}",
   "@delegationFrom": {
     "placeholders": { "name": { "type": "String" } }
@@ -525,10 +386,6 @@
   "delegationTo": "Asked {name}",
   "@delegationTo": {
     "placeholders": { "name": { "type": "String" } }
-  },
-  "delegationBonusLabel": "Bonus {amount}đ",
-  "@delegationBonusLabel": {
-    "placeholders": { "amount": { "type": "String" } }
   },
   "delegationStatusPending": "Awaiting reply",
   "delegationStatusAccepted": "In progress",
@@ -628,5 +485,18 @@
   "voiceMessageSnippet": "Voice message",
   "imageSnippet": "Photo",
   "videoSnippet": "Video",
-  "attachedReportSnippet": "Attached report"
+  "attachedReportSnippet": "Attached report",
+  "reportDeadlineLabel": "Resolution deadline",
+  "deadlineOverdueBadge": "Overdue",
+  "daysRemainingLabel": "{days} days left",
+  "@daysRemainingLabel": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "overdueOnlyFilter": "Overdue",
+  "rejectedReasonTitle": "Rejection Reason",
+  "noRejectionReasonProvided": "Rejected by administrator."
 }

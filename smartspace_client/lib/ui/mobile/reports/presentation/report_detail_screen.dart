@@ -561,6 +561,43 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
                                 ),
                               ),
 
+                            // Overdue badge
+                            if (report.isOverdue)
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 10,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.errorContainer,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(
+                                    color: theme.colorScheme.error
+                                        .withValues(alpha: 0.45),
+                                  ),
+                                ),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.schedule_outlined,
+                                      size: 14,
+                                      color: theme.colorScheme.onErrorContainer,
+                                    ),
+                                    const SizedBox(width: 4),
+                                    Text(
+                                      l10n.deadlineOverdueBadge,
+                                      style:
+                                          theme.textTheme.labelSmall?.copyWith(
+                                        color:
+                                            theme.colorScheme.onErrorContainer,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+
                             // Severity Pill
                             Container(
                               padding: const EdgeInsets.symmetric(
@@ -633,11 +670,133 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
                               '${l10n.createdAtLabel}: ${DateFormat('dd/MM/yyyy HH:mm').format(report.createdAt)}',
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
+                                fontFeatures: const [FontFeature.tabularFigures()],
                               ),
                             ),
                           ],
                         ),
+                        if (report.deadline != null && report.status != ReportStatus.rejected) ...[
+                          const SizedBox(height: 6),
+                          Builder(
+                            builder: (context) {
+                              final isOverdue = report.isOverdue;
+                              final remainingDays = report.remainingDays;
+                              final deadlineColor = isOverdue
+                                  ? theme.colorScheme.error
+                                  : theme.colorScheme.onSurfaceVariant;
+                              final formattedDeadline =
+                                  DateFormat('dd/MM/yyyy HH:mm').format(report.deadline!.toLocal());
+                              final deadlineLine = !isOverdue && remainingDays != null
+                                  ? '${l10n.reportDeadlineLabel}: $formattedDeadline (${l10n.daysRemainingLabel(remainingDays)})'
+                                  : '${l10n.reportDeadlineLabel}: $formattedDeadline';
+                              return Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2),
+                                    child: Icon(
+                                      Icons.event_available_outlined,
+                                      size: 14,
+                                      color: deadlineColor,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Wrap(
+                                      spacing: 6,
+                                      runSpacing: 4,
+                                      crossAxisAlignment: WrapCrossAlignment.center,
+                                      children: [
+                                        Text(
+                                          deadlineLine,
+                                          style: theme.textTheme.bodySmall?.copyWith(
+                                            color: deadlineColor,
+                                            fontWeight: isOverdue ? FontWeight.w700 : FontWeight.normal,
+                                            fontFeatures: const [FontFeature.tabularFigures()],
+                                          ),
+                                        ),
+                                        if (isOverdue)
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: theme.colorScheme.errorContainer,
+                                              borderRadius: BorderRadius.circular(6),
+                                            ),
+                                            child: Text(
+                                              l10n.deadlineOverdueBadge,
+                                              style: theme.textTheme.labelSmall?.copyWith(
+                                                color: theme.colorScheme.onErrorContainer,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        ],
                         const SizedBox(height: 16),
+
+                        // Rejection Reason Card (when report is rejected)
+                        if (report.status == ReportStatus.rejected) ...[
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.errorContainer.withValues(alpha: 0.22),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: theme.colorScheme.error.withValues(alpha: 0.35),
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.cancel_outlined,
+                                      size: 18,
+                                      color: theme.colorScheme.error,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        l10n.rejectedReasonTitle,
+                                        style: theme.textTheme.titleSmall?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: theme.colorScheme.error,
+                                        ),
+                                      ),
+                                    ),
+                                    if (report.rejectedAt != null)
+                                      Text(
+                                        DateFormat('dd/MM/yyyy HH:mm').format(report.rejectedAt!.toLocal()),
+                                        style: theme.textTheme.bodySmall?.copyWith(
+                                          color: theme.colorScheme.onSurfaceVariant,
+                                          fontFeatures: const [FontFeature.tabularFigures()],
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  (report.rejectedReason != null && report.rejectedReason!.trim().isNotEmpty)
+                                      ? report.rejectedReason!
+                                      : l10n.noRejectionReasonProvided,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.onSurface,
+                                    height: 1.45,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
 
                         // Title & Description Card
                         Container(

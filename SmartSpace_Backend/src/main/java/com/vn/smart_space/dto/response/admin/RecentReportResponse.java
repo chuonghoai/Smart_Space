@@ -40,4 +40,12 @@ public class RecentReportResponse {
     Boolean isAnonymous;
 
     Boolean isReviewResolved;
+
+    LocalDateTime deadline;
+
+    LocalDateTime resolvedAt;
+
+    Boolean isOverdue;
+
+    Long remainingDays;
 }

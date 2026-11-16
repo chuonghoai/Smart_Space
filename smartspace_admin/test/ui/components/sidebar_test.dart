@@ -154,57 +154,6 @@ void main() {
       expect(find.text('Home Screen'), findsOneWidget);
     });
 
-    testWidgets('Focuses Staff Wallets item when on /admin/wallets/withdrawals (Quick Access route)', (tester) async {
-      await tester.binding.setSurfaceSize(const Size(800, 1200));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
-
-      final router = GoRouter(
-        initialLocation: RouterPath.adminWithdrawalRequests,
-        routes: [
-          GoRoute(
-            path: RouterPath.home,
-            builder: (context, state) => Scaffold(
-              drawer: const Sidebar(),
-              body: const Text('Home Screen'),
-            ),
-          ),
-          GoRoute(
-            path: RouterPath.adminWithdrawalRequests,
-            builder: (context, state) => Scaffold(
-              drawer: const Sidebar(),
-              body: const Text('Withdrawals Screen'),
-            ),
-          ),
-        ],
-      );
-
-      await tester.pumpWidget(_buildTestAppWithRouter(router));
-      await tester.pumpAndSettle();
-
-      // Open the Drawer on /admin/wallets/withdrawals
-      final scaffoldState = tester.state<ScaffoldState>(find.byType(Scaffold));
-      scaffoldState.openDrawer();
-      await tester.pumpAndSettle();
-
-      // Staff Wallets should be selected
-      final walletTile = tester.widget<ListTile>(
-        find.widgetWithText(ListTile, 'Quản lý ví nhân viên'),
-      );
-      expect(walletTile.selected, isTrue);
-
-      // Overview should NOT be selected
-      final overviewTile = tester.widget<ListTile>(
-        find.widgetWithText(ListTile, 'Tổng quan'),
-      );
-      expect(overviewTile.selected, isFalse);
-
-      // Tapping Overview navigates back to Home
-      await tester.tap(find.widgetWithText(ListTile, 'Tổng quan'));
-      await tester.pumpAndSettle();
-
-      expect(find.text('Home Screen'), findsOneWidget);
-    });
-
     testWidgets('Focuses Staff Management when on /staff-management', (tester) async {
       await tester.binding.setSurfaceSize(const Size(800, 1200));
       addTearDown(() => tester.binding.setSurfaceSize(null));

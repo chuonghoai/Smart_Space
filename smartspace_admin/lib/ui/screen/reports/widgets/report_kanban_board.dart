@@ -425,6 +425,77 @@ class _KanbanCard extends StatelessWidget {
                             ),
                         ],
                       ),
+                      if (item.deadline != null && item.status != 'rejected') ...[
+                        const SizedBox(height: 4),
+                        Wrap(
+                          spacing: 4,
+                          runSpacing: 2,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.event_available_outlined,
+                                  size: 11,
+                                  color: item.isOverdue
+                                      ? theme.colorScheme.error
+                                      : theme.colorScheme.onSurfaceVariant,
+                                ),
+                                const SizedBox(width: 3),
+                                Text(
+                                  l10n.expectedCompletionDate(
+                                    DateFormat('dd/MM').format(item.deadline!.toLocal()),
+                                  ),
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    fontSize: 10,
+                                    color: item.isOverdue
+                                        ? theme.colorScheme.error
+                                        : theme.colorScheme.onSurfaceVariant,
+                                    fontWeight: item.isOverdue
+                                        ? FontWeight.w600
+                                        : FontWeight.normal,
+                                    fontFeatures: const [FontFeature.tabularFigures()],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (item.isOverdue)
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.errorContainer,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  l10n.deadlineOverdueBadge,
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    fontSize: 9.5,
+                                    color: theme.colorScheme.onErrorContainer,
+                                    fontWeight: FontWeight.w700,
+                                  ),
+                                ),
+                              )
+                            else if (item.remainingDays != null)
+                              Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1),
+                                decoration: BoxDecoration(
+                                  color: theme.colorScheme.surfaceContainerHighest,
+                                  borderRadius: BorderRadius.circular(4),
+                                ),
+                                child: Text(
+                                  l10n.daysRemainingLabel(item.remainingDays!),
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    fontSize: 9.5,
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                    fontWeight: FontWeight.w600,
+                                    fontFeatures: const [FontFeature.tabularFigures()],
+                                  ),
+                                ),
+                              ),
+                          ],
+                        ),
+                      ],
 
                       // Staff row
                       if (item.assignedStaffName != null) ...[

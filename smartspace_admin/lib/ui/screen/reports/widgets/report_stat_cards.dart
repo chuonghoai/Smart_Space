@@ -20,32 +20,43 @@ class ReportStatCards extends ConsumerWidget {
       data: (stats) {
         final items = [
           _CardData(l10n.totalReports, stats.total.toString(),
-              Icons.assessment_outlined, Colors.blue, null),
+              Icons.assessment_outlined, Colors.blue),
           _CardData(l10n.pendingReports, stats.pending.toString(),
-              Icons.hourglass_top_outlined, Colors.orange, 'pending'),
+              Icons.hourglass_top_outlined, Colors.orange,
+              statusFilter: 'pending'),
           _CardData(l10n.processingReportsLabel, stats.processing.toString(),
-              Icons.autorenew_rounded, Colors.teal, 'processing'),
+              Icons.autorenew_rounded, Colors.teal,
+              statusFilter: 'processing'),
           _CardData(l10n.resolvedReports, stats.resolved.toString(),
-              Icons.check_circle_outline, Colors.green, 'processed'),
+              Icons.check_circle_outline, Colors.green,
+              statusFilter: 'processed'),
           _CardData(l10n.rejectedReports, stats.rejected.toString(),
-              Icons.cancel_outlined, Colors.red, 'rejected'),
+              Icons.cancel_outlined, Colors.red,
+              statusFilter: 'rejected'),
           _CardData(
             l10n.rehandlingBadge,
             stats.rehandling.toString(),
             Icons.refresh_rounded,
             isDark ? const Color(0xFFFFB74D) : const Color(0xFFE65100),
-            'rehandling',
+            statusFilter: 'rehandling',
+          ),
+          _CardData(
+            l10n.deadlineOverdueBadge,
+            stats.overdue.toString(),
+            Icons.warning_amber_rounded,
+            theme.colorScheme.error,
+            overdueOnly: true,
           ),
         ];
 
         return LayoutBuilder(
           builder: (context, constraints) {
             int crossAxisCount;
-            if (constraints.maxWidth >= 1200) {
-              crossAxisCount = 6;
-            } else if (constraints.maxWidth >= 1000) {
-              crossAxisCount = 5;
-            } else if (constraints.maxWidth >= 700) {
+            if (constraints.maxWidth >= 1300) {
+              crossAxisCount = 7;
+            } else if (constraints.maxWidth >= 900) {
+              crossAxisCount = 4;
+            } else if (constraints.maxWidth >= 600) {
               crossAxisCount = 3;
             } else {
               crossAxisCount = 2;
@@ -63,18 +74,24 @@ class ReportStatCards extends ConsumerWidget {
               itemCount: items.length,
               itemBuilder: (context, index) {
                 final item = items[index];
-                final isActive = item.statusFilter == null
-                    ? (currentFilter.status == null ||
-                        currentFilter.status!.isEmpty)
-                    : currentFilter.status == item.statusFilter;
+                final hasStatus =
+                    currentFilter.status != null && currentFilter.status!.isNotEmpty;
+                final isActive = item.overdueOnly
+                    ? (currentFilter.overdueOnly && !hasStatus)
+                    : item.statusFilter == null
+                        ? (!hasStatus && !currentFilter.overdueOnly)
+                        : (currentFilter.status == item.statusFilter &&
+                            !currentFilter.overdueOnly);
                 return _buildCard(theme, item, isActive, isDark, () {
-                  if (item.statusFilter == null) {
+                  if (item.overdueOnly) {
+                    ref.read(reportFilterProvider.notifier).state =
+                        const ReportFilter(page: 1, overdueOnly: true);
+                  } else if (item.statusFilter == null) {
                     ref.read(reportFilterProvider.notifier).state =
                         const ReportFilter(page: 1);
                   } else {
                     ref.read(reportFilterProvider.notifier).state =
-                        const ReportFilter(page: 1)
-                            .copyWith(status: item.statusFilter);
+                        ReportFilter(page: 1, status: item.statusFilter);
                   }
                 });
               },
@@ -153,6 +170,7 @@ class ReportStatCards extends ConsumerWidget {
                       data.value,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
+                        fontFeatures: const [FontFeature.tabularFigures()],
                         color: isActive
                             ? data.color
                             : theme.colorScheme.onSurface,
@@ -175,6 +193,13 @@ class _CardData {
   final IconData icon;
   final Color color;
   final String? statusFilter;
+  final bool overdueOnly;
   const _CardData(
-      this.label, this.value, this.icon, this.color, this.statusFilter);
+    this.label,
+    this.value,
+    this.icon,
+    this.color, {
+    this.statusFilter,
+    this.overdueOnly = false,
+  });
 }

@@ -4,15 +4,24 @@ import java.time.Duration;
 import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.YearMonth;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.springframework.data.domain.Limit;
+import com.vn.smart_space.model.Report;
+import com.vn.smart_space.service.report.ReportServiceImpl;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -59,7 +68,6 @@ import lombok.extern.slf4j.Slf4j;
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
 public class StaffServiceImpl implements IStaffService {
 
-        static final int STATS_WINDOW_DAYS = 30;
         static final int WORKLOAD_LIMIT = 5;
 
         UserRepository userRepository;
@@ -399,60 +407,299 @@ public class StaffServiceImpl implements IStaffService {
 
         @Override
         @Transactional(readOnly = true)
-        public StaffStatisticsResponse getStatistics() {
+        public StaffStatisticsResponse getStatistics(Integer year, Integer month) {
                 LocalDateTime now = LocalDateTime.now();
-                LocalDateTime currentFrom = now.minusDays(STATS_WINDOW_DAYS);
-                LocalDateTime previousFrom = currentFrom.minusDays(STATS_WINDOW_DAYS);
+                YearMonth currentCalendarMonth = YearMonth.from(now);
+                YearMonth selectedMonth = (year != null && month != null && month >= 1 && month <= 12)
+                                ? YearMonth.of(year, month)
+                                : currentCalendarMonth;
 
-                // 1. Nhân sự + tải hiện tại
+                LocalDateTime rangeStart = selectedMonth.atDay(1).atStartOfDay();
+                LocalDateTime rangeEnd = selectedMonth.equals(currentCalendarMonth)
+                                ? now
+                                : selectedMonth.plusMonths(1).atDay(1).atStartOfDay();
+                LocalDateTime evalTime = now.isBefore(rangeEnd) ? now : rangeEnd;
+
+                YearMonth prevMonth = selectedMonth.minusMonths(1);
+                LocalDateTime prevStart = prevMonth.atDay(1).atStartOfDay();
+                LocalDateTime prevEnd = rangeStart;
+
+                List<StaffStatisticsResponse.AvailableMonthItem> availableMonths = buildAvailableMonths(selectedMonth);
+
+                // 1. Nhân sự + danh sách toàn bộ nhân viên
                 long total = userRepository.countByRole(ERole.staff);
                 long active = userRepository.countByRoleAndStatus(ERole.staff, EUserStatus.active);
                 long blocked = userRepository.countByRoleAndStatus(ERole.staff, EUserStatus.blocked);
-                long processing = reportRepository.countByStatus(EReportStatus.processing);
 
-                // 2. Hiệu suất 30 ngày so với 30 ngày trước
-                long resolved = reportRepository.countAssignedByStatusUpdatedBetween(
-                                EReportStatus.processed, currentFrom, now);
-                long resolvedPrevious = reportRepository.countAssignedByStatusUpdatedBetween(
-                                EReportStatus.processed, previousFrom, currentFrom);
-                Long avgMinutes = averageResolutionMinutes(currentFrom, now);
-                Long avgMinutesPrevious = averageResolutionMinutes(previousFrom, currentFrom);
+                List<Report> trackedReports = reportRepository.findAssignedByStatusInWithStaff(
+                                List.of(EReportStatus.processing, EReportStatus.processed));
+                List<User> allStaffs = userRepository.findByRole(ERole.staff);
+                Map<String, User> staffUsers = new LinkedHashMap<>();
+                for (User s : allStaffs) {
+                        staffUsers.put(s.getId(), s);
+                }
+
+                // [0]=overdue, [1]=completedLate, [2]=completedOnTime, [3]=processing, [4]=rehandling, [5]=resolved
+                Map<String, long[]> countsByStaff = new LinkedHashMap<>();
+                for (String staffId : staffUsers.keySet()) {
+                        countsByStaff.put(staffId, new long[6]);
+                }
+
+                long processingReports = 0;
+                long resolved = 0;
+                long resolvedPrevious = 0;
+                long currDurationMinutes = 0;
+                int currDurationSamples = 0;
+                long prevDurationMinutes = 0;
+                int prevDurationSamples = 0;
+                long overdueReports = 0;
+                long completedLate = 0;
+                long completedOnTime = 0;
+
+                for (Report r : trackedReports) {
+                        User assigned = r.getAssignedStaff();
+                        if (assigned == null) {
+                                continue;
+                        }
+                        staffUsers.putIfAbsent(assigned.getId(), assigned);
+                        long[] c = countsByStaff.computeIfAbsent(assigned.getId(), k -> new long[6]);
+                        LocalDateTime deadline = ReportServiceImpl.resolveDeadline(r);
+
+                        if (r.getStatus() == EReportStatus.processed) {
+                                LocalDateTime resolvedAt = toLocalDateTime(r.getResolvedAt());
+                                LocalDateTime resolvedTime = resolvedAt != null ? resolvedAt : r.getUpdatedAt();
+                                if (resolvedTime == null) {
+                                        continue;
+                                }
+                                LocalDateTime assignedAt = toLocalDateTime(r.getAssignedAt());
+
+                                if (!resolvedTime.isBefore(prevStart) && resolvedTime.isBefore(prevEnd)) {
+                                        resolvedPrevious++;
+                                        if (assignedAt != null && !resolvedTime.isBefore(assignedAt)) {
+                                                prevDurationMinutes += Duration.between(assignedAt, resolvedTime).toMinutes();
+                                                prevDurationSamples++;
+                                        }
+                                }
+
+                                if (!resolvedTime.isBefore(rangeStart) && !resolvedTime.isAfter(rangeEnd)) {
+                                        resolved++;
+                                        c[5]++;
+                                        if (assignedAt != null && !resolvedTime.isBefore(assignedAt)) {
+                                                currDurationMinutes += Duration.between(assignedAt, resolvedTime).toMinutes();
+                                                currDurationSamples++;
+                                        }
+                                        if (deadline != null) {
+                                                if (resolvedAt != null && resolvedAt.isAfter(deadline)) {
+                                                        completedLate++;
+                                                        c[1]++;
+                                                } else {
+                                                        completedOnTime++;
+                                                        c[2]++;
+                                                }
+                                        }
+                                }
+                        } else if (r.getStatus() == EReportStatus.processing) {
+                                LocalDateTime assignedTime = r.getAssignedAt() != null
+                                                ? toLocalDateTime(r.getAssignedAt())
+                                                : r.getCreatedAt();
+                                boolean inSelectedMonth;
+                                if (selectedMonth.equals(currentCalendarMonth)) {
+                                        inSelectedMonth = assignedTime == null || !assignedTime.isAfter(rangeEnd);
+                                } else {
+                                        boolean assignedInMonth = assignedTime != null
+                                                        && !assignedTime.isBefore(rangeStart)
+                                                        && assignedTime.isBefore(rangeEnd);
+                                        boolean deadlineInMonth = deadline != null
+                                                        && !deadline.isBefore(rangeStart)
+                                                        && deadline.isBefore(rangeEnd);
+                                        inSelectedMonth = assignedInMonth || deadlineInMonth;
+                                }
+                                if (!inSelectedMonth) {
+                                        continue;
+                                }
+
+                                processingReports++;
+                                c[3]++;
+                                if (Boolean.FALSE.equals(r.getIsReviewResolved())) {
+                                        c[4]++;
+                                }
+                                if (deadline != null && !deadline.isAfter(evalTime)) {
+                                        overdueReports++;
+                                        c[0]++;
+                                }
+                        }
+                }
+
+                Long avgMinutes = currDurationSamples == 0
+                                ? null
+                                : Math.round((double) currDurationMinutes / currDurationSamples);
+                Long avgMinutesPrevious = prevDurationSamples == 0
+                                ? null
+                                : Math.round((double) prevDurationMinutes / prevDurationSamples);
+
+                long totalFinished = completedOnTime + completedLate;
+                Double onTimeRate = totalFinished == 0
+                                ? null
+                                : Math.round((completedOnTime * 1000.0) / totalFinished) / 10.0;
+
+                List<StaffStatisticsResponse.WorkloadItem> workload = countsByStaff.entrySet().stream()
+                                .filter(entry -> entry.getValue()[3] > 0 || entry.getValue()[5] > 0)
+                                .sorted(Comparator
+                                                .<Map.Entry<String, long[]>>comparingLong(e -> e.getValue()[3])
+                                                .reversed()
+                                                .thenComparing(Comparator.<Map.Entry<String, long[]>>comparingLong(
+                                                                e -> e.getValue()[5]).reversed()))
+                                .limit(WORKLOAD_LIMIT)
+                                .map(entry -> {
+                                        StaffResponse staff = toStaffResponse(staffUsers.get(entry.getKey()));
+                                        staff.setProcessingCount(entry.getValue()[3]);
+                                        return StaffStatisticsResponse.WorkloadItem.builder()
+                                                        .staff(staff)
+                                                        .resolvedCount(entry.getValue()[5])
+                                                        .build();
+                                })
+                                .collect(Collectors.toList());
+
+                List<StaffStatisticsResponse.DeadlinePerformanceItem> deadlinePerformance = countsByStaff.entrySet()
+                                .stream()
+                                .map(entry -> {
+                                        long[] c = entry.getValue();
+                                        long overdueCnt = c[0];
+                                        long lateCnt = c[1];
+                                        long onTimeCnt = c[2];
+                                        long procCnt = c[3];
+                                        long rehandleCnt = c[4];
+                                        long resCnt = c[5];
+                                        long totalTasks = procCnt + resCnt;
+                                        long evaluated = overdueCnt + lateCnt + onTimeCnt;
+                                        Double efficiencyRate = evaluated == 0
+                                                        ? null
+                                                        : Math.round((onTimeCnt * 1000.0) / evaluated) / 10.0;
+                                        boolean missed = overdueCnt > 0 || lateCnt > 0;
+                                        StaffResponse staffDto = toStaffResponse(staffUsers.get(entry.getKey()));
+                                        staffDto.setProcessingCount(procCnt);
+                                        return StaffStatisticsResponse.DeadlinePerformanceItem.builder()
+                                                        .staff(staffDto)
+                                                        .overdueCount(overdueCnt)
+                                                        .completedLateCount(lateCnt)
+                                                        .completedOnTimeCount(onTimeCnt)
+                                                        .processingCount(procCnt)
+                                                        .resolvedCount(resCnt)
+                                                        .rehandlingCount(rehandleCnt)
+                                                        .totalTasks(totalTasks)
+                                                        .efficiencyRate(efficiencyRate)
+                                                        .hasMissedDeadline(missed)
+                                                        .build();
+                                })
+                                .sorted(Comparator
+                                                .comparingLong((StaffStatisticsResponse.DeadlinePerformanceItem item) ->
+                                                                item.getOverdueCount() + item.getCompletedLateCount())
+                                                .reversed()
+                                                .thenComparing(Comparator.comparingLong(
+                                                                StaffStatisticsResponse.DeadlinePerformanceItem::getOverdueCount)
+                                                                .reversed())
+                                                .thenComparing(Comparator.comparingLong(
+                                                                StaffStatisticsResponse.DeadlinePerformanceItem::getCompletedOnTimeCount)
+                                                                .reversed())
+                                                .thenComparing(item -> item.getStaff().getFullName() != null
+                                                                ? item.getStaff().getFullName()
+                                                                : ""))
+                                .collect(Collectors.toList());
+
+                boolean anyStaffMissedDeadline = overdueReports > 0 || completedLate > 0;
 
                 return StaffStatisticsResponse.builder()
+                                .selectedYear(selectedMonth.getYear())
+                                .selectedMonth(selectedMonth.getMonthValue())
+                                .availableMonths(availableMonths)
                                 .totalStaff(total)
                                 .activeStaff(active)
                                 .blockedStaff(blocked)
-                                .processingReports(processing)
+                                .processingReports(processingReports)
                                 .resolved(resolved)
                                 .resolvedPrevious(resolvedPrevious)
                                 .avgResolutionMinutes(avgMinutes)
                                 .avgResolutionMinutesPrevious(avgMinutesPrevious)
-                                .workload(buildWorkload(currentFrom))
+                                .workload(workload)
+                                .anyStaffMissedDeadline(anyStaffMissedDeadline)
+                                .overdueReports(overdueReports)
+                                .completedOnTime(completedOnTime)
+                                .completedLate(completedLate)
+                                .onTimeRate(onTimeRate)
+                                .deadlinePerformance(deadlinePerformance)
                                 .build();
+        }
+
+        private List<StaffStatisticsResponse.AvailableMonthItem> buildAvailableMonths(YearMonth selectedMonth) {
+                Set<YearMonth> months = new LinkedHashSet<>();
+                List<Object[]> rows = reportRepository.findAssignedAvailableMonths();
+                if (rows != null) {
+                        for (Object[] row : rows) {
+                                if (row != null && row.length >= 2 && row[0] instanceof Number y && row[1] instanceof Number m) {
+                                        int yr = y.intValue();
+                                        int mo = m.intValue();
+                                        if (mo >= 1 && mo <= 12 && yr >= 2000) {
+                                                months.add(YearMonth.of(yr, mo));
+                                        }
+                                }
+                        }
+                }
+                months.add(selectedMonth);
+                return months.stream()
+                                .sorted(Comparator.reverseOrder())
+                                .map(ym -> StaffStatisticsResponse.AvailableMonthItem.builder()
+                                                .year(ym.getYear())
+                                                .month(ym.getMonthValue())
+                                                .label(String.format(Locale.ROOT, "%02d/%04d", ym.getMonthValue(), ym.getYear()))
+                                                .build())
+                                .collect(Collectors.toList());
         }
 
         @Override
         @Transactional(readOnly = true)
-        public StaffTrendResponse getTrend(String period) {
+        public StaffTrendResponse getTrend(String period, Integer year, Integer month) {
                 String normalized = TrendBucketHelper.normalizePeriod(period);
-                List<LocalDate> bucketDates = TrendBucketHelper.buckets(normalized, LocalDate.now());
-                LocalDateTime from = bucketDates.get(0).atStartOfDay();
+                LocalDate today = LocalDate.now();
+                YearMonth currentCalendarMonth = YearMonth.from(today);
+                YearMonth selectedMonth = (year != null && month != null && month >= 1 && month <= 12)
+                                ? YearMonth.of(year, month)
+                                : currentCalendarMonth;
 
-                // Vào: thời điểm được phân công
+                LocalDate anchorEnd = selectedMonth.equals(currentCalendarMonth)
+                                ? today
+                                : selectedMonth.atEndOfMonth();
+
+                List<LocalDate> bucketDates;
+                if ("daily".equals(normalized)) {
+                        bucketDates = new ArrayList<>();
+                        LocalDate cursor = selectedMonth.atDay(1);
+                        while (!cursor.isAfter(anchorEnd)) {
+                                bucketDates.add(cursor);
+                                cursor = cursor.plusDays(1);
+                        }
+                        if (bucketDates.isEmpty()) {
+                                bucketDates.add(anchorEnd);
+                        }
+                } else {
+                        bucketDates = TrendBucketHelper.buckets(normalized, anchorEnd);
+                }
+
+                LocalDateTime from = bucketDates.get(0).atStartOfDay();
+                LocalDateTime toExclusive = anchorEnd.plusDays(1).atStartOfDay();
+
                 Map<LocalDate, Long> assigned = TrendBucketHelper.emptyCounts(bucketDates);
-                for (Date assignedAt : reportRepository.findAssignedAtSince(toDate(from))) {
+                for (Date assignedAt : reportRepository.findAssignedAtBetween(toDate(from), toDate(toExclusive))) {
                         LocalDateTime time = toLocalDateTime(assignedAt);
                         if (time != null) {
                                 TrendBucketHelper.increment(assigned, time.toLocalDate(), normalized);
                         }
                 }
 
-                // Ra: thời điểm xử lý xong
                 Map<LocalDate, Long> resolved = TrendBucketHelper.emptyCounts(bucketDates);
-                for (LocalDateTime updatedAt : reportRepository.findAssignedUpdatedAtByStatusSince(
-                                EReportStatus.processed, from)) {
-                        if (updatedAt != null) {
-                                TrendBucketHelper.increment(resolved, updatedAt.toLocalDate(), normalized);
+                for (LocalDateTime resolvedTime : reportRepository.findAssignedResolvedTimeByStatusBetween(
+                                EReportStatus.processed, from, toExclusive)) {
+                        if (resolvedTime != null) {
+                                TrendBucketHelper.increment(resolved, resolvedTime.toLocalDate(), normalized);
                         }
                 }
 
@@ -468,55 +715,6 @@ public class StaffServiceImpl implements IStaffService {
                                 .period(normalized)
                                 .items(items)
                                 .build();
-        }
-
-        /** Trung bình (phút) từ lúc phân công đến lúc xử lý xong; null nếu không có mẫu hợp lệ. */
-        private Long averageResolutionMinutes(LocalDateTime from, LocalDateTime to) {
-                List<Object[]> rows = reportRepository.findAssignedAndUpdatedAtByStatusBetween(
-                                EReportStatus.processed, from, to);
-                long totalMinutes = 0;
-                int samples = 0;
-                for (Object[] row : rows) {
-                        LocalDateTime assignedAt = toLocalDateTime((Date) row[0]);
-                        LocalDateTime resolvedAt = (LocalDateTime) row[1];
-                        if (assignedAt == null || resolvedAt == null || resolvedAt.isBefore(assignedAt)) {
-                                continue; // Dữ liệu bất thường → bỏ qua thay vì làm lệch trung bình
-                        }
-                        totalMinutes += Duration.between(assignedAt, resolvedAt).toMinutes();
-                        samples++;
-                }
-                return samples == 0 ? null : Math.round((double) totalMinutes / samples);
-        }
-
-        /** Top nhân viên theo số báo cáo đang xử lý, kèm số đã xử lý trong 30 ngày. */
-        private List<StaffStatisticsResponse.WorkloadItem> buildWorkload(LocalDateTime resolvedFrom) {
-                List<Object[]> topRows = reportRepository.findTopAssigneesByStatus(
-                                EReportStatus.processing, Limit.of(WORKLOAD_LIMIT));
-                if (topRows.isEmpty()) {
-                        return Collections.emptyList();
-                }
-
-                List<String> staffIds = topRows.stream().map(row -> (String) row[0]).collect(Collectors.toList());
-                Map<String, User> staffById = userRepository.findWithPositionByIdIn(staffIds).stream()
-                                .collect(Collectors.toMap(User::getId, u -> u));
-                Map<String, Long> resolvedById = reportRepository
-                                .countByAssignedStaffIdInAndStatusUpdatedSince(
-                                                staffIds, EReportStatus.processed, resolvedFrom)
-                                .stream()
-                                .collect(Collectors.toMap(row -> (String) row[0], row -> (Long) row[1]));
-
-                return topRows.stream()
-                                .filter(row -> staffById.containsKey((String) row[0]))
-                                .map(row -> {
-                                        String staffId = (String) row[0];
-                                        StaffResponse staff = toStaffResponse(staffById.get(staffId));
-                                        staff.setProcessingCount((Long) row[1]);
-                                        return StaffStatisticsResponse.WorkloadItem.builder()
-                                                        .staff(staff)
-                                                        .resolvedCount(resolvedById.getOrDefault(staffId, 0L))
-                                                        .build();
-                                })
-                                .collect(Collectors.toList());
         }
 
         private static LocalDateTime toLocalDateTime(Date date) {

@@ -153,8 +153,9 @@ class _ReportCard extends StatelessWidget {
                       left: 12,
                       right: 12,
                       child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          if (report.severity != null)
+                          if (report.severity != null) ...[
                             _buildSeverityBadge(
                               report.severity,
                               theme,
@@ -162,17 +163,34 @@ class _ReportCard extends StatelessWidget {
                               l10n,
                               onImage: true,
                             ),
-                          const Spacer(),
-                          if (report.isReviewResolved == false) ...[
-                            _buildRehandlingBadge(theme, isDark, l10n, onImage: true),
                             const SizedBox(width: 6),
                           ],
-                          _buildStatusBadge(
-                            report.status,
-                            theme,
-                            isDark,
-                            l10n,
-                            onImage: true,
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.topRight,
+                              child: Wrap(
+                                spacing: 6,
+                                runSpacing: 6,
+                                alignment: WrapAlignment.end,
+                                crossAxisAlignment: WrapCrossAlignment.center,
+                                children: [
+                                  if (report.isReviewResolved == false)
+                                    _buildRehandlingBadge(
+                                      theme,
+                                      isDark,
+                                      l10n,
+                                      onImage: true,
+                                    ),
+                                  _buildStatusBadge(
+                                    report.status,
+                                    theme,
+                                    isDark,
+                                    l10n,
+                                    onImage: true,
+                                  ),
+                                ],
+                              ),
+                            ),
                           ),
                         ],
                       ),
@@ -186,35 +204,50 @@ class _ReportCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // When NO image: Badges + Date row at top of body
+                    // When NO image: Badges & Date wrap cleanly without right overflow
                     if (!hasImage) ...[
-                      Row(
-                        children: [
-                          if (report.severity != null) ...[
-                            _buildSeverityBadge(
-                              report.severity,
-                              theme,
-                              isDark,
-                              l10n,
-                              onImage: false,
+                      SizedBox(
+                        width: double.infinity,
+                        child: Wrap(
+                          alignment: WrapAlignment.spaceBetween,
+                          runAlignment: WrapAlignment.center,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          spacing: 8,
+                          runSpacing: 6,
+                          children: [
+                            Wrap(
+                              spacing: 6,
+                              runSpacing: 6,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                if (report.severity != null)
+                                  _buildSeverityBadge(
+                                    report.severity,
+                                    theme,
+                                    isDark,
+                                    l10n,
+                                    onImage: false,
+                                  ),
+                                _buildStatusBadge(
+                                  report.status,
+                                  theme,
+                                  isDark,
+                                  l10n,
+                                  onImage: false,
+                                ),
+                                if (report.isReviewResolved == false)
+                                  _buildRehandlingBadge(
+                                    theme,
+                                    isDark,
+                                    l10n,
+                                    onImage: false,
+                                  ),
+                              ],
                             ),
-                            const SizedBox(width: 8),
+                            if (report.createdAt != null)
+                              _buildDateWidget(report.createdAt!, theme),
                           ],
-                          _buildStatusBadge(
-                            report.status,
-                            theme,
-                            isDark,
-                            l10n,
-                            onImage: false,
-                          ),
-                          if (report.isReviewResolved == false) ...[
-                            const SizedBox(width: 8),
-                            _buildRehandlingBadge(theme, isDark, l10n, onImage: false),
-                          ],
-                          const Spacer(),
-                          if (report.createdAt != null)
-                            _buildDateWidget(report.createdAt!, theme),
-                        ],
+                        ),
                       ),
                       const SizedBox(height: 12),
                     ] else if (report.createdAt != null) ...[
@@ -234,6 +267,79 @@ class _ReportCard extends StatelessWidget {
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
+
+                    if (report.deadline != null && report.status != 'rejected') ...[
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        children: [
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.event_available_outlined,
+                                size: 14,
+                                color: report.isOverdue
+                                    ? theme.colorScheme.error
+                                    : theme.colorScheme.onSurfaceVariant,
+                              ),
+                              const SizedBox(width: 5),
+                              Flexible(
+                                child: Text(
+                                  l10n.expectedCompletionDate(
+                                    DateFormat('dd/MM').format(report.deadline!.toLocal()),
+                                  ),
+                                  style: theme.textTheme.bodySmall?.copyWith(
+                                    color: report.isOverdue
+                                        ? theme.colorScheme.error
+                                        : theme.colorScheme.onSurfaceVariant,
+                                    fontWeight: report.isOverdue
+                                        ? FontWeight.w600
+                                        : FontWeight.normal,
+                                    fontFeatures: const [FontFeature.tabularFigures()],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                          if (report.isOverdue)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.errorContainer,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                l10n.deadlineOverdueBadge,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  fontSize: 10,
+                                  color: theme.colorScheme.onErrorContainer,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            )
+                          else if (report.remainingDays != null)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.surfaceContainerHighest,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                l10n.daysRemainingLabel(report.remainingDays!),
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  fontSize: 10,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                  fontWeight: FontWeight.w600,
+                                  fontFeatures: const [FontFeature.tabularFigures()],
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ],
 
                     // Address row (if present)
                     if (addressText != null) ...[

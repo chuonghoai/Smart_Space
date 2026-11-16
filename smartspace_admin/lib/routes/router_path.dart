@@ -40,16 +40,6 @@ class RouterPath {
   static String editNewsWithId(String id) =>
       RouteName.editNews.path.replaceAll(':id', id);
   static String get allActivities => RouteName.allActivities.path;
-  static String get walletConfig => RouteName.walletConfig.path;
-  static String get adminStaffWallets => RouteName.adminStaffWallets.path;
-  static String get adminWithdrawalRequests => RouteName.adminWithdrawalRequests.path;
-  static String get adminStaffWalletDetail => RouteName.adminStaffWalletDetail.path;
-  static String adminStaffWalletDetailWithId(String id) =>
-      RouteName.adminStaffWalletDetail.path.replaceAll(':id', id);
-  static String get systemConfig => RouteName.systemConfig.path;
-  static String get commissionConfig => RouteName.commissionConfig.path;
-  static String get penaltyRateConfig => RouteName.penaltyRateConfig.path;
-  static String get delegationRateConfig => RouteName.delegationRateConfig.path;
   static String get conversations => RouteName.conversations.path;
   static String get chatDetail => RouteName.chatDetail.path;
   static String chatDetailWithId(String id) =>

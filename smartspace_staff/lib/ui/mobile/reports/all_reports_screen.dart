@@ -82,7 +82,7 @@ class _AllReportsScreenState extends State<AllReportsScreen> {
               // Filters
               SingleChildScrollView(
                 scrollDirection: Axis.horizontal,
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 6),
                 child: Row(
                   children: [
                     _buildFilterChip(state, 'all', l10n.filterAll),
@@ -93,6 +93,47 @@ class _AllReportsScreenState extends State<AllReportsScreen> {
                     const SizedBox(width: 8),
                     _buildFilterChip(state, 'resolved', l10n.reportStatusProcessed),
                   ],
+                ),
+              ),
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 10),
+                child: Align(
+                  alignment: Alignment.centerLeft,
+                  child: FilterChip(
+                    selected: state.overdueOnly,
+                    onSelected: (_) => _controller.toggleOverdueOnly(),
+                    avatar: Icon(
+                      Icons.schedule_outlined,
+                      size: 16,
+                      color: state.overdueOnly
+                          ? theme.colorScheme.onErrorContainer
+                          : theme.colorScheme.error,
+                    ),
+                    label: Text(
+                      state.stats != null && state.stats!.overdue > 0
+                          ? '${l10n.overdueOnlyFilter} (${state.stats!.overdue})'
+                          : l10n.overdueOnlyFilter,
+                    ),
+                    showCheckmark: false,
+                    selectedColor: theme.colorScheme.errorContainer,
+                    backgroundColor: theme.colorScheme.surface,
+                    labelStyle: theme.textTheme.labelLarge?.copyWith(
+                      color: state.overdueOnly
+                          ? theme.colorScheme.onErrorContainer
+                          : theme.colorScheme.onSurface,
+                      fontWeight: state.overdueOnly ? FontWeight.w600 : FontWeight.w500,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                    side: BorderSide(
+                      color: state.overdueOnly
+                          ? theme.colorScheme.error.withValues(alpha: 0.5)
+                          : theme.colorScheme.outlineVariant,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    materialTapTargetSize: MaterialTapTargetSize.padded,
+                  ),
                 ),
               ),
               const Divider(height: 1),

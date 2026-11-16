@@ -1,3 +1,4 @@
+import 'package:mobile_shared/core/utils/report_deadline_helper.dart';
 
 class ReportListItem {
   final String id;
@@ -13,6 +14,10 @@ class ReportListItem {
   final String? userEmail;
   final bool isAnonymous;
   final bool? isReviewResolved;
+  final DateTime? deadline;
+  final DateTime? resolvedAt;
+  final bool? serverIsOverdue;
+  final int? serverRemainingDays;
 
   const ReportListItem({
     required this.id,
@@ -28,12 +33,43 @@ class ReportListItem {
     this.userEmail,
     this.isAnonymous = false,
     this.isReviewResolved,
+    this.deadline,
+    this.resolvedAt,
+    this.serverIsOverdue,
+    this.serverRemainingDays,
   });
+
+  bool get isOverdue => ReportDeadlineHelper.isOverdue(
+        status: status,
+        deadline: deadline,
+        resolvedAt: resolvedAt,
+        serverIsOverdue: serverIsOverdue,
+      );
+
+  int? get remainingDays => ReportDeadlineHelper.remainingDays(
+        status: status,
+        deadline: deadline,
+        resolvedAt: resolvedAt,
+        serverIsOverdue: serverIsOverdue,
+        serverRemainingDays: serverRemainingDays,
+      );
+
+  bool get isOverdueActive => isOverdue;
 
   factory ReportListItem.fromJson(Map<String, dynamic> json) {
     DateTime? createdAt;
     final raw = json['createdAt'] ?? json['created_at'];
     if (raw != null) createdAt = DateTime.tryParse(raw.toString());
+
+    DateTime? deadline;
+    final rawDeadline = json['deadline'] ?? json['report_deadline'];
+    if (rawDeadline != null) deadline = DateTime.tryParse(rawDeadline.toString());
+
+    DateTime? resolvedAt;
+    final rawResolvedAt = json['resolvedAt'] ?? json['resolved_at'];
+    if (rawResolvedAt != null) {
+      resolvedAt = DateTime.tryParse(rawResolvedAt.toString());
+    }
 
     String? imgUrl = json['imageUrl']?.toString() ?? json['image_url']?.toString();
     if (imgUrl == null || imgUrl.isEmpty) {
@@ -62,10 +98,24 @@ class ReportListItem {
       userEmail: json['userEmail']?.toString() ?? json['user_email']?.toString(),
       isAnonymous: (json['is_anonymous'] ?? json['isAnonymous']) as bool? ?? false,
       isReviewResolved: json['isReviewResolved'] as bool? ?? json['is_review_resolved'] as bool?,
+      deadline: deadline,
+      resolvedAt: resolvedAt,
+      serverIsOverdue: (json['is_overdue'] ?? json['isOverdue']) as bool?,
+      serverRemainingDays:
+          ((json['remaining_days'] ?? json['remainingDays']) as num?)?.toInt(),
     );
   }
 
-  ReportListItem copyWith({String? status, bool? isAnonymous, bool? isReviewResolved}) => ReportListItem(
+  ReportListItem copyWith({
+    String? status,
+    bool? isAnonymous,
+    bool? isReviewResolved,
+    DateTime? deadline,
+    DateTime? resolvedAt,
+    bool? serverIsOverdue,
+    int? serverRemainingDays,
+  }) =>
+      ReportListItem(
         id: id,
         title: title,
         status: status ?? this.status,
@@ -79,6 +129,10 @@ class ReportListItem {
         userEmail: userEmail,
         isAnonymous: isAnonymous ?? this.isAnonymous,
         isReviewResolved: isReviewResolved ?? this.isReviewResolved,
+        deadline: deadline ?? this.deadline,
+        resolvedAt: resolvedAt ?? this.resolvedAt,
+        serverIsOverdue: serverIsOverdue ?? this.serverIsOverdue,
+        serverRemainingDays: serverRemainingDays ?? this.serverRemainingDays,
       );
 }
 

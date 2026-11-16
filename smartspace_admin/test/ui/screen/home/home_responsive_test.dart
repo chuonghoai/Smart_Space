@@ -104,7 +104,6 @@ Widget _buildTestApp({
         ),
       ),
       adminOverviewProvider.overrideWith(() => _MockAdminOverviewNotifier()),
-      pendingWithdrawalCountProvider.overrideWith((ref) => 2),
       recentReportProvider.overrideWith(() => _MockRecentReportNotifier()),
       recentActivityProvider.overrideWith(() => _MockRecentActivityNotifier()),
       latestNewsProvider.overrideWith((ref) => []),
@@ -122,7 +121,7 @@ Widget _buildTestApp({
 
 void main() {
   group('AdminQuickAccessBar Tests', () {
-    testWidgets('renders all 8 quick access cards and scrollbar in scrollable mode',
+    testWidgets('renders all 5 quick access cards and scrollbar in scrollable mode',
         (tester) async {
       await tester.binding.setSurfaceSize(const Size(1200, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -146,11 +145,8 @@ void main() {
       expect(find.byIcon(Icons.report_outlined), findsOneWidget);
       expect(find.byIcon(Icons.map_outlined), findsOneWidget);
       expect(find.byIcon(Icons.badge_outlined), findsOneWidget);
-      expect(find.byIcon(Icons.payments_outlined), findsOneWidget);
-      expect(find.byIcon(Icons.account_balance_wallet_outlined), findsOneWidget);
       expect(find.byIcon(Icons.people_outline), findsOneWidget);
       expect(find.byIcon(Icons.newspaper_outlined), findsOneWidget);
-      expect(find.byIcon(Icons.tune_outlined), findsOneWidget);
     });
 
     testWidgets('renders panel mode with 2-column grid when isPanelMode is true',
@@ -171,15 +167,12 @@ void main() {
       expect(find.byType(Scrollbar), findsNothing);
       expect(find.byIcon(Icons.chevron_left), findsNothing);
 
-      // Verify all 8 action tiles exist
+      // Verify all 5 action tiles exist
       expect(find.byIcon(Icons.report_outlined), findsOneWidget);
       expect(find.byIcon(Icons.map_outlined), findsOneWidget);
       expect(find.byIcon(Icons.badge_outlined), findsOneWidget);
-      expect(find.byIcon(Icons.payments_outlined), findsOneWidget);
-      expect(find.byIcon(Icons.account_balance_wallet_outlined), findsOneWidget);
       expect(find.byIcon(Icons.people_outline), findsOneWidget);
       expect(find.byIcon(Icons.newspaper_outlined), findsOneWidget);
-      expect(find.byIcon(Icons.tune_outlined), findsOneWidget);
     });
 
     testWidgets('scroll buttons move the scroll position smoothly',

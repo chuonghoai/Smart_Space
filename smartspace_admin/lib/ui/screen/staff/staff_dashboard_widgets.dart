@@ -23,6 +23,101 @@ String formatResolutionDuration(BuildContext context, int minutes) {
   return l10n.durationDays(format.format(minutes / (24 * 60)));
 }
 
+/// Bộ chọn tháng thống kê dùng chung cho Web & Mobile trong màn Quản lý nhân viên.
+class StaffStatsMonthSelector extends ConsumerWidget {
+  const StaffStatsMonthSelector({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final stats = ref.watch(staffStatisticsProvider).valueOrNull;
+    final selected = ref.watch(selectedStaffStatsMonthProvider);
+    final now = DateTime.now();
+
+    final currentYear = selected?.year ?? stats?.selectedYear ?? now.year;
+    final currentMonth = selected?.month ?? stats?.selectedMonth ?? now.month;
+
+    final rawMonths = stats?.availableMonths ?? const <AvailableMonthItem>[];
+    final items = <AvailableMonthItem>[...rawMonths];
+    if (!items.any((m) => m.year == currentYear && m.month == currentMonth)) {
+      items.insert(
+        0,
+        AvailableMonthItem(
+          year: currentYear,
+          month: currentMonth,
+          label: '${currentMonth.toString().padLeft(2, '0')}/$currentYear',
+        ),
+      );
+    }
+
+    String encode(int year, int month) => '$year-$month';
+    final selectedKey = encode(currentYear, currentMonth);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: theme.dividerColor),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.calendar_month_outlined,
+            size: 16,
+            color: theme.colorScheme.primary,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            '${l10n.statsMonthLabel}: ',
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: selectedKey,
+              isDense: true,
+              style: theme.textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+              items: items
+                  .map(
+                    (m) => DropdownMenuItem<String>(
+                      value: encode(m.year, m.month),
+                      child: Text(
+                        m.label,
+                        style: const TextStyle(
+                          fontFeatures: [FontFeature.tabularFigures()],
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (key) {
+                if (key == null) return;
+                final parts = key.split('-');
+                if (parts.length != 2) return;
+                final y = int.tryParse(parts[0]);
+                final m = int.tryParse(parts[1]);
+                if (y != null && m != null) {
+                  ref.read(selectedStaffStatsMonthProvider.notifier).state = (
+                    year: y,
+                    month: m,
+                  );
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// 4 KPI của màn Quản lý nhân viên.
 class StaffKpiGrid extends ConsumerWidget {
   final bool compact;
@@ -88,7 +183,7 @@ class StaffKpiGrid extends ConsumerWidget {
           compact: compact,
           icon: Icons.task_alt,
           iconColor: semantic.success,
-          label: l10n.resolved30Days,
+          label: l10n.resolvedInMonth,
           value: count(stats?.resolved),
           footnote: KpiFootnote.change(
             context,
@@ -101,7 +196,7 @@ class StaffKpiGrid extends ConsumerWidget {
           compact: compact,
           icon: Icons.timer_outlined,
           iconColor: theme.colorScheme.secondary,
-          label: l10n.avgResolutionTime30Days,
+          label: l10n.avgResolutionTimeInMonth,
           value: avgMinutes == null
               ? '—'
               : formatResolutionDuration(context, avgMinutes),
@@ -216,7 +311,7 @@ class StaffWorkloadChart extends ConsumerWidget {
                   name: item.staff.fullName,
                   avatarUrl: item.staff.avatarUrl,
                   value: item.staff.processingCount,
-                  subtitle: l10n.resolvedLast30Days(item.resolvedCount),
+                  subtitle: l10n.resolvedMonthCount(item.resolvedCount),
                 ),
             ],
             onTap: (item) {
@@ -236,6 +331,326 @@ class StaffWorkloadChart extends ConsumerWidget {
           child: ChartPlaceholder.error(
             onRetry: () => ref.invalidate(staffStatisticsProvider),
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Thống kê hiệu suất xử lý phản ánh của nhân viên dựa vào tình trạng trễ deadline.
+class StaffDeadlinePerformanceCard extends ConsumerWidget {
+  final bool compact;
+  const StaffDeadlinePerformanceCard({super.key, this.compact = false});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final semantic = AppSemanticColors.of(context);
+    final statsAsync = ref.watch(staffStatisticsProvider);
+
+    return ChartCard(
+      title: l10n.staffDeadlinePerformanceTitle,
+      subtitle: l10n.staffDeadlinePerformanceSubtitle,
+      child: statsAsync.when(
+        data: (stats) => _buildBody(context, ref, l10n, theme, semantic, stats),
+        loading: () => const Padding(
+          padding: EdgeInsets.symmetric(vertical: 32),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+        error: (_, _) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 24),
+          child: ChartPlaceholder.error(
+            onRetry: () => ref.invalidate(staffStatisticsProvider),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBody(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    ThemeData theme,
+    AppSemanticColors semantic,
+    StaffStatisticsModel stats,
+  ) {
+    final cs = theme.colorScheme;
+    final missed = stats.anyStaffMissedDeadline;
+    final statusColor = missed ? cs.error : semantic.success;
+    final rateText = stats.onTimeRate == null
+        ? null
+        : l10n.onTimeRateLabel(
+            NumberFormat('#,##0.#', Localizations.localeOf(context).toLanguageTag())
+                .format(stats.onTimeRate!),
+          );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: statusColor.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: statusColor.withValues(alpha: 0.28)),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                missed ? Icons.warning_amber_rounded : Icons.verified_outlined,
+                color: statusColor,
+                size: 18,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  missed
+                      ? l10n.staffMissedDeadlineSummary(
+                          stats.overdueReports,
+                          stats.completedLate,
+                        )
+                      : l10n.noStaffMissedDeadline,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: cs.onSurface,
+                    fontWeight: FontWeight.w600,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+              ),
+              if (rateText != null) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: cs.surface,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    rateText,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: statusColor,
+                      fontWeight: FontWeight.w700,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _DeadlineMetricTile(
+                label: l10n.overdueActiveLabel,
+                value: formatCount(context, stats.overdueReports),
+                accent: stats.overdueReports > 0 ? cs.error : cs.onSurface,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _DeadlineMetricTile(
+                label: l10n.completedLateLabel,
+                value: formatCount(context, stats.completedLate),
+                accent: stats.completedLate > 0 ? semantic.warning : cs.onSurface,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _DeadlineMetricTile(
+                label: l10n.completedOnTimeLabel,
+                value: formatCount(context, stats.completedOnTime),
+                accent: semantic.success,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (stats.deadlinePerformance.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Text(
+              l10n.noDeadlineRecordsYet,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+            ),
+          )
+        else ...[
+          for (final item in stats.deadlinePerformance.take(compact ? 5 : 8))
+            _DeadlineStaffRow(
+              item: item,
+              semantic: semantic,
+              onTap: () => showStaffDetailSheet(
+                context,
+                l10n,
+                theme,
+                item.staff,
+                ref,
+              ),
+            ),
+        ],
+      ],
+    );
+  }
+}
+
+class _DeadlineMetricTile extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color accent;
+
+  const _DeadlineMetricTile({
+    required this.label,
+    required this.value,
+    required this.accent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            value,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: accent,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: cs.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DeadlineStaffRow extends StatelessWidget {
+  final StaffDeadlinePerformanceItem item;
+  final AppSemanticColors semantic;
+  final VoidCallback onTap;
+
+  const _DeadlineStaffRow({
+    required this.item,
+    required this.semantic,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final badgeColor = item.hasMissedDeadline ? cs.error : semantic.success;
+    final name = item.staff.fullName.isNotEmpty
+        ? item.staff.fullName
+        : item.staff.email;
+    final avatar = item.staff.avatarUrl;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 16,
+              backgroundColor: cs.primaryContainer,
+              foregroundImage: (avatar != null && avatar.isNotEmpty)
+                  ? NetworkImage(avatar)
+                  : null,
+              child: Text(
+                name.isNotEmpty ? name[0].toUpperCase() : '?',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: cs.onPrimaryContainer,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    l10n.staffDeadlineStatsBreakdown(
+                      item.overdueCount,
+                      item.completedLateCount,
+                      item.completedOnTimeCount,
+                    ),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: cs.onSurfaceVariant,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    item.efficiencyRate == null
+                        ? l10n.staffEfficiencyNoData
+                        : l10n.staffEfficiencyLabel(
+                            NumberFormat(
+                              '#,##0.#',
+                              Localizations.localeOf(context).toLanguageTag(),
+                            ).format(item.efficiencyRate!),
+                          ),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: item.efficiencyRate == null
+                          ? cs.onSurfaceVariant
+                          : badgeColor,
+                      fontWeight: FontWeight.w600,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: badgeColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                item.hasMissedDeadline
+                    ? l10n.missedDeadlineBadge
+                    : l10n.excellentBadge,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: badgeColor,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
     );

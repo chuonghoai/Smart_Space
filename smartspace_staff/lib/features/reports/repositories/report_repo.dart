@@ -4,7 +4,12 @@ import 'package:smartspace_staff/features/reports/models/report_statistics_model
 import 'package:smartspace_staff/features/reports/models/report_detail_model.dart';
 
 abstract class ReportRepo {
-  Future<ApiResponse<List<ReportModel>>> getStaffAssignedReports({String status = 'all', int page = 0, int limit = 10});
+  Future<ApiResponse<List<ReportModel>>> getStaffAssignedReports({
+    String status = 'all',
+    bool overdueOnly = false,
+    int page = 0,
+    int limit = 10,
+  });
   Future<ApiResponse<ReportStatisticsModel>> getStaffStatistics();
   Future<ApiResponse<ReportDetailModel>> getReportDetail(String reportId);
   Future<ApiResponse<ReportDetailModel>> completeReport(

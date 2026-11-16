@@ -499,5 +499,18 @@
   "voiceMessageSnippet": "Tin nhắn thoại",
   "imageSnippet": "Hình ảnh",
   "videoSnippet": "Video",
-  "attachedReportSnippet": "Phản ánh đính kèm"
+  "attachedReportSnippet": "Phản ánh đính kèm",
+  "reportDeadlineLabel": "Hạn xử lý",
+  "deadlineOverdueBadge": "Quá hạn",
+  "daysRemainingLabel": "Còn {days} ngày",
+  "@daysRemainingLabel": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "overdueOnlyFilter": "Quá hạn",
+  "rejectedReasonTitle": "Lý do từ chối",
+  "noRejectionReasonProvided": "Phản ánh đã bị quản trị viên từ chối."
 }

@@ -2491,6 +2491,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Attached report'**
   String get attachedReportSnippet;
+
+  /// No description provided for @reportDeadlineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution deadline'**
+  String get reportDeadlineLabel;
+
+  /// No description provided for @deadlineOverdueBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get deadlineOverdueBadge;
+
+  /// No description provided for @daysRemainingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days left'**
+  String daysRemainingLabel(int days);
+
+  /// No description provided for @overdueOnlyFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get overdueOnlyFilter;
+
+  /// No description provided for @rejectedReasonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejection Reason'**
+  String get rejectedReasonTitle;
+
+  /// No description provided for @noRejectionReasonProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected by administrator.'**
+  String get noRejectionReasonProvided;
 }
 
 class _AppLocalizationsDelegate

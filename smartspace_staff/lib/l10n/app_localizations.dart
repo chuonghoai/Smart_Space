@@ -1688,353 +1688,11 @@ abstract class AppLocalizations {
   /// **'Citizen Photos'**
   String get citizenReviewPhotos;
 
-  /// No description provided for @staffWallet.
-  ///
-  /// In en, this message translates to:
-  /// **'Staff Wallet'**
-  String get staffWallet;
-
-  /// No description provided for @walletBalance.
-  ///
-  /// In en, this message translates to:
-  /// **'Wallet Balance'**
-  String get walletBalance;
-
-  /// No description provided for @withdrawMoney.
-  ///
-  /// In en, this message translates to:
-  /// **'Withdraw'**
-  String get withdrawMoney;
-
-  /// No description provided for @transactionHistory.
-  ///
-  /// In en, this message translates to:
-  /// **'Transaction History'**
-  String get transactionHistory;
-
-  /// No description provided for @featureUnderDevelopment.
-  ///
-  /// In en, this message translates to:
-  /// **'Feature under development'**
-  String get featureUnderDevelopment;
-
-  /// No description provided for @recentTransactions.
-  ///
-  /// In en, this message translates to:
-  /// **'Recent Transactions'**
-  String get recentTransactions;
-
-  /// No description provided for @noTransactions.
-  ///
-  /// In en, this message translates to:
-  /// **'No transactions yet'**
-  String get noTransactions;
-
-  /// No description provided for @commissionExpectedNotice.
-  ///
-  /// In en, this message translates to:
-  /// **'You will receive {amount} VND after completing this report.'**
-  String commissionExpectedNotice(String amount);
-
-  /// No description provided for @commissionReceived.
-  ///
-  /// In en, this message translates to:
-  /// **'You received {amount} VND'**
-  String commissionReceived(String amount);
-
-  /// No description provided for @commissionPenaltyDeducted.
-  ///
-  /// In en, this message translates to:
-  /// **'Rated poorly: -{amount} VND'**
-  String commissionPenaltyDeducted(String amount);
-
-  /// No description provided for @commissionPenaltyDeductionTurn.
-  ///
-  /// In en, this message translates to:
-  /// **'Bad review deduction turn {turn}: -{amount} VND'**
-  String commissionPenaltyDeductionTurn(int turn, String amount);
-
-  /// No description provided for @finalCommissionReceived.
-  ///
-  /// In en, this message translates to:
-  /// **'Final amount received: {amount} VND'**
-  String finalCommissionReceived(String amount);
-
-  /// No description provided for @rehandlingNoExtraCommission.
-  ///
-  /// In en, this message translates to:
-  /// **'Re-handling will not receive additional commission.'**
-  String get rehandlingNoExtraCommission;
-
-  /// No description provided for @routeStaffWallet.
-  ///
-  /// In en, this message translates to:
-  /// **'Staff Wallet'**
-  String get routeStaffWallet;
-
-  /// No description provided for @routeStaffWalletTransactions.
-  ///
-  /// In en, this message translates to:
-  /// **'Transaction History'**
-  String get routeStaffWalletTransactions;
-
-  /// No description provided for @commissionBreakdown.
-  ///
-  /// In en, this message translates to:
-  /// **'Commission Breakdown'**
-  String get commissionBreakdown;
-
-  /// No description provided for @allTransactions.
-  ///
-  /// In en, this message translates to:
-  /// **'All Transactions'**
-  String get allTransactions;
-
-  /// No description provided for @routeStaffWithdrawal.
-  ///
-  /// In en, this message translates to:
-  /// **'Withdraw'**
-  String get routeStaffWithdrawal;
-
-  /// No description provided for @routeStaffWithdrawalHistory.
-  ///
-  /// In en, this message translates to:
-  /// **'Withdrawal History'**
-  String get routeStaffWithdrawalHistory;
-
-  /// No description provided for @routeStaffWithdrawalDetail.
-  ///
-  /// In en, this message translates to:
-  /// **'Request Details'**
-  String get routeStaffWithdrawalDetail;
-
-  /// No description provided for @routeStaffBankAccounts.
-  ///
-  /// In en, this message translates to:
-  /// **'Bank Accounts Management'**
-  String get routeStaffBankAccounts;
-
-  /// No description provided for @bankAccountsManagement.
-  ///
-  /// In en, this message translates to:
-  /// **'Bank Accounts Management'**
-  String get bankAccountsManagement;
-
-  /// No description provided for @withdrawalHistory.
-  ///
-  /// In en, this message translates to:
-  /// **'Withdrawal History'**
-  String get withdrawalHistory;
-
-  /// No description provided for @withdrawalDetail.
-  ///
-  /// In en, this message translates to:
-  /// **'Request Details'**
-  String get withdrawalDetail;
-
-  /// No description provided for @selectSavedBankAccount.
-  ///
-  /// In en, this message translates to:
-  /// **'Select saved bank account'**
-  String get selectSavedBankAccount;
-
-  /// No description provided for @suggestSaveBankQuick.
-  ///
-  /// In en, this message translates to:
-  /// **'Tip: Save bank account for faster withdrawals next time'**
-  String get suggestSaveBankQuick;
-
-  /// No description provided for @saveBankModalTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Save Bank Account'**
-  String get saveBankModalTitle;
-
-  /// No description provided for @confirmSaveBankPrompt.
-  ///
-  /// In en, this message translates to:
-  /// **'Do you want to save this account for next time?'**
-  String get confirmSaveBankPrompt;
-
-  /// No description provided for @saveAndContinue.
-  ///
-  /// In en, this message translates to:
-  /// **'Save & Continue'**
-  String get saveAndContinue;
-
-  /// No description provided for @continueWithoutSaving.
-  ///
-  /// In en, this message translates to:
-  /// **'Continue without saving'**
-  String get continueWithoutSaving;
-
-  /// No description provided for @bankName.
-  ///
-  /// In en, this message translates to:
-  /// **'Bank Name'**
-  String get bankName;
-
-  /// No description provided for @bankNameHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Select or enter bank name'**
-  String get bankNameHint;
-
-  /// No description provided for @bankAccountNumber.
-  ///
-  /// In en, this message translates to:
-  /// **'Account Number'**
-  String get bankAccountNumber;
-
-  /// No description provided for @bankAccountNumberHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter account number'**
-  String get bankAccountNumberHint;
-
-  /// No description provided for @bankAccountOwner.
-  ///
-  /// In en, this message translates to:
-  /// **'Account Holder Name'**
-  String get bankAccountOwner;
-
-  /// No description provided for @bankAccountOwnerHint.
-  ///
-  /// In en, this message translates to:
-  /// **'NGUYEN VAN A'**
-  String get bankAccountOwnerHint;
-
-  /// No description provided for @withdrawalAmount.
-  ///
-  /// In en, this message translates to:
-  /// **'Withdrawal Amount'**
-  String get withdrawalAmount;
-
-  /// No description provided for @withdrawalAmountHint.
-  ///
-  /// In en, this message translates to:
-  /// **'Enter withdrawal amount'**
-  String get withdrawalAmountHint;
-
-  /// No description provided for @submitWithdrawalRequest.
-  ///
-  /// In en, this message translates to:
-  /// **'Submit Withdrawal Request'**
-  String get submitWithdrawalRequest;
-
-  /// No description provided for @withdrawalRequestSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Withdrawal request submitted successfully'**
-  String get withdrawalRequestSuccess;
-
-  /// No description provided for @filterApproved.
-  ///
-  /// In en, this message translates to:
-  /// **'Approved'**
-  String get filterApproved;
-
-  /// No description provided for @filterRejected.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancelled'**
-  String get filterRejected;
-
-  /// No description provided for @filterPending.
-  ///
-  /// In en, this message translates to:
-  /// **'Pending'**
-  String get filterPending;
-
   /// No description provided for @statusPending.
   ///
   /// In en, this message translates to:
   /// **'Pending'**
   String get statusPending;
-
-  /// No description provided for @statusApproved.
-  ///
-  /// In en, this message translates to:
-  /// **'Approved'**
-  String get statusApproved;
-
-  /// No description provided for @statusRejected.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancelled'**
-  String get statusRejected;
-
-  /// No description provided for @additionalInfo.
-  ///
-  /// In en, this message translates to:
-  /// **'Additional Information'**
-  String get additionalInfo;
-
-  /// No description provided for @cancellationReason.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancellation Reason'**
-  String get cancellationReason;
-
-  /// No description provided for @noCancellationReasonProvided.
-  ///
-  /// In en, this message translates to:
-  /// **'No specific reason provided'**
-  String get noCancellationReasonProvided;
-
-  /// No description provided for @emptyWithdrawalHistory.
-  ///
-  /// In en, this message translates to:
-  /// **'No withdrawal requests found'**
-  String get emptyWithdrawalHistory;
-
-  /// No description provided for @emptyBankAccounts.
-  ///
-  /// In en, this message translates to:
-  /// **'No saved bank accounts yet'**
-  String get emptyBankAccounts;
-
-  /// No description provided for @addBankAccount.
-  ///
-  /// In en, this message translates to:
-  /// **'Add Bank Account'**
-  String get addBankAccount;
-
-  /// No description provided for @deleteBankAccount.
-  ///
-  /// In en, this message translates to:
-  /// **'Delete Account'**
-  String get deleteBankAccount;
-
-  /// No description provided for @deleteBankAccountConfirm.
-  ///
-  /// In en, this message translates to:
-  /// **'Are you sure you want to delete this bank account?'**
-  String get deleteBankAccountConfirm;
-
-  /// No description provided for @amountExceedsBalance.
-  ///
-  /// In en, this message translates to:
-  /// **'Withdrawal amount cannot exceed wallet balance'**
-  String get amountExceedsBalance;
-
-  /// No description provided for @minWithdrawalAmountError.
-  ///
-  /// In en, this message translates to:
-  /// **'Minimum withdrawal amount is 10,000 VND'**
-  String get minWithdrawalAmountError;
-
-  /// No description provided for @bankInfoIncomplete.
-  ///
-  /// In en, this message translates to:
-  /// **'Please fill in all bank details'**
-  String get bankInfoIncomplete;
-
-  /// No description provided for @savedBankAccounts.
-  ///
-  /// In en, this message translates to:
-  /// **'Saved Bank Accounts'**
-  String get savedBankAccounts;
 
   /// No description provided for @saveSuccess.
   ///
@@ -2054,12 +1712,6 @@ abstract class AppLocalizations {
   /// **'Confirm Delete'**
   String get confirmDelete;
 
-  /// No description provided for @bankAccount.
-  ///
-  /// In en, this message translates to:
-  /// **'Bank Account'**
-  String get bankAccount;
-
   /// No description provided for @createdDate.
   ///
   /// In en, this message translates to:
@@ -2078,77 +1730,17 @@ abstract class AppLocalizations {
   /// **'An error occurred, please try again!'**
   String get genericError;
 
-  /// No description provided for @doNotSave.
-  ///
-  /// In en, this message translates to:
-  /// **'Don\'t save'**
-  String get doNotSave;
-
-  /// No description provided for @addNewBankAccount.
-  ///
-  /// In en, this message translates to:
-  /// **'Add new bank account'**
-  String get addNewBankAccount;
-
-  /// No description provided for @heldWithdrawalNoticeTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Amount is currently held'**
-  String get heldWithdrawalNoticeTitle;
-
-  /// No description provided for @heldWithdrawalNoticeDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'The withdrawal amount has been held from your wallet balance. If the request is rejected, the amount will be refunded to your wallet.'**
-  String get heldWithdrawalNoticeDesc;
-
-  /// No description provided for @refundedNoticeDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'The withdrawal amount has been refunded back to your wallet.'**
-  String get refundedNoticeDesc;
-
-  /// No description provided for @cancelWithdrawalRequest.
-  ///
-  /// In en, this message translates to:
-  /// **'Cancel withdrawal request'**
-  String get cancelWithdrawalRequest;
-
-  /// No description provided for @confirmCancelWithdrawalTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Confirm cancellation'**
-  String get confirmCancelWithdrawalTitle;
-
-  /// No description provided for @confirmCancelWithdrawalContent.
-  ///
-  /// In en, this message translates to:
-  /// **'Are you sure you want to cancel this withdrawal request? The held amount will be refunded to your wallet immediately.'**
-  String get confirmCancelWithdrawalContent;
-
   /// No description provided for @confirmCancel.
   ///
   /// In en, this message translates to:
   /// **'Cancel request'**
   String get confirmCancel;
 
-  /// No description provided for @cancelWithdrawalSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Withdrawal request cancelled successfully, the amount has been refunded to your wallet.'**
-  String get cancelWithdrawalSuccess;
-
   /// No description provided for @statusCancelled.
   ///
   /// In en, this message translates to:
   /// **'Cancelled'**
   String get statusCancelled;
-
-  /// No description provided for @cancelledNoticeDesc.
-  ///
-  /// In en, this message translates to:
-  /// **'This withdrawal request has been cancelled and the held amount has been refunded to your wallet.'**
-  String get cancelledNoticeDesc;
 
   /// No description provided for @routeDelegations.
   ///
@@ -2222,48 +1814,6 @@ abstract class AppLocalizations {
   /// **'Choose a colleague'**
   String get delegationChooseColleague;
 
-  /// No description provided for @delegationHelperReceives.
-  ///
-  /// In en, this message translates to:
-  /// **'Colleague receives'**
-  String get delegationHelperReceives;
-
-  /// No description provided for @delegationHelperReceivesValue.
-  ///
-  /// In en, this message translates to:
-  /// **'{commission}đ + {bonus}đ bonus'**
-  String delegationHelperReceivesValue(String commission, String bonus);
-
-  /// No description provided for @delegationYouPay.
-  ///
-  /// In en, this message translates to:
-  /// **'Deducted from your wallet'**
-  String get delegationYouPay;
-
-  /// No description provided for @delegationBonusRate.
-  ///
-  /// In en, this message translates to:
-  /// **'Bonus = {rate}% of the task commission'**
-  String delegationBonusRate(String rate);
-
-  /// No description provided for @delegationCurrentBalance.
-  ///
-  /// In en, this message translates to:
-  /// **'Current balance'**
-  String get delegationCurrentBalance;
-
-  /// No description provided for @delegationInsufficientBalance.
-  ///
-  /// In en, this message translates to:
-  /// **'Your wallet balance is not enough to pay this bonus'**
-  String get delegationInsufficientBalance;
-
-  /// No description provided for @delegationHoldHint.
-  ///
-  /// In en, this message translates to:
-  /// **'The bonus is held in your wallet and refunded if the request doesn\'t go through. Requests expire after 24 hours.'**
-  String get delegationHoldHint;
-
   /// No description provided for @delegationNoteLabel.
   ///
   /// In en, this message translates to:
@@ -2306,36 +1856,6 @@ abstract class AppLocalizations {
   /// **'You are handling this task for {name}'**
   String delegationAcceptedHelperBanner(String name);
 
-  /// No description provided for @delegationHelperEarns.
-  ///
-  /// In en, this message translates to:
-  /// **'You\'ll receive {commission}đ + {bonus}đ bonus'**
-  String delegationHelperEarns(String commission, String bonus);
-
-  /// No description provided for @delegationBonusHeld.
-  ///
-  /// In en, this message translates to:
-  /// **'{bonus}đ bonus held from your wallet'**
-  String delegationBonusHeld(String bonus);
-
-  /// No description provided for @commissionExpectedWithBonusNotice.
-  ///
-  /// In en, this message translates to:
-  /// **'You will receive {commission} VND + {bonus} VND delegation bonus after completing this report.'**
-  String commissionExpectedWithBonusNotice(String commission, String bonus);
-
-  /// No description provided for @delegationBonusReceivedLine.
-  ///
-  /// In en, this message translates to:
-  /// **'Delegation bonus from {name}: +{amount} VND'**
-  String delegationBonusReceivedLine(String name, String amount);
-
-  /// No description provided for @delegationBonusPaidNotice.
-  ///
-  /// In en, this message translates to:
-  /// **'You paid {name} a {amount} VND bonus for handling this report.'**
-  String delegationBonusPaidNotice(String amount, String name);
-
   /// No description provided for @delegationExpiresAt.
   ///
   /// In en, this message translates to:
@@ -2369,7 +1889,7 @@ abstract class AppLocalizations {
   /// No description provided for @delegationAcceptConfirmMessage.
   ///
   /// In en, this message translates to:
-  /// **'The report will be assigned to you. You\'ll be responsible for it, including any re-handling and penalties.'**
+  /// **'The report will be assigned to you and you\'ll be responsible for resolving it.'**
   String get delegationAcceptConfirmMessage;
 
   /// No description provided for @delegationDeclineConfirmTitle.
@@ -2381,7 +1901,7 @@ abstract class AppLocalizations {
   /// No description provided for @delegationDeclineConfirmMessage.
   ///
   /// In en, this message translates to:
-  /// **'{name} will get the held bonus back.'**
+  /// **'{name} will be notified that you declined.'**
   String delegationDeclineConfirmMessage(String name);
 
   /// No description provided for @delegationCancelConfirmTitle.
@@ -2393,7 +1913,7 @@ abstract class AppLocalizations {
   /// No description provided for @delegationCancelConfirmMessage.
   ///
   /// In en, this message translates to:
-  /// **'The held bonus will be refunded to your wallet.'**
+  /// **'This delegation request will be cancelled.'**
   String get delegationCancelConfirmMessage;
 
   /// No description provided for @delegationAcceptedSuccess.
@@ -2411,7 +1931,7 @@ abstract class AppLocalizations {
   /// No description provided for @delegationCancelledSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Request cancelled, bonus refunded'**
+  /// **'Delegation request cancelled'**
   String get delegationCancelledSuccess;
 
   /// No description provided for @delegationFrom.
@@ -2425,12 +1945,6 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Asked {name}'**
   String delegationTo(String name);
-
-  /// No description provided for @delegationBonusLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Bonus {amount}đ'**
-  String delegationBonusLabel(String amount);
 
   /// No description provided for @delegationStatusPending.
   ///
@@ -2810,6 +2324,12 @@ abstract class AppLocalizations {
   /// **'Free in-app voice call'**
   String get freeCall;
 
+  /// No description provided for @featureUnderDevelopment.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature under development'**
+  String get featureUnderDevelopment;
+
   /// No description provided for @comingSoon.
   ///
   /// In en, this message translates to:
@@ -2899,6 +2419,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Attached report'**
   String get attachedReportSnippet;
+
+  /// No description provided for @reportDeadlineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution deadline'**
+  String get reportDeadlineLabel;
+
+  /// No description provided for @deadlineOverdueBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get deadlineOverdueBadge;
+
+  /// No description provided for @daysRemainingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days left'**
+  String daysRemainingLabel(int days);
+
+  /// No description provided for @overdueOnlyFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get overdueOnlyFilter;
+
+  /// No description provided for @rejectedReasonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejection Reason'**
+  String get rejectedReasonTitle;
+
+  /// No description provided for @noRejectionReasonProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected by administrator.'**
+  String get noRejectionReasonProvided;
 }
 
 class _AppLocalizationsDelegate

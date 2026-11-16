@@ -320,121 +320,15 @@
   "citizenRating": "Đánh giá của người dân",
   "citizenReviewReason": "Lý do chưa xử lý thỏa đáng",
   "citizenReviewPhotos": "Hình ảnh người dân cung cấp",
-  "staffWallet": "Ví nhân viên",
-  "walletBalance": "Số dư ví",
-  "withdrawMoney": "Rút tiền",
-  "transactionHistory": "Lịch sử giao dịch",
-  "featureUnderDevelopment": "Tính năng đang được phát triển",
-  "recentTransactions": "Giao dịch gần đây",
-  "noTransactions": "Chưa có giao dịch nào",
-  "commissionExpectedNotice": "Bạn sẽ nhận được {amount} đ sau khi hoàn tất xử lý phản ánh này.",
-  "@commissionExpectedNotice": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "commissionReceived": "Bạn đã nhận được {amount}đ",
-  "@commissionReceived": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "commissionPenaltyDeducted": "Bị đánh giá xấu: -{amount}đ",
-  "@commissionPenaltyDeducted": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "commissionPenaltyDeductionTurn": "Bị đánh giá xấu lần {turn}: -{amount}đ",
-  "@commissionPenaltyDeductionTurn": {
-    "placeholders": {
-      "turn": {
-        "type": "int"
-      },
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "finalCommissionReceived": "Số tiền cuối cùng nhận được: {amount}đ",
-  "@finalCommissionReceived": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      }
-    }
-  },
-  "rehandlingNoExtraCommission": "Xử lý lại sẽ không nhận thêm hoa hồng.",
-  "routeStaffWallet": "Ví nhân viên",
-  "routeStaffWalletTransactions": "Lịch sử giao dịch",
-  "commissionBreakdown": "Chi tiết hoa hồng",
-  "allTransactions": "Tất cả giao dịch",
-  "routeStaffWithdrawal": "Rút tiền",
-  "routeStaffWithdrawalHistory": "Lịch sử rút tiền",
-  "routeStaffWithdrawalDetail": "Chi tiết yêu cầu",
-  "routeStaffBankAccounts": "Quản lý tài khoản ngân hàng",
-  "bankAccountsManagement": "Quản lý tài khoản ngân hàng",
-  "withdrawalHistory": "Lịch sử rút tiền",
-  "withdrawalDetail": "Chi tiết yêu cầu",
-  "selectSavedBankAccount": "Chọn tài khoản ngân hàng đã lưu",
-  "suggestSaveBankQuick": "Gợi ý: Lưu nhanh tài khoản ngân hàng để tiện cho lần sau",
-  "saveBankModalTitle": "Lưu tài khoản ngân hàng",
-  "confirmSaveBankPrompt": "Bạn có muốn lưu lại số tài khoản để tiện cho lần sau hay không?",
-  "saveAndContinue": "Lưu và tiếp tục",
-  "continueWithoutSaving": "Không lưu, tiếp tục",
-  "bankName": "Tên ngân hàng",
-  "bankNameHint": "Chọn hoặc nhập tên ngân hàng",
-  "bankAccountNumber": "Số tài khoản",
-  "bankAccountNumberHint": "Nhập số tài khoản",
-  "bankAccountOwner": "Họ tên chủ tài khoản",
-  "bankAccountOwnerHint": "NGUYEN VAN A",
-  "withdrawalAmount": "Số tiền muốn rút",
-  "withdrawalAmountHint": "Nhập số tiền muốn rút",
-  "submitWithdrawalRequest": "Gửi yêu cầu rút tiền",
-  "withdrawalRequestSuccess": "Gửi yêu cầu rút tiền thành công",
-  "filterApproved": "Đã duyệt",
-  "filterRejected": "Đã hủy",
-  "filterPending": "Đang chờ",
   "statusPending": "Đang chờ xử lý",
-  "statusApproved": "Đã duyệt",
-  "statusRejected": "Đã hủy",
-  "additionalInfo": "Thông tin thêm",
-  "cancellationReason": "Lý do hủy yêu cầu",
-  "noCancellationReasonProvided": "Không có lý do cụ thể",
-  "emptyWithdrawalHistory": "Chưa có yêu cầu rút tiền nào",
-  "emptyBankAccounts": "Chưa có tài khoản ngân hàng nào được lưu",
-  "addBankAccount": "Thêm tài khoản ngân hàng",
-  "deleteBankAccount": "Xóa tài khoản",
-  "deleteBankAccountConfirm": "Bạn có chắc chắn muốn xóa tài khoản này khỏi danh sách đã lưu?",
-  "amountExceedsBalance": "Số tiền rút không được vượt quá số dư ví",
-  "minWithdrawalAmountError": "Số tiền rút tối thiểu là 10.000 đ",
-  "bankInfoIncomplete": "Vui lòng điền đầy đủ thông tin ngân hàng",
-  "savedBankAccounts": "Tài khoản ngân hàng đã lưu",
   "saveSuccess": "Lưu thành công",
   "deleteSuccess": "Xóa thành công",
   "confirmDelete": "Xác nhận xóa",
-  "bankAccount": "Tài khoản ngân hàng",
   "createdDate": "Ngày tạo",
   "save": "Lưu",
   "genericError": "Đã có lỗi xảy ra, vui lòng thử lại!",
-  "doNotSave": "Không lưu",
-  "addNewBankAccount": "Thêm tài khoản ngân hàng mới",
-  "heldWithdrawalNoticeTitle": "Số tiền đang được tạm giữ",
-  "heldWithdrawalNoticeDesc": "Số tiền rút đã được trừ tạm giữ khỏi số dư ví. Nếu yêu cầu bị từ chối, số tiền sẽ được hoàn trả lại ví của bạn.",
-  "refundedNoticeDesc": "Số tiền yêu cầu rút đã được hoàn trả lại vào ví của bạn.",
-  "cancelWithdrawalRequest": "Hủy yêu cầu rút tiền",
-  "confirmCancelWithdrawalTitle": "Xác nhận hủy yêu cầu",
-  "confirmCancelWithdrawalContent": "Bạn có chắc chắn muốn hủy yêu cầu rút tiền này không? Số tiền tạm giữ sẽ được hoàn lại ngay vào ví của bạn.",
   "confirmCancel": "Hủy yêu cầu",
-  "cancelWithdrawalSuccess": "Hủy yêu cầu rút tiền thành công, số tiền đã được hoàn lại vào ví.",
   "statusCancelled": "Đã hủy",
-  "cancelledNoticeDesc": "Yêu cầu rút tiền này đã được hủy và số tiền tạm giữ đã được hoàn trả lại ví của bạn.",
   "routeDelegations": "Việc nhờ làm hộ",
   "delegationScreenTitle": "Việc nhờ làm hộ",
   "delegationTabReceived": "Được nhờ",
@@ -447,19 +341,6 @@
   "delegationSearchHint": "Tìm đồng nghiệp theo tên",
   "delegationNoColleagues": "Không tìm thấy đồng nghiệp phù hợp",
   "delegationChooseColleague": "Chọn đồng nghiệp",
-  "delegationHelperReceives": "Đồng nghiệp nhận",
-  "delegationHelperReceivesValue": "{commission}đ + {bonus}đ bonus",
-  "@delegationHelperReceivesValue": {
-    "placeholders": { "commission": { "type": "String" }, "bonus": { "type": "String" } }
-  },
-  "delegationYouPay": "Ví bạn bị trừ",
-  "delegationBonusRate": "Bonus = {rate}% hoa hồng của task",
-  "@delegationBonusRate": {
-    "placeholders": { "rate": { "type": "String" } }
-  },
-  "delegationCurrentBalance": "Số dư hiện tại",
-  "delegationInsufficientBalance": "Số dư ví không đủ để trả bonus này",
-  "delegationHoldHint": "Bonus được giữ tạm trong ví và hoàn lại nếu yêu cầu không thành. Yêu cầu hết hạn sau 24 giờ.",
   "delegationNoteLabel": "Lời nhắn (không bắt buộc)",
   "delegationSendAction": "Gửi yêu cầu",
   "delegationSentSuccess": "Đã gửi yêu cầu nhờ làm hộ",
@@ -479,26 +360,6 @@
   "@delegationAcceptedHelperBanner": {
     "placeholders": { "name": { "type": "String" } }
   },
-  "delegationHelperEarns": "Bạn sẽ nhận {commission}đ + {bonus}đ bonus",
-  "@delegationHelperEarns": {
-    "placeholders": { "commission": { "type": "String" }, "bonus": { "type": "String" } }
-  },
-  "delegationBonusHeld": "Đang giữ {bonus}đ bonus từ ví của bạn",
-  "@delegationBonusHeld": {
-    "placeholders": { "bonus": { "type": "String" } }
-  },
-  "commissionExpectedWithBonusNotice": "Bạn sẽ nhận được {commission}đ + {bonus}đ bonus làm hộ sau khi hoàn tất xử lý phản ánh này.",
-  "@commissionExpectedWithBonusNotice": {
-    "placeholders": { "commission": { "type": "String" }, "bonus": { "type": "String" } }
-  },
-  "delegationBonusReceivedLine": "Bonus làm hộ từ {name}: +{amount}đ",
-  "@delegationBonusReceivedLine": {
-    "placeholders": { "name": { "type": "String" }, "amount": { "type": "String" } }
-  },
-  "delegationBonusPaidNotice": "Bạn đã trả {amount}đ bonus cho {name} làm hộ phản ánh này.",
-  "@delegationBonusPaidNotice": {
-    "placeholders": { "amount": { "type": "String" }, "name": { "type": "String" } }
-  },
   "delegationExpiresAt": "Hết hạn lúc {time}",
   "@delegationExpiresAt": {
     "placeholders": { "time": { "type": "String" } }
@@ -507,17 +368,17 @@
   "delegationDeclineAction": "Từ chối",
   "delegationCancelAction": "Huỷ yêu cầu",
   "delegationAcceptConfirmTitle": "Nhận làm hộ phản ánh này?",
-  "delegationAcceptConfirmMessage": "Phản ánh sẽ được giao cho bạn. Bạn chịu trách nhiệm xử lý, kể cả khi phải xử lý lại và bị trừ hoa hồng.",
+  "delegationAcceptConfirmMessage": "Phản ánh sẽ được giao cho bạn và bạn chịu trách nhiệm xử lý.",
   "delegationDeclineConfirmTitle": "Từ chối yêu cầu này?",
-  "delegationDeclineConfirmMessage": "{name} sẽ được hoàn lại bonus đã giữ.",
+  "delegationDeclineConfirmMessage": "{name} sẽ nhận được thông báo từ chối.",
   "@delegationDeclineConfirmMessage": {
     "placeholders": { "name": { "type": "String" } }
   },
   "delegationCancelConfirmTitle": "Huỷ yêu cầu nhờ làm hộ?",
-  "delegationCancelConfirmMessage": "Bonus đã giữ sẽ được hoàn lại vào ví của bạn.",
+  "delegationCancelConfirmMessage": "Yêu cầu nhờ làm hộ này sẽ bị huỷ.",
   "delegationAcceptedSuccess": "Bạn đã nhận làm hộ",
   "delegationDeclinedSuccess": "Đã từ chối yêu cầu",
-  "delegationCancelledSuccess": "Đã huỷ yêu cầu, bonus đã được hoàn lại",
+  "delegationCancelledSuccess": "Đã huỷ yêu cầu nhờ làm hộ",
   "delegationFrom": "Từ {name}",
   "@delegationFrom": {
     "placeholders": { "name": { "type": "String" } }
@@ -525,10 +386,6 @@
   "delegationTo": "Nhờ {name}",
   "@delegationTo": {
     "placeholders": { "name": { "type": "String" } }
-  },
-  "delegationBonusLabel": "Bonus {amount}đ",
-  "@delegationBonusLabel": {
-    "placeholders": { "amount": { "type": "String" } }
   },
   "delegationStatusPending": "Chờ phản hồi",
   "delegationStatusAccepted": "Đang làm hộ",
@@ -628,5 +485,18 @@
   "voiceMessageSnippet": "Tin nhắn thoại",
   "imageSnippet": "Hình ảnh",
   "videoSnippet": "Video",
-  "attachedReportSnippet": "Phản ánh đính kèm"
+  "attachedReportSnippet": "Phản ánh đính kèm",
+  "reportDeadlineLabel": "Hạn xử lý",
+  "deadlineOverdueBadge": "Quá hạn",
+  "daysRemainingLabel": "Còn {days} ngày",
+  "@daysRemainingLabel": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "overdueOnlyFilter": "Quá hạn",
+  "rejectedReasonTitle": "Lý do từ chối",
+  "noRejectionReasonProvided": "Phản ánh đã bị quản trị viên từ chối."
 }

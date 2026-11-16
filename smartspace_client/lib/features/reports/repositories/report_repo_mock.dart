@@ -154,6 +154,7 @@ class ReportRepoMock implements ReportRepo {
     EReportSeverity? severity,
     ReportDateRange? dateRange,
     String? search,
+    bool overdueOnly = false,
     int page = 1,
     int size = 20,
   }) async {
@@ -167,6 +168,9 @@ class ReportRepoMock implements ReportRepo {
     }
     if (severity != null) {
       mockData = mockData.where((r) => r.severity == severity).toList();
+    }
+    if (overdueOnly) {
+      mockData = mockData.where((r) => r.isOverdue).toList();
     }
     if (dateRange != null) {
       final endExclusive = dateRange.end.add(const Duration(days: 1));

@@ -10,40 +10,12 @@ class ReportDetailModel extends ReportModel {
   final String? assignedStaffAvatarUrl;
   final String? resolvedNote;
   final List<String>? resolvedImageUrls;
-  final DateTime? resolvedAt;
   final int? rating;
   final String? reviewNote;
   final List<String>? reviewImageUrls;
   final DateTime? reviewedAt;
-  final double? baseCommission;
-  final double? deductedCommission;
-  final double? finalCommission;
-  final double? expectedCommission;
-  final bool? commissionAwarded;
-  final int? rehandlingPenaltyCount;
-  final List<PenaltyDeductionModel> penaltyDeductions;
-
-  List<PenaltyDeductionModel> get resolvedPenaltyDeductions {
-    if (penaltyDeductions.isNotEmpty) {
-      return penaltyDeductions;
-    }
-    final count = rehandlingPenaltyCount ?? 0;
-    final base = baseCommission ?? 0;
-    if (count > 0 && base > 0) {
-      final List<PenaltyDeductionModel> list = [];
-      for (int i = 0; i < count && i < 3; i++) {
-        final rate = switch (i) {
-          0 => 0.20,
-          1 => 0.20,
-          2 => 0.60,
-          _ => 0.0,
-        };
-        list.add(PenaltyDeductionModel(turn: i + 1, amount: base * rate));
-      }
-      return list;
-    }
-    return [];
-  }
+  final String? rejectedReason;
+  final DateTime? rejectedAt;
 
   ReportDetailModel({
     required super.id,
@@ -61,6 +33,10 @@ class ReportDetailModel extends ReportModel {
     required super.severity,
     required super.isAnonymous,
     super.isReviewResolved,
+    super.deadline,
+    super.resolvedAt,
+    super.serverIsOverdue,
+    super.serverRemainingDays,
 
     required this.imageUrls,
     this.address,
@@ -71,18 +47,12 @@ class ReportDetailModel extends ReportModel {
     this.assignedStaffAvatarUrl,
     this.resolvedNote,
     this.resolvedImageUrls,
-    this.resolvedAt,
     this.rating,
     this.reviewNote,
     this.reviewImageUrls,
     this.reviewedAt,
-    this.baseCommission,
-    this.deductedCommission,
-    this.finalCommission,
-    this.expectedCommission,
-    this.commissionAwarded,
-    this.rehandlingPenaltyCount,
-    this.penaltyDeductions = const [],
+    this.rejectedReason,
+    this.rejectedAt,
   }) : super(imageUrl: imageUrls.isNotEmpty ? imageUrls.first : '');
 
   factory ReportDetailModel.fromJson(Map<String, dynamic> json) {
@@ -153,17 +123,15 @@ class ReportDetailModel extends ReportModel {
       reviewedAt: json['reviewed_at'] != null || json['reviewedAt'] != null
           ? DateTime.tryParse((json['reviewed_at'] ?? json['reviewedAt']).toString())
           : null,
-      baseCommission: (json['base_commission'] as num?)?.toDouble(),
-      deductedCommission: (json['deducted_commission'] as num?)?.toDouble(),
-      finalCommission: (json['final_commission'] as num?)?.toDouble(),
-      expectedCommission: (json['expected_commission'] as num?)?.toDouble(),
-      commissionAwarded: json['commission_awarded'] as bool?,
-      rehandlingPenaltyCount: (json['rehandling_penalty_count'] as num?)?.toInt(),
-      penaltyDeductions: json['penalty_deductions'] != null && json['penalty_deductions'] is List
-          ? (json['penalty_deductions'] as List)
-              .map((e) => PenaltyDeductionModel.fromJson(e as Map<String, dynamic>))
-              .toList()
-          : const [],
+      deadline: (json['deadline'] ?? json['report_deadline']) != null
+          ? DateTime.tryParse((json['deadline'] ?? json['report_deadline']).toString())
+          : null,
+      serverIsOverdue: (json['is_overdue'] ?? json['isOverdue']) as bool?,
+      serverRemainingDays: ((json['remaining_days'] ?? json['remainingDays']) as num?)?.toInt(),
+      rejectedReason: (json['rejected_reason'] ?? json['rejectedReason']) as String?,
+      rejectedAt: (json['rejected_at'] ?? json['rejectedAt']) != null
+          ? DateTime.tryParse((json['rejected_at'] ?? json['rejectedAt']).toString())
+          : null,
     );
   }
 
@@ -186,12 +154,9 @@ class ReportDetailModel extends ReportModel {
     map['review_note'] = reviewNote;
     map['review_image_urls'] = reviewImageUrls;
     map['reviewed_at'] = reviewedAt?.toIso8601String();
-    map['base_commission'] = baseCommission;
-    map['deducted_commission'] = deductedCommission;
-    map['final_commission'] = finalCommission;
-    map['expected_commission'] = expectedCommission;
-    map['commission_awarded'] = commissionAwarded;
-    map['rehandling_penalty_count'] = rehandlingPenaltyCount;
+    map['deadline'] = deadline?.toIso8601String();
+    map['rejected_reason'] = rejectedReason;
+    map['rejected_at'] = rejectedAt?.toIso8601String();
     return map;
   }
 
@@ -226,6 +191,11 @@ class ReportDetailModel extends ReportModel {
     String? reviewNote,
     List<String>? reviewImageUrls,
     DateTime? reviewedAt,
+    DateTime? deadline,
+    bool? serverIsOverdue,
+    int? serverRemainingDays,
+    String? rejectedReason,
+    DateTime? rejectedAt,
   }) {
     return ReportDetailModel(
       id: id ?? this.id,
@@ -237,6 +207,9 @@ class ReportDetailModel extends ReportModel {
       createdAt: createdAt ?? this.createdAt,
       distanceInMeters: distanceInMeters ?? this.distanceInMeters,
       userId: userId ?? this.userId,
+      deadline: deadline ?? this.deadline,
+      serverIsOverdue: serverIsOverdue ?? this.serverIsOverdue,
+      serverRemainingDays: serverRemainingDays ?? this.serverRemainingDays,
       severity: severity ?? this.severity,
       imageUrls: imageUrls ?? this.imageUrls,
       isAnonymous: isAnonymous ?? this.isAnonymous,
@@ -256,30 +229,8 @@ class ReportDetailModel extends ReportModel {
       reviewNote: reviewNote ?? this.reviewNote,
       reviewImageUrls: reviewImageUrls ?? this.reviewImageUrls,
       reviewedAt: reviewedAt ?? this.reviewedAt,
+      rejectedReason: rejectedReason ?? this.rejectedReason,
+      rejectedAt: rejectedAt ?? this.rejectedAt,
     );
-  }
-}
-
-class PenaltyDeductionModel {
-  final int turn;
-  final double amount;
-
-  const PenaltyDeductionModel({
-    required this.turn,
-    required this.amount,
-  });
-
-  factory PenaltyDeductionModel.fromJson(Map<String, dynamic> json) {
-    return PenaltyDeductionModel(
-      turn: (json['turn'] as num?)?.toInt() ?? 1,
-      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
-    );
-  }
-
-  Map<String, dynamic> toJson() {
-    return {
-      'turn': turn,
-      'amount': amount,
-    };
   }
 }

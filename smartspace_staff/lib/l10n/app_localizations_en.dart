@@ -847,195 +847,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get citizenReviewPhotos => 'Citizen Photos';
 
   @override
-  String get staffWallet => 'Staff Wallet';
-
-  @override
-  String get walletBalance => 'Wallet Balance';
-
-  @override
-  String get withdrawMoney => 'Withdraw';
-
-  @override
-  String get transactionHistory => 'Transaction History';
-
-  @override
-  String get featureUnderDevelopment => 'Feature under development';
-
-  @override
-  String get recentTransactions => 'Recent Transactions';
-
-  @override
-  String get noTransactions => 'No transactions yet';
-
-  @override
-  String commissionExpectedNotice(String amount) {
-    return 'You will receive $amount VND after completing this report.';
-  }
-
-  @override
-  String commissionReceived(String amount) {
-    return 'You received $amount VND';
-  }
-
-  @override
-  String commissionPenaltyDeducted(String amount) {
-    return 'Rated poorly: -$amount VND';
-  }
-
-  @override
-  String commissionPenaltyDeductionTurn(int turn, String amount) {
-    return 'Bad review deduction turn $turn: -$amount VND';
-  }
-
-  @override
-  String finalCommissionReceived(String amount) {
-    return 'Final amount received: $amount VND';
-  }
-
-  @override
-  String get rehandlingNoExtraCommission =>
-      'Re-handling will not receive additional commission.';
-
-  @override
-  String get routeStaffWallet => 'Staff Wallet';
-
-  @override
-  String get routeStaffWalletTransactions => 'Transaction History';
-
-  @override
-  String get commissionBreakdown => 'Commission Breakdown';
-
-  @override
-  String get allTransactions => 'All Transactions';
-
-  @override
-  String get routeStaffWithdrawal => 'Withdraw';
-
-  @override
-  String get routeStaffWithdrawalHistory => 'Withdrawal History';
-
-  @override
-  String get routeStaffWithdrawalDetail => 'Request Details';
-
-  @override
-  String get routeStaffBankAccounts => 'Bank Accounts Management';
-
-  @override
-  String get bankAccountsManagement => 'Bank Accounts Management';
-
-  @override
-  String get withdrawalHistory => 'Withdrawal History';
-
-  @override
-  String get withdrawalDetail => 'Request Details';
-
-  @override
-  String get selectSavedBankAccount => 'Select saved bank account';
-
-  @override
-  String get suggestSaveBankQuick =>
-      'Tip: Save bank account for faster withdrawals next time';
-
-  @override
-  String get saveBankModalTitle => 'Save Bank Account';
-
-  @override
-  String get confirmSaveBankPrompt =>
-      'Do you want to save this account for next time?';
-
-  @override
-  String get saveAndContinue => 'Save & Continue';
-
-  @override
-  String get continueWithoutSaving => 'Continue without saving';
-
-  @override
-  String get bankName => 'Bank Name';
-
-  @override
-  String get bankNameHint => 'Select or enter bank name';
-
-  @override
-  String get bankAccountNumber => 'Account Number';
-
-  @override
-  String get bankAccountNumberHint => 'Enter account number';
-
-  @override
-  String get bankAccountOwner => 'Account Holder Name';
-
-  @override
-  String get bankAccountOwnerHint => 'NGUYEN VAN A';
-
-  @override
-  String get withdrawalAmount => 'Withdrawal Amount';
-
-  @override
-  String get withdrawalAmountHint => 'Enter withdrawal amount';
-
-  @override
-  String get submitWithdrawalRequest => 'Submit Withdrawal Request';
-
-  @override
-  String get withdrawalRequestSuccess =>
-      'Withdrawal request submitted successfully';
-
-  @override
-  String get filterApproved => 'Approved';
-
-  @override
-  String get filterRejected => 'Cancelled';
-
-  @override
-  String get filterPending => 'Pending';
-
-  @override
   String get statusPending => 'Pending';
-
-  @override
-  String get statusApproved => 'Approved';
-
-  @override
-  String get statusRejected => 'Cancelled';
-
-  @override
-  String get additionalInfo => 'Additional Information';
-
-  @override
-  String get cancellationReason => 'Cancellation Reason';
-
-  @override
-  String get noCancellationReasonProvided => 'No specific reason provided';
-
-  @override
-  String get emptyWithdrawalHistory => 'No withdrawal requests found';
-
-  @override
-  String get emptyBankAccounts => 'No saved bank accounts yet';
-
-  @override
-  String get addBankAccount => 'Add Bank Account';
-
-  @override
-  String get deleteBankAccount => 'Delete Account';
-
-  @override
-  String get deleteBankAccountConfirm =>
-      'Are you sure you want to delete this bank account?';
-
-  @override
-  String get amountExceedsBalance =>
-      'Withdrawal amount cannot exceed wallet balance';
-
-  @override
-  String get minWithdrawalAmountError =>
-      'Minimum withdrawal amount is 10,000 VND';
-
-  @override
-  String get bankInfoIncomplete => 'Please fill in all bank details';
-
-  @override
-  String get savedBankAccounts => 'Saved Bank Accounts';
 
   @override
   String get saveSuccess => 'Saved successfully';
@@ -1047,9 +859,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get confirmDelete => 'Confirm Delete';
 
   @override
-  String get bankAccount => 'Bank Account';
-
-  @override
   String get createdDate => 'Created Date';
 
   @override
@@ -1059,45 +868,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get genericError => 'An error occurred, please try again!';
 
   @override
-  String get doNotSave => 'Don\'t save';
-
-  @override
-  String get addNewBankAccount => 'Add new bank account';
-
-  @override
-  String get heldWithdrawalNoticeTitle => 'Amount is currently held';
-
-  @override
-  String get heldWithdrawalNoticeDesc =>
-      'The withdrawal amount has been held from your wallet balance. If the request is rejected, the amount will be refunded to your wallet.';
-
-  @override
-  String get refundedNoticeDesc =>
-      'The withdrawal amount has been refunded back to your wallet.';
-
-  @override
-  String get cancelWithdrawalRequest => 'Cancel withdrawal request';
-
-  @override
-  String get confirmCancelWithdrawalTitle => 'Confirm cancellation';
-
-  @override
-  String get confirmCancelWithdrawalContent =>
-      'Are you sure you want to cancel this withdrawal request? The held amount will be refunded to your wallet immediately.';
-
-  @override
   String get confirmCancel => 'Cancel request';
 
   @override
-  String get cancelWithdrawalSuccess =>
-      'Withdrawal request cancelled successfully, the amount has been refunded to your wallet.';
-
-  @override
   String get statusCancelled => 'Cancelled';
-
-  @override
-  String get cancelledNoticeDesc =>
-      'This withdrawal request has been cancelled and the held amount has been refunded to your wallet.';
 
   @override
   String get routeDelegations => 'Delegated tasks';
@@ -1138,33 +912,6 @@ class AppLocalizationsEn extends AppLocalizations {
   String get delegationChooseColleague => 'Choose a colleague';
 
   @override
-  String get delegationHelperReceives => 'Colleague receives';
-
-  @override
-  String delegationHelperReceivesValue(String commission, String bonus) {
-    return '$commissionđ + $bonusđ bonus';
-  }
-
-  @override
-  String get delegationYouPay => 'Deducted from your wallet';
-
-  @override
-  String delegationBonusRate(String rate) {
-    return 'Bonus = $rate% of the task commission';
-  }
-
-  @override
-  String get delegationCurrentBalance => 'Current balance';
-
-  @override
-  String get delegationInsufficientBalance =>
-      'Your wallet balance is not enough to pay this bonus';
-
-  @override
-  String get delegationHoldHint =>
-      'The bonus is held in your wallet and refunded if the request doesn\'t go through. Requests expire after 24 hours.';
-
-  @override
   String get delegationNoteLabel => 'Message (optional)';
 
   @override
@@ -1194,31 +941,6 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String delegationHelperEarns(String commission, String bonus) {
-    return 'You\'ll receive $commissionđ + $bonusđ bonus';
-  }
-
-  @override
-  String delegationBonusHeld(String bonus) {
-    return '$bonusđ bonus held from your wallet';
-  }
-
-  @override
-  String commissionExpectedWithBonusNotice(String commission, String bonus) {
-    return 'You will receive $commission VND + $bonus VND delegation bonus after completing this report.';
-  }
-
-  @override
-  String delegationBonusReceivedLine(String name, String amount) {
-    return 'Delegation bonus from $name: +$amount VND';
-  }
-
-  @override
-  String delegationBonusPaidNotice(String amount, String name) {
-    return 'You paid $name a $amount VND bonus for handling this report.';
-  }
-
-  @override
   String delegationExpiresAt(String time) {
     return 'Expires at $time';
   }
@@ -1237,14 +959,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get delegationAcceptConfirmMessage =>
-      'The report will be assigned to you. You\'ll be responsible for it, including any re-handling and penalties.';
+      'The report will be assigned to you and you\'ll be responsible for resolving it.';
 
   @override
   String get delegationDeclineConfirmTitle => 'Decline this request?';
 
   @override
   String delegationDeclineConfirmMessage(String name) {
-    return '$name will get the held bonus back.';
+    return '$name will be notified that you declined.';
   }
 
   @override
@@ -1252,7 +974,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get delegationCancelConfirmMessage =>
-      'The held bonus will be refunded to your wallet.';
+      'This delegation request will be cancelled.';
 
   @override
   String get delegationAcceptedSuccess => 'You accepted the task';
@@ -1261,7 +983,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get delegationDeclinedSuccess => 'Request declined';
 
   @override
-  String get delegationCancelledSuccess => 'Request cancelled, bonus refunded';
+  String get delegationCancelledSuccess => 'Delegation request cancelled';
 
   @override
   String delegationFrom(String name) {
@@ -1271,11 +993,6 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String delegationTo(String name) {
     return 'Asked $name';
-  }
-
-  @override
-  String delegationBonusLabel(String amount) {
-    return 'Bonus $amountđ';
   }
 
   @override
@@ -1480,6 +1197,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get freeCall => 'Free in-app voice call';
 
   @override
+  String get featureUnderDevelopment => 'Feature under development';
+
+  @override
   String get comingSoon => 'Coming soon';
 
   @override
@@ -1524,4 +1244,24 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get attachedReportSnippet => 'Attached report';
+
+  @override
+  String get reportDeadlineLabel => 'Resolution deadline';
+
+  @override
+  String get deadlineOverdueBadge => 'Overdue';
+
+  @override
+  String daysRemainingLabel(int days) {
+    return '$days days left';
+  }
+
+  @override
+  String get overdueOnlyFilter => 'Overdue';
+
+  @override
+  String get rejectedReasonTitle => 'Rejection Reason';
+
+  @override
+  String get noRejectionReasonProvided => 'Rejected by administrator.';
 }

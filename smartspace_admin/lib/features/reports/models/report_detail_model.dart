@@ -1,3 +1,5 @@
+import 'package:mobile_shared/core/utils/report_deadline_helper.dart';
+
 class ReportDetailModel {
   final String id;
   final String title;
@@ -28,6 +30,11 @@ class ReportDetailModel {
   final String? reviewNote;
   final List<String> reviewImages;
   final DateTime? reviewedAt;
+  final DateTime? deadline;
+  final String? rejectedReason;
+  final DateTime? rejectedAt;
+  final bool? serverIsOverdue;
+  final int? serverRemainingDays;
 
   ReportDetailModel({
     required this.id,
@@ -59,7 +66,27 @@ class ReportDetailModel {
     this.reviewNote,
     this.reviewImages = const [],
     this.reviewedAt,
+    this.deadline,
+    this.rejectedReason,
+    this.rejectedAt,
+    this.serverIsOverdue,
+    this.serverRemainingDays,
   });
+
+  bool get isOverdue => ReportDeadlineHelper.isOverdue(
+        status: status,
+        deadline: deadline,
+        resolvedAt: resolvedAt,
+        serverIsOverdue: serverIsOverdue,
+      );
+
+  int? get remainingDays => ReportDeadlineHelper.remainingDays(
+        status: status,
+        deadline: deadline,
+        resolvedAt: resolvedAt,
+        serverIsOverdue: serverIsOverdue,
+        serverRemainingDays: serverRemainingDays,
+      );
 
   factory ReportDetailModel.fromJson(Map<String, dynamic> json) {
     // Parse images list from image_urls or images
@@ -155,6 +182,16 @@ class ReportDetailModel {
       reviewedAt: json['reviewed_at'] != null || json['reviewedAt'] != null
           ? DateTime.tryParse((json['reviewed_at'] ?? json['reviewedAt']).toString())
           : null,
+      deadline: (json['deadline'] ?? json['report_deadline']) != null
+          ? DateTime.tryParse((json['deadline'] ?? json['report_deadline']).toString())
+          : null,
+      rejectedReason: (json['rejected_reason'] ?? json['rejectedReason']) as String?,
+      rejectedAt: (json['rejected_at'] ?? json['rejectedAt']) != null
+          ? DateTime.tryParse((json['rejected_at'] ?? json['rejectedAt']).toString())
+          : null,
+      serverIsOverdue: (json['is_overdue'] ?? json['isOverdue']) as bool?,
+      serverRemainingDays:
+          ((json['remaining_days'] ?? json['remainingDays']) as num?)?.toInt(),
     );
   }
 
@@ -188,6 +225,11 @@ class ReportDetailModel {
     String? reviewNote,
     List<String>? reviewImages,
     DateTime? reviewedAt,
+    DateTime? deadline,
+    String? rejectedReason,
+    DateTime? rejectedAt,
+    bool? serverIsOverdue,
+    int? serverRemainingDays,
   }) {
     return ReportDetailModel(
       id: id ?? this.id,
@@ -219,6 +261,11 @@ class ReportDetailModel {
       reviewNote: reviewNote ?? this.reviewNote,
       reviewImages: reviewImages ?? this.reviewImages,
       reviewedAt: reviewedAt ?? this.reviewedAt,
+      deadline: deadline ?? this.deadline,
+      rejectedReason: rejectedReason ?? this.rejectedReason,
+      rejectedAt: rejectedAt ?? this.rejectedAt,
+      serverIsOverdue: serverIsOverdue ?? this.serverIsOverdue,
+      serverRemainingDays: serverRemainingDays ?? this.serverRemainingDays,
     );
   }
 }

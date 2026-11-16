@@ -103,13 +103,14 @@ public class AdminReportController {
             @RequestParam(required = false) String assigneeId,
             @RequestParam(required = false) String from,
             @RequestParam(required = false) String to,
-            @RequestParam(required = false) String search) {
+            @RequestParam(required = false) String search,
+            @RequestParam(required = false) Boolean overdue) {
 
         return ResponseEntity.ok(ApiResponse.success("system.success",
-                reportService.getAdminReportList(page, size, status, severity, assigneeId, from, to, search)));
+                reportService.getAdminReportList(page, size, status, severity, assigneeId, from, to, search, overdue)));
     }
 
-    // Update Status Report For Kanban
+    // Update Status Report For Kanban & Detail (supports optional reject reason)
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasRole('admin')")
     public ResponseEntity<ApiResponse> updateStatus(
@@ -118,7 +119,7 @@ public class AdminReportController {
             @AuthenticationPrincipal Jwt jwt) {
         String adminId = jwt != null ? jwt.getClaimAsString("userId") : null;
         return ResponseEntity.ok(ApiResponse.success("system.success",
-                reportService.updateReportStatus(id, body.get("status"), adminId)));
+                reportService.updateReportStatus(id, body.get("status"), body.get("reason"), adminId)));
     }
 
     @GetMapping("/map")

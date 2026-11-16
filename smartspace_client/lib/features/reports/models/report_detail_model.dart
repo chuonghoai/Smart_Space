@@ -17,11 +17,12 @@ class ReportDetailModel extends ReportModel {
   final String? assignedStaffAvatarUrl;
   final String? resolvedNote;
   final List<String> resolvedImageUrls;
-  final DateTime? resolvedAt;
   final int? rating;
   final String? reviewNote;
   final List<String> reviewImageUrls;
   final DateTime? reviewedAt;
+  final String? rejectedReason;
+  final DateTime? rejectedAt;
 
   bool get hasReviewed => reviewedAt != null || isReviewResolved != null;
 
@@ -36,6 +37,10 @@ class ReportDetailModel extends ReportModel {
     super.distanceInMeters,
     super.isReviewResolved,
     super.userId,
+    super.deadline,
+    super.resolvedAt,
+    super.serverIsOverdue,
+    super.serverRemainingDays,
 
     required EReportSeverity super.severity,
     required this.imageUrls,
@@ -47,11 +52,12 @@ class ReportDetailModel extends ReportModel {
     this.assignedStaffAvatarUrl,
     this.resolvedNote,
     this.resolvedImageUrls = const [],
-    this.resolvedAt,
     this.rating,
     this.reviewNote,
     this.reviewImageUrls = const [],
     this.reviewedAt,
+    this.rejectedReason,
+    this.rejectedAt,
   }) : super(imageUrl: imageUrls.isNotEmpty ? imageUrls.first : '');
 
   factory ReportDetailModel.fromJson(Map<String, dynamic> json) {
@@ -122,6 +128,15 @@ class ReportDetailModel extends ReportModel {
       reviewedAt: json['reviewed_at'] != null
           ? DateTime.tryParse(json['reviewed_at'].toString())
           : null,
+      deadline: (json['deadline'] ?? json['report_deadline']) != null
+          ? DateTime.tryParse((json['deadline'] ?? json['report_deadline']).toString())
+          : null,
+      serverIsOverdue: (json['is_overdue'] ?? json['isOverdue']) as bool?,
+      serverRemainingDays: ((json['remaining_days'] ?? json['remainingDays']) as num?)?.toInt(),
+      rejectedReason: (json['rejected_reason'] ?? json['rejectedReason']) as String?,
+      rejectedAt: (json['rejected_at'] ?? json['rejectedAt']) != null
+          ? DateTime.tryParse((json['rejected_at'] ?? json['rejectedAt']).toString())
+          : null,
       userId: json['user_id'] as String?,
     );
   }
@@ -145,6 +160,9 @@ class ReportDetailModel extends ReportModel {
     map['review_note'] = reviewNote;
     map['review_image_urls'] = reviewImageUrls;
     map['reviewed_at'] = reviewedAt?.toIso8601String();
+    map['deadline'] = deadline?.toIso8601String();
+    map['rejected_reason'] = rejectedReason;
+    map['rejected_at'] = rejectedAt?.toIso8601String();
     return map;
   }
 
@@ -193,6 +211,11 @@ class ReportDetailModel extends ReportModel {
     String? reviewNote,
     List<String>? reviewImageUrls,
     DateTime? reviewedAt,
+    DateTime? deadline,
+    bool? serverIsOverdue,
+    int? serverRemainingDays,
+    String? rejectedReason,
+    DateTime? rejectedAt,
     String? userId,
   }) {
     return ReportDetailModel(
@@ -205,6 +228,9 @@ class ReportDetailModel extends ReportModel {
       createdAt: createdAt ?? this.createdAt,
       distanceInMeters: distanceInMeters ?? this.distanceInMeters,
       userId: userId ?? this.userId,
+      deadline: deadline ?? this.deadline,
+      serverIsOverdue: serverIsOverdue ?? this.serverIsOverdue,
+      serverRemainingDays: serverRemainingDays ?? this.serverRemainingDays,
       severity: severity ?? this.severity,
       imageUrls: imageUrls ?? this.imageUrls,
       isAnonymous: isAnonymous ?? this.isAnonymous,
@@ -221,6 +247,8 @@ class ReportDetailModel extends ReportModel {
       reviewNote: reviewNote ?? this.reviewNote,
       reviewImageUrls: reviewImageUrls ?? this.reviewImageUrls,
       reviewedAt: reviewedAt ?? this.reviewedAt,
+      rejectedReason: rejectedReason ?? this.rejectedReason,
+      rejectedAt: rejectedAt ?? this.rejectedAt,
     );
   }
 }

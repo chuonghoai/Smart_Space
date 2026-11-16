@@ -193,6 +193,50 @@ class MyReportCard extends StatelessWidget {
                           ),
                         ],
                       ),
+                      if (report.deadline != null &&
+                          report.status != ReportStatus.rejected) ...[
+                        const SizedBox(height: 6),
+                        Builder(
+                          builder: (context) {
+                            final remaining = report.remainingDays;
+                            final isOverdue = report.isOverdue;
+                            final deadlineColor = isOverdue
+                                ? theme.colorScheme.error
+                                : theme.colorScheme.onSurfaceVariant;
+                            final formatted = DateFormat('dd/MM/yyyy HH:mm')
+                                .format(report.deadline!.toLocal());
+                            final deadlineText = remaining != null && !isOverdue
+                                ? '${l10n.reportDeadlineLabel}: $formatted (${l10n.daysRemainingLabel(remaining)})'
+                                : '${l10n.reportDeadlineLabel}: $formatted';
+                            return Row(
+                              children: [
+                                Icon(
+                                  Icons.event_available_outlined,
+                                  size: 14,
+                                  color: deadlineColor,
+                                ),
+                                const SizedBox(width: 4),
+                                Expanded(
+                                  child: Text(
+                                    deadlineText,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      color: deadlineColor,
+                                      fontWeight: isOverdue
+                                          ? FontWeight.w600
+                                          : FontWeight.normal,
+                                      fontFeatures: const [
+                                        FontFeature.tabularFigures(),
+                                      ],
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ],
                       const SizedBox(height: 8),
 
                       // Date and Status (Bottom Row)
@@ -215,6 +259,7 @@ class MyReportCard extends StatelessWidget {
                               alignment: WrapAlignment.end,
                               crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
+                                if (report.isOverdue) const _OverdueBadge(),
                                 if (report.isReviewResolved == false)
                                   const _UnsatisfactoryBadge(),
                                 _MyReportStatusBadge(status: report.status),
@@ -230,6 +275,43 @@ class MyReportCard extends StatelessWidget {
             ),
           ),
         ),
+      ),
+    );
+  }
+}
+
+class _OverdueBadge extends StatelessWidget {
+  const _OverdueBadge();
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+      decoration: BoxDecoration(
+        color: cs.errorContainer,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: cs.error.withValues(alpha: 0.4),
+        ),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(Icons.schedule_outlined, size: 12, color: cs.onErrorContainer),
+          const SizedBox(width: 4),
+          Text(
+            l10n.deadlineOverdueBadge,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: cs.onErrorContainer,
+              fontSize: 10.5,
+              fontWeight: FontWeight.w700,
+            ),
+          ),
+        ],
       ),
     );
   }

@@ -78,6 +78,7 @@ class ReportRepoApi implements ReportRepo {
     EReportSeverity? severity,
     ReportDateRange? dateRange,
     String? search,
+    bool overdueOnly = false,
     int page = 1,
     int size = 20,
   }) async {
@@ -91,6 +92,7 @@ class ReportRepoApi implements ReportRepo {
         'severity': ?severity?.name,
         'from': ?dateRange?.fromQuery,
         'to': ?dateRange?.toQuery,
+        if (overdueOnly) 'overdue': true,
         if (keyword != null && keyword.isNotEmpty) 'search': keyword,
       },
       decoder: (json) {

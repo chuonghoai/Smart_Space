@@ -39,15 +39,6 @@ public class DelegationResponse {
 
     StaffColleagueResponse helper;
 
-    @JsonProperty("rate_percent")
-    Double ratePercent;
-
-    @JsonProperty("commission_amount")
-    Double commissionAmount;
-
-    @JsonProperty("bonus_amount")
-    Double bonusAmount;
-
     String note;
 
     @JsonProperty("expires_at")

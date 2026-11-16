@@ -7,15 +7,7 @@ import 'package:smartspace_staff/features/delegation/models/delegation_model.dar
 import 'package:smartspace_staff/features/delegation/providers/delegation_providers.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 
-final NumberFormat _money = NumberFormat('#,###', 'vi_VN');
-
-/// Số tiền không kèm đơn vị (đơn vị "đ" nằm trong chuỗi L10n).
-String formatDelegationMoney(double amount) => _money.format(amount);
-
 String formatDelegationTime(DateTime time) => DateFormat('HH:mm dd/MM').format(time.toLocal());
-
-/// Phần trăm gọn: 50 → "50", 12.5 → "12.5".
-String formatDelegationRate(double rate) => rate == rate.roundToDouble() ? rate.round().toString() : rate.toString();
 
 extension DelegationStatusUi on DelegationStatus {
   String label(AppLocalizations l10n) => switch (this) {
