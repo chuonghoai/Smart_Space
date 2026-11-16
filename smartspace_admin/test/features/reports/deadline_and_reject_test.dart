@@ -3,13 +3,16 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mobile_shared/core/theme/app_theme.dart';
 import 'package:smartspace_admin/features/home/models/recent_report_model.dart';
+import 'package:smartspace_admin/features/reports/application/report_list_providers.dart';
 import 'package:smartspace_admin/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_admin/features/reports/models/report_list_model.dart';
 import 'package:smartspace_admin/features/staff/application/staff_providers.dart';
 import 'package:smartspace_admin/features/staff/models/staff_model.dart';
 import 'package:smartspace_admin/features/staff/models/staff_statistics_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
+import 'package:smartspace_admin/ui/screen/reports/admin_report_detail_screen.dart';
 import 'package:smartspace_admin/ui/screen/staff/staff_dashboard_widgets.dart';
+import 'package:smartspace_admin/ui/screen/staff/staff_shared_widgets.dart';
 
 void main() {
   group('Deadline & Reject Model Parsing', () {
@@ -51,6 +54,15 @@ void main() {
       });
       expect(processedPast.isOverdueActive, isFalse);
 
+      final processedLate = ReportListItem.fromJson({
+        'id': '2b',
+        'title': 'Done late',
+        'status': 'processed',
+        'deadline': past.toIso8601String(),
+        'resolved_at': DateTime.now().toIso8601String(),
+      });
+      expect(processedLate.isOverdue, isTrue);
+
       final recentFuture = RecentReportModel.fromJson({
         'id': '3',
         'title': 'Upcoming',
@@ -59,6 +71,7 @@ void main() {
       });
       expect(recentFuture.deadlineDate, isNotNull);
       expect(recentFuture.isOverdueActive, isFalse);
+      expect(recentFuture.remainingDays, greaterThanOrEqualTo(1));
     });
   });
 
@@ -111,6 +124,7 @@ void main() {
             completedLateCount: 1,
             completedOnTimeCount: 0,
             hasMissedDeadline: true,
+            efficiencyRate: 0.0,
           ),
           StaffDeadlinePerformanceItem(
             staff: staff('s2', 'Trần Đúng Hạn'),
@@ -118,6 +132,7 @@ void main() {
             completedLateCount: 0,
             completedOnTimeCount: 2,
             hasMissedDeadline: false,
+            efficiencyRate: 100.0,
           ),
         ],
       );
@@ -130,7 +145,9 @@ void main() {
       expect(find.text('Nguyễn Văn Trễ'), findsOneWidget);
       expect(find.text('Trần Đúng Hạn'), findsOneWidget);
       expect(find.text('Trễ hạn'), findsOneWidget);
-      expect(find.text('Đúng hạn'), findsOneWidget);
+      expect(find.text('Xuất sắc'), findsOneWidget);
+      expect(find.text('Hiệu suất công việc: 100%'), findsOneWidget);
+      expect(find.text('Hiệu suất công việc: 0%'), findsOneWidget);
     });
 
     testWidgets('shows no missed deadline banner in Dark Mode (EN)', (tester) async {
@@ -154,6 +171,7 @@ void main() {
             completedLateCount: 0,
             completedOnTimeCount: 3,
             hasMissedDeadline: false,
+            efficiencyRate: 100.0,
           ),
         ],
       );
@@ -165,6 +183,123 @@ void main() {
       expect(find.text('No staff members have missed a deadline'), findsOneWidget);
       expect(find.text('100% on time'), findsOneWidget);
       expect(find.text('Alex Timely'), findsOneWidget);
+      expect(find.text('Excellent'), findsOneWidget);
+      expect(find.text('Work efficiency: 100%'), findsOneWidget);
+    });
+  });
+
+  group('RejectReportDialog & StaffDetailSheetBody Tests', () {
+    testWidgets('RejectReportDialog confirms cleanly without _dependents.isEmpty crash',
+        (tester) async {
+      String? capturedReason;
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.lightTheme,
+          localizationsDelegates: AppLocalizations.localizationsDelegates,
+          supportedLocales: AppLocalizations.supportedLocales,
+          locale: const Locale('vi'),
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: ElevatedButton(
+                onPressed: () async {
+                  capturedReason = await showDialog<String>(
+                    context: context,
+                    builder: (_) => const RejectReportDialog(),
+                  );
+                },
+                child: const Text('Open Reject'),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Open Reject'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextFormField), 'Không hợp lệ');
+      await tester.tap(find.byType(FilledButton));
+      await tester.pumpAndSettle();
+
+      expect(capturedReason, 'Không hợp lệ');
+    });
+
+    testWidgets('StaffDetailSheetBody shows monthly workload breakdown',
+        (tester) async {
+      final staffMember = StaffModel(
+        id: 'staff-1',
+        email: 'nv@test.com',
+        fullName: 'Nhân viên Kiểm thử',
+        status: 'active',
+        processingCount: 2,
+      );
+      final stats = StaffStatisticsModel(
+        totalStaff: 1,
+        activeStaff: 1,
+        blockedStaff: 0,
+        processingReports: 2,
+        resolved: 3,
+        resolvedPrevious: 1,
+        workload: const [],
+        selectedYear: 2026,
+        selectedMonth: 5,
+        deadlinePerformance: [
+          StaffDeadlinePerformanceItem(
+            staff: staffMember,
+            overdueCount: 1,
+            completedLateCount: 0,
+            completedOnTimeCount: 3,
+            hasMissedDeadline: true,
+            processingCount: 2,
+            resolvedCount: 3,
+            rehandlingCount: 1,
+            totalTasks: 5,
+            efficiencyRate: 75.0,
+          ),
+        ],
+      );
+
+      late ProviderContainer container;
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            staffStatisticsProvider.overrideWith((ref) async => stats),
+          ],
+          child: Consumer(
+            builder: (context, ref, _) {
+              container = ProviderScope.containerOf(context);
+              return MaterialApp(
+                theme: AppTheme.darkTheme,
+                localizationsDelegates: AppLocalizations.localizationsDelegates,
+                supportedLocales: AppLocalizations.supportedLocales,
+                locale: const Locale('vi'),
+                home: Builder(
+                  builder: (ctx) => Scaffold(
+                    body: StaffDetailSheetBody(
+                      staff: staffMember,
+                      parentContext: ctx,
+                      sheetContext: ctx,
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text('Khối lượng công việc trong tháng 05/2026'),
+        findsOneWidget,
+      );
+      expect(
+        find.text('2 đang xử lý, 3 đã xử lý, 1 trễ hạn, 1 xử lý lại'),
+        findsOneWidget,
+      );
+      expect(find.text('Hiệu suất công việc: 75%'), findsOneWidget);
+      expect(find.text('Xem phản ánh được giao'), findsOneWidget);
+      expect(container.read(reportFilterProvider).assigneeId, isNull);
     });
   });
 }

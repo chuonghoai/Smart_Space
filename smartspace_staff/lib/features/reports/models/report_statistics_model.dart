@@ -22,4 +22,5 @@ class ReportStatisticsModel {
   int get resolved => byStatus['resolved'] ?? 0;
   int get rejected => byStatus['rejected'] ?? 0;
   int get rehandling => byStatus['rehandling'] ?? 0;
+  int get overdue => byStatus['overdue'] ?? 0;
 }

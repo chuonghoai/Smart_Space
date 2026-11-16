@@ -82,16 +82,21 @@ public class StaffController {
 
         @PreAuthorize("hasRole('admin')")
         @GetMapping("/statistics")
-        public ResponseEntity<ApiResponse> getStatistics() {
+        public ResponseEntity<ApiResponse> getStatistics(
+                        @RequestParam(required = false) Integer year,
+                        @RequestParam(required = false) Integer month) {
                 return ResponseEntity.ok(
-                                ApiResponse.success("system.success", staffService.getStatistics()));
+                                ApiResponse.success("system.success", staffService.getStatistics(year, month)));
         }
 
         @PreAuthorize("hasRole('admin')")
         @GetMapping("/trend")
-        public ResponseEntity<ApiResponse> getTrend(@RequestParam(defaultValue = "daily") String period) {
+        public ResponseEntity<ApiResponse> getTrend(
+                        @RequestParam(defaultValue = "daily") String period,
+                        @RequestParam(required = false) Integer year,
+                        @RequestParam(required = false) Integer month) {
                 return ResponseEntity.ok(
-                                ApiResponse.success("system.success", staffService.getTrend(period)));
+                                ApiResponse.success("system.success", staffService.getTrend(period, year, month)));
         }
 
 }

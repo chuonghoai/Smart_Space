@@ -82,6 +82,7 @@ class _MyReportsScreenState extends ConsumerState<MyReportsScreen> {
                     resultCount: state.isLoading ? null : state.totalElements,
                     horizontalPadding: _gutter,
                     chips: _buildFilterChips(context, state, notifier),
+                    belowChips: _buildOverdueToggle(context, state, notifier),
                   ),
                   const SizedBox(height: 12),
                   for (final widget in _buildListContent(context, state, notifier))
@@ -258,6 +259,42 @@ class _MyReportsScreenState extends ConsumerState<MyReportsScreen> {
         onChanged: notifier.setDateRange,
       ),
     ];
+  }
+
+  Widget _buildOverdueToggle(
+    BuildContext context,
+    MyReportsState state,
+    MyReportsNotifier notifier,
+  ) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final selected = state.overdueOnly;
+
+    return FilterChip(
+      selected: selected,
+      onSelected: (_) => notifier.toggleOverdueOnly(),
+      avatar: Icon(
+        Icons.schedule_outlined,
+        size: 16,
+        color: selected ? cs.onErrorContainer : cs.error,
+      ),
+      label: Text(l10n.overdueOnlyFilter),
+      showCheckmark: false,
+      selectedColor: cs.errorContainer,
+      backgroundColor: cs.surface,
+      labelStyle: theme.textTheme.labelLarge?.copyWith(
+        color: selected ? cs.onErrorContainer : cs.onSurface,
+        fontWeight: selected ? FontWeight.w600 : FontWeight.w500,
+      ),
+      side: BorderSide(
+        color: selected ? cs.error.withValues(alpha: 0.5) : cs.outlineVariant,
+      ),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(8),
+      ),
+      materialTapTargetSize: MaterialTapTargetSize.padded,
+    );
   }
 
   List<Widget> _buildGroupedList(BuildContext context, MyReportsState state) {

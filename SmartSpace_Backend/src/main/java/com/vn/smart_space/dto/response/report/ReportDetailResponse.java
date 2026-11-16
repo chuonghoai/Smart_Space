@@ -93,6 +93,12 @@ public class ReportDetailResponse {
     @JsonProperty("deadline")
     private String deadline;
 
+    @JsonProperty("is_overdue")
+    private Boolean isOverdue;
+
+    @JsonProperty("remaining_days")
+    private Long remainingDays;
+
     @JsonProperty("rejected_reason")
     private String rejectedReason;
 

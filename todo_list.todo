@@ -3,18 +3,250 @@
     "tree": [
       {
         "key": 1794801387388,
-        "children": [],
+        "children": [
+          {
+            "key": 1794832412341,
+            "children": [],
+            "todo": {
+              "content": "New client: Trong danh sách report ở trang chủ client, phải ghi chú rõ deadline xử lý của report và nhãn \"quá hạn\" nếu report bị quá thời hạn xử lý",
+              "id": 1794832412341,
+              "level": "default",
+              "done": true,
+              "start": 1794832412341,
+              "focus": false,
+              "end": 1794837301898
+            }
+          },
+          {
+            "key": 1794832262333,
+            "children": [],
+            "todo": {
+              "content": "New client: Trong danh sách report của tôi, thêm nút toggle để lọc ra những report quá hạn. Nút toggle phải nằm phía dưới dòng filter hiện tại (trạng thái, mức độ, khoảng thời gian)",
+              "id": 1794832262333,
+              "level": "default",
+              "done": false,
+              "start": 1794832262333
+            }
+          },
+          {
+            "key": 1794832188941,
+            "children": [],
+            "todo": {
+              "content": "New client: Trong UI phản ánh của tôi, ở mỗi card phản ánh, nếu report bị quá hạn thì phải hiện nhãn ghi chú \"Quá hạn\" cho report đó",
+              "id": 1794832188941,
+              "level": "default",
+              "done": true,
+              "start": 1794832188941,
+              "focus": false,
+              "end": 1794837337674
+            }
+          },
+          {
+            "key": 1794832333893,
+            "children": [],
+            "todo": {
+              "content": "New client: Nếu client đánh giá xấu và admin xác nhận report phải xử lý lại, phải cập nhật lại deadline xử lý bằng thời gian admin duyệt xử lý lại + thời gian deadline theo mức độ (3/5/7/10 ngày). Deadline mới sẽ được cập nhật cho cả admin và staff",
+              "id": 1794832333893,
+              "level": "default",
+              "done": true,
+              "start": 1794832333894,
+              "focus": false,
+              "end": 1794837439138
+            }
+          },
+          {
+            "key": 1794834201101,
+            "children": [],
+            "todo": {
+              "content": "New client: Trong giao diện chi tiết report của client, nếu report bị quá hạn thì phải ghi chú rõ \"Quá hạn\" vào dòng \"Hạn xử lý\" (bôi đỏ dòng chữ để làm nổi bật)",
+              "id": 1794834201101,
+              "level": "default",
+              "done": false,
+              "start": 1794834201101
+            }
+          },
+          {
+            "key": 1794831976077,
+            "children": [],
+            "todo": {
+              "content": "New: Trong chi tiết quản lý phản ánh của staff và admin, thêm 1 dòng ghi chú \"Còn .. ngày\" để nói rõ cách thời hạn xử lý report còn bao nhiêu ngày, nếu quá hạn thì sẽ thay thế bằng ghi chú \"Quá hạn\"",
+              "id": 1794831976077,
+              "level": "default",
+              "done": true,
+              "start": 1794831976077,
+              "focus": false,
+              "end": 1794838081409
+            }
+          },
+          {
+            "key": 1794831821046,
+            "children": [],
+            "todo": {
+              "content": "New admin: Trong UI quản lý phản ánh, thêm 1 chip stat thống kê số lượng phản ánh quá hạn",
+              "id": 1794831821046,
+              "level": "default",
+              "done": true,
+              "start": 1794831821046,
+              "focus": false,
+              "end": 1794838090001
+            }
+          },
+          {
+            "key": 1794831908782,
+            "children": [],
+            "todo": {
+              "content": "New admin: Trong quản lý phản ánh, thêm bộ lọc các phản ánh quá hạn. Chỉ cần toggle nút bật lên thì sẽ gọi API lọc ra các phản ánh quá hạn. Nút toggle này phải nằm phía dưới dòng button filter hiện tại của admin (trạng thái, mức độ, nhân viên phụ trách, chọn ngày)",
+              "id": 1794831908782,
+              "level": "default",
+              "done": true,
+              "start": 1794831908782,
+              "focus": false,
+              "end": 1794838111265
+            }
+          },
+          {
+            "key": 1794832538285,
+            "children": [],
+            "todo": {
+              "content": "New admin: Trong danh sách card report của giao diện thống kê phản ánh, ở mỗi card phải ghi chú rõ còn bao nhiêu ngày đến deadline (\"Còn .. ngày\"), nếu quá hạn thì thay thế bằng ghi chú \"Quá hạn\"",
+              "id": 1794832538285,
+              "level": "default",
+              "done": true,
+              "start": 1794832538285,
+              "focus": false,
+              "end": 1794838160970
+            }
+          },
+          {
+            "key": 1794832643829,
+            "children": [],
+            "todo": {
+              "content": "New admin: Trong danh sách report ở trang chủ admin, ở mỗi card report, trên dòng \"Dự kiến hoàn thành\" phải ghi chú rõ \"Còn ... ngày\" hoặc \"Quá hạn\". Layout của các ghi chú này phải đảm bảo không bị che mất và bị thay thế bằng \"...\" bởi ghi chú \"Ẩn danh\". Đảm bảo dòng \"Dự kiến hoàn thành\" có thể hiển thị trọn vẹn, đầy đủ, không bị che mất bởi ghi chú \"ẩn danh\"",
+              "id": 1794832643829,
+              "level": "default",
+              "done": true,
+              "start": 1794832643829,
+              "focus": false,
+              "end": 1794838179697
+            }
+          },
+          {
+            "key": 1794832036967,
+            "children": [],
+            "todo": {
+              "content": "New staff: Trong danh sách công việc của tôi, ở mỗi card report, thêm ghi chú thời hạn xử lý kèm theo ghi chú \"Còn .. ngày\" (thay thế bằng \"Quá hạn\" nếu report đã quá thời hạn xử lý). Nhưng dù đã quá hạn thì staff vẫn có thể xử lý hoàn thành report 1 cách bình thường, nhưng dù cho xử lý hoàn tất thì nhãn \"Quá hạn\" vẫn còn tồn tại (vẫn bị bôi đỏ), admin và client có thể xem được tình trạng xử lý quá này của nhân viên",
+              "id": 1794832036967,
+              "level": "default",
+              "done": true,
+              "start": 1794832036967,
+              "focus": false,
+              "end": 1794838243706
+            }
+          },
+          {
+            "key": 1794832785453,
+            "children": [],
+            "todo": {
+              "content": "New staff: Trong danh sách report của trang chủ staff, ở mỗi card report, phải ghi chú rõ thời hạn xử lý và ghi chú \"Còn ... ngày\" hoặc \"Quá hạn\" (có bôi đỏ)",
+              "id": 1794832785453,
+              "level": "default",
+              "done": true,
+              "start": 1794832785453,
+              "focus": false,
+              "end": 1794838265401
+            }
+          },
+          {
+            "key": 1794832855421,
+            "children": [],
+            "todo": {
+              "content": "New staff - admin: Trong chi tiết report đã xử lý, thêm ghi chú thời gian hoàn thành (thời gian nhân viên thực hiện API hoàn tất xử lý report), để nhân viên có thể đối chiếu rõ với deadline",
+              "id": 1794832855421,
+              "level": "default",
+              "done": true,
+              "start": 1794832855421,
+              "focus": false,
+              "end": 1794838282353
+            }
+          },
+          {
+            "key": 1794832931085,
+            "children": [],
+            "todo": {
+              "content": "New staff: Trong giao diện công việc của tôi, thêm 1 nút toggle để lọc các report bị quá hạn (trễ deadlien), button này phải nằm phía dưới dòng button filter \"tất cả\", \"đang xử lý\", \"xử lý lại\"...",
+              "id": 1794832931085,
+              "level": "default",
+              "done": false,
+              "start": 1794832931085
+            }
+          }
+        ],
         "todo": {
           "content": "New: Tự động thêm deadline cho report khi vừa được tạo bởi client. Các mức deadline tương ứng với mức độ của report (thấp: 3 ngày, trung bình: 5 ngày, cao: 7 ngày, nghiêm trọng: 10 ngày). Deadline này phải được nhìn thấy công khai cho admin, staff (người được phân công xử lý) và client (người tạo report) trong giao diện chi tiết report",
           "id": 1794801387388,
           "level": "default",
           "done": false,
-          "start": 1794801387388
+          "start": 1794801387388,
+          "focus": false,
+          "end": 1794832966957
         }
       },
       {
         "key": 1794801487099,
-        "children": [],
+        "children": [
+          {
+            "key": 1794833085565,
+            "children": [],
+            "todo": {
+              "content": "Fix Bug admin: Trong quản lý staff, ở mục hiệu dashboard hiệu suất theo hạn xử lý, đang bị lỗi: Nhân viên không có report nào bị trễ deadline nhưng vẫn bị gắn nhãn \"Trễ hạn\" trong dashboard hiệu suất theo hạn xử lý. Sửa lại để đảm bảo thống kê hiệu suất hiện thị đúng theo thực trạng khối lượng và hiệu suất công việc của từng nhân viên, gắn đúng nhãn cho từng người (nhãn Trễ hạn cho nhân viên có phản ánh trễ hạn, nhãn Xuất xắc cho nhân viên không có report nào bị trễ).",
+              "id": 1794833085565,
+              "level": "default",
+              "done": true,
+              "start": 1794833085565,
+              "focus": false,
+              "end": 1794838382673
+            }
+          },
+          {
+            "key": 1794833186989,
+            "children": [],
+            "todo": {
+              "content": "New admin: Trong dashboard hiệu suất theo hạn xử lý trong giao diện quản lý nhân viên: Phải ghi chú thông số định lượng \"Hiệu suất công việc: ...%\" (công thức là công việc đúng hạn/tổng số công việc) cho mỗi nhân viên",
+              "id": 1794833186989,
+              "level": "default",
+              "done": true,
+              "start": 1794833186989,
+              "focus": false,
+              "end": 1794838388465
+            }
+          },
+          {
+            "key": 1794833267716,
+            "children": [],
+            "todo": {
+              "content": "Fix admin: Sửa cơ chế thống kê trong quản lý nhân viên của admin: mặc định sẽ thống kê hiệu suất công việc của nhân viên trong tháng hiện tại (tháng hiện tại bắt đầu từ ngày 1 của tháng đến hôm nay, không phải bắt đầu từ ngày này tháng trước đến hôm nay), khi chọn bộ lọc, toàn bộ thống kê của quản lý nhân viên phải được tính toán lại theo đúng tháng được chọn. Hơn nữa, số tháng có thể chọn phải được tính toán linh hoạt theo database: Ví dụ trong DB có thống kê hiệu suất của tháng 12 năm ngoái đến tháng 9 năm nay, thì trong dropdown có thể chọn các tháng 12/2025 - tháng 09/2026, nếu chỉ có duy nhất thống kê hiệu suất của tháng 9 này thì chỉ có thể chọn thống kê hiệu suất của tháng 9/2026",
+              "id": 1794833267716,
+              "level": "default",
+              "done": true,
+              "start": 1794833267717,
+              "focus": false,
+              "end": 1794838392729
+            }
+          },
+          {
+            "key": 1794833587004,
+            "children": [],
+            "todo": {
+              "content": "New admin: Trong giao diện quản lý nhân viên, khi bấm vào 1 nhân viên để mở bottom sheet thông tin nhân viên, phải hiện rõ thống kê thông số/hiệu suất của nhân viên trong tháng như \"Khối lượng công việc trong tháng 9: 1 đang xử lý, 1 đã xử lý, 1 trễ hạn, 1 xử lý lại...\", có nút bấm để mở màn hình quản lý phản ánh với bộ lọc chọn sẵn các report được phân công cho nhân viên đó",
+              "id": 1794833587004,
+              "level": "default",
+              "done": true,
+              "start": 1794833587005,
+              "focus": false,
+              "end": 1794838409193
+            }
+          }
+        ],
         "todo": {
           "content": "New admin: Trong quản lý staff, thêm dash board thống kê hiệu suất xử lý phản ánh của client. Phương pháp thống kê là xem có staff nào trễ deadline hay không. Ngoài ra trong danh sách phản ánh của admin (danh sách trong quản lý phản ánh và trang chủ) phải có 1 dòng ghi chú về deadline phản ánh (ví dụ: \"Dự kiến hoàn thành: DD/MM\")",
           "id": 1794801487099,
@@ -25,13 +257,29 @@
       },
       {
         "key": 1794801773371,
-        "children": [],
+        "children": [
+          {
+            "key": 1794833799028,
+            "children": [],
+            "todo": {
+              "content": "Fix bug admin: Khi bấm xác nhận từ chối, màn hình app admin hiện màn hình đỏ lòm với lỗi: 'package:flutter/src/widgets/framework.dart': Failed assertion: line 6268 pos 12: '_dependents.isEmpty': is not true. See also: https://docs.flutter.dev/testing/errors",
+              "id": 1794833799028,
+              "level": "default",
+              "done": true,
+              "start": 1794833799028,
+              "focus": false,
+              "end": 1794838462425
+            }
+          }
+        ],
         "todo": {
           "content": "New admin: Thêm tính năng từ chối phản ánh trong giao diện chi tiết phản ánh (chỉ khả dụng report có trạng thái pending và processing)",
           "id": 1794801773371,
           "level": "default",
-          "done": false,
-          "start": 1794801773371
+          "done": true,
+          "start": 1794801773371,
+          "focus": false,
+          "end": 1794838461241
         }
       },
       {
@@ -41,12 +289,20 @@
           "content": "Fix: Xóa module ví tiền hoa hồng của staff. Phạm vi của task xóa module ví hoa hồng bao gồm cả trên UI của admin và staff, trong backend, database, tất cả các dòng logic có liên quan đến module ví tiền hoa hồng đều phải được xóa triệt để. Trong quá trình xóa, tuyệt đối không được làm ảnh hưởng trực tiếp hay gián tiếp đến logic của module khác (cả frontend lẫn backend). Trước khi xóa mỗi dòng, phải xác minh dòng đó có thật sự liên quan đến module ví tiền hoa hồng hay ko, và phải xác nhận dòng đó có cần thiết phải xóa hay ko... Nếu thật sự dòng đó là logic liên quan đến module ví tiền hoa hồng thì mới được xóa.",
           "id": 1794801864794,
           "level": "default",
-          "done": false,
-          "start": 1794801864794
+          "done": true,
+          "start": 1794801864794,
+          "focus": false,
+          "end": 1794834058692
         }
       }
     ],
-    "expandKeys": [],
+    "expandKeys": [
+      1794801387388,
+      1794831908782,
+      1794801487099,
+      1794801773371,
+      1794832412341
+    ],
     "add_mode": "bottom",
     "virtual": false,
     "showLine": false,
@@ -56,6 +312,6 @@
     "showEndTime": false,
     "simpleMode": false,
     "lang": "en",
-    "version": "1794805304414"
+    "version": "1794838462463"
   }
 }

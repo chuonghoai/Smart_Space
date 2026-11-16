@@ -639,20 +639,35 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
               children: [
                 LayoutBuilder(
                   builder: (context, constraints) {
-                    const cardHeight = 140.0;
                     if (constraints.maxWidth >= 720 && reports.length > 1) {
-                      final cardWidth = (constraints.maxWidth - 12) / 2;
-                      return Wrap(
-                        spacing: 12,
-                        runSpacing: 12,
-                        children: reports.map((report) {
-                          return SizedBox(
-                            width: cardWidth,
-                            height: cardHeight,
-                            child: _buildReportCard(report, theme, l10n),
-                          );
-                        }).toList(),
-                      );
+                      final rows = <Widget>[];
+                      for (var i = 0; i < reports.length; i += 2) {
+                        final first = reports[i];
+                        final second =
+                            i + 1 < reports.length ? reports[i + 1] : null;
+                        rows.add(
+                          IntrinsicHeight(
+                            child: Row(
+                              crossAxisAlignment: CrossAxisAlignment.stretch,
+                              children: [
+                                Expanded(
+                                  child: _buildReportCard(first, theme, l10n),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: second != null
+                                      ? _buildReportCard(second, theme, l10n)
+                                      : const SizedBox.shrink(),
+                                ),
+                              ],
+                            ),
+                          ),
+                        );
+                        if (i + 2 < reports.length) {
+                          rows.add(const SizedBox(height: 12));
+                        }
+                      }
+                      return Column(children: rows);
                     }
                     return ListView.separated(
                       shrinkWrap: true,
@@ -660,11 +675,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
                       itemCount: reports.length,
                       separatorBuilder: (_, _) => const SizedBox(height: 12),
                       itemBuilder: (context, index) {
-                        final report = reports[index];
-                        return SizedBox(
-                          height: cardHeight,
-                          child: _buildReportCard(report, theme, l10n),
-                        );
+                        return _buildReportCard(reports[index], theme, l10n);
                       },
                     );
                   },
@@ -1053,120 +1064,170 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
     final deadline = report.deadlineDate;
     final showDeadline =
         deadline != null && report.status?.toLowerCase() != 'rejected';
+    final remainingDays = report.remainingDays;
 
     return InkWell(
       onTap: () => context.push(RouterPath.reportDetailWithId(report.id)),
       borderRadius: BorderRadius.circular(14),
-      child: Container(
-        height: 140,
-        padding: const EdgeInsets.all(12),
-        decoration: BoxDecoration(
-          color: theme.cardColor,
-          borderRadius: BorderRadius.circular(14),
-          border: Border.all(
-            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-            width: 1,
-          ),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withValues(alpha: 0.03),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(minHeight: 140),
+        child: Container(
+          padding: const EdgeInsets.all(12),
+          decoration: BoxDecoration(
+            color: theme.cardColor,
+            borderRadius: BorderRadius.circular(14),
+            border: Border.all(
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+              width: 1,
             ),
-          ],
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            _buildReportThumbnail(report, theme, isDark),
-            const SizedBox(width: 12),
-            Expanded(
-              child: Column(
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.03),
+                blurRadius: 8,
+                offset: const Offset(0, 2),
+              ),
+            ],
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Top row: Thumbnail + Title/CreatedAt + StatusBadge
+              Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  SizedBox(
-                    height: 38,
-                    child: Align(
-                      alignment: Alignment.topLeft,
-                      child: Text(
-                        report.title,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 14,
-                          height: 1.25,
-                        ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  SizedBox(
-                    height: 16,
-                    child: Row(
+                  _buildReportThumbnail(report, theme, isDark),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      mainAxisSize: MainAxisSize.min,
                       children: [
-                        Icon(
-                          Icons.access_time_rounded,
-                          size: 13,
-                          color: theme.hintColor,
-                        ),
-                        const SizedBox(width: 4),
-                        Expanded(
-                          child: Text(
-                            _formatDateTime(report.createdAt),
-                            style: theme.textTheme.bodySmall?.copyWith(
-                              color: theme.hintColor,
-                              fontSize: 11,
-                              fontFeatures: const [FontFeature.tabularFigures()],
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
+                        Text(
+                          report.title,
+                          style: theme.textTheme.titleMedium?.copyWith(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 14,
+                            height: 1.25,
                           ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.access_time_rounded,
+                              size: 13,
+                              color: theme.hintColor,
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                _formatDateTime(report.createdAt),
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.hintColor,
+                                  fontSize: 11,
+                                  fontFeatures: const [FontFeature.tabularFigures()],
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
                         ),
                       ],
                     ),
                   ),
-                  if (showDeadline) ...[
-                    const SizedBox(height: 4),
-                    SizedBox(
-                      height: 16,
-                      child: Row(
-                        children: [
-                          Icon(
-                            Icons.event_available_outlined,
-                            size: 13,
-                            color: report.isOverdueActive
+                  const SizedBox(width: 8),
+                  _buildReportStatusBadge(report.status, theme, l10n),
+                ],
+              ),
+              if (showDeadline) ...[
+                const SizedBox(height: 8),
+                // Full-width deadline row so status/anonymous badges never squeeze it
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 4,
+                  crossAxisAlignment: WrapCrossAlignment.center,
+                  children: [
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.event_available_outlined,
+                          size: 13,
+                          color: report.isOverdue
+                              ? theme.colorScheme.error
+                              : theme.hintColor,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          l10n.expectedCompletionDate(
+                            DateFormat('dd/MM').format(deadline.toLocal()),
+                          ),
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: report.isOverdue
                                 ? theme.colorScheme.error
                                 : theme.hintColor,
+                            fontSize: 11,
+                            fontWeight: report.isOverdue
+                                ? FontWeight.w600
+                                : FontWeight.normal,
+                            fontFeatures: const [FontFeature.tabularFigures()],
                           ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Text(
-                              l10n.expectedCompletionDate(
-                                DateFormat('dd/MM').format(deadline.toLocal()),
-                              ),
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: report.isOverdueActive
-                                    ? theme.colorScheme.error
-                                    : theme.hintColor,
-                                fontSize: 11,
-                                fontWeight: report.isOverdueActive
-                                    ? FontWeight.w600
-                                    : FontWeight.normal,
-                                fontFeatures: const [FontFeature.tabularFigures()],
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
+                    if (report.isOverdue)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 1.5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.errorContainer,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          l10n.deadlineOverdueBadge,
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            fontSize: 10,
+                            color: theme.colorScheme.onErrorContainer,
+                            fontWeight: FontWeight.w700,
+                          ),
+                        ),
+                      )
+                    else if (remainingDays != null)
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 6,
+                          vertical: 1.5,
+                        ),
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surfaceContainerHighest,
+                          borderRadius: BorderRadius.circular(4),
+                        ),
+                        child: Text(
+                          l10n.daysRemainingLabel(remainingDays),
+                          style: theme.textTheme.labelSmall?.copyWith(
+                            fontSize: 10,
+                            color: theme.colorScheme.onSurfaceVariant,
+                            fontWeight: FontWeight.w600,
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                          ),
+                        ),
+                      ),
                   ],
-                  const SizedBox(height: 6),
-                  SizedBox(
-                    height: 20,
+                ),
+              ],
+              const SizedBox(height: 8),
+              // Bottom row: Assigned Staff + Secondary Badges (New / Rehandling / Anonymous)
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Expanded(
                     child: Row(
                       children: [
                         if (report.assignedStaffName != null &&
@@ -1198,9 +1259,8 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
                         ] else ...[
                           CircleAvatar(
                             radius: 10,
-                            backgroundColor: isDark
-                                ? theme.colorScheme.surfaceContainerHighest
-                                : theme.colorScheme.surfaceContainerHighest,
+                            backgroundColor:
+                                theme.colorScheme.surfaceContainerHighest,
                             child: Icon(
                               Icons.person_outline,
                               size: 12,
@@ -1223,34 +1283,23 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
                       ],
                     ),
                   ),
+                  const SizedBox(width: 8),
+                  Wrap(
+                    spacing: 4,
+                    runSpacing: 4,
+                    alignment: WrapAlignment.end,
+                    children: [
+                      if (isNew) _buildNewBadge(theme, isDark, l10n),
+                      if (report.isReviewResolved == false)
+                        _buildRehandlingBadge(theme, isDark, l10n),
+                      if (report.isAnonymous)
+                        _buildAnonymousBadge(theme, isDark, l10n),
+                    ],
+                  ),
                 ],
               ),
-            ),
-            const SizedBox(width: 10),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                _buildReportStatusBadge(report.status, theme, l10n),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.end,
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    if (isNew) ...[
-                      _buildNewBadge(theme, isDark, l10n),
-                      const SizedBox(height: 3),
-                    ],
-                    if (report.isReviewResolved == false) ...[
-                      _buildRehandlingBadge(theme, isDark, l10n),
-                      if (report.isAnonymous) const SizedBox(height: 3),
-                    ],
-                    if (report.isAnonymous)
-                      _buildAnonymousBadge(theme, isDark, l10n),
-                  ],
-                ),
-              ],
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

@@ -1,3 +1,5 @@
+import 'package:mobile_shared/core/utils/report_deadline_helper.dart';
+
 class ReportDetailModel {
   final String id;
   final String title;
@@ -31,6 +33,8 @@ class ReportDetailModel {
   final DateTime? deadline;
   final String? rejectedReason;
   final DateTime? rejectedAt;
+  final bool? serverIsOverdue;
+  final int? serverRemainingDays;
 
   ReportDetailModel({
     required this.id,
@@ -65,7 +69,24 @@ class ReportDetailModel {
     this.deadline,
     this.rejectedReason,
     this.rejectedAt,
+    this.serverIsOverdue,
+    this.serverRemainingDays,
   });
+
+  bool get isOverdue => ReportDeadlineHelper.isOverdue(
+        status: status,
+        deadline: deadline,
+        resolvedAt: resolvedAt,
+        serverIsOverdue: serverIsOverdue,
+      );
+
+  int? get remainingDays => ReportDeadlineHelper.remainingDays(
+        status: status,
+        deadline: deadline,
+        resolvedAt: resolvedAt,
+        serverIsOverdue: serverIsOverdue,
+        serverRemainingDays: serverRemainingDays,
+      );
 
   factory ReportDetailModel.fromJson(Map<String, dynamic> json) {
     // Parse images list from image_urls or images
@@ -168,6 +189,9 @@ class ReportDetailModel {
       rejectedAt: (json['rejected_at'] ?? json['rejectedAt']) != null
           ? DateTime.tryParse((json['rejected_at'] ?? json['rejectedAt']).toString())
           : null,
+      serverIsOverdue: (json['is_overdue'] ?? json['isOverdue']) as bool?,
+      serverRemainingDays:
+          ((json['remaining_days'] ?? json['remainingDays']) as num?)?.toInt(),
     );
   }
 
@@ -204,6 +228,8 @@ class ReportDetailModel {
     DateTime? deadline,
     String? rejectedReason,
     DateTime? rejectedAt,
+    bool? serverIsOverdue,
+    int? serverRemainingDays,
   }) {
     return ReportDetailModel(
       id: id ?? this.id,
@@ -238,6 +264,8 @@ class ReportDetailModel {
       deadline: deadline ?? this.deadline,
       rejectedReason: rejectedReason ?? this.rejectedReason,
       rejectedAt: rejectedAt ?? this.rejectedAt,
+      serverIsOverdue: serverIsOverdue ?? this.serverIsOverdue,
+      serverRemainingDays: serverRemainingDays ?? this.serverRemainingDays,
     );
   }
 }

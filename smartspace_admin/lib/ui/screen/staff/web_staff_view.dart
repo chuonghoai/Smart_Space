@@ -91,27 +91,36 @@ class _WebStaffViewState extends ConsumerState<WebStaffView> {
           staffStatisticsProvider.select((s) => s.valueOrNull?.totalStaff),
         ) ??
         staffAsync.valueOrNull?.summary.total;
-    return Row(
+    return Wrap(
+      alignment: WrapAlignment.spaceBetween,
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: 12,
+      runSpacing: 12,
       children: [
-        Expanded(
-          child: Text(
-            total == null
-                ? l10n.manageStaffs
-                : '${l10n.manageStaffs} · ${formatCount(context, total)}',
-            style: theme.textTheme.headlineSmall?.copyWith(
-              fontWeight: FontWeight.bold,
-            ),
+        Text(
+          total == null
+              ? l10n.manageStaffs
+              : '${l10n.manageStaffs} · ${formatCount(context, total)}',
+          style: theme.textTheme.headlineSmall?.copyWith(
+            fontWeight: FontWeight.bold,
           ),
         ),
-        FilledButton.icon(
-          onPressed: () => showStaffFormDialog(context, l10n, theme, ref),
-          icon: const Icon(Icons.add, size: 18),
-          label: Text(l10n.addStaff),
-          style: FilledButton.styleFrom(
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(8),
+        Row(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const StaffStatsMonthSelector(),
+            const SizedBox(width: 12),
+            FilledButton.icon(
+              onPressed: () => showStaffFormDialog(context, l10n, theme, ref),
+              icon: const Icon(Icons.add, size: 18),
+              label: Text(l10n.addStaff),
+              style: FilledButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(8),
+                ),
+              ),
             ),
-          ),
+          ],
         ),
       ],
     );

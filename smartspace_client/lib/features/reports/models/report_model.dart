@@ -1,3 +1,5 @@
+import 'package:mobile_shared/core/utils/report_deadline_helper.dart';
+
 enum ReportStatus { processed, processing, pending, rejected, unknown }
 
 enum EReportSeverity { low, medium, high, critical }
@@ -16,9 +18,27 @@ class ReportModel {
   final EReportSeverity? severity;
   final String? userId;
   final DateTime? deadline;
+  final DateTime? resolvedAt;
+  final bool? serverIsOverdue;
+  final int? serverRemainingDays;
 
   bool get isDangerous =>
       severity == EReportSeverity.high || severity == EReportSeverity.critical;
+
+  bool get isOverdue => ReportDeadlineHelper.isOverdue(
+        status: status.name,
+        deadline: deadline,
+        resolvedAt: resolvedAt,
+        serverIsOverdue: serverIsOverdue,
+      );
+
+  int? get remainingDays => ReportDeadlineHelper.remainingDays(
+        status: status.name,
+        deadline: deadline,
+        resolvedAt: resolvedAt,
+        serverIsOverdue: serverIsOverdue,
+        serverRemainingDays: serverRemainingDays,
+      );
 
   ReportModel({
     required this.id,
@@ -34,6 +54,9 @@ class ReportModel {
     this.severity,
     this.userId,
     this.deadline,
+    this.resolvedAt,
+    this.serverIsOverdue,
+    this.serverRemainingDays,
   });
 
   factory ReportModel.fromJson(Map<String, dynamic> json) {
@@ -55,6 +78,11 @@ class ReportModel {
       deadline: (json['deadline'] ?? json['report_deadline']) != null
           ? DateTime.tryParse((json['deadline'] ?? json['report_deadline']).toString())
           : null,
+      resolvedAt: (json['resolved_at'] ?? json['resolvedAt']) != null
+          ? DateTime.tryParse((json['resolved_at'] ?? json['resolvedAt']).toString())
+          : null,
+      serverIsOverdue: (json['is_overdue'] ?? json['isOverdue']) as bool?,
+      serverRemainingDays: ((json['remaining_days'] ?? json['remainingDays']) as num?)?.toInt(),
     );
   }
 
@@ -72,6 +100,9 @@ class ReportModel {
       'severity': severity?.name,
       'user_id': userId,
       'deadline': deadline?.toIso8601String(),
+      'resolved_at': resolvedAt?.toIso8601String(),
+      'is_overdue': serverIsOverdue,
+      'remaining_days': serverRemainingDays,
     };
   }
 
@@ -89,6 +120,9 @@ class ReportModel {
     EReportSeverity? severity,
     String? userId,
     DateTime? deadline,
+    DateTime? resolvedAt,
+    bool? serverIsOverdue,
+    int? serverRemainingDays,
   }) {
     return ReportModel(
       id: id ?? this.id,
@@ -104,6 +138,9 @@ class ReportModel {
       severity: severity ?? this.severity,
       userId: userId ?? this.userId,
       deadline: deadline ?? this.deadline,
+      resolvedAt: resolvedAt ?? this.resolvedAt,
+      serverIsOverdue: serverIsOverdue ?? this.serverIsOverdue,
+      serverRemainingDays: serverRemainingDays ?? this.serverRemainingDays,
     );
   }
 

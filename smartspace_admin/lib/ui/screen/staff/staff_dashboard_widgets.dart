@@ -23,6 +23,101 @@ String formatResolutionDuration(BuildContext context, int minutes) {
   return l10n.durationDays(format.format(minutes / (24 * 60)));
 }
 
+/// Bộ chọn tháng thống kê dùng chung cho Web & Mobile trong màn Quản lý nhân viên.
+class StaffStatsMonthSelector extends ConsumerWidget {
+  const StaffStatsMonthSelector({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final stats = ref.watch(staffStatisticsProvider).valueOrNull;
+    final selected = ref.watch(selectedStaffStatsMonthProvider);
+    final now = DateTime.now();
+
+    final currentYear = selected?.year ?? stats?.selectedYear ?? now.year;
+    final currentMonth = selected?.month ?? stats?.selectedMonth ?? now.month;
+
+    final rawMonths = stats?.availableMonths ?? const <AvailableMonthItem>[];
+    final items = <AvailableMonthItem>[...rawMonths];
+    if (!items.any((m) => m.year == currentYear && m.month == currentMonth)) {
+      items.insert(
+        0,
+        AvailableMonthItem(
+          year: currentYear,
+          month: currentMonth,
+          label: '${currentMonth.toString().padLeft(2, '0')}/$currentYear',
+        ),
+      );
+    }
+
+    String encode(int year, int month) => '$year-$month';
+    final selectedKey = encode(currentYear, currentMonth);
+
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(8),
+        border: Border.all(color: theme.dividerColor),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.calendar_month_outlined,
+            size: 16,
+            color: theme.colorScheme.primary,
+          ),
+          const SizedBox(width: 6),
+          Text(
+            '${l10n.statsMonthLabel}: ',
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: theme.colorScheme.onSurfaceVariant,
+            ),
+          ),
+          DropdownButtonHideUnderline(
+            child: DropdownButton<String>(
+              value: selectedKey,
+              isDense: true,
+              style: theme.textTheme.labelMedium?.copyWith(
+                fontWeight: FontWeight.w600,
+                fontFeatures: const [FontFeature.tabularFigures()],
+              ),
+              items: items
+                  .map(
+                    (m) => DropdownMenuItem<String>(
+                      value: encode(m.year, m.month),
+                      child: Text(
+                        m.label,
+                        style: const TextStyle(
+                          fontFeatures: [FontFeature.tabularFigures()],
+                        ),
+                      ),
+                    ),
+                  )
+                  .toList(),
+              onChanged: (key) {
+                if (key == null) return;
+                final parts = key.split('-');
+                if (parts.length != 2) return;
+                final y = int.tryParse(parts[0]);
+                final m = int.tryParse(parts[1]);
+                if (y != null && m != null) {
+                  ref.read(selectedStaffStatsMonthProvider.notifier).state = (
+                    year: y,
+                    month: m,
+                  );
+                }
+              },
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 /// 4 KPI của màn Quản lý nhân viên.
 class StaffKpiGrid extends ConsumerWidget {
   final bool compact;
@@ -88,7 +183,7 @@ class StaffKpiGrid extends ConsumerWidget {
           compact: compact,
           icon: Icons.task_alt,
           iconColor: semantic.success,
-          label: l10n.resolved30Days,
+          label: l10n.resolvedInMonth,
           value: count(stats?.resolved),
           footnote: KpiFootnote.change(
             context,
@@ -101,7 +196,7 @@ class StaffKpiGrid extends ConsumerWidget {
           compact: compact,
           icon: Icons.timer_outlined,
           iconColor: theme.colorScheme.secondary,
-          label: l10n.avgResolutionTime30Days,
+          label: l10n.avgResolutionTimeInMonth,
           value: avgMinutes == null
               ? '—'
               : formatResolutionDuration(context, avgMinutes),
@@ -216,7 +311,7 @@ class StaffWorkloadChart extends ConsumerWidget {
                   name: item.staff.fullName,
                   avatarUrl: item.staff.avatarUrl,
                   value: item.staff.processingCount,
-                  subtitle: l10n.resolvedLast30Days(item.resolvedCount),
+                  subtitle: l10n.resolvedMonthCount(item.resolvedCount),
                 ),
             ],
             onTap: (item) {
@@ -517,6 +612,24 @@ class _DeadlineStaffRow extends StatelessWidget {
                       fontFeatures: const [FontFeature.tabularFigures()],
                     ),
                   ),
+                  const SizedBox(height: 2),
+                  Text(
+                    item.efficiencyRate == null
+                        ? l10n.staffEfficiencyNoData
+                        : l10n.staffEfficiencyLabel(
+                            NumberFormat(
+                              '#,##0.#',
+                              Localizations.localeOf(context).toLanguageTag(),
+                            ).format(item.efficiencyRate!),
+                          ),
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: item.efficiencyRate == null
+                          ? cs.onSurfaceVariant
+                          : badgeColor,
+                      fontWeight: FontWeight.w600,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
                 ],
               ),
             ),
@@ -528,7 +641,9 @@ class _DeadlineStaffRow extends StatelessWidget {
                 borderRadius: BorderRadius.circular(8),
               ),
               child: Text(
-                item.hasMissedDeadline ? l10n.missedDeadlineBadge : l10n.onTimeBadge,
+                item.hasMissedDeadline
+                    ? l10n.missedDeadlineBadge
+                    : l10n.excellentBadge,
                 style: theme.textTheme.labelSmall?.copyWith(
                   color: badgeColor,
                   fontWeight: FontWeight.w700,

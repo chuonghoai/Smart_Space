@@ -9,6 +9,7 @@ class AllReportsState {
   final bool isLoading;
   final bool hasMore;
   final String filter;
+  final bool overdueOnly;
   final int page;
   final String? error;
   final ReportStatisticsModel? stats;
@@ -18,6 +19,7 @@ class AllReportsState {
     this.isLoading = false,
     this.hasMore = true,
     this.filter = 'all',
+    this.overdueOnly = false,
     this.page = 0,
     this.error,
     this.stats,
@@ -28,6 +30,7 @@ class AllReportsState {
     bool? isLoading,
     bool? hasMore,
     String? filter,
+    bool? overdueOnly,
     int? page,
     String? error,
     ReportStatisticsModel? stats,
@@ -37,6 +40,7 @@ class AllReportsState {
       isLoading: isLoading ?? this.isLoading,
       hasMore: hasMore ?? this.hasMore,
       filter: filter ?? this.filter,
+      overdueOnly: overdueOnly ?? this.overdueOnly,
       page: page ?? this.page,
       error: error,
       stats: stats ?? this.stats,
@@ -66,6 +70,7 @@ class AllReportsController extends ChangeNotifier {
       final responses = await Future.wait([
         _reportService.getStaffAssignedReports(
           status: _state.filter,
+          overdueOnly: _state.overdueOnly,
           page: 0,
           limit: 20,
         ),
@@ -108,6 +113,7 @@ class AllReportsController extends ChangeNotifier {
     try {
       final response = await _reportService.getStaffAssignedReports(
         status: _state.filter,
+        overdueOnly: _state.overdueOnly,
         page: _state.page,
         limit: 20,
       );
@@ -138,6 +144,11 @@ class AllReportsController extends ChangeNotifier {
   void setFilter(String newFilter) {
     if (_state.filter == newFilter) return;
     _state = _state.copyWith(filter: newFilter);
+    fetchInitial();
+  }
+
+  void toggleOverdueOnly() {
+    _state = _state.copyWith(overdueOnly: !_state.overdueOnly);
     fetchInitial();
   }
 }

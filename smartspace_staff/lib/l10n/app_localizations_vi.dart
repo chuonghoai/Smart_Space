@@ -1238,6 +1238,14 @@ class AppLocalizationsVi extends AppLocalizations {
   String get deadlineOverdueBadge => 'Quá hạn';
 
   @override
+  String daysRemainingLabel(int days) {
+    return 'Còn $days ngày';
+  }
+
+  @override
+  String get overdueOnlyFilter => 'Quá hạn';
+
+  @override
   String get rejectedReasonTitle => 'Lý do từ chối';
 
   @override

@@ -1,5 +1,6 @@
 package com.vn.smart_space.service.report;
 
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -140,6 +141,43 @@ public class ReportServiceImpl implements IReportService {
         return base != null ? base.plusDays(deadlineDaysForSeverity(report.getSeverity())) : null;
     }
 
+    public static boolean isReportOverdue(Report report, LocalDateTime now) {
+        if (report == null || report.getStatus() == EReportStatus.rejected) {
+            return false;
+        }
+        LocalDateTime deadline = resolveDeadline(report);
+        if (deadline == null) {
+            return false;
+        }
+        if (report.getStatus() == EReportStatus.processed) {
+            LocalDateTime resolvedTime = toLocalDateTime(report.getResolvedAt());
+            return resolvedTime != null && resolvedTime.isAfter(deadline);
+        }
+        if (report.getStatus() == EReportStatus.pending || report.getStatus() == EReportStatus.processing) {
+            LocalDateTime evalTime = now != null ? now : LocalDateTime.now();
+            return !deadline.isAfter(evalTime);
+        }
+        return false;
+    }
+
+    public static Long calculateRemainingDays(Report report, LocalDateTime now) {
+        if (report == null
+                || report.getStatus() == EReportStatus.rejected
+                || report.getStatus() == EReportStatus.processed) {
+            return null;
+        }
+        LocalDateTime deadline = resolveDeadline(report);
+        if (deadline == null) {
+            return null;
+        }
+        LocalDateTime evalTime = now != null ? now : LocalDateTime.now();
+        if (!deadline.isAfter(evalTime)) {
+            return null;
+        }
+        long seconds = Duration.between(evalTime, deadline).getSeconds();
+        return Math.max(1L, (long) Math.ceil(seconds / 86400.0));
+    }
+
     private static LocalDateTime toLocalDateTime(java.util.Date date) {
         return date == null
                 ? null
@@ -177,6 +215,7 @@ public class ReportServiceImpl implements IReportService {
                 ? r.getAddress()
                 : r.getLocationDescription();
 
+        LocalDateTime now = LocalDateTime.now();
         return RecentReportResponse.builder()
                 .id(r.getId())
                 .title(r.getTitle())
@@ -197,10 +236,13 @@ public class ReportServiceImpl implements IReportService {
                 .isReviewResolved(r.getIsReviewResolved())
                 .deadline(resolveDeadline(r))
                 .resolvedAt(toLocalDateTime(r.getResolvedAt()))
+                .isOverdue(isReportOverdue(r, now))
+                .remainingDays(calculateRemainingDays(r, now))
                 .build();
     }
 
     private ReportResponse mapToResponse(Report report) {
+        LocalDateTime now = LocalDateTime.now();
         return ReportResponse.builder()
                 .id(report.getId())
                 .title(report.getTitle())
@@ -214,6 +256,9 @@ public class ReportServiceImpl implements IReportService {
                 .assignedAt(formatIsoDateTime(report.getAssignedAt()))
                 .isReviewResolved(report.getIsReviewResolved())
                 .deadline(formatIsoDateTime(resolveDeadline(report)))
+                .resolvedAt(formatIsoDateTime(report.getResolvedAt()))
+                .isOverdue(isReportOverdue(report, now))
+                .remainingDays(calculateRemainingDays(report, now))
                 .userId(report.getUser() != null ? report.getUser().getId() : null)
                 .build();
     }
@@ -281,6 +326,7 @@ public class ReportServiceImpl implements IReportService {
             activityHistoryRepository.save(activity);
         }
 
+        LocalDateTime now = LocalDateTime.now();
         ReportDetailResponse response = ReportDetailResponse.builder()
                 .id(report.getId())
                 .title(report.getTitle())
@@ -297,6 +343,8 @@ public class ReportServiceImpl implements IReportService {
                         : null)
                 .assignedAt(formatIsoDateTime(report.getAssignedAt()))
                 .deadline(formatIsoDateTime(resolveDeadline(report)))
+                .isOverdue(isReportOverdue(report, now))
+                .remainingDays(calculateRemainingDays(report, now))
                 .userId(userId)
                 .build();
 
@@ -573,6 +621,7 @@ public class ReportServiceImpl implements IReportService {
                     .collect(Collectors.toList());
         }
 
+        LocalDateTime now = LocalDateTime.now();
         return ReportDetailResponse.builder()
                 .id(report.getId())
                 .title(report.getTitle())
@@ -604,6 +653,8 @@ public class ReportServiceImpl implements IReportService {
                 .reviewImageUrls(reviewImages)
                 .reviewedAt(formatIsoDateTime(report.getReviewedAt()))
                 .deadline(formatIsoDateTime(resolveDeadline(report)))
+                .isOverdue(isReportOverdue(report, now))
+                .remainingDays(calculateRemainingDays(report, now))
                 .rejectedReason(report.getRejectedReason())
                 .rejectedAt(formatIsoDateTime(report.getRejectedAt()))
                 .userId(user != null ? user.getId() : null)
@@ -1008,7 +1059,7 @@ public class ReportServiceImpl implements IReportService {
     @Override
     @Transactional(readOnly = true)
     public PageResponse<ReportResponse> getMyReports(String userId, String status, String severity, String search,
-            String from, String to, int page, int size) {
+            String from, String to, Boolean overdue, int page, int size) {
         int safePage = Math.max(1, page);
         int safeSize = Math.max(1, Math.min(size, MY_REPORTS_MAX_PAGE_SIZE));
 
@@ -1024,10 +1075,11 @@ public class ReportServiceImpl implements IReportService {
             }
         }
 
+        boolean overdueOnly = Boolean.TRUE.equals(overdue);
         ClientDateRange dates = parseClientDateRange(from, to);
         Page<Report> reportPage = reportRepository.findMyReports(userId, reportStatus, parseClientSeverity(severity),
-                rehandling, normalizeClientKeyword(search), dates.from(), dates.toExclusive(),
-                PageRequest.of(safePage - 1, safeSize));
+                rehandling, overdueOnly, LocalDateTime.now(), normalizeClientKeyword(search),
+                dates.from(), dates.toExclusive(), PageRequest.of(safePage - 1, safeSize));
 
         return PageResponse.<ReportResponse>builder()
                 .currentPage(safePage)
@@ -1119,6 +1171,7 @@ public class ReportServiceImpl implements IReportService {
                 .processed(byStatus.getOrDefault(EReportStatus.processed, 0L))
                 .rejected(byStatus.getOrDefault(EReportStatus.rejected, 0L))
                 .rehandling(reportRepository.countByUserIdAndIsReviewResolvedFalse(userId))
+                .overdue(reportRepository.countMyOverdueReports(userId, LocalDateTime.now()))
                 .build();
     }
 
@@ -1147,6 +1200,7 @@ public class ReportServiceImpl implements IReportService {
         long rehandlingCount = reportRepository.countByStatusAndIsReviewResolved(EReportStatus.processed, false)
                 + reportRepository.countByStatusAndIsReviewResolved(EReportStatus.processing, false);
         byStatus.put("rehandling", (int) rehandlingCount);
+        byStatus.put("overdue", (int) reportRepository.countAdminOverdueReports(LocalDateTime.now()));
 
         // Count by severity
         List<Object[]> severityRows = reportRepository.countGroupBySeverity();
@@ -1190,7 +1244,7 @@ public class ReportServiceImpl implements IReportService {
     @Override
     @Transactional(readOnly = true)
     public ReportListResponse getAdminReportList(int page, int size, String status, String severity, String assigneeId,
-            String from, String to, String search) {
+            String from, String to, String search, Boolean overdue) {
 
         // 1. Parse enums (null = no filter)
         EReportStatus statusEnum = null;
@@ -1228,13 +1282,15 @@ public class ReportServiceImpl implements IReportService {
         // 3. Normalize search + assigneeId
         String searchParam = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
         String assigneeParam = (assigneeId != null && !assigneeId.trim().isEmpty()) ? assigneeId.trim() : null;
+        boolean overdueOnly = Boolean.TRUE.equals(overdue);
 
         // 4. Query
         int safePage = Math.max(1, page);
         int safeSize = Math.max(1, Math.min(size, 100));
         PageRequest pageable = PageRequest.of(safePage - 1, safeSize);
         Page<Report> reportPage = reportRepository.findAllFiltered(
-                statusEnum, isRehandling, severityEnum, assigneeParam, fromDt, toDt, searchParam, pageable);
+                statusEnum, isRehandling, overdueOnly, LocalDateTime.now(),
+                severityEnum, assigneeParam, fromDt, toDt, searchParam, pageable);
 
         // 5. Map Report -> RecentReportResponse (bổ sung userName, userEmail, deadline)
         List<RecentReportResponse> content = reportPage.getContent().stream()
@@ -1285,11 +1341,17 @@ public class ReportServiceImpl implements IReportService {
 
         report.setStatus(next);
         if (next == EReportStatus.processed) {
+            if (report.getResolvedAt() == null) {
+                report.setResolvedAt(new java.util.Date());
+            }
             report.setIsReviewResolved(null);
             report.setRating(null);
             report.setReviewNote(null);
             report.setReviewImageUrls(null);
             report.setReviewedAt(null);
+        } else if (current == EReportStatus.processed && next == EReportStatus.processing) {
+            LocalDateTime rehandleApprovedAt = LocalDateTime.now();
+            report.setDeadline(rehandleApprovedAt.plusDays(deadlineDaysForSeverity(report.getSeverity())));
         }
         Report saved = reportRepository.save(report);
 
@@ -1328,8 +1390,15 @@ public class ReportServiceImpl implements IReportService {
             delegationService.onReportUnassigned(saved);
         }
 
-        // When admin re-opens from processed back to processing, notify assigned Staff
+        // When admin re-opens from processed back to processing, notify assigned Staff and Admins with new deadline
         if (current == EReportStatus.processed && next == EReportStatus.processing) {
+            LocalDateTime updatedDeadline = resolveDeadline(saved);
+            String formattedDeadline = updatedDeadline != null
+                    ? updatedDeadline.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                    : "";
+            String actionData = String.format(
+                    "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}", saved.getId());
+
             User staff = saved.getAssignedStaff();
             if (staff != null) {
                 try {
@@ -1342,13 +1411,11 @@ public class ReportServiceImpl implements IReportService {
                             staffLocale);
                     String message = messageSource.getMessage(
                             "notification.report.reopened.staff.message",
-                            new Object[] { saved.getTitle() },
+                            new Object[] { saved.getTitle(), formattedDeadline },
                             String.format(
-                                    "Phản ánh '%s' được đánh giá là chưa được xử lý thỏa đáng và cần được xử lý lại.",
-                                    saved.getTitle()),
+                                    "Phản ánh '%s' được đánh giá là chưa được xử lý thỏa đáng và cần được xử lý lại. Hạn xử lý mới: %s.",
+                                    saved.getTitle(), formattedDeadline),
                             staffLocale);
-                    String actionData = String.format(
-                            "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}", saved.getId());
 
                     notificationService.createNotification(staff.getId(), title, message, actionData,
                             saved.getImageUrl());
@@ -1356,6 +1423,9 @@ public class ReportServiceImpl implements IReportService {
                     Map<String, Object> staffExtra = new java.util.HashMap<>();
                     staffExtra.put("shouldRefresh", true);
                     staffExtra.put("stats", getStaffReportStatistics(staff.getId()));
+                    if (updatedDeadline != null) {
+                        staffExtra.put("deadline", formatIsoDateTime(updatedDeadline));
+                    }
                     NotificationEvent staffEvent = new NotificationEvent(title, message, actionData,
                             saved.getImageUrl(), staffExtra);
                     messagingTemplate.convertAndSendToUser(staff.getId(), "/queue/notifications", staffEvent);
@@ -1367,6 +1437,42 @@ public class ReportServiceImpl implements IReportService {
                 } catch (Exception ex) {
                     log.warn("[Notify Staff] Failed to notify staff {} on reopen: {}", staff.getId(), ex.getMessage());
                 }
+            }
+
+            try {
+                List<User> admins = userRepository.findByRole(ERole.admin);
+                for (User a : admins) {
+                    try {
+                        java.util.Locale adminLocale = new java.util.Locale(
+                                a.getLanguage() != null ? a.getLanguage() : "vi");
+                        String adminTitle = messageSource.getMessage(
+                                "notification.report.reopened.admin.title",
+                                null,
+                                "Đã duyệt xử lý lại phản ánh",
+                                adminLocale);
+                        String adminMsg = messageSource.getMessage(
+                                "notification.report.reopened.admin.message",
+                                new Object[] { saved.getTitle(), formattedDeadline },
+                                String.format("Phản ánh '%s' đã được cập nhật hạn xử lý mới (%s) để xử lý lại.",
+                                        saved.getTitle(), formattedDeadline),
+                                adminLocale);
+                        notificationService.createNotification(a.getId(), adminTitle, adminMsg, actionData,
+                                saved.getImageUrl());
+                        Map<String, Object> adminExtra = new java.util.HashMap<>();
+                        adminExtra.put("shouldRefresh", true);
+                        if (updatedDeadline != null) {
+                            adminExtra.put("deadline", formatIsoDateTime(updatedDeadline));
+                        }
+                        messagingTemplate.convertAndSendToUser(
+                                a.getId(),
+                                "/queue/notifications",
+                                new NotificationEvent(adminTitle, adminMsg, actionData, saved.getImageUrl(), adminExtra));
+                    } catch (Exception ex) {
+                        log.warn("[Notify Admin] Failed to notify admin {} on reopen: {}", a.getId(), ex.getMessage());
+                    }
+                }
+            } catch (Exception ex) {
+                log.warn("[Notify Admins] Failed on reopen for report {}: {}", saved.getId(), ex.getMessage());
             }
         }
 
@@ -1510,37 +1616,27 @@ public class ReportServiceImpl implements IReportService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, int page, int limit) {
+    public List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, Boolean overdue, int page, int limit) {
         int safeLimit = Math.max(1, Math.min(limit, 100));
         int safePage = Math.max(0, page);
-
-        if ("rehandling".equalsIgnoreCase(status)) {
-            org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(safePage,
-                    safeLimit);
-            List<Report> reports = reportRepository.findStaffReportsByStatusAndIsReviewResolved(staffId,
-                    EReportStatus.processing, false, pageable);
-            return reports.stream()
-                    .map(r -> toRecentReportResponse(r, true, true))
-                    .collect(Collectors.toList());
-        }
+        boolean rehandling = "rehandling".equalsIgnoreCase(status);
+        boolean overdueOnly = Boolean.TRUE.equals(overdue);
 
         List<EReportStatus> statuses;
         if ("resolved".equalsIgnoreCase(status) || "processed".equalsIgnoreCase(status)) {
             statuses = List.of(EReportStatus.processed);
-        } else if ("processing".equalsIgnoreCase(status)) {
+        } else if ("processing".equalsIgnoreCase(status) || rehandling) {
             statuses = List.of(EReportStatus.processing);
         } else if ("rejected".equalsIgnoreCase(status)) {
             statuses = List.of(EReportStatus.rejected);
         } else {
-            // "all" or invalid or null defaults to processing + processed for staff
-            // (pending removed)
             statuses = List.of(EReportStatus.processing, EReportStatus.processed);
         }
 
         org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(safePage,
                 safeLimit);
-        List<Report> reports = reportRepository.findByAssignedStaffIdAndStatusInOrderByCreatedAtDesc(staffId, statuses,
-                pageable);
+        List<Report> reports = reportRepository.findStaffAssignedFiltered(
+                staffId, statuses, rehandling, overdueOnly, LocalDateTime.now(), pageable);
 
         return reports.stream()
                 .map(r -> toRecentReportResponse(r, true, true))
@@ -1567,6 +1663,7 @@ public class ReportServiceImpl implements IReportService {
         long rehandlingCount = reportRepository.countStaffReportsByStatusAndIsReviewResolved(staffId,
                 EReportStatus.processing, false);
         byStatus.put("rehandling", (int) rehandlingCount);
+        byStatus.put("overdue", (int) reportRepository.countStaffOverdueReports(staffId, LocalDateTime.now()));
 
         int total = byStatus.getOrDefault("processing", 0) + byStatus.getOrDefault("resolved", 0);
 

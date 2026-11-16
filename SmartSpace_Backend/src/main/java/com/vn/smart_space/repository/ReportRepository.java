@@ -67,15 +67,21 @@ public interface ReportRepository extends JpaRepository<Report, String> {
        String CLIENT_DATE_FILTER = "AND (:createdFrom IS NULL OR r.createdAt >= :createdFrom) " +
                      "AND (:createdTo IS NULL OR r.createdAt < :createdTo) ";
 
+       String OVERDUE_CONDITION = "r.deadline IS NOT NULL AND (" +
+                     "(r.status IN (com.vn.smart_space.consts.EReportStatus.pending, com.vn.smart_space.consts.EReportStatus.processing) AND r.deadline <= :now) " +
+                     "OR (r.status = com.vn.smart_space.consts.EReportStatus.processed AND r.resolvedAt IS NOT NULL AND cast(r.resolvedAt as LocalDateTime) > r.deadline)" +
+                     ")";
+
        String MY_REPORTS_FILTER = "WHERE r.user.id = :userId " +
                      "AND (:status IS NULL OR r.status = :status) " +
                      "AND (:severity IS NULL OR r.severity = :severity) " +
                      "AND (:rehandling = false OR r.isReviewResolved = false) " +
+                     "AND (:overdueOnly = false OR (" + OVERDUE_CONDITION + ")) " +
                      CLIENT_DATE_FILTER +
                      CLIENT_KEYWORD_FILTER;
 
        // Client "My reports": newest first, optional status / severity / re-handling /
-       // keyword.
+       // overdue / keyword.
        @Query(value = "SELECT r FROM Report r " + MY_REPORTS_FILTER
                      + "ORDER BY r.createdAt DESC, r.id DESC", countQuery = "SELECT COUNT(r) FROM Report r "
                                    + MY_REPORTS_FILTER)
@@ -84,10 +90,15 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                      @Param("status") EReportStatus status,
                      @Param("severity") EReportSeverity severity,
                      @Param("rehandling") boolean rehandling,
+                     @Param("overdueOnly") boolean overdueOnly,
+                     @Param("now") LocalDateTime now,
                      @Param("search") String search,
                      @Param("createdFrom") LocalDateTime createdFrom,
                      @Param("createdTo") LocalDateTime createdTo,
                      Pageable pageable);
+
+       @Query("SELECT COUNT(r) FROM Report r WHERE r.user.id = :userId AND " + OVERDUE_CONDITION)
+       long countMyOverdueReports(@Param("userId") String userId, @Param("now") LocalDateTime now);
 
        // Client "My reports" summary card: [status, count] over all of the owner's
        // reports
@@ -140,6 +151,24 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                      @Param("status") EReportStatus status, @Param("isReviewResolved") Boolean isReviewResolved,
                      Pageable pageable);
 
+       @EntityGraph(attributePaths = { "user", "assignedStaff" })
+       @Query("SELECT r FROM Report r " +
+                     "WHERE r.assignedStaff.id = :staffId " +
+                     "AND ((:rehandling = false AND r.status IN :statuses) " +
+                     "     OR (:rehandling = true AND r.status = com.vn.smart_space.consts.EReportStatus.processing AND r.isReviewResolved = false)) " +
+                     "AND (:overdueOnly = false OR (" + OVERDUE_CONDITION + ")) " +
+                     "ORDER BY r.createdAt DESC, r.id DESC")
+       List<Report> findStaffAssignedFiltered(
+                     @Param("staffId") String staffId,
+                     @Param("statuses") List<EReportStatus> statuses,
+                     @Param("rehandling") boolean rehandling,
+                     @Param("overdueOnly") boolean overdueOnly,
+                     @Param("now") LocalDateTime now,
+                     Pageable pageable);
+
+       @Query("SELECT COUNT(r) FROM Report r WHERE r.assignedStaff.id = :staffId AND " + OVERDUE_CONDITION)
+       long countStaffOverdueReports(@Param("staffId") String staffId, @Param("now") LocalDateTime now);
+
        // Dashboard: group by severity (exclude null)
        @Query("SELECT r.severity, COUNT(r) FROM Report r WHERE r.severity IS NOT NULL GROUP BY r.severity")
        List<Object[]> countGroupBySeverity();
@@ -172,6 +201,7 @@ public interface ReportRepository extends JpaRepository<Report, String> {
        @Query("SELECT r FROM Report r LEFT JOIN r.user u " +
                      "WHERE (:status IS NULL OR r.status = :status) " +
                      "AND (:isRehandling IS NULL OR (:isRehandling = true AND r.isReviewResolved = false)) " +
+                     "AND (:overdueOnly = false OR (" + OVERDUE_CONDITION + ")) " +
                      "AND (:severity IS NULL OR r.severity = :severity) " +
                      "AND (:assigneeId IS NULL OR r.assignedStaff.id = :assigneeId) " +
                      "AND (:from IS NULL OR r.createdAt >= :from) " +
@@ -187,12 +217,17 @@ public interface ReportRepository extends JpaRepository<Report, String> {
        Page<Report> findAllFiltered(
                      @Param("status") EReportStatus status,
                      @Param("isRehandling") Boolean isRehandling,
+                     @Param("overdueOnly") boolean overdueOnly,
+                     @Param("now") LocalDateTime now,
                      @Param("severity") EReportSeverity severity,
                      @Param("assigneeId") String assigneeId,
                      @Param("from") LocalDateTime from,
                      @Param("to") LocalDateTime to,
                      @Param("search") String search,
                      Pageable pageable);
+
+       @Query("SELECT COUNT(r) FROM Report r WHERE " + OVERDUE_CONDITION)
+       long countAdminOverdueReports(@Param("now") LocalDateTime now);
 
        // Admin - User management
        // Thống kê tổng hợp (aggregate) tính cả báo cáo ẩn danh; số liệu gắn với từng
@@ -283,6 +318,27 @@ public interface ReportRepository extends JpaRepository<Report, String> {
        @Query("SELECT r FROM Report r LEFT JOIN FETCH r.assignedStaff s " +
                      "WHERE s IS NOT NULL AND r.status IN :statuses")
        List<Report> findAssignedByStatusInWithStaff(@Param("statuses") List<EReportStatus> statuses);
+
+       @Query(value = "SELECT DISTINCT ym_year, ym_month FROM (" +
+                     "SELECT YEAR(created_at) AS ym_year, MONTH(created_at) AS ym_month FROM reports WHERE assigned_staff_id IS NOT NULL AND created_at IS NOT NULL " +
+                     "UNION " +
+                     "SELECT YEAR(assigned_at) AS ym_year, MONTH(assigned_at) AS ym_month FROM reports WHERE assigned_staff_id IS NOT NULL AND assigned_at IS NOT NULL " +
+                     "UNION " +
+                     "SELECT YEAR(resolved_at) AS ym_year, MONTH(resolved_at) AS ym_month FROM reports WHERE assigned_staff_id IS NOT NULL AND resolved_at IS NOT NULL" +
+                     ") m ORDER BY ym_year DESC, ym_month DESC", nativeQuery = true)
+       List<Object[]> findAssignedAvailableMonths();
+
+       @Query("SELECT r.assignedAt FROM Report r WHERE r.assignedAt >= :from AND r.assignedAt < :to")
+       List<Date> findAssignedAtBetween(@Param("from") Date from, @Param("to") Date to);
+
+       @Query("SELECT COALESCE(cast(r.resolvedAt as LocalDateTime), r.updatedAt) FROM Report r " +
+                     "WHERE r.status = :status AND r.assignedStaff IS NOT NULL " +
+                     "AND COALESCE(cast(r.resolvedAt as LocalDateTime), r.updatedAt) >= :from " +
+                     "AND COALESCE(cast(r.resolvedAt as LocalDateTime), r.updatedAt) < :to")
+       List<LocalDateTime> findAssignedResolvedTimeByStatusBetween(
+                     @Param("status") EReportStatus status,
+                     @Param("from") LocalDateTime from,
+                     @Param("to") LocalDateTime to);
 
        // Client community feed: excluding one status (rejected), optional status /
        // severity / keyword.

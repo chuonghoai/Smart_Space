@@ -756,7 +756,7 @@
   "callUser": "Gọi điện",
   "conversationLockedNotice": "Hội thoại này đã kết thúc do phản ánh đã hoàn thành xử lý. Khung chat đang ở chế độ chỉ đọc.",
   "messageInputPlaceholder": "Nhập tin nhắn...",
-  "anonymousUser": "Người dùng ẩn danh",
+  "anonymousUser": "Ẩn danh",
   "systemNotification": "Thông báo hệ thống",
   "yesterday": "Hôm qua",
   "activeStaff": "Nhân viên",
@@ -966,5 +966,61 @@
   "lockProposalSentTitle": "Đã gửi đề xuất khoá",
   "lockProposalSentBody": "Hội đồng quản trị đã được thông báo. Tài khoản sẽ bị khoá khi có {required} quản trị viên khác bảo lãnh trong {hours} giờ.",
   "lockBlockedNotEnoughAdmins": "Cần ít nhất {min} quản trị viên đang hoạt động để biểu quyết khoá. Hãy thêm quản trị viên trong Hội đồng quản trị.",
-  "lockBlockedNotActive": "Chỉ có thể đề xuất khoá tài khoản đang hoạt động"
+  "lockBlockedNotActive": "Chỉ có thể đề xuất khoá tài khoản đang hoạt động",
+  "daysRemainingLabel": "Còn {days} ngày",
+  "@daysRemainingLabel": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "overdueOnlyFilter": "Quá hạn",
+  "excellentBadge": "Xuất sắc",
+  "staffEfficiencyLabel": "Hiệu suất công việc: {rate}%",
+  "@staffEfficiencyLabel": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "staffEfficiencyNoData": "Hiệu suất công việc: —",
+  "statsMonthLabel": "Tháng thống kê",
+  "resolvedInMonth": "Đã xử lý trong tháng",
+  "avgResolutionTimeInMonth": "TB thời gian xử lý",
+  "resolvedMonthCount": "{count} đã xử lý trong tháng",
+  "@resolvedMonthCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "staffMonthlyWorkloadTitle": "Khối lượng công việc trong tháng {month}",
+  "@staffMonthlyWorkloadTitle": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "staffMonthlyWorkloadBreakdown": "{processing} đang xử lý, {resolved} đã xử lý, {overdue} trễ hạn, {rehandling} xử lý lại",
+  "@staffMonthlyWorkloadBreakdown": {
+    "placeholders": {
+      "processing": {
+        "type": "int"
+      },
+      "resolved": {
+        "type": "int"
+      },
+      "overdue": {
+        "type": "int"
+      },
+      "rehandling": {
+        "type": "int"
+      }
+    }
+  },
+  "viewAssignedReportsAction": "Xem phản ánh được giao"
 }

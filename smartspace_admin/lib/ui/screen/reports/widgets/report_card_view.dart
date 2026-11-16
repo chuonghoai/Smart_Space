@@ -237,36 +237,39 @@ class _ReportCard extends StatelessWidget {
 
                     if (report.deadline != null && report.status != 'rejected') ...[
                       const SizedBox(height: 6),
-                      Row(
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
+                        crossAxisAlignment: WrapCrossAlignment.center,
                         children: [
-                          Icon(
-                            Icons.event_available_outlined,
-                            size: 14,
-                            color: report.isOverdueActive
-                                ? theme.colorScheme.error
-                                : theme.colorScheme.onSurfaceVariant,
-                          ),
-                          const SizedBox(width: 5),
-                          Flexible(
-                            child: Text(
-                              l10n.expectedCompletionDate(
-                                DateFormat('dd/MM').format(report.deadline!.toLocal()),
-                              ),
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                color: report.isOverdueActive
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.event_available_outlined,
+                                size: 14,
+                                color: report.isOverdue
                                     ? theme.colorScheme.error
                                     : theme.colorScheme.onSurfaceVariant,
-                                fontWeight: report.isOverdueActive
-                                    ? FontWeight.w600
-                                    : FontWeight.normal,
-                                fontFeatures: const [FontFeature.tabularFigures()],
                               ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
-                            ),
+                              const SizedBox(width: 5),
+                              Text(
+                                l10n.expectedCompletionDate(
+                                  DateFormat('dd/MM').format(report.deadline!.toLocal()),
+                                ),
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: report.isOverdue
+                                      ? theme.colorScheme.error
+                                      : theme.colorScheme.onSurfaceVariant,
+                                  fontWeight: report.isOverdue
+                                      ? FontWeight.w600
+                                      : FontWeight.normal,
+                                  fontFeatures: const [FontFeature.tabularFigures()],
+                                ),
+                              ),
+                            ],
                           ),
-                          if (report.isOverdueActive) ...[
-                            const SizedBox(width: 6),
+                          if (report.isOverdue)
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
                               decoration: BoxDecoration(
@@ -281,8 +284,24 @@ class _ReportCard extends StatelessWidget {
                                   fontWeight: FontWeight.w700,
                                 ),
                               ),
+                            )
+                          else if (report.remainingDays != null)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.surfaceContainerHighest,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                l10n.daysRemainingLabel(report.remainingDays!),
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  fontSize: 10,
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                  fontWeight: FontWeight.w600,
+                                  fontFeatures: const [FontFeature.tabularFigures()],
+                                ),
+                              ),
                             ),
-                          ],
                         ],
                       ),
                     ],

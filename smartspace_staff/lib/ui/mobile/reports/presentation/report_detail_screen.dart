@@ -17,6 +17,7 @@ import 'package:smartspace_staff/features/reports/utils/report_severity_ext.dart
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:smartspace_staff/ui/mobile/reports/presentation/widgets/fullscreen_image_viewer.dart';
 import 'package:smartspace_staff/ui/mobile/reports/presentation/widgets/handling_progress_dialog.dart';
+import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
 import 'package:smartspace_staff/features/delegation/providers/delegation_providers.dart';
@@ -626,43 +627,96 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                           const SizedBox(height: 6),
                           Builder(
                             builder: (context) {
-                              final isActive = report.status == ReportStatus.pending ||
-                                  report.status == ReportStatus.processing;
-                              final isOverdue = isActive && DateTime.now().isAfter(report.deadline!);
+                              final isOverdue = report.isOverdue;
+                              final remainingDays = report.remainingDays;
                               final deadlineColor = isOverdue
                                   ? theme.colorScheme.error
                                   : theme.colorScheme.onSurfaceVariant;
+                              final formattedDeadline =
+                                  DateFormat('dd/MM/yyyy HH:mm').format(report.deadline!.toLocal());
+                              return Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2),
+                                    child: Icon(Icons.event_available_outlined, size: 14, color: deadlineColor),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Wrap(
+                                      spacing: 8,
+                                      runSpacing: 4,
+                                      crossAxisAlignment: WrapCrossAlignment.center,
+                                      children: [
+                                        Text(
+                                          '${l10n.reportDeadlineLabel}: $formattedDeadline',
+                                          style: theme.textTheme.bodySmall?.copyWith(
+                                            color: deadlineColor,
+                                            fontWeight: isOverdue ? FontWeight.w600 : FontWeight.normal,
+                                            fontFeatures: const [FontFeature.tabularFigures()],
+                                          ),
+                                        ),
+                                        if (isOverdue)
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: theme.colorScheme.errorContainer,
+                                              borderRadius: BorderRadius.circular(6),
+                                            ),
+                                            child: Text(
+                                              l10n.deadlineOverdueBadge,
+                                              style: theme.textTheme.labelSmall?.copyWith(
+                                                color: theme.colorScheme.onErrorContainer,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          )
+                                        else if (remainingDays != null)
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: theme.colorScheme.surfaceContainerHighest,
+                                              borderRadius: BorderRadius.circular(6),
+                                            ),
+                                            child: Text(
+                                              l10n.daysRemainingLabel(remainingDays),
+                                              style: theme.textTheme.labelSmall?.copyWith(
+                                                color: theme.colorScheme.onSurfaceVariant,
+                                                fontWeight: FontWeight.w600,
+                                                fontFeatures: const [FontFeature.tabularFigures()],
+                                              ),
+                                            ),
+                                          ),
+                                      ],
+                                    ),
+                                  ),
+                                ],
+                              );
+                            },
+                          ),
+                        ],
+                        if (report.resolvedAt != null) ...[
+                          const SizedBox(height: 6),
+                          Builder(
+                            builder: (context) {
+                              final late = report.isOverdue;
+                              final color = late
+                                  ? theme.colorScheme.error
+                                  : AppSemanticColors.of(context).success;
                               return Row(
                                 children: [
-                                  Icon(Icons.event_available_outlined, size: 14, color: deadlineColor),
+                                  Icon(Icons.task_alt_outlined, size: 14, color: color),
                                   const SizedBox(width: 4),
-                                  Flexible(
+                                  Expanded(
                                     child: Text(
-                                      '${l10n.reportDeadlineLabel}: ${DateFormat('dd/MM/yyyy HH:mm').format(report.deadline!.toLocal())}',
+                                      '${l10n.resolvedAtLabel}: ${DateFormat('dd/MM/yyyy HH:mm').format(report.resolvedAt!.toLocal())}',
                                       style: theme.textTheme.bodySmall?.copyWith(
-                                        color: deadlineColor,
-                                        fontWeight: isOverdue ? FontWeight.w600 : FontWeight.normal,
+                                        color: color,
+                                        fontWeight: FontWeight.w600,
                                         fontFeatures: const [FontFeature.tabularFigures()],
                                       ),
                                     ),
                                   ),
-                                  if (isOverdue) ...[
-                                    const SizedBox(width: 6),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                      decoration: BoxDecoration(
-                                        color: theme.colorScheme.errorContainer,
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                      child: Text(
-                                        l10n.deadlineOverdueBadge,
-                                        style: theme.textTheme.labelSmall?.copyWith(
-                                          color: theme.colorScheme.onErrorContainer,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
                                 ],
                               );
                             },
@@ -1098,10 +1152,11 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                                       ),
                                       if (report.resolvedAt != null)
                                         Text(
-                                          DateFormat('dd/MM/yyyy HH:mm').format(report.resolvedAt!),
+                                          '${l10n.resolvedAtLabel}: ${DateFormat('dd/MM/yyyy HH:mm').format(report.resolvedAt!.toLocal())}',
                                           style: theme.textTheme.bodySmall?.copyWith(
                                             color: theme.colorScheme.onSurfaceVariant,
                                             fontSize: 12,
+                                            fontFeatures: const [FontFeature.tabularFigures()],
                                           ),
                                         ),
                                     ],

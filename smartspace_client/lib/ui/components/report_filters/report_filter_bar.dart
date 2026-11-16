@@ -23,6 +23,9 @@ class ReportFilterBar extends StatelessWidget {
   /// Lề ngang của nội dung; hàng chip cuộn tràn tới mép màn hình.
   final double horizontalPadding;
 
+  /// Hàng điều khiển bổ sung ngay bên dưới hàng chip lọc (vd: nút toggle quá hạn).
+  final Widget? belowChips;
+
   const ReportFilterBar({
     super.key,
     required this.searchController,
@@ -33,6 +36,7 @@ class ReportFilterBar extends StatelessWidget {
     required this.onClearFilters,
     this.resultCount,
     this.horizontalPadding = 16,
+    this.belowChips,
   });
 
   @override
@@ -98,6 +102,14 @@ class ReportFilterBar extends StatelessWidget {
             ],
           ),
         ),
+        if (belowChips != null)
+          Padding(
+            padding: EdgeInsets.fromLTRB(horizontalPadding, 6, horizontalPadding, 0),
+            child: Align(
+              alignment: Alignment.centerLeft,
+              child: belowChips!,
+            ),
+          ),
         if (isFiltering && resultCount != null)
           Padding(
             padding: EdgeInsets.fromLTRB(horizontalPadding, 4, horizontalPadding, 0),

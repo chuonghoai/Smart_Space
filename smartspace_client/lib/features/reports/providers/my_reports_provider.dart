@@ -19,6 +19,7 @@ class MyReportsState {
 
   /// Khoảng ngày tạo; null = mọi thời gian.
   final ReportDateRange? dateRangeFilter;
+  final bool overdueOnly;
   final String searchQuery;
 
   final int page;
@@ -43,6 +44,7 @@ class MyReportsState {
     this.statusFilter,
     this.severityFilter,
     this.dateRangeFilter,
+    this.overdueOnly = false,
     this.searchQuery = '',
     this.page = 0,
     this.hasMore = false,
@@ -54,7 +56,11 @@ class MyReportsState {
   });
 
   bool get isFiltering =>
-      statusFilter != null || severityFilter != null || dateRangeFilter != null || searchQuery.isNotEmpty;
+      statusFilter != null ||
+      severityFilter != null ||
+      dateRangeFilter != null ||
+      overdueOnly ||
+      searchQuery.isNotEmpty;
 
   /// Các field lọc nullable và [error] nhận function để có thể gán `null` tường minh.
   MyReportsState copyWith({
@@ -63,6 +69,7 @@ class MyReportsState {
     String? Function()? statusFilter,
     EReportSeverity? Function()? severityFilter,
     ReportDateRange? Function()? dateRangeFilter,
+    bool? overdueOnly,
     String? searchQuery,
     int? page,
     bool? hasMore,
@@ -78,6 +85,7 @@ class MyReportsState {
       statusFilter: statusFilter != null ? statusFilter() : this.statusFilter,
       severityFilter: severityFilter != null ? severityFilter() : this.severityFilter,
       dateRangeFilter: dateRangeFilter != null ? dateRangeFilter() : this.dateRangeFilter,
+      overdueOnly: overdueOnly ?? this.overdueOnly,
       searchQuery: searchQuery ?? this.searchQuery,
       page: page ?? this.page,
       hasMore: hasMore ?? this.hasMore,
@@ -160,7 +168,12 @@ class MyReportsNotifier extends StateNotifier<MyReportsState> {
     _loadFirstPage(clearList: true);
   }
 
-  /// Bỏ trạng thái, mức độ, khoảng ngày và từ khoá.
+  void toggleOverdueOnly() {
+    state = state.copyWith(overdueOnly: !state.overdueOnly);
+    _loadFirstPage(clearList: true);
+  }
+
+  /// Bỏ trạng thái, mức độ, khoảng ngày, quá hạn và từ khoá.
   void clearFilters() {
     _debounce?.cancel();
     if (!state.isFiltering) return;
@@ -168,6 +181,7 @@ class MyReportsNotifier extends StateNotifier<MyReportsState> {
       statusFilter: () => null,
       severityFilter: () => null,
       dateRangeFilter: () => null,
+      overdueOnly: false,
       searchQuery: '',
     );
     _loadFirstPage(clearList: true);
@@ -195,6 +209,7 @@ class MyReportsNotifier extends StateNotifier<MyReportsState> {
         severity: state.severityFilter,
         dateRange: state.dateRangeFilter,
         search: state.searchQuery,
+        overdueOnly: state.overdueOnly,
         page: nextPage,
         size: _pageSize,
       );
@@ -248,6 +263,7 @@ class MyReportsNotifier extends StateNotifier<MyReportsState> {
         severity: state.severityFilter,
         dateRange: state.dateRangeFilter,
         search: state.searchQuery,
+        overdueOnly: state.overdueOnly,
         page: 1,
         size: _pageSize,
       );

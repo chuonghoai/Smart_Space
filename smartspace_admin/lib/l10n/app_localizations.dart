@@ -4555,6 +4555,83 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Only active accounts can be proposed for locking'**
   String get lockBlockedNotActive;
+
+  /// No description provided for @daysRemainingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}d remaining'**
+  String daysRemainingLabel(int days);
+
+  /// No description provided for @overdueOnlyFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get overdueOnlyFilter;
+
+  /// No description provided for @excellentBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Excellent'**
+  String get excellentBadge;
+
+  /// No description provided for @staffEfficiencyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Work efficiency: {rate}%'**
+  String staffEfficiencyLabel(String rate);
+
+  /// No description provided for @staffEfficiencyNoData.
+  ///
+  /// In en, this message translates to:
+  /// **'Work efficiency: —'**
+  String get staffEfficiencyNoData;
+
+  /// No description provided for @statsMonthLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics month'**
+  String get statsMonthLabel;
+
+  /// No description provided for @resolvedInMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved this month'**
+  String get resolvedInMonth;
+
+  /// No description provided for @avgResolutionTimeInMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg resolution time'**
+  String get avgResolutionTimeInMonth;
+
+  /// No description provided for @resolvedMonthCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} resolved in month'**
+  String resolvedMonthCount(int count);
+
+  /// No description provided for @staffMonthlyWorkloadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Workload in {month}'**
+  String staffMonthlyWorkloadTitle(String month);
+
+  /// No description provided for @staffMonthlyWorkloadBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'{processing} in progress, {resolved} resolved, {overdue} overdue, {rehandling} rehandling'**
+  String staffMonthlyWorkloadBreakdown(
+    int processing,
+    int resolved,
+    int overdue,
+    int rehandling,
+  );
+
+  /// No description provided for @viewAssignedReportsAction.
+  ///
+  /// In en, this message translates to:
+  /// **'View assigned reports'**
+  String get viewAssignedReportsAction;
 }
 
 class _AppLocalizationsDelegate

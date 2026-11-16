@@ -193,10 +193,7 @@ class ReportDeadlineAndRejectTest {
 
         when(userRepository.countByRole(ERole.staff)).thenReturn(2L);
         when(userRepository.countByRoleAndStatus(eq(ERole.staff), any())).thenReturn(2L, 0L);
-        when(reportRepository.countByStatus(EReportStatus.processing)).thenReturn(1L);
-        when(reportRepository.countAssignedByStatusUpdatedBetween(eq(EReportStatus.processed), any(), any())).thenReturn(2L, 0L);
-        when(reportRepository.findAssignedAndUpdatedAtByStatusBetween(eq(EReportStatus.processed), any(), any())).thenReturn(List.of());
-        when(reportRepository.findTopAssigneesByStatus(eq(EReportStatus.processing), any())).thenReturn(List.of());
+        when(reportRepository.findAssignedAvailableMonths()).thenReturn(List.of());
         when(reportRepository.findAssignedByStatusInWithStaff(anyList()))
                 .thenReturn(List.of(overdueProcessing, completedLate, completedOnTime));
         when(userRepository.findByRole(ERole.staff)).thenReturn(List.of(staffLate, staffOnTime));
@@ -212,5 +209,86 @@ class ReportDeadlineAndRejectTest {
         assertEquals("s-late", stats.getDeadlinePerformance().get(0).getStaff().getId());
         assertTrue(stats.getDeadlinePerformance().get(0).isHasMissedDeadline());
         assertFalse(stats.getDeadlinePerformance().get(1).isHasMissedDeadline());
+        assertEquals(100.0, stats.getDeadlinePerformance().get(1).getEfficiencyRate());
+    }
+
+    @Test
+    void reopenReportRecalculatesDeadlineAndNotifiesStaffAndAdmins() {
+        User staff = User.builder().fullName("Staff A").role(ERole.staff).language("vi").build();
+        staff.setId("s-reopen");
+        User admin = User.builder().fullName("Admin A").role(ERole.admin).language("en").build();
+        admin.setId("a-1");
+
+        LocalDateTime oldDeadline = LocalDateTime.now().minusDays(2);
+        Report report = Report.builder()
+                .title("Nắp cống vỡ")
+                .status(EReportStatus.processed)
+                .severity(EReportSeverity.high)
+                .assignedStaff(staff)
+                .isReviewResolved(false)
+                .deadline(oldDeadline)
+                .build();
+        report.setId("rep-reopen");
+
+        when(reportRepository.findById("rep-reopen")).thenReturn(Optional.of(report));
+        when(reportRepository.save(any(Report.class))).thenAnswer(inv -> inv.getArgument(0));
+        when(reportRepository.countStaffReportsGroupByStatus("s-reopen")).thenReturn(List.of());
+        when(userRepository.findByRole(ERole.admin)).thenReturn(List.of(admin));
+
+        LocalDateTime before = LocalDateTime.now();
+        ReportDetailResponse res = reportService.updateReportStatus("rep-reopen", "processing", null);
+
+        assertEquals("processing", res.getStatus());
+        assertNotNull(report.getDeadline());
+        assertTrue(report.getDeadline().isAfter(before.plusDays(6)));
+        assertFalse(Boolean.TRUE.equals(res.getIsOverdue()));
+        verify(notificationService, times(2)).createNotification(anyString(), any(), any(), anyString(), any());
+    }
+
+    @Test
+    void overdueRemainsTrueWhenProcessedAfterDeadline() {
+        LocalDateTime dl = LocalDateTime.now().minusDays(2);
+        Report processedLate = Report.builder()
+                .status(EReportStatus.processed)
+                .deadline(dl)
+                .resolvedAt(Date.from(dl.plusHours(5).atZone(ZoneId.systemDefault()).toInstant()))
+                .build();
+        assertTrue(ReportServiceImpl.isReportOverdue(processedLate, LocalDateTime.now()));
+        assertNull(ReportServiceImpl.calculateRemainingDays(processedLate, LocalDateTime.now()));
+
+        Report processedOnTime = Report.builder()
+                .status(EReportStatus.processed)
+                .deadline(dl)
+                .resolvedAt(Date.from(dl.minusHours(1).atZone(ZoneId.systemDefault()).toInstant()))
+                .build();
+        assertFalse(ReportServiceImpl.isReportOverdue(processedOnTime, LocalDateTime.now()));
+    }
+
+    @Test
+    void staffWithoutLateReportsNotMarkedMissedWhenUpdatedAtMutatedAfterReview() {
+        User staff = User.builder().fullName("Clean Staff").role(ERole.staff).build();
+        staff.setId("s-clean");
+
+        Report legacyOnTime = Report.builder()
+                .status(EReportStatus.processed)
+                .assignedStaff(staff)
+                .deadline(LocalDateTime.now().minusDays(1))
+                .resolvedAt(null)
+                .build();
+        // updatedAt mutated today (after deadline), resolvedAt null -> must NOT trigger false Trễ hạn
+        legacyOnTime.setUpdatedAt(LocalDateTime.now());
+
+        when(userRepository.countByRole(ERole.staff)).thenReturn(1L);
+        when(userRepository.countByRoleAndStatus(eq(ERole.staff), any())).thenReturn(1L, 0L);
+        when(reportRepository.findAssignedAvailableMonths()).thenReturn(List.of());
+        when(reportRepository.findAssignedByStatusInWithStaff(anyList())).thenReturn(List.of(legacyOnTime));
+        when(userRepository.findByRole(ERole.staff)).thenReturn(List.of(staff));
+
+        StaffStatisticsResponse stats = staffService.getStatistics(LocalDateTime.now().getYear(), LocalDateTime.now().getMonthValue());
+        assertFalse(stats.isAnyStaffMissedDeadline());
+        assertEquals(0L, stats.getCompletedLate());
+        assertEquals(1L, stats.getCompletedOnTime());
+        assertFalse(stats.getDeadlinePerformance().get(0).isHasMissedDeadline());
+        assertEquals(100.0, stats.getDeadlinePerformance().get(0).getEfficiencyRate());
     }
 }

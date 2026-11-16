@@ -18,6 +18,9 @@ class StaffStatisticsModel {
   final int completedLate;
   final double? onTimeRate;
   final List<StaffDeadlinePerformanceItem> deadlinePerformance;
+  final int selectedYear;
+  final int selectedMonth;
+  final List<AvailableMonthItem> availableMonths;
 
   const StaffStatisticsModel({
     required this.totalStaff,
@@ -35,11 +38,16 @@ class StaffStatisticsModel {
     this.completedLate = 0,
     this.onTimeRate,
     this.deadlinePerformance = const [],
+    this.selectedYear = 0,
+    this.selectedMonth = 0,
+    this.availableMonths = const [],
   });
 
   factory StaffStatisticsModel.fromJson(Map<String, dynamic> json) {
     final workloadList = json['workload'] as List<dynamic>? ?? [];
     final performanceList = json['deadlinePerformance'] as List<dynamic>? ?? [];
+    final availableMonthsList = json['availableMonths'] as List<dynamic>? ?? [];
+    final now = DateTime.now();
     return StaffStatisticsModel(
       totalStaff: (json['totalStaff'] as num?)?.toInt() ?? 0,
       activeStaff: (json['activeStaff'] as num?)?.toInt() ?? 0,
@@ -64,6 +72,11 @@ class StaffStatisticsModel {
               e as Map<String, dynamic>,
             ),
           )
+          .toList(),
+      selectedYear: (json['selectedYear'] as num?)?.toInt() ?? now.year,
+      selectedMonth: (json['selectedMonth'] as num?)?.toInt() ?? now.month,
+      availableMonths: availableMonthsList
+          .map((e) => AvailableMonthItem.fromJson(e as Map<String, dynamic>))
           .toList(),
     );
   }
@@ -98,6 +111,11 @@ class StaffDeadlinePerformanceItem {
   final int completedLateCount;
   final int completedOnTimeCount;
   final bool hasMissedDeadline;
+  final int processingCount;
+  final int resolvedCount;
+  final int rehandlingCount;
+  final int totalTasks;
+  final double? efficiencyRate;
 
   const StaffDeadlinePerformanceItem({
     required this.staff,
@@ -105,6 +123,11 @@ class StaffDeadlinePerformanceItem {
     required this.completedLateCount,
     required this.completedOnTimeCount,
     required this.hasMissedDeadline,
+    this.processingCount = 0,
+    this.resolvedCount = 0,
+    this.rehandlingCount = 0,
+    this.totalTasks = 0,
+    this.efficiencyRate,
   });
 
   int get totalLateCount => overdueCount + completedLateCount;
@@ -119,6 +142,34 @@ class StaffDeadlinePerformanceItem {
       completedOnTimeCount:
           (json['completedOnTimeCount'] as num?)?.toInt() ?? 0,
       hasMissedDeadline: json['hasMissedDeadline'] as bool? ?? false,
+      processingCount: (json['processingCount'] as num?)?.toInt() ?? 0,
+      resolvedCount: (json['resolvedCount'] as num?)?.toInt() ?? 0,
+      rehandlingCount: (json['rehandlingCount'] as num?)?.toInt() ?? 0,
+      totalTasks: (json['totalTasks'] as num?)?.toInt() ?? 0,
+      efficiencyRate: (json['efficiencyRate'] as num?)?.toDouble(),
+    );
+  }
+}
+
+class AvailableMonthItem {
+  final int year;
+  final int month;
+  final String label;
+
+  const AvailableMonthItem({
+    required this.year,
+    required this.month,
+    required this.label,
+  });
+
+  factory AvailableMonthItem.fromJson(Map<String, dynamic> json) {
+    final year = (json['year'] as num?)?.toInt() ?? DateTime.now().year;
+    final month = (json['month'] as num?)?.toInt() ?? DateTime.now().month;
+    final fallbackLabel = '${month.toString().padLeft(2, '0')}/$year';
+    return AvailableMonthItem(
+      year: year,
+      month: month,
+      label: json['label']?.toString() ?? fallbackLabel,
     );
   }
 }

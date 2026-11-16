@@ -19,6 +19,7 @@ class _FakeReportRepo implements ReportRepo {
   @override
   Future<ApiResponse<List<ReportModel>>> getStaffAssignedReports({
     String status = 'all',
+    bool overdueOnly = false,
     int page = 0,
     int limit = 10,
   }) {

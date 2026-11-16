@@ -32,101 +32,146 @@ class ReportFilterBar extends ConsumerWidget {
       'critical': l10n.severityCritical,
     };
 
-    return Wrap(
-      spacing: 8,
-      runSpacing: 8,
-      crossAxisAlignment: WrapCrossAlignment.center,
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Status
-        _DropdownChip(
-          label: l10n.filterByStatus,
-          value: filter.status ?? '',
-          items: statusItems,
-          onChanged: (v) => ref.read(reportFilterProvider.notifier).state =
-              filter.copyWith(
-                  status: v!.isEmpty ? null : v,
-                  clearStatus: v.isEmpty,
-                  page: 1),
-          theme: theme,
-        ),
-
-        // Severity
-        _DropdownChip(
-          label: l10n.filterBySeverity,
-          value: filter.severity ?? '',
-          items: severityItems,
-          onChanged: (v) => ref.read(reportFilterProvider.notifier).state =
-              filter.copyWith(
-                  severity: v!.isEmpty ? null : v,
-                  clearSeverity: v.isEmpty,
-                  page: 1),
-          theme: theme,
-        ),
-
-        // Assignee
-        staffAsync.when(
-          data: (staffList) {
-            final assigneeItems = <String, String>{'': l10n.all};
-            for (final s in staffList) {
-              assigneeItems[s.id] = s.fullName;
-            }
-            return _DropdownChip(
-              label: l10n.filterByAssignee,
-              value: filter.assigneeId ?? '',
-              items: assigneeItems,
-              onChanged: (v) =>
-                  ref.read(reportFilterProvider.notifier).state = filter
-                      .copyWith(
-                          assigneeId: v!.isEmpty ? null : v,
-                          clearAssignee: v.isEmpty,
-                          page: 1),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          children: [
+            // Status
+            _DropdownChip(
+              label: l10n.filterByStatus,
+              value: filter.status ?? '',
+              items: statusItems,
+              onChanged: (v) => ref.read(reportFilterProvider.notifier).state =
+                  filter.copyWith(
+                      status: v!.isEmpty ? null : v,
+                      clearStatus: v.isEmpty,
+                      page: 1),
               theme: theme,
-            );
-          },
-          loading: () => const SizedBox.shrink(),
-          error: (_, _) => const SizedBox.shrink(),
-        ),
+            ),
 
-        // Date range
-        ActionChip(
-          avatar: Icon(Icons.date_range_outlined,
-              size: 16, color: theme.colorScheme.primary),
-          label: Text(
-            filter.from != null
-                ? '${DateFormat('dd/MM').format(filter.from!)} – ${DateFormat('dd/MM').format(filter.to!)}'
-                : l10n.selectDateRange,
-            style: theme.textTheme.labelMedium,
-          ),
-          onPressed: () async {
-            final range = await showDateRangePicker(
-              context: context,
-              firstDate: DateTime(2024),
-              lastDate: DateTime.now(),
-              builder: (context, child) => Theme(
-                data: theme,
-                child: child!,
+            // Severity
+            _DropdownChip(
+              label: l10n.filterBySeverity,
+              value: filter.severity ?? '',
+              items: severityItems,
+              onChanged: (v) => ref.read(reportFilterProvider.notifier).state =
+                  filter.copyWith(
+                      severity: v!.isEmpty ? null : v,
+                      clearSeverity: v.isEmpty,
+                      page: 1),
+              theme: theme,
+            ),
+
+            // Assignee
+            staffAsync.when(
+              data: (staffList) {
+                final assigneeItems = <String, String>{'': l10n.all};
+                for (final s in staffList) {
+                  assigneeItems[s.id] = s.fullName;
+                }
+                if (filter.assigneeId != null &&
+                    filter.assigneeId!.isNotEmpty &&
+                    !assigneeItems.containsKey(filter.assigneeId!)) {
+                  assigneeItems[filter.assigneeId!] = l10n.assignee;
+                }
+                return _DropdownChip(
+                  label: l10n.filterByAssignee,
+                  value: filter.assigneeId ?? '',
+                  items: assigneeItems,
+                  onChanged: (v) =>
+                      ref.read(reportFilterProvider.notifier).state = filter
+                          .copyWith(
+                              assigneeId: v!.isEmpty ? null : v,
+                              clearAssignee: v.isEmpty,
+                              page: 1),
+                  theme: theme,
+                );
+              },
+              loading: () => const SizedBox.shrink(),
+              error: (_, _) => const SizedBox.shrink(),
+            ),
+
+            // Date range
+            ActionChip(
+              avatar: Icon(Icons.date_range_outlined,
+                  size: 16, color: theme.colorScheme.primary),
+              label: Text(
+                filter.from != null
+                    ? '${DateFormat('dd/MM').format(filter.from!)} – ${DateFormat('dd/MM').format(filter.to!)}'
+                    : l10n.selectDateRange,
+                style: theme.textTheme.labelMedium,
               ),
+              onPressed: () async {
+                final range = await showDateRangePicker(
+                  context: context,
+                  firstDate: DateTime(2024),
+                  lastDate: DateTime.now(),
+                  builder: (context, child) => Theme(
+                    data: theme,
+                    child: child!,
+                  ),
+                );
+                if (range != null) {
+                  ref.read(reportFilterProvider.notifier).state = filter.copyWith(
+                    from: range.start,
+                    to: range.end,
+                    page: 1,
+                  );
+                }
+              },
+            ),
+
+            // Clear filters
+            if (filter.isActive)
+              ActionChip(
+                avatar: const Icon(Icons.close, size: 16),
+                label: Text(l10n.clearFilters,
+                    style: theme.textTheme.labelMedium),
+                onPressed: () =>
+                    ref.read(reportFilterProvider.notifier).state =
+                        const ReportFilter(),
+              ),
+          ],
+        ),
+        const SizedBox(height: 8),
+        FilterChip(
+          selected: filter.overdueOnly,
+          showCheckmark: false,
+          avatar: Icon(
+            Icons.warning_amber_rounded,
+            size: 16,
+            color: filter.overdueOnly
+                ? theme.colorScheme.onErrorContainer
+                : theme.colorScheme.error,
+          ),
+          label: Text(
+            l10n.overdueOnlyFilter,
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: filter.overdueOnly
+                  ? theme.colorScheme.onErrorContainer
+                  : theme.colorScheme.onSurface,
+              fontWeight: filter.overdueOnly ? FontWeight.w600 : FontWeight.normal,
+            ),
+          ),
+          selectedColor: theme.colorScheme.errorContainer,
+          backgroundColor: theme.colorScheme.surface,
+          side: BorderSide(
+            color: filter.overdueOnly
+                ? theme.colorScheme.error.withValues(alpha: 0.45)
+                : theme.dividerColor,
+          ),
+          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+          onSelected: (selected) {
+            ref.read(reportFilterProvider.notifier).state = filter.copyWith(
+              overdueOnly: selected,
+              page: 1,
             );
-            if (range != null) {
-              ref.read(reportFilterProvider.notifier).state = filter.copyWith(
-                from: range.start,
-                to: range.end,
-                page: 1,
-              );
-            }
           },
         ),
-
-        // Clear filters
-        if (filter.isActive)
-          ActionChip(
-            avatar: const Icon(Icons.close, size: 16),
-            label: Text(l10n.clearFilters,
-                style: theme.textTheme.labelMedium),
-            onPressed: () =>
-                ref.read(reportFilterProvider.notifier).state =
-                    const ReportFilter(),
-          ),
       ],
     );
   }

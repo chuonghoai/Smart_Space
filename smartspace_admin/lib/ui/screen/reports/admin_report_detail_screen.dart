@@ -5,6 +5,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_admin/features/home/application/home_providers.dart';
+import 'package:smartspace_admin/features/reports/application/report_dashboard_providers.dart';
+import 'package:smartspace_admin/features/reports/application/report_list_providers.dart';
 import 'package:smartspace_admin/features/reports/application/report_providers.dart';
 import 'package:smartspace_admin/features/reports/data/report_repository.dart';
 import 'package:smartspace_admin/features/reports/models/report_detail_model.dart';
@@ -682,35 +684,43 @@ class _AdminReportDetailScreenState
               const SizedBox(height: 6),
               Builder(
                 builder: (context) {
-                  final upperStatus = report.status.toUpperCase();
-                  final isActive = upperStatus == 'PENDING' || upperStatus == 'PROCESSING';
-                  final isOverdue = isActive && DateTime.now().isAfter(report.deadline!);
-                  final deadlineColor =
-                      isOverdue ? theme.colorScheme.error : theme.colorScheme.onSurfaceVariant;
-                  final formattedDeadline =
-                      DateFormat('dd/MM/yyyy HH:mm').format(report.deadline!.toLocal());
-                  return Row(
+                  final deadlineColor = report.isOverdue
+                      ? theme.colorScheme.error
+                      : theme.colorScheme.onSurfaceVariant;
+                  final formattedDeadline = DateFormat('dd/MM/yyyy HH:mm')
+                      .format(report.deadline!.toLocal());
+                  return Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
+                    crossAxisAlignment: WrapCrossAlignment.center,
                     children: [
-                      Icon(
-                        Icons.event_available_outlined,
-                        size: 14,
-                        color: deadlineColor,
-                      ),
-                      const SizedBox(width: 4),
-                      Flexible(
-                        child: Text(
-                          '${l10n.reportDeadlineLabel}: $formattedDeadline',
-                          style: theme.textTheme.bodySmall?.copyWith(
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.event_available_outlined,
+                            size: 14,
                             color: deadlineColor,
-                            fontWeight: isOverdue ? FontWeight.w600 : FontWeight.normal,
-                            fontFeatures: const [FontFeature.tabularFigures()],
                           ),
-                        ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${l10n.reportDeadlineLabel}: $formattedDeadline',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: deadlineColor,
+                              fontWeight: report.isOverdue
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
+                              fontFeatures: const [FontFeature.tabularFigures()],
+                            ),
+                          ),
+                        ],
                       ),
-                      if (isOverdue) ...[
-                        const SizedBox(width: 8),
+                      if (report.isOverdue)
                         Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
                           decoration: BoxDecoration(
                             color: theme.colorScheme.errorContainer,
                             borderRadius: BorderRadius.circular(6),
@@ -722,11 +732,51 @@ class _AdminReportDetailScreenState
                               fontWeight: FontWeight.w600,
                             ),
                           ),
+                        )
+                      else if (report.remainingDays != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            l10n.daysRemainingLabel(report.remainingDays!),
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                              fontWeight: FontWeight.w600,
+                              fontFeatures: const [FontFeature.tabularFigures()],
+                            ),
+                          ),
                         ),
-                      ],
                     ],
                   );
                 },
+              ),
+            ],
+            if (report.resolvedAt != null) ...[
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  Icon(
+                    Icons.check_circle_outline,
+                    size: 14,
+                    color: AppSemanticColors.of(context).success,
+                  ),
+                  const SizedBox(width: 4),
+                  Flexible(
+                    child: Text(
+                      '${l10n.resolvedAtLabel}: ${DateFormat('dd/MM/yyyy HH:mm').format(report.resolvedAt!.toLocal())}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                  ),
+                ],
               ),
             ],
           ],
@@ -1468,10 +1518,6 @@ class _AdminReportDetailScreenState
     AppLocalizations l10n,
     ThemeData theme,
   ) {
-    String? positionFilter;
-    String searchQuery = '';
-    final searchController = TextEditingController();
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1479,177 +1525,18 @@ class _AdminReportDetailScreenState
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (bottomSheetContext) {
-        return StatefulBuilder(
-          builder: (context, setSheetState) {
-            var filtered = positionFilter == null
-                ? staffs
-                : staffs.where((s) => s.positionId == positionFilter).toList();
-            if (searchQuery.trim().isNotEmpty) {
-              filtered = filtered
-                  .where((s) => _ViSearchHelper.matches(s, searchQuery))
-                  .toList();
-            }
-
-            return ConstrainedBox(
-              constraints: BoxConstraints(
-                maxHeight: MediaQuery.of(context).size.height * 0.75,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(vertical: 16),
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 20, vertical: 8),
-                      child: Text(
-                        l10n.selectStaffPrompt,
-                        style: theme.textTheme.titleMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                    PositionFilterChips(
-                      selectedId: positionFilter,
-                      onChanged: (id) =>
-                          setSheetState(() => positionFilter = id),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 16, vertical: 6),
-                      child: TextField(
-                        controller: searchController,
-                        decoration: InputDecoration(
-                          isDense: true,
-                          hintText: l10n.searchStaffHint,
-                          prefixIcon: const Icon(Icons.search, size: 20),
-                          suffixIcon: searchQuery.isNotEmpty
-                              ? IconButton(
-                                  icon: const Icon(Icons.clear, size: 18),
-                                  onPressed: () {
-                                    searchController.clear();
-                                    setSheetState(() => searchQuery = '');
-                                  },
-                                )
-                              : null,
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 12, vertical: 8),
-                        ),
-                        onChanged: (v) => setSheetState(() => searchQuery = v),
-                      ),
-                    ),
-                    const Divider(),
-                    if (filtered.isEmpty)
-                      Padding(
-                        padding: const EdgeInsets.all(24),
-                        child: Center(
-                          child: Text(
-                            l10n.noStaffAvailable,
-                            style: TextStyle(
-                              color: theme.colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ),
-                      )
-                    else
-                      Flexible(
-                        child: ListView.separated(
-                          shrinkWrap: true,
-                          itemCount: filtered.length,
-                          separatorBuilder: (context, index) =>
-                              const Divider(height: 1),
-                          itemBuilder: (context, index) {
-                            final staff = filtered[index];
-                            final isSelected = _selectedStaff?.id == staff.id;
-
-                            return ListTile(
-                              leading: AppNetworkImage(
-                                url: staff.avatarUrl,
-                                width: 40,
-                                height: 40,
-                                isCircle: true,
-                                errorWidget: CircleAvatar(
-                                  radius: 20,
-                                  backgroundColor:
-                                      theme.colorScheme.primaryContainer,
-                                  child: Text(
-                                    staff.fullName.isNotEmpty
-                                        ? staff.fullName[0].toUpperCase()
-                                        : 'S',
-                                    style: TextStyle(
-                                      color:
-                                          theme.colorScheme.onPrimaryContainer,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ),
-                              ),
-                              title: Text(
-                                staff.fullName,
-                                style: TextStyle(
-                                  fontWeight: isSelected
-                                      ? FontWeight.bold
-                                      : FontWeight.normal,
-                                ),
-                              ),
-                              subtitle: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    '${staff.email}${staff.phoneNumber != null ? ' • ${staff.phoneNumber}' : ''}',
-                                    style: TextStyle(
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                      fontSize: 12,
-                                    ),
-                                  ),
-                                  const SizedBox(height: 4),
-                                  Wrap(
-                                    spacing: 6,
-                                    runSpacing: 4,
-                                    children: [
-                                      PositionChip(
-                                        name: staff.positionName ??
-                                            l10n.noPosition,
-                                      ),
-                                      if (staff.processingCount > 0)
-                                        Text(
-                                          '${staff.processingCount} ${l10n.processingStatus.toLowerCase()}',
-                                          style: TextStyle(
-                                            color: theme.colorScheme.primary,
-                                            fontSize: 11,
-                                            fontWeight: FontWeight.w600,
-                                          ),
-                                        ),
-                                    ],
-                                  ),
-                                ],
-                              ),
-                              trailing: isSelected
-                                  ? Icon(Icons.check_circle,
-                                      color: theme.colorScheme.primary)
-                                  : null,
-                              onTap: () {
-                                setState(() {
-                                  _selectedStaff = staff;
-                                });
-                                Navigator.of(bottomSheetContext).pop();
-                              },
-                            );
-                          },
-                        ),
-                      ),
-                  ],
-                ),
-              ),
-            );
+        return _StaffPickerBottomSheet(
+          staffs: staffs,
+          selectedStaff: _selectedStaff,
+          onSelect: (staff) {
+            setState(() {
+              _selectedStaff = staff;
+            });
+            Navigator.of(bottomSheetContext).pop();
           },
         );
       },
-    ).whenComplete(() => searchController.dispose());
+    );
   }
 
   Widget _buildAssignedStaffTwoColumnCard(
@@ -1820,11 +1707,11 @@ class _AdminReportDetailScreenState
                 ),
                 if (report.resolvedAt != null)
                   Text(
-                    DateFormat('dd/MM/yyyy HH:mm')
-                        .format(report.resolvedAt!.toLocal()),
+                    '${l10n.resolvedAtLabel}: ${DateFormat('dd/MM/yyyy HH:mm').format(report.resolvedAt!.toLocal())}',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
                       fontSize: 12,
+                      fontFeatures: const [FontFeature.tabularFigures()],
                     ),
                   ),
               ],
@@ -2177,70 +2064,12 @@ class _AdminReportDetailScreenState
     AppLocalizations l10n,
     ThemeData theme,
   ) async {
-    final formKey = GlobalKey<FormState>();
-    final reasonCtrl = TextEditingController();
-    final confirmed = await showDialog<bool>(
+    final reason = await showDialog<String>(
       context: context,
-      builder: (dialogCtx) => AlertDialog(
-        title: Text(l10n.rejectReportConfirmTitle),
-        content: Form(
-          key: formKey,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                l10n.rejectReportConfirmMessage,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                ),
-              ),
-              const SizedBox(height: 14),
-              TextFormField(
-                controller: reasonCtrl,
-                autofocus: true,
-                maxLines: 3,
-                maxLength: 500,
-                decoration: InputDecoration(
-                  labelText: l10n.rejectReportReasonLabel,
-                  hintText: l10n.rejectReportReasonHint,
-                  border: const OutlineInputBorder(),
-                ),
-                validator: (value) {
-                  if (value == null || value.trim().isEmpty) {
-                    return l10n.rejectReportReasonRequired;
-                  }
-                  return null;
-                },
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(dialogCtx).pop(false),
-            child: Text(l10n.cancel),
-          ),
-          FilledButton(
-            style: FilledButton.styleFrom(
-              backgroundColor: theme.colorScheme.error,
-              foregroundColor: theme.colorScheme.onError,
-            ),
-            onPressed: () {
-              if (formKey.currentState?.validate() ?? false) {
-                Navigator.of(dialogCtx).pop(true);
-              }
-            },
-            child: Text(l10n.confirmRejectAction),
-          ),
-        ],
-      ),
+      builder: (_) => const RejectReportDialog(),
     );
 
-    final reason = reasonCtrl.text.trim();
-    reasonCtrl.dispose();
-
-    if (confirmed != true || !mounted) return;
+    if (reason == null || reason.isEmpty || !mounted) return;
 
     final success = await ref.read(reportAssignProvider.notifier).rejectReport(
           reportId: widget.reportId,
@@ -2367,6 +2196,10 @@ class _AdminReportDetailScreenState
           ref.read(reportDetailProvider(widget.reportId).notifier).refresh();
           ref.read(adminOverviewProvider.notifier).refresh();
           ref.invalidate(recentReportProvider);
+          ref.invalidate(reportListProvider);
+          ref.invalidate(reportStatisticsProvider);
+          ref.invalidate(unsatisfactoryReportsProvider);
+          ref.invalidate(kanbanColumnProvider);
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(
@@ -2703,6 +2536,275 @@ class _AdminReportDetailScreenState
               aspectRatio: 16 / 9,
               child: sliderWidget,
             ),
+    );
+  }
+}
+
+class RejectReportDialog extends StatefulWidget {
+  const RejectReportDialog({super.key});
+
+  @override
+  State<RejectReportDialog> createState() => _RejectReportDialogState();
+}
+
+class _RejectReportDialogState extends State<RejectReportDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _reasonCtrl = TextEditingController();
+
+  @override
+  void dispose() {
+    _reasonCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    return AlertDialog(
+      title: Text(l10n.rejectReportConfirmTitle),
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.rejectReportConfirmMessage,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 14),
+            TextFormField(
+              controller: _reasonCtrl,
+              autofocus: true,
+              maxLines: 3,
+              maxLength: 500,
+              decoration: InputDecoration(
+                labelText: l10n.rejectReportReasonLabel,
+                hintText: l10n.rejectReportReasonHint,
+                border: const OutlineInputBorder(),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return l10n.rejectReportReasonRequired;
+                }
+                return null;
+              },
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          style: FilledButton.styleFrom(
+            backgroundColor: theme.colorScheme.error,
+            foregroundColor: theme.colorScheme.onError,
+          ),
+          onPressed: () {
+            if (_formKey.currentState?.validate() ?? false) {
+              Navigator.of(context).pop(_reasonCtrl.text.trim());
+            }
+          },
+          child: Text(l10n.confirmRejectAction),
+        ),
+      ],
+    );
+  }
+}
+
+class _StaffPickerBottomSheet extends StatefulWidget {
+  final List<StaffModel> staffs;
+  final StaffModel? selectedStaff;
+  final ValueChanged<StaffModel> onSelect;
+
+  const _StaffPickerBottomSheet({
+    required this.staffs,
+    required this.selectedStaff,
+    required this.onSelect,
+  });
+
+  @override
+  State<_StaffPickerBottomSheet> createState() =>
+      _StaffPickerBottomSheetState();
+}
+
+class _StaffPickerBottomSheetState extends State<_StaffPickerBottomSheet> {
+  String? _positionFilter;
+  String _searchQuery = '';
+  final _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    var filtered = _positionFilter == null
+        ? widget.staffs
+        : widget.staffs
+            .where((s) => s.positionId == _positionFilter)
+            .toList();
+    if (_searchQuery.trim().isNotEmpty) {
+      filtered = filtered
+          .where((s) => _ViSearchHelper.matches(s, _searchQuery))
+          .toList();
+    }
+
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.75,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: Text(
+                l10n.selectStaffPrompt,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            PositionFilterChips(
+              selectedId: _positionFilter,
+              onChanged: (id) => setState(() => _positionFilter = id),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  isDense: true,
+                  hintText: l10n.searchStaffHint,
+                  prefixIcon: const Icon(Icons.search, size: 20),
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, size: 18),
+                          onPressed: () {
+                            _searchController.clear();
+                            setState(() => _searchQuery = '');
+                          },
+                        )
+                      : null,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                ),
+                onChanged: (v) => setState(() => _searchQuery = v),
+              ),
+            ),
+            const Divider(),
+            if (filtered.isEmpty)
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Center(
+                  child: Text(
+                    l10n.noStaffAvailable,
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              )
+            else
+              Flexible(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: filtered.length,
+                  separatorBuilder: (context, index) =>
+                      const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final staff = filtered[index];
+                    final isSelected = widget.selectedStaff?.id == staff.id;
+
+                    return ListTile(
+                      leading: AppNetworkImage(
+                        url: staff.avatarUrl,
+                        width: 40,
+                        height: 40,
+                        isCircle: true,
+                        errorWidget: CircleAvatar(
+                          radius: 20,
+                          backgroundColor: theme.colorScheme.primaryContainer,
+                          child: Text(
+                            staff.fullName.isNotEmpty
+                                ? staff.fullName[0].toUpperCase()
+                                : 'S',
+                            style: TextStyle(
+                              color: theme.colorScheme.onPrimaryContainer,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      title: Text(
+                        staff.fullName,
+                        style: TextStyle(
+                          fontWeight:
+                              isSelected ? FontWeight.bold : FontWeight.normal,
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${staff.email}${staff.phoneNumber != null ? ' • ${staff.phoneNumber}' : ''}',
+                            style: TextStyle(
+                              color: theme.colorScheme.onSurfaceVariant,
+                              fontSize: 12,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 4,
+                            children: [
+                              PositionChip(
+                                name: staff.positionName ?? l10n.noPosition,
+                              ),
+                              if (staff.processingCount > 0)
+                                Text(
+                                  '${staff.processingCount} ${l10n.processingStatus.toLowerCase()}',
+                                  style: TextStyle(
+                                    color: theme.colorScheme.primary,
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      trailing: isSelected
+                          ? Icon(
+                              Icons.check_circle,
+                              color: theme.colorScheme.primary,
+                            )
+                          : null,
+                      onTap: () => widget.onSelect(staff),
+                    );
+                  },
+                ),
+              ),
+          ],
+        ),
+      ),
     );
   }
 }

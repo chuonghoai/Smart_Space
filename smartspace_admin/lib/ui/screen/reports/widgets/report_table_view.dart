@@ -110,22 +110,66 @@ class ReportTableView extends ConsumerWidget {
                                   ),
                                   if (r.deadline != null && r.status != 'rejected') ...[
                                     const SizedBox(height: 3),
-                                    Text(
-                                      l10n.expectedCompletionDate(
-                                        DateFormat('dd/MM').format(r.deadline!.toLocal()),
-                                      ),
-                                      style: theme.textTheme.labelSmall?.copyWith(
-                                        fontSize: 10.5,
-                                        color: r.isOverdueActive
-                                            ? theme.colorScheme.error
-                                            : theme.colorScheme.onSurfaceVariant,
-                                        fontWeight: r.isOverdueActive
-                                            ? FontWeight.w600
-                                            : FontWeight.normal,
-                                        fontFeatures: const [FontFeature.tabularFigures()],
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
+                                    Wrap(
+                                      spacing: 6,
+                                      runSpacing: 2,
+                                      crossAxisAlignment: WrapCrossAlignment.center,
+                                      children: [
+                                        Text(
+                                          l10n.expectedCompletionDate(
+                                            DateFormat('dd/MM').format(r.deadline!.toLocal()),
+                                          ),
+                                          style: theme.textTheme.labelSmall?.copyWith(
+                                            fontSize: 10.5,
+                                            color: r.isOverdue
+                                                ? theme.colorScheme.error
+                                                : theme.colorScheme.onSurfaceVariant,
+                                            fontWeight: r.isOverdue
+                                                ? FontWeight.w600
+                                                : FontWeight.normal,
+                                            fontFeatures: const [FontFeature.tabularFigures()],
+                                          ),
+                                        ),
+                                        if (r.isOverdue)
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 5,
+                                              vertical: 1,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: theme.colorScheme.errorContainer,
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            child: Text(
+                                              l10n.deadlineOverdueBadge,
+                                              style: theme.textTheme.labelSmall?.copyWith(
+                                                fontSize: 9.5,
+                                                color: theme.colorScheme.onErrorContainer,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          )
+                                        else if (r.remainingDays != null)
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 5,
+                                              vertical: 1,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: theme.colorScheme.surfaceContainerHighest,
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            child: Text(
+                                              l10n.daysRemainingLabel(r.remainingDays!),
+                                              style: theme.textTheme.labelSmall?.copyWith(
+                                                fontSize: 9.5,
+                                                color: theme.colorScheme.onSurfaceVariant,
+                                                fontWeight: FontWeight.w600,
+                                                fontFeatures: const [FontFeature.tabularFigures()],
+                                              ),
+                                            ),
+                                          ),
+                                      ],
                                     ),
                                   ],
                                 ],

@@ -163,13 +163,25 @@ final staffListProvider =
       () => StaffListNotifier(),
     );
 
+final selectedStaffStatsMonthProvider =
+    StateProvider<({int year, int month})?>((ref) => null);
+
 final staffStatisticsProvider =
     FutureProvider.autoDispose<StaffStatisticsModel>((ref) {
-      return staffRepository.getStatistics();
+      final selectedMonth = ref.watch(selectedStaffStatsMonthProvider);
+      return staffRepository.getStatistics(
+        year: selectedMonth?.year,
+        month: selectedMonth?.month,
+      );
     });
 
 /// period: 'daily' | 'weekly' | 'monthly'
 final staffTrendProvider = FutureProvider.autoDispose
     .family<List<StaffTrendItem>, String>((ref, period) {
-      return staffRepository.getTrend(period);
+      final selectedMonth = ref.watch(selectedStaffStatsMonthProvider);
+      return staffRepository.getTrend(
+        period,
+        year: selectedMonth?.year,
+        month: selectedMonth?.month,
+      );
     });

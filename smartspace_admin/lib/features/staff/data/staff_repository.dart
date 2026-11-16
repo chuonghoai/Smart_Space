@@ -89,9 +89,13 @@ class StaffRepository {
     );
   }
 
-  Future<StaffStatisticsModel> getStatistics() async {
+  Future<StaffStatisticsModel> getStatistics({int? year, int? month}) async {
     final response = await apiClient.get<StaffStatisticsModel>(
       '/admin/staffs/statistics',
+      queryParameters: {
+        'year': ?year,
+        'month': ?month,
+      },
       decoder: (json) =>
           StaffStatisticsModel.fromJson(json as Map<String, dynamic>),
     );
@@ -102,10 +106,18 @@ class StaffRepository {
   }
 
   /// period: 'daily' | 'weekly' | 'monthly'
-  Future<List<StaffTrendItem>> getTrend(String period) async {
+  Future<List<StaffTrendItem>> getTrend(
+    String period, {
+    int? year,
+    int? month,
+  }) async {
     final response = await apiClient.get<List<StaffTrendItem>>(
       '/admin/staffs/trend',
-      queryParameters: {'period': period},
+      queryParameters: {
+        'period': period,
+        'year': ?year,
+        'month': ?month,
+      },
       decoder: (json) {
         final items = (json as Map<String, dynamic>)['items'] as List? ?? [];
         return items

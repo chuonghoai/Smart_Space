@@ -2432,6 +2432,18 @@ abstract class AppLocalizations {
   /// **'Overdue'**
   String get deadlineOverdueBadge;
 
+  /// No description provided for @daysRemainingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days left'**
+  String daysRemainingLabel(int days);
+
+  /// No description provided for @overdueOnlyFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get overdueOnlyFilter;
+
   /// No description provided for @rejectedReasonTitle.
   ///
   /// In en, this message translates to:

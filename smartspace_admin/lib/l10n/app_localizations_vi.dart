@@ -536,7 +536,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get reporterInfoSection => 'Người gửi';
 
   @override
-  String get anonymousUser => 'Người dùng ẩn danh';
+  String get anonymousUser => 'Ẩn danh';
 
   @override
   String get anonymousDescription =>
@@ -2402,4 +2402,55 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get lockBlockedNotActive =>
       'Chỉ có thể đề xuất khoá tài khoản đang hoạt động';
+
+  @override
+  String daysRemainingLabel(int days) {
+    return 'Còn $days ngày';
+  }
+
+  @override
+  String get overdueOnlyFilter => 'Quá hạn';
+
+  @override
+  String get excellentBadge => 'Xuất sắc';
+
+  @override
+  String staffEfficiencyLabel(String rate) {
+    return 'Hiệu suất công việc: $rate%';
+  }
+
+  @override
+  String get staffEfficiencyNoData => 'Hiệu suất công việc: —';
+
+  @override
+  String get statsMonthLabel => 'Tháng thống kê';
+
+  @override
+  String get resolvedInMonth => 'Đã xử lý trong tháng';
+
+  @override
+  String get avgResolutionTimeInMonth => 'TB thời gian xử lý';
+
+  @override
+  String resolvedMonthCount(int count) {
+    return '$count đã xử lý trong tháng';
+  }
+
+  @override
+  String staffMonthlyWorkloadTitle(String month) {
+    return 'Khối lượng công việc trong tháng $month';
+  }
+
+  @override
+  String staffMonthlyWorkloadBreakdown(
+    int processing,
+    int resolved,
+    int overdue,
+    int rehandling,
+  ) {
+    return '$processing đang xử lý, $resolved đã xử lý, $overdue trễ hạn, $rehandling xử lý lại';
+  }
+
+  @override
+  String get viewAssignedReportsAction => 'Xem phản ánh được giao';
 }

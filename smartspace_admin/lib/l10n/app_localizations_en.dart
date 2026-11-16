@@ -2406,4 +2406,55 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get lockBlockedNotActive =>
       'Only active accounts can be proposed for locking';
+
+  @override
+  String daysRemainingLabel(int days) {
+    return '${days}d remaining';
+  }
+
+  @override
+  String get overdueOnlyFilter => 'Overdue';
+
+  @override
+  String get excellentBadge => 'Excellent';
+
+  @override
+  String staffEfficiencyLabel(String rate) {
+    return 'Work efficiency: $rate%';
+  }
+
+  @override
+  String get staffEfficiencyNoData => 'Work efficiency: —';
+
+  @override
+  String get statsMonthLabel => 'Statistics month';
+
+  @override
+  String get resolvedInMonth => 'Resolved this month';
+
+  @override
+  String get avgResolutionTimeInMonth => 'Avg resolution time';
+
+  @override
+  String resolvedMonthCount(int count) {
+    return '$count resolved in month';
+  }
+
+  @override
+  String staffMonthlyWorkloadTitle(String month) {
+    return 'Workload in $month';
+  }
+
+  @override
+  String staffMonthlyWorkloadBreakdown(
+    int processing,
+    int resolved,
+    int overdue,
+    int rehandling,
+  ) {
+    return '$processing in progress, $resolved resolved, $overdue overdue, $rehandling rehandling';
+  }
+
+  @override
+  String get viewAssignedReportsAction => 'View assigned reports';
 }

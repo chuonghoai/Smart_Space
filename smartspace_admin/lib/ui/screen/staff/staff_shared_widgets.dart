@@ -3,13 +3,17 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:intl/intl.dart';
 import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:mobile_shared/features/chat/models/conversation_model.dart';
 import 'package:mobile_shared/util/media_upload.dart';
+import 'package:smartspace_admin/features/position/application/position_providers.dart';
+import 'package:smartspace_admin/features/reports/application/report_list_providers.dart';
+import 'package:smartspace_admin/features/reports/models/report_filter_model.dart';
 import 'package:smartspace_admin/features/staff/application/staff_providers.dart';
 import 'package:smartspace_admin/features/staff/models/staff_list_response.dart';
-import 'package:smartspace_admin/features/position/application/position_providers.dart';
 import 'package:smartspace_admin/features/staff/models/staff_model.dart';
+import 'package:smartspace_admin/features/staff/models/staff_statistics_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/shared/position/position_widgets.dart';
@@ -960,8 +964,6 @@ void showStaffDetailSheet(
   StaffModel staff,
   WidgetRef ref,
 ) {
-  // Sheet cao vừa nội dung; phần thông tin cuộn được khi màn hình thấp,
-  // còn hàng nút luôn ghim ở đáy để không phải kéo sheet lên mới thấy.
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
@@ -969,7 +971,59 @@ void showStaffDetailSheet(
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
     ),
-    builder: (sheetContext) => SafeArea(
+    builder: (sheetContext) => StaffDetailSheetBody(
+      staff: staff,
+      parentContext: context,
+      sheetContext: sheetContext,
+    ),
+  );
+}
+
+class StaffDetailSheetBody extends ConsumerWidget {
+  final StaffModel staff;
+  final BuildContext parentContext;
+  final BuildContext sheetContext;
+
+  const StaffDetailSheetBody({
+    super.key,
+    required this.staff,
+    required this.parentContext,
+    required this.sheetContext,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final semantic = AppSemanticColors.of(context);
+    final stats = ref.watch(staffStatisticsProvider).valueOrNull;
+    final selectedMonth = ref.watch(selectedStaffStatsMonthProvider);
+    final now = DateTime.now();
+
+    final displayYear = selectedMonth?.year ?? stats?.selectedYear ?? now.year;
+    final displayMonth =
+        selectedMonth?.month ?? stats?.selectedMonth ?? now.month;
+    final monthLabel =
+        '${displayMonth.toString().padLeft(2, '0')}/$displayYear';
+
+    StaffDeadlinePerformanceItem? perf;
+    if (stats != null) {
+      for (final item in stats.deadlinePerformance) {
+        if (item.staff.id == staff.id) {
+          perf = item;
+          break;
+        }
+      }
+    }
+
+    final processingCount = perf?.processingCount ?? 0;
+    final resolvedCount = perf?.resolvedCount ?? 0;
+    final overdueTotal = perf?.totalLateCount ?? 0;
+    final rehandlingCount = perf?.rehandlingCount ?? 0;
+    final efficiencyRate = perf?.efficiencyRate;
+
+    return SafeArea(
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
@@ -1015,6 +1069,76 @@ void showStaffDetailSheet(
                       ),
                     ),
                   ],
+                  const SizedBox(height: 16),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: cs.surfaceContainerLow,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(color: theme.dividerColor),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.bar_chart_rounded,
+                              size: 18,
+                              color: cs.primary,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                l10n.staffMonthlyWorkloadTitle(monthLabel),
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                  fontFeatures: const [
+                                    FontFeature.tabularFigures(),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.staffMonthlyWorkloadBreakdown(
+                            processingCount,
+                            resolvedCount,
+                            overdueTotal,
+                            rehandlingCount,
+                          ),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: cs.onSurfaceVariant,
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        Text(
+                          efficiencyRate == null
+                              ? l10n.staffEfficiencyNoData
+                              : l10n.staffEfficiencyLabel(
+                                  NumberFormat(
+                                    '#,##0.#',
+                                    Localizations.localeOf(context)
+                                        .toLanguageTag(),
+                                  ).format(efficiencyRate),
+                                ),
+                          style: theme.textTheme.labelMedium?.copyWith(
+                            color: efficiencyRate == null
+                                ? cs.onSurfaceVariant
+                                : (perf?.hasMissedDeadline ?? false)
+                                    ? cs.error
+                                    : semantic.success,
+                            fontWeight: FontWeight.w600,
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 20),
                 ],
               ),
@@ -1030,8 +1154,8 @@ void showStaffDetailSheet(
                   width: double.infinity,
                   child: FilledButton.icon(
                     onPressed: () {
-                      Navigator.pop(context); // Đóng bottom sheet
-                      context.push(
+                      Navigator.of(sheetContext).pop();
+                      parentContext.push(
                         RouterPath.chatDetailWithId('new_${staff.id}'),
                         extra: ParticipantModel(
                           userId: staff.id,
@@ -1051,22 +1175,49 @@ void showStaffDetailSheet(
                     ),
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 10),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      ref.read(reportFilterProvider.notifier).state =
+                          ReportFilter(assigneeId: staff.id, page: 1);
+                      Navigator.of(sheetContext).pop();
+                      parentContext.push(RouterPath.reportDashboard);
+                    },
+                    icon: const Icon(Icons.assignment_ind_outlined),
+                    label: Text(l10n.viewAssignedReportsAction),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: cs.primary,
+                      side: BorderSide(color: cs.primary),
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
                 Row(
                   children: [
                     // Nút Chỉnh sửa
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: () {
-                          Navigator.pop(context); // Đóng bottom sheet
-                          showStaffFormDialog(context, l10n, theme, ref,
-                              editingStaff: staff);
+                          Navigator.of(sheetContext).pop();
+                          showStaffFormDialog(
+                            parentContext,
+                            l10n,
+                            theme,
+                            ref,
+                            editingStaff: staff,
+                          );
                         },
                         icon: const Icon(Icons.edit_outlined),
                         label: Text(l10n.editInfo),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: theme.colorScheme.primary,
-                          side: BorderSide(color: theme.colorScheme.primary),
+                          foregroundColor: cs.primary,
+                          side: BorderSide(color: cs.primary),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8),
@@ -1079,8 +1230,14 @@ void showStaffDetailSheet(
                     Expanded(
                       child: OutlinedButton.icon(
                         onPressed: () {
-                          Navigator.pop(context); // Đóng bottom sheet
-                          confirmToggleStaffStatus(context, l10n, theme, staff, ref);
+                          Navigator.of(sheetContext).pop();
+                          confirmToggleStaffStatus(
+                            parentContext,
+                            l10n,
+                            theme,
+                            staff,
+                            ref,
+                          );
                         },
                         icon: Icon(
                           staff.isActive ? Icons.lock_outline : Icons.lock_open,
@@ -1089,13 +1246,10 @@ void showStaffDetailSheet(
                           staff.isActive ? l10n.lockAccount : l10n.unlockAccount,
                         ),
                         style: OutlinedButton.styleFrom(
-                          foregroundColor: staff.isActive
-                              ? theme.colorScheme.error
-                              : theme.colorScheme.primary,
+                          foregroundColor:
+                              staff.isActive ? cs.error : cs.primary,
                           side: BorderSide(
-                            color: staff.isActive
-                                ? theme.colorScheme.error
-                                : theme.colorScheme.primary,
+                            color: staff.isActive ? cs.error : cs.primary,
                           ),
                           padding: const EdgeInsets.symmetric(vertical: 12),
                           shape: RoundedRectangleBorder(
@@ -1111,8 +1265,8 @@ void showStaffDetailSheet(
           ),
         ],
       ),
-    ),
-  );
+    );
+  }
 }
 
 /// Dialog xác nhận khoá/mở khoá tài khoản

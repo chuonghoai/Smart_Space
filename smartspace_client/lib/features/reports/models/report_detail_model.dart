@@ -17,7 +17,6 @@ class ReportDetailModel extends ReportModel {
   final String? assignedStaffAvatarUrl;
   final String? resolvedNote;
   final List<String> resolvedImageUrls;
-  final DateTime? resolvedAt;
   final int? rating;
   final String? reviewNote;
   final List<String> reviewImageUrls;
@@ -39,6 +38,9 @@ class ReportDetailModel extends ReportModel {
     super.isReviewResolved,
     super.userId,
     super.deadline,
+    super.resolvedAt,
+    super.serverIsOverdue,
+    super.serverRemainingDays,
 
     required EReportSeverity super.severity,
     required this.imageUrls,
@@ -50,7 +52,6 @@ class ReportDetailModel extends ReportModel {
     this.assignedStaffAvatarUrl,
     this.resolvedNote,
     this.resolvedImageUrls = const [],
-    this.resolvedAt,
     this.rating,
     this.reviewNote,
     this.reviewImageUrls = const [],
@@ -130,6 +131,8 @@ class ReportDetailModel extends ReportModel {
       deadline: (json['deadline'] ?? json['report_deadline']) != null
           ? DateTime.tryParse((json['deadline'] ?? json['report_deadline']).toString())
           : null,
+      serverIsOverdue: (json['is_overdue'] ?? json['isOverdue']) as bool?,
+      serverRemainingDays: ((json['remaining_days'] ?? json['remainingDays']) as num?)?.toInt(),
       rejectedReason: (json['rejected_reason'] ?? json['rejectedReason']) as String?,
       rejectedAt: (json['rejected_at'] ?? json['rejectedAt']) != null
           ? DateTime.tryParse((json['rejected_at'] ?? json['rejectedAt']).toString())
@@ -209,6 +212,8 @@ class ReportDetailModel extends ReportModel {
     List<String>? reviewImageUrls,
     DateTime? reviewedAt,
     DateTime? deadline,
+    bool? serverIsOverdue,
+    int? serverRemainingDays,
     String? rejectedReason,
     DateTime? rejectedAt,
     String? userId,
@@ -224,6 +229,8 @@ class ReportDetailModel extends ReportModel {
       distanceInMeters: distanceInMeters ?? this.distanceInMeters,
       userId: userId ?? this.userId,
       deadline: deadline ?? this.deadline,
+      serverIsOverdue: serverIsOverdue ?? this.serverIsOverdue,
+      serverRemainingDays: serverRemainingDays ?? this.serverRemainingDays,
       severity: severity ?? this.severity,
       imageUrls: imageUrls ?? this.imageUrls,
       isAnonymous: isAnonymous ?? this.isAnonymous,

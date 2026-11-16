@@ -3,6 +3,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:intl/intl.dart';
 import 'package:smartspace_staff/features/reports/models/report_model.dart';
 import 'package:smartspace_staff/features/reports/models/report_statistics_model.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
@@ -826,6 +827,83 @@ class _ReportListItem extends StatelessWidget {
                       ),
                     ],
                   ),
+                  if (report.deadline != null &&
+                      report.status != ReportStatus.rejected) ...[
+                    const SizedBox(height: 6),
+                    Wrap(
+                      spacing: 6,
+                      runSpacing: 4,
+                      crossAxisAlignment: WrapCrossAlignment.center,
+                      children: [
+                        Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.event_available_outlined,
+                              size: 13,
+                              color: report.isOverdue
+                                  ? theme.colorScheme.error
+                                  : theme.colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 4),
+                            Text(
+                              '${l10n.reportDeadlineLabel}: ${DateFormat('dd/MM/yyyy HH:mm').format(report.deadline!.toLocal())}',
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: report.isOverdue
+                                    ? theme.colorScheme.error
+                                    : theme.colorScheme.onSurfaceVariant,
+                                fontWeight: report.isOverdue
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
+                                fontFeatures: const [
+                                  FontFeature.tabularFigures(),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        if (report.isOverdue)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.errorContainer,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              l10n.deadlineOverdueBadge,
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.onErrorContainer,
+                                fontWeight: FontWeight.w700,
+                              ),
+                            ),
+                          )
+                        else if (report.remainingDays != null)
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 6,
+                              vertical: 2,
+                            ),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.surfaceContainerHighest,
+                              borderRadius: BorderRadius.circular(4),
+                            ),
+                            child: Text(
+                              l10n.daysRemainingLabel(report.remainingDays!),
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                                fontWeight: FontWeight.w600,
+                                fontFeatures: const [
+                                  FontFeature.tabularFigures(),
+                                ],
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
                   if (distanceStr != null) ...[
                     const SizedBox(height: 4),
                     Row(

@@ -132,11 +132,12 @@ public class ReportController {
             @RequestParam(required = false) String search,
             @RequestParam(required = false) String from,
             @RequestParam(required = false) String to,
+            @RequestParam(required = false) Boolean overdue,
             @RequestParam(defaultValue = "1") int page,
             @RequestParam(defaultValue = "20") int size) {
         String userId = jwt.getClaim("userId").toString();
         return ResponseEntity.ok(ApiResponse.success("system.success",
-                reportService.getMyReports(userId, status, severity, search, from, to, page, size)));
+                reportService.getMyReports(userId, status, severity, search, from, to, overdue, page, size)));
     }
 
     @GetMapping("/my-reports/summary")
@@ -150,11 +151,12 @@ public class ReportController {
     public ResponseEntity<ApiResponse> getStaffAssignedReports(
             @AuthenticationPrincipal Jwt jwt,
             @RequestParam(defaultValue = "all") String status,
+            @RequestParam(required = false) Boolean overdue,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int limit) {
         String staffId = jwt.getClaim("userId").toString();
-        return ResponseEntity.ok(ApiResponse.success("system.success", 
-                reportService.getStaffAssignedReports(staffId, status, page, limit)));
+        return ResponseEntity.ok(ApiResponse.success("system.success",
+                reportService.getStaffAssignedReports(staffId, status, overdue, page, limit)));
     }
 
     @GetMapping("/staff/statistics")

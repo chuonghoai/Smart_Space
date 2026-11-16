@@ -1131,5 +1131,61 @@
       "min": { "type": "int" }
     }
   },
-  "lockBlockedNotActive": "Only active accounts can be proposed for locking"
+  "lockBlockedNotActive": "Only active accounts can be proposed for locking",
+  "daysRemainingLabel": "{days}d remaining",
+  "@daysRemainingLabel": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "overdueOnlyFilter": "Overdue",
+  "excellentBadge": "Excellent",
+  "staffEfficiencyLabel": "Work efficiency: {rate}%",
+  "@staffEfficiencyLabel": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "staffEfficiencyNoData": "Work efficiency: —",
+  "statsMonthLabel": "Statistics month",
+  "resolvedInMonth": "Resolved this month",
+  "avgResolutionTimeInMonth": "Avg resolution time",
+  "resolvedMonthCount": "{count} resolved in month",
+  "@resolvedMonthCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "staffMonthlyWorkloadTitle": "Workload in {month}",
+  "@staffMonthlyWorkloadTitle": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "staffMonthlyWorkloadBreakdown": "{processing} in progress, {resolved} resolved, {overdue} overdue, {rehandling} rehandling",
+  "@staffMonthlyWorkloadBreakdown": {
+    "placeholders": {
+      "processing": {
+        "type": "int"
+      },
+      "resolved": {
+        "type": "int"
+      },
+      "overdue": {
+        "type": "int"
+      },
+      "rehandling": {
+        "type": "int"
+      }
+    }
+  },
+  "viewAssignedReportsAction": "View assigned reports"
 }

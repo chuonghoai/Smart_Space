@@ -1,3 +1,4 @@
+import 'package:mobile_shared/core/utils/report_deadline_helper.dart';
 
 class ReportListItem {
   final String id;
@@ -15,6 +16,8 @@ class ReportListItem {
   final bool? isReviewResolved;
   final DateTime? deadline;
   final DateTime? resolvedAt;
+  final bool? serverIsOverdue;
+  final int? serverRemainingDays;
 
   const ReportListItem({
     required this.id,
@@ -32,12 +35,26 @@ class ReportListItem {
     this.isReviewResolved,
     this.deadline,
     this.resolvedAt,
+    this.serverIsOverdue,
+    this.serverRemainingDays,
   });
 
-  bool get isOverdueActive =>
-      deadline != null &&
-      (status == 'pending' || status == 'processing') &&
-      DateTime.now().isAfter(deadline!);
+  bool get isOverdue => ReportDeadlineHelper.isOverdue(
+        status: status,
+        deadline: deadline,
+        resolvedAt: resolvedAt,
+        serverIsOverdue: serverIsOverdue,
+      );
+
+  int? get remainingDays => ReportDeadlineHelper.remainingDays(
+        status: status,
+        deadline: deadline,
+        resolvedAt: resolvedAt,
+        serverIsOverdue: serverIsOverdue,
+        serverRemainingDays: serverRemainingDays,
+      );
+
+  bool get isOverdueActive => isOverdue;
 
   factory ReportListItem.fromJson(Map<String, dynamic> json) {
     DateTime? createdAt;
@@ -83,6 +100,9 @@ class ReportListItem {
       isReviewResolved: json['isReviewResolved'] as bool? ?? json['is_review_resolved'] as bool?,
       deadline: deadline,
       resolvedAt: resolvedAt,
+      serverIsOverdue: (json['is_overdue'] ?? json['isOverdue']) as bool?,
+      serverRemainingDays:
+          ((json['remaining_days'] ?? json['remainingDays']) as num?)?.toInt(),
     );
   }
 
@@ -92,6 +112,8 @@ class ReportListItem {
     bool? isReviewResolved,
     DateTime? deadline,
     DateTime? resolvedAt,
+    bool? serverIsOverdue,
+    int? serverRemainingDays,
   }) =>
       ReportListItem(
         id: id,
@@ -109,6 +131,8 @@ class ReportListItem {
         isReviewResolved: isReviewResolved ?? this.isReviewResolved,
         deadline: deadline ?? this.deadline,
         resolvedAt: resolvedAt ?? this.resolvedAt,
+        serverIsOverdue: serverIsOverdue ?? this.serverIsOverdue,
+        serverRemainingDays: serverRemainingDays ?? this.serverRemainingDays,
       );
 }
 

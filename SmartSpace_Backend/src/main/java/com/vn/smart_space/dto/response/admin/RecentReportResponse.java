@@ -44,4 +44,8 @@ public class RecentReportResponse {
     LocalDateTime deadline;
 
     LocalDateTime resolvedAt;
+
+    Boolean isOverdue;
+
+    Long remainingDays;
 }

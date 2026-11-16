@@ -642,47 +642,62 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
                           const SizedBox(height: 6),
                           Builder(
                             builder: (context) {
-                              final isActive = report.status == ReportStatus.pending ||
-                                  report.status == ReportStatus.processing;
-                              final isOverdue = isActive && DateTime.now().isAfter(report.deadline!);
+                              final isOverdue = report.isOverdue;
+                              final remainingDays = report.remainingDays;
                               final deadlineColor = isOverdue
                                   ? theme.colorScheme.error
                                   : theme.colorScheme.onSurfaceVariant;
+                              final formattedDeadline =
+                                  DateFormat('dd/MM/yyyy HH:mm').format(report.deadline!.toLocal());
+                              final deadlineLine = isOverdue
+                                  ? '${l10n.reportDeadlineLabel}: $formattedDeadline (${l10n.deadlineOverdueBadge})'
+                                  : remainingDays != null
+                                      ? '${l10n.reportDeadlineLabel}: $formattedDeadline (${l10n.daysRemainingLabel(remainingDays)})'
+                                      : '${l10n.reportDeadlineLabel}: $formattedDeadline';
                               return Row(
+                                crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  Icon(
-                                    Icons.event_available_outlined,
-                                    size: 14,
-                                    color: deadlineColor,
+                                  Padding(
+                                    padding: const EdgeInsets.only(top: 2),
+                                    child: Icon(
+                                      Icons.event_available_outlined,
+                                      size: 14,
+                                      color: deadlineColor,
+                                    ),
                                   ),
                                   const SizedBox(width: 4),
-                                  Flexible(
-                                    child: Text(
-                                      '${l10n.reportDeadlineLabel}: ${DateFormat('dd/MM/yyyy HH:mm').format(report.deadline!.toLocal())}',
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: deadlineColor,
-                                        fontWeight: isOverdue ? FontWeight.w600 : FontWeight.normal,
-                                        fontFeatures: const [FontFeature.tabularFigures()],
-                                      ),
+                                  Expanded(
+                                    child: Wrap(
+                                      spacing: 6,
+                                      runSpacing: 4,
+                                      crossAxisAlignment: WrapCrossAlignment.center,
+                                      children: [
+                                        Text(
+                                          deadlineLine,
+                                          style: theme.textTheme.bodySmall?.copyWith(
+                                            color: deadlineColor,
+                                            fontWeight: isOverdue ? FontWeight.w700 : FontWeight.normal,
+                                            fontFeatures: const [FontFeature.tabularFigures()],
+                                          ),
+                                        ),
+                                        if (isOverdue)
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                            decoration: BoxDecoration(
+                                              color: theme.colorScheme.errorContainer,
+                                              borderRadius: BorderRadius.circular(6),
+                                            ),
+                                            child: Text(
+                                              l10n.deadlineOverdueBadge,
+                                              style: theme.textTheme.labelSmall?.copyWith(
+                                                color: theme.colorScheme.onErrorContainer,
+                                                fontWeight: FontWeight.w700,
+                                              ),
+                                            ),
+                                          ),
+                                      ],
                                     ),
                                   ),
-                                  if (isOverdue) ...[
-                                    const SizedBox(width: 6),
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                      decoration: BoxDecoration(
-                                        color: theme.colorScheme.errorContainer,
-                                        borderRadius: BorderRadius.circular(6),
-                                      ),
-                                      child: Text(
-                                        l10n.deadlineOverdueBadge,
-                                        style: theme.textTheme.labelSmall?.copyWith(
-                                          color: theme.colorScheme.onErrorContainer,
-                                          fontWeight: FontWeight.w600,
-                                        ),
-                                      ),
-                                    ),
-                                  ],
                                 ],
                               );
                             },

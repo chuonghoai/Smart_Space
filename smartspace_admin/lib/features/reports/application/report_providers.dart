@@ -4,6 +4,7 @@ import '../../home/application/home_providers.dart';
 import '../data/report_repository.dart';
 import '../models/report_detail_model.dart';
 import '../models/staff_model.dart';
+import 'report_dashboard_providers.dart';
 import 'report_list_providers.dart';
 
 final reportDetailProvider = AsyncNotifierProviderFamily<ReportDetailNotifier, ReportDetailModel, String>(() => ReportDetailNotifier());
@@ -90,6 +91,9 @@ class ReportAssignNotifier extends StateNotifier<ReportAssignState> {
         ref.read(adminOverviewProvider.notifier).refresh();
         ref.read(recentActivityProvider.notifier).refresh();
         ref.invalidate(recentReportProvider);
+        ref.invalidate(reportListProvider);
+        ref.invalidate(reportStatisticsProvider);
+        ref.invalidate(kanbanColumnProvider);
 
         return true;
       } else {
@@ -121,6 +125,8 @@ class ReportAssignNotifier extends StateNotifier<ReportAssignState> {
         ref.read(recentActivityProvider.notifier).refresh();
         ref.invalidate(recentReportProvider);
         ref.invalidate(reportListProvider);
+        ref.invalidate(reportStatisticsProvider);
+        ref.invalidate(kanbanColumnProvider);
         return true;
       } else {
         state = ReportAssignState(error: response.message);

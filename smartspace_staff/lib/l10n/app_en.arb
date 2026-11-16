@@ -488,6 +488,15 @@
   "attachedReportSnippet": "Attached report",
   "reportDeadlineLabel": "Resolution deadline",
   "deadlineOverdueBadge": "Overdue",
+  "daysRemainingLabel": "{days} days left",
+  "@daysRemainingLabel": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "overdueOnlyFilter": "Overdue",
   "rejectedReasonTitle": "Rejection Reason",
   "noRejectionReasonProvided": "Rejected by administrator."
 }
