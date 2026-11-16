@@ -14,7 +14,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * Hết hạn các yêu cầu nhờ làm giùm PENDING quá hạn và hoàn bonus cho người nhờ.
+ * Hết hạn các yêu cầu nhờ làm giùm PENDING quá hạn.
  * Mỗi yêu cầu chạy trong transaction riêng (gọi qua proxy của service) → một bản ghi lỗi không chặn cả lô.
  */
 @Slf4j

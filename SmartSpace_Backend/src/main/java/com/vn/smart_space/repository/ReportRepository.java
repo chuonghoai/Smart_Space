@@ -280,6 +280,10 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                      @Param("status") EReportStatus status,
                      @Param("from") LocalDateTime from);
 
+       @Query("SELECT r FROM Report r LEFT JOIN FETCH r.assignedStaff s " +
+                     "WHERE s IS NOT NULL AND r.status IN :statuses")
+       List<Report> findAssignedByStatusInWithStaff(@Param("statuses") List<EReportStatus> statuses);
+
        // Client community feed: excluding one status (rejected), optional status /
        // severity / keyword.
        String FEED_FILTER = "WHERE r.status <> :excluded " +

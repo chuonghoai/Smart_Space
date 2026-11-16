@@ -96,18 +96,12 @@ public class Report extends AbstractEntity {
     @Column(name = "reviewed_at")
     java.util.Date reviewedAt;
 
-    @Column(name = "base_commission")
-    Double baseCommission;
+    @Column(name = "deadline")
+    java.time.LocalDateTime deadline;
 
-    @Builder.Default
-    @Column(name = "total_commission_deducted")
-    Double totalCommissionDeducted = 0.0;
+    @Column(name = "rejected_reason", columnDefinition = "TEXT")
+    String rejectedReason;
 
-    @Builder.Default
-    @Column(name = "rehandling_penalty_count")
-    Integer rehandlingPenaltyCount = 0;
-
-    @Builder.Default
-    @Column(name = "commission_awarded")
-    Boolean commissionAwarded = false;
+    @Column(name = "rejected_at")
+    java.util.Date rejectedAt;
 }

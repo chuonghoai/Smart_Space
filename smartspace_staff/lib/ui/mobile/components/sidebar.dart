@@ -134,14 +134,6 @@ class Sidebar extends ConsumerWidget {
                     },
                   ),
                   _SidebarItem(
-                    icon: Icons.account_balance_wallet_outlined,
-                    label: l10n.staffWallet,
-                    onTap: () {
-                      Navigator.pop(context);
-                      context.push(RouterPath.staffWallet);
-                    },
-                  ),
-                  _SidebarItem(
                     icon: Icons.handshake_outlined,
                     label: l10n.routeDelegations,
                     onTap: () {

@@ -1576,135 +1576,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get locationDescriptionLabel => 'Mô tả vị trí';
 
   @override
-  String get routeWalletConfig => 'Cấu hình hoa hồng ví';
-
-  @override
-  String get walletConfigTitle => 'Cấu hình hoa hồng ví';
-
-  @override
-  String get walletConfigDescription =>
-      'Thiết lập định mức hoa hồng cho nhân viên theo mức độ nghiêm trọng và tỷ lệ trừ tiền khi bị đánh giá chưa thỏa đáng.';
-
-  @override
-  String get commissionBySeverity => 'Định mức hoa hồng theo mức độ';
-
-  @override
-  String get commissionLow => 'Mức độ thấp (VNĐ)';
-
-  @override
-  String get commissionMedium => 'Mức độ trung bình (VNĐ)';
-
-  @override
-  String get commissionHigh => 'Mức độ cao (VNĐ)';
-
-  @override
-  String get commissionCritical => 'Mức độ nghiêm trọng (VNĐ)';
-
-  @override
-  String get penaltyRateSettings => 'Tỷ lệ trừ hoa hồng khi xử lý lại';
-
-  @override
-  String get penaltyRate1 => 'Lần xử lý lại thứ 1 (%)';
-
-  @override
-  String get penaltyRate2 => 'Lần xử lý lại thứ 2 (%)';
-
-  @override
-  String get penaltyRate3 => 'Lần xử lý lại thứ 3 (%)';
-
-  @override
-  String get penaltyRateNote =>
-      'Từ lần xử lý lại thứ 3 trở đi, nhân viên sẽ bị trừ tối đa 100% hoa hồng. Các lần tiếp theo không tính thêm.';
-
-  @override
-  String get saveWalletConfig => 'Lưu cấu hình';
-
-  @override
-  String get saveWalletConfigSuccess =>
-      'Cập nhật cấu hình hoa hồng ví thành công!';
-
-  @override
-  String get saveWalletConfigFailed =>
-      'Không thể lưu cấu hình, vui lòng thử lại.';
-
-  @override
   String get invalidNumber => 'Giá trị không hợp lệ';
-
-  @override
-  String get systemSettingsSection => 'Hệ thống';
-
-  @override
-  String get manageWalletConfig => 'Cấu hình ví và hoa hồng';
-
-  @override
-  String get manageStaffWallets => 'Quản lý ví nhân viên';
-
-  @override
-  String get routeManageStaffWallets => 'Quản lý ví nhân viên';
-
-  @override
-  String get withdrawalRequests => 'Yêu cầu rút tiền';
-
-  @override
-  String get routeWithdrawalRequests => 'Yêu cầu rút tiền';
-
-  @override
-  String get withdrawalRequestBadge => 'Yêu cầu rút tiền';
-
-  @override
-  String pendingWithdrawalBanner(int count) {
-    return '$count yêu cầu rút tiền';
-  }
-
-  @override
-  String staffWalletDetailTitle(String name) {
-    return 'Ví nhân viên $name';
-  }
-
-  @override
-  String get routeStaffWalletDetail => 'Chi tiết ví nhân viên';
-
-  @override
-  String get withdrawalDetailTitle => 'Chi tiết yêu cầu rút tiền';
-
-  @override
-  String get bankName => 'Ngân hàng';
-
-  @override
-  String get bankAccountNumber => 'Số tài khoản';
-
-  @override
-  String get bankAccountName => 'Tên chủ tài khoản';
-
-  @override
-  String get withdrawAmount => 'Số tiền rút';
-
-  @override
-  String get quickScanQr => 'Mã QR quét nhanh';
-
-  @override
-  String get scanQrAutoFillNote =>
-      'Quét mã bằng ứng dụng ngân hàng để tự động điền thông tin chuyển tiền';
-
-  @override
-  String get approveAndTransfer => 'Xác nhận đã chuyển tiền';
-
-  @override
-  String get rejectWithdrawal => 'Từ chối';
-
-  @override
-  String get rejectReasonPrompt => 'Lý do từ chối yêu cầu rút tiền';
-
-  @override
-  String get rejectReasonRequired => 'Vui lòng nhập lý do từ chối';
-
-  @override
-  String get confirmApprovalTitle => 'Xác nhận duyệt rút tiền';
-
-  @override
-  String confirmApprovalContent(String amount, String name) {
-    return 'Bạn có chắc chắn đã chuyển số tiền $amount cho nhân viên $name?';
-  }
 
   @override
   String get copySuccess => 'Đã sao chép vào bộ nhớ tạm';
@@ -1737,123 +1609,16 @@ class AppLocalizationsVi extends AppLocalizations {
   String get filterAll => 'Tất cả';
 
   @override
-  String get noStaffWalletsFound => 'Không tìm thấy ví nhân viên nào';
-
-  @override
-  String get noWithdrawalRequestsFound => 'Không có yêu cầu rút tiền nào';
-
-  @override
-  String get noTransactionsFound => 'Chưa có giao dịch nào';
-
-  @override
   String get searchStaffHint => 'Tìm theo tên, email, SĐT...';
-
-  @override
-  String get staffWalletBalance => 'Số dư ví nhân viên';
-
-  @override
-  String get walletBalance => 'Số dư ví';
-
-  @override
-  String get transactionHistory => 'Lịch sử giao dịch';
-
-  @override
-  String relatedReport(String title) {
-    return 'Phản ánh: $title';
-  }
 
   @override
   String get viewReportDetail => 'Xem chi tiết phản ánh';
 
   @override
-  String get processSuccess => 'Xử lý yêu cầu rút tiền thành công!';
-
-  @override
-  String get processFailed => 'Không thể xử lý yêu cầu, vui lòng thử lại.';
-
-  @override
-  String get systemConfig => 'Cấu hình hệ thống';
-
-  @override
-  String get routeSystemConfig => 'Cấu hình hệ thống';
-
-  @override
-  String get commissionConfig => 'Cấu hình hoa hồng';
-
-  @override
-  String get routeCommissionConfig => 'Cấu hình hoa hồng';
-
-  @override
-  String get commissionConfigDescription =>
-      'Thiết lập định mức hoa hồng cho nhân viên theo từng mức độ nghiêm trọng của phản ánh.';
-
-  @override
-  String get penaltyRateConfig => 'Cấu hình tỷ lệ trừ hoa hồng khi xử lý lại';
-
-  @override
-  String get routePenaltyRateConfig =>
-      'Cấu hình tỷ lệ trừ hoa hồng khi xử lý lại';
-
-  @override
-  String get penaltyRateConfigDescription =>
-      'Thiết lập tỷ lệ phần trăm trừ hoa hồng khi phản ánh bị người dân đánh giá chưa thỏa đáng và cần xử lý lại.';
-
-  @override
-  String get commissionConfigSummary =>
-      'Định mức 4 mức độ: Thấp, Trung bình, Cao, Nghiêm trọng';
-
-  @override
-  String get penaltyRateConfigSummary =>
-      'Tỷ lệ phạt 3 lần: Lần 1, Lần 2, Lần 3';
-
-  @override
-  String get saveCommissionSuccess => 'Cập nhật cấu hình hoa hồng thành công!';
-
-  @override
-  String get savePenaltyRateSuccess =>
-      'Cập nhật tỷ lệ trừ hoa hồng thành công!';
-
-  @override
   String get copied => 'Đã sao chép';
 
   @override
-  String homePendingWithdrawalBanner(int count) {
-    return 'Có $count yêu cầu rút tiền';
-  }
-
-  @override
-  String get homePendingWithdrawalSubtitle =>
-      'Nhấn để xem và duyệt các yêu cầu rút tiền';
-
-  @override
   String get statusCancelled => 'Đã hủy';
-
-  @override
-  String get delegationRateConfig => 'Cấu hình hoa hồng công việc được nhờ';
-
-  @override
-  String get routeDelegationRateConfig =>
-      'Cấu hình hoa hồng công việc được nhờ';
-
-  @override
-  String get delegationRateConfigDescription =>
-      'Thiết lập bonus nhân viên nhận thêm khi làm giùm đồng nghiệp, tính theo % hoa hồng của task theo mức độ nghiêm trọng. Bonus được trừ từ ví của người nhờ.';
-
-  @override
-  String delegationRateExample(String rate, String commission, String bonus) {
-    return '$rate% × $commissionđ = $bonusđ bonus';
-  }
-
-  @override
-  String get delegationRateNote =>
-      'Người làm giùm nhận hoa hồng của task cộng thêm bonus này. Thay đổi chỉ áp dụng cho yêu cầu nhờ gửi sau khi lưu.';
-
-  @override
-  String get saveDelegationRateSuccess =>
-      'Cập nhật hoa hồng công việc được nhờ thành công!';
-
-  @override
-  String get delegationRateLoadFailed => 'Không tải được cấu hình';
 
   @override
   String get connectionStable => 'Kết nối ổn định';
@@ -2154,4 +1919,96 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get attachedReportSnippet => 'Phản ánh đính kèm';
+
+  @override
+  String get reportDeadlineLabel => 'Hạn xử lý';
+
+  @override
+  String get deadlineOverdueBadge => 'Quá hạn';
+
+  @override
+  String expectedCompletionDate(String date) {
+    return 'Dự kiến hoàn thành: $date';
+  }
+
+  @override
+  String get staffDeadlinePerformanceTitle => 'Hiệu suất theo hạn xử lý';
+
+  @override
+  String get staffDeadlinePerformanceSubtitle =>
+      'Theo dõi phản ánh đang trễ hạn và lịch sử hoàn thành đúng hạn của nhân viên';
+
+  @override
+  String get noStaffMissedDeadline =>
+      'Chưa ghi nhận nhân viên nào trễ deadline';
+
+  @override
+  String staffMissedDeadlineSummary(int count, int lateCount) {
+    return '$count đang quá hạn · $lateCount hoàn thành trễ';
+  }
+
+  @override
+  String onTimeRateLabel(String rate) {
+    return '$rate% đúng hạn';
+  }
+
+  @override
+  String get overdueActiveLabel => 'Đang trễ hạn';
+
+  @override
+  String get completedLateLabel => 'Hoàn thành trễ';
+
+  @override
+  String get completedOnTimeLabel => 'Hoàn thành đúng hạn';
+
+  @override
+  String get missedDeadlineBadge => 'Trễ hạn';
+
+  @override
+  String get onTimeBadge => 'Đúng hạn';
+
+  @override
+  String get noDeadlineRecordsYet => 'Chưa có dữ liệu hạn xử lý được phân công';
+
+  @override
+  String staffDeadlineStatsBreakdown(int overdue, int late, int onTime) {
+    return '$overdue quá hạn · $late trễ · $onTime đúng hạn';
+  }
+
+  @override
+  String get rejectReportButton => 'Từ chối phản ánh';
+
+  @override
+  String get rejectReportConfirmTitle => 'Từ chối phản ánh này?';
+
+  @override
+  String get rejectReportConfirmMessage =>
+      'Hành động này sẽ chuyển trạng thái phản ánh thành từ chối và thông báo cho người gửi.';
+
+  @override
+  String get rejectReportReasonLabel => 'Lý do từ chối';
+
+  @override
+  String get rejectReportReasonHint =>
+      'Nhập lý do không thể tiếp nhận hoặc từ chối phản ánh...';
+
+  @override
+  String get rejectReportReasonRequired => 'Vui lòng nhập lý do từ chối';
+
+  @override
+  String get confirmRejectAction => 'Xác nhận từ chối';
+
+  @override
+  String get rejectSuccessMessage => 'Đã từ chối phản ánh';
+
+  @override
+  String get rejectFailedMessage =>
+      'Không thể từ chối phản ánh, vui lòng thử lại';
+
+  @override
+  String get rejectedReasonTitle => 'Lý do từ chối';
+
+  @override
+  String get noRejectionReasonProvided =>
+      'Phản ánh đã bị quản trị viên từ chối.';
 }

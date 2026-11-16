@@ -217,9 +217,14 @@ class _AdminReportDetailScreenState
         _buildStatusAndSeveritySection(context, report, l10n, theme),
         const SizedBox(height: 16),
 
-        // 3. Report Info Card (Title, Description, CreatedAt)
+        // 3. Report Info Card (Title, Description, CreatedAt, Deadline)
         _buildReportInfoCard(context, report, l10n, theme),
         const SizedBox(height: 16),
+
+        if (report.status.toUpperCase() == 'REJECTED') ...[
+          _buildRejectedReasonCard(context, report, l10n, theme),
+          const SizedBox(height: 16),
+        ],
 
         // 4. Reporter Card
         _buildReporterCard(context, report, l10n, theme),
@@ -667,13 +672,126 @@ class _AdminReportDetailScreenState
                     '${l10n.createdAtLabel}: $formattedDate',
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: theme.colorScheme.onSurfaceVariant,
+                      fontFeatures: const [FontFeature.tabularFigures()],
                     ),
                   ),
                 ),
               ],
             ),
+            if (report.deadline != null && report.status.toUpperCase() != 'REJECTED') ...[
+              const SizedBox(height: 6),
+              Builder(
+                builder: (context) {
+                  final upperStatus = report.status.toUpperCase();
+                  final isActive = upperStatus == 'PENDING' || upperStatus == 'PROCESSING';
+                  final isOverdue = isActive && DateTime.now().isAfter(report.deadline!);
+                  final deadlineColor =
+                      isOverdue ? theme.colorScheme.error : theme.colorScheme.onSurfaceVariant;
+                  final formattedDeadline =
+                      DateFormat('dd/MM/yyyy HH:mm').format(report.deadline!.toLocal());
+                  return Row(
+                    children: [
+                      Icon(
+                        Icons.event_available_outlined,
+                        size: 14,
+                        color: deadlineColor,
+                      ),
+                      const SizedBox(width: 4),
+                      Flexible(
+                        child: Text(
+                          '${l10n.reportDeadlineLabel}: $formattedDeadline',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: deadlineColor,
+                            fontWeight: isOverdue ? FontWeight.w600 : FontWeight.normal,
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                          ),
+                        ),
+                      ),
+                      if (isOverdue) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.errorContainer,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            l10n.deadlineOverdueBadge,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.onErrorContainer,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ],
+                  );
+                },
+              ),
+            ],
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildRejectedReasonCard(
+    BuildContext context,
+    ReportDetailModel report,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.errorContainer.withValues(alpha: 0.22),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: theme.colorScheme.error.withValues(alpha: 0.35),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.cancel_outlined,
+                size: 20,
+                color: theme.colorScheme.error,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.rejectedReasonTitle,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.error,
+                  ),
+                ),
+              ),
+              if (report.rejectedAt != null)
+                Text(
+                  DateFormat('dd/MM/yyyy HH:mm').format(report.rejectedAt!.toLocal()),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+            ],
+          ),
+          const Divider(height: 20),
+          Text(
+            (report.rejectedReason != null && report.rejectedReason!.trim().isNotEmpty)
+                ? report.rejectedReason!
+                : l10n.noRejectionReasonProvided,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurface,
+              height: 1.45,
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -1941,43 +2059,74 @@ class _AdminReportDetailScreenState
     bool isDesktop,
   ) {
     if (report == null) return null;
-    if (report.status.toUpperCase() != 'PENDING') return null;
+    final upperStatus = report.status.toUpperCase();
+    final canReject = upperStatus == 'PENDING' || upperStatus == 'PROCESSING';
+    final canAssign = upperStatus == 'PENDING' && _selectedStaff != null;
 
-    // Requirement: Hide button if disabled (_selectedStaff == null)
-    if (_selectedStaff == null) {
-      return null;
-    }
+    if (!canReject && !canAssign) return null;
 
-    final buttonWidget = FilledButton(
-      onPressed: assignState.isLoading
-          ? null
-          : () => _submitAssign(context, l10n),
-      style: FilledButton.styleFrom(
-        padding: const EdgeInsets.symmetric(vertical: 14),
+    final rejectButton = OutlinedButton.icon(
+      onPressed: assignState.isLoading ? null : () => _showRejectDialog(context, l10n, theme),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: theme.colorScheme.error,
+        side: BorderSide(color: theme.colorScheme.error.withValues(alpha: 0.7)),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(14),
         ),
       ),
-      child: assignState.isLoading
-          ? const SizedBox(
-              width: 20,
-              height: 20,
-              child: CircularProgressIndicator(
-                strokeWidth: 2,
-                color: Colors.white,
-              ),
-            )
-          : Text(
-              l10n.processReportButton,
-              style: const TextStyle(
-                fontSize: 16,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
+      icon: const Icon(Icons.block_rounded, size: 18),
+      label: Text(
+        l10n.rejectReportButton,
+        style: const TextStyle(fontWeight: FontWeight.w600),
+      ),
     );
 
+    final Widget actionBarContent;
+    if (canAssign) {
+      final assignButton = FilledButton(
+        onPressed: assignState.isLoading
+            ? null
+            : () => _submitAssign(context, l10n),
+        style: FilledButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+        child: assignState.isLoading
+            ? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: theme.colorScheme.onPrimary,
+                ),
+              )
+            : Text(
+                l10n.processReportButton,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+      );
+      actionBarContent = Row(
+        children: [
+          rejectButton,
+          const SizedBox(width: 12),
+          Expanded(child: assignButton),
+        ],
+      );
+    } else {
+      actionBarContent = SizedBox(
+        width: double.infinity,
+        child: rejectButton,
+      );
+    }
+
     if (!isDesktop) {
-      // Mobile View: GIỮ NGUYÊN TRẠNG 100%
+      // Mobile View
       return SafeArea(
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -1991,7 +2140,7 @@ class _AdminReportDetailScreenState
               ),
             ],
           ),
-          child: buttonWidget,
+          child: actionBarContent,
         ),
       );
     }
@@ -2015,12 +2164,95 @@ class _AdminReportDetailScreenState
             child: Container(
               width: double.infinity,
               padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-              child: buttonWidget,
+              child: actionBarContent,
             ),
           ),
         ),
       ),
     );
+  }
+
+  Future<void> _showRejectDialog(
+    BuildContext context,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) async {
+    final formKey = GlobalKey<FormState>();
+    final reasonCtrl = TextEditingController();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogCtx) => AlertDialog(
+        title: Text(l10n.rejectReportConfirmTitle),
+        content: Form(
+          key: formKey,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                l10n.rejectReportConfirmMessage,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 14),
+              TextFormField(
+                controller: reasonCtrl,
+                autofocus: true,
+                maxLines: 3,
+                maxLength: 500,
+                decoration: InputDecoration(
+                  labelText: l10n.rejectReportReasonLabel,
+                  hintText: l10n.rejectReportReasonHint,
+                  border: const OutlineInputBorder(),
+                ),
+                validator: (value) {
+                  if (value == null || value.trim().isEmpty) {
+                    return l10n.rejectReportReasonRequired;
+                  }
+                  return null;
+                },
+              ),
+            ],
+          ),
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogCtx).pop(false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: theme.colorScheme.error,
+              foregroundColor: theme.colorScheme.onError,
+            ),
+            onPressed: () {
+              if (formKey.currentState?.validate() ?? false) {
+                Navigator.of(dialogCtx).pop(true);
+              }
+            },
+            child: Text(l10n.confirmRejectAction),
+          ),
+        ],
+      ),
+    );
+
+    final reason = reasonCtrl.text.trim();
+    reasonCtrl.dispose();
+
+    if (confirmed != true || !mounted) return;
+
+    final success = await ref.read(reportAssignProvider.notifier).rejectReport(
+          reportId: widget.reportId,
+          reason: reason,
+        );
+
+    if (!mounted) return;
+    if (success) {
+      Toast.show(ToastType.success, l10n.rejectSuccessMessage);
+    } else {
+      Toast.show(ToastType.error, l10n.rejectFailedMessage);
+    }
   }
 
   Future<void> _submitAssign(BuildContext context, AppLocalizations l10n) async {

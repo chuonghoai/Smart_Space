@@ -12,6 +12,12 @@ class StaffStatisticsModel {
   final int? avgResolutionMinutes;
   final int? avgResolutionMinutesPrevious;
   final List<StaffWorkloadItem> workload;
+  final bool anyStaffMissedDeadline;
+  final int overdueReports;
+  final int completedOnTime;
+  final int completedLate;
+  final double? onTimeRate;
+  final List<StaffDeadlinePerformanceItem> deadlinePerformance;
 
   const StaffStatisticsModel({
     required this.totalStaff,
@@ -23,10 +29,17 @@ class StaffStatisticsModel {
     this.avgResolutionMinutes,
     this.avgResolutionMinutesPrevious,
     required this.workload,
+    this.anyStaffMissedDeadline = false,
+    this.overdueReports = 0,
+    this.completedOnTime = 0,
+    this.completedLate = 0,
+    this.onTimeRate,
+    this.deadlinePerformance = const [],
   });
 
   factory StaffStatisticsModel.fromJson(Map<String, dynamic> json) {
     final workloadList = json['workload'] as List<dynamic>? ?? [];
+    final performanceList = json['deadlinePerformance'] as List<dynamic>? ?? [];
     return StaffStatisticsModel(
       totalStaff: (json['totalStaff'] as num?)?.toInt() ?? 0,
       activeStaff: (json['activeStaff'] as num?)?.toInt() ?? 0,
@@ -39,6 +52,18 @@ class StaffStatisticsModel {
           (json['avgResolutionMinutesPrevious'] as num?)?.toInt(),
       workload: workloadList
           .map((e) => StaffWorkloadItem.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      anyStaffMissedDeadline: json['anyStaffMissedDeadline'] as bool? ?? false,
+      overdueReports: (json['overdueReports'] as num?)?.toInt() ?? 0,
+      completedOnTime: (json['completedOnTime'] as num?)?.toInt() ?? 0,
+      completedLate: (json['completedLate'] as num?)?.toInt() ?? 0,
+      onTimeRate: (json['onTimeRate'] as num?)?.toDouble(),
+      deadlinePerformance: performanceList
+          .map(
+            (e) => StaffDeadlinePerformanceItem.fromJson(
+              e as Map<String, dynamic>,
+            ),
+          )
           .toList(),
     );
   }
@@ -63,6 +88,37 @@ class StaffWorkloadItem {
         json['staff'] as Map<String, dynamic>? ?? const {},
       ),
       resolvedCount: (json['resolvedCount'] as num?)?.toInt() ?? 0,
+    );
+  }
+}
+
+class StaffDeadlinePerformanceItem {
+  final StaffModel staff;
+  final int overdueCount;
+  final int completedLateCount;
+  final int completedOnTimeCount;
+  final bool hasMissedDeadline;
+
+  const StaffDeadlinePerformanceItem({
+    required this.staff,
+    required this.overdueCount,
+    required this.completedLateCount,
+    required this.completedOnTimeCount,
+    required this.hasMissedDeadline,
+  });
+
+  int get totalLateCount => overdueCount + completedLateCount;
+
+  factory StaffDeadlinePerformanceItem.fromJson(Map<String, dynamic> json) {
+    return StaffDeadlinePerformanceItem(
+      staff: StaffModel.fromJson(
+        json['staff'] as Map<String, dynamic>? ?? const {},
+      ),
+      overdueCount: (json['overdueCount'] as num?)?.toInt() ?? 0,
+      completedLateCount: (json['completedLateCount'] as num?)?.toInt() ?? 0,
+      completedOnTimeCount:
+          (json['completedOnTimeCount'] as num?)?.toInt() ?? 0,
+      hasMissedDeadline: json['hasMissedDeadline'] as bool? ?? false,
     );
   }
 }

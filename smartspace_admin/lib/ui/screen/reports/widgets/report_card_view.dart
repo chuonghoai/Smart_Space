@@ -235,6 +235,58 @@ class _ReportCard extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                     ),
 
+                    if (report.deadline != null && report.status != 'rejected') ...[
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.event_available_outlined,
+                            size: 14,
+                            color: report.isOverdueActive
+                                ? theme.colorScheme.error
+                                : theme.colorScheme.onSurfaceVariant,
+                          ),
+                          const SizedBox(width: 5),
+                          Flexible(
+                            child: Text(
+                              l10n.expectedCompletionDate(
+                                DateFormat('dd/MM').format(report.deadline!.toLocal()),
+                              ),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: report.isOverdueActive
+                                    ? theme.colorScheme.error
+                                    : theme.colorScheme.onSurfaceVariant,
+                                fontWeight: report.isOverdueActive
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
+                                fontFeatures: const [FontFeature.tabularFigures()],
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (report.isOverdueActive) ...[
+                            const SizedBox(width: 6),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 1),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.errorContainer,
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                l10n.deadlineOverdueBadge,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  fontSize: 10,
+                                  color: theme.colorScheme.onErrorContainer,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      ),
+                    ],
+
                     // Address row (if present)
                     if (addressText != null) ...[
                       const SizedBox(height: 8),

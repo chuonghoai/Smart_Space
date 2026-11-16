@@ -6,7 +6,7 @@ import lombok.experimental.FieldDefaults;
 
 /**
  * Trạng thái nhờ làm giùm của một report, cho màn chi tiết của staff:
- * có nhờ được không (kèm lý do), bonus dự kiến, số dư ví, và yêu cầu đang hoạt động (nếu có).
+ * có nhờ được không (kèm lý do) và yêu cầu đang hoạt động (nếu có).
  */
 @Data
 @Builder
@@ -18,7 +18,7 @@ public class DelegationReportStateResponse {
     @JsonProperty("can_request")
     boolean canRequest;
 
-    /** Mã lý do không nhờ được (vd. delegation.insufficient_balance), null khi nhờ được. */
+    /** Mã lý do không nhờ được (vd. delegation.already_active), null khi nhờ được. */
     @JsonProperty("reason_code")
     String reasonCode;
 
@@ -27,21 +27,10 @@ public class DelegationReportStateResponse {
 
     String severity;
 
-    @JsonProperty("commission_amount")
-    Double commissionAmount;
-
-    @JsonProperty("rate_percent")
-    Double ratePercent;
-
-    @JsonProperty("bonus_amount")
-    Double bonusAmount;
-
-    Double balance;
-
     @JsonProperty("active_delegation")
     DelegationResponse activeDelegation;
 
-    /** Yêu cầu đã hoàn tất của report mà staff tham gia (để hiện bonus đã nhận / đã trả), null nếu không có. */
+    /** Yêu cầu đã hoàn tất của report mà staff tham gia, null nếu không có. */
     @JsonProperty("completed_delegation")
     DelegationResponse completedDelegation;
 

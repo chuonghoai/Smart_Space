@@ -425,6 +425,40 @@ class _KanbanCard extends StatelessWidget {
                             ),
                         ],
                       ),
+                      if (item.deadline != null && item.status != 'rejected') ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.event_available_outlined,
+                              size: 11,
+                              color: item.isOverdueActive
+                                  ? theme.colorScheme.error
+                                  : theme.colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 3),
+                            Expanded(
+                              child: Text(
+                                l10n.expectedCompletionDate(
+                                  DateFormat('dd/MM').format(item.deadline!.toLocal()),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  fontSize: 10,
+                                  color: item.isOverdueActive
+                                      ? theme.colorScheme.error
+                                      : theme.colorScheme.onSurfaceVariant,
+                                  fontWeight: item.isOverdueActive
+                                      ? FontWeight.w600
+                                      : FontWeight.normal,
+                                  fontFeatures: const [FontFeature.tabularFigures()],
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
 
                       // Staff row
                       if (item.assignedStaffName != null) ...[

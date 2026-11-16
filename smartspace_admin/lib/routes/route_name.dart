@@ -55,22 +55,6 @@ class AppRouteInfo {
         return l10n.routeEditNews;
       case 'routeAllActivities':
         return l10n.routeAllActivities;
-      case 'routeWalletConfig':
-        return l10n.routeWalletConfig;
-      case 'routeManageStaffWallets':
-        return l10n.routeManageStaffWallets;
-      case 'routeWithdrawalRequests':
-        return l10n.routeWithdrawalRequests;
-      case 'routeStaffWalletDetail':
-        return l10n.routeStaffWalletDetail;
-      case 'routeSystemConfig':
-        return l10n.routeSystemConfig;
-      case 'routeCommissionConfig':
-        return l10n.routeCommissionConfig;
-      case 'routePenaltyRateConfig':
-        return l10n.routePenaltyRateConfig;
-      case 'routeDelegationRateConfig':
-        return l10n.routeDelegationRateConfig;
       default:
         return nameKey;
     }
@@ -222,54 +206,6 @@ class RouteName {
     icon: Icons.history,
     priority: 8,
   );
-  static const walletConfig = AppRouteInfo(
-    path: '/wallet-config',
-    nameKey: 'routeWalletConfig',
-    icon: Icons.account_balance_wallet_outlined,
-    priority: 6,
-  );
-  static const adminStaffWallets = AppRouteInfo(
-    path: '/admin/wallets',
-    nameKey: 'routeManageStaffWallets',
-    icon: Icons.account_balance_wallet_outlined,
-    priority: 5,
-  );
-  static const adminWithdrawalRequests = AppRouteInfo(
-    path: '/admin/wallets/withdrawals',
-    nameKey: 'routeWithdrawalRequests',
-    icon: Icons.pending_actions_outlined,
-    isHiddenInSearch: true,
-  );
-  static const adminStaffWalletDetail = AppRouteInfo(
-    path: '/admin/wallets/staff/:id',
-    nameKey: 'routeStaffWalletDetail',
-    icon: Icons.wallet_outlined,
-    isHiddenInSearch: true,
-  );
-  static const systemConfig = AppRouteInfo(
-    path: '/system-config',
-    nameKey: 'routeSystemConfig',
-    icon: Icons.tune_outlined,
-    priority: 6,
-  );
-  static const commissionConfig = AppRouteInfo(
-    path: '/system-config/commission',
-    nameKey: 'routeCommissionConfig',
-    icon: Icons.monetization_on_outlined,
-    isHiddenInSearch: true,
-  );
-  static const penaltyRateConfig = AppRouteInfo(
-    path: '/system-config/penalty-rate',
-    nameKey: 'routePenaltyRateConfig',
-    icon: Icons.percent_outlined,
-    isHiddenInSearch: true,
-  );
-  static const delegationRateConfig = AppRouteInfo(
-    path: '/system-config/delegation-rate',
-    nameKey: 'routeDelegationRateConfig',
-    icon: Icons.handshake_outlined,
-    isHiddenInSearch: true,
-  );
   static const conversations = AppRouteInfo(
     path: '/conversations',
     nameKey: 'routeConversations',
@@ -300,14 +236,6 @@ class RouteName {
     completeProfile,
     forgotPassword,
     settings,
-    walletConfig,
-    adminStaffWallets,
-    adminWithdrawalRequests,
-    adminStaffWalletDetail,
-    systemConfig,
-    commissionConfig,
-    penaltyRateConfig,
-    delegationRateConfig,
     editProfile,
     changePassword,
     staffManagement,

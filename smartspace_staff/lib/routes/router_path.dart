@@ -19,15 +19,6 @@ class RouterPath {
   static String mapWithFocus(MapFocusTarget focus) => focus.toLocation(map);
   static String get handleReport => RouteName.handleReport.path;
   static String get news => RouteName.news.path;
-  static String get staffWallet => RouteName.staffWallet.path;
-  static String get staffWalletTransactions =>
-      RouteName.staffWalletTransactions.path;
-    static String get staffWithdrawal => RouteName.staffWithdrawal.path;
-  static String get staffWithdrawalHistory =>
-      RouteName.staffWithdrawalHistory.path;
-  static String staffWithdrawalDetailWithId(String id) =>
-      RouteName.staffWithdrawalDetail.path.replaceAll(':id', id);
-  static String get staffBankAccounts => RouteName.staffBankAccounts.path;
   static String get delegations => RouteName.delegations.path;
   static String get conversations => RouteName.conversations.path;
   static String get chatDetail => RouteName.chatDetail.path;

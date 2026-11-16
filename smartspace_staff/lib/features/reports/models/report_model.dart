@@ -18,6 +18,7 @@ class ReportModel {
   final bool isAnonymous;
   final ReportSeverity severity;
   final bool? isReviewResolved;
+  final DateTime? deadline;
 
   ReportModel({
     required this.id,
@@ -36,6 +37,7 @@ class ReportModel {
     this.isAnonymous = false,
     this.severity = ReportSeverity.unknown,
     this.isReviewResolved,
+    this.deadline,
   });
 
   bool get isDangerous =>
@@ -66,6 +68,9 @@ class ReportModel {
       isAnonymous: json['isAnonymous'] as bool? ?? json['is_anonymous'] as bool? ?? false,
       severity: mapSeverity(json['severity'] as String?),
       isReviewResolved: json['isReviewResolved'] as bool? ?? json['is_review_resolved'] as bool?,
+      deadline: (json['deadline'] ?? json['report_deadline']) != null
+          ? DateTime.tryParse((json['deadline'] ?? json['report_deadline']).toString())
+          : null,
     );
   }
 
@@ -86,6 +91,7 @@ class ReportModel {
       'is_anonymous': isAnonymous,
       'severity': severity.name,
       'isReviewResolved': isReviewResolved,
+      'deadline': deadline?.toIso8601String(),
     };
   }
 
@@ -118,6 +124,7 @@ class ReportModel {
       isAnonymous: isAnonymous,
       severity: severity,
       isReviewResolved: isReviewResolved,
+      deadline: deadline,
     );
   }
 

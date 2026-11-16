@@ -28,6 +28,9 @@ class ReportDetailModel {
   final String? reviewNote;
   final List<String> reviewImages;
   final DateTime? reviewedAt;
+  final DateTime? deadline;
+  final String? rejectedReason;
+  final DateTime? rejectedAt;
 
   ReportDetailModel({
     required this.id,
@@ -59,6 +62,9 @@ class ReportDetailModel {
     this.reviewNote,
     this.reviewImages = const [],
     this.reviewedAt,
+    this.deadline,
+    this.rejectedReason,
+    this.rejectedAt,
   });
 
   factory ReportDetailModel.fromJson(Map<String, dynamic> json) {
@@ -155,6 +161,13 @@ class ReportDetailModel {
       reviewedAt: json['reviewed_at'] != null || json['reviewedAt'] != null
           ? DateTime.tryParse((json['reviewed_at'] ?? json['reviewedAt']).toString())
           : null,
+      deadline: (json['deadline'] ?? json['report_deadline']) != null
+          ? DateTime.tryParse((json['deadline'] ?? json['report_deadline']).toString())
+          : null,
+      rejectedReason: (json['rejected_reason'] ?? json['rejectedReason']) as String?,
+      rejectedAt: (json['rejected_at'] ?? json['rejectedAt']) != null
+          ? DateTime.tryParse((json['rejected_at'] ?? json['rejectedAt']).toString())
+          : null,
     );
   }
 
@@ -188,6 +201,9 @@ class ReportDetailModel {
     String? reviewNote,
     List<String>? reviewImages,
     DateTime? reviewedAt,
+    DateTime? deadline,
+    String? rejectedReason,
+    DateTime? rejectedAt,
   }) {
     return ReportDetailModel(
       id: id ?? this.id,
@@ -219,6 +235,9 @@ class ReportDetailModel {
       reviewNote: reviewNote ?? this.reviewNote,
       reviewImages: reviewImages ?? this.reviewImages,
       reviewedAt: reviewedAt ?? this.reviewedAt,
+      deadline: deadline ?? this.deadline,
+      rejectedReason: rejectedReason ?? this.rejectedReason,
+      rejectedAt: rejectedAt ?? this.rejectedAt,
     );
   }
 }

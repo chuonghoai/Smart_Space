@@ -10,8 +10,6 @@ import java.time.LocalDateTime;
 
 /**
  * Yêu cầu nhờ một staff khác làm giùm task.
- * Mức độ, tỷ lệ, hoa hồng và bonus được chốt lúc gửi yêu cầu → admin đổi cấu
- * hình.
  */
 @Getter
 @Setter
@@ -32,12 +30,12 @@ public class ReportDelegation extends AbstractEntity {
     @JoinColumn(name = "report_id", nullable = false)
     Report report;
 
-    /** Staff đang được giao task, người trả bonus. */
+    /** Staff đang được giao task, người nhờ làm giùm. */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "requester_id", nullable = false)
     User requester;
 
-    /** Staff được nhờ, người nhận hoa hồng + bonus khi hoàn tất. */
+    /** Staff được nhờ làm giùm. */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "helper_id", nullable = false)
     User helper;
@@ -50,15 +48,6 @@ public class ReportDelegation extends AbstractEntity {
     @Enumerated(EnumType.STRING)
     @Column(name = "severity", columnDefinition = "VARCHAR(20)")
     EReportSeverity severity;
-
-    @Column(name = "rate_percent", nullable = false)
-    Double ratePercent;
-
-    @Column(name = "commission_amount", nullable = false)
-    Double commissionAmount;
-
-    @Column(name = "bonus_amount", nullable = false)
-    Double bonusAmount;
 
     @Column(name = "note", length = 500)
     String note;

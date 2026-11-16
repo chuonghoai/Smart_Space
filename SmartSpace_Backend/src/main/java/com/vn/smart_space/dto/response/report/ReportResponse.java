@@ -32,6 +32,9 @@ public class ReportResponse {
     @JsonProperty("is_review_resolved")
     private Boolean isReviewResolved;
 
+    @JsonProperty("deadline")
+    private String deadline;
+
     @JsonProperty("user_id")
     private String userId;
 }

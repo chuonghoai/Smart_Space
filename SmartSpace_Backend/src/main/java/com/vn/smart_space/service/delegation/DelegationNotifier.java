@@ -72,9 +72,4 @@ public class DelegationNotifier {
             send.run();
         }
     }
-
-    /** Số tiền hiển thị trong thông báo, cùng định dạng với thông báo ví hiện có. */
-    public static String money(Double amount) {
-        return String.format("%,.0f", amount != null ? amount : 0.0);
-    }
 }

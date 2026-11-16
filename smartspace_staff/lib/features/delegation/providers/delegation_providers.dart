@@ -6,7 +6,6 @@ import 'package:mobile_shared/core/auth/user_storage_service.dart';
 import 'package:smartspace_staff/features/delegation/models/delegation_model.dart';
 import 'package:smartspace_staff/features/delegation/services/delegation_service.dart';
 import 'package:smartspace_staff/features/reports/providers/report_detail_provider.dart';
-import 'package:smartspace_staff/features/wallet/providers/staff_wallet_provider.dart';
 import 'package:smartspace_staff/ui/mobile/home/home_controller.dart';
 
 /// Service nhờ làm giùm — tách thành provider để test thay bằng repo giả.
@@ -18,7 +17,7 @@ final currentStaffIdProvider = FutureProvider<String?>((ref) async {
   return user?.id;
 });
 
-/// Trạng thái nhờ làm giùm của report (màn chi tiết): nhờ được không, bonus dự kiến, yêu cầu đang hoạt động.
+/// Trạng thái nhờ làm giùm của report (màn chi tiết): nhờ được không, yêu cầu đang hoạt động.
 final delegationReportStateProvider = FutureProvider.autoDispose.family<DelegationReportStateModel, String>((
   ref,
   reportId,
@@ -200,7 +199,6 @@ class DelegationActions {
     _ref.invalidate(delegationReportStateProvider(reportId));
     _ref.invalidate(delegationListProvider);
     unawaited(_ref.read(reportDetailProvider(reportId).notifier).refresh().catchError((_) {}));
-    unawaited(_ref.read(staffWalletProvider.notifier).refresh());
     unawaited(_ref.read(homeControllerProvider.notifier).manualRefresh());
     return null;
   }

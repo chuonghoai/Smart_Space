@@ -118,6 +118,8 @@ class _MobileStaffViewState extends ConsumerState<MobileStaffView> {
                               StaffFlowChart(chartHeight: 200),
                               SizedBox(height: 12),
                               StaffWorkloadChart(),
+                              SizedBox(height: 12),
+                              StaffDeadlinePerformanceCard(compact: true),
                               SizedBox(height: 4),
                             ],
                           )

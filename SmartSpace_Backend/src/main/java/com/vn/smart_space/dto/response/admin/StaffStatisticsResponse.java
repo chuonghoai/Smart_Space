@@ -31,6 +31,13 @@ public class StaffStatisticsResponse {
     Long avgResolutionMinutesPrevious;
     List<WorkloadItem> workload;
 
+    boolean anyStaffMissedDeadline;
+    long overdueReports;
+    long completedOnTime;
+    long completedLate;
+    Double onTimeRate; // null khi chưa có báo cáo đã hoàn tất có deadline
+    List<DeadlinePerformanceItem> deadlinePerformance;
+
     @Data
     @NoArgsConstructor
     @AllArgsConstructor
@@ -39,5 +46,18 @@ public class StaffStatisticsResponse {
     public static class WorkloadItem {
         StaffResponse staff; // processingCount = số báo cáo đang xử lý
         long resolvedCount; // số báo cáo đã xử lý trong 30 ngày
+    }
+
+    @Data
+    @NoArgsConstructor
+    @AllArgsConstructor
+    @Builder
+    @FieldDefaults(level = AccessLevel.PRIVATE)
+    public static class DeadlinePerformanceItem {
+        StaffResponse staff;
+        long overdueCount; // đang xử lý nhưng quá deadline
+        long completedLateCount; // đã hoàn tất sau deadline
+        long completedOnTimeCount; // đã hoàn tất đúng/trước deadline
+        boolean hasMissedDeadline;
     }
 }

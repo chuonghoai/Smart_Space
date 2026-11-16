@@ -241,3 +241,303 @@ class StaffWorkloadChart extends ConsumerWidget {
     );
   }
 }
+
+/// Thống kê hiệu suất xử lý phản ánh của nhân viên dựa vào tình trạng trễ deadline.
+class StaffDeadlinePerformanceCard extends ConsumerWidget {
+  final bool compact;
+  const StaffDeadlinePerformanceCard({super.key, this.compact = false});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final semantic = AppSemanticColors.of(context);
+    final statsAsync = ref.watch(staffStatisticsProvider);
+
+    return ChartCard(
+      title: l10n.staffDeadlinePerformanceTitle,
+      subtitle: l10n.staffDeadlinePerformanceSubtitle,
+      child: statsAsync.when(
+        data: (stats) => _buildBody(context, ref, l10n, theme, semantic, stats),
+        loading: () => const Padding(
+          padding: EdgeInsets.symmetric(vertical: 32),
+          child: Center(child: CircularProgressIndicator()),
+        ),
+        error: (_, _) => Padding(
+          padding: const EdgeInsets.symmetric(vertical: 24),
+          child: ChartPlaceholder.error(
+            onRetry: () => ref.invalidate(staffStatisticsProvider),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildBody(
+    BuildContext context,
+    WidgetRef ref,
+    AppLocalizations l10n,
+    ThemeData theme,
+    AppSemanticColors semantic,
+    StaffStatisticsModel stats,
+  ) {
+    final cs = theme.colorScheme;
+    final missed = stats.anyStaffMissedDeadline;
+    final statusColor = missed ? cs.error : semantic.success;
+    final rateText = stats.onTimeRate == null
+        ? null
+        : l10n.onTimeRateLabel(
+            NumberFormat('#,##0.#', Localizations.localeOf(context).toLanguageTag())
+                .format(stats.onTimeRate!),
+          );
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+          decoration: BoxDecoration(
+            color: statusColor.withValues(alpha: 0.10),
+            borderRadius: BorderRadius.circular(10),
+            border: Border.all(color: statusColor.withValues(alpha: 0.28)),
+          ),
+          child: Row(
+            children: [
+              Icon(
+                missed ? Icons.warning_amber_rounded : Icons.verified_outlined,
+                color: statusColor,
+                size: 18,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  missed
+                      ? l10n.staffMissedDeadlineSummary(
+                          stats.overdueReports,
+                          stats.completedLate,
+                        )
+                      : l10n.noStaffMissedDeadline,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: cs.onSurface,
+                    fontWeight: FontWeight.w600,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+              ),
+              if (rateText != null) ...[
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: cs.surface,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Text(
+                    rateText,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: statusColor,
+                      fontWeight: FontWeight.w700,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
+        ),
+        const SizedBox(height: 12),
+        Row(
+          children: [
+            Expanded(
+              child: _DeadlineMetricTile(
+                label: l10n.overdueActiveLabel,
+                value: formatCount(context, stats.overdueReports),
+                accent: stats.overdueReports > 0 ? cs.error : cs.onSurface,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _DeadlineMetricTile(
+                label: l10n.completedLateLabel,
+                value: formatCount(context, stats.completedLate),
+                accent: stats.completedLate > 0 ? semantic.warning : cs.onSurface,
+              ),
+            ),
+            const SizedBox(width: 8),
+            Expanded(
+              child: _DeadlineMetricTile(
+                label: l10n.completedOnTimeLabel,
+                value: formatCount(context, stats.completedOnTime),
+                accent: semantic.success,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        if (stats.deadlinePerformance.isEmpty)
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 16),
+            child: Text(
+              l10n.noDeadlineRecordsYet,
+              textAlign: TextAlign.center,
+              style: theme.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
+            ),
+          )
+        else ...[
+          for (final item in stats.deadlinePerformance.take(compact ? 5 : 8))
+            _DeadlineStaffRow(
+              item: item,
+              semantic: semantic,
+              onTap: () => showStaffDetailSheet(
+                context,
+                l10n,
+                theme,
+                item.staff,
+                ref,
+              ),
+            ),
+        ],
+      ],
+    );
+  }
+}
+
+class _DeadlineMetricTile extends StatelessWidget {
+  final String label;
+  final String value;
+  final Color accent;
+
+  const _DeadlineMetricTile({
+    required this.label,
+    required this.value,
+    required this.accent,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            value,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.w700,
+              color: accent,
+              fontFeatures: const [FontFeature.tabularFigures()],
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            label,
+            maxLines: 1,
+            overflow: TextOverflow.ellipsis,
+            style: theme.textTheme.labelSmall?.copyWith(
+              color: cs.onSurfaceVariant,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _DeadlineStaffRow extends StatelessWidget {
+  final StaffDeadlinePerformanceItem item;
+  final AppSemanticColors semantic;
+  final VoidCallback onTap;
+
+  const _DeadlineStaffRow({
+    required this.item,
+    required this.semantic,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+    final badgeColor = item.hasMissedDeadline ? cs.error : semantic.success;
+    final name = item.staff.fullName.isNotEmpty
+        ? item.staff.fullName
+        : item.staff.email;
+    final avatar = item.staff.avatarUrl;
+
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 4),
+        child: Row(
+          children: [
+            CircleAvatar(
+              radius: 16,
+              backgroundColor: cs.primaryContainer,
+              foregroundImage: (avatar != null && avatar.isNotEmpty)
+                  ? NetworkImage(avatar)
+                  : null,
+              child: Text(
+                name.isNotEmpty ? name[0].toUpperCase() : '?',
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: cs.onPrimaryContainer,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    name,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  const SizedBox(height: 2),
+                  Text(
+                    l10n.staffDeadlineStatsBreakdown(
+                      item.overdueCount,
+                      item.completedLateCount,
+                      item.completedOnTimeCount,
+                    ),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: cs.onSurfaceVariant,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(width: 8),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+              decoration: BoxDecoration(
+                color: badgeColor.withValues(alpha: 0.12),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: Text(
+                item.hasMissedDeadline ? l10n.missedDeadlineBadge : l10n.onTimeBadge,
+                style: theme.textTheme.labelSmall?.copyWith(
+                  color: badgeColor,
+                  fontWeight: FontWeight.w700,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

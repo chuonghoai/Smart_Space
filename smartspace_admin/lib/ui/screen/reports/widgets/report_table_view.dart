@@ -96,13 +96,39 @@ class ReportTableView extends ConsumerWidget {
                               onTap: openDetail,
                             ),
                             _dCell(
-                              Text(
-                                r.title,
-                                overflow: TextOverflow.ellipsis,
-                                maxLines: 2,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  fontWeight: FontWeight.w500,
-                                ),
+                              Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    r.title,
+                                    overflow: TextOverflow.ellipsis,
+                                    maxLines: 2,
+                                    style: theme.textTheme.bodySmall?.copyWith(
+                                      fontWeight: FontWeight.w500,
+                                    ),
+                                  ),
+                                  if (r.deadline != null && r.status != 'rejected') ...[
+                                    const SizedBox(height: 3),
+                                    Text(
+                                      l10n.expectedCompletionDate(
+                                        DateFormat('dd/MM').format(r.deadline!.toLocal()),
+                                      ),
+                                      style: theme.textTheme.labelSmall?.copyWith(
+                                        fontSize: 10.5,
+                                        color: r.isOverdueActive
+                                            ? theme.colorScheme.error
+                                            : theme.colorScheme.onSurfaceVariant,
+                                        fontWeight: r.isOverdueActive
+                                            ? FontWeight.w600
+                                            : FontWeight.normal,
+                                        fontFeatures: const [FontFeature.tabularFigures()],
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ],
+                                ],
                               ),
                               onTap: openDetail,
                             ),

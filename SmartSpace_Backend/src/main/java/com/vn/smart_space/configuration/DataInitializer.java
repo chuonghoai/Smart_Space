@@ -38,18 +38,27 @@ public class DataInitializer implements CommandLineRunner {
             log.warn("Failed to migrate user language: " + e.getMessage());
         }
 
-        try {
-            jdbcTemplate.execute("ALTER TABLE staff_wallet_transactions MODIFY COLUMN type VARCHAR(50) NOT NULL");
-            log.info("Migrated staff_wallet_transactions.type column to VARCHAR(50)");
-        } catch (Exception e) {
-            log.info("Migration for staff_wallet_transactions.type: " + e.getMessage());
-        }
-
-        try {
-            jdbcTemplate.execute("ALTER TABLE staff_withdrawal_requests MODIFY COLUMN status VARCHAR(50) NOT NULL");
-            log.info("Migrated staff_withdrawal_requests.status column to VARCHAR(50)");
-        } catch (Exception e) {
-            log.info("Migration for staff_withdrawal_requests.status: " + e.getMessage());
+        // Cleanup obsolete staff wallet & commission tables/columns
+        String[] cleanupQueries = {
+            "DROP TABLE IF EXISTS staff_wallet_transactions",
+            "DROP TABLE IF EXISTS staff_withdrawal_requests",
+            "DROP TABLE IF EXISTS staff_wallets",
+            "DROP TABLE IF EXISTS staff_bank_accounts",
+            "DROP TABLE IF EXISTS wallet_configs",
+            "ALTER TABLE reports DROP COLUMN base_commission",
+            "ALTER TABLE reports DROP COLUMN total_commission_deducted",
+            "ALTER TABLE reports DROP COLUMN rehandling_penalty_count",
+            "ALTER TABLE reports DROP COLUMN commission_awarded",
+            "ALTER TABLE report_delegations DROP COLUMN rate_percent",
+            "ALTER TABLE report_delegations DROP COLUMN commission_amount",
+            "ALTER TABLE report_delegations DROP COLUMN bonus_amount"
+        };
+        for (String sql : cleanupQueries) {
+            try {
+                jdbcTemplate.execute(sql);
+            } catch (Exception ignored) {
+                // Column/table already removed
+            }
         }
 
         if (!userRepository.existsByEmailAndRole("admin@gmail.com", ERole.admin)) {

@@ -109,7 +109,7 @@ public class AdminReportController {
                 reportService.getAdminReportList(page, size, status, severity, assigneeId, from, to, search)));
     }
 
-    // Update Status Report For Kanban
+    // Update Status Report For Kanban & Detail (supports optional reject reason)
     @PatchMapping("/{id}/status")
     @PreAuthorize("hasRole('admin')")
     public ResponseEntity<ApiResponse> updateStatus(
@@ -118,7 +118,7 @@ public class AdminReportController {
             @AuthenticationPrincipal Jwt jwt) {
         String adminId = jwt != null ? jwt.getClaimAsString("userId") : null;
         return ResponseEntity.ok(ApiResponse.success("system.success",
-                reportService.updateReportStatus(id, body.get("status"), adminId)));
+                reportService.updateReportStatus(id, body.get("status"), body.get("reason"), adminId)));
     }
 
     @GetMapping("/map")

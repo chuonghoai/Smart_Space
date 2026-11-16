@@ -69,16 +69,6 @@ class _AdminQuickAccessBarState extends State<AdminQuickAccessBar> {
         onTap: () => context.push(RouterPath.staffManagement),
       ),
       _QuickAccessItemData(
-        title: l10n.withdrawalRequests,
-        icon: Icons.payments_outlined,
-        onTap: () => context.push(RouterPath.adminWithdrawalRequests),
-      ),
-      _QuickAccessItemData(
-        title: l10n.manageStaffWallets,
-        icon: Icons.account_balance_wallet_outlined,
-        onTap: () => context.push(RouterPath.adminStaffWallets),
-      ),
-      _QuickAccessItemData(
         title: l10n.manageUsers,
         icon: Icons.people_outline,
         onTap: () => context.push(RouterPath.userManagement),
@@ -87,11 +77,6 @@ class _AdminQuickAccessBarState extends State<AdminQuickAccessBar> {
         title: l10n.manageNews,
         icon: Icons.newspaper_outlined,
         onTap: () => context.push(RouterPath.newsManagement),
-      ),
-      _QuickAccessItemData(
-        title: l10n.systemConfig,
-        icon: Icons.tune_outlined,
-        onTap: () => context.push(RouterPath.systemConfig),
       ),
     ];
 

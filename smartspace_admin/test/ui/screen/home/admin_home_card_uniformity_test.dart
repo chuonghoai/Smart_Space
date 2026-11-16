@@ -75,6 +75,7 @@ class _MockRecentReportNotifier extends RecentReportNotifier {
         imageUrl: 'https://example.com/img1.jpg',
         assignedStaffName: 'Nguyễn Văn A',
         createdAt: '2026-10-30T10:00:00Z',
+        deadline: '2026-11-04T10:00:00Z',
       ),
       const RecentReportModel(
         id: 'rep-2',
@@ -223,7 +224,7 @@ void main() {
   });
 
   group('Recent Reports Card Uniformity Tests on AdminHomeScreen', () {
-    testWidgets('All recent report cards on desktop and mobile have standard 120.0px height',
+    testWidgets('All recent report cards on desktop and mobile have standard 140.0px height',
         (tester) async {
       await tester.binding.setSurfaceSize(const Size(1200, 900));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -237,7 +238,6 @@ void main() {
               ),
             ),
             adminOverviewProvider.overrideWith(() => _MockAdminOverviewNotifier()),
-            pendingWithdrawalCountProvider.overrideWith((ref) => 0),
             recentReportProvider.overrideWith(() => _MockRecentReportNotifier()),
             recentActivityProvider.overrideWith(() => _MockRecentActivityNotifier()),
             latestNewsProvider.overrideWith((ref) => []),
@@ -264,6 +264,9 @@ void main() {
 
       // Verify unassigned staff placeholder text in Vietnamese
       expect(find.text('Chưa phân công'), findsWidgets);
+
+      // Verify deadline note line renders cleanly
+      expect(find.textContaining('Dự kiến hoàn thành:'), findsOneWidget);
     });
   });
 }

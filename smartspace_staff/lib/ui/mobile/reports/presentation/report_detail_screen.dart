@@ -21,8 +21,6 @@ import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
 import 'package:smartspace_staff/features/delegation/providers/delegation_providers.dart';
 import 'package:smartspace_staff/ui/mobile/delegation/widgets/delegation_section.dart';
-import 'package:smartspace_staff/ui/mobile/delegation/widgets/delegation_common.dart';
-import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:smartspace_staff/features/chat/data/chat_repository.dart';
 import 'package:smartspace_staff/features/chat/models/conversation_model.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -187,16 +185,10 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
-    final isDark = theme.brightness == Brightness.dark;
     final reportAsyncValue = ref.watch(reportDetailProvider(widget.reportId));
     final reportData = reportAsyncValue.asData?.value;
     final isHandling = handleReportBackgroundService.isHandling(widget.reportId);
     final currentStaffId = ref.watch(currentStaffIdProvider).valueOrNull;
-    // Bonus nhờ làm giùm của người đang xem, cộng vào khung hoa hồng
-    final delegationState = ref.watch(delegationReportStateProvider(widget.reportId)).valueOrNull;
-    final bonusReceived = delegationState?.bonusReceivedByViewer;
-    final bonusPaid = delegationState?.bonusPaidByViewer;
-    final upcomingBonus = delegationState?.upcomingBonusForViewer;
     // Chỉ người đang được giao mới xử lý được (vd. người nhờ sau khi task đã chuyển cho người làm giùm thì không)
     final isAssignee = reportData?.assignedStaffId == null ||
         currentStaffId == null ||
@@ -427,187 +419,6 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                           ),
                         ],
 
-                        // Commission Details Banner / Card (Always at the top)
-                        // Người nhờ: task đã chuyển cho người làm giùm → không hiện hoa hồng, chỉ hiện bonus đã trả
-                        if (delegationState?.hidesViewerCommission ?? false) ...[
-                          if (bonusPaid != null)
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.all(12),
-                              margin: const EdgeInsets.only(bottom: 16),
-                              decoration: BoxDecoration(
-                                color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.35),
-                                borderRadius: BorderRadius.circular(12),
-                                border: Border.all(
-                                  color: theme.colorScheme.outlineVariant.withOpacity(0.4),
-                                ),
-                              ),
-                              child: Row(
-                                children: [
-                                  Icon(
-                                    Icons.handshake_outlined,
-                                    size: 18,
-                                    color: AppSemanticColors.of(context).info,
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Expanded(
-                                    child: Text(
-                                      l10n.delegationBonusPaidNotice(
-                                        formatDelegationMoney(bonusPaid.bonusAmount),
-                                        bonusPaid.helper.fullName,
-                                      ),
-                                      style: theme.textTheme.bodySmall,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                        ] else if (report.commissionAwarded == true || (report.baseCommission != null && report.baseCommission! > 0)) ...[
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(12),
-                            margin: const EdgeInsets.only(bottom: 16),
-                            decoration: BoxDecoration(
-                              color: theme.colorScheme.surfaceContainerHighest.withOpacity(0.35),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: theme.colorScheme.outlineVariant.withOpacity(0.4),
-                              ),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Row(
-                                  children: [
-                                    Icon(
-                                      Icons.monetization_on_outlined,
-                                      size: 18,
-                                      color: isDark ? const Color(0xFF81C784) : const Color(0xFF2E7D32),
-                                    ),
-                                    const SizedBox(width: 8),
-                                    Text(
-                                      l10n.commissionBreakdown,
-                                      style: theme.textTheme.labelMedium?.copyWith(
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 6),
-                                if (report.baseCommission != null)
-                                  Text(
-                                    l10n.commissionReceived(NumberFormat('#,###', 'vi_VN').format(report.baseCommission!)),
-                                    style: theme.textTheme.bodySmall,
-                                  ),
-                                if (report.resolvedPenaltyDeductions.isNotEmpty) ...[
-                                  for (final item in report.resolvedPenaltyDeductions) ...[
-                                    const SizedBox(height: 2),
-                                    Text(
-                                      l10n.commissionPenaltyDeductionTurn(item.turn, NumberFormat('#,###', 'vi_VN').format(item.amount)),
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: isDark ? const Color(0xFFEF5350) : const Color(0xFFC62828),
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ],
-                                ] else if (report.deductedCommission != null && report.deductedCommission! > 0) ...[
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    l10n.commissionPenaltyDeducted(NumberFormat('#,###', 'vi_VN').format(report.deductedCommission!)),
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: isDark ? const Color(0xFFEF5350) : const Color(0xFFC62828),
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                                // Bonus làm giùm không bị trừ khi phạt (phạt chỉ tính trên hoa hồng)
-                                if (bonusReceived != null && bonusReceived.bonusAmount > 0) ...[
-                                  const SizedBox(height: 2),
-                                  Text(
-                                    l10n.delegationBonusReceivedLine(
-                                      bonusReceived.requester.fullName,
-                                      formatDelegationMoney(bonusReceived.bonusAmount),
-                                    ),
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: AppSemanticColors.of(context).success,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ],
-                                if (report.finalCommission != null) ...[
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    l10n.finalCommissionReceived(NumberFormat('#,###', 'vi_VN')
-                                        .format(report.finalCommission! + (bonusReceived?.bonusAmount ?? 0))),
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      fontWeight: FontWeight.bold,
-                                      color: isDark ? const Color(0xFF81C784) : const Color(0xFF2E7D32),
-                                    ),
-                                  ),
-                                ],
-                                if (report.status == ReportStatus.processing) ...[
-                                  const SizedBox(height: 4),
-                                  Text(
-                                    l10n.rehandlingNoExtraCommission,
-                                    style: theme.textTheme.labelSmall?.copyWith(
-                                      color: theme.colorScheme.onSurfaceVariant,
-                                    ),
-                                  ),
-                                ],
-                              ],
-                            ),
-                          ),
-                        ] else if (report.status == ReportStatus.processing &&
-                            report.expectedCommission != null &&
-                            report.expectedCommission! > 0) ...[
-                          Container(
-                            width: double.infinity,
-                            padding: const EdgeInsets.all(12),
-                            margin: const EdgeInsets.only(bottom: 16),
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? const Color(0xFF2E7D32).withOpacity(0.18)
-                                  : const Color(0xFFE8F5E9),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(
-                                color: isDark
-                                    ? const Color(0xFF66BB6A).withOpacity(0.4)
-                                    : const Color(0xFFA5D6A7),
-                              ),
-                            ),
-                            child: Row(
-                              children: [
-                                Icon(
-                                  Icons.monetization_on_outlined,
-                                  color: isDark
-                                      ? const Color(0xFF81C784)
-                                      : const Color(0xFF2E7D32),
-                                  size: 22,
-                                ),
-                                const SizedBox(width: 10),
-                                Expanded(
-                                  child: Text(
-                                    upcomingBonus != null
-                                        ? l10n.commissionExpectedWithBonusNotice(
-                                            NumberFormat('#,###', 'vi_VN').format(report.expectedCommission!),
-                                            formatDelegationMoney(upcomingBonus),
-                                          )
-                                        : l10n.commissionExpectedNotice(
-                                            NumberFormat('#,###', 'vi_VN').format(report.expectedCommission!),
-                                          ),
-                                    style: theme.textTheme.bodySmall?.copyWith(
-                                      color: isDark
-                                          ? const Color(0xFFC8E6C9)
-                                          : const Color(0xFF1B5E20),
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-
                         // Status & Severity Dual Cards
                         Row(
                           children: [
@@ -804,10 +615,111 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                             const SizedBox(width: 4),
                             Text(
                               '${l10n.createdAtLabel}: ${DateFormat('dd/MM/yyyy HH:mm').format(report.createdAt)}',
-                              style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: theme.colorScheme.onSurfaceVariant,
+                                fontFeatures: const [FontFeature.tabularFigures()],
+                              ),
                             ),
                           ],
                         ),
+                        if (report.deadline != null && report.status != ReportStatus.rejected) ...[
+                          const SizedBox(height: 6),
+                          Builder(
+                            builder: (context) {
+                              final isActive = report.status == ReportStatus.pending ||
+                                  report.status == ReportStatus.processing;
+                              final isOverdue = isActive && DateTime.now().isAfter(report.deadline!);
+                              final deadlineColor = isOverdue
+                                  ? theme.colorScheme.error
+                                  : theme.colorScheme.onSurfaceVariant;
+                              return Row(
+                                children: [
+                                  Icon(Icons.event_available_outlined, size: 14, color: deadlineColor),
+                                  const SizedBox(width: 4),
+                                  Flexible(
+                                    child: Text(
+                                      '${l10n.reportDeadlineLabel}: ${DateFormat('dd/MM/yyyy HH:mm').format(report.deadline!.toLocal())}',
+                                      style: theme.textTheme.bodySmall?.copyWith(
+                                        color: deadlineColor,
+                                        fontWeight: isOverdue ? FontWeight.w600 : FontWeight.normal,
+                                        fontFeatures: const [FontFeature.tabularFigures()],
+                                      ),
+                                    ),
+                                  ),
+                                  if (isOverdue) ...[
+                                    const SizedBox(width: 6),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: theme.colorScheme.errorContainer,
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                      child: Text(
+                                        l10n.deadlineOverdueBadge,
+                                        style: theme.textTheme.labelSmall?.copyWith(
+                                          color: theme.colorScheme.onErrorContainer,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              );
+                            },
+                          ),
+                        ],
+                        if (report.status == ReportStatus.rejected) ...[
+                          const SizedBox(height: 16),
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.errorContainer.withValues(alpha: 0.22),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: theme.colorScheme.error.withValues(alpha: 0.35),
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(Icons.cancel_outlined, size: 18, color: theme.colorScheme.error),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        l10n.rejectedReasonTitle,
+                                        style: theme.textTheme.titleSmall?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: theme.colorScheme.error,
+                                        ),
+                                      ),
+                                    ),
+                                    if (report.rejectedAt != null)
+                                      Text(
+                                        DateFormat('dd/MM/yyyy HH:mm').format(report.rejectedAt!.toLocal()),
+                                        style: theme.textTheme.bodySmall?.copyWith(
+                                          color: theme.colorScheme.onSurfaceVariant,
+                                          fontFeatures: const [FontFeature.tabularFigures()],
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  (report.rejectedReason != null && report.rejectedReason!.trim().isNotEmpty)
+                                      ? report.rejectedReason!
+                                      : l10n.noRejectionReasonProvided,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.onSurface,
+                                    height: 1.45,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
                         const SizedBox(height: 24),
 
                         // Reporter Info

@@ -10,6 +10,8 @@ class RecentReportModel {
   final String? assignedStaffAvatarUrl;
   final bool isAnonymous;
   final bool? isReviewResolved;
+  final String? deadline;
+  final String? resolvedAt;
 
   const RecentReportModel({
     required this.id,
@@ -23,7 +25,20 @@ class RecentReportModel {
     this.assignedStaffAvatarUrl,
     this.isAnonymous = false,
     this.isReviewResolved,
+    this.deadline,
+    this.resolvedAt,
   });
+
+  DateTime? get deadlineDate =>
+      deadline != null ? DateTime.tryParse(deadline!) : null;
+
+  bool get isOverdueActive {
+    final dl = deadlineDate;
+    final st = status?.toLowerCase();
+    return dl != null &&
+        (st == 'pending' || st == 'processing') &&
+        DateTime.now().isAfter(dl);
+  }
 
   factory RecentReportModel.fromJson(Map<String, dynamic> json) {
     // Parse single image url or first of image_urls
@@ -49,6 +64,8 @@ class RecentReportModel {
       assignedStaffAvatarUrl: (json['assigned_staff_avatar_url'] ?? json['assignedStaffAvatarUrl'])?.toString(),
       isAnonymous: (json['is_anonymous'] ?? json['isAnonymous']) as bool? ?? false,
       isReviewResolved: json['isReviewResolved'] as bool? ?? json['is_review_resolved'] as bool?,
+      deadline: (json['deadline'] ?? json['report_deadline'])?.toString(),
+      resolvedAt: (json['resolvedAt'] ?? json['resolved_at'])?.toString(),
     );
   }
 
@@ -64,6 +81,8 @@ class RecentReportModel {
       'assignedStaffName': assignedStaffName,
       'assignedStaffAvatarUrl': assignedStaffAvatarUrl,
       'is_anonymous': isAnonymous,
+      'deadline': deadline,
+      'resolvedAt': resolvedAt,
     };
   }
 }

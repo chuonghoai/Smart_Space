@@ -62,6 +62,8 @@ class _WebStaffViewState extends ConsumerState<WebStaffView> {
               );
             },
           ),
+          const SizedBox(height: 16),
+          const StaffDeadlinePerformanceCard(),
           const SizedBox(height: 24),
 
           // Search + Filter

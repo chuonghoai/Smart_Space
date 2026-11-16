@@ -35,23 +35,6 @@ class NotificationRouter {
           debugPrint('[NotificationRouter] Missing newsId in payload');
         }
         break;
-      case 'STAFF_WITHDRAWAL':
-      case 'WITHDRAWAL':
-        final withdrawalId = (action.payload['withdrawalId'] ?? action.payload['id']) as String?;
-        if (withdrawalId != null && withdrawalId.isNotEmpty) {
-          final path = RouterPath.staffWithdrawalDetailWithId(withdrawalId);
-          debugPrint('[NotificationRouter] Navigating to detail: $path');
-          GoRouter.of(ctx).push(path);
-        } else {
-          final status = (action.payload['status'] ?? '').toString().toUpperCase();
-          final filter = status == 'APPROVED'
-              ? 'approved'
-              : (status == 'REJECTED' ? 'rejected' : 'all');
-          final path = '${RouterPath.staffWithdrawalHistory}?filter=$filter';
-          debugPrint('[NotificationRouter] Navigating to fallback history: $path');
-          GoRouter.of(ctx).push(path);
-        }
-        break;
       case 'STAFF_DELEGATION':
         // Chi tiết report có banner nhờ làm giùm kèm thao tác (nhận / từ chối / huỷ)
         final delegationReportId = action.payload['reportId'] as String?;
@@ -60,12 +43,6 @@ class NotificationRouter {
             : RouterPath.delegations;
         debugPrint('[NotificationRouter] Navigating to $delegationPath');
         GoRouter.of(ctx).push(delegationPath);
-        break;
-      case 'STAFF_WALLET':
-      case 'WALLET':
-        final path = RouterPath.staffWallet;
-        debugPrint('[NotificationRouter] Navigating to $path');
-        GoRouter.of(ctx).push(path);
         break;
       case 'CHAT':
       case 'CHAT_DETAIL':

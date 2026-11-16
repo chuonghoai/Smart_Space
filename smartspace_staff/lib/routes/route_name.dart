@@ -31,20 +31,8 @@ class AppRouteInfo {
         return l10n.routeEditProfile;
       case 'routeManageDevices':
         return l10n.routeManageDevices;
-      case 'routeStaffWallet':
-        return l10n.routeStaffWallet;
       case 'routeDelegations':
         return l10n.routeDelegations;
-      case 'routeStaffWalletTransactions':
-        return l10n.routeStaffWalletTransactions;
-      case 'routeStaffWithdrawal':
-        return l10n.routeStaffWithdrawal;
-      case 'routeStaffWithdrawalHistory':
-        return l10n.routeStaffWithdrawalHistory;
-      case 'routeStaffWithdrawalDetail':
-        return l10n.routeStaffWithdrawalDetail;
-      case 'routeStaffBankAccounts':
-        return l10n.routeStaffBankAccounts;
       case 'routeConversations':
         return l10n.routeConversations;
       case 'routeChatDetail':
@@ -161,50 +149,6 @@ class RouteName {
     isHiddenInSearch: true,
   );
 
-  static const staffWallet = AppRouteInfo(
-    path: '/wallet',
-    nameKey: 'routeStaffWallet',
-    icon: Icons.account_balance_wallet_outlined,
-    isHiddenInSearch: false,
-    priority: 4,
-  );
-
-  static const staffWalletTransactions = AppRouteInfo(
-    path: '/wallet/transactions',
-    nameKey: 'routeStaffWalletTransactions',
-    icon: Icons.history,
-    isHiddenInSearch: true,
-  );
-
-  
-  static const staffWithdrawal = AppRouteInfo(
-    path: '/wallet/withdraw',
-    nameKey: 'routeStaffWithdrawal',
-    icon: Icons.arrow_upward_rounded,
-    isHiddenInSearch: true,
-  );
-
-  static const staffWithdrawalHistory = AppRouteInfo(
-    path: '/wallet/withdrawals',
-    nameKey: 'routeStaffWithdrawalHistory',
-    icon: Icons.history_rounded,
-    isHiddenInSearch: true,
-  );
-
-  static const staffWithdrawalDetail = AppRouteInfo(
-    path: '/wallet/withdrawals/:id',
-    nameKey: 'routeStaffWithdrawalDetail',
-    icon: Icons.receipt_long_rounded,
-    isHiddenInSearch: true,
-  );
-
-  static const staffBankAccounts = AppRouteInfo(
-    path: '/settings/bank-accounts',
-    nameKey: 'routeStaffBankAccounts',
-    icon: Icons.account_balance_outlined,
-    isHiddenInSearch: true,
-  );
-
   static const delegations = AppRouteInfo(
     path: '/delegations',
     nameKey: 'routeDelegations',
@@ -251,12 +195,6 @@ class RouteName {
     map,
     news,
     newsDetail,
-    staffWallet,
-    staffWalletTransactions,
-    staffWithdrawal,
-    staffWithdrawalHistory,
-    staffWithdrawalDetail,
-    staffBankAccounts,
     delegations,
     conversations,
     chatDetail,

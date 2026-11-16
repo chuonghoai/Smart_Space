@@ -4,6 +4,7 @@ import '../../home/application/home_providers.dart';
 import '../data/report_repository.dart';
 import '../models/report_detail_model.dart';
 import '../models/staff_model.dart';
+import 'report_list_providers.dart';
 
 final reportDetailProvider = AsyncNotifierProviderFamily<ReportDetailNotifier, ReportDetailModel, String>(() => ReportDetailNotifier());
 
@@ -90,6 +91,36 @@ class ReportAssignNotifier extends StateNotifier<ReportAssignState> {
         ref.read(recentActivityProvider.notifier).refresh();
         ref.invalidate(recentReportProvider);
 
+        return true;
+      } else {
+        state = ReportAssignState(error: response.message);
+        return false;
+      }
+    } catch (e) {
+      state = ReportAssignState(error: e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> rejectReport({
+    required String reportId,
+    required String reason,
+  }) async {
+    state = const ReportAssignState(isLoading: true);
+    try {
+      final response = await reportRepository.updateReportStatus(
+        reportId,
+        'rejected',
+        reason: reason,
+      );
+
+      if (response.success) {
+        state = const ReportAssignState(isSuccess: true);
+        ref.invalidate(reportDetailProvider(reportId));
+        ref.read(adminOverviewProvider.notifier).refresh();
+        ref.read(recentActivityProvider.notifier).refresh();
+        ref.invalidate(recentReportProvider);
+        ref.invalidate(reportListProvider);
         return true;
       } else {
         state = ReportAssignState(error: response.message);

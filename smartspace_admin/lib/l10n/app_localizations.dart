@@ -3080,245 +3080,11 @@ abstract class AppLocalizations {
   /// **'Location description'**
   String get locationDescriptionLabel;
 
-  /// No description provided for @routeWalletConfig.
-  ///
-  /// In en, this message translates to:
-  /// **'Wallet Commission Config'**
-  String get routeWalletConfig;
-
-  /// No description provided for @walletConfigTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Wallet Commission Config'**
-  String get walletConfigTitle;
-
-  /// No description provided for @walletConfigDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Configure staff commission rates by severity and penalty deduction rates for re-handled reports.'**
-  String get walletConfigDescription;
-
-  /// No description provided for @commissionBySeverity.
-  ///
-  /// In en, this message translates to:
-  /// **'Commission by Severity'**
-  String get commissionBySeverity;
-
-  /// No description provided for @commissionLow.
-  ///
-  /// In en, this message translates to:
-  /// **'Low Severity (VND)'**
-  String get commissionLow;
-
-  /// No description provided for @commissionMedium.
-  ///
-  /// In en, this message translates to:
-  /// **'Medium Severity (VND)'**
-  String get commissionMedium;
-
-  /// No description provided for @commissionHigh.
-  ///
-  /// In en, this message translates to:
-  /// **'High Severity (VND)'**
-  String get commissionHigh;
-
-  /// No description provided for @commissionCritical.
-  ///
-  /// In en, this message translates to:
-  /// **'Critical Severity (VND)'**
-  String get commissionCritical;
-
-  /// No description provided for @penaltyRateSettings.
-  ///
-  /// In en, this message translates to:
-  /// **'Re-handling Penalty Rates'**
-  String get penaltyRateSettings;
-
-  /// No description provided for @penaltyRate1.
-  ///
-  /// In en, this message translates to:
-  /// **'1st Re-handling Penalty (%)'**
-  String get penaltyRate1;
-
-  /// No description provided for @penaltyRate2.
-  ///
-  /// In en, this message translates to:
-  /// **'2nd Re-handling Penalty (%)'**
-  String get penaltyRate2;
-
-  /// No description provided for @penaltyRate3.
-  ///
-  /// In en, this message translates to:
-  /// **'3rd Re-handling Penalty (%)'**
-  String get penaltyRate3;
-
-  /// No description provided for @penaltyRateNote.
-  ///
-  /// In en, this message translates to:
-  /// **'From the 3rd re-handling onwards, up to 100% of the commission is deducted. Subsequent attempts will have no further changes.'**
-  String get penaltyRateNote;
-
-  /// No description provided for @saveWalletConfig.
-  ///
-  /// In en, this message translates to:
-  /// **'Save Configuration'**
-  String get saveWalletConfig;
-
-  /// No description provided for @saveWalletConfigSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Wallet commission configuration updated successfully!'**
-  String get saveWalletConfigSuccess;
-
-  /// No description provided for @saveWalletConfigFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to save configuration, please try again.'**
-  String get saveWalletConfigFailed;
-
   /// No description provided for @invalidNumber.
   ///
   /// In en, this message translates to:
   /// **'Invalid value'**
   String get invalidNumber;
-
-  /// No description provided for @systemSettingsSection.
-  ///
-  /// In en, this message translates to:
-  /// **'System'**
-  String get systemSettingsSection;
-
-  /// No description provided for @manageWalletConfig.
-  ///
-  /// In en, this message translates to:
-  /// **'Wallet and Commission Config'**
-  String get manageWalletConfig;
-
-  /// No description provided for @manageStaffWallets.
-  ///
-  /// In en, this message translates to:
-  /// **'Staff Wallet Management'**
-  String get manageStaffWallets;
-
-  /// No description provided for @routeManageStaffWallets.
-  ///
-  /// In en, this message translates to:
-  /// **'Staff Wallet Management'**
-  String get routeManageStaffWallets;
-
-  /// No description provided for @withdrawalRequests.
-  ///
-  /// In en, this message translates to:
-  /// **'Withdrawal Requests'**
-  String get withdrawalRequests;
-
-  /// No description provided for @routeWithdrawalRequests.
-  ///
-  /// In en, this message translates to:
-  /// **'Withdrawal Requests'**
-  String get routeWithdrawalRequests;
-
-  /// No description provided for @withdrawalRequestBadge.
-  ///
-  /// In en, this message translates to:
-  /// **'Withdrawal Request'**
-  String get withdrawalRequestBadge;
-
-  /// No description provided for @pendingWithdrawalBanner.
-  ///
-  /// In en, this message translates to:
-  /// **'{count} withdrawal requests'**
-  String pendingWithdrawalBanner(int count);
-
-  /// No description provided for @staffWalletDetailTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Staff Wallet: {name}'**
-  String staffWalletDetailTitle(String name);
-
-  /// No description provided for @routeStaffWalletDetail.
-  ///
-  /// In en, this message translates to:
-  /// **'Staff Wallet Details'**
-  String get routeStaffWalletDetail;
-
-  /// No description provided for @withdrawalDetailTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Withdrawal Request Details'**
-  String get withdrawalDetailTitle;
-
-  /// No description provided for @bankName.
-  ///
-  /// In en, this message translates to:
-  /// **'Bank'**
-  String get bankName;
-
-  /// No description provided for @bankAccountNumber.
-  ///
-  /// In en, this message translates to:
-  /// **'Account Number'**
-  String get bankAccountNumber;
-
-  /// No description provided for @bankAccountName.
-  ///
-  /// In en, this message translates to:
-  /// **'Account Holder'**
-  String get bankAccountName;
-
-  /// No description provided for @withdrawAmount.
-  ///
-  /// In en, this message translates to:
-  /// **'Withdrawal Amount'**
-  String get withdrawAmount;
-
-  /// No description provided for @quickScanQr.
-  ///
-  /// In en, this message translates to:
-  /// **'Quick QR Scan'**
-  String get quickScanQr;
-
-  /// No description provided for @scanQrAutoFillNote.
-  ///
-  /// In en, this message translates to:
-  /// **'Scan QR with your banking app to auto-fill payment details'**
-  String get scanQrAutoFillNote;
-
-  /// No description provided for @approveAndTransfer.
-  ///
-  /// In en, this message translates to:
-  /// **'Confirm & Approve'**
-  String get approveAndTransfer;
-
-  /// No description provided for @rejectWithdrawal.
-  ///
-  /// In en, this message translates to:
-  /// **'Reject'**
-  String get rejectWithdrawal;
-
-  /// No description provided for @rejectReasonPrompt.
-  ///
-  /// In en, this message translates to:
-  /// **'Reason for rejecting withdrawal'**
-  String get rejectReasonPrompt;
-
-  /// No description provided for @rejectReasonRequired.
-  ///
-  /// In en, this message translates to:
-  /// **'Please enter a rejection reason'**
-  String get rejectReasonRequired;
-
-  /// No description provided for @confirmApprovalTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Confirm Withdrawal Approval'**
-  String get confirmApprovalTitle;
-
-  /// No description provided for @confirmApprovalContent.
-  ///
-  /// In en, this message translates to:
-  /// **'Are you sure you have transferred {amount} to staff {name}?'**
-  String confirmApprovalContent(String amount, String name);
 
   /// No description provided for @copySuccess.
   ///
@@ -3380,53 +3146,11 @@ abstract class AppLocalizations {
   /// **'All'**
   String get filterAll;
 
-  /// No description provided for @noStaffWalletsFound.
-  ///
-  /// In en, this message translates to:
-  /// **'No staff wallets found'**
-  String get noStaffWalletsFound;
-
-  /// No description provided for @noWithdrawalRequestsFound.
-  ///
-  /// In en, this message translates to:
-  /// **'No withdrawal requests found'**
-  String get noWithdrawalRequestsFound;
-
-  /// No description provided for @noTransactionsFound.
-  ///
-  /// In en, this message translates to:
-  /// **'No transactions found'**
-  String get noTransactionsFound;
-
   /// No description provided for @searchStaffHint.
   ///
   /// In en, this message translates to:
   /// **'Search staff by name, email, phone...'**
   String get searchStaffHint;
-
-  /// No description provided for @staffWalletBalance.
-  ///
-  /// In en, this message translates to:
-  /// **'Staff Wallet Balance'**
-  String get staffWalletBalance;
-
-  /// No description provided for @walletBalance.
-  ///
-  /// In en, this message translates to:
-  /// **'Wallet Balance'**
-  String get walletBalance;
-
-  /// No description provided for @transactionHistory.
-  ///
-  /// In en, this message translates to:
-  /// **'Transaction History'**
-  String get transactionHistory;
-
-  /// No description provided for @relatedReport.
-  ///
-  /// In en, this message translates to:
-  /// **'Report: {title}'**
-  String relatedReport(String title);
 
   /// No description provided for @viewReportDetail.
   ///
@@ -3434,155 +3158,17 @@ abstract class AppLocalizations {
   /// **'View Report Details'**
   String get viewReportDetail;
 
-  /// No description provided for @processSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Withdrawal request processed successfully!'**
-  String get processSuccess;
-
-  /// No description provided for @processFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Failed to process request, please try again.'**
-  String get processFailed;
-
-  /// No description provided for @systemConfig.
-  ///
-  /// In en, this message translates to:
-  /// **'System Configuration'**
-  String get systemConfig;
-
-  /// No description provided for @routeSystemConfig.
-  ///
-  /// In en, this message translates to:
-  /// **'System Configuration'**
-  String get routeSystemConfig;
-
-  /// No description provided for @commissionConfig.
-  ///
-  /// In en, this message translates to:
-  /// **'Commission Configuration'**
-  String get commissionConfig;
-
-  /// No description provided for @routeCommissionConfig.
-  ///
-  /// In en, this message translates to:
-  /// **'Commission Configuration'**
-  String get routeCommissionConfig;
-
-  /// No description provided for @commissionConfigDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Configure staff commission rates based on report severity level.'**
-  String get commissionConfigDescription;
-
-  /// No description provided for @penaltyRateConfig.
-  ///
-  /// In en, this message translates to:
-  /// **'Penalty Deduction Rate Configuration'**
-  String get penaltyRateConfig;
-
-  /// No description provided for @routePenaltyRateConfig.
-  ///
-  /// In en, this message translates to:
-  /// **'Penalty Deduction Rate Configuration'**
-  String get routePenaltyRateConfig;
-
-  /// No description provided for @penaltyRateConfigDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Configure commission deduction percentages when reports are marked unsatisfactory and require re-handling.'**
-  String get penaltyRateConfigDescription;
-
-  /// No description provided for @commissionConfigSummary.
-  ///
-  /// In en, this message translates to:
-  /// **'4 severity levels: Low, Medium, High, Critical'**
-  String get commissionConfigSummary;
-
-  /// No description provided for @penaltyRateConfigSummary.
-  ///
-  /// In en, this message translates to:
-  /// **'3-turn penalty: Turn 1, Turn 2, Turn 3'**
-  String get penaltyRateConfigSummary;
-
-  /// No description provided for @saveCommissionSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Commission configuration updated successfully!'**
-  String get saveCommissionSuccess;
-
-  /// No description provided for @savePenaltyRateSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Penalty deduction rate updated successfully!'**
-  String get savePenaltyRateSuccess;
-
   /// No description provided for @copied.
   ///
   /// In en, this message translates to:
   /// **'Copied'**
   String get copied;
 
-  /// No description provided for @homePendingWithdrawalBanner.
-  ///
-  /// In en, this message translates to:
-  /// **'There are {count} withdrawal requests'**
-  String homePendingWithdrawalBanner(int count);
-
-  /// No description provided for @homePendingWithdrawalSubtitle.
-  ///
-  /// In en, this message translates to:
-  /// **'Tap to review pending withdrawal requests'**
-  String get homePendingWithdrawalSubtitle;
-
   /// No description provided for @statusCancelled.
   ///
   /// In en, this message translates to:
   /// **'Cancelled'**
   String get statusCancelled;
-
-  /// No description provided for @delegationRateConfig.
-  ///
-  /// In en, this message translates to:
-  /// **'Delegated Task Commission Configuration'**
-  String get delegationRateConfig;
-
-  /// No description provided for @routeDelegationRateConfig.
-  ///
-  /// In en, this message translates to:
-  /// **'Delegated Task Commission Configuration'**
-  String get routeDelegationRateConfig;
-
-  /// No description provided for @delegationRateConfigDescription.
-  ///
-  /// In en, this message translates to:
-  /// **'Set the extra bonus a staff member earns when handling a task on behalf of a colleague, as a percentage of the task commission by severity. The bonus is paid from the requester\'s wallet.'**
-  String get delegationRateConfigDescription;
-
-  /// No description provided for @delegationRateExample.
-  ///
-  /// In en, this message translates to:
-  /// **'{rate}% × {commission}đ = {bonus}đ bonus'**
-  String delegationRateExample(String rate, String commission, String bonus);
-
-  /// No description provided for @delegationRateNote.
-  ///
-  /// In en, this message translates to:
-  /// **'The helper receives the task commission plus this bonus. Changes only apply to delegation requests sent after saving.'**
-  String get delegationRateNote;
-
-  /// No description provided for @saveDelegationRateSuccess.
-  ///
-  /// In en, this message translates to:
-  /// **'Delegated task commission rates updated successfully!'**
-  String get saveDelegationRateSuccess;
-
-  /// No description provided for @delegationRateLoadFailed.
-  ///
-  /// In en, this message translates to:
-  /// **'Couldn\'t load the configuration'**
-  String get delegationRateLoadFailed;
 
   /// No description provided for @connectionStable.
   ///
@@ -4159,6 +3745,162 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Attached report'**
   String get attachedReportSnippet;
+
+  /// No description provided for @reportDeadlineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution deadline'**
+  String get reportDeadlineLabel;
+
+  /// No description provided for @deadlineOverdueBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get deadlineOverdueBadge;
+
+  /// No description provided for @expectedCompletionDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Est. completion: {date}'**
+  String expectedCompletionDate(String date);
+
+  /// No description provided for @staffDeadlinePerformanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Deadline Performance'**
+  String get staffDeadlinePerformanceTitle;
+
+  /// No description provided for @staffDeadlinePerformanceSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracks overdue tasks and late vs. on-time completions by staff'**
+  String get staffDeadlinePerformanceSubtitle;
+
+  /// No description provided for @noStaffMissedDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'No staff members have missed a deadline'**
+  String get noStaffMissedDeadline;
+
+  /// No description provided for @staffMissedDeadlineSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} overdue active · {lateCount} completed late'**
+  String staffMissedDeadlineSummary(int count, int lateCount);
+
+  /// No description provided for @onTimeRateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{rate}% on time'**
+  String onTimeRateLabel(String rate);
+
+  /// No description provided for @overdueActiveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue active'**
+  String get overdueActiveLabel;
+
+  /// No description provided for @completedLateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed late'**
+  String get completedLateLabel;
+
+  /// No description provided for @completedOnTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed on time'**
+  String get completedOnTimeLabel;
+
+  /// No description provided for @missedDeadlineBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Missed deadline'**
+  String get missedDeadlineBadge;
+
+  /// No description provided for @onTimeBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'On time'**
+  String get onTimeBadge;
+
+  /// No description provided for @noDeadlineRecordsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No assigned deadline data yet'**
+  String get noDeadlineRecordsYet;
+
+  /// No description provided for @staffDeadlineStatsBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'{overdue} overdue · {late} late · {onTime} on time'**
+  String staffDeadlineStatsBreakdown(int overdue, int late, int onTime);
+
+  /// No description provided for @rejectReportButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject report'**
+  String get rejectReportButton;
+
+  /// No description provided for @rejectReportConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject this report?'**
+  String get rejectReportConfirmTitle;
+
+  /// No description provided for @rejectReportConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This action will mark the report as rejected and notify the reporter.'**
+  String get rejectReportConfirmMessage;
+
+  /// No description provided for @rejectReportReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejection reason'**
+  String get rejectReportReasonLabel;
+
+  /// No description provided for @rejectReportReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain why this report cannot be processed...'**
+  String get rejectReportReasonHint;
+
+  /// No description provided for @rejectReportReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a rejection reason'**
+  String get rejectReportReasonRequired;
+
+  /// No description provided for @confirmRejectAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm reject'**
+  String get confirmRejectAction;
+
+  /// No description provided for @rejectSuccessMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Report rejected successfully'**
+  String get rejectSuccessMessage;
+
+  /// No description provided for @rejectFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reject report, please try again'**
+  String get rejectFailedMessage;
+
+  /// No description provided for @rejectedReasonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejection Reason'**
+  String get rejectedReasonTitle;
+
+  /// No description provided for @noRejectionReasonProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected by administrator.'**
+  String get noRejectionReasonProvided;
 }
 
 class _AppLocalizationsDelegate

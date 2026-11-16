@@ -95,10 +95,16 @@ class ReportRepository {
   }
 
   Future<ApiResponse<Map<String, dynamic>>> updateReportStatus(
-      String id, String status) async {
+    String id,
+    String status, {
+    String? reason,
+  }) async {
     return apiClient.patch(
       '/admin/reports/$id/status',
-      data: {'status': status},
+      data: {
+        'status': status,
+        if (reason != null && reason.trim().isNotEmpty) 'reason': reason.trim(),
+      },
       decoder: (json) => json as Map<String, dynamic>? ?? {},
     );
   }

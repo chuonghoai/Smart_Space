@@ -1276,4 +1276,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get attachedReportSnippet => 'Phản ánh đính kèm';
+
+  @override
+  String get reportDeadlineLabel => 'Hạn xử lý';
+
+  @override
+  String get deadlineOverdueBadge => 'Quá hạn';
+
+  @override
+  String get rejectedReasonTitle => 'Lý do từ chối';
+
+  @override
+  String get noRejectionReasonProvided =>
+      'Phản ánh đã bị quản trị viên từ chối.';
 }

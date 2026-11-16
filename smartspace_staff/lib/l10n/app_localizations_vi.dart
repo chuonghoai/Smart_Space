@@ -834,192 +834,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get citizenReviewPhotos => 'Hình ảnh người dân cung cấp';
 
   @override
-  String get staffWallet => 'Ví nhân viên';
-
-  @override
-  String get walletBalance => 'Số dư ví';
-
-  @override
-  String get withdrawMoney => 'Rút tiền';
-
-  @override
-  String get transactionHistory => 'Lịch sử giao dịch';
-
-  @override
-  String get featureUnderDevelopment => 'Tính năng đang được phát triển';
-
-  @override
-  String get recentTransactions => 'Giao dịch gần đây';
-
-  @override
-  String get noTransactions => 'Chưa có giao dịch nào';
-
-  @override
-  String commissionExpectedNotice(String amount) {
-    return 'Bạn sẽ nhận được $amount đ sau khi hoàn tất xử lý phản ánh này.';
-  }
-
-  @override
-  String commissionReceived(String amount) {
-    return 'Bạn đã nhận được $amountđ';
-  }
-
-  @override
-  String commissionPenaltyDeducted(String amount) {
-    return 'Bị đánh giá xấu: -$amountđ';
-  }
-
-  @override
-  String commissionPenaltyDeductionTurn(int turn, String amount) {
-    return 'Bị đánh giá xấu lần $turn: -$amountđ';
-  }
-
-  @override
-  String finalCommissionReceived(String amount) {
-    return 'Số tiền cuối cùng nhận được: $amountđ';
-  }
-
-  @override
-  String get rehandlingNoExtraCommission =>
-      'Xử lý lại sẽ không nhận thêm hoa hồng.';
-
-  @override
-  String get routeStaffWallet => 'Ví nhân viên';
-
-  @override
-  String get routeStaffWalletTransactions => 'Lịch sử giao dịch';
-
-  @override
-  String get commissionBreakdown => 'Chi tiết hoa hồng';
-
-  @override
-  String get allTransactions => 'Tất cả giao dịch';
-
-  @override
-  String get routeStaffWithdrawal => 'Rút tiền';
-
-  @override
-  String get routeStaffWithdrawalHistory => 'Lịch sử rút tiền';
-
-  @override
-  String get routeStaffWithdrawalDetail => 'Chi tiết yêu cầu';
-
-  @override
-  String get routeStaffBankAccounts => 'Quản lý tài khoản ngân hàng';
-
-  @override
-  String get bankAccountsManagement => 'Quản lý tài khoản ngân hàng';
-
-  @override
-  String get withdrawalHistory => 'Lịch sử rút tiền';
-
-  @override
-  String get withdrawalDetail => 'Chi tiết yêu cầu';
-
-  @override
-  String get selectSavedBankAccount => 'Chọn tài khoản ngân hàng đã lưu';
-
-  @override
-  String get suggestSaveBankQuick =>
-      'Gợi ý: Lưu nhanh tài khoản ngân hàng để tiện cho lần sau';
-
-  @override
-  String get saveBankModalTitle => 'Lưu tài khoản ngân hàng';
-
-  @override
-  String get confirmSaveBankPrompt =>
-      'Bạn có muốn lưu lại số tài khoản để tiện cho lần sau hay không?';
-
-  @override
-  String get saveAndContinue => 'Lưu và tiếp tục';
-
-  @override
-  String get continueWithoutSaving => 'Không lưu, tiếp tục';
-
-  @override
-  String get bankName => 'Tên ngân hàng';
-
-  @override
-  String get bankNameHint => 'Chọn hoặc nhập tên ngân hàng';
-
-  @override
-  String get bankAccountNumber => 'Số tài khoản';
-
-  @override
-  String get bankAccountNumberHint => 'Nhập số tài khoản';
-
-  @override
-  String get bankAccountOwner => 'Họ tên chủ tài khoản';
-
-  @override
-  String get bankAccountOwnerHint => 'NGUYEN VAN A';
-
-  @override
-  String get withdrawalAmount => 'Số tiền muốn rút';
-
-  @override
-  String get withdrawalAmountHint => 'Nhập số tiền muốn rút';
-
-  @override
-  String get submitWithdrawalRequest => 'Gửi yêu cầu rút tiền';
-
-  @override
-  String get withdrawalRequestSuccess => 'Gửi yêu cầu rút tiền thành công';
-
-  @override
-  String get filterApproved => 'Đã duyệt';
-
-  @override
-  String get filterRejected => 'Đã hủy';
-
-  @override
-  String get filterPending => 'Đang chờ';
-
-  @override
   String get statusPending => 'Đang chờ xử lý';
-
-  @override
-  String get statusApproved => 'Đã duyệt';
-
-  @override
-  String get statusRejected => 'Đã hủy';
-
-  @override
-  String get additionalInfo => 'Thông tin thêm';
-
-  @override
-  String get cancellationReason => 'Lý do hủy yêu cầu';
-
-  @override
-  String get noCancellationReasonProvided => 'Không có lý do cụ thể';
-
-  @override
-  String get emptyWithdrawalHistory => 'Chưa có yêu cầu rút tiền nào';
-
-  @override
-  String get emptyBankAccounts => 'Chưa có tài khoản ngân hàng nào được lưu';
-
-  @override
-  String get addBankAccount => 'Thêm tài khoản ngân hàng';
-
-  @override
-  String get deleteBankAccount => 'Xóa tài khoản';
-
-  @override
-  String get deleteBankAccountConfirm =>
-      'Bạn có chắc chắn muốn xóa tài khoản này khỏi danh sách đã lưu?';
-
-  @override
-  String get amountExceedsBalance => 'Số tiền rút không được vượt quá số dư ví';
-
-  @override
-  String get minWithdrawalAmountError => 'Số tiền rút tối thiểu là 10.000 đ';
-
-  @override
-  String get bankInfoIncomplete => 'Vui lòng điền đầy đủ thông tin ngân hàng';
-
-  @override
-  String get savedBankAccounts => 'Tài khoản ngân hàng đã lưu';
 
   @override
   String get saveSuccess => 'Lưu thành công';
@@ -1031,9 +846,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get confirmDelete => 'Xác nhận xóa';
 
   @override
-  String get bankAccount => 'Tài khoản ngân hàng';
-
-  @override
   String get createdDate => 'Ngày tạo';
 
   @override
@@ -1043,45 +855,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get genericError => 'Đã có lỗi xảy ra, vui lòng thử lại!';
 
   @override
-  String get doNotSave => 'Không lưu';
-
-  @override
-  String get addNewBankAccount => 'Thêm tài khoản ngân hàng mới';
-
-  @override
-  String get heldWithdrawalNoticeTitle => 'Số tiền đang được tạm giữ';
-
-  @override
-  String get heldWithdrawalNoticeDesc =>
-      'Số tiền rút đã được trừ tạm giữ khỏi số dư ví. Nếu yêu cầu bị từ chối, số tiền sẽ được hoàn trả lại ví của bạn.';
-
-  @override
-  String get refundedNoticeDesc =>
-      'Số tiền yêu cầu rút đã được hoàn trả lại vào ví của bạn.';
-
-  @override
-  String get cancelWithdrawalRequest => 'Hủy yêu cầu rút tiền';
-
-  @override
-  String get confirmCancelWithdrawalTitle => 'Xác nhận hủy yêu cầu';
-
-  @override
-  String get confirmCancelWithdrawalContent =>
-      'Bạn có chắc chắn muốn hủy yêu cầu rút tiền này không? Số tiền tạm giữ sẽ được hoàn lại ngay vào ví của bạn.';
-
-  @override
   String get confirmCancel => 'Hủy yêu cầu';
 
   @override
-  String get cancelWithdrawalSuccess =>
-      'Hủy yêu cầu rút tiền thành công, số tiền đã được hoàn lại vào ví.';
-
-  @override
   String get statusCancelled => 'Đã hủy';
-
-  @override
-  String get cancelledNoticeDesc =>
-      'Yêu cầu rút tiền này đã được hủy và số tiền tạm giữ đã được hoàn trả lại ví của bạn.';
 
   @override
   String get routeDelegations => 'Việc nhờ làm hộ';
@@ -1120,33 +897,6 @@ class AppLocalizationsVi extends AppLocalizations {
   String get delegationChooseColleague => 'Chọn đồng nghiệp';
 
   @override
-  String get delegationHelperReceives => 'Đồng nghiệp nhận';
-
-  @override
-  String delegationHelperReceivesValue(String commission, String bonus) {
-    return '$commissionđ + $bonusđ bonus';
-  }
-
-  @override
-  String get delegationYouPay => 'Ví bạn bị trừ';
-
-  @override
-  String delegationBonusRate(String rate) {
-    return 'Bonus = $rate% hoa hồng của task';
-  }
-
-  @override
-  String get delegationCurrentBalance => 'Số dư hiện tại';
-
-  @override
-  String get delegationInsufficientBalance =>
-      'Số dư ví không đủ để trả bonus này';
-
-  @override
-  String get delegationHoldHint =>
-      'Bonus được giữ tạm trong ví và hoàn lại nếu yêu cầu không thành. Yêu cầu hết hạn sau 24 giờ.';
-
-  @override
   String get delegationNoteLabel => 'Lời nhắn (không bắt buộc)';
 
   @override
@@ -1176,31 +926,6 @@ class AppLocalizationsVi extends AppLocalizations {
   }
 
   @override
-  String delegationHelperEarns(String commission, String bonus) {
-    return 'Bạn sẽ nhận $commissionđ + $bonusđ bonus';
-  }
-
-  @override
-  String delegationBonusHeld(String bonus) {
-    return 'Đang giữ $bonusđ bonus từ ví của bạn';
-  }
-
-  @override
-  String commissionExpectedWithBonusNotice(String commission, String bonus) {
-    return 'Bạn sẽ nhận được $commissionđ + $bonusđ bonus làm hộ sau khi hoàn tất xử lý phản ánh này.';
-  }
-
-  @override
-  String delegationBonusReceivedLine(String name, String amount) {
-    return 'Bonus làm hộ từ $name: +$amountđ';
-  }
-
-  @override
-  String delegationBonusPaidNotice(String amount, String name) {
-    return 'Bạn đã trả $amountđ bonus cho $name làm hộ phản ánh này.';
-  }
-
-  @override
   String delegationExpiresAt(String time) {
     return 'Hết hạn lúc $time';
   }
@@ -1219,14 +944,14 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get delegationAcceptConfirmMessage =>
-      'Phản ánh sẽ được giao cho bạn. Bạn chịu trách nhiệm xử lý, kể cả khi phải xử lý lại và bị trừ hoa hồng.';
+      'Phản ánh sẽ được giao cho bạn và bạn chịu trách nhiệm xử lý.';
 
   @override
   String get delegationDeclineConfirmTitle => 'Từ chối yêu cầu này?';
 
   @override
   String delegationDeclineConfirmMessage(String name) {
-    return '$name sẽ được hoàn lại bonus đã giữ.';
+    return '$name sẽ nhận được thông báo từ chối.';
   }
 
   @override
@@ -1234,7 +959,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get delegationCancelConfirmMessage =>
-      'Bonus đã giữ sẽ được hoàn lại vào ví của bạn.';
+      'Yêu cầu nhờ làm hộ này sẽ bị huỷ.';
 
   @override
   String get delegationAcceptedSuccess => 'Bạn đã nhận làm hộ';
@@ -1243,8 +968,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get delegationDeclinedSuccess => 'Đã từ chối yêu cầu';
 
   @override
-  String get delegationCancelledSuccess =>
-      'Đã huỷ yêu cầu, bonus đã được hoàn lại';
+  String get delegationCancelledSuccess => 'Đã huỷ yêu cầu nhờ làm hộ';
 
   @override
   String delegationFrom(String name) {
@@ -1254,11 +978,6 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String delegationTo(String name) {
     return 'Nhờ $name';
-  }
-
-  @override
-  String delegationBonusLabel(String amount) {
-    return 'Bonus $amountđ';
   }
 
   @override
@@ -1464,6 +1183,9 @@ class AppLocalizationsVi extends AppLocalizations {
   String get freeCall => 'Gọi miễn phí qua ứng dụng';
 
   @override
+  String get featureUnderDevelopment => 'Tính năng đang được phát triển';
+
+  @override
   String get comingSoon => 'Sắp ra mắt';
 
   @override
@@ -1508,4 +1230,17 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get attachedReportSnippet => 'Phản ánh đính kèm';
+
+  @override
+  String get reportDeadlineLabel => 'Hạn xử lý';
+
+  @override
+  String get deadlineOverdueBadge => 'Quá hạn';
+
+  @override
+  String get rejectedReasonTitle => 'Lý do từ chối';
+
+  @override
+  String get noRejectionReasonProvided =>
+      'Phản ánh đã bị quản trị viên từ chối.';
 }

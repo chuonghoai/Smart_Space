@@ -187,10 +187,6 @@ class _DelegationCard extends ConsumerWidget {
                       style: theme.textTheme.labelSmall?.copyWith(color: severityColor, fontWeight: FontWeight.w600),
                     ),
                   ),
-                  Text(
-                    l10n.delegationBonusLabel(formatDelegationMoney(delegation.bonusAmount)),
-                    style: theme.textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w600),
-                  ),
                   if (pending && delegation.expiresAt != null)
                     Text(
                       l10n.delegationExpiresAt(formatDelegationTime(delegation.expiresAt!)),

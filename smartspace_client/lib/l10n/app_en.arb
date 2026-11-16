@@ -499,5 +499,9 @@
   "voiceMessageSnippet": "Voice message",
   "imageSnippet": "Photo",
   "videoSnippet": "Video",
-  "attachedReportSnippet": "Attached report"
+  "attachedReportSnippet": "Attached report",
+  "reportDeadlineLabel": "Resolution deadline",
+  "deadlineOverdueBadge": "Overdue",
+  "rejectedReasonTitle": "Rejection Reason",
+  "noRejectionReasonProvided": "Rejected by administrator."
 }

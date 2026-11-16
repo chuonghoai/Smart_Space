@@ -1,0 +1,61 @@
+{
+  "todotree": {
+    "tree": [
+      {
+        "key": 1794801387388,
+        "children": [],
+        "todo": {
+          "content": "New: Tự động thêm deadline cho report khi vừa được tạo bởi client. Các mức deadline tương ứng với mức độ của report (thấp: 3 ngày, trung bình: 5 ngày, cao: 7 ngày, nghiêm trọng: 10 ngày). Deadline này phải được nhìn thấy công khai cho admin, staff (người được phân công xử lý) và client (người tạo report) trong giao diện chi tiết report",
+          "id": 1794801387388,
+          "level": "default",
+          "done": false,
+          "start": 1794801387388
+        }
+      },
+      {
+        "key": 1794801487099,
+        "children": [],
+        "todo": {
+          "content": "New admin: Trong quản lý staff, thêm dash board thống kê hiệu suất xử lý phản ánh của client. Phương pháp thống kê là xem có staff nào trễ deadline hay không. Ngoài ra trong danh sách phản ánh của admin (danh sách trong quản lý phản ánh và trang chủ) phải có 1 dòng ghi chú về deadline phản ánh (ví dụ: \"Dự kiến hoàn thành: DD/MM\")",
+          "id": 1794801487099,
+          "level": "default",
+          "done": false,
+          "start": 1794801487099
+        }
+      },
+      {
+        "key": 1794801773371,
+        "children": [],
+        "todo": {
+          "content": "New admin: Thêm tính năng từ chối phản ánh trong giao diện chi tiết phản ánh (chỉ khả dụng report có trạng thái pending và processing)",
+          "id": 1794801773371,
+          "level": "default",
+          "done": false,
+          "start": 1794801773371
+        }
+      },
+      {
+        "key": 1794801864794,
+        "children": [],
+        "todo": {
+          "content": "Fix: Xóa module ví tiền hoa hồng của staff. Phạm vi của task xóa module ví hoa hồng bao gồm cả trên UI của admin và staff, trong backend, database, tất cả các dòng logic có liên quan đến module ví tiền hoa hồng đều phải được xóa triệt để. Trong quá trình xóa, tuyệt đối không được làm ảnh hưởng trực tiếp hay gián tiếp đến logic của module khác (cả frontend lẫn backend). Trước khi xóa mỗi dòng, phải xác minh dòng đó có thật sự liên quan đến module ví tiền hoa hồng hay ko, và phải xác nhận dòng đó có cần thiết phải xóa hay ko... Nếu thật sự dòng đó là logic liên quan đến module ví tiền hoa hồng thì mới được xóa.",
+          "id": 1794801864794,
+          "level": "default",
+          "done": false,
+          "start": 1794801864794
+        }
+      }
+    ],
+    "expandKeys": [],
+    "add_mode": "bottom",
+    "virtual": false,
+    "showLine": false,
+    "playFontSize": 24,
+    "title": "todo_list",
+    "autoSort": false,
+    "showEndTime": false,
+    "simpleMode": false,
+    "lang": "en",
+    "version": "1794805304414"
+  }
+}

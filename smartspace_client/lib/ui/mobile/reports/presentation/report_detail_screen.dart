@@ -633,11 +633,120 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
                               '${l10n.createdAtLabel}: ${DateFormat('dd/MM/yyyy HH:mm').format(report.createdAt)}',
                               style: theme.textTheme.bodySmall?.copyWith(
                                 color: theme.colorScheme.onSurfaceVariant,
+                                fontFeatures: const [FontFeature.tabularFigures()],
                               ),
                             ),
                           ],
                         ),
+                        if (report.deadline != null && report.status != ReportStatus.rejected) ...[
+                          const SizedBox(height: 6),
+                          Builder(
+                            builder: (context) {
+                              final isActive = report.status == ReportStatus.pending ||
+                                  report.status == ReportStatus.processing;
+                              final isOverdue = isActive && DateTime.now().isAfter(report.deadline!);
+                              final deadlineColor = isOverdue
+                                  ? theme.colorScheme.error
+                                  : theme.colorScheme.onSurfaceVariant;
+                              return Row(
+                                children: [
+                                  Icon(
+                                    Icons.event_available_outlined,
+                                    size: 14,
+                                    color: deadlineColor,
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Flexible(
+                                    child: Text(
+                                      '${l10n.reportDeadlineLabel}: ${DateFormat('dd/MM/yyyy HH:mm').format(report.deadline!.toLocal())}',
+                                      style: theme.textTheme.bodySmall?.copyWith(
+                                        color: deadlineColor,
+                                        fontWeight: isOverdue ? FontWeight.w600 : FontWeight.normal,
+                                        fontFeatures: const [FontFeature.tabularFigures()],
+                                      ),
+                                    ),
+                                  ),
+                                  if (isOverdue) ...[
+                                    const SizedBox(width: 6),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                      decoration: BoxDecoration(
+                                        color: theme.colorScheme.errorContainer,
+                                        borderRadius: BorderRadius.circular(6),
+                                      ),
+                                      child: Text(
+                                        l10n.deadlineOverdueBadge,
+                                        style: theme.textTheme.labelSmall?.copyWith(
+                                          color: theme.colorScheme.onErrorContainer,
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ],
+                              );
+                            },
+                          ),
+                        ],
                         const SizedBox(height: 16),
+
+                        // Rejection Reason Card (when report is rejected)
+                        if (report.status == ReportStatus.rejected) ...[
+                          Container(
+                            width: double.infinity,
+                            padding: const EdgeInsets.all(14),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.errorContainer.withValues(alpha: 0.22),
+                              borderRadius: BorderRadius.circular(16),
+                              border: Border.all(
+                                color: theme.colorScheme.error.withValues(alpha: 0.35),
+                              ),
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Icon(
+                                      Icons.cancel_outlined,
+                                      size: 18,
+                                      color: theme.colorScheme.error,
+                                    ),
+                                    const SizedBox(width: 8),
+                                    Expanded(
+                                      child: Text(
+                                        l10n.rejectedReasonTitle,
+                                        style: theme.textTheme.titleSmall?.copyWith(
+                                          fontWeight: FontWeight.bold,
+                                          color: theme.colorScheme.error,
+                                        ),
+                                      ),
+                                    ),
+                                    if (report.rejectedAt != null)
+                                      Text(
+                                        DateFormat('dd/MM/yyyy HH:mm').format(report.rejectedAt!.toLocal()),
+                                        style: theme.textTheme.bodySmall?.copyWith(
+                                          color: theme.colorScheme.onSurfaceVariant,
+                                          fontFeatures: const [FontFeature.tabularFigures()],
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  (report.rejectedReason != null && report.rejectedReason!.trim().isNotEmpty)
+                                      ? report.rejectedReason!
+                                      : l10n.noRejectionReasonProvided,
+                                  style: theme.textTheme.bodyMedium?.copyWith(
+                                    color: theme.colorScheme.onSurface,
+                                    height: 1.45,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
 
                         // Title & Description Card
                         Container(

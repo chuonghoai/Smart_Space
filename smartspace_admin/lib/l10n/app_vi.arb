@@ -691,70 +691,7 @@
   "viewOnMap": "Xem trên bản đồ",
   "mapFocusedReportHidden": "Phản ánh này không khớp bộ lọc hiện tại của bản đồ",
   "locationDescriptionLabel": "Mô tả vị trí",
-  "routeWalletConfig": "Cấu hình hoa hồng ví",
-  "walletConfigTitle": "Cấu hình hoa hồng ví",
-  "walletConfigDescription": "Thiết lập định mức hoa hồng cho nhân viên theo mức độ nghiêm trọng và tỷ lệ trừ tiền khi bị đánh giá chưa thỏa đáng.",
-  "commissionBySeverity": "Định mức hoa hồng theo mức độ",
-  "commissionLow": "Mức độ thấp (VNĐ)",
-  "commissionMedium": "Mức độ trung bình (VNĐ)",
-  "commissionHigh": "Mức độ cao (VNĐ)",
-  "commissionCritical": "Mức độ nghiêm trọng (VNĐ)",
-  "penaltyRateSettings": "Tỷ lệ trừ hoa hồng khi xử lý lại",
-  "penaltyRate1": "Lần xử lý lại thứ 1 (%)",
-  "penaltyRate2": "Lần xử lý lại thứ 2 (%)",
-  "penaltyRate3": "Lần xử lý lại thứ 3 (%)",
-  "penaltyRateNote": "Từ lần xử lý lại thứ 3 trở đi, nhân viên sẽ bị trừ tối đa 100% hoa hồng. Các lần tiếp theo không tính thêm.",
-  "saveWalletConfig": "Lưu cấu hình",
-  "saveWalletConfigSuccess": "Cập nhật cấu hình hoa hồng ví thành công!",
-  "saveWalletConfigFailed": "Không thể lưu cấu hình, vui lòng thử lại.",
   "invalidNumber": "Giá trị không hợp lệ",
-  "systemSettingsSection": "Hệ thống",
-  "manageWalletConfig": "Cấu hình ví và hoa hồng",
-  "manageStaffWallets": "Quản lý ví nhân viên",
-  "routeManageStaffWallets": "Quản lý ví nhân viên",
-  "withdrawalRequests": "Yêu cầu rút tiền",
-  "routeWithdrawalRequests": "Yêu cầu rút tiền",
-  "withdrawalRequestBadge": "Yêu cầu rút tiền",
-  "pendingWithdrawalBanner": "{count} yêu cầu rút tiền",
-  "@pendingWithdrawalBanner": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "staffWalletDetailTitle": "Ví nhân viên {name}",
-  "@staffWalletDetailTitle": {
-    "placeholders": {
-      "name": {
-        "type": "String"
-      }
-    }
-  },
-  "routeStaffWalletDetail": "Chi tiết ví nhân viên",
-  "withdrawalDetailTitle": "Chi tiết yêu cầu rút tiền",
-  "bankName": "Ngân hàng",
-  "bankAccountNumber": "Số tài khoản",
-  "bankAccountName": "Tên chủ tài khoản",
-  "withdrawAmount": "Số tiền rút",
-  "quickScanQr": "Mã QR quét nhanh",
-  "scanQrAutoFillNote": "Quét mã bằng ứng dụng ngân hàng để tự động điền thông tin chuyển tiền",
-  "approveAndTransfer": "Xác nhận đã chuyển tiền",
-  "rejectWithdrawal": "Từ chối",
-  "rejectReasonPrompt": "Lý do từ chối yêu cầu rút tiền",
-  "rejectReasonRequired": "Vui lòng nhập lý do từ chối",
-  "confirmApprovalTitle": "Xác nhận duyệt rút tiền",
-  "confirmApprovalContent": "Bạn có chắc chắn đã chuyển số tiền {amount} cho nhân viên {name}?",
-  "@confirmApprovalContent": {
-    "placeholders": {
-      "amount": {
-        "type": "String"
-      },
-      "name": {
-        "type": "String"
-      }
-    }
-  },
   "copySuccess": "Đã sao chép vào bộ nhớ tạm",
   "copy": "Sao chép",
   "note": "Ghi chú",
@@ -765,61 +702,10 @@
   "statusApproved": "Đã duyệt",
   "statusRejected": "Từ chối",
   "filterAll": "Tất cả",
-  "noStaffWalletsFound": "Không tìm thấy ví nhân viên nào",
-  "noWithdrawalRequestsFound": "Không có yêu cầu rút tiền nào",
-  "noTransactionsFound": "Chưa có giao dịch nào",
   "searchStaffHint": "Tìm theo tên, email, SĐT...",
-  "staffWalletBalance": "Số dư ví nhân viên",
-  "walletBalance": "Số dư ví",
-  "transactionHistory": "Lịch sử giao dịch",
-  "relatedReport": "Phản ánh: {title}",
-  "@relatedReport": {
-    "placeholders": {
-      "title": {
-        "type": "String"
-      }
-    }
-  },
   "viewReportDetail": "Xem chi tiết phản ánh",
-  "processSuccess": "Xử lý yêu cầu rút tiền thành công!",
-  "processFailed": "Không thể xử lý yêu cầu, vui lòng thử lại.",
-  "systemConfig": "Cấu hình hệ thống",
-  "routeSystemConfig": "Cấu hình hệ thống",
-  "commissionConfig": "Cấu hình hoa hồng",
-  "routeCommissionConfig": "Cấu hình hoa hồng",
-  "commissionConfigDescription": "Thiết lập định mức hoa hồng cho nhân viên theo từng mức độ nghiêm trọng của phản ánh.",
-  "penaltyRateConfig": "Cấu hình tỷ lệ trừ hoa hồng khi xử lý lại",
-  "routePenaltyRateConfig": "Cấu hình tỷ lệ trừ hoa hồng khi xử lý lại",
-  "penaltyRateConfigDescription": "Thiết lập tỷ lệ phần trăm trừ hoa hồng khi phản ánh bị người dân đánh giá chưa thỏa đáng và cần xử lý lại.",
-  "commissionConfigSummary": "Định mức 4 mức độ: Thấp, Trung bình, Cao, Nghiêm trọng",
-  "penaltyRateConfigSummary": "Tỷ lệ phạt 3 lần: Lần 1, Lần 2, Lần 3",
-  "saveCommissionSuccess": "Cập nhật cấu hình hoa hồng thành công!",
-  "savePenaltyRateSuccess": "Cập nhật tỷ lệ trừ hoa hồng thành công!",
   "copied": "Đã sao chép",
-  "homePendingWithdrawalBanner": "Có {count} yêu cầu rút tiền",
-  "@homePendingWithdrawalBanner": {
-    "placeholders": {
-      "count": {
-        "type": "int"
-      }
-    }
-  },
-  "homePendingWithdrawalSubtitle": "Nhấn để xem và duyệt các yêu cầu rút tiền",
   "statusCancelled": "Đã hủy",
-  "delegationRateConfig": "Cấu hình hoa hồng công việc được nhờ",
-  "routeDelegationRateConfig": "Cấu hình hoa hồng công việc được nhờ",
-  "delegationRateConfigDescription": "Thiết lập bonus nhân viên nhận thêm khi làm giùm đồng nghiệp, tính theo % hoa hồng của task theo mức độ nghiêm trọng. Bonus được trừ từ ví của người nhờ.",
-  "delegationRateExample": "{rate}% × {commission}đ = {bonus}đ bonus",
-  "@delegationRateExample": {
-    "placeholders": {
-      "rate": { "type": "String" },
-      "commission": { "type": "String" },
-      "bonus": { "type": "String" }
-    }
-  },
-  "delegationRateNote": "Người làm giùm nhận hoa hồng của task cộng thêm bonus này. Thay đổi chỉ áp dụng cho yêu cầu nhờ gửi sau khi lưu.",
-  "saveDelegationRateSuccess": "Cập nhật hoa hồng công việc được nhờ thành công!",
-  "delegationRateLoadFailed": "Không tải được cấu hình",
   "connectionStable": "Kết nối ổn định",
   "connectionConnecting": "Đang thiết lập kết nối...",
   "connectionDisconnected": "Mất kết nối. Bấm để thử lại.",
@@ -920,5 +806,56 @@
   "voiceMessageSnippet": "Tin nhắn thoại",
   "imageSnippet": "Hình ảnh",
   "videoSnippet": "Video",
-  "attachedReportSnippet": "Phản ánh đính kèm"
+  "attachedReportSnippet": "Phản ánh đính kèm",
+  "reportDeadlineLabel": "Hạn xử lý",
+  "deadlineOverdueBadge": "Quá hạn",
+  "expectedCompletionDate": "Dự kiến hoàn thành: {date}",
+  "@expectedCompletionDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "staffDeadlinePerformanceTitle": "Hiệu suất theo hạn xử lý",
+  "staffDeadlinePerformanceSubtitle": "Theo dõi phản ánh đang trễ hạn và lịch sử hoàn thành đúng hạn của nhân viên",
+  "noStaffMissedDeadline": "Chưa ghi nhận nhân viên nào trễ deadline",
+  "staffMissedDeadlineSummary": "{count} đang quá hạn · {lateCount} hoàn thành trễ",
+  "@staffMissedDeadlineSummary": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "lateCount": { "type": "int" }
+    }
+  },
+  "onTimeRateLabel": "{rate}% đúng hạn",
+  "@onTimeRateLabel": {
+    "placeholders": {
+      "rate": { "type": "String" }
+    }
+  },
+  "overdueActiveLabel": "Đang trễ hạn",
+  "completedLateLabel": "Hoàn thành trễ",
+  "completedOnTimeLabel": "Hoàn thành đúng hạn",
+  "missedDeadlineBadge": "Trễ hạn",
+  "onTimeBadge": "Đúng hạn",
+  "noDeadlineRecordsYet": "Chưa có dữ liệu hạn xử lý được phân công",
+  "staffDeadlineStatsBreakdown": "{overdue} quá hạn · {late} trễ · {onTime} đúng hạn",
+  "@staffDeadlineStatsBreakdown": {
+    "placeholders": {
+      "overdue": { "type": "int" },
+      "late": { "type": "int" },
+      "onTime": { "type": "int" }
+    }
+  },
+  "rejectReportButton": "Từ chối phản ánh",
+  "rejectReportConfirmTitle": "Từ chối phản ánh này?",
+  "rejectReportConfirmMessage": "Hành động này sẽ chuyển trạng thái phản ánh thành từ chối và thông báo cho người gửi.",
+  "rejectReportReasonLabel": "Lý do từ chối",
+  "rejectReportReasonHint": "Nhập lý do không thể tiếp nhận hoặc từ chối phản ánh...",
+  "rejectReportReasonRequired": "Vui lòng nhập lý do từ chối",
+  "confirmRejectAction": "Xác nhận từ chối",
+  "rejectSuccessMessage": "Đã từ chối phản ánh",
+  "rejectFailedMessage": "Không thể từ chối phản ánh, vui lòng thử lại",
+  "rejectedReasonTitle": "Lý do từ chối",
+  "noRejectionReasonProvided": "Phản ánh đã bị quản trị viên từ chối."
 }

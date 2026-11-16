@@ -216,18 +216,6 @@ class Sidebar extends ConsumerWidget {
                     },
                   ),
                   _SidebarItem(
-                    icon: Icons.account_balance_wallet_outlined,
-                    label: l10n.manageStaffWallets,
-                    isSelected: currentPath.startsWith(RouterPath.adminStaffWallets) ||
-                        currentPath.startsWith(RouterPath.adminWithdrawalRequests),
-                    onTap: () {
-                      Navigator.pop(context);
-                      if (currentPath != RouterPath.adminStaffWallets) {
-                        context.push(RouterPath.adminStaffWallets);
-                      }
-                    },
-                  ),
-                  _SidebarItem(
                     icon: Icons.workspace_premium_outlined,
                     label: l10n.managePositions,
                     isSelected: currentPath == RouterPath.positionManagement ||
@@ -248,20 +236,6 @@ class Sidebar extends ConsumerWidget {
                       Navigator.pop(context);
                       if (currentPath != RouterPath.newsManagement) {
                         context.push(RouterPath.newsManagement);
-                      }
-                    },
-                  ),
-                  _SidebarItem(
-                    icon: Icons.tune_outlined,
-                    label: l10n.systemConfig,
-                    isSelected: currentPath.startsWith(RouterPath.systemConfig) ||
-                        currentPath == RouterPath.walletConfig ||
-                        currentPath == RouterPath.commissionConfig ||
-                        currentPath == RouterPath.penaltyRateConfig,
-                    onTap: () {
-                      Navigator.pop(context);
-                      if (currentPath != RouterPath.systemConfig) {
-                        context.push(RouterPath.systemConfig);
                       }
                     },
                   ),
@@ -544,18 +518,6 @@ class WebSidebar extends ConsumerWidget {
                 },
               ),
               _WebSidebarItem(
-                icon: Icons.account_balance_wallet_outlined,
-                label: l10n.manageStaffWallets,
-                isExpanded: isExpanded,
-                isSelected: currentPath.startsWith(RouterPath.adminStaffWallets) ||
-                    currentPath.startsWith(RouterPath.adminWithdrawalRequests),
-                onTap: () {
-                  if (currentPath != RouterPath.adminStaffWallets) {
-                    context.push(RouterPath.adminStaffWallets);
-                  }
-                },
-              ),
-              _WebSidebarItem(
                 icon: Icons.workspace_premium_outlined,
                 label: l10n.managePositions,
                 isExpanded: isExpanded,
@@ -576,20 +538,6 @@ class WebSidebar extends ConsumerWidget {
                 onTap: () {
                   if (currentPath != RouterPath.newsManagement) {
                     context.push(RouterPath.newsManagement);
-                  }
-                },
-              ),
-              _WebSidebarItem(
-                icon: Icons.tune_outlined,
-                label: l10n.systemConfig,
-                isExpanded: isExpanded,
-                isSelected: currentPath.startsWith(RouterPath.systemConfig) ||
-                    currentPath == RouterPath.walletConfig ||
-                    currentPath == RouterPath.commissionConfig ||
-                    currentPath == RouterPath.penaltyRateConfig,
-                onTap: () {
-                  if (currentPath != RouterPath.systemConfig) {
-                    context.push(RouterPath.systemConfig);
                   }
                 },
               ),

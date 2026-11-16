@@ -90,39 +90,15 @@ public class ReportDetailResponse {
     @JsonProperty("reviewed_at")
     private String reviewedAt;
 
+    @JsonProperty("deadline")
+    private String deadline;
+
+    @JsonProperty("rejected_reason")
+    private String rejectedReason;
+
+    @JsonProperty("rejected_at")
+    private String rejectedAt;
+
     @JsonProperty("user_id")
     private String userId;
-
-    @JsonProperty("base_commission")
-    private Double baseCommission;
-
-    @JsonProperty("deducted_commission")
-    private Double deductedCommission;
-
-    @JsonProperty("final_commission")
-    private Double finalCommission;
-
-    @JsonProperty("expected_commission")
-    private Double expectedCommission;
-
-    @JsonProperty("commission_awarded")
-    private Boolean commissionAwarded;
-
-    @JsonProperty("rehandling_penalty_count")
-    private Integer rehandlingPenaltyCount;
-
-    @JsonProperty("penalty_deductions")
-    private List<PenaltyDeductionItem> penaltyDeductions;
-
-    @Data
-    @Builder
-    @NoArgsConstructor
-    @AllArgsConstructor
-    public static class PenaltyDeductionItem {
-        @JsonProperty("turn")
-        private Integer turn;
-
-        @JsonProperty("amount")
-        private Double amount;
-    }
 }

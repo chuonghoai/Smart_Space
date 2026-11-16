@@ -115,10 +115,6 @@ public class StaffDelegationTest {
                 "{\"note\": \"StaffDelegationTest hoàn tất\", \"image_urls\": []}");
     }
 
-    private double balance(String token) throws Exception {
-        return okData(send("GET", "/staff/wallet", token, null), "Xem ví").path("balance").asDouble();
-    }
-
     private JsonNode state(String reportId, String token) throws Exception {
         return okData(send("GET", "/staff/delegations/report/" + reportId, token, null), "Xem trạng thái nhờ");
     }
@@ -128,13 +124,9 @@ public class StaffDelegationTest {
                 "{\"report_id\": \"" + reportId + "\", \"helper_id\": \"" + helperId + "\", \"note\": \"Nhờ giúp\"}");
     }
 
-    /** Report (mức thấp) của người nhờ, đảm bảo ví người nhờ đủ trả bonus (nạp bằng cách hoàn tất task khác). */
+    /** Report (mức thấp) của người nhờ, sẵn sàng nhờ làm giùm. */
     private String reportReadyToDelegate() throws Exception {
         String reportId = createAssignedReport(REQUESTER, "low");
-        for (int i = 0; i < 5 && balance(requesterToken) < state(reportId, requesterToken).path("bonus_amount").asDouble(); i++) {
-            String topUp = createAssignedReport(REQUESTER, "critical");
-            okData(complete(topUp, requesterToken), "Hoàn tất task nạp ví");
-        }
         assertTrue(state(reportId, requesterToken).path("can_request").asBoolean(), "Người nhờ phải nhờ được");
         return reportId;
     }
@@ -142,19 +134,12 @@ public class StaffDelegationTest {
     // ===================== Tests =====================
 
     @Test
-    @DisplayName("Luồng chính: giữ bonus → nhận → người làm giùm hoàn tất, nhận hoa hồng + bonus; người nhờ không tự hoàn tất được")
+    @DisplayName("Luồng chính: gửi yêu cầu → nhận → người làm giùm hoàn tất; người nhờ không tự hoàn tất được")
     void testDelegation_HappyPath() throws Exception {
         String reportId = reportReadyToDelegate();
-        JsonNode preview = state(reportId, requesterToken);
-        double bonus = preview.path("bonus_amount").asDouble();
-        double commission = preview.path("commission_amount").asDouble();
-        assertEquals(Math.round(commission * preview.path("rate_percent").asDouble() / 100.0), bonus, 0.001,
-                "Bonus = tỷ lệ × hoa hồng, làm tròn tới đồng");
 
-        double requesterBefore = balance(requesterToken);
         JsonNode created = okData(requestDelegation(reportId, HELPER), "Gửi yêu cầu nhờ");
         assertEquals("PENDING", created.path("status").asText());
-        assertEquals(requesterBefore - bonus, balance(requesterToken), 0.001, "Bonus phải bị giữ khỏi ví người nhờ");
 
         assertEquals(400, requestDelegation(reportId, HELPER).statusCode(), "Không tạo được 2 yêu cầu cho cùng task");
 
@@ -168,12 +153,7 @@ public class StaffDelegationTest {
 
         assertEquals(403, complete(reportId, requesterToken).statusCode(), "Người nhờ không còn là người được giao");
 
-        double helperBefore = balance(helperToken);
-        double requesterAfterHold = balance(requesterToken);
         okData(complete(reportId, helperToken), "Người làm giùm hoàn tất");
-        assertEquals(helperBefore + commission + bonus, balance(helperToken), 0.001,
-                "Người làm giùm nhận hoa hồng task + bonus");
-        assertEquals(requesterAfterHold, balance(requesterToken), 0.001, "Ví người nhờ không đổi thêm khi hoàn tất");
 
         JsonNode sent = okData(send("GET", "/staff/delegations?box=sent", requesterToken, null), "Danh sách đã gửi");
         boolean completed = false;
@@ -182,51 +162,36 @@ public class StaffDelegationTest {
         }
         assertTrue(completed, "Yêu cầu phải chuyển sang COMPLETED");
 
-        // Chi tiết report sau hoàn tất: cả hai bên vẫn thấy yêu cầu đã hoàn tất để hiện bonus đã nhận / đã trả
         JsonNode helperState = state(reportId, helperToken);
         assertTrue(helperState.path("active_delegation").isNull() || helperState.path("active_delegation").isMissingNode());
         assertEquals(delegationId, helperState.path("completed_delegation").path("id").asText());
-        assertEquals(bonus, helperState.path("completed_delegation").path("bonus_amount").asDouble(), 0.001);
         assertEquals("HELPER", helperState.path("viewer_role").asText());
         assertEquals("REQUESTER", state(reportId, requesterToken).path("viewer_role").asText());
-
-        // Mở lại: người làm giùm chịu phạt, người nhờ không bị ảnh hưởng
-        double helperBeforeReopen = balance(helperToken);
-        double requesterBeforeReopen = balance(requesterToken);
-        okData(send("PATCH", "/admin/reports/" + reportId + "/status", adminToken, "{\"status\": \"processing\"}"), "Admin mở lại");
-        assertTrue(balance(helperToken) < helperBeforeReopen, "Người làm giùm bị trừ phạt khi task bị mở lại");
-        assertEquals(requesterBeforeReopen, balance(requesterToken), 0.001, "Người nhờ không bị phạt");
     }
 
     @Test
-    @DisplayName("Từ chối / huỷ / admin phân công lại → hoàn đủ bonus cho người nhờ")
-    void testDelegation_RefundFlows() throws Exception {
+    @DisplayName("Từ chối / huỷ / admin phân công lại → đóng yêu cầu nhờ làm giùm")
+    void testDelegation_CloseFlows() throws Exception {
         // Từ chối
         String declined = reportReadyToDelegate();
-        double before = balance(requesterToken);
         String id1 = okData(requestDelegation(declined, HELPER), "Gửi yêu cầu").path("id").asText();
         JsonNode d1 = okData(send("POST", "/staff/delegations/" + id1 + "/decline", helperToken, null), "Từ chối");
         assertEquals("DECLINED", d1.path("status").asText());
-        assertEquals(before, balance(requesterToken), 0.001, "Từ chối → hoàn bonus");
 
         // Huỷ, sau đó người được nhờ không nhận được nữa
         String cancelled = reportReadyToDelegate();
-        before = balance(requesterToken);
         String id2 = okData(requestDelegation(cancelled, HELPER), "Gửi yêu cầu").path("id").asText();
         assertEquals(403, send("POST", "/staff/delegations/" + id2 + "/cancel", helperToken, null).statusCode(),
                 "Chỉ người nhờ mới huỷ được");
         okData(send("POST", "/staff/delegations/" + id2 + "/cancel", requesterToken, null), "Huỷ");
-        assertEquals(before, balance(requesterToken), 0.001, "Huỷ → hoàn bonus");
         assertEquals(400, send("POST", "/staff/delegations/" + id2 + "/accept", helperToken, null).statusCode(),
                 "Yêu cầu đã huỷ không nhận được");
 
         // Admin phân công lại cho người khác khi đang chờ
         String reassigned = reportReadyToDelegate();
-        before = balance(requesterToken);
         okData(requestDelegation(reassigned, HELPER), "Gửi yêu cầu");
         okData(send("POST", "/admin/reports/" + reassigned + "/assign", adminToken,
                 "{\"staffId\": \"" + HELPER + "\", \"severity\": \"low\"}"), "Admin phân công lại");
-        assertEquals(before, balance(requesterToken), 0.001, "Phân công lại → thu hồi, hoàn bonus");
         assertTrue(state(reassigned, requesterToken).path("active_delegation").isNull(), "Không còn yêu cầu đang hoạt động");
     }
 
@@ -249,23 +214,5 @@ public class StaffDelegationTest {
             assertNotEquals(REQUESTER, c.path("id").asText(), "Danh sách đồng nghiệp không gồm chính mình");
             assertFalse(c.has("email"), "Không lộ email đồng nghiệp");
         }
-    }
-
-    @Test
-    @DisplayName("Admin cấu hình tỷ lệ nhờ làm giùm: chỉ admin, giá trị trong 0–100")
-    void testDelegationRateConfig() throws Exception {
-        JsonNode current = okData(send("GET", "/admin/wallet/config/delegation", adminToken, null), "Xem cấu hình");
-        assertTrue(current.has("rate_low") && current.has("commission_low"), "Trả tỷ lệ kèm hoa hồng để xem ví dụ");
-
-        assertEquals(403, send("GET", "/admin/wallet/config/delegation", requesterToken, null).statusCode(), "Staff không xem được");
-        assertEquals(400, send("PUT", "/admin/wallet/config/delegation", adminToken,
-                "{\"rate_low\": 150, \"rate_medium\": 40, \"rate_high\": 30, \"rate_critical\": 20}").statusCode(),
-                "Tỷ lệ > 100 → 400");
-
-        String same = String.format(Locale.US, "{\"rate_low\": %f, \"rate_medium\": %f, \"rate_high\": %f, \"rate_critical\": %f}",
-                current.path("rate_low").asDouble(), current.path("rate_medium").asDouble(),
-                current.path("rate_high").asDouble(), current.path("rate_critical").asDouble());
-        JsonNode saved = okData(send("PUT", "/admin/wallet/config/delegation", adminToken, same), "Lưu cấu hình");
-        assertEquals(current.path("rate_low").asDouble(), saved.path("rate_low").asDouble(), 0.001);
     }
 }

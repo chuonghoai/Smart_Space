@@ -15,6 +15,7 @@ class ReportModel {
   final bool? isReviewResolved;
   final EReportSeverity? severity;
   final String? userId;
+  final DateTime? deadline;
 
   bool get isDangerous =>
       severity == EReportSeverity.high || severity == EReportSeverity.critical;
@@ -32,6 +33,7 @@ class ReportModel {
     this.isReviewResolved,
     this.severity,
     this.userId,
+    this.deadline,
   });
 
   factory ReportModel.fromJson(Map<String, dynamic> json) {
@@ -50,6 +52,9 @@ class ReportModel {
       isReviewResolved: json['is_review_resolved'] as bool? ?? json['isReviewResolved'] as bool?,
       severity: mapSeverity(json['severity'] as String?),
       userId: json['user_id'] as String?,
+      deadline: (json['deadline'] ?? json['report_deadline']) != null
+          ? DateTime.tryParse((json['deadline'] ?? json['report_deadline']).toString())
+          : null,
     );
   }
 
@@ -66,6 +71,7 @@ class ReportModel {
       'is_review_resolved': isReviewResolved,
       'severity': severity?.name,
       'user_id': userId,
+      'deadline': deadline?.toIso8601String(),
     };
   }
 
@@ -82,6 +88,7 @@ class ReportModel {
     bool? isReviewResolved,
     EReportSeverity? severity,
     String? userId,
+    DateTime? deadline,
   }) {
     return ReportModel(
       id: id ?? this.id,
@@ -96,6 +103,7 @@ class ReportModel {
       isReviewResolved: isReviewResolved ?? this.isReviewResolved,
       severity: severity ?? this.severity,
       userId: userId ?? this.userId,
+      deadline: deadline ?? this.deadline,
     );
   }
 

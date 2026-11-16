@@ -28,7 +28,7 @@ class DelegationSection extends ConsumerWidget {
         child: _ActiveDelegationBanner(delegation: active, staffId: staffId),
       );
     }
-    if (state.canRequest || state.isInsufficientBalance) {
+    if (state.canRequest) {
       return Padding(
         padding: const EdgeInsets.only(bottom: 16),
         child: _RequestButton(reportId: reportId, state: state),
@@ -47,39 +47,24 @@ class _RequestButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final theme = Theme.of(context);
-    final cs = theme.colorScheme;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        OutlinedButton.icon(
-          onPressed: state.canRequest
-              ? () async {
-                  final sent = await DelegationRequestSheet.show(context, reportId: reportId, state: state);
-                  if (sent == true && context.mounted) {
-                    ScaffoldMessenger.of(context)
-                      ..hideCurrentSnackBar()
-                      ..showSnackBar(SnackBar(content: Text(l10n.delegationSentSuccess)));
-                  }
-                }
-              : null,
-          style: OutlinedButton.styleFrom(
-            minimumSize: const Size.fromHeight(48),
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-          ),
-          icon: const Icon(Icons.handshake_outlined, size: 20),
-          label: Text(l10n.delegationRequestAction),
-        ),
-        if (state.isInsufficientBalance) ...[
-          const SizedBox(height: 6),
-          Text(
-            l10n.delegationInsufficientBalance,
-            textAlign: TextAlign.center,
-            style: theme.textTheme.bodySmall?.copyWith(color: cs.error),
-          ),
-        ],
-      ],
+    return OutlinedButton.icon(
+      onPressed: state.canRequest
+          ? () async {
+              final sent = await DelegationRequestSheet.show(context, reportId: reportId, state: state);
+              if (sent == true && context.mounted) {
+                ScaffoldMessenger.of(context)
+                  ..hideCurrentSnackBar()
+                  ..showSnackBar(SnackBar(content: Text(l10n.delegationSentSuccess)));
+              }
+            }
+          : null,
+      style: OutlinedButton.styleFrom(
+        minimumSize: const Size.fromHeight(48),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+      ),
+      icon: const Icon(Icons.handshake_outlined, size: 20),
+      label: Text(l10n.delegationRequestAction),
     );
   }
 }
@@ -106,12 +91,6 @@ class _ActiveDelegationBanner extends ConsumerWidget {
       (false, true) => l10n.delegationPendingRequesterBanner(delegation.helper.fullName),
       (false, false) => l10n.delegationAcceptedRequesterBanner(delegation.helper.fullName),
     };
-    final money = isHelper
-        ? l10n.delegationHelperEarns(
-            formatDelegationMoney(delegation.commissionAmount),
-            formatDelegationMoney(delegation.bonusAmount),
-          )
-        : l10n.delegationBonusHeld(formatDelegationMoney(delegation.bonusAmount));
 
     return Container(
       padding: const EdgeInsets.all(12),
@@ -133,13 +112,13 @@ class _ActiveDelegationBanner extends ConsumerWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(headline, style: theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600)),
-                    const SizedBox(height: 2),
-                    Text(money, style: theme.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant)),
-                    if (pending && delegation.expiresAt != null)
+                    if (pending && delegation.expiresAt != null) ...[
+                      const SizedBox(height: 2),
                       Text(
                         l10n.delegationExpiresAt(formatDelegationTime(delegation.expiresAt!)),
                         style: theme.textTheme.bodySmall?.copyWith(color: cs.onSurfaceVariant),
                       ),
+                    ],
                     if (delegation.note != null) ...[
                       const SizedBox(height: 4),
                       Text(

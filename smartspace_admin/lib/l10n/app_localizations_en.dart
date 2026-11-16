@@ -1585,135 +1585,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get locationDescriptionLabel => 'Location description';
 
   @override
-  String get routeWalletConfig => 'Wallet Commission Config';
-
-  @override
-  String get walletConfigTitle => 'Wallet Commission Config';
-
-  @override
-  String get walletConfigDescription =>
-      'Configure staff commission rates by severity and penalty deduction rates for re-handled reports.';
-
-  @override
-  String get commissionBySeverity => 'Commission by Severity';
-
-  @override
-  String get commissionLow => 'Low Severity (VND)';
-
-  @override
-  String get commissionMedium => 'Medium Severity (VND)';
-
-  @override
-  String get commissionHigh => 'High Severity (VND)';
-
-  @override
-  String get commissionCritical => 'Critical Severity (VND)';
-
-  @override
-  String get penaltyRateSettings => 'Re-handling Penalty Rates';
-
-  @override
-  String get penaltyRate1 => '1st Re-handling Penalty (%)';
-
-  @override
-  String get penaltyRate2 => '2nd Re-handling Penalty (%)';
-
-  @override
-  String get penaltyRate3 => '3rd Re-handling Penalty (%)';
-
-  @override
-  String get penaltyRateNote =>
-      'From the 3rd re-handling onwards, up to 100% of the commission is deducted. Subsequent attempts will have no further changes.';
-
-  @override
-  String get saveWalletConfig => 'Save Configuration';
-
-  @override
-  String get saveWalletConfigSuccess =>
-      'Wallet commission configuration updated successfully!';
-
-  @override
-  String get saveWalletConfigFailed =>
-      'Failed to save configuration, please try again.';
-
-  @override
   String get invalidNumber => 'Invalid value';
-
-  @override
-  String get systemSettingsSection => 'System';
-
-  @override
-  String get manageWalletConfig => 'Wallet and Commission Config';
-
-  @override
-  String get manageStaffWallets => 'Staff Wallet Management';
-
-  @override
-  String get routeManageStaffWallets => 'Staff Wallet Management';
-
-  @override
-  String get withdrawalRequests => 'Withdrawal Requests';
-
-  @override
-  String get routeWithdrawalRequests => 'Withdrawal Requests';
-
-  @override
-  String get withdrawalRequestBadge => 'Withdrawal Request';
-
-  @override
-  String pendingWithdrawalBanner(int count) {
-    return '$count withdrawal requests';
-  }
-
-  @override
-  String staffWalletDetailTitle(String name) {
-    return 'Staff Wallet: $name';
-  }
-
-  @override
-  String get routeStaffWalletDetail => 'Staff Wallet Details';
-
-  @override
-  String get withdrawalDetailTitle => 'Withdrawal Request Details';
-
-  @override
-  String get bankName => 'Bank';
-
-  @override
-  String get bankAccountNumber => 'Account Number';
-
-  @override
-  String get bankAccountName => 'Account Holder';
-
-  @override
-  String get withdrawAmount => 'Withdrawal Amount';
-
-  @override
-  String get quickScanQr => 'Quick QR Scan';
-
-  @override
-  String get scanQrAutoFillNote =>
-      'Scan QR with your banking app to auto-fill payment details';
-
-  @override
-  String get approveAndTransfer => 'Confirm & Approve';
-
-  @override
-  String get rejectWithdrawal => 'Reject';
-
-  @override
-  String get rejectReasonPrompt => 'Reason for rejecting withdrawal';
-
-  @override
-  String get rejectReasonRequired => 'Please enter a rejection reason';
-
-  @override
-  String get confirmApprovalTitle => 'Confirm Withdrawal Approval';
-
-  @override
-  String confirmApprovalContent(String amount, String name) {
-    return 'Are you sure you have transferred $amount to staff $name?';
-  }
 
   @override
   String get copySuccess => 'Copied to clipboard';
@@ -1746,123 +1618,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get filterAll => 'All';
 
   @override
-  String get noStaffWalletsFound => 'No staff wallets found';
-
-  @override
-  String get noWithdrawalRequestsFound => 'No withdrawal requests found';
-
-  @override
-  String get noTransactionsFound => 'No transactions found';
-
-  @override
   String get searchStaffHint => 'Search staff by name, email, phone...';
-
-  @override
-  String get staffWalletBalance => 'Staff Wallet Balance';
-
-  @override
-  String get walletBalance => 'Wallet Balance';
-
-  @override
-  String get transactionHistory => 'Transaction History';
-
-  @override
-  String relatedReport(String title) {
-    return 'Report: $title';
-  }
 
   @override
   String get viewReportDetail => 'View Report Details';
 
   @override
-  String get processSuccess => 'Withdrawal request processed successfully!';
-
-  @override
-  String get processFailed => 'Failed to process request, please try again.';
-
-  @override
-  String get systemConfig => 'System Configuration';
-
-  @override
-  String get routeSystemConfig => 'System Configuration';
-
-  @override
-  String get commissionConfig => 'Commission Configuration';
-
-  @override
-  String get routeCommissionConfig => 'Commission Configuration';
-
-  @override
-  String get commissionConfigDescription =>
-      'Configure staff commission rates based on report severity level.';
-
-  @override
-  String get penaltyRateConfig => 'Penalty Deduction Rate Configuration';
-
-  @override
-  String get routePenaltyRateConfig => 'Penalty Deduction Rate Configuration';
-
-  @override
-  String get penaltyRateConfigDescription =>
-      'Configure commission deduction percentages when reports are marked unsatisfactory and require re-handling.';
-
-  @override
-  String get commissionConfigSummary =>
-      '4 severity levels: Low, Medium, High, Critical';
-
-  @override
-  String get penaltyRateConfigSummary =>
-      '3-turn penalty: Turn 1, Turn 2, Turn 3';
-
-  @override
-  String get saveCommissionSuccess =>
-      'Commission configuration updated successfully!';
-
-  @override
-  String get savePenaltyRateSuccess =>
-      'Penalty deduction rate updated successfully!';
-
-  @override
   String get copied => 'Copied';
 
   @override
-  String homePendingWithdrawalBanner(int count) {
-    return 'There are $count withdrawal requests';
-  }
-
-  @override
-  String get homePendingWithdrawalSubtitle =>
-      'Tap to review pending withdrawal requests';
-
-  @override
   String get statusCancelled => 'Cancelled';
-
-  @override
-  String get delegationRateConfig => 'Delegated Task Commission Configuration';
-
-  @override
-  String get routeDelegationRateConfig =>
-      'Delegated Task Commission Configuration';
-
-  @override
-  String get delegationRateConfigDescription =>
-      'Set the extra bonus a staff member earns when handling a task on behalf of a colleague, as a percentage of the task commission by severity. The bonus is paid from the requester\'s wallet.';
-
-  @override
-  String delegationRateExample(String rate, String commission, String bonus) {
-    return '$rate% × $commissionđ = $bonusđ bonus';
-  }
-
-  @override
-  String get delegationRateNote =>
-      'The helper receives the task commission plus this bonus. Changes only apply to delegation requests sent after saving.';
-
-  @override
-  String get saveDelegationRateSuccess =>
-      'Delegated task commission rates updated successfully!';
-
-  @override
-  String get delegationRateLoadFailed => 'Couldn\'t load the configuration';
 
   @override
   String get connectionStable => 'Stable connection';
@@ -2161,4 +1926,93 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get attachedReportSnippet => 'Attached report';
+
+  @override
+  String get reportDeadlineLabel => 'Resolution deadline';
+
+  @override
+  String get deadlineOverdueBadge => 'Overdue';
+
+  @override
+  String expectedCompletionDate(String date) {
+    return 'Est. completion: $date';
+  }
+
+  @override
+  String get staffDeadlinePerformanceTitle => 'Deadline Performance';
+
+  @override
+  String get staffDeadlinePerformanceSubtitle =>
+      'Tracks overdue tasks and late vs. on-time completions by staff';
+
+  @override
+  String get noStaffMissedDeadline => 'No staff members have missed a deadline';
+
+  @override
+  String staffMissedDeadlineSummary(int count, int lateCount) {
+    return '$count overdue active · $lateCount completed late';
+  }
+
+  @override
+  String onTimeRateLabel(String rate) {
+    return '$rate% on time';
+  }
+
+  @override
+  String get overdueActiveLabel => 'Overdue active';
+
+  @override
+  String get completedLateLabel => 'Completed late';
+
+  @override
+  String get completedOnTimeLabel => 'Completed on time';
+
+  @override
+  String get missedDeadlineBadge => 'Missed deadline';
+
+  @override
+  String get onTimeBadge => 'On time';
+
+  @override
+  String get noDeadlineRecordsYet => 'No assigned deadline data yet';
+
+  @override
+  String staffDeadlineStatsBreakdown(int overdue, int late, int onTime) {
+    return '$overdue overdue · $late late · $onTime on time';
+  }
+
+  @override
+  String get rejectReportButton => 'Reject report';
+
+  @override
+  String get rejectReportConfirmTitle => 'Reject this report?';
+
+  @override
+  String get rejectReportConfirmMessage =>
+      'This action will mark the report as rejected and notify the reporter.';
+
+  @override
+  String get rejectReportReasonLabel => 'Rejection reason';
+
+  @override
+  String get rejectReportReasonHint =>
+      'Explain why this report cannot be processed...';
+
+  @override
+  String get rejectReportReasonRequired => 'Please enter a rejection reason';
+
+  @override
+  String get confirmRejectAction => 'Confirm reject';
+
+  @override
+  String get rejectSuccessMessage => 'Report rejected successfully';
+
+  @override
+  String get rejectFailedMessage => 'Could not reject report, please try again';
+
+  @override
+  String get rejectedReasonTitle => 'Rejection Reason';
+
+  @override
+  String get noRejectionReasonProvided => 'Rejected by administrator.';
 }

@@ -63,7 +63,11 @@ public interface IReportService {
                         String from, String to, String search);
 
         // Admin Update Status Report
-        ReportDetailResponse updateReportStatus(String reportId, String newStatus, String adminId);
+        default ReportDetailResponse updateReportStatus(String reportId, String newStatus, String adminId) {
+                return updateReportStatus(reportId, newStatus, null, adminId);
+        }
+
+        ReportDetailResponse updateReportStatus(String reportId, String newStatus, String reason, String adminId);
 
         // Admin Map — lightweight list with lat/lng, optional viewport (all bounds null = whole map)
         default AdminMapReportsResponse getAdminMapReports(String status, String severity, String assigneeId,

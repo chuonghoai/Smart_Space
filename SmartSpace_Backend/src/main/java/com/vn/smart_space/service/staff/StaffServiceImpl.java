@@ -7,10 +7,15 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeParseException;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import com.vn.smart_space.model.Report;
+import com.vn.smart_space.service.report.ReportServiceImpl;
 
 import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
@@ -409,6 +414,88 @@ public class StaffServiceImpl implements IStaffService {
                 Long avgMinutes = averageResolutionMinutes(currentFrom, now);
                 Long avgMinutesPrevious = averageResolutionMinutes(previousFrom, currentFrom);
 
+                // 3. Hiệu suất xử lý theo deadline
+                List<Report> trackedReports = reportRepository.findAssignedByStatusInWithStaff(
+                                List.of(EReportStatus.processing, EReportStatus.processed));
+                List<User> allStaffs = userRepository.findByRole(ERole.staff);
+                Map<String, User> staffUsers = new LinkedHashMap<>();
+                for (User s : allStaffs) {
+                        staffUsers.put(s.getId(), s);
+                }
+                Map<String, long[]> countsByStaff = new LinkedHashMap<>();
+                for (String staffId : staffUsers.keySet()) {
+                        countsByStaff.put(staffId, new long[3]); // [overdue, completedLate, completedOnTime]
+                }
+
+                long overdueReports = 0;
+                long completedLate = 0;
+                long completedOnTime = 0;
+                for (Report r : trackedReports) {
+                        User assigned = r.getAssignedStaff();
+                        if (assigned == null) {
+                                continue;
+                        }
+                        staffUsers.putIfAbsent(assigned.getId(), assigned);
+                        long[] c = countsByStaff.computeIfAbsent(assigned.getId(), k -> new long[3]);
+
+                        LocalDateTime deadline = ReportServiceImpl.resolveDeadline(r);
+                        if (deadline == null) {
+                                continue;
+                        }
+                        if (r.getStatus() == EReportStatus.processing) {
+                                if (now.isAfter(deadline)) {
+                                        overdueReports++;
+                                        c[0]++;
+                                }
+                        } else if (r.getStatus() == EReportStatus.processed) {
+                                LocalDateTime resolvedTime = r.getResolvedAt() != null
+                                                ? toLocalDateTime(r.getResolvedAt())
+                                                : r.getUpdatedAt();
+                                if (resolvedTime != null && resolvedTime.isAfter(deadline)) {
+                                        completedLate++;
+                                        c[1]++;
+                                } else {
+                                        completedOnTime++;
+                                        c[2]++;
+                                }
+                        }
+                }
+
+                long totalFinished = completedOnTime + completedLate;
+                Double onTimeRate = totalFinished == 0
+                                ? null
+                                : Math.round((completedOnTime * 1000.0) / totalFinished) / 10.0;
+
+                List<StaffStatisticsResponse.DeadlinePerformanceItem> deadlinePerformance = countsByStaff.entrySet()
+                                .stream()
+                                .map(entry -> {
+                                        long[] c = entry.getValue();
+                                        boolean missed = c[0] > 0 || c[1] > 0;
+                                        return StaffStatisticsResponse.DeadlinePerformanceItem.builder()
+                                                        .staff(toStaffResponse(staffUsers.get(entry.getKey())))
+                                                        .overdueCount(c[0])
+                                                        .completedLateCount(c[1])
+                                                        .completedOnTimeCount(c[2])
+                                                        .hasMissedDeadline(missed)
+                                                        .build();
+                                })
+                                .sorted(Comparator
+                                                .comparingLong((StaffStatisticsResponse.DeadlinePerformanceItem item) ->
+                                                                item.getOverdueCount() + item.getCompletedLateCount())
+                                                .reversed()
+                                                .thenComparing(Comparator.comparingLong(
+                                                                StaffStatisticsResponse.DeadlinePerformanceItem::getOverdueCount)
+                                                                .reversed())
+                                                .thenComparing(Comparator.comparingLong(
+                                                                StaffStatisticsResponse.DeadlinePerformanceItem::getCompletedOnTimeCount)
+                                                                .reversed())
+                                                .thenComparing(item -> item.getStaff().getFullName() != null
+                                                                ? item.getStaff().getFullName()
+                                                                : ""))
+                                .collect(Collectors.toList());
+
+                boolean anyStaffMissedDeadline = overdueReports > 0 || completedLate > 0;
+
                 return StaffStatisticsResponse.builder()
                                 .totalStaff(total)
                                 .activeStaff(active)
@@ -419,6 +506,12 @@ public class StaffServiceImpl implements IStaffService {
                                 .avgResolutionMinutes(avgMinutes)
                                 .avgResolutionMinutesPrevious(avgMinutesPrevious)
                                 .workload(buildWorkload(currentFrom))
+                                .anyStaffMissedDeadline(anyStaffMissedDeadline)
+                                .overdueReports(overdueReports)
+                                .completedOnTime(completedOnTime)
+                                .completedLate(completedLate)
+                                .onTimeRate(onTimeRate)
+                                .deadlinePerformance(deadlinePerformance)
                                 .build();
         }
 

@@ -51,7 +51,6 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
   Future<void> _onRefresh() async {
     final currentTab = _tabs[_tabController.index];
     ref.invalidate(newsListProvider);
-    ref.invalidate(pendingWithdrawalCountProvider);
     final futures = <Future<void>>[
       userStorageService.getUser(),
       ref.read(adminOverviewProvider.notifier).refresh(),
@@ -273,8 +272,6 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
     bool isDesktop,
   ) {
     final overviewAsync = ref.watch(adminOverviewProvider);
-    final pendingWithdrawalCount =
-        ref.watch(pendingWithdrawalCountProvider).valueOrNull ?? 0;
 
     return overviewAsync.when(
       data: (data) {
@@ -288,15 +285,6 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
           children: [
             if (hasUnsatisfactory) ...[
               _buildUnsatisfactoryBanner(context, data, theme, l10n),
-              const SizedBox(height: 16),
-            ],
-            if (pendingWithdrawalCount > 0) ...[
-              _buildHomeWithdrawalBanner(
-                context,
-                pendingWithdrawalCount,
-                theme,
-                l10n,
-              ),
               const SizedBox(height: 16),
             ],
             if (!isDesktop) ...[
@@ -520,94 +508,6 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
     );
   }
 
-  Widget _buildHomeWithdrawalBanner(
-    BuildContext context,
-    int count,
-    ThemeData theme,
-    AppLocalizations l10n,
-  ) {
-    final isDark = theme.brightness == Brightness.dark;
-    final bg = isDark ? const Color(0xFF2C1E0A) : const Color(0xFFFFF8E1);
-    final border = isDark ? const Color(0xFF7A4A0A) : const Color(0xFFFFE082);
-    final titleColor = isDark ? const Color(0xFFFFCC80) : const Color(0xFFBF360C);
-    final subtitleColor = isDark
-        ? const Color(0xFFFFB74D).withValues(alpha: 0.8)
-        : const Color(0xFFD84315);
-
-    return Material(
-      color: Colors.transparent,
-      child: InkWell(
-        onTap: () async {
-          await context
-              .push('${RouterPath.adminWithdrawalRequests}?filter=PENDING');
-          ref.invalidate(pendingWithdrawalCountProvider);
-        },
-        borderRadius: BorderRadius.circular(16),
-        child: Container(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-          decoration: BoxDecoration(
-            color: bg,
-            borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: border, width: 1.2),
-            boxShadow: [
-              BoxShadow(
-                color: (isDark ? Colors.black : const Color(0xFFF57F17))
-                    .withValues(alpha: isDark ? 0.3 : 0.08),
-                blurRadius: 10,
-                offset: const Offset(0, 4),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(10),
-                decoration: BoxDecoration(
-                  color: isDark ? const Color(0xFF7A4A0A) : const Color(0xFFFFE082),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  Icons.notification_important_rounded,
-                  color: isDark ? const Color(0xFFFFB74D) : const Color(0xFFE65100),
-                  size: 22,
-                ),
-              ),
-              const SizedBox(width: 14),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      l10n.homePendingWithdrawalBanner(count),
-                      style: theme.textTheme.titleMedium?.copyWith(
-                        fontWeight: FontWeight.bold,
-                        color: titleColor,
-                        fontSize: 15,
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      l10n.homePendingWithdrawalSubtitle,
-                      style: theme.textTheme.bodySmall?.copyWith(
-                        color: subtitleColor,
-                        fontSize: 12,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              Icon(
-                Icons.arrow_forward_ios_rounded,
-                size: 16,
-                color: isDark ? const Color(0xFFFFB74D) : const Color(0xFFE65100),
-              ),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
   Widget _buildStatCard(
     String title,
     String count,
@@ -739,7 +639,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
               children: [
                 LayoutBuilder(
                   builder: (context, constraints) {
-                    const cardHeight = 120.0;
+                    const cardHeight = 140.0;
                     if (constraints.maxWidth >= 720 && reports.length > 1) {
                       final cardWidth = (constraints.maxWidth - 12) / 2;
                       return Wrap(
@@ -1150,12 +1050,15 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
   ) {
     final isNew = _isWithin1Hour(report.createdAt);
     final isDark = theme.brightness == Brightness.dark;
+    final deadline = report.deadlineDate;
+    final showDeadline =
+        deadline != null && report.status?.toLowerCase() != 'rejected';
 
     return InkWell(
       onTap: () => context.push(RouterPath.reportDetailWithId(report.id)),
       borderRadius: BorderRadius.circular(14),
       child: Container(
-        height: 120,
+        height: 140,
         padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: theme.cardColor,
@@ -1198,7 +1101,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
                       ),
                     ),
                   ),
-                  const SizedBox(height: 6),
+                  const SizedBox(height: 4),
                   SizedBox(
                     height: 16,
                     child: Row(
@@ -1215,6 +1118,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: theme.hintColor,
                               fontSize: 11,
+                              fontFeatures: const [FontFeature.tabularFigures()],
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -1223,6 +1127,43 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
                       ],
                     ),
                   ),
+                  if (showDeadline) ...[
+                    const SizedBox(height: 4),
+                    SizedBox(
+                      height: 16,
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.event_available_outlined,
+                            size: 13,
+                            color: report.isOverdueActive
+                                ? theme.colorScheme.error
+                                : theme.hintColor,
+                          ),
+                          const SizedBox(width: 4),
+                          Expanded(
+                            child: Text(
+                              l10n.expectedCompletionDate(
+                                DateFormat('dd/MM').format(deadline.toLocal()),
+                              ),
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: report.isOverdueActive
+                                    ? theme.colorScheme.error
+                                    : theme.hintColor,
+                                fontSize: 11,
+                                fontWeight: report.isOverdueActive
+                                    ? FontWeight.w600
+                                    : FontWeight.normal,
+                                fontFeatures: const [FontFeature.tabularFigures()],
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 6),
                   SizedBox(
                     height: 20,
