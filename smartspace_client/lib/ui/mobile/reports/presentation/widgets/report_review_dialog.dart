@@ -4,21 +4,33 @@ import 'package:image_picker/image_picker.dart';
 import 'package:mobile_shared/util/media_upload.dart';
 import 'package:smartspace_client/features/reports/services/report_service.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
+import 'package:smartspace_client/ui/mobile/reports/presentation/widgets/report_resolution_card.dart';
 
 class ReportReviewDialog extends StatefulWidget {
   final String reportId;
   final VoidCallback onReviewSubmitted;
 
+  /// Kết quả xử lý của staff, hiển thị để người dân biết mình đang đánh giá gì.
+  final String? resolvedNote;
+  final List<String> resolvedImageUrls;
+  final DateTime? resolvedAt;
+
   const ReportReviewDialog({
     super.key,
     required this.reportId,
     required this.onReviewSubmitted,
+    this.resolvedNote,
+    this.resolvedImageUrls = const [],
+    this.resolvedAt,
   });
 
   static Future<void> show(
     BuildContext context, {
     required String reportId,
     required VoidCallback onReviewSubmitted,
+    String? resolvedNote,
+    List<String> resolvedImageUrls = const [],
+    DateTime? resolvedAt,
   }) {
     return showDialog<void>(
       context: context,
@@ -26,6 +38,9 @@ class ReportReviewDialog extends StatefulWidget {
       builder: (_) => ReportReviewDialog(
         reportId: reportId,
         onReviewSubmitted: onReviewSubmitted,
+        resolvedNote: resolvedNote,
+        resolvedImageUrls: resolvedImageUrls,
+        resolvedAt: resolvedAt,
       ),
     );
   }
@@ -217,6 +232,20 @@ class _ReportReviewDialogState extends State<ReportReviewDialog> {
                 ],
               ),
               const SizedBox(height: 12),
+
+              // Staff resolution summary
+              if (ReportResolutionCard.hasContent(
+                widget.resolvedNote,
+                widget.resolvedImageUrls,
+              )) ...[
+                ReportResolutionCard(
+                  note: widget.resolvedNote,
+                  imageUrls: widget.resolvedImageUrls,
+                  resolvedAt: widget.resolvedAt,
+                  compact: true,
+                ),
+                const SizedBox(height: 16),
+              ],
 
               // Question
               Text(

@@ -28,7 +28,7 @@ public class DeviceController {
             @AuthenticationPrincipal Jwt jwt,
             @RequestBody @Valid RegisterFcmTokenRequest request) {
         String userId = jwt.getClaim("userId").toString();
-        deviceService.registerFcmToken(userId, request);
+        deviceService.registerFcmToken(userId, jwt.getClaimAsString("deviceId"), request);
         return ResponseEntity.ok(ApiResponse.success("device.fcm.register.success", null));
     }
 

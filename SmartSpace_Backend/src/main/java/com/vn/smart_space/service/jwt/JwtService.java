@@ -141,6 +141,20 @@ public class JwtService implements IJwtService {
     }
 
     @Override
+    public SignedJWT verifySignature(String token) {
+        try {
+            JWSVerifier verifier = new MACVerifier(signerKey.getBytes());
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            if (!signedJWT.verify(verifier)) {
+                throw new UnauthorizedException("auth.token.invalid");
+            }
+            return signedJWT;
+        } catch (JOSEException | ParseException e) {
+            throw new UnauthorizedException("auth.token.invalid");
+        }
+    }
+
+    @Override
     public String buildScope(User user) {
         if (user.getRole() != null) {
             return "ROLE_" + user.getRole().name();

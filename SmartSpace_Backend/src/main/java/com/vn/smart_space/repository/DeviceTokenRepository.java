@@ -1,9 +1,11 @@
 package com.vn.smart_space.repository;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
@@ -25,5 +27,11 @@ public interface DeviceTokenRepository extends JpaRepository<DeviceToken, String
     // Get fcmToken strings for multicast
     @Query("SELECT dt.fcmToken FROM DeviceToken dt WHERE dt.user.id = :userId")
     List<String> findFcmTokensByUserId(@Param("userId") String userId);
+
+    // Thiết bị bị đăng xuất (tự đăng xuất hoặc bị đăng xuất từ xa) → không nhận push nữa
+    @Modifying
+    @Query("DELETE FROM DeviceToken dt WHERE dt.user.id = :userId AND dt.deviceId IN :deviceIds")
+    int deleteByUserIdAndDeviceIdIn(@Param("userId") String userId,
+            @Param("deviceIds") Collection<String> deviceIds);
 }
 

@@ -18,7 +18,8 @@ public class AdminOverviewResponse {
     long adminCount;
     long issueCount;
     long pendingCount;
-    long processingCount;
+    long processingCount; // Không gồm báo cáo xử lý lại
+    long rehandlingCount; // = unsatisfactoryProcessedCount + rehandlingProcessingCount
     long unsatisfactoryProcessedCount;
     long rehandlingProcessingCount;
 }

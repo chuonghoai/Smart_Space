@@ -137,6 +137,25 @@ public interface ReportRepository extends JpaRepository<Report, String> {
 
        long countByStatusAndIsReviewResolved(EReportStatus status, Boolean isReviewResolved);
 
+       /**
+        * Định nghĩa duy nhất của "xử lý lại" (rehandling) cho thống kê Admin:
+        * người dân đánh giá chưa thỏa đáng (isReviewResolved = false) và báo cáo
+        * đang chờ giao lại (processed) hoặc đang được làm lại (processing).
+        */
+       String REHANDLING_STATUS_LIST = "(com.vn.smart_space.consts.EReportStatus.processed, "
+                     + "com.vn.smart_space.consts.EReportStatus.processing)";
+
+       String REHANDLING_CONDITION = "(r.isReviewResolved = false AND r.status IN " + REHANDLING_STATUS_LIST + ")";
+
+       // Phủ định viết tường minh (null-safe): "NOT (NULL = false AND ...)" trong SQL ra NULL
+       // và sẽ loại nhầm báo cáo chưa được đánh giá.
+       String NOT_REHANDLING_CONDITION = "(r.isReviewResolved IS NULL OR r.isReviewResolved = true "
+                     + "OR r.status NOT IN " + REHANDLING_STATUS_LIST + ")";
+
+       /** Đếm báo cáo xử lý lại theo từng trạng thái gốc: [status, count]. */
+       @Query("SELECT r.status, COUNT(r) FROM Report r WHERE " + REHANDLING_CONDITION + " GROUP BY r.status")
+       List<Object[]> countRehandlingGroupByStatus();
+
        @Query("SELECT COUNT(r) FROM Report r WHERE r.assignedStaff.id = :staffId AND r.status = :status AND r.isReviewResolved = :isReviewResolved")
        long countStaffReportsByStatusAndIsReviewResolved(@Param("staffId") String staffId,
                      @Param("status") EReportStatus status, @Param("isReviewResolved") Boolean isReviewResolved);
@@ -200,7 +219,9 @@ public interface ReportRepository extends JpaRepository<Report, String> {
        // Report list: multi-filter + pageable
        @Query("SELECT r FROM Report r LEFT JOIN r.user u " +
                      "WHERE (:status IS NULL OR r.status = :status) " +
-                     "AND (:isRehandling IS NULL OR (:isRehandling = true AND r.isReviewResolved = false)) " +
+                     "AND (:isRehandling IS NULL OR (:isRehandling = true AND " + REHANDLING_CONDITION + ")) " +
+                     // Bảng thống kê tách nhóm: lọc processing/processed thì bỏ báo cáo xử lý lại
+                     "AND (:excludeRehandling = false OR " + NOT_REHANDLING_CONDITION + ") " +
                      "AND (:overdueOnly = false OR (" + OVERDUE_CONDITION + ")) " +
                      "AND (:severity IS NULL OR r.severity = :severity) " +
                      "AND (:assigneeId IS NULL OR r.assignedStaff.id = :assigneeId) " +
@@ -217,6 +238,7 @@ public interface ReportRepository extends JpaRepository<Report, String> {
        Page<Report> findAllFiltered(
                      @Param("status") EReportStatus status,
                      @Param("isRehandling") Boolean isRehandling,
+                     @Param("excludeRehandling") boolean excludeRehandling,
                      @Param("overdueOnly") boolean overdueOnly,
                      @Param("now") LocalDateTime now,
                      @Param("severity") EReportSeverity severity,

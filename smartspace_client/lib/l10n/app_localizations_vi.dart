@@ -336,6 +336,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get sessionExpired => 'Phiên đăng nhập hết hạn';
 
   @override
+  String get sessionRevokedOnThisDevice =>
+      'Bạn đã bị đăng xuất khỏi thiết bị này từ một thiết bị khác.';
+
+  @override
   String get settingsTitle => 'Cài đặt';
 
   @override
@@ -827,6 +831,18 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get unresolvedReviewTitle => 'Phản hồi chưa được xử lý thỏa đáng';
+
+  @override
+  String get resolutionInfo => 'Kết quả xử lý';
+
+  @override
+  String get resolutionNote => 'Ghi chú xử lý';
+
+  @override
+  String get resolutionImages => 'Ảnh kết quả xử lý';
+
+  @override
+  String get resolvedAtLabel => 'Thời gian hoàn thành';
 
   @override
   String get reviewRatingLabel => 'Đánh giá người dân';

@@ -35,6 +35,10 @@ public class AdminHomeService {
     public AdminOverviewResponse getOverview() {
         long unsatisfactoryProcessedCount = reportRepository.countByStatusAndIsReviewResolved(EReportStatus.processed, false);
         long rehandlingProcessingCount = reportRepository.countByStatusAndIsReviewResolved(EReportStatus.processing, false);
+        // Cùng định nghĩa với Thống kê phản ánh: "Đang xử lý" không gồm báo cáo xử lý lại,
+        // "Xử lý lại" = chờ giao lại (processed) + đang làm lại (processing).
+        long processingCount = Math.max(0,
+                reportRepository.countByStatus(EReportStatus.processing) - rehandlingProcessingCount);
 
         return AdminOverviewResponse.builder()
                 .userCount(userRepository.countByRole(ERole.client))
@@ -42,7 +46,8 @@ public class AdminHomeService {
                 .adminCount(userRepository.countByRole(ERole.admin))
                 .issueCount(reportRepository.countByStatusIn(List.of(EReportStatus.pending, EReportStatus.processing)))
                 .pendingCount(reportRepository.countByStatus(EReportStatus.pending))
-                .processingCount(reportRepository.countByStatus(EReportStatus.processing))
+                .processingCount(processingCount)
+                .rehandlingCount(unsatisfactoryProcessedCount + rehandlingProcessingCount)
                 .unsatisfactoryProcessedCount(unsatisfactoryProcessedCount)
                 .rehandlingProcessingCount(rehandlingProcessingCount)
                 .build();
