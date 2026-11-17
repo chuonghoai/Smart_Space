@@ -10,6 +10,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_shared/mobile_shared.dart';
+import 'package:mobile_shared/features/auth/services/session_ws_service.dart';
 import 'firebase_options.dart';
 import 'features/app_services/app_services_initializer.dart';
 import 'features/app_services/root_scope.dart';
@@ -37,16 +38,22 @@ void main() async {
     resetRootProviderScope();
     appRouter.go(RouterPath.login);
     final context = navigatorKey.currentContext;
-    if (context != null && reason == 'session_expired') {
+    if (context != null) {
       final l10n = AppLocalizations.of(context);
-      if (l10n != null) {
+      final message = switch (reason) {
+        'session_expired' => l10n?.sessionExpired,
+        SessionWsService.revokedReason => l10n?.sessionRevokedOnThisDevice,
+        _ => null,
+      };
+      if (message != null) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.sessionExpired)),
+          SnackBar(content: Text(message)),
         );
       }
     }
   });
 
+  WsServicesRegistry.register(SessionWsService());
   WsServicesRegistry.register(NotificationWsService());
   WsServicesRegistry.register(chatWsService);
 

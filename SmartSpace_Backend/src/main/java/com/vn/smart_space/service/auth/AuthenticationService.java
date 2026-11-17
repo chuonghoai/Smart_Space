@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -23,7 +24,6 @@ import com.google.api.client.json.gson.GsonFactory;
 import com.nimbusds.jwt.SignedJWT;
 import com.vn.smart_space.consts.ERegistrationStatus;
 import com.vn.smart_space.consts.EUserStatus;
-import com.vn.smart_space.dto.JwtInfo;
 import com.vn.smart_space.dto.TokenPayload;
 import com.vn.smart_space.dto.request.auth.GoogleLoginRequest;
 import com.vn.smart_space.dto.request.auth.IntrospectRequest;
@@ -38,6 +38,7 @@ import com.vn.smart_space.mapper.UserMapper;
 import com.vn.smart_space.model.InvalidatedToken;
 import com.vn.smart_space.model.RefreshTokenSession;
 import com.vn.smart_space.model.User;
+import com.vn.smart_space.repository.DeviceTokenRepository;
 import com.vn.smart_space.repository.InvalidatedTokenRepository;
 import com.vn.smart_space.repository.RefreshTokenSessionRepository;
 import com.vn.smart_space.repository.UserRepository;
@@ -56,6 +57,8 @@ public class AuthenticationService implements IAuthenticationService {
     private final UserRepository userRepository;
     private final InvalidatedTokenRepository invalidatedTokenRepository;
     private final RefreshTokenSessionRepository sessionRepository;
+    private final DeviceTokenRepository deviceTokenRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     private final IJwtService jwtService;
     private final IMailService mailService;
@@ -89,6 +92,17 @@ public class AuthenticationService implements IAuthenticationService {
             // Check tài khoản vừa bị khóa )
             Object userId = signedJWT.getJWTClaimsSet().getClaim("userId");
             if (isValid && userId != null && isUserAccessRevoked(userId.toString())) {
+                isValid = false;
+            }
+
+            // Phiên của thiết bị đã bị thu hồi (đăng xuất / đăng xuất từ xa) → access token
+            // của thiết bị đó hết hiệu lực ngay, không đợi tới khi hết hạn 30 phút.
+            // Refresh token luôn sống lâu hơn access token (≥ 1 ngày) nên phiên hợp lệ
+            // luôn còn trong Redis suốt vòng đời access token.
+            Object deviceId = signedJWT.getJWTClaimsSet().getClaim("deviceId");
+            Object tokenType = signedJWT.getJWTClaimsSet().getClaim("tokenType");
+            if (isValid && "access".equals(tokenType) && userId != null && deviceId != null
+                    && !sessionRepository.existsById(sessionKey(userId.toString(), deviceId.toString()))) {
                 isValid = false;
             }
         } catch (Exception e) {
@@ -197,33 +211,33 @@ public class AuthenticationService implements IAuthenticationService {
     @Override
     @Transactional
     public void logout(String token) {
-        JwtInfo jwtInfo = jwtService.parseToken(token);
-
-        Date expiryTime = jwtInfo.getExpiryTime();
-        if (expiryTime.before(new Date())) {
-            return;
-        }
-
-        // Set TTL
-        long ttlSeconds = (expiryTime.getTime() - System.currentTimeMillis()) / 1000;
-
-        invalidatedTokenRepository.save(InvalidatedToken.builder()
-                .id(jwtInfo.getJwtId())
-                .ttl(ttlSeconds)
-                .build());
-
+        // Chấp nhận access token đã hết hạn (chỉ cần đúng chữ ký): người dùng bấm đăng
+        // xuất sau 30 phút không hoạt động vẫn phải xoá được phiên của thiết bị, nếu không
+        // thiết bị sẽ còn mãi trong "Quản lý thiết bị".
+        SignedJWT signedJWT = jwtService.verifySignature(token);
         try {
-            SignedJWT signedJWT = SignedJWT.parse(token);
-            String userId = (String) signedJWT.getJWTClaimsSet().getClaim("userId");
-            String deviceId = (String) signedJWT.getJWTClaimsSet().getClaim("deviceId");
+            var claims = signedJWT.getJWTClaimsSet();
+            if (!"access".equals(claims.getClaim("tokenType"))) {
+                throw new UnauthorizedException("auth.token.invalid");
+            }
 
-            userRepository.findById(userId).ifPresent(user -> {
-                if (deviceId != null) {
-                    revokeSession(user.getId(), deviceId);
-                }
-            });
+            Date expiryTime = claims.getExpirationTime();
+            if (expiryTime != null && expiryTime.after(new Date()) && claims.getJWTID() != null) {
+                long ttlSeconds = (expiryTime.getTime() - System.currentTimeMillis()) / 1000;
+                invalidatedTokenRepository.save(InvalidatedToken.builder()
+                        .id(claims.getJWTID())
+                        .ttl(ttlSeconds)
+                        .build());
+            }
+
+            String userId = (String) claims.getClaim("userId");
+            String deviceId = (String) claims.getClaim("deviceId");
+            if (userId != null && deviceId != null) {
+                // Tự đăng xuất: không cần báo WS cho chính thiết bị này
+                removeDeviceSessions(userId, List.of(deviceId));
+            }
         } catch (ParseException e) {
-            // Access token đã blacklist
+            throw new UnauthorizedException("auth.token.invalid");
         }
     }
 
@@ -303,8 +317,24 @@ public class AuthenticationService implements IAuthenticationService {
     @Override
     @Transactional
     public void revokeSession(String userId, String deviceId) {
-        String key = userId + ":" + deviceId;
-        sessionRepository.deleteById(key);
+        if (deviceId == null || deviceId.isBlank()) {
+            return;
+        }
+        removeDeviceSessions(userId, List.of(deviceId));
+        eventPublisher.publishEvent(new SessionRevokedEvent(userId, List.of(deviceId)));
+    }
+
+    /** Xoá phiên (refresh token) + FCM token của các thiết bị → access token hết hiệu lực ngay. */
+    private void removeDeviceSessions(String userId, List<String> deviceIds) {
+        if (deviceIds.isEmpty()) {
+            return;
+        }
+        sessionRepository.deleteAllById(deviceIds.stream().map(id -> sessionKey(userId, id)).toList());
+        deviceTokenRepository.deleteByUserIdAndDeviceIdIn(userId, deviceIds);
+    }
+
+    private static String sessionKey(String userId, String deviceId) {
+        return userId + ":" + deviceId;
     }
 
     @Override
@@ -358,10 +388,15 @@ public class AuthenticationService implements IAuthenticationService {
     @Override
     @Transactional
     public void revokeAllOtherSessions(String userId, String currentDeviceId) {
-        List<RefreshTokenSession> sessions = sessionRepository.findByUserId(userId);
-        sessions.stream()
-                .filter(s -> !s.getDeviceId().equals(currentDeviceId))
-                .forEach(s -> sessionRepository.deleteById(s.getId()));
+        List<String> otherDeviceIds = sessionRepository.findByUserId(userId).stream()
+                .map(RefreshTokenSession::getDeviceId)
+                .filter(id -> id != null && !id.equals(currentDeviceId))
+                .toList();
+        if (otherDeviceIds.isEmpty()) {
+            return;
+        }
+        removeDeviceSessions(userId, otherDeviceIds);
+        eventPublisher.publishEvent(new SessionRevokedEvent(userId, otherDeviceIds));
     }
 
     // SEND OTP FOR REGISTRATION

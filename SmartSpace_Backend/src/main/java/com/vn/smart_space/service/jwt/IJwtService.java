@@ -12,6 +12,12 @@ public interface IJwtService {
 
     SignedJWT verifyToken(String token);
 
+    /**
+     * Chỉ xác thực chữ ký, KHÔNG kiểm tra hạn dùng. Dùng cho logout: token hết hạn
+     * vẫn phải xoá được session của thiết bị, nhưng không chấp nhận token giả mạo.
+     */
+    SignedJWT verifySignature(String token);
+
     String buildScope(User user);
 
     JwtInfo parseToken(String token);

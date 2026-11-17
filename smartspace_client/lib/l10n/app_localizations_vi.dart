@@ -336,6 +336,10 @@ class AppLocalizationsVi extends AppLocalizations {
   String get sessionExpired => 'Phiên đăng nhập hết hạn';
 
   @override
+  String get sessionRevokedOnThisDevice =>
+      'Bạn đã bị đăng xuất khỏi thiết bị này từ một thiết bị khác.';
+
+  @override
   String get settingsTitle => 'Cài đặt';
 
   @override

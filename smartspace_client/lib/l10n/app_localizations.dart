@@ -746,6 +746,12 @@ abstract class AppLocalizations {
   /// **'Session expired'**
   String get sessionExpired;
 
+  /// No description provided for @sessionRevokedOnThisDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'You have been signed out of this device from another device.'**
+  String get sessionRevokedOnThisDevice;
+
   /// No description provided for @settingsTitle.
   ///
   /// In en, this message translates to:

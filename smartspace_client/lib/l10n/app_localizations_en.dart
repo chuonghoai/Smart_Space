@@ -336,6 +336,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessionExpired => 'Session expired';
 
   @override
+  String get sessionRevokedOnThisDevice =>
+      'You have been signed out of this device from another device.';
+
+  @override
   String get settingsTitle => 'Settings';
 
   @override

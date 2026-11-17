@@ -125,6 +125,7 @@
   "reportStatusRejected": "Rejected",
   "reportStatusUnknown": "Unknown",
   "sessionExpired": "Session expired",
+  "sessionRevokedOnThisDevice": "You have been signed out of this device from another device.",
   "settingsTitle": "Settings",
   "accountSection": "Account",
   "shareHistory": "Share History",
