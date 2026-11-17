@@ -14,6 +14,7 @@ import 'package:smartspace_admin/ui/layout/app_layout.dart';
 import 'package:smartspace_admin/ui/screen/home/widgets/new_reports_slider.dart';
 import 'package:smartspace_admin/ui/screen/home/widgets/admin_quick_access_bar.dart';
 import 'package:smartspace_admin/ui/screen/news/widgets/news_card.dart';
+import 'package:smartspace_admin/ui/shared/dashboard/stat_card_grid.dart';
 import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
 
 class AdminHomeScreen extends ConsumerStatefulWidget {
@@ -315,76 +316,86 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
                     : (width >= 650 ? 3 : 2);
                 final double extent = width >= 1100 ? 84 : 78;
 
-                return GridView.count(
+                void openReports(String? status) {
+                  ref.read(reportFilterProvider.notifier).state = status == null
+                      ? const ReportFilter(page: 1)
+                      : const ReportFilter(page: 1).copyWith(status: status);
+                  context.push(RouterPath.reportDashboard);
+                }
+
+                // Mỗi thẻ nhận cờ `centered` từ StatCardGrid (thẻ lẻ giãn 2 ô).
+                final cards = <Widget Function(bool centered)>[
+                  (c) => _buildStatCard(
+                        l10n.users,
+                        data.userCount.toString(),
+                        Icons.people_outline,
+                        theme,
+                        Colors.blue,
+                        () => context.push(RouterPath.userManagement),
+                        c,
+                      ),
+                  (c) => _buildStatCard(
+                        l10n.staff,
+                        data.staffCount.toString(),
+                        Icons.badge_outlined,
+                        theme,
+                        Colors.indigo,
+                        () => context.push(RouterPath.staffManagement),
+                        c,
+                      ),
+                  (c) => _buildStatCard(
+                        l10n.admins,
+                        data.adminCount.toString(),
+                        Icons.admin_panel_settings_outlined,
+                        theme,
+                        Colors.purple,
+                        null,
+                        c,
+                      ),
+                  (c) => _buildStatCard(
+                        l10n.issues,
+                        data.issueCount.toString(),
+                        Icons.warning_amber_rounded,
+                        theme,
+                        Colors.red,
+                        () => openReports(null),
+                        c,
+                      ),
+                  (c) => _buildStatCard(
+                        l10n.pendingIssues,
+                        data.pendingCount.toString(),
+                        Icons.hourglass_top_outlined,
+                        theme,
+                        Colors.orange,
+                        () => openReports('pending'),
+                        c,
+                      ),
+                  (c) => _buildStatCard(
+                        l10n.processingIssues,
+                        data.processingCount.toString(),
+                        Icons.autorenew_rounded,
+                        theme,
+                        Colors.teal,
+                        () => openReports('processing'),
+                        c,
+                      ),
+                  (c) => _buildStatCard(
+                        l10n.rehandlingBadge,
+                        data.rehandlingCount.toString(),
+                        Icons.refresh_rounded,
+                        theme,
+                        AppSemanticColors.of(context).warning,
+                        () => openReports('rehandling'),
+                        c,
+                      ),
+                ];
+
+                return StatCardGrid(
                   crossAxisCount: crossAxisCount,
-                  shrinkWrap: true,
-                  physics: const NeverScrollableScrollPhysics(),
-                  mainAxisSpacing: 12,
-                  crossAxisSpacing: 12,
-                  mainAxisExtent: extent,
-                  children: [
-                    _buildStatCard(
-                      l10n.users,
-                      data.userCount.toString(),
-                      Icons.people_outline,
-                      theme,
-                      Colors.blue,
-                      () => context.push(RouterPath.userManagement),
-                    ),
-                    _buildStatCard(
-                      l10n.staff,
-                      data.staffCount.toString(),
-                      Icons.badge_outlined,
-                      theme,
-                      Colors.indigo,
-                      () => context.push(RouterPath.staffManagement),
-                    ),
-                    _buildStatCard(
-                      l10n.admins,
-                      data.adminCount.toString(),
-                      Icons.admin_panel_settings_outlined,
-                      theme,
-                      Colors.purple,
-                    ),
-                    _buildStatCard(
-                      l10n.issues,
-                      data.issueCount.toString(),
-                      Icons.warning_amber_rounded,
-                      theme,
-                      Colors.red,
-                      () {
-                        ref.read(reportFilterProvider.notifier).state =
-                            const ReportFilter(page: 1);
-                        context.push(RouterPath.reportDashboard);
-                      },
-                    ),
-                    _buildStatCard(
-                      l10n.pendingIssues,
-                      data.pendingCount.toString(),
-                      Icons.hourglass_top_outlined,
-                      theme,
-                      Colors.orange,
-                      () {
-                        ref.read(reportFilterProvider.notifier).state =
-                            const ReportFilter(page: 1)
-                                .copyWith(status: 'pending');
-                        context.push(RouterPath.reportDashboard);
-                      },
-                    ),
-                    _buildStatCard(
-                      l10n.processingIssues,
-                      data.processingCount.toString(),
-                      Icons.autorenew_rounded,
-                      theme,
-                      Colors.teal,
-                      () {
-                        ref.read(reportFilterProvider.notifier).state =
-                            const ReportFilter(page: 1)
-                                .copyWith(status: 'processing');
-                        context.push(RouterPath.reportDashboard);
-                      },
-                    ),
-                  ],
+                  itemHeight: extent,
+                  itemCount: cards.length,
+                  itemBuilder: (context, index, spanned) =>
+                      cards[index](spanned),
                 );
               },
             ),
@@ -615,6 +626,7 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
     ThemeData theme, [
     Color? customColor,
     VoidCallback? onTap,
+    bool centered = false,
   ]) {
     final color = customColor ?? theme.primaryColor;
     return Material(
@@ -641,6 +653,9 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
         ],
       ),
       child: Row(
+        // Thẻ giãn 2 ô: căn giữa cụm icon + chữ thay vì dồn sang trái
+        mainAxisAlignment:
+            centered ? MainAxisAlignment.center : MainAxisAlignment.start,
         children: [
           Container(
             padding: const EdgeInsets.all(8),
@@ -651,7 +666,8 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
             child: Icon(icon, color: color, size: 22),
           ),
           const SizedBox(width: 12),
-          Expanded(
+          Flexible(
+            fit: centered ? FlexFit.loose : FlexFit.tight,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               mainAxisAlignment: MainAxisAlignment.center,

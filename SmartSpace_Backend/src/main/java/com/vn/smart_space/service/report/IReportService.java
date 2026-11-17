@@ -59,8 +59,13 @@ public interface IReportService {
         ReportTrendResponse getReportTrend(String period);
 
         // Admin Get List Report
+        /**
+         * @param excludeRehandling true: lọc theo trạng thái thì bỏ báo cáo "xử lý lại"
+         *                          (khớp nhóm tách riêng trên thẻ thống kê); Kanban
+         *                          để false để giữ báo cáo trong cột trạng thái gốc.
+         */
         ReportListResponse getAdminReportList(int page, int size, String status, String severity, String assigneeId,
-                        String from, String to, String search);
+                        String from, String to, String search, boolean excludeRehandling);
 
         // Admin Update Status Report
         ReportDetailResponse updateReportStatus(String reportId, String newStatus, String adminId);

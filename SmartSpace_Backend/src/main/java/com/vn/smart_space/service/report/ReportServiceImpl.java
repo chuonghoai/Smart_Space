@@ -1143,10 +1143,22 @@ public class ReportServiceImpl implements IReportService {
         }
         int total = byStatus.values().stream().mapToInt(Integer::intValue).sum();
 
-        // Count rehandling: processing + processed with isReviewResolved = false
-        long rehandlingCount = reportRepository.countByStatusAndIsReviewResolved(EReportStatus.processed, false)
-                + reportRepository.countByStatusAndIsReviewResolved(EReportStatus.processing, false);
-        byStatus.put("rehandling", (int) rehandlingCount);
+        // "Xử lý lại" là nhóm riêng: trừ khỏi processing / resolved để các nhóm không
+        // trùng nhau và cộng lại đúng bằng tổng (pending + processing + resolved +
+        // rejected + rehandling = total).
+        int rehandlingProcessed = 0;
+        int rehandlingProcessing = 0;
+        for (Object[] row : reportRepository.countRehandlingGroupByStatus()) {
+            int count = row[1] != null ? ((Number) row[1]).intValue() : 0;
+            if (row[0] == EReportStatus.processed) {
+                rehandlingProcessed = count;
+            } else if (row[0] == EReportStatus.processing) {
+                rehandlingProcessing = count;
+            }
+        }
+        byStatus.put("resolved", Math.max(0, byStatus.get("resolved") - rehandlingProcessed));
+        byStatus.put("processing", Math.max(0, byStatus.get("processing") - rehandlingProcessing));
+        byStatus.put("rehandling", rehandlingProcessed + rehandlingProcessing);
 
         // Count by severity
         List<Object[]> severityRows = reportRepository.countGroupBySeverity();
@@ -1190,7 +1202,7 @@ public class ReportServiceImpl implements IReportService {
     @Override
     @Transactional(readOnly = true)
     public ReportListResponse getAdminReportList(int page, int size, String status, String severity, String assigneeId,
-            String from, String to, String search) {
+            String from, String to, String search, boolean excludeRehandling) {
 
         // 1. Parse enums (null = no filter)
         EReportStatus statusEnum = null;
@@ -1229,12 +1241,18 @@ public class ReportServiceImpl implements IReportService {
         String searchParam = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
         String assigneeParam = (assigneeId != null && !assigneeId.trim().isEmpty()) ? assigneeId.trim() : null;
 
+        // Chỉ tách "xử lý lại" khỏi nhóm Đang xử lý / Đã xử lý; lọc "Tất cả" vẫn
+        // giữ nguyên để khớp với thẻ Tổng.
+        boolean applyExcludeRehandling = excludeRehandling
+                && (statusEnum == EReportStatus.processing || statusEnum == EReportStatus.processed);
+
         // 4. Query
         int safePage = Math.max(1, page);
         int safeSize = Math.max(1, Math.min(size, 100));
         PageRequest pageable = PageRequest.of(safePage - 1, safeSize);
         Page<Report> reportPage = reportRepository.findAllFiltered(
-                statusEnum, isRehandling, severityEnum, assigneeParam, fromDt, toDt, searchParam, pageable);
+                statusEnum, isRehandling, applyExcludeRehandling, severityEnum, assigneeParam,
+                fromDt, toDt, searchParam, pageable);
 
         // 5. Map Report -> RecentReportResponse (bổ sung userName, userEmail)
         List<RecentReportResponse> content = reportPage.getContent().stream().map(r -> {

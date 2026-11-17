@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:smartspace_admin/features/reports/application/report_dashboard_providers.dart';
 import 'package:smartspace_admin/features/reports/application/report_list_providers.dart';
 import 'package:smartspace_admin/features/reports/models/report_filter_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
+import 'package:smartspace_admin/ui/shared/dashboard/stat_card_grid.dart';
 
 class ReportStatCards extends ConsumerWidget {
   const ReportStatCards({super.key});
@@ -33,7 +35,7 @@ class ReportStatCards extends ConsumerWidget {
             l10n.rehandlingBadge,
             stats.rehandling.toString(),
             Icons.refresh_rounded,
-            isDark ? const Color(0xFFFFB74D) : const Color(0xFFE65100),
+            AppSemanticColors.of(context).warning,
             'rehandling',
           ),
         ];
@@ -51,32 +53,29 @@ class ReportStatCards extends ConsumerWidget {
               crossAxisCount = 2;
             }
 
-            return GridView.builder(
-              shrinkWrap: true,
-              physics: const NeverScrollableScrollPhysics(),
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: crossAxisCount,
-                mainAxisSpacing: 12,
-                crossAxisSpacing: 12,
-                mainAxisExtent: 84,
-              ),
+            return StatCardGrid(
+              crossAxisCount: crossAxisCount,
+              itemHeight: 84,
               itemCount: items.length,
-              itemBuilder: (context, index) {
+              itemBuilder: (context, index, spanned) {
                 final item = items[index];
-                final isActive = item.statusFilter == null
-                    ? (currentFilter.status == null ||
-                        currentFilter.status!.isEmpty)
-                    : currentFilter.status == item.statusFilter;
-                return _buildCard(theme, item, isActive, isDark, () {
-                  if (item.statusFilter == null) {
+                return _buildCard(
+                  theme,
+                  item,
+                  item.statusFilter == null
+                      ? (currentFilter.status == null ||
+                          currentFilter.status!.isEmpty)
+                      : currentFilter.status == item.statusFilter,
+                  isDark,
+                  () {
                     ref.read(reportFilterProvider.notifier).state =
-                        const ReportFilter(page: 1);
-                  } else {
-                    ref.read(reportFilterProvider.notifier).state =
-                        const ReportFilter(page: 1)
-                            .copyWith(status: item.statusFilter);
-                  }
-                });
+                        item.statusFilter == null
+                            ? const ReportFilter(page: 1)
+                            : const ReportFilter(page: 1)
+                                .copyWith(status: item.statusFilter);
+                  },
+                  centered: spanned,
+                );
               },
             );
           },
@@ -91,7 +90,7 @@ class ReportStatCards extends ConsumerWidget {
   }
 
   Widget _buildCard(ThemeData theme, _CardData data, bool isActive,
-      bool isDark, VoidCallback onTap) {
+      bool isDark, VoidCallback onTap, {bool centered = false}) {
     final borderColor = isActive
         ? data.color.withValues(alpha: isDark ? 0.6 : 0.45)
         : theme.colorScheme.outlineVariant.withValues(alpha: 0.4);
@@ -124,6 +123,9 @@ class ReportStatCards extends ConsumerWidget {
             ],
           ),
           child: Row(
+            // Thẻ giãn 2 ô: căn giữa cụm icon + chữ thay vì dồn sang trái
+            mainAxisAlignment:
+                centered ? MainAxisAlignment.center : MainAxisAlignment.start,
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
@@ -134,7 +136,8 @@ class ReportStatCards extends ConsumerWidget {
                 child: Icon(data.icon, color: data.color, size: 22),
               ),
               const SizedBox(width: 12),
-              Expanded(
+              Flexible(
+                fit: centered ? FlexFit.loose : FlexFit.tight,
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisAlignment: MainAxisAlignment.center,

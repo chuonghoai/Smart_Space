@@ -24,7 +24,8 @@ class ReportListNotifier extends AsyncNotifier<ReportListData> {
   }
 
   Future<ReportListData> _fetch(ReportFilter filter) async {
-    final res = await reportRepository.getReportList(filter);
+    final res =
+        await reportRepository.getReportList(filter, excludeRehandling: true);
     if (res.success && res.data != null) return res.data!;
     throw Exception(res.message);
   }
