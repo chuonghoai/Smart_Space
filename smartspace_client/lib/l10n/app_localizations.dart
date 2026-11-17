@@ -746,6 +746,12 @@ abstract class AppLocalizations {
   /// **'Session expired'**
   String get sessionExpired;
 
+  /// No description provided for @sessionRevokedOnThisDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'You have been signed out of this device from another device.'**
+  String get sessionRevokedOnThisDevice;
+
   /// No description provided for @settingsTitle.
   ///
   /// In en, this message translates to:
@@ -1669,6 +1675,30 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Unresolved feedback'**
   String get unresolvedReviewTitle;
+
+  /// No description provided for @resolutionInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution result'**
+  String get resolutionInfo;
+
+  /// No description provided for @resolutionNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution note'**
+  String get resolutionNote;
+
+  /// No description provided for @resolutionImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution photos'**
+  String get resolutionImages;
+
+  /// No description provided for @resolvedAtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed at'**
+  String get resolvedAtLabel;
 
   /// No description provided for @reviewRatingLabel.
   ///

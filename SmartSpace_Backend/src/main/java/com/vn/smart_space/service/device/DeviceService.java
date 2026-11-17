@@ -26,7 +26,7 @@ public class DeviceService implements IDeviceService {
      * If Not Exist - Create New
      */
     @Override
-    public void registerFcmToken(String userId, RegisterFcmTokenRequest request) {
+    public void registerFcmToken(String userId, String deviceId, RegisterFcmTokenRequest request) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new BadRequestException("User not found"));
 
@@ -37,6 +37,11 @@ public class DeviceService implements IDeviceService {
                         .build());
         deviceToken.setPlatform(request.platform());
         deviceToken.setDeviceName(request.deviceName());
+        // Cập nhật mỗi lần đăng ký: cùng FCM token có thể được đăng ký lại sau khi đăng nhập
+        // lại (deviceId mới) — luôn trỏ về phiên hiện tại để đăng xuất từ xa xoá đúng token.
+        if (deviceId != null && !deviceId.isBlank()) {
+            deviceToken.setDeviceId(deviceId);
+        }
         deviceToken.setLastUsedAt(LocalDateTime.now());
         deviceTokenRepository.save(deviceToken);
 

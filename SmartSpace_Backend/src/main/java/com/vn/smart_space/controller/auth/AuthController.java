@@ -31,6 +31,7 @@ import com.vn.smart_space.dto.request.user.UpdateProfileRequest;
 import com.vn.smart_space.dto.response.auth.LoginResponse;
 import com.vn.smart_space.dto.response.auth.SessionResponse;
 import com.vn.smart_space.dto.response.user.UserResponse;
+import com.vn.smart_space.exception.UnauthorizedException;
 import com.vn.smart_space.service.auth.IAuthenticationService;
 import com.vn.smart_space.service.user.IUserService;
 
@@ -92,8 +93,14 @@ public class AuthController {
 
         // 4. Logout
         @PostMapping("/logout")
-        public ResponseEntity<ApiResponse> logout(@RequestHeader("Authorization") String authHeader) {
-                String token = authHeader.replace("Bearer ", "");
+        public ResponseEntity<ApiResponse> logout(
+                @RequestHeader(value = "Authorization", required = false) String authHeader) {
+                // Endpoint bỏ qua bearer filter (xem SecurityConfig.LOGOUT_PATH): service tự
+                // xác thực chữ ký và chấp nhận access token đã hết hạn.
+                if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+                        throw new UnauthorizedException("auth.token.invalid");
+                }
+                String token = authHeader.substring("Bearer ".length()).trim();
                 authenticationService.logout(token);
                 return ResponseEntity.ok(ApiResponse.success("auth.logout.success", null));
         }
@@ -102,9 +109,10 @@ public class AuthController {
         @GetMapping("/sessions")
         public ResponseEntity<ApiResponse> getActiveSessions(
                 @AuthenticationPrincipal Jwt jwt,
-                @RequestParam String currentDeviceId) {
+                @RequestParam(required = false) String currentDeviceId) {
                 String userId = jwt.getClaim("userId").toString();
-                List<SessionResponse> sessions = authenticationService.getActiveSessions(userId, currentDeviceId);
+                List<SessionResponse> sessions = authenticationService.getActiveSessions(userId,
+                                resolveCurrentDeviceId(jwt, currentDeviceId));
                 return ResponseEntity.ok(ApiResponse.success("auth.sessions.get.success", sessions));
         }
 
@@ -122,9 +130,9 @@ public class AuthController {
         @DeleteMapping("/sessions")
         public ResponseEntity<ApiResponse> revokeAllOtherSessions(
                 @AuthenticationPrincipal Jwt jwt,
-                @RequestParam String currentDeviceId) {
+                @RequestParam(required = false) String currentDeviceId) {
                 String userId = jwt.getClaim("userId").toString();
-                authenticationService.revokeAllOtherSessions(userId, currentDeviceId);
+                authenticationService.revokeAllOtherSessions(userId, resolveCurrentDeviceId(jwt, currentDeviceId));
                 return ResponseEntity.ok(ApiResponse.success("auth.sessions.revoke_all.success", null));
         }
 
@@ -195,4 +203,12 @@ public class AuthController {
                 return ResponseEntity.ok(ApiResponse.success("user.password.change.success", null));
         }
 
+        /**
+         * Thiết bị hiện tại lấy từ claim "deviceId" của access token (không tin tham số
+         * client gửi lên). Tham số chỉ dùng làm fallback cho token cũ không có claim.
+         */
+        private static String resolveCurrentDeviceId(Jwt jwt, String requestedDeviceId) {
+                String claimDeviceId = jwt.getClaimAsString("deviceId");
+                return claimDeviceId != null && !claimDeviceId.isBlank() ? claimDeviceId : requestedDeviceId;
+        }
 }

@@ -306,7 +306,8 @@ public class ReportServiceImpl implements IReportService {
 
         // Incremental update for map density
         try {
-            reportDensityService.onReportCreated(report.getId(), report.getLatitude(), report.getLongitude(), report.getCreatedAt());
+            reportDensityService.onReportCreated(report.getId(), report.getLatitude(), report.getLongitude(),
+                    report.getCreatedAt());
         } catch (Exception e) {
             log.warn("[ReportDensity] Failed to trigger density update on create report: {}", e.getMessage());
         }
@@ -351,13 +352,16 @@ public class ReportServiceImpl implements IReportService {
         // Notify Users
         if (userId != null) {
             try {
-                User creator = report.getUser() != null ? report.getUser() : userRepository.findById(userId).orElse(null);
+                User creator = report.getUser() != null ? report.getUser()
+                        : userRepository.findById(userId).orElse(null);
                 Locale userLocale = (creator != null && "en".equalsIgnoreCase(creator.getLanguage()))
                         ? Locale.ENGLISH
                         : Locale.forLanguageTag("vi");
 
-                String title = messageSource.getMessage("notification.report.created.user.title", null, "Tạo phản ánh thành công", userLocale);
-                String message = messageSource.getMessage("notification.report.created.user.message", null, "Phản ánh của bạn đã được ghi nhận và đang chờ xử lý.", userLocale);
+                String title = messageSource.getMessage("notification.report.created.user.title", null,
+                        "Tạo phản ánh thành công", userLocale);
+                String message = messageSource.getMessage("notification.report.created.user.message", null,
+                        "Phản ánh của bạn đã được ghi nhận và đang chờ xử lý.", userLocale);
 
                 // Standardized actionData: { "type": "...", "payload": { ... } }
                 String actionData = "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"" + report.getId()
@@ -412,15 +416,19 @@ public class ReportServiceImpl implements IReportService {
                         Locale adminLocale = (admin != null && "en".equalsIgnoreCase(admin.getLanguage()))
                                 ? Locale.ENGLISH
                                 : Locale.forLanguageTag("vi");
-                        String adminTitle = messageSource.getMessage("notification.report.created.admin.title", null, "Có phản ánh mới", adminLocale);
-                        String fallbackMsg = messageSource.getMessage("notification.report.created.admin.fallback_message", null, "Một phản ánh mới vừa được tạo và đang chờ xử lý.", adminLocale);
+                        String adminTitle = messageSource.getMessage("notification.report.created.admin.title", null,
+                                "Có phản ánh mới", adminLocale);
+                        String fallbackMsg = messageSource.getMessage(
+                                "notification.report.created.admin.fallback_message", null,
+                                "Một phản ánh mới vừa được tạo và đang chờ xử lý.", adminLocale);
                         String adminMessage = report.getTitle() != null && !report.getTitle().trim().isEmpty()
                                 ? report.getTitle().trim()
-                        : fallbackMsg;
+                                : fallbackMsg;
 
                         NotificationEvent adminEvent = new NotificationEvent(adminTitle, adminMessage, adminActionData,
                                 report.getImageUrl(), Map.of("shouldRefresh", true));
-                        NotificationRequest adminNotif = new NotificationRequest(adminTitle, adminMessage, adminFcmData);
+                        NotificationRequest adminNotif = new NotificationRequest(adminTitle, adminMessage,
+                                adminFcmData);
 
                         notificationService.createNotification(admin.getId(), adminTitle, adminMessage,
                                 adminActionData, report.getImageUrl());
@@ -555,7 +563,9 @@ public class ReportServiceImpl implements IReportService {
                 .build();
     }
 
-    /** Shared by client & admin map: every bound present, in range, and min <= max. */
+    /**
+     * Shared by client & admin map: every bound present, in range, and min <= max.
+     */
     private void validateMapBounds(Double minLat, Double maxLat, Double minLng, Double maxLng) {
         if (!isValidLatitude(minLat) || !isValidLatitude(maxLat)
                 || !isValidLongitude(minLng) || !isValidLongitude(maxLng)
@@ -717,7 +727,8 @@ public class ReportServiceImpl implements IReportService {
                 : LocalDateTime.now().plusDays(deadlineDaysForSeverity(report.getSeverity())));
         report = reportRepository.save(report);
 
-        // Auto-create chat conversation between staff & client and post initial system message
+        // Auto-create chat conversation between staff & client and post initial system
+        // message
         try {
             com.vn.smart_space.model.Conversation conv = conversationService.getOrCreateReportConversation(report);
             if (conv != null && report.getUser() != null) {
@@ -728,7 +739,7 @@ public class ReportServiceImpl implements IReportService {
                         ? staff.getFullName().trim()
                         : (staff.getEmail() != null ? staff.getEmail().trim() : "Nhân viên");
                 String sysMsg = messageSource.getMessage("chat.system.report_assigned",
-                        new Object[]{ staffN, report.getTitle() },
+                        new Object[] { staffN, report.getTitle() },
                         String.format("%s đã tiếp nhận phản ánh '%s'", staffN, report.getTitle()),
                         clientLocale);
                 conversationService.sendSystemMessage(conv, sysMsg, clientUser);
@@ -737,7 +748,8 @@ public class ReportServiceImpl implements IReportService {
             log.error("Failed to create conversation or send system message on assign report: {}", e.getMessage());
         }
 
-        // Phân công cho người khác → yêu cầu nhờ làm giùm cũ không còn ý nghĩa, hoàn bonus
+        // Phân công cho người khác → yêu cầu nhờ làm giùm cũ không còn ý nghĩa, hoàn
+        // bonus
         if (assigneeChanged) {
             delegationService.onReportUnassigned(report);
         }
@@ -870,7 +882,8 @@ public class ReportServiceImpl implements IReportService {
         Report report = reportRepository.findByIdForUpdate(reportId)
                 .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
 
-        // Chỉ staff đang được giao mới hoàn tất được (người nhờ không tự hoàn tất task đã giao cho người làm giùm)
+        // Chỉ staff đang được giao mới hoàn tất được (người nhờ không tự hoàn tất task
+        // đã giao cho người làm giùm)
         if (staffId == null || report.getAssignedStaff() == null
                 || !staffId.equals(report.getAssignedStaff().getId())) {
             throw new AccessDeniedException("report.complete.not_assignee");
@@ -884,12 +897,14 @@ public class ReportServiceImpl implements IReportService {
         if (report.getDeadline() == null) {
             report.setDeadline(resolveDeadline(report));
         }
-        if (request.getNote() != null && !request.getNote().trim().isEmpty()) {
-            report.setResolvedNote(request.getNote().trim());
-        }
-        if (request.getImageUrls() != null && !request.getImageUrls().isEmpty()) {
-            report.setResolvedImageUrls(String.join(",", request.getImageUrls()));
-        }
+        // Luôn ghi đè kết quả của lần hoàn tất hiện tại (kể cả khi để trống) để
+        // người dân không thấy ghi chú/ảnh cũ của lần xử lý trước khi bị xử lý lại.
+        report.setResolvedNote(request.getNote() != null && !request.getNote().trim().isEmpty()
+                ? request.getNote().trim()
+                : null);
+        report.setResolvedImageUrls(request.getImageUrls() != null && !request.getImageUrls().isEmpty()
+                ? String.join(",", request.getImageUrls())
+                : null);
         report.setResolvedAt(new java.util.Date());
 
         // Reset previous citizen review when report is completed or re-handled so
@@ -916,7 +931,7 @@ public class ReportServiceImpl implements IReportService {
                         ? staff.getFullName().trim()
                         : (staff.getEmail() != null ? staff.getEmail().trim() : "Nhân viên");
                 String sysMsg = messageSource.getMessage("chat.system.report_resolved",
-                        new Object[]{ staffN, report.getTitle() },
+                        new Object[] { staffN, report.getTitle() },
                         String.format("%s đã hoàn tất việc xử lý phản ánh '%s'", staffN, report.getTitle()),
                         clientLocale);
                 conversationService.sendSystemMessage(conv, sysMsg, clientUser);
@@ -959,7 +974,8 @@ public class ReportServiceImpl implements IReportService {
                     Locale adminLocale = (a != null && "en".equalsIgnoreCase(a.getLanguage()))
                             ? Locale.ENGLISH
                             : Locale.forLanguageTag("vi");
-                    String adminTitle = messageSource.getMessage("notification.report.completed.admin.title", null, "Phản ánh hoàn tất", adminLocale);
+                    String adminTitle = messageSource.getMessage("notification.report.completed.admin.title", null,
+                            "Phản ánh hoàn tất", adminLocale);
                     String adminMsg = messageSource.getMessage("notification.report.completed.admin.message",
                             new Object[] { staffName, report.getTitle() },
                             String.format("Nhân viên %s đã xử lý xong phản ánh '%s'.", staffName, report.getTitle()),
@@ -983,7 +999,7 @@ public class ReportServiceImpl implements IReportService {
         if (report.getUser() != null) {
             try {
                 User client = report.getUser();
-                java.util.Locale clientLocale = new java.util.Locale(
+                Locale clientLocale = new Locale(
                         client.getLanguage() != null ? client.getLanguage() : "vi");
                 String clientTitle = messageSource.getMessage("notification.report.completed.client.title", null,
                         "Phản ánh đã được xử lý", clientLocale);
@@ -1066,7 +1082,8 @@ public class ReportServiceImpl implements IReportService {
         int safePage = Math.max(1, page);
         int safeSize = Math.max(1, Math.min(size, MY_REPORTS_MAX_PAGE_SIZE));
 
-        // "rehandling" không phải EReportStatus: lọc theo is_review_resolved = false (mọi trạng thái)
+        // "rehandling" không phải EReportStatus: lọc theo is_review_resolved = false
+        // (mọi trạng thái)
         String normalizedStatus = status != null ? status.trim().toLowerCase() : "";
         boolean rehandling = "rehandling".equals(normalizedStatus);
         EReportStatus reportStatus = null;
@@ -1106,14 +1123,20 @@ public class ReportServiceImpl implements IReportService {
         }
     }
 
-    /** Từ khoá tìm kiếm từ Client: trim, cắt độ dài tối đa; rỗng = null (không lọc). */
-    /** Khoảng ngày tạo phản ánh: [from, toExclusive); mỗi đầu null = không giới hạn. */
+    /**
+     * Từ khoá tìm kiếm từ Client: trim, cắt độ dài tối đa; rỗng = null (không lọc).
+     */
+    /**
+     * Khoảng ngày tạo phản ánh: [from, toExclusive); mỗi đầu null = không giới hạn.
+     */
     private record ClientDateRange(LocalDateTime from, LocalDateTime toExclusive) {
     }
 
     /**
-     * Ngày Client chọn (yyyy-MM-dd, theo giờ server) → [đầu ngày from, đầu ngày sau to).
-     * Sai định dạng thì bỏ đầu đó; from sau to thì đảo lại để không trả về rỗng vô lý.
+     * Ngày Client chọn (yyyy-MM-dd, theo giờ server) → [đầu ngày from, đầu ngày sau
+     * to).
+     * Sai định dạng thì bỏ đầu đó; from sau to thì đảo lại để không trả về rỗng vô
+     * lý.
      */
     private ClientDateRange parseClientDateRange(String from, String to) {
         LocalDate fromDate = parseClientDate(from);
@@ -1199,10 +1222,23 @@ public class ReportServiceImpl implements IReportService {
         }
         int total = byStatus.values().stream().mapToInt(Integer::intValue).sum();
 
-        // Count rehandling: processing + processed with isReviewResolved = false
-        long rehandlingCount = reportRepository.countByStatusAndIsReviewResolved(EReportStatus.processed, false)
-                + reportRepository.countByStatusAndIsReviewResolved(EReportStatus.processing, false);
-        byStatus.put("rehandling", (int) rehandlingCount);
+        // "Xử lý lại" là nhóm riêng: trừ khỏi processing / resolved để các nhóm không
+        // trùng nhau và cộng lại đúng bằng tổng (pending + processing + resolved +
+        // rejected + rehandling = total).
+        int rehandlingProcessed = 0;
+        int rehandlingProcessing = 0;
+        for (Object[] row : reportRepository.countRehandlingGroupByStatus()) {
+            int count = row[1] != null ? ((Number) row[1]).intValue() : 0;
+            if (row[0] == EReportStatus.processed) {
+                rehandlingProcessed = count;
+            } else if (row[0] == EReportStatus.processing) {
+                rehandlingProcessing = count;
+            }
+        }
+        byStatus.put("resolved", Math.max(0, byStatus.get("resolved") - rehandlingProcessed));
+        byStatus.put("processing", Math.max(0, byStatus.get("processing") - rehandlingProcessing));
+        byStatus.put("rehandling", rehandlingProcessed + rehandlingProcessing);
+        // "Quá hạn" là chỉ số chồng lên các nhóm trên (không cộng vào tổng)
         byStatus.put("overdue", (int) reportRepository.countAdminOverdueReports(LocalDateTime.now()));
 
         // Count by severity
@@ -1247,7 +1283,7 @@ public class ReportServiceImpl implements IReportService {
     @Override
     @Transactional(readOnly = true)
     public ReportListResponse getAdminReportList(int page, int size, String status, String severity, String assigneeId,
-            String from, String to, String search, Boolean overdue) {
+            String from, String to, String search, Boolean overdue, boolean excludeRehandling) {
 
         // 1. Parse enums (null = no filter)
         EReportStatus statusEnum = null;
@@ -1287,12 +1323,17 @@ public class ReportServiceImpl implements IReportService {
         String assigneeParam = (assigneeId != null && !assigneeId.trim().isEmpty()) ? assigneeId.trim() : null;
         boolean overdueOnly = Boolean.TRUE.equals(overdue);
 
+        // Chỉ tách "xử lý lại" khỏi nhóm Đang xử lý / Đã xử lý; lọc "Tất cả" vẫn
+        // giữ nguyên để khớp với thẻ Tổng.
+        boolean applyExcludeRehandling = excludeRehandling
+                && (statusEnum == EReportStatus.processing || statusEnum == EReportStatus.processed);
+
         // 4. Query
         int safePage = Math.max(1, page);
         int safeSize = Math.max(1, Math.min(size, 100));
         PageRequest pageable = PageRequest.of(safePage - 1, safeSize);
         Page<Report> reportPage = reportRepository.findAllFiltered(
-                statusEnum, isRehandling, overdueOnly, LocalDateTime.now(),
+                statusEnum, isRehandling, applyExcludeRehandling, overdueOnly, LocalDateTime.now(),
                 severityEnum, assigneeParam, fromDt, toDt, searchParam, pageable);
 
         // 5. Map Report -> RecentReportResponse (bổ sung userName, userEmail, deadline)
@@ -1363,9 +1404,11 @@ public class ReportServiceImpl implements IReportService {
 
         if (next == EReportStatus.rejected) {
             try {
-                reportDensityService.onReportRejected(saved.getId(), saved.getLatitude(), saved.getLongitude(), saved.getCreatedAt());
+                reportDensityService.onReportRejected(saved.getId(), saved.getLatitude(), saved.getLongitude(),
+                        saved.getCreatedAt());
             } catch (Exception ex) {
-                log.warn("[ReportDensity] Error updating density for rejected report {}: {}", saved.getId(), ex.getMessage());
+                log.warn("[ReportDensity] Error updating density for rejected report {}: {}", saved.getId(),
+                        ex.getMessage());
             }
 
             User admin = adminId != null ? userRepository.findById(adminId).orElse(null) : null;
@@ -1548,7 +1591,8 @@ public class ReportServiceImpl implements IReportService {
     @Override
     @Transactional(readOnly = true)
     public AdminMapReportsResponse getAdminMapReports(String status, String severity, String assigneeId,
-            String from, String to, String timeframe, Double minLat, Double maxLat, Double minLng, Double maxLng, int limit) {
+            String from, String to, String timeframe, Double minLat, Double maxLat, Double minLng, Double maxLng,
+            int limit) {
         // Bounds are optional, but all-or-nothing
         boolean anyBound = minLat != null || maxLat != null || minLng != null || maxLng != null;
         if (anyBound) {
@@ -1583,7 +1627,8 @@ public class ReportServiceImpl implements IReportService {
             log.warn("[MapReports] Invalid date filter from={} to={}", from, to);
         }
 
-        // If fromDt not set, but timeframe is provided, derive fromDt from timeframe cutoff
+        // If fromDt not set, but timeframe is provided, derive fromDt from timeframe
+        // cutoff
         if (fromDt == null && timeframe != null && !timeframe.trim().isEmpty()) {
             fromDt = EDensityTimeframe.fromCode(timeframe).getCutoff(LocalDateTime.now());
         }
@@ -1752,20 +1797,24 @@ public class ReportServiceImpl implements IReportService {
                         assignedStaff.getLanguage() != null ? assignedStaff.getLanguage() : "vi");
                 String clientName;
                 if (Boolean.TRUE.equals(saved.getIsAnonymous())) {
-                    clientName = messageSource.getMessage("chat.anonymous_user", null, "Người dùng ẩn danh", staffLocale);
+                    clientName = messageSource.getMessage("chat.anonymous_user", null, "Người dùng ẩn danh",
+                            staffLocale);
                 } else {
                     clientName = (clientUser != null && clientUser.getFullName() != null)
-                            ? clientUser.getFullName() : "Cư dân";
+                            ? clientUser.getFullName()
+                            : "Cư dân";
                 }
 
                 String sysMsgKey = Boolean.TRUE.equals(saved.getIsReviewResolved())
                         ? "chat.system.review_resolved"
                         : "chat.system.review_unresolved";
                 String fallbackMsg = Boolean.TRUE.equals(saved.getIsReviewResolved())
-                        ? String.format("%s đã đánh giá phản ánh '%s' là đã xử lý thỏa đáng", clientName, saved.getTitle())
-                        : String.format("%s đã đánh giá phản ánh '%s' là chưa được xử lý thỏa đáng", clientName, saved.getTitle());
+                        ? String.format("%s đã đánh giá phản ánh '%s' là đã xử lý thỏa đáng", clientName,
+                                saved.getTitle())
+                        : String.format("%s đã đánh giá phản ánh '%s' là chưa được xử lý thỏa đáng", clientName,
+                                saved.getTitle());
                 String sysMsg = messageSource.getMessage(sysMsgKey,
-                        new Object[]{ clientName, saved.getTitle() },
+                        new Object[] { clientName, saved.getTitle() },
                         fallbackMsg,
                         staffLocale);
 
@@ -1869,13 +1918,15 @@ public class ReportServiceImpl implements IReportService {
 
     @Override
     @Transactional
-    public ReportNearbyAlertResponse checkNearbyReportsAndAlert(Double lat, Double lng, Double radius, String userId, Boolean notify) {
+    public ReportNearbyAlertResponse checkNearbyReportsAndAlert(Double lat, Double lng, Double radius, String userId,
+            Boolean notify) {
         if (lat == null || lng == null) {
             throw new BadRequestException("report.nearby.coordinates_required");
         }
         double searchRadius = radius != null && radius > 0 ? radius : 200.0;
 
-        List<Report> reports = reportRepository.findNearbyActiveReportsWithinRadius(lat, lng, searchRadius, Limit.of(20));
+        List<Report> reports = reportRepository.findNearbyActiveReportsWithinRadius(lat, lng, searchRadius,
+                Limit.of(20));
 
         if (reports.isEmpty()) {
             return ReportNearbyAlertResponse.builder()
@@ -1900,7 +1951,8 @@ public class ReportServiceImpl implements IReportService {
                     .status(r.getStatus() != null ? r.getStatus().name() : null)
                     .severity(r.getSeverity() != null ? r.getSeverity().name() : null)
                     .distanceInMeters(dist)
-                    .createdAt(r.getCreatedAt() != null ? r.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME) : null)
+                    .createdAt(
+                            r.getCreatedAt() != null ? r.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME) : null)
                     .build();
         }).collect(Collectors.toList());
 
@@ -1914,7 +1966,8 @@ public class ReportServiceImpl implements IReportService {
         if (shouldNotify) {
             UserNearbyAlertRecord lastAlert = userLastAlertCache.get(userId);
             if (lastAlert != null && lastAlert.getReportIds().equals(currentReportIds)) {
-                long minutesSinceLastAlert = java.time.Duration.between(lastAlert.getLastAlertTime(), java.time.Instant.now()).toMinutes();
+                long minutesSinceLastAlert = java.time.Duration
+                        .between(lastAlert.getLastAlertTime(), java.time.Instant.now()).toMinutes();
                 if (minutesSinceLastAlert < 10) {
                     shouldNotify = false;
                 }
@@ -1926,11 +1979,12 @@ public class ReportServiceImpl implements IReportService {
             userLastAlertCache.put(userId, new UserNearbyAlertRecord(currentReportIds, java.time.Instant.now()));
             try {
                 User user = userRepository.findById(userId).orElse(null);
-                java.util.Locale userLocale = (user != null && user.getLanguage() != null && !user.getLanguage().isBlank())
-                        ? new java.util.Locale(user.getLanguage())
-                        : (org.springframework.context.i18n.LocaleContextHolder.getLocale() != null
-                                ? org.springframework.context.i18n.LocaleContextHolder.getLocale()
-                                : new java.util.Locale("vi"));
+                java.util.Locale userLocale = (user != null && user.getLanguage() != null
+                        && !user.getLanguage().isBlank())
+                                ? new java.util.Locale(user.getLanguage())
+                                : (org.springframework.context.i18n.LocaleContextHolder.getLocale() != null
+                                        ? org.springframework.context.i18n.LocaleContextHolder.getLocale()
+                                        : new java.util.Locale("vi"));
 
                 String title = messageSource.getMessage(
                         "notification.report.nearby.title",
@@ -1956,7 +2010,8 @@ public class ReportServiceImpl implements IReportService {
 
                 // Send WebSocket Event
                 NotificationEvent event = new NotificationEvent(title, message, actionData, firstImage,
-                        Map.of("type", "NEARBY_REPORTS_ALERT", "count", count, "nearestDistance", nearestDistance, "reportId", nearestReportId));
+                        Map.of("type", "NEARBY_REPORTS_ALERT", "count", count, "nearestDistance", nearestDistance,
+                                "reportId", nearestReportId));
                 messagingTemplate.convertAndSendToUser(userId, "/queue/notifications", event);
 
                 // Send FCM
@@ -2031,7 +2086,8 @@ public class ReportServiceImpl implements IReportService {
         if (oldLat != null && oldLng != null && report.getLatitude() != null && report.getLongitude() != null
                 && (!oldLat.equals(report.getLatitude()) || !oldLng.equals(report.getLongitude()))) {
             try {
-                reportDensityService.onReportMoved(report.getId(), oldLat, oldLng, report.getLatitude(), report.getLongitude(), report.getCreatedAt());
+                reportDensityService.onReportMoved(report.getId(), oldLat, oldLng, report.getLatitude(),
+                        report.getLongitude(), report.getCreatedAt());
             } catch (Exception e) {
                 log.warn("[ReportDensity] Failed to trigger density update on move report: {}", e.getMessage());
             }
@@ -2074,7 +2130,8 @@ public class ReportServiceImpl implements IReportService {
         report = reportRepository.save(report);
 
         try {
-            reportDensityService.onReportRejected(report.getId(), report.getLatitude(), report.getLongitude(), report.getCreatedAt());
+            reportDensityService.onReportRejected(report.getId(), report.getLatitude(), report.getLongitude(),
+                    report.getCreatedAt());
         } catch (Exception e) {
             log.warn("[ReportDensity] Failed to trigger density update on cancel report: {}", e.getMessage());
         }

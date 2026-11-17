@@ -104,10 +104,12 @@ public class AdminReportController {
             @RequestParam(required = false) String from,
             @RequestParam(required = false) String to,
             @RequestParam(required = false) String search,
-            @RequestParam(required = false) Boolean overdue) {
+            @RequestParam(required = false) Boolean overdue,
+            @RequestParam(defaultValue = "false") boolean excludeRehandling) {
 
         return ResponseEntity.ok(ApiResponse.success("system.success",
-                reportService.getAdminReportList(page, size, status, severity, assigneeId, from, to, search, overdue)));
+                reportService.getAdminReportList(page, size, status, severity, assigneeId, from, to, search,
+                        overdue, excludeRehandling)));
     }
 
     // Update Status Report For Kanban & Detail (supports optional reject reason)

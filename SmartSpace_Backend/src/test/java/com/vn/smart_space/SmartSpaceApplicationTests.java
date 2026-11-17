@@ -48,7 +48,7 @@ class SmartSpaceApplicationTests {
 
 		LocalDateTime now = LocalDateTime.now();
 		Page<Report> adminOverdue = reportRepository.findAllFiltered(
-				null, null, true, now, null, null, null, null, null, PageRequest.of(0, 100));
+				null, null, false, true, now, null, null, null, null, null, PageRequest.of(0, 100));
 		assertTrue(adminOverdue.getTotalElements() > 0, "Expected synced DB to return overdue reports");
 		assertTrue(
 				adminOverdue.getContent().stream().anyMatch(r -> r.getStatus() == EReportStatus.processing),

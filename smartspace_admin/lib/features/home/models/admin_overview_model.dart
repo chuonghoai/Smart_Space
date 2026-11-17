@@ -4,7 +4,8 @@ class AdminOverviewModel {
   final int adminCount;
   final int issueCount;
   final int pendingCount;
-  final int processingCount;
+  final int processingCount; // Không gồm báo cáo xử lý lại
+  final int rehandlingCount; // Chờ giao lại + đang làm lại
   final int unsatisfactoryProcessedCount;
   final int rehandlingProcessingCount;
 
@@ -15,6 +16,7 @@ class AdminOverviewModel {
     required this.issueCount,
     this.pendingCount = 0,
     this.processingCount = 0,
+    this.rehandlingCount = 0,
     this.unsatisfactoryProcessedCount = 0,
     this.rehandlingProcessingCount = 0,
   });
@@ -27,6 +29,7 @@ class AdminOverviewModel {
       issueCount: (json['issueCount'] as num?)?.toInt() ?? 0,
       pendingCount: (json['pendingCount'] as num?)?.toInt() ?? 0,
       processingCount: (json['processingCount'] as num?)?.toInt() ?? 0,
+      rehandlingCount: (json['rehandlingCount'] as num?)?.toInt() ?? 0,
       unsatisfactoryProcessedCount: (json['unsatisfactoryProcessedCount'] as num?)?.toInt() ?? 0,
       rehandlingProcessingCount: (json['rehandlingProcessingCount'] as num?)?.toInt() ?? 0,
     );
@@ -40,6 +43,7 @@ class AdminOverviewModel {
       'issueCount': issueCount,
       'pendingCount': pendingCount,
       'processingCount': processingCount,
+      'rehandlingCount': rehandlingCount,
       'unsatisfactoryProcessedCount': unsatisfactoryProcessedCount,
       'rehandlingProcessingCount': rehandlingProcessingCount,
     };
@@ -52,6 +56,7 @@ class AdminOverviewModel {
     int? issueCount,
     int? pendingCount,
     int? processingCount,
+    int? rehandlingCount,
     int? unsatisfactoryProcessedCount,
     int? rehandlingProcessingCount,
   }) {
@@ -62,6 +67,7 @@ class AdminOverviewModel {
       issueCount: issueCount ?? this.issueCount,
       pendingCount: pendingCount ?? this.pendingCount,
       processingCount: processingCount ?? this.processingCount,
+      rehandlingCount: rehandlingCount ?? this.rehandlingCount,
       unsatisfactoryProcessedCount: unsatisfactoryProcessedCount ?? this.unsatisfactoryProcessedCount,
       rehandlingProcessingCount: rehandlingProcessingCount ?? this.rehandlingProcessingCount,
     );

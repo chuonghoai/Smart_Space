@@ -336,6 +336,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get sessionExpired => 'Session expired';
 
   @override
+  String get sessionRevokedOnThisDevice =>
+      'You have been signed out of this device from another device.';
+
+  @override
   String get settingsTitle => 'Settings';
 
   @override
@@ -827,6 +831,18 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get unresolvedReviewTitle => 'Unresolved feedback';
+
+  @override
+  String get resolutionInfo => 'Resolution result';
+
+  @override
+  String get resolutionNote => 'Resolution note';
+
+  @override
+  String get resolutionImages => 'Resolution photos';
+
+  @override
+  String get resolvedAtLabel => 'Completed at';
 
   @override
   String get reviewRatingLabel => 'Citizen rating';

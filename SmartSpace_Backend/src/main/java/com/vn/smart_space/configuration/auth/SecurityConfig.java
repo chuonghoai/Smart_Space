@@ -10,6 +10,8 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.oauth2.server.resource.authentication.JwtAuthenticationConverter;
 import org.springframework.security.oauth2.server.resource.authentication.JwtGrantedAuthoritiesConverter;
+import org.springframework.security.oauth2.server.resource.web.BearerTokenResolver;
+import org.springframework.security.oauth2.server.resource.web.DefaultBearerTokenResolver;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
@@ -25,8 +27,14 @@ public class SecurityConfig {
             "/auth/send-otp-register",
             "/auth/verify-otp-register",
             "/auth/send-otp-forgot-password",
-            "/auth/reset-password"
+            "/auth/reset-password",
+            SecurityConfig.LOGOUT_PATH
     };
+
+    // Logout tự xác thực chữ ký token trong service (chấp nhận token đã hết hạn) nên
+    // bỏ qua bearer filter — nếu không, token hết hạn bị 401 trước khi tới controller
+    // và phiên của thiết bị không bao giờ được xoá.
+    static final String LOGOUT_PATH = "/auth/logout";
     private final CustomJwtDecoder customJwtDecoder;
     private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
     private final JwtAccessDeniedHandler jwtAccessDeniedHandler;
@@ -51,6 +59,7 @@ public class SecurityConfig {
 
         // 2. Cấu hình OAuth2 Resource Server để dùng JWT
         httpSecurity.oauth2ResourceServer(oauth2 -> oauth2
+                .bearerTokenResolver(bearerTokenResolver())
                 .jwt(jwtConfigurer -> jwtConfigurer
                         .decoder(customJwtDecoder)
                         .jwtAuthenticationConverter(jwtAuthenticationConverter()))
@@ -67,6 +76,13 @@ public class SecurityConfig {
         httpSecurity.cors(Customizer.withDefaults());
 
         return httpSecurity.build();
+    }
+
+    private BearerTokenResolver bearerTokenResolver() {
+        DefaultBearerTokenResolver defaultResolver = new DefaultBearerTokenResolver();
+        return request -> LOGOUT_PATH.equals(request.getServletPath())
+                ? null
+                : defaultResolver.resolve(request);
     }
 
     @Bean

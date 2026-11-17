@@ -93,6 +93,10 @@ class AuthService {
 
   Future<ApiResponse<void>> logout() async {
     try {
+      // Xóa FCM token TRƯỚC khi gọi API logout: sau logout access token bị blacklist nên
+      // DELETE /devices/fcm-token sẽ bị 401. (Backend cũng tự xoá FCM token theo deviceId
+      // khi logout; bước này dọn cả token cũ đăng ký trước khi có cột device_id.)
+      await FirebaseService.clearTokenOnServer();
       return await authRepo.logout();
     } catch (e) {
       return ApiResponse(
@@ -101,10 +105,7 @@ class AuthService {
         data: null,
       );
     } finally {
-      // Gọi API logout
       stopScheduledTokenRefresh();
-      // Xóa FCM token của thiết bị hiện tại
-      await FirebaseService.clearTokenOnServer();
       // Xóa token
       await TokenStorage.clearAuth();
       userStorageService.clear();

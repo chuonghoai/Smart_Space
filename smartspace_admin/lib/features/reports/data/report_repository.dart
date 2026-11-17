@@ -86,10 +86,19 @@ class ReportRepository {
     );
   }
 
-  Future<ApiResponse<ReportListData>> getReportList(ReportFilter filter) async {
+  /// [excludeRehandling]: lọc "Đang xử lý"/"Đã xử lý" thì bỏ báo cáo xử lý lại,
+  /// khớp với nhóm tách riêng trên thẻ thống kê. Kanban để `false` để báo cáo
+  /// vẫn nằm trong cột trạng thái gốc.
+  Future<ApiResponse<ReportListData>> getReportList(
+    ReportFilter filter, {
+    bool excludeRehandling = false,
+  }) async {
     return apiClient.get(
       '/admin/reports',
-      queryParameters: filter.toQueryParams(),
+      queryParameters: {
+        ...filter.toQueryParams(),
+        if (excludeRehandling) 'excludeRehandling': true,
+      },
       decoder: (json) => ReportListData.fromJson(json as Map<String, dynamic>),
     );
   }
