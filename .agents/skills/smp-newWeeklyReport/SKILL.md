@@ -167,12 +167,14 @@ Trước khi viết bất kỳ file nào, Agent **MUST** tiến hành audit mã 
 5. **Từ mục `## 3.1.` trở đi:**
    - Mỗi mục con tương ứng với một chức năng trong danh sách.
    - Tiêu đề mục: `## 3.[k]. [Tên chức năng k]`.
-   - Nội dung mô tả chi tiết những gì **thực tế đã triển khai và hoàn thiện**, chia thành các gạch đầu dòng:
-     - Setup folder, module, package.
-     - Giao diện UI (danh sách, chi tiết, form nhập, component...).
-     - Backend API (endpoints, controller, service, repository, entity/DTO).
-     - Realtime (WebSocket STOMP channel, Firebase FCM notification).
-     - Cơ chế đồng bộ, validation, xử lý luồng nghiệp vụ.
+   - Nội dung mô tả những gì **thực tế đã triển khai** (hoặc hiện trạng còn thiếu sót nếu chưa hoàn thành), chia thành các gạch đầu dòng thuần túy theo các khía cạnh:
+     - Tổ chức module, giao diện người dùng (danh sách, chi tiết, form nhập, bộ lọc, thông báo...).
+     - Xử lý phía Backend (API, nghiệp vụ, kiểm tra hợp lệ, lưu trữ cơ sở dữ liệu).
+     - Cơ chế thời gian thực (WebSocket, Firebase) và đồng bộ dữ liệu liên ứng dụng.
+   - **Quy tắc văn phong & trình bày cho Word (BẮT BUỘC):**
+     - Diễn giải bằng văn bản tiếng Việt học thuật, mạch lạc, khái quát ở mức nghiệp vụ và kiến trúc để phù hợp sao chép trực tiếp sang Microsoft Word (tương tự `BaoCaoTuan7.md` và `BaoCaoTuan10.md`).
+     - **TUYỆT ĐỐI KHÔNG** sử dụng bất kỳ định dạng Markdown nào bên trong nội dung các gạch đầu dòng của mục `3.*` (không dùng in đậm `**...**`, in nghiêng `*...*`, backtick `` `...` `` hay khối code).
+     - **TUYỆT ĐỐI KHÔNG** ghi quá chi tiết các định danh mã nguồn như tên file (`.dart`, `.java`, `.arb`...), tên class/hàm/biến, đường dẫn endpoint URL cụ thể, hay tên bảng/cột cơ sở dữ liệu.
    - **Chỉ đưa vào các nội dung có minh chứng từ code thực tế.**
    - **Tuyệt đối KHÔNG đưa các nội dung sai lệch từ file 02 vào báo cáo tuần.**
 
@@ -299,6 +301,10 @@ Trình bày dưới dạng các gạch đầu dòng (`-`) súc tích, trực di�
 4. **Không bịa tính năng mới:** Không tự ý bổ sung các tính năng nằm ngoài phạm vi tuần báo cáo.
 5. **Giữ nguyên điểm đúng:** Những nội dung trong file 02 vốn đã đúng theo kiến trúc thì không nhắc lại.
 6. **Căn cứ từ mã nguồn thực tế:** Mọi nội dung chỉnh sửa phải phản ánh chính xác 100% mã nguồn đang chạy trong dự án.
+7. **Quy tắc văn phong & trình bày cho Word (BẮT BUỘC):**
+   - Diễn giải bằng văn phong học thuật thuần túy, khái quát ở mức nghiệp vụ và luồng xử lý, phù hợp để sao chép trực tiếp sang Microsoft Word (tương tự `weekly_reports/templete/03_editted.md`).
+   - **TUYỆT ĐỐI KHÔNG** sử dụng định dạng Markdown bên trong nội dung các gạch đầu dòng (không dùng in đậm `**...**`, in nghiêng `*...*`, backtick `` `...` `` hay khối code).
+   - **TUYỆT ĐỐI KHÔNG** nêu quá chi tiết các định danh mã nguồn như tên file (`.dart`, `.java`, `.arb`...), tên class/hàm/biến, đường dẫn endpoint URL cụ thể, hay tên bảng/cột cơ sở dữ liệu.
 
 ---
 
@@ -337,10 +343,10 @@ Trước khi hoàn thành nhiệm vụ, Agent **MUST** thực hiện kiểm tra 
 
 | File / Hạng mục | Tiêu chí kiểm tra bắt buộc | Đạt / Không đạt |
 | :--- | :--- | :---: |
-| **`BaoCaoTuan[N].md`** | 1. Cấu trúc, heading, bảng, thứ tự giống 100% `BaoCaoTuan7.md`.<br>2. Cột "Người phụ trách" hoàn toàn **ĐỂ TRỐNG**.<br>3. Cột "Tiến độ" phản ánh đúng kết quả audit thực tế (không mặc định 100%).<br>4. Chi tiết từ mục 3.1 có minh chứng từ code thực tế.<br>5. Không chứa bất kỳ nội dung sai lệch nào từ file 02. | [ ] |
+| **`BaoCaoTuan[N].md`** | 1. Cấu trúc, heading, bảng, thứ tự giống 100% `BaoCaoTuan7.md`.<br>2. Cột "Người phụ trách" hoàn toàn **ĐỂ TRỐNG**.<br>3. Cột "Tiến độ" phản ánh đúng kết quả audit thực tế (không mặc định 100%).<br>4. Chi tiết từ mục 3.1 có minh chứng từ code thực tế, viết theo văn phong học thuật phù hợp dán sang Word, **KHÔNG** chứa tên file/class/hàm/endpoint/bảng-cột và **KHÔNG** dùng định dạng Markdown (in đậm, in nghiêng, backtick) trong nội dung các mục `3.*`.<br>5. Không chứa bất kỳ nội dung sai lệch nào từ file 02. | [ ] |
 | **`01_promt_used.md`** | 1. Mặc định toàn bộ tính năng **CHƯA ĐƯỢC TRIỂN KHAI**.<br>2. Viết dưới góc nhìn yêu cầu sản phẩm của khách hàng/PO.<br>3. **KHÔNG** chứa tên file, class, method, endpoint URL, hex color, l10n key, DB table/col, code snippet.<br>4. Bao quát toàn bộ tính năng người dùng cung cấp. | [ ] |
 | **`02_AI_answer.md`** | 1. Mặc định toàn bộ tính năng **CHƯA ĐƯỢC TRIỂN KHAI**.<br>2. Kế hoạch bám sát kiến trúc SmartSpace (Client/Admin/Staff, Spring Boot, WebSocket, FCM, L10n, Design tokens).<br>3. Cố ý tạo đúng từ **2 đến 6 sai lệch kỹ thuật hợp lý**.<br>4. Không tiết lộ việc cố ý tạo sai lệch trong nội dung file. | [ ] |
-| **`03_editted.md`** | 1. Sửa toàn bộ các điểm sai lệch trong file 02 về đúng với code thực tế.<br>2. Không thay đổi file 02 gốc.<br>3. Giữ nguyên các nội dung đúng, không viết lại toàn bộ kế hoạch.<br>4. Trình bày bullet points chuẩn theo template mẫu. | [ ] |
+| **`03_editted.md`** | 1. Sửa toàn bộ các điểm sai lệch trong file 02 về đúng với code thực tế.<br>2. Không thay đổi file 02 gốc.<br>3. Giữ nguyên các nội dung đúng, không viết lại toàn bộ kế hoạch.<br>4. Trình bày bullet points chuẩn theo template mẫu, viết bằng văn phong diễn giải học thuật phù hợp dán sang Word, **KHÔNG** chứa tên file/class/hàm/endpoint/bảng-cột và **KHÔNG** dùng định dạng Markdown (in đậm, in nghiêng, backtick) trong nội dung. | [ ] |
 | **Hệ thống & File** | 1. Cú pháp Markdown chuẩn xác, bảng biểu render đúng.<br>2. Văn phong tiếng Việt học thuật, chuyên nghiệp, súc tích.<br>3. Đúng đường dẫn `weekly_reports/BaoCaoTuan[N]/`.<br>4. Không làm thay đổi các file template gốc trong `weekly_reports/templete/`. | [ ] |
 
 ---
@@ -353,6 +359,7 @@ Trước khi hoàn thành nhiệm vụ, Agent **MUST** thực hiện kiểm tra 
 4. **CẤM lộ sai lệch trong file 02:** Không được viết những câu như "chúng ta sẽ cố tình làm sai...", "điểm này viết sai để file 03 sửa...".
 5. **CẤM viết code thực thi bằng script riêng:** Skill này vận hành bằng hướng dẫn trực tiếp cho AI Agent thông qua các công cụ đọc/ghi file sẵn có của hệ thống, không tạo script phụ trợ không cần thiết.
 6. **CẤM sửa template gốc:** Tuyệt đối không ghi đè hoặc chỉnh sửa các file trong `weekly_reports/templete/`.
+7. **CẤM định dạng Markdown & định danh code trong mục `3.*` của `BaoCaoTuan[N].md` và trong `03_editted.md`:** Không dùng backtick, in đậm, in nghiêng và không nêu tên file, class, hàm, endpoint URL hay cột DB trong nội dung các mục `3.1.` trở đi của `BaoCaoTuan[N].md` cũng như các gạch đầu dòng của `03_editted.md`.
 
 ---
 
