@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:intl/intl.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:smartspace_admin/features/map/application/map_providers.dart';
 import 'package:smartspace_admin/features/map/models/report_timeframe.dart';
 import 'package:smartspace_admin/features/reports/models/report_filter_model.dart';
@@ -16,7 +17,8 @@ class MapFilterBottomSheet extends ConsumerWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (_) => const MapFilterBottomSheet(),
+      // Web: chặn click rơi xuống iframe bản đồ nằm dưới sheet
+      builder: (_) => PointerInterceptor(child: const MapFilterBottomSheet()),
     );
   }
 

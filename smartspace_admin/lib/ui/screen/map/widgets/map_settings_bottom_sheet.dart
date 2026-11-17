@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:smartspace_admin/features/map/models/report_timeframe.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 
@@ -33,13 +34,17 @@ class MapSettingsBottomSheet extends StatefulWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (sheetContext) => MapSettingsBottomSheet(
-        isDensityEnabled: isDensityEnabled,
-        onDensityToggle: onDensityToggle,
-        currentStatus: currentStatus,
-        onStatusSelected: onStatusSelected,
-        currentTimeframe: currentTimeframe,
-        onTimeframeSelected: onTimeframeSelected,
+      // Web: sheet nằm đè lên iframe bản đồ (HtmlElementView) — không có
+      // PointerInterceptor thì click rơi xuống iframe, Switch/chip không bấm được.
+      builder: (sheetContext) => PointerInterceptor(
+        child: MapSettingsBottomSheet(
+          isDensityEnabled: isDensityEnabled,
+          onDensityToggle: onDensityToggle,
+          currentStatus: currentStatus,
+          onStatusSelected: onStatusSelected,
+          currentTimeframe: currentTimeframe,
+          onTimeframeSelected: onTimeframeSelected,
+        ),
       ),
     );
   }
