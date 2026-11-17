@@ -829,6 +829,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get unresolvedReviewTitle => 'Unresolved feedback';
 
   @override
+  String get resolutionInfo => 'Resolution result';
+
+  @override
+  String get resolutionNote => 'Resolution note';
+
+  @override
+  String get resolutionImages => 'Resolution photos';
+
+  @override
+  String get resolvedAtLabel => 'Completed at';
+
+  @override
   String get reviewRatingLabel => 'Citizen rating';
 
   @override

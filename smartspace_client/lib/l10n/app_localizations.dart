@@ -1670,6 +1670,30 @@ abstract class AppLocalizations {
   /// **'Unresolved feedback'**
   String get unresolvedReviewTitle;
 
+  /// No description provided for @resolutionInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution result'**
+  String get resolutionInfo;
+
+  /// No description provided for @resolutionNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution note'**
+  String get resolutionNote;
+
+  /// No description provided for @resolutionImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution photos'**
+  String get resolutionImages;
+
+  /// No description provided for @resolvedAtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed at'**
+  String get resolvedAtLabel;
+
   /// No description provided for @reviewRatingLabel.
   ///
   /// In en, this message translates to:

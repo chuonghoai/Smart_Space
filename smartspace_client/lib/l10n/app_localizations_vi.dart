@@ -829,6 +829,18 @@ class AppLocalizationsVi extends AppLocalizations {
   String get unresolvedReviewTitle => 'Phản hồi chưa được xử lý thỏa đáng';
 
   @override
+  String get resolutionInfo => 'Kết quả xử lý';
+
+  @override
+  String get resolutionNote => 'Ghi chú xử lý';
+
+  @override
+  String get resolutionImages => 'Ảnh kết quả xử lý';
+
+  @override
+  String get resolvedAtLabel => 'Thời gian hoàn thành';
+
+  @override
   String get reviewRatingLabel => 'Đánh giá người dân';
 
   @override

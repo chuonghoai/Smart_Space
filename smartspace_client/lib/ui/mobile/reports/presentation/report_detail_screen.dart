@@ -19,6 +19,7 @@ import 'package:smartspace_client/features/reports/utils/report_severity_ext.dar
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/routes/router_path.dart';
 import 'package:smartspace_client/ui/mobile/reports/presentation/widgets/fullscreen_image_viewer.dart';
+import 'package:smartspace_client/ui/mobile/reports/presentation/widgets/report_resolution_card.dart';
 import 'package:smartspace_client/ui/mobile/reports/presentation/widgets/report_review_dialog.dart';
 import 'package:mobile_shared/features/chat/data/chat_repository.dart';
 import 'package:mobile_shared/features/chat/models/conversation_model.dart';
@@ -43,9 +44,13 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
   int _currentImageIndex = 0;
 
   void _openReviewDialog() {
+    final report = ref.read(reportDetailProvider(widget.reportId)).valueOrNull;
     ReportReviewDialog.show(
       context,
       reportId: widget.reportId,
+      resolvedNote: report?.resolvedNote,
+      resolvedImageUrls: report?.resolvedImageUrls ?? const [],
+      resolvedAt: report?.resolvedAt,
       onReviewSubmitted: () {
         ref.read(reportDetailProvider(widget.reportId).notifier).refresh();
       },
@@ -816,6 +821,21 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
                                 ),
                               ],
                             ),
+                          ),
+                          const SizedBox(height: 16),
+                        ],
+
+                        // Staff resolution result — chỉ hiện khi đã xử lý xong,
+                        // tránh lộ kết quả cũ trong lúc staff đang xử lý lại.
+                        if (report.status == ReportStatus.processed &&
+                            ReportResolutionCard.hasContent(
+                              report.resolvedNote,
+                              report.resolvedImageUrls,
+                            )) ...[
+                          ReportResolutionCard(
+                            note: report.resolvedNote,
+                            imageUrls: report.resolvedImageUrls,
+                            resolvedAt: report.resolvedAt,
                           ),
                           const SizedBox(height: 16),
                         ],
