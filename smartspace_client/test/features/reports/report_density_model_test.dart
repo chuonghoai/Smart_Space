@@ -4,6 +4,8 @@ import 'package:smartspace_client/features/reports/models/report_density_model.d
 
 void main() {
   group('ReportDensityModel Tests', () {
+    // Test Case ID: SMP-032
+    // Description: Kiểm tra ReportDensityCell.fromJson parse đúng cellId, count, level LOW, màu sắc, tọa độ tâm và danh sách coordinates.
     test('ReportDensityCell parses LOW level correctly', () {
       final json = {
         'cellId': '8b2f567406a0fff',
@@ -30,6 +32,8 @@ void main() {
       expect(cell.coordinates.length, equals(3));
     });
 
+    // Test Case ID: SMP-033
+    // Description: Kiểm tra ReportDensityCell.fromJson parse đúng mức MEDIUM và HIGH kèm màu sắc tương ứng.
     test('ReportDensityCell parses MEDIUM and HIGH levels correctly', () {
       final mediumJson = {
         'cellId': 'cell_medium',
@@ -58,6 +62,8 @@ void main() {
       expect(highCell.color, equals(const Color(0xFFEF4444)));
     });
 
+    // Test Case ID: SMP-034
+    // Description: Kiểm tra ReportDensityResult.fromJson parse đúng thông tin tổng quan, danh sách cells và GeoJSON FeatureCollection.
     test('ReportDensityResult parses GeoJSON FeatureCollection correctly', () {
       final json = {
         'resolution': 11,

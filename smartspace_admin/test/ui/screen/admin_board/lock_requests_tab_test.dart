@@ -70,6 +70,8 @@ void main() {
     nextDeadlineAt: DateTime.now().add(const Duration(hours: 5, minutes: 30)),
   );
 
+  // Test Case ID: SMP-107
+  // Description: Kiểm tra dòng tóm tắt và 3 thẻ đếm trên tab Yêu cầu khóa tài khoản hiển thị đúng số liệu.
   testWidgets('Finding trả lời câu hỏi của màn và 3 thẻ đếm hiển thị đúng số', (tester) async {
     await _pump(tester, someAwaiting);
 
@@ -80,6 +82,8 @@ void main() {
     expect(find.text('14'), findsOneWidget);
   });
 
+  // Test Case ID: SMP-108
+  // Description: Kiểm tra bộ lọc mặc định "Cần bạn" và chuyển sang danh sách "Đang chờ" khi nhấn thẻ tương ứng.
   testWidgets('Mặc định lọc "Cần bạn"; bấm thẻ "Đang chờ" → danh sách đổi theo', (tester) async {
     await _pump(tester, someAwaiting);
 
@@ -92,6 +96,8 @@ void main() {
     expect(find.text('Võ Thành Nam'), findsOneWidget);
   });
 
+  // Test Case ID: SMP-109
+  // Description: Kiểm tra tự động chuyển sang bộ lọc "Đang chờ" khi awaitingMyVote = 0 nhưng vẫn còn đề xuất đang chờ.
   testWidgets('Không có gì cần bạn nhưng còn đề xuất chờ → tự chuyển sang "Đang chờ"', (tester) async {
     await _pump(tester, const AccountLockPendingCount(pending: 2, awaitingMyVote: 0, resolved: 3));
 
@@ -100,6 +106,8 @@ void main() {
     expect(find.text('Võ Thành Nam'), findsOneWidget);
   });
 
+  // Test Case ID: SMP-110
+  // Description: Kiểm tra hiển thị thông báo trạng thái trống khi chọn bộ lọc "Đã kết thúc" không có dữ liệu.
   testWidgets('Bộ lọc trống → giữ khung và một câu', (tester) async {
     await _pump(tester, someAwaiting);
 
@@ -109,6 +117,8 @@ void main() {
     expect(find.text('Chưa có đề xuất nào kết thúc'), findsOneWidget);
   });
 
+  // Test Case ID: SMP-111
+  // Description: Kiểm tra trên màn hình điện thoại (390x844), 3 thẻ đếm chuyển thành ChoiceChip kèm số và không lỗi layout.
   testWidgets('Điện thoại: thẻ đếm thành chip có số, không tràn', (tester) async {
     await _pump(tester, someAwaiting, size: const Size(390, 844));
 

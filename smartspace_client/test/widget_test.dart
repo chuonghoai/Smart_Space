@@ -10,6 +10,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:smartspace_client/main.dart';
 
 void main() {
+  // Test Case ID: SMP-061
+  // Description: Template counter mặc định của Flutter kiểm tra widget đếm '0'/'1' trên SmartSpaceApp() (không khớp giao diện thực tế).
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const SmartSpaceApp());

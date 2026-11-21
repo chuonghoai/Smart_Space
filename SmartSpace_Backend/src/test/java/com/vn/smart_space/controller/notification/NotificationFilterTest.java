@@ -37,6 +37,8 @@ public class NotificationFilterTest {
         }
     }
 
+    // Test Case ID: SMP-194
+    // Description: Kiểm tra GET /notifications/my?unread=true chỉ trả về thông báo chưa đọc (isRead=false) và không vượt quá badge unread-count
     @Test
     @DisplayName("unread=true: chi tra ve thong bao chua doc, khong nhieu hon so badge")
     void testUnreadOnly() throws Exception {
@@ -49,6 +51,8 @@ public class NotificationFilterTest {
                 "So thong bao chua doc vuot so badge (" + badge + ")");
     }
 
+    // Test Case ID: SMP-195
+    // Description: Kiểm tra GET /notifications/my không truyền tham số unread trả về tổng số thông báo lớn hơn hoặc bằng số thông báo chưa đọc
     @Test
     @DisplayName("Khong truyen unread: van tra ve ca thong bao da doc (tuong thich nguoc cho Staff/Admin)")
     void testDefaultReturnsAll() throws Exception {

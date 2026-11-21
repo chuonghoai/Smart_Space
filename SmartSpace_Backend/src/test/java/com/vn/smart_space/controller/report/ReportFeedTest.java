@@ -43,6 +43,8 @@ public class ReportFeedTest {
         }
     }
 
+    // Test Case ID: SMP-213
+    // Description: Kiểm tra GET /reports/feed ẩn report rejected, không lộ số điện thoại người gửi, email nhân viên và tên người đăng ẩn danh.
     @Test
     @DisplayName("Client xem Bang tin: khong co rejected, khong lo SDT, an danh khong lo ten")
     void testFeed_PublicSafety() throws Exception {
@@ -78,6 +80,8 @@ public class ReportFeedTest {
                 "Phan anh an danh khong duoc lo ten");
     }
 
+    // Test Case ID: SMP-214
+    // Description: Kiểm tra GET /reports/feed với sort=nearby trả về distance_in_meters và sắp xếp tăng dần qua phân trang page 1 và page 2.
     @Test
     @DisplayName("Gan toi: backend sap xep theo khoang cach, dung thu tu ca khi sang trang 2")
     void testFeed_NearbySortedAcrossPages() throws Exception {
@@ -96,6 +100,8 @@ public class ReportFeedTest {
         }
     }
 
+    // Test Case ID: SMP-215
+    // Description: Kiểm tra GET /reports/feed với severity=high đảm bảo mọi phần tử trả về đều có mức độ severity là high.
     @Test
     @DisplayName("Loc muc do: chi tra ve phan anh dung severity")
     void testFeed_SeverityFilter() throws Exception {
@@ -104,6 +110,8 @@ public class ReportFeedTest {
         }
     }
 
+    // Test Case ID: SMP-216
+    // Description: Kiểm tra tham số search trên GET /reports/feed trả về kết quả chứa từ khóa trong title, description hoặc address.
     @Test
     @DisplayName("Tim kiem: moi ket qua chua tu khoa trong tieu de, mo ta hoac dia chi")
     void testFeed_SearchMatchesReportContentOnly() throws Exception {
@@ -123,6 +131,8 @@ public class ReportFeedTest {
         }
     }
 
+    // Test Case ID: SMP-217
+    // Description: Kiểm tra lọc ngày trên GET /reports/feed khi from=to chỉ trả về các phản ánh có created_at thuộc đúng ngày đó.
     @Test
     @DisplayName("Loc theo ngay: from = to = mot ngay chi tra ve phan anh tao trong dung ngay do")
     void testFeed_SingleDayFilter() throws Exception {

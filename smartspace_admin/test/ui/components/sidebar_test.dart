@@ -66,6 +66,8 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Sidebar (Mobile Drawer) Focus and Navigation Tests', () {
+    // Test Case ID: SMP-088
+    // Description: Kiểm tra Sidebar drawer chọn mục Tổng quan khi router đang ở đường dẫn /home.
     testWidgets('Focuses Overview (Tổng quan) when on /home', (tester) async {
       await tester.binding.setSurfaceSize(const Size(800, 1200));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -103,6 +105,8 @@ void main() {
       expect(newsTile.selected, isFalse);
     });
 
+    // Test Case ID: SMP-089
+    // Description: Kiểm tra Sidebar drawer chọn mục Quản lý tin tức khi ở /news và điều hướng về /home khi bấm Tổng quan.
     testWidgets('Focuses News item when on /news, and Overview is not focused', (tester) async {
       await tester.binding.setSurfaceSize(const Size(800, 1200));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -154,6 +158,8 @@ void main() {
       expect(find.text('Home Screen'), findsOneWidget);
     });
 
+    // Test Case ID: SMP-090
+    // Description: Kiểm tra Sidebar drawer chọn mục Quản lý nhân viên và bỏ chọn Tổng quan khi ở đường dẫn /staff-management.
     testWidgets('Focuses Staff Management when on /staff-management', (tester) async {
       await tester.binding.setSurfaceSize(const Size(800, 1200));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -197,6 +203,8 @@ void main() {
       expect(overviewTile.selected, isFalse);
     });
 
+    // Test Case ID: SMP-091
+    // Description: Kiểm tra Sidebar drawer chọn mục Hội đồng quản trị tại /admin-board và đúng thứ tự giữa Hội thoại và Quản lý phản ánh.
     testWidgets('Focuses Board of Administrators when on /admin-board', (tester) async {
       await tester.binding.setSurfaceSize(const Size(800, 1200));
       addTearDown(() => tester.binding.setSurfaceSize(null));

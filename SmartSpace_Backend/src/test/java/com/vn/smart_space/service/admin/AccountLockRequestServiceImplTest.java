@@ -123,6 +123,8 @@ class AccountLockRequestServiceImplTest {
         private final User proposer = user(PROPOSER, ERole.admin, EUserStatus.active);
         private final User target = user(TARGET, ERole.client, EUserStatus.active);
 
+        // Test Case ID: SMP-234
+        // Description: Từ chối tạo đề xuất khóa khi lý do sau khi trim quá ngắn và không truy vấn DB.
         @Test
         @DisplayName("lý do quá ngắn (sau khi trim) → reason.length, không chạm DB")
         void shortReason_isRejected() {
@@ -134,6 +136,8 @@ class AccountLockRequestServiceImplTest {
             verifyNoInteractions(userRepository, requestRepository);
         }
 
+        // Test Case ID: SMP-235
+        // Description: Từ chối tạo đề xuất khóa khi không có bằng chứng ảnh hoặc phản ánh hợp lệ.
         @Test
         @DisplayName("không có bằng chứng → evidence.required")
         void noEvidence_isRejected() {
@@ -144,6 +148,8 @@ class AccountLockRequestServiceImplTest {
             verifyNoInteractions(userRepository);
         }
 
+        // Test Case ID: SMP-236
+        // Description: Từ chối tạo đề xuất khóa khi URL ảnh bằng chứng không bắt đầu bằng https://.
         @Test
         @DisplayName("ảnh không phải https → evidence.image_invalid")
         void nonHttpsImage_isRejected() {
@@ -153,6 +159,8 @@ class AccountLockRequestServiceImplTest {
             assertEquals("lock_request.evidence.image_invalid", ex.getMessage());
         }
 
+        // Test Case ID: SMP-237
+        // Description: Trả về ResourceNotFoundException khi đối tượng bị đề xuất khóa không có role client.
         @Test
         @DisplayName("đối tượng không phải client → target_not_found")
         void nonClientTarget_isNotFound() {
@@ -165,6 +173,8 @@ class AccountLockRequestServiceImplTest {
             assertEquals("lock_request.target_not_found", ex.getMessage());
         }
 
+        // Test Case ID: SMP-238
+        // Description: Từ chối tạo đề xuất khóa khi tài khoản client đích đang ở trạng thái blocked.
         @Test
         @DisplayName("người dùng đã bị khóa → target_not_active")
         void blockedTarget_isRejected() {
@@ -177,6 +187,8 @@ class AccountLockRequestServiceImplTest {
             assertEquals("lock_request.target_not_active", ex.getMessage());
         }
 
+        // Test Case ID: SMP-239
+        // Description: Từ chối khi đã có đề xuất pending và xác minh khóa dòng user trước khi kiểm tra.
         @Test
         @DisplayName("đã có đề xuất chờ → already_pending; khóa dòng người dùng diễn ra TRƯỚC khi kiểm tra")
         void alreadyPending_isRejected_afterRowLock() {
@@ -193,6 +205,8 @@ class AccountLockRequestServiceImplTest {
             order.verify(requestRepository).existsByTargetIdAndStatus(TARGET, EAccountLockRequestStatus.pending);
         }
 
+        // Test Case ID: SMP-240
+        // Description: Từ chối tạo đề xuất khóa khi tổng admin active là 2 (không đủ 2 admin khác biểu quyết).
         @Test
         @DisplayName("không đủ 2 admin khác đang hoạt động → not_enough_admins")
         void notEnoughAdmins_isRejected() {
@@ -207,6 +221,8 @@ class AccountLockRequestServiceImplTest {
             verify(requestRepository, never()).save(any());
         }
 
+        // Test Case ID: SMP-241
+        // Description: Từ chối tạo đề xuất khóa khi bằng chứng phản ánh là ẩn danh hoặc thuộc người dùng khác.
         @Test
         @DisplayName("phản ánh ẩn danh hoặc của người khác → evidence.report_invalid")
         void anonymousOrForeignReport_isRejected() {
@@ -224,6 +240,8 @@ class AccountLockRequestServiceImplTest {
             verify(requestRepository, never()).save(any());
         }
 
+        // Test Case ID: SMP-242
+        // Description: Tạo đề xuất khóa thành công với hạn 72h, gộp ảnh trùng, ghi log và mời admin active.
         @Test
         @DisplayName("thành công → pending, hạn 72h, lưu ảnh + phản ánh, ghi log, mời các admin biểu quyết")
         void success_createsPendingRequest() {
@@ -281,6 +299,8 @@ class AccountLockRequestServiceImplTest {
         private final User voterB = user(VOTER_B, ERole.admin, EUserStatus.active);
         private final User target = user(TARGET, ERole.client, EUserStatus.active);
 
+        // Test Case ID: SMP-243
+        // Description: Từ chối bỏ phiếu khi quyết định không hợp lệ và không truy vấn khóa dòng đề xuất.
         @Test
         @DisplayName("phiếu không hợp lệ → decision_invalid, không khóa dòng")
         void invalidDecision_isRejected() {
@@ -291,6 +311,8 @@ class AccountLockRequestServiceImplTest {
             verifyNoInteractions(requestRepository);
         }
 
+        // Test Case ID: SMP-244
+        // Description: Từ chối bỏ phiếu khi đề xuất khóa đã ở trạng thái kết thúc (approved).
         @Test
         @DisplayName("đề xuất đã kết thúc → closed")
         void resolvedRequest_isClosed() {
@@ -304,6 +326,8 @@ class AccountLockRequestServiceImplTest {
             assertEquals("lock_request.closed", ex.getMessage());
         }
 
+        // Test Case ID: SMP-245
+        // Description: Từ chối bỏ phiếu khi đề xuất đang pending nhưng đã quá thời hạn expiresAt.
         @Test
         @DisplayName("đã quá hạn nhưng scheduler chưa chạy → closed")
         void overdueRequest_isClosed() {
@@ -317,6 +341,8 @@ class AccountLockRequestServiceImplTest {
             assertEquals("lock_request.closed", ex.getMessage());
         }
 
+        // Test Case ID: SMP-246
+        // Description: Từ chối khi chính người đề xuất tự bỏ phiếu cho đề xuất khóa của mình.
         @Test
         @DisplayName("người đề xuất tự bỏ phiếu → self_vote")
         void proposerVote_isRejected() {
@@ -328,6 +354,8 @@ class AccountLockRequestServiceImplTest {
             assertEquals("lock_request.self_vote", ex.getMessage());
         }
 
+        // Test Case ID: SMP-247
+        // Description: Từ chối khi admin bỏ phiếu lần thứ hai cho cùng một đề xuất khóa.
         @Test
         @DisplayName("bỏ phiếu lần hai → already_voted")
         void secondVote_isRejected() {
@@ -341,6 +369,8 @@ class AccountLockRequestServiceImplTest {
             verify(voteRepository, never()).save(any());
         }
 
+        // Test Case ID: SMP-248
+        // Description: Lưu phiếu bảo lãnh đầu tiên (chuẩn hóa chữ hoa và trim comment), đề xuất giữ nguyên pending.
         @Test
         @DisplayName("phiếu bảo lãnh đầu tiên → vẫn chờ, chưa khóa")
         void firstApproval_staysPending() {
@@ -362,6 +392,8 @@ class AccountLockRequestServiceImplTest {
             verify(notifier, never()).notifyAccountLocked(any(), anyString());
         }
 
+        // Test Case ID: SMP-249
+        // Description: Đủ 2 phiếu bảo lãnh thì duyệt đề xuất, khóa tài khoản target, thu hồi phiên và gửi thông báo.
         @Test
         @DisplayName("đủ 2 bảo lãnh → khóa tài khoản, thu hồi phiên, báo người dùng, thông báo kết quả")
         void secondApproval_locksAccount() {
@@ -383,6 +415,8 @@ class AccountLockRequestServiceImplTest {
             verify(notifier).notifyResolved(eq(req), anyCollection());
         }
 
+        // Test Case ID: SMP-250
+        // Description: Đủ 2 phiếu từ chối thì bác bỏ đề xuất, giữ nguyên tài khoản active và thông báo kết quả.
         @Test
         @DisplayName("đủ 2 từ chối → bác bỏ, tài khoản giữ nguyên")
         void secondRejection_rejectsRequest() {
@@ -410,6 +444,8 @@ class AccountLockRequestServiceImplTest {
         private final User proposer = user(PROPOSER, ERole.admin, EUserStatus.active);
         private final User target = user(TARGET, ERole.client, EUserStatus.active);
 
+        // Test Case ID: SMP-251
+        // Description: Từ chối hủy đề xuất khóa khi người thực hiện không phải người đề xuất.
         @Test
         @DisplayName("người khác hủy → not_proposer")
         void cancelByOther_isRejected() {
@@ -420,6 +456,8 @@ class AccountLockRequestServiceImplTest {
             assertEquals("lock_request.not_proposer", ex.getMessage());
         }
 
+        // Test Case ID: SMP-252
+        // Description: Người đề xuất hủy thành công đề xuất đang pending, trạng thái chuyển sang cancelled.
         @Test
         @DisplayName("người đề xuất hủy khi còn chờ → cancelled")
         void cancelByProposer_cancels() {
@@ -433,6 +471,8 @@ class AccountLockRequestServiceImplTest {
             assertFalse(res.isCanCancel());
         }
 
+        // Test Case ID: SMP-253
+        // Description: Đề xuất pending đã quá hạn khi gọi expire sẽ chuyển sang expired và thông báo kết quả.
         @Test
         @DisplayName("quá hạn và còn chờ → expired + thông báo kết quả")
         void overdue_expires() {
@@ -446,6 +486,8 @@ class AccountLockRequestServiceImplTest {
             verify(notifier).notifyResolved(eq(req), anyCollection());
         }
 
+        // Test Case ID: SMP-254
+        // Description: Bỏ qua xử lý expire khi đề xuất đã chuyển sang trạng thái kết thúc (approved).
         @Test
         @DisplayName("vừa được duyệt trước khi scheduler khóa dòng → không đổi gì")
         void alreadyResolved_isNoop() {
@@ -467,6 +509,8 @@ class AccountLockRequestServiceImplTest {
     @DisplayName("Mở khóa")
     class Unlock {
 
+        // Test Case ID: SMP-255
+        // Description: Từ chối mở khóa khi tài khoản client đích đang ở trạng thái active (chưa bị khóa).
         @Test
         @DisplayName("tài khoản không bị khóa → not_blocked")
         void notBlocked_isRejected() {
@@ -479,6 +523,8 @@ class AccountLockRequestServiceImplTest {
             assertEquals("user.unlock.not_blocked", ex.getMessage());
         }
 
+        // Test Case ID: SMP-256
+        // Description: Mở khóa tài khoản client bị blocked thành công, khôi phục phiên, lọc ký tự '|' trong log và thông báo.
         @Test
         @DisplayName("một admin mở khóa + lý do → active, gỡ chặn, ghi log kèm lý do, báo người dùng")
         void success_unlocks() {
@@ -505,6 +551,8 @@ class AccountLockRequestServiceImplTest {
     @DisplayName("Điều kiện đề xuất, bộ lọc và bộ đếm")
     class Eligibility {
 
+        // Test Case ID: SMP-257
+        // Description: Kiểm tra proposalBlockedReason trả về not_active khi bị khóa và already_pending khi đang có đề xuất chờ.
         @Test
         @DisplayName("proposalBlockedReason: đã khóa → not_active; đã có đề xuất chờ → already_pending")
         void blockedReasons_inactiveAndPending() {
@@ -517,6 +565,8 @@ class AccountLockRequestServiceImplTest {
                     service.proposalBlockedReason(user(TARGET, ERole.client, EUserStatus.active)));
         }
 
+        // Test Case ID: SMP-258
+        // Description: Kiểm tra proposalBlockedReason trả về not_enough_admins khi có 2 admin active và null khi có 3 admin.
         @Test
         @DisplayName("proposalBlockedReason: chỉ 2 admin hoạt động → not_enough_admins; 3 admin → được phép")
         void blockedReasons_adminCount() {
@@ -527,6 +577,8 @@ class AccountLockRequestServiceImplTest {
             assertEquals(null, service.proposalBlockedReason(target));
         }
 
+        // Test Case ID: SMP-259
+        // Description: Danh sách filter awaiting_mine dùng truy vấn findAwaitingVote sắp xếp expiresAt tăng dần.
         @Test
         @DisplayName("list(awaiting_mine) → truy vấn hàng chờ của chính admin, hạn gần nhất lên trước")
         void listAwaitingMine_usesAwaitingQuery() {
@@ -543,6 +595,8 @@ class AccountLockRequestServiceImplTest {
             verify(requestRepository, never()).findByStatusIn(anyCollection(), any());
         }
 
+        // Test Case ID: SMP-260
+        // Description: Kiểm tra getPendingCount trả về đúng số lượng pending, awaitingMyVote, resolved và nextDeadlineAt.
         @Test
         @DisplayName("getPendingCount → gồm cả số đã kết thúc và hạn gần nhất cần biểu quyết")
         void pendingCount_includesResolvedAndNextDeadline() {
@@ -563,6 +617,8 @@ class AccountLockRequestServiceImplTest {
         }
     }
 
+    // Test Case ID: SMP-261
+    // Description: Kiểm tra activityKey thay ký tự '|' trong tham số bằng khoảng trắng và cắt tối đa 255 ký tự.
     @Test
     @DisplayName("activityKey: thay '|' trong tham số và chặn tối đa 255 ký tự")
     void activityKey_sanitizesAndTruncates() {

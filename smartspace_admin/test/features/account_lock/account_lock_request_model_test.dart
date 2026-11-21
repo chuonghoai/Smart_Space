@@ -3,6 +3,8 @@ import 'package:smartspace_admin/features/account_lock/models/account_lock_reque
 
 void main() {
   group('AccountLockRequestModel.fromJson', () {
+    // Test Case ID: SMP-062
+    // Description: Kiểm tra parse JSON đầy đủ cho AccountLockRequestModel gồm phiếu, bằng chứng và quyền thao tác.
     test('parse đầy đủ chi tiết: phiếu, bằng chứng, quyền thao tác', () {
       final model = AccountLockRequestModel.fromJson({
         'id': 'req-1',
@@ -46,6 +48,8 @@ void main() {
       expect(model.expiresAt, DateTime(2026, 11, 18, 10));
     });
 
+    // Test Case ID: SMP-063
+    // Description: Kiểm tra parse JSON tối giản thiếu bằng chứng/phiếu và status không xác định vẫn an toàn và fallback về pending.
     test('bản tóm tắt (danh sách) không có bằng chứng/phiếu và trạng thái lạ không làm crash', () {
       final model = AccountLockRequestModel.fromJson({
         'id': 'req-2',
@@ -63,6 +67,8 @@ void main() {
     });
   });
 
+  // Test Case ID: SMP-064
+  // Description: Kiểm tra thuộc tính LockRequestStatus.isResolved trả về false cho pending và true cho các trạng thái đã kết thúc.
   test('LockRequestStatus.isResolved', () {
     expect(LockRequestStatus.pending.isResolved, isFalse);
     for (final s in [

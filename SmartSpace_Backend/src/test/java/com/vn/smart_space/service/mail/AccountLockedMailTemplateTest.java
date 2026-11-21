@@ -51,6 +51,8 @@ class AccountLockedMailTemplateTest {
         return engine.process("mail/account-locked", ctx);
     }
 
+    // Test Case ID: SMP-290
+    // Description: Render template mail/account-locked tiếng Việt kèm lý do khóa, email hỗ trợ, không thiếu key i18n và xuất HTML preview.
     @Test
     void rendersVietnameseWithReason() throws IOException {
         String html = render(Locale.forLanguageTag("vi"), "Lê Văn C", "Đăng nhiều phản ánh sai sự thật.", true);
@@ -67,6 +69,8 @@ class AccountLockedMailTemplateTest {
         Files.writeString(dir.resolve("account-locked_vi.html"), html, StandardCharsets.UTF_8);
     }
 
+    // Test Case ID: SMP-291
+    // Description: Render template mail/account-locked tiếng Anh và ẩn dòng liên hệ hỗ trợ khi supportEmail là null.
     @Test
     void rendersEnglishAndHidesSupportLine() {
         String html = render(Locale.ENGLISH, "Jane Doe", "Repeated spam reports.", false);
@@ -77,6 +81,8 @@ class AccountLockedMailTemplateTest {
         assertFalse(html.contains("??"));
     }
 
+    // Test Case ID: SMP-292
+    // Description: Kiểm tra HTML-escape cho fullName và reason chứa thẻ HTML/script trong template mail/account-locked để chống XSS.
     @Test
     void escapesReasonAndName() {
         String html = render(Locale.forLanguageTag("vi"), "<b>x</b>", "<script>alert(1)</script>", false);

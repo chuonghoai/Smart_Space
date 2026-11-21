@@ -121,6 +121,8 @@ Widget _buildTestApp({
 
 void main() {
   group('AdminQuickAccessBar Tests', () {
+    // Test Case ID: SMP-121
+    // Description: Kiểm tra AdminQuickAccessBar chế độ cuộn ngang hiển thị Scrollbar, nút cuộn trái/phải và đủ 5 icon chức năng.
     testWidgets('renders all 5 quick access cards and scrollbar in scrollable mode',
         (tester) async {
       await tester.binding.setSurfaceSize(const Size(1200, 800));
@@ -149,6 +151,8 @@ void main() {
       expect(find.byIcon(Icons.newspaper_outlined), findsOneWidget);
     });
 
+    // Test Case ID: SMP-122
+    // Description: Kiểm tra AdminQuickAccessBar ở chế độ panel (isPanelMode: true) ẩn Scrollbar/nút cuộn và hiển thị đủ 5 ô chức năng.
     testWidgets('renders panel mode with 2-column grid when isPanelMode is true',
         (tester) async {
       await tester.binding.setSurfaceSize(const Size(400, 600));
@@ -175,6 +179,8 @@ void main() {
       expect(find.byIcon(Icons.newspaper_outlined), findsOneWidget);
     });
 
+    // Test Case ID: SMP-123
+    // Description: Kiểm tra sự tồn tại và thao tác nhấn nút cuộn phải (Icons.chevron_right) trên AdminQuickAccessBar ở kích thước 600x800.
     testWidgets('scroll buttons move the scroll position smoothly',
         (tester) async {
       await tester.binding.setSurfaceSize(const Size(600, 800));
@@ -197,6 +203,8 @@ void main() {
   });
 
   group('ConnectionIndicator Tests', () {
+    // Test Case ID: SMP-124
+    // Description: Kiểm tra ConnectionIndicator hiển thị icon wifi và Tooltip khi trạng thái kết nối là connected.
     testWidgets('shows connected wifi icon and tooltip when connected',
         (tester) async {
       connectionStateProvider.setConnected();
@@ -214,6 +222,8 @@ void main() {
       expect(find.byType(Tooltip), findsOneWidget);
     });
 
+    // Test Case ID: SMP-125
+    // Description: Kiểm tra ConnectionIndicator hiển thị icon wifi_off khi trạng thái kết nối là disconnected.
     testWidgets('shows disconnected icon and retry action when disconnected',
         (tester) async {
       connectionStateProvider.setDisconnected();
@@ -232,6 +242,8 @@ void main() {
   });
 
   group('AppLayout Responsive Tests', () {
+    // Test Case ID: SMP-126
+    // Description: Kiểm tra AppLayout chuyển sang bố cục mobile có nút menu mở drawer khi chiều rộng < 850px.
     testWidgets('switches to mobile layout when width < 850px', (tester) async {
       await tester.binding.setSurfaceSize(const Size(400, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -252,6 +264,8 @@ void main() {
   });
 
   group('AdminHomeScreen Desktop & Mobile Responsive Tests', () {
+    // Test Case ID: SMP-127
+    // Description: Kiểm tra AdminHomeScreen hiển thị header desktop, các chỉ số KPI và AdminQuickAccessBar chế độ panel khi width >= 1024px.
     testWidgets('renders desktop bento layout with header and panel quick access when width >= 1024',
         (tester) async {
       await tester.binding.setSurfaceSize(const Size(1400, 1000));
@@ -274,6 +288,8 @@ void main() {
       ), findsOneWidget);
     });
 
+    // Test Case ID: SMP-128
+    // Description: Kiểm tra AdminHomeScreen ẩn header desktop, dùng AdminQuickAccessBar chế độ cuộn ngang và hiển thị KPI khi width < 1024px.
     testWidgets('renders mobile layout without desktop header and scrollable quick access when width < 1024',
         (tester) async {
       await tester.binding.setSurfaceSize(const Size(400, 900));

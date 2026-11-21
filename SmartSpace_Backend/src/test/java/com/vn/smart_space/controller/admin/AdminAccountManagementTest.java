@@ -42,6 +42,8 @@ public class AdminAccountManagementTest {
         }
     }
 
+    // Test Case ID: SMP-175
+    // Description: Kiểm tra API GET /admin/admins chỉ trả về danh sách admin kèm summary, currentUser và không lộ staff/client
     @Test
     @DisplayName("Danh sach chi gom admin, co summary va danh dau tai khoan cua chinh minh")
     void testListAdmins_OnlyAdmins() throws Exception {
@@ -56,6 +58,8 @@ public class AdminAccountManagementTest {
         assertFalse(body.contains("user@gmail.com"), "Khong duoc tra ve client");
     }
 
+    // Test Case ID: SMP-176
+    // Description: Kiểm tra API GET /admin/admins tự động giới hạn pageSize tối đa về 50 khi truyền size vượt ngưỡng
     @Test
     @DisplayName("Size vuot gioi han bi gioi han ve 50")
     void testListAdmins_PageSizeClamped() throws Exception {
@@ -65,6 +69,8 @@ public class AdminAccountManagementTest {
         assertTrue(res.body().contains("\"pageSize\":50"));
     }
 
+    // Test Case ID: SMP-177
+    // Description: Kiểm tra Staff và Client bị từ chối 403 khi truy cập API danh sách và cập nhật trạng thái hội đồng quản trị
     @Test
     @DisplayName("Staff va client khong duoc truy cap API hoi dong quan tri")
     void testForbiddenForNonAdmin() throws Exception {
@@ -74,6 +80,8 @@ public class AdminAccountManagementTest {
                 token("user@gmail.com", "u2", "ROLE_client")).statusCode());
     }
 
+    // Test Case ID: SMP-178
+    // Description: Kiểm tra Admin không thể tự khóa chính tài khoản của mình qua API PUT /admin/admins/u1/status
     @Test
     @DisplayName("Khong the tu khoa chinh minh")
     void testUpdateStatus_SelfRejected() throws Exception {
@@ -82,6 +90,8 @@ public class AdminAccountManagementTest {
         assertEquals(400, res.statusCode());
     }
 
+    // Test Case ID: SMP-179
+    // Description: Kiểm tra API cập nhật trạng thái admin trả về 404 khi target là tài khoản staff u5
     @Test
     @DisplayName("Khong khoa duoc staff qua API hoi dong quan tri")
     void testUpdateStatus_StaffNotFound() throws Exception {
@@ -90,6 +100,8 @@ public class AdminAccountManagementTest {
         assertEquals(404, res.statusCode());
     }
 
+    // Test Case ID: SMP-180
+    // Description: Kiểm tra API cập nhật trạng thái admin trả về 400 khi status không hợp lệ hoặc body rỗng
     @Test
     @DisplayName("Trang thai khong hop le bi tu choi")
     void testUpdateStatus_InvalidStatus() throws Exception {
@@ -97,6 +109,8 @@ public class AdminAccountManagementTest {
         assertEquals(400, put("/admin/admins/u5/status", "{}", adminToken()).statusCode());
     }
 
+    // Test Case ID: SMP-181
+    // Description: Kiểm tra API tạo admin trả về 400 khi fullName rỗng, email sai định dạng hoặc phone không hợp lệ
     @Test
     @DisplayName("Tao admin voi du lieu khong hop le bi tu choi truoc khi gui mail")
     void testCreate_ValidationErrors() throws Exception {
@@ -106,6 +120,8 @@ public class AdminAccountManagementTest {
                 "{\"fullName\":\"A\",\"email\":\"a@b.vn\",\"phone\":\"12ab\"}", adminToken()).statusCode());
     }
 
+    // Test Case ID: SMP-182
+    // Description: Kiểm tra API tạo admin trả về 400 khi email trùng với tài khoản admin đã tồn tại
     @Test
     @DisplayName("Tao admin trung email da co tai khoan admin bi tu choi")
     void testCreate_DuplicateEmail() throws Exception {
@@ -115,6 +131,8 @@ public class AdminAccountManagementTest {
         assertEquals(400, res.statusCode());
     }
 
+    // Test Case ID: SMP-183
+    // Description: Kiểm tra API GET /admin/activities lọc nhật ký hoạt động theo actorId trả về 200 và trường content
     @Test
     @DisplayName("Loc hoat dong theo actorId")
     void testActivities_FilterByActor() throws Exception {

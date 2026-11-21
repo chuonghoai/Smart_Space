@@ -75,6 +75,8 @@ public class HandleReportTest {
         return signedJWT.serialize();
     }
 
+    // Test Case ID: SMP-204
+    // Description: Kiểm thử luồng E2E từ Client tạo report, Admin phân công cho Staff u5 đến Staff hoàn tất xử lý với ghi chú và 2 ảnh minh chứng.
     @Test
     @DisplayName("Mô phỏng quy trình E2E: Client tạo report -> Admin phân công -> Staff xử lý hoàn thành")
     void testEndToEnd_CreateAssignAndHandleReport() throws Exception {

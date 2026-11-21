@@ -31,6 +31,8 @@ Widget _mapLikeScreen({required VoidCallback onChip, required VoidCallback onBac
 }
 
 void main() {
+  // Test Case ID: SMP-148
+  // Description: Kiểm tra MapAppBar không chặn sự kiện chạm vào ChoiceChip nằm dưới vùng toolbar trong khi nút back vẫn hoạt động.
   testWidgets('MapAppBar không chặn chạm vào chip lọc nằm dưới vùng toolbar', (tester) async {
     var chipTaps = 0;
     var backTaps = 0;

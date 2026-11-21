@@ -104,6 +104,8 @@ class _MockRecentActivityNotifier extends RecentActivityNotifier {
 
 void main() {
   group('Report Status Colors Tests', () {
+    // Test Case ID: SMP-118
+    // Description: Kiểm tra hàm reportStatusColor trả về màu info cho "processing" và màu success cho "processed" ở cả Light/Dark mode.
     testWidgets('Processing color is Blue (Info) and distinctly different from Processed (Green)',
         (tester) async {
       late Color processingColorLight;
@@ -159,6 +161,8 @@ void main() {
   });
 
   group('NewsCard Uniformity Tests', () {
+    // Test Case ID: SMP-119
+    // Description: Kiểm tra hai NewsCard (có ảnh và không có ảnh) có cùng chiều cao 338.0px và ẩn/hiện nội dung tương ứng.
     testWidgets('NewsCard with image has no content, without image fills with content, both are 338px',
         (tester) async {
       await tester.binding.setSurfaceSize(const Size(1200, 800));
@@ -224,6 +228,8 @@ void main() {
   });
 
   group('Recent Reports Card Uniformity Tests on AdminHomeScreen', () {
+    // Test Case ID: SMP-120
+    // Description: Kiểm tra AdminHomeScreen hiển thị danh sách phản ánh gần đây trên desktop (1200x900) gồm tiêu đề, icon, trạng thái phân công và hạn dự kiến.
     testWidgets('All recent report cards on desktop and mobile have standard 140.0px height',
         (tester) async {
       await tester.binding.setSurfaceSize(const Size(1200, 900));

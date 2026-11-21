@@ -40,6 +40,8 @@ class ReportDensityServiceTest {
         densityService = new ReportDensityServiceImpl(reportRepository, redisTemplate, objectMapper);
     }
 
+    // Test Case ID: SMP-308
+    // Description: Kiểm tra chuyển đổi tọa độ lat/lng sang ô H3 độ phân giải 11 (chuỗi hex 15 ký tự, tâm gần điểm gốc và đa giác 6 đỉnh).
     @Test
     @DisplayName("H3 Resolution 11: Converts lat/lng to valid 15-char hex cell address")
     void testH3ConversionResolution11() {
@@ -62,6 +64,8 @@ class ReportDensityServiceTest {
         assertEquals(6, boundary.size(), "Hexagon cell must have 6 boundary vertices");
     }
 
+    // Test Case ID: SMP-309
+    // Description: Kiểm tra gom nhóm ô H3 độ phân giải 11: hai điểm cách ~15m cùng một ô còn điểm cách ~220m thuộc ô khác.
     @Test
     @DisplayName("H3 Resolution 11: Points ~15m apart share same cell; points 200m apart have different cells")
     void testH3CellGrouping() {
@@ -84,6 +88,8 @@ class ReportDensityServiceTest {
         assertNotEquals(cell1, cellFar, "Points 200m apart must belong to different cells");
     }
 
+    // Test Case ID: SMP-310
+    // Description: Kiểm tra phân loại mức độ mật độ và mã màu tương ứng cho ngưỡng 1-2 (LOW), 3-5 (MEDIUM) và >5 (HIGH).
     @Test
     @DisplayName("Classification: Correct level and color thresholds")
     void testDensityClassificationThresholds() {
@@ -107,6 +113,8 @@ class ReportDensityServiceTest {
         assertEquals("HIGH", ReportDensityServiceImpl.classifyLevel(20));
     }
 
+    // Test Case ID: SMP-311
+    // Description: Xác minh getDensity ném BadRequestException khi tọa độ biên null, south > north hoặc vĩ độ vượt ngoài khoảng [-90, 90].
     @Test
     @DisplayName("Validation: Rejects missing or invalid bounds")
     void testValidationInvalidBounds() {
@@ -122,6 +130,8 @@ class ReportDensityServiceTest {
         assertThrows(BadRequestException.class, () -> densityService.getDensity(10.0, -95.0, 106.0, 105.0, 14.0));
     }
 
+    // Test Case ID: SMP-312
+    // Description: Kiểm tra hằng số tỷ lệ phóng đại diện tích đa giác lục giác HEXAGON_AREA_SCALE=1.5 và bán kính HEXAGON_RADIUS_SCALE=sqrt(1.5).
     @Test
     @DisplayName("Geometry Scaling: Hexagon polygon area scaled by 1.5x (radius scale sqrt(1.5))")
     void testHexagonPolygonScaling() {
@@ -129,6 +139,8 @@ class ReportDensityServiceTest {
         assertEquals(Math.sqrt(1.5), ReportDensityServiceImpl.HEXAGON_RADIUS_SCALE, 0.000001);
     }
 
+    // Test Case ID: SMP-313
+    // Description: Kiểm tra ánh xạ EDensityTimeframe.fromCode và tính mốc thời gian getCutoff cho ALL, 1m, 3m, 6m, 9m, 12m.
     @Test
     @DisplayName("Timeframe: EDensityTimeframe mappings and cutoff dates")
     void testDensityTimeframeCutoffs() {
@@ -151,6 +163,8 @@ class ReportDensityServiceTest {
         assertEquals(now.minusMonths(12), EDensityTimeframe.MONTH_12.getCutoff(now));
     }
 
+    // Test Case ID: SMP-314
+    // Description: Kiểm tra định dạng key Redis (cells, geo, meta) sinh ra theo từng khung thời gian ALL, MONTH_1 và MONTH_12.
     @Test
     @DisplayName("Redis Keys: Format matches timeframe")
     void testRedisKeyFormatting() {

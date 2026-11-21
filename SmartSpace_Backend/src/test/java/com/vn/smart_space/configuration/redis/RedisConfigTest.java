@@ -13,6 +13,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class RedisConfigTest {
 
+    // Test Case ID: SMP-164
+    // Description: Kiểm tra parseRedisUrl phân tích URL rediss:// gồm host, port, username, password và bật TLS
     @Test
     void parseRedisUrl_withRedissUrl_parsesHostPortCredentialsAndEnablesTls() {
         RedisConfig.ResolvedRedisSettings settings = RedisConfig.parseRedisUrl(
@@ -31,6 +33,8 @@ class RedisConfigTest {
         assertEquals("super-secret", new String(standalone.getPassword().get()));
     }
 
+    // Test Case ID: SMP-165
+    // Description: Kiểm tra parseRedisUrl xử lý URL valkeys:// có mật khẩu URL-encoded, giữ nguyên dấu '+' thô và database index
     @Test
     void parseRedisUrl_withValkeysUrlEncodedPasswordAndDb_preservesPlusAndDecodes() {
         RedisConfig.ResolvedRedisSettings settings = RedisConfig.parseRedisUrl(
@@ -45,6 +49,8 @@ class RedisConfigTest {
         assertEquals(3, standalone.getDatabase());
     }
 
+    // Test Case ID: SMP-166
+    // Description: Kiểm tra parseRedisUrl với URL redis://localhost:6379 tắt TLS và ánh xạ đúng host, port
     @Test
     void parseRedisUrl_withLocalRedisUrl_disablesTls() {
         RedisConfig.ResolvedRedisSettings settings = RedisConfig.parseRedisUrl(
@@ -58,6 +64,8 @@ class RedisConfigTest {
         assertEquals(6379, settings.standaloneConfiguration().getPort());
     }
 
+    // Test Case ID: SMP-167
+    // Description: Kiểm tra parseRedisUrl với URL redis:// không chỉ định port sẽ dùng port mặc định 6379
     @Test
     void parseRedisUrl_withRedisPlainUrlAndDefaultPort_usesPort6379() {
         RedisConfig.ResolvedRedisSettings settings = RedisConfig.parseRedisUrl(
@@ -69,6 +77,8 @@ class RedisConfigTest {
         assertEquals(6379, settings.port());
     }
 
+    // Test Case ID: SMP-168
+    // Description: Kiểm tra parseRedisUrl ném IllegalArgumentException khi URL rỗng/null/sai scheme/sai cú pháp và không lộ mật khẩu
     @Test
     void parseRedisUrl_whenBlankOrInvalid_throwsWithoutLeakingCredentials() {
         assertThrows(IllegalArgumentException.class, () -> RedisConfig.parseRedisUrl("   "));
@@ -88,6 +98,8 @@ class RedisConfigTest {
         assertFalse(malformed.getMessage().contains(secret));
     }
 
+    // Test Case ID: SMP-169
+    // Description: Kiểm tra buildClientConfiguration cấu hình SSL FULL, autoReconnect và keepAlive khi bật/tắt TLS
     @Test
     void buildClientConfiguration_configuresSslVerificationAndReconnectOptions() {
         LettuceClientConfiguration tlsConfig = RedisConfig.buildClientConfiguration(true);

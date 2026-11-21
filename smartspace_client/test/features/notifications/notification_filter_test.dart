@@ -53,6 +53,8 @@ void main() {
     notifier = NotificationNotifier(NotificationService(notificationRepo: repo));
   });
 
+  // Test Case ID: SMP-001
+  // Description: Kiểm tra khi bật lọc "Chưa đọc", notifier gọi API trang 0 với unreadOnly=true, xóa danh sách cũ và bật trạng thái đang tải.
   test('chọn "Chưa đọc" → tải lại trang 0 với unreadOnly, xoá danh sách cũ', () async {
     unawaited(notifier.fetchNotifications());
     await _flush();
@@ -67,6 +69,8 @@ void main() {
     expect(notifier.state.isLoadingNotifications, isTrue);
   });
 
+  // Test Case ID: SMP-002
+  // Description: Kiểm tra response của request bộ lọc cũ trả về sau response mới sẽ bị bỏ qua, không ghi đè danh sách hiện tại.
   test('response của bộ lọc cũ về sau thì bị bỏ qua', () async {
     unawaited(notifier.fetchNotifications());
     await _flush();
@@ -83,6 +87,8 @@ void main() {
     expect(notifier.state.unreadOnly, isTrue);
   });
 
+  // Test Case ID: SMP-003
+  // Description: Kiểm tra khi đang lọc "Chưa đọc", đánh dấu đã đọc một thông báo vẫn giữ nó trong danh sách với isRead=true.
   test('ở "Chưa đọc", đọc một thông báo thì nó vẫn ở lại danh sách (hiển thị đã đọc)', () async {
     unawaited(notifier.setUnreadOnly(true));
     await _flush();
@@ -95,6 +101,8 @@ void main() {
     expect(notifier.state.notifications.first.isRead, isTrue);
   });
 
+  // Test Case ID: SMP-004
+  // Description: Kiểm tra loadMore gọi trang 1 và thao tác làm mới gọi lại trang 0 nhưng vẫn giữ nguyên unreadOnly=true.
   test('kéo làm mới và tải thêm giữ nguyên bộ lọc', () async {
     unawaited(notifier.setUnreadOnly(true));
     await _flush();

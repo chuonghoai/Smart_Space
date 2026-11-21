@@ -25,6 +25,8 @@ ReportModel _report(
     );
 
 void main() {
+  // Test Case ID: SMP-056
+  // Description: Kiểm tra MapClusterSheet.sortForCluster sắp xếp ưu tiên theo mức độ nguy hiểm giảm dần, sau đó theo createdAt mới nhất.
   test('MapClusterSheet.sortForCluster: nguy hiểm nhất trước, rồi mới nhất trước', () {
     final sorted = MapClusterSheet.sortForCluster([
       _report('low', severity: EReportSeverity.low),
@@ -36,6 +38,8 @@ void main() {
     expect(sorted.map((r) => r.id), ['critical', 'high-new', 'high-old', 'low', 'none']);
   });
 
+  // Test Case ID: SMP-057
+  // Description: Kiểm tra MapState.getFilteredReports lọc tách biệt 2 nhóm Nguy hiểm (high/critical) và Thông thường (medium/low/null) không chồng chéo.
   test('MapState.getFilteredReports: 2 nhóm Nguy hiểm / Thông thường không chồng nhau', () {
     final reports = [
       _report('danger', severity: EReportSeverity.high),

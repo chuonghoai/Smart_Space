@@ -45,6 +45,8 @@ public class StaffDashboardTest {
         }
     }
 
+    // Test Case ID: SMP-224
+    // Description: Kiểm tra GET /admin/staffs/statistics trả về HTTP 200 kèm đầy đủ các trường KPI, workload và không lộ trường password.
     @Test
     @DisplayName("Thong ke tra ve du KPI va workload")
     void testStatistics() throws Exception {
@@ -60,6 +62,8 @@ public class StaffDashboardTest {
         assertFalse(body.contains("\"password\""), "Khong duoc tra ve password");
     }
 
+    // Test Case ID: SMP-225
+    // Description: Kiểm tra GET /admin/staffs/trend trả về đúng số lượng bucket (30 cho daily/fallback, 12 cho weekly/monthly) kèm series assigned và resolved.
     @Test
     @DisplayName("Trend zero-fill du so bucket va co 2 series assigned/resolved")
     void testTrend_BucketCount() throws Exception {
@@ -77,6 +81,8 @@ public class StaffDashboardTest {
                 send("GET", "/admin/staffs/trend?period=abc", adminToken(), null).body(), "\"date\""));
     }
 
+    // Test Case ID: SMP-226
+    // Description: Kiểm tra tài khoản role client nhận HTTP 403 khi gọi GET /admin/staffs/statistics và GET /admin/staffs/trend.
     @Test
     @DisplayName("Client khong duoc truy cap thong ke nhan vien")
     void testForbiddenForClient() throws Exception {
@@ -89,6 +95,8 @@ public class StaffDashboardTest {
      * Thống kê "đã xử lý" dùng updatedAt của báo cáo processed. Giả định này chỉ đúng khi
      * processed là trạng thái cuối. Nếu test này fail → cần chuyển sang cột resolvedAt riêng.
      */
+    // Test Case ID: SMP-227
+    // Description: Kiểm tra báo cáo trạng thái processed không thể chuyển về processing, pending hoặc rejected qua PATCH /admin/reports/{id}/status.
     @Test
     @DisplayName("Bao cao processed khong duoc chuyen trang thai (khoa gia dinh dung updatedAt)")
     void testProcessedIsTerminal() throws Exception {

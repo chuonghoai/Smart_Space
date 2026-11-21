@@ -79,6 +79,8 @@ class AdminAccountServiceImplTest {
 
     // ---------- list ----------
 
+    // Test Case ID: SMP-262
+    // Description: Kiểm tra getAdmins giới hạn pageSize tối đa 50, đánh dấu currentUser và trả về summary chính xác.
     @Test
     @DisplayName("getAdmins: đánh dấu currentUser, summary tính trên toàn bộ admin, page size bị chặn tối đa")
     void getAdmins_marksCurrentUserAndClampsSize() {
@@ -111,6 +113,8 @@ class AdminAccountServiceImplTest {
         private final CreateAdminRequest request =
                 new CreateAdminRequest(" New Admin ", " new@example.com ", "");
 
+        // Test Case ID: SMP-263
+        // Description: Từ chối tạo admin mới khi email (sau trim) đã tồn tại với role admin, không lưu và không gửi mail.
         @Test
         @DisplayName("email đã có tài khoản admin → auth.email.exists, không tạo, không gửi mail")
         void duplicateEmail_isRejected() {
@@ -124,6 +128,8 @@ class AdminAccountServiceImplTest {
             verifyNoInteractions(mailService);
         }
 
+        // Test Case ID: SMP-264
+        // Description: Chuyển DataIntegrityViolationException khi lưu đồng thời trùng email thành BadRequestException auth.email.exists.
         @Test
         @DisplayName("vi phạm unique khi tạo đồng thời → auth.email.exists, không gửi mail")
         void concurrentDuplicate_isRejected() {
@@ -139,6 +145,8 @@ class AdminAccountServiceImplTest {
             verifyNoInteractions(mailService);
         }
 
+        // Test Case ID: SMP-265
+        // Description: Tạo admin thành công: hash mật khẩu, chuẩn hóa SĐT rỗng thành null, ghi activity log và gửi email.
         @Test
         @DisplayName("thành công → role admin, active, mật khẩu được hash, ghi log, gửi mail mật khẩu gốc")
         void success_createsAdminLogsAndMails() {
@@ -175,6 +183,8 @@ class AdminAccountServiceImplTest {
             assertFalse(res.isCurrentUser());
         }
 
+        // Test Case ID: SMP-266
+        // Description: Ném BadRequestException mail.admin.credentials.send_failed khi gửi email thông tin đăng nhập thất bại.
         @Test
         @DisplayName("gửi mail thất bại → mail.admin.credentials.send_failed (transaction rollback)")
         void mailFailure_isReported() {
@@ -197,6 +207,8 @@ class AdminAccountServiceImplTest {
     @DisplayName("Khóa / mở khóa quản trị viên")
     class Status {
 
+        // Test Case ID: SMP-267
+        // Description: Từ chối khi admin tự thay đổi trạng thái của chính mình và không tương tác DB/auth.
         @Test
         @DisplayName("tự thay đổi trạng thái chính mình → admin.account.cannot_lock_self")
         void self_isRejected() {
@@ -207,6 +219,8 @@ class AdminAccountServiceImplTest {
             verifyNoInteractions(userRepository, authenticationService);
         }
 
+        // Test Case ID: SMP-268
+        // Description: Từ chối cập nhật trạng thái admin khi giá trị status không hợp lệ ("deleted").
         @Test
         @DisplayName("status không hợp lệ → admin.account.status_invalid")
         void invalidStatus_isRejected() {
@@ -216,6 +230,8 @@ class AdminAccountServiceImplTest {
             assertEquals("admin.account.status_invalid", ex.getMessage());
         }
 
+        // Test Case ID: SMP-269
+        // Description: Trả về ResourceNotFoundException admin.account.not_found khi tài khoản đích không phải role admin.
         @Test
         @DisplayName("đối tượng không phải admin → admin.account.not_found (không lộ tài khoản staff/client)")
         void nonAdminTarget_isNotFound() {
@@ -231,6 +247,8 @@ class AdminAccountServiceImplTest {
             verify(userRepository, never()).save(any());
         }
 
+        // Test Case ID: SMP-270
+        // Description: Khóa tài khoản admin khác thành công: lưu blocked, thu hồi phiên truy cập và ghi activity log.
         @Test
         @DisplayName("khóa admin khác → lưu blocked, thu hồi phiên, ghi log")
         void block_revokesAccessAndLogs() {
@@ -253,6 +271,8 @@ class AdminAccountServiceImplTest {
                     activity.getValue().getI18nKey());
         }
 
+        // Test Case ID: SMP-271
+        // Description: Từ chối thao tác khóa khi người gọi đã bị khóa đồng thời trước đó (auth.account.blocked).
         @Test
         @DisplayName("người gọi đã bị khóa bởi yêu cầu đồng thời → auth.account.blocked, không khóa thêm")
         void callerBlockedConcurrently_isRejected() {
@@ -270,6 +290,8 @@ class AdminAccountServiceImplTest {
             verifyNoInteractions(authenticationService);
         }
 
+        // Test Case ID: SMP-272
+        // Description: Mở khóa tài khoản admin thành công, khôi phục phiên truy cập và không cần khóa danh sách admin.
         @Test
         @DisplayName("mở khóa → lưu active, gỡ cờ chặn, không cần lock danh sách admin")
         void unblock_restoresAccess() {
@@ -284,6 +306,8 @@ class AdminAccountServiceImplTest {
             verify(userRepository, never()).lockByRoleAndStatus(any(), any());
         }
 
+        // Test Case ID: SMP-273
+        // Description: Không lưu DB, không tác động phiên và không ghi log khi trạng thái mới trùng với trạng thái hiện tại.
         @Test
         @DisplayName("trạng thái không đổi → idempotent, không lưu, không ghi log")
         void sameStatus_isNoop() {

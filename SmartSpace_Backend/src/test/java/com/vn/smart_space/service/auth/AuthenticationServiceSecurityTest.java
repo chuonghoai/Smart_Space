@@ -157,6 +157,8 @@ class AuthenticationServiceSecurityTest {
     @DisplayName("Chặn tài khoản bị khóa")
     class BlockedAccount {
 
+        // Test Case ID: SMP-274
+        // Description: Từ chối đăng nhập loginBasic cho tài khoản staff bị khóa dù đúng mật khẩu và không cấp token.
         @Test
         @DisplayName("loginBasic: bị khóa + đúng mật khẩu → auth.account.blocked, không cấp token")
         void loginBasic_blocked_isRejected() {
@@ -171,6 +173,8 @@ class AuthenticationServiceSecurityTest {
             verify(jwtService, never()).generateAccessToken(any(), anyString());
         }
 
+        // Test Case ID: SMP-275
+        // Description: Trả về auth.invalid_credentials khi tài khoản admin bị khóa nhưng sai mật khẩu để tránh lộ trạng thái khóa.
         @Test
         @DisplayName("loginBasic: bị khóa + sai mật khẩu → chỉ báo sai thông tin (không lộ trạng thái)")
         void loginBasic_blockedWrongPassword_doesNotLeakStatus() {
@@ -184,6 +188,8 @@ class AuthenticationServiceSecurityTest {
             assertEquals("auth.invalid_credentials", ex.getMessage());
         }
 
+        // Test Case ID: SMP-276
+        // Description: Từ chối đăng nhập loginGoogle đối với tài khoản client bị khóa với mã lỗi auth.account.blocked và không cấp token.
         @Test
         @DisplayName("loginGoogle: tài khoản tồn tại nhưng bị khóa → auth.account.blocked")
         void loginGoogle_blocked_isRejected() {
@@ -198,6 +204,8 @@ class AuthenticationServiceSecurityTest {
             verify(jwtService, never()).generateAccessToken(any(), anyString());
         }
 
+        // Test Case ID: SMP-277
+        // Description: Từ chối refreshToken khi tài khoản staff bị khóa, xóa toàn bộ phiên đăng nhập và không cấp access token mới.
         @Test
         @DisplayName("refreshToken: bị khóa → xóa mọi phiên và từ chối")
         void refreshToken_blocked_revokesSessions() {
@@ -215,6 +223,8 @@ class AuthenticationServiceSecurityTest {
             verify(jwtService, never()).generateAccessToken(any(), anyString());
         }
 
+        // Test Case ID: SMP-278
+        // Description: Kiểm tra introspect trả về isValid=false đối với access token của user có khóa blocked_user trong Redis.
         @Test
         @DisplayName("introspect: access token của user vừa bị khóa → không hợp lệ")
         void introspect_revokedUser_isInvalid() {
@@ -225,6 +235,8 @@ class AuthenticationServiceSecurityTest {
             assertFalse(authenticationService.introspect(IntrospectRequest.builder().token("at").build()).isValid());
         }
 
+        // Test Case ID: SMP-279
+        // Description: Kiểm tra introspect trả về isValid=true đối với access token hợp lệ của user không bị đánh dấu khóa trong Redis.
         @Test
         @DisplayName("introspect: user không bị khóa → hợp lệ")
         void introspect_activeUser_isValid() {
@@ -235,6 +247,8 @@ class AuthenticationServiceSecurityTest {
             assertTrue(authenticationService.introspect(IntrospectRequest.builder().token("at").build()).isValid());
         }
 
+        // Test Case ID: SMP-280
+        // Description: Xác minh revokeUserAccess xóa toàn bộ RefreshTokenSession của user và đặt cờ blocked_user trong Redis lâu hơn TTL access token.
         @Test
         @DisplayName("revokeUserAccess: xóa mọi phiên + đặt cờ chặn sống lâu hơn access token")
         void revokeUserAccess_deletesSessionsAndSetsMarker() {
@@ -249,6 +263,8 @@ class AuthenticationServiceSecurityTest {
                     Duration.ofMinutes(JwtService.ACCESS_TOKEN_TTL_MINUTES + 1));
         }
 
+        // Test Case ID: SMP-281
+        // Description: Xác minh restoreUserAccess xóa khóa blocked_user khỏi Redis cho user tương ứng.
         @Test
         @DisplayName("restoreUserAccess: gỡ cờ chặn")
         void restoreUserAccess_removesMarker() {
@@ -264,6 +280,8 @@ class AuthenticationServiceSecurityTest {
     @DisplayName("Google login chỉ tự tạo tài khoản client")
     class GoogleProvisioning {
 
+        // Test Case ID: SMP-282
+        // Description: Từ chối loginGoogle với tài khoản admin/staff chưa được cấp trước (auth.account.not_provisioned), không tự tạo user hay cấp token.
         @ParameterizedTest
         @EnumSource(value = ERole.class, names = { "admin", "staff" })
         @DisplayName("admin/staff chưa được cấp → auth.account.not_provisioned, không tạo user")
@@ -279,6 +297,8 @@ class AuthenticationServiceSecurityTest {
             verifyNoInteractions(jwtService);
         }
 
+        // Test Case ID: SMP-283
+        // Description: Cho phép loginGoogle thành công đối với tài khoản staff active đã được cấp sẵn mà không gọi save user mới.
         @Test
         @DisplayName("staff đã được cấp tài khoản → đăng nhập bình thường")
         void loginGoogle_provisionedStaff_succeeds() {
@@ -291,6 +311,8 @@ class AuthenticationServiceSecurityTest {
             verify(userRepository, never()).save(any());
         }
 
+        // Test Case ID: SMP-284
+        // Description: Tự động tạo tài khoản mới với role client và status active khi user chưa tồn tại đăng nhập qua loginGoogle.
         @Test
         @DisplayName("client mới → tự tạo tài khoản với role client")
         void loginGoogle_newClient_isCreated() {
@@ -318,6 +340,8 @@ class AuthenticationServiceSecurityTest {
     @DisplayName("Đăng ký public chỉ dành cho client")
     class SelfRegistration {
 
+        // Test Case ID: SMP-285
+        // Description: Từ chối sendOtpRegister với vai trò đặc quyền admin và staff (auth.role.invalid) trước khi gọi mailService, Redis hoặc DB.
         @ParameterizedTest
         @EnumSource(value = ERole.class, names = { "admin", "staff" })
         @DisplayName("sendOtpRegister với admin/staff → auth.role.invalid, không gửi mail")
@@ -329,6 +353,8 @@ class AuthenticationServiceSecurityTest {
             verifyNoInteractions(mailService, stringRedisTemplate, userRepository);
         }
 
+        // Test Case ID: SMP-286
+        // Description: Từ chối verifyOtpRegister với vai trò đặc quyền admin và staff (auth.role.invalid) và không tương tác Redis.
         @ParameterizedTest
         @EnumSource(value = ERole.class, names = { "admin", "staff" })
         @DisplayName("verifyOtpRegister với admin/staff → auth.role.invalid, không đánh dấu verified")
@@ -340,6 +366,8 @@ class AuthenticationServiceSecurityTest {
             verifyNoInteractions(stringRedisTemplate);
         }
 
+        // Test Case ID: SMP-287
+        // Description: Từ chối vai trò null trong assertSelfRegistrableRole với BadRequestException chứa mã lỗi auth.role.invalid.
         @Test
         @DisplayName("assertSelfRegistrableRole: role null → auth.role.invalid")
         void assertSelfRegistrableRole_null_isRejected() {
@@ -349,12 +377,16 @@ class AuthenticationServiceSecurityTest {
             assertEquals("auth.role.invalid", ex.getMessage());
         }
 
+        // Test Case ID: SMP-288
+        // Description: Cho phép vai trò ERole.client vượt qua kiểm tra assertSelfRegistrableRole mà không ném ngoại lệ.
         @Test
         @DisplayName("assertSelfRegistrableRole: client → hợp lệ")
         void assertSelfRegistrableRole_client_passes() {
             assertDoesNotThrow(() -> authenticationService.assertSelfRegistrableRole(ERole.client));
         }
 
+        // Test Case ID: SMP-289
+        // Description: Thực hiện gửi email OTP thành công khi gọi sendOtpRegister với vai trò client hợp lệ, chưa tồn tại và không đang cooldown.
         @Test
         @DisplayName("sendOtpRegister với client → tiếp tục luồng gửi OTP")
         void sendOtpRegister_client_sendsOtp() {

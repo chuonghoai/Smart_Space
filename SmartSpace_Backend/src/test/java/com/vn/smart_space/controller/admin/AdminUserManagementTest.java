@@ -44,6 +44,8 @@ public class AdminUserManagementTest {
         }
     }
 
+    // Test Case ID: SMP-184
+    // Description: Kiểm tra GET /admin/users chỉ trả về danh sách client kèm reportCount và không lộ admin/staff
     @Test
     @DisplayName("Danh sach chi gom client, co reportCount, khong lo admin/staff")
     void testListUsers_OnlyClients() throws Exception {
@@ -58,6 +60,8 @@ public class AdminUserManagementTest {
         assertFalse(body.contains("staff1@gmail.com"), "Khong duoc tra ve staff");
     }
 
+    // Test Case ID: SMP-185
+    // Description: Kiểm tra GET /admin/users hỗ trợ tìm kiếm theo từ khóa email trả về đúng người dùng khớp
     @Test
     @DisplayName("Tim kiem theo email tra ve dung nguoi dung")
     void testListUsers_Search() throws Exception {
@@ -68,6 +72,8 @@ public class AdminUserManagementTest {
         assertFalse(res.body().contains("user@gmail.com"));
     }
 
+    // Test Case ID: SMP-186
+    // Description: Kiểm tra GET /admin/users tự động giới hạn pageSize tối đa về 50 khi truyền size vượt ngưỡng
     @Test
     @DisplayName("Size vuot gioi han bi gioi han ve 50")
     void testListUsers_PageSizeClamped() throws Exception {
@@ -77,6 +83,8 @@ public class AdminUserManagementTest {
         assertTrue(res.body().contains("\"pageSize\":50"), "pageSize phai bi gioi han ve 50");
     }
 
+    // Test Case ID: SMP-187
+    // Description: Kiểm tra Client bị từ chối 403 khi gọi API GET /admin/users
     @Test
     @DisplayName("Client khong duoc truy cap API quan ly nguoi dung")
     void testListUsers_ForbiddenForClient() throws Exception {
@@ -85,6 +93,8 @@ public class AdminUserManagementTest {
         assertEquals(403, res.statusCode());
     }
 
+    // Test Case ID: SMP-188
+    // Description: Kiểm tra GET /admin/users/statistics trả về 200 và đầy đủ 7 trường KPI thống kê
     @Test
     @DisplayName("Thong ke tra ve du KPI va top nguoi dong gop")
     void testStatistics() throws Exception {
@@ -98,6 +108,8 @@ public class AdminUserManagementTest {
         }
     }
 
+    // Test Case ID: SMP-189
+    // Description: Kiểm tra GET /admin/users/trend trả về đủ số bucket zero-fill theo period (daily/abc=30, weekly=12, monthly=12)
     @Test
     @DisplayName("Trend zero-fill du so bucket: daily 30, weekly 12, monthly 12")
     void testTrend_BucketCount() throws Exception {
@@ -108,6 +120,8 @@ public class AdminUserManagementTest {
         assertEquals(30, countMatches(get("/admin/users/trend?period=abc", adminToken()).body(), "\"date\""));
     }
 
+    // Test Case ID: SMP-190
+    // Description: Kiểm tra GET /admin/users/u2 trả về reportStats, recentReports và ẩn các phản ánh ẩn danh (r3, r15)
     @Test
     @DisplayName("Chi tiet nguoi dung khong lo phan anh an danh")
     void testDetail_HidesAnonymousReports() throws Exception {
@@ -121,6 +135,8 @@ public class AdminUserManagementTest {
         assertFalse(body.contains("\"id\":\"r15\""), "Phan anh an danh r15 khong duoc xuat hien");
     }
 
+    // Test Case ID: SMP-191
+    // Description: Kiểm tra GET /admin/users/{id} trả về 404 khi tra cứu tài khoản staff (u5) hoặc admin (u1)
     @Test
     @DisplayName("Chi tiet khong tra cuu duoc staff/admin qua API nguoi dung")
     void testDetail_NotFoundForStaff() throws Exception {

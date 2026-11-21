@@ -109,6 +109,8 @@ Future<void> _flush() => Future<void>.delayed(Duration.zero);
 
 void main() {
   group('ReportDateRange', () {
+    // Test Case ID: SMP-040
+    // Description: Kiểm tra ReportDateRange chuẩn hóa bỏ phần giờ, tự đảo start/end nếu ngược và xuất fromQuery/toQuery định dạng yyyy-MM-dd.
     test('bỏ giờ, đảo đầu-cuối nếu ngược, định dạng yyyy-MM-dd cho API', () {
       final range = ReportDateRange(start: DateTime(2026, 3, 15, 18, 30), end: DateTime(2026, 3, 1, 7));
       expect(range.fromQuery, '2026-03-01');
@@ -116,6 +118,8 @@ void main() {
       expect(range.isSingleDay, isFalse);
     });
 
+    // Test Case ID: SMP-041
+    // Description: Kiểm tra ReportDateRange khi start và end cùng một ngày thì isSingleDay=true, fromQuery bằng toQuery và bằng nhau về value.
     test('một ngày cụ thể: start trùng end', () {
       final day = ReportDateRange(start: DateTime(2026, 1, 9, 23, 59), end: DateTime(2026, 1, 9));
       expect(day.isSingleDay, isTrue);
@@ -132,6 +136,8 @@ void main() {
     ReportFeedNotifier build({({double lat, double lng})? position = (lat: 10.77, lng: 106.69)}) =>
         ReportFeedNotifier(ReportService(reportRepo: repo), getPosition: () async => position);
 
+    // Test Case ID: SMP-042
+    // Description: Kiểm tra ReportFeedNotifier.setSeverity gửi lại page=1 với severity tương ứng và bật isLoading cùng isFiltering.
     test('đổi mức độ → tải lại trang 1 với severity, xoá danh sách cũ', () async {
       final notifier = build();
       await _flush();
@@ -147,6 +153,8 @@ void main() {
       expect(notifier.state.isFiltering, isTrue);
     });
 
+    // Test Case ID: SMP-043
+    // Description: Kiểm tra response của request bảng tin cũ hoàn tất sau request mới hơn sẽ bị bỏ qua, giữ state của bộ lọc mới.
     test('response cũ về sau response mới thì bị bỏ qua', () async {
       final notifier = build();
       await _flush();
@@ -163,6 +171,8 @@ void main() {
       expect(notifier.state.statusFilter, ReportStatus.processing);
     });
 
+    // Test Case ID: SMP-044
+    // Description: Kiểm tra setSort(FeedSort.nearby) khi có vị trí sẽ gửi sort=nearby kèm tọa độ lat, lng lên API.
     test('"Gần tôi" gửi sort=nearby kèm toạ độ để backend sắp xếp theo khoảng cách', () async {
       final notifier = build();
       await _flush();
@@ -176,6 +186,8 @@ void main() {
       expect(call.lng, 106.69);
     });
 
+    // Test Case ID: SMP-045
+    // Description: Kiểm tra setSort(FeedSort.nearby) khi không lấy được vị trí sẽ quay về FeedSort.latest, bật nearbyUnavailable=true và không gửi lat.
     test('"Gần tôi" không có vị trí → quay về Mới nhất và báo nearbyUnavailable', () async {
       final notifier = build(position: null);
       await _flush();
@@ -189,6 +201,8 @@ void main() {
       expect(repo.feedCalls.last.lat, isNull);
     });
 
+    // Test Case ID: SMP-046
+    // Description: Kiểm tra ReportFeedNotifier.refresh() giữ nguyên sort, status và severity đã chọn.
     test('kéo làm mới giữ nguyên sắp xếp, trạng thái và mức độ', () async {
       final notifier = build();
       await _flush();
@@ -207,6 +221,8 @@ void main() {
       expect(call.severity, EReportSeverity.critical);
     });
 
+    // Test Case ID: SMP-047
+    // Description: Kiểm tra ReportFeedNotifier.clearFilters() xóa lọc status, severity, search, tắt isFiltering nhưng vẫn giữ nguyên sort hiện tại.
     test('Xoá lọc bỏ trạng thái, mức độ, từ khoá nhưng giữ sắp xếp', () async {
       final notifier = build();
       await _flush();
@@ -236,6 +252,8 @@ void main() {
 
     setUp(() => repo = _FakeReportRepo());
 
+    // Test Case ID: SMP-048
+    // Description: Kiểm tra ReportFeedNotifier với setDateRange gửi page=1 kèm dateRange, giữ nguyên khi refresh và xóa sạch khi clearFilters.
     test('Bảng tin: chọn ngày → tải trang 1 với dateRange; làm mới giữ; Xoá lọc bỏ', () async {
       final notifier = ReportFeedNotifier(ReportService(reportRepo: repo), getPosition: () async => null);
       await _flush();
@@ -256,6 +274,8 @@ void main() {
       expect(notifier.state.dateRangeFilter, isNull);
     });
 
+    // Test Case ID: SMP-049
+    // Description: Kiểm tra MyReportsNotifier.setDateRange không gọi lại API nếu chọn trùng khoảng ngày hiện tại và cho phép xóa lọc bằng null.
     test('Phản ánh của tôi: chọn lại đúng khoảng ngày cũ không gọi API thêm', () async {
       final notifier = MyReportsNotifier(ReportService(reportRepo: repo));
       await _flush();
@@ -279,6 +299,8 @@ void main() {
 
     setUp(() => repo = _FakeReportRepo());
 
+    // Test Case ID: SMP-050
+    // Description: Kiểm tra MyReportsNotifier lọc kết hợp status và severity gửi đúng tham số và giữ nguyên khi refresh ở page=1.
     test('lọc mức độ gửi severity; làm mới giữ cả trạng thái và mức độ', () async {
       final notifier = MyReportsNotifier(ReportService(reportRepo: repo));
       await _flush();
@@ -299,6 +321,8 @@ void main() {
       expect(repo.myCalls.last.page, 1);
     });
 
+    // Test Case ID: SMP-051
+    // Description: Kiểm tra MyReportsNotifier.clearFilters() đưa status và severity về null và tắt isFiltering.
     test('Xoá lọc trả về toàn bộ phản ánh', () async {
       final notifier = MyReportsNotifier(ReportService(reportRepo: repo));
       await _flush();

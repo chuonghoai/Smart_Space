@@ -61,6 +61,8 @@ class ReportDeadlineAndRejectTest {
     @InjectMocks ReportServiceImpl reportService;
     @InjectMocks StaffServiceImpl staffService;
 
+    // Test Case ID: SMP-299
+    // Description: Xác minh deadlineDaysForSeverity ánh xạ đúng số ngày hạn xử lý cho null/low (3), medium (5), high (7) và critical (10).
     @Test
     void deadlineDaysForSeverityMatchesSpec() {
         assertEquals(3L, ReportServiceImpl.deadlineDaysForSeverity(null));
@@ -70,6 +72,8 @@ class ReportDeadlineAndRejectTest {
         assertEquals(10L, ReportServiceImpl.deadlineDaysForSeverity(EReportSeverity.critical));
     }
 
+    // Test Case ID: SMP-300
+    // Description: Xác minh createReport tự động tính hạn xử lý mặc định 3 ngày (mức low) kể từ thời điểm tạo báo cáo.
     @Test
     void createReportSetsDefaultLow3DayDeadline() {
         User client = User.builder().email("c@test.com").fullName("Client").role(ERole.client).language("vi").build();
@@ -96,6 +100,8 @@ class ReportDeadlineAndRejectTest {
         assertEquals(LocalDateTime.of(2026, 5, 4, 10, 0), LocalDateTime.parse(res.getDeadline()));
     }
 
+    // Test Case ID: SMP-301
+    // Description: Xác minh assignReport cập nhật mức độ nghiêm trọng và tính lại deadline 7 ngày (mức high) tính từ assignedAt.
     @Test
     void assignReportRecalculatesDeadlineFromAssignedAtAndSeverity() {
         User staff = User.builder().email("s@test.com").fullName("Staff A").role(ERole.staff).language("vi").build();
@@ -127,6 +133,8 @@ class ReportDeadlineAndRejectTest {
         assertEquals(7L, Duration.between(assignedLdt, existing.getDeadline()).toDays());
     }
 
+    // Test Case ID: SMP-302
+    // Description: Từ chối báo cáo từ trạng thái processing: lưu rejectedReason đã trim, rejectedAt, hủy phân công ủy quyền và gửi 2 thông báo.
     @Test
     void rejectReportFromProcessingStoresReasonAndNotifies() {
         User client = User.builder().fullName("Client").role(ERole.client).language("en").build();
@@ -156,6 +164,8 @@ class ReportDeadlineAndRejectTest {
         verify(delegationService).onReportUnassigned(report);
     }
 
+    // Test Case ID: SMP-303
+    // Description: Ném BadRequestException khi từ chối (rejected) một báo cáo đã ở trạng thái processed.
     @Test
     void rejectReportFromProcessedThrowsBadRequest() {
         Report report = Report.builder().title("Done").status(EReportStatus.processed).build();
@@ -166,6 +176,8 @@ class ReportDeadlineAndRejectTest {
                 () -> reportService.updateReportStatus("rep-4", "rejected", "Too late", null));
     }
 
+    // Test Case ID: SMP-304
+    // Description: Kiểm tra getStatistics tổng hợp đúng số báo cáo quá hạn, hoàn thành trễ/đúng hạn, tỷ lệ đúng hạn và hiệu suất từng nhân viên.
     @Test
     void staffStatisticsComputesDeadlinePerformance() {
         User staffLate = User.builder().fullName("Late Staff").role(ERole.staff).build();
@@ -212,6 +224,8 @@ class ReportDeadlineAndRejectTest {
         assertEquals(100.0, stats.getDeadlinePerformance().get(1).getEfficiencyRate());
     }
 
+    // Test Case ID: SMP-305
+    // Description: Mở lại báo cáo từ processed về processing: tính lại deadline theo mức độ high, đặt isOverdue không true và thông báo staff cùng admin.
     @Test
     void reopenReportRecalculatesDeadlineAndNotifiesStaffAndAdmins() {
         User staff = User.builder().fullName("Staff A").role(ERole.staff).language("vi").build();
@@ -245,6 +259,8 @@ class ReportDeadlineAndRejectTest {
         verify(notificationService, times(2)).createNotification(anyString(), any(), any(), anyString(), any());
     }
 
+    // Test Case ID: SMP-306
+    // Description: Kiểm tra isReportOverdue và calculateRemainingDays phân biệt chính xác báo cáo processed sau hạn (overdue=true) và đúng hạn.
     @Test
     void overdueRemainsTrueWhenProcessedAfterDeadline() {
         LocalDateTime dl = LocalDateTime.now().minusDays(2);
@@ -264,6 +280,8 @@ class ReportDeadlineAndRejectTest {
         assertFalse(ReportServiceImpl.isReportOverdue(processedOnTime, LocalDateTime.now()));
     }
 
+    // Test Case ID: SMP-307
+    // Description: Đảm bảo báo cáo legacy processed có resolvedAt=null không bị tính nhầm trễ hạn khi updatedAt bị đổi sau thời điểm review.
     @Test
     void staffWithoutLateReportsNotMarkedMissedWhenUpdatedAtMutatedAfterReview() {
         User staff = User.builder().fullName("Clean Staff").role(ERole.staff).build();

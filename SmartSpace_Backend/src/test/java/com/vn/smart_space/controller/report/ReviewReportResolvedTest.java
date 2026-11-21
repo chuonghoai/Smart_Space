@@ -75,6 +75,8 @@ public class ReviewReportResolvedTest {
         return signedJWT.serialize();
     }
 
+    // Test Case ID: SMP-219
+    // Description: Kiểm thử luồng E2E Client u2 đánh giá phản ánh đã xử lý xong là Resolved kèm 5 sao và ghi chú qua POST /reports/{id}/review.
     @Test
     @DisplayName("Mô phỏng Client đánh giá phản ánh là 'Đã xử lý' (Resolved) kèm đánh giá 5 sao cho nhân viên")
     void testClientReviewReport_ResolvedWithRating() throws Exception {

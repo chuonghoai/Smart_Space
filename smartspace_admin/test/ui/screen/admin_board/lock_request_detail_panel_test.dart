@@ -94,6 +94,8 @@ Future<_FakeActions> _pump(
 }
 
 void main() {
+  // Test Case ID: SMP-095
+  // Description: Kiểm tra LockRequestDetailPanel hiển thị đầy đủ đối tượng, phiếu bầu, lý do, bằng chứng và lịch sử bỏ phiếu.
   testWidgets('Hiển thị đối tượng, phiếu bầu (ghế + số), lý do, bằng chứng và phiếu đã bỏ', (tester) async {
     await _pump(tester, _request(canVote: true));
 
@@ -108,6 +110,8 @@ void main() {
     expect(find.text('“Bằng chứng rõ ràng”'), findsOneWidget);
   });
 
+  // Test Case ID: SMP-096
+  // Description: Kiểm tra khi canVote là true thì nút Bảo lãnh và Từ chối hiển thị trong phiếu bầu, ẩn menu Thao tác khác.
   testWidgets('Được bỏ phiếu → nút Bảo lãnh và Từ chối nằm ngay trong phiếu bầu', (tester) async {
     await _pump(tester, _request(canVote: true));
 
@@ -116,6 +120,8 @@ void main() {
     expect(find.byTooltip('Thao tác khác'), findsNothing, reason: 'không phải người đề xuất');
   });
 
+  // Test Case ID: SMP-097
+  // Description: Kiểm tra khi là người đề xuất thì ẩn nút bỏ phiếu, hiện lý do và đặt mục Huỷ đề xuất trong menu Thao tác khác.
   testWidgets('Người đề xuất → lý do không bỏ phiếu, Huỷ đề xuất nằm trong menu ⋮', (tester) async {
     await _pump(tester, _request(blocked: LockVoteBlockedReason.proposer, canCancel: true));
 
@@ -127,6 +133,8 @@ void main() {
     expect(find.text('Huỷ đề xuất'), findsOneWidget);
   });
 
+  // Test Case ID: SMP-098
+  // Description: Kiểm tra khi đề xuất đã được thông qua thì hiển thị thông báo kết quả bằng chữ và ẩn các nút thao tác.
   testWidgets('Đã thông qua → kết quả bằng chữ thay cho đồng hồ, không có nút thao tác', (tester) async {
     await _pump(tester, _request(
       status: LockRequestStatus.approved,
@@ -139,6 +147,8 @@ void main() {
     expect(find.widgetWithText(FilledButton, 'Bảo lãnh'), findsNothing);
   });
 
+  // Test Case ID: SMP-099
+  // Description: Kiểm tra khi bỏ phiếu gặp lỗi thì dialog xác nhận vẫn giữ mở và hiển thị thông báo lỗi ngay bên trong dialog.
   testWidgets('Bỏ phiếu lỗi → lỗi hiện NGAY TRONG dialog, dialog vẫn mở', (tester) async {
     final actions = await _pump(tester, _request(canVote: true), voteError: 'Bạn đã bỏ phiếu cho đề xuất này');
 
@@ -155,6 +165,8 @@ void main() {
     expect(find.text('Bạn đã bỏ phiếu cho đề xuất này'), findsOneWidget);
   });
 
+  // Test Case ID: SMP-100
+  // Description: Kiểm tra khi bỏ phiếu thành công thì gọi vote đúng 1 lần và đóng dialog xác nhận.
   testWidgets('Bỏ phiếu thành công → dialog đóng', (tester) async {
     final actions = await _pump(tester, _request(canVote: true));
 
@@ -167,6 +179,8 @@ void main() {
     expect(find.byType(AlertDialog), findsNothing);
   });
 
+  // Test Case ID: SMP-101
+  // Description: Kiểm tra LockRequestDetailPanel render bình thường ở Dark Mode mà không phát sinh exception.
   testWidgets('Render được ở Dark mode', (tester) async {
     await _pump(tester, _request(canVote: true), theme: AppTheme.darkTheme);
 

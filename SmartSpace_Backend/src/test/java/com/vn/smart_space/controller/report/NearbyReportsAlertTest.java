@@ -52,6 +52,8 @@ public class NearbyReportsAlertTest {
         }
     }
 
+    // Test Case ID: SMP-212
+    // Description: Kiểm thử API GET /reports/nearby-alerts cho client u2 với tọa độ tại TP.HCM và bán kính 200m trả về đúng cấu trúc JSON.
     @Test
     @DisplayName("Mô phỏng Client gọi API kiểm tra phản ánh trong bán kính 200m để cảnh báo (gọi API 1 lần duy nhất)")
     void testCheckNearbyAlerts_SimulateRealClient() throws Exception {

@@ -36,6 +36,7 @@ Mọi thay đổi do AI Agent thực hiện phải tuân thủ các tài liệu 
     ├── smp-createTestCase/                 # Đọc code thực tế và tạo Test Cases
     ├── smp-fixbug/                         # Truy vết root cause và lập kế hoạch sửa bug
     ├── smp-newFeature/                     # Phân tích yêu cầu và lập kế hoạch tính năng mới
+    ├── smp-newTestCase/                    # Tạo/chuẩn hóa test case (SMP-XXX), tài liệu & danh sách tập trung
     ├── smp-newTesting/                     # Quy chuẩn viết Integration Test Backend & testapi.ps1
     ├── smp-newWeeklyReport/                # Tự động hóa audit codebase & lập 4 file báo cáo tiến độ tuần
     ├── smp-review-code/                    # Review code branch hiện tại so với dev
@@ -68,6 +69,7 @@ Các quy tắc trong `.agents/rules/` được phân loại rõ ràng theo cơ c
 | `/smp-reviewSecurityPerformance` | Đánh giá an toàn, bảo mật và hiệu năng | Branch name | Không | Không | Không |
 | `/smp-createPR` | Push code và tạo Pull Request lên remote | Không | Không | Có (push) | Không (chỉ tạo PR) |
 | `/smp-createTestCase` | Đọc code thực tế để tạo Test Cases | Không / Mô tả | Không | Không | Không |
+| `/smp-newTestCase` | Tạo/chuẩn hóa test case thực thi, cấp mã `SMP-XXX` & đồng bộ tài liệu | Yêu cầu kiểm thử / File test | Có (code test & docs) | Không | **Có** (nếu thiếu thông tin) |
 | `/smp-newTesting` | Viết integration test backend & cấu hình `testapi.ps1` | Tên API / Flow | Có (khi user cho phép) | Không | **Có** (cho plan test) |
 | `/smp-newWeeklyReport` | Audit codebase & tạo 4 file báo cáo tiến độ tuần theo template | Tên tuần & Danh sách tính năng | Không (chỉ tạo file .md báo cáo) | Không | **Có** (nếu ghi đè báo cáo cũ) |
 | `/smp-cleanup` | Quét và dọn dẹp file rác trong workspace | Không | Không (chỉ xóa rác) | Không | **Có** (trước khi xóa file) |

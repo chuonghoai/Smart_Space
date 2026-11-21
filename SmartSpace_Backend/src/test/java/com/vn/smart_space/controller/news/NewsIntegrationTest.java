@@ -67,6 +67,8 @@ public class NewsIntegrationTest {
         return signedJWT.serialize();
     }
 
+    // Test Case ID: SMP-193
+    // Description: Kiểm tra phân quyền Client bị chặn 403 khi tạo tin tức và luồng Admin CRUD (POST/GET/PUT/DELETE) /news
     @Test
     @DisplayName("Kiểm tra luồng CRUD News: Admin tạo, cập nhật, lấy chi tiết, xóa và Client bị chặn quyền CUD")
     void testNewsLifecycleAndPermissions() throws Exception {

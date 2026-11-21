@@ -75,6 +75,8 @@ public class ReviewReportUnresolvedTest {
         return signedJWT.serialize();
     }
 
+    // Test Case ID: SMP-220
+    // Description: Kiểm thử luồng E2E Client u2 đánh giá phản ánh là Unresolved kèm lý do và 1 ảnh bằng chứng qua POST /reports/{id}/review.
     @Test
     @DisplayName("Mô phỏng Client đánh giá phản ánh là 'Chưa được xử lý' (Unresolved) kèm lý do và ảnh chụp bằng chứng")
     void testClientReviewReport_UnresolvedWithReasonAndImages() throws Exception {

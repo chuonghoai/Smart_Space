@@ -8,6 +8,8 @@ import 'package:smartspace_client/ui/mobile/reports/widgets/my_report_card.dart'
 
 void main() {
   group('ReportDeadlineHelper lifecycle transitions', () {
+    // Test Case ID: SMP-005
+    // Description: Kiểm tra ReportDeadlineHelper.isOverdue qua các mốc trạng thái: quá hạn đang xử lý, hoàn thành trễ, mở lại với hạn mới và quá hạn lại.
     test('handles overdue processing, late processed, reopened future deadline, and re-overdue', () {
       final now = DateTime(2026, 11, 16, 12, 0);
       final pastDeadline = DateTime(2026, 11, 10, 12, 0);
@@ -69,6 +71,8 @@ void main() {
       );
     }
 
+    // Test Case ID: SMP-006
+    // Description: Kiểm tra MyReportCard ở Light Mode hiển thị dòng "Hạn xử lý:", số ngày còn lại và không hiện nhãn "Quá hạn" khi chưa đến hạn.
     testWidgets('shows deadline note with remaining days when active (Light Mode)', (tester) async {
       final now = DateTime.now();
       final report = ReportModel(
@@ -91,6 +95,8 @@ void main() {
       expect(find.text('Quá hạn'), findsNothing);
     });
 
+    // Test Case ID: SMP-007
+    // Description: Kiểm tra MyReportCard ở Dark Mode hiển thị hạn xử lý, nhãn "Quá hạn" và "Xử lý chưa thỏa đáng" khi xử lý trễ và review chưa đạt.
     testWidgets('shows deadline note and Overdue badge when completed late (Dark Mode)', (tester) async {
       final pastDeadline = DateTime(2026, 10, 10, 14, 0);
       final report = ReportModel(

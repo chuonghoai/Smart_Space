@@ -28,10 +28,14 @@ class SmartSpaceApplicationTests {
 	@Autowired
 	private ReportDeadlineSyncInitializer deadlineSyncInitializer;
 
+	// Test Case ID: SMP-231
+	// Description: Kiểm tra Spring Boot application context khởi động thành công (hàm rỗng không có assertion nghiệp vụ bổ sung, phụ thuộc MySQL và Redis).
 	@Test
 	void contextLoads() {
 	}
 
+	// Test Case ID: SMP-232
+	// Description: Gọi conversationRepository.findAllByUserIdAndQuery("u1", "nhân", PageRequest(0,10)) và in log ra console, chưa có assertion kiểm tra kết quả.
 	@Test
 	void testSearchConversation() {
 		var page = conversationRepository.findAllByUserIdAndQuery("u1", "nhân", PageRequest.of(0, 10));
@@ -41,6 +45,8 @@ class SmartSpaceApplicationTests {
 		}
 	}
 
+	// Test Case ID: SMP-233
+	// Description: Gọi syncMissingDeadlines() cập nhật DB thật rồi kiểm tra bộ lọc overdue trên Repository cho Admin, Client và Staff (phụ thuộc dữ liệu DB có sẵn).
 	@Test
 	void overdueFilterIncludesProcessingAndLateCompletedReportsAfterDbSync() {
 		deadlineSyncInitializer.syncMissingDeadlines();

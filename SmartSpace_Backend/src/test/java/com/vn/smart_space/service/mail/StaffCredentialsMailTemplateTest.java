@@ -57,6 +57,8 @@ class StaffCredentialsMailTemplateTest {
         return engine.process("mail/staff-credentials", ctx);
     }
 
+    // Test Case ID: SMP-296
+    // Description: Render template mail/staff-credentials tiếng Việt đầy đủ thông tin tài khoản, chức vụ, link Staff App, hỗ trợ và xuất preview.
     @Test
     void rendersVietnameseWithAllSections() throws IOException {
         String html = render(Locale.forLanguageTag("vi"), "Nguyễn Văn A", "Kỹ thuật viên", true);
@@ -74,6 +76,8 @@ class StaffCredentialsMailTemplateTest {
         writePreview("staff-credentials_vi.html", html);
     }
 
+    // Test Case ID: SMP-297
+    // Description: Render template mail/staff-credentials tiếng Anh và ẩn mục Position, nút tải app, dòng hỗ trợ khi các biến tùy chọn là null.
     @Test
     void rendersEnglishAndHidesOptionalSections() throws IOException {
         String html = render(Locale.ENGLISH, "John Doe", null, false);
@@ -88,6 +92,8 @@ class StaffCredentialsMailTemplateTest {
         writePreview("staff-credentials_en.html", html);
     }
 
+    // Test Case ID: SMP-298
+    // Description: Kiểm tra HTML-escape giá trị fullName và positionName chứa thẻ HTML/script trong template mail/staff-credentials.
     @Test
     void escapesUserProvidedValues() {
         String html = render(Locale.forLanguageTag("vi"), "<script>alert(1)</script>", "<b>x</b>", false);

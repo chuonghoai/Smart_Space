@@ -29,6 +29,8 @@ Widget createLocalizedApp(Widget child) {
 
 void main() {
   group('Map Density UI Components Tests', () {
+    // Test Case ID: SMP-052
+    // Description: Kiểm tra MapDensityLegend hiển thị đúng icon layers, tiêu đề "Mật độ phản ánh" và 3 mốc chú giải Thấp, Trung bình, Cao.
     testWidgets('MapDensityLegend renders correct elements', (tester) async {
       await tester.pumpWidget(createLocalizedApp(const MapDensityLegend()));
       await tester.pumpAndSettle();
@@ -41,6 +43,8 @@ void main() {
       expect(find.text('Trên 5 phản ánh (Cao)'), findsOneWidget);
     });
 
+    // Test Case ID: SMP-053
+    // Description: Kiểm tra MapSettingsBottomSheet hiển thị đầy đủ Switch mật độ, chip bộ lọc và khoảng thời gian, đồng thời kích hoạt các callback khi tương tác.
     testWidgets('MapSettingsBottomSheet renders, triggers toggle, and selects filter and timeframe', (tester) async {
       bool toggledValue = false;
       MapReportFilter selectedFilter = MapReportFilter.all;
@@ -102,6 +106,8 @@ void main() {
       expect(selectedTimeframe, equals(ReportTimeframe.month3));
     });
 
+    // Test Case ID: SMP-054
+    // Description: Kiểm tra MapControls hiển thị nút cài đặt (icon layers_outlined) và gọi callback onSettingsPressed khi chạm.
     testWidgets('MapControls includes settings button and fires callback', (tester) async {
       bool settingsClicked = false;
 
@@ -134,6 +140,8 @@ void main() {
       expect(settingsClicked, isTrue);
     });
 
+    // Test Case ID: SMP-055
+    // Description: Kiểm tra ReportInfoSheet hiển thị tiêu đề, mô tả, icon điều hướng và kích hoạt onViewDetail khi chạm.
     testWidgets('ReportInfoSheet renders and triggers onViewDetail when tapped', (tester) async {
       bool detailClicked = false;
       final report = ReportModel(

@@ -62,6 +62,8 @@ ApiResponse<List<ReportModel>> _ok(List<ReportModel> reports) =>
 
 void main() {
   group('ReportModel getters', () {
+    // Test Case ID: SMP-149
+    // Description: Kiểm tra getter isDangerous của ReportModel chỉ trả về true khi severity là high hoặc critical.
     test('isDangerous: chỉ high / critical', () {
       expect(_report('a', severity: ReportSeverity.critical).isDangerous, isTrue);
       expect(_report('b', severity: ReportSeverity.high).isDangerous, isTrue);
@@ -69,6 +71,8 @@ void main() {
       expect(_report('d', severity: ReportSeverity.unknown).isDangerous, isFalse);
     });
 
+    // Test Case ID: SMP-150
+    // Description: Kiểm tra getter needsRehandling chỉ trả về true khi status là processing và isReviewResolved là false.
     test('needsRehandling: đang xử lý và bị đánh giá chưa thoả đáng', () {
       expect(_report('a', isReviewResolved: false).needsRehandling, isTrue);
       expect(_report('b', isReviewResolved: null).needsRehandling, isFalse);
@@ -79,6 +83,8 @@ void main() {
     });
   });
 
+  // Test Case ID: SMP-151
+  // Description: Kiểm tra MapState.getFilteredReports lọc tách biệt 2 nhóm Nguy hiểm và Thông thường không chồng lấn.
   test('MapState.getFilteredReports: 2 nhóm Nguy hiểm / Thông thường không chồng nhau', () {
     final reports = [
       _report('danger', severity: ReportSeverity.high),
@@ -103,20 +109,28 @@ void main() {
 
     List<String> ids(MapState state) => state.getFilteredReports(reports).map((r) => r.id).toList();
 
+    // Test Case ID: SMP-152
+    // Description: Kiểm tra MapState mặc định dùng statusFilter = all và giữ lại mọi report kể cả việc cần xử lý lại.
     test('mặc định Tất cả: mọi việc đang xử lý, kể cả xử lý lại', () {
       expect(const MapState().statusFilter, StaffMapStatusFilter.all);
       expect(ids(const MapState()), ['danger', 'danger-rehandling', 'normal-rehandling', 'normal']);
     });
 
+    // Test Case ID: SMP-153
+    // Description: Kiểm tra khi statusFilter là processing thì loại bỏ các report cần xử lý lại.
     test('Đang xử lý: bỏ việc cần xử lý lại', () {
       expect(ids(const MapState(statusFilter: StaffMapStatusFilter.processing)), ['danger', 'normal']);
     });
 
+    // Test Case ID: SMP-154
+    // Description: Kiểm tra khi statusFilter là rehandling thì chỉ giữ các report bị đánh giá chưa thoả đáng.
     test('Xử lý lại: chỉ việc bị đánh giá chưa thoả đáng', () {
       expect(ids(const MapState(statusFilter: StaffMapStatusFilter.rehandling)),
           ['danger-rehandling', 'normal-rehandling']);
     });
 
+    // Test Case ID: SMP-155
+    // Description: Kiểm tra bộ lọc chip trạng thái (rehandling) kết hợp đồng thời với bộ lọc mức độ (showDangerous = false).
     test('chip trạng thái kết hợp với nút mức độ', () {
       expect(
         ids(const MapState(statusFilter: StaffMapStatusFilter.rehandling, showDangerous: false)),
@@ -124,6 +138,8 @@ void main() {
       );
     });
 
+    // Test Case ID: SMP-156
+    // Description: Kiểm tra MapController.setStatusFilter cập nhật statusFilter nhưng giữ nguyên trạng thái showDangerous đã bật/tắt.
     test('MapController.setStatusFilter giữ nguyên nút mức độ', () {
       final controller = MapController()..toggleDangerous();
       controller.setStatusFilter(StaffMapStatusFilter.rehandling);
@@ -133,6 +149,8 @@ void main() {
     });
   });
 
+  // Test Case ID: SMP-157
+  // Description: Kiểm tra googleMapsDirectionsUri tạo đúng HTTPS URL chỉ đường của Google Maps tới toạ độ truyền vào.
   test('googleMapsDirectionsUri: URL chỉ đường chính thức tới toạ độ report', () {
     final uri = googleMapsDirectionsUri(10.8231, 106.6297);
     expect(uri.scheme, 'https');
@@ -142,6 +160,8 @@ void main() {
   });
 
   group('MapClusterSheet.sortForCluster', () {
+    // Test Case ID: SMP-158
+    // Description: Kiểm tra MapClusterSheet.sortForCluster ưu tiên sắp xếp theo khoảng cách tăng dần khi mọi report đều có distance.
     test('có khoảng cách → gần nhất trước', () {
       final sorted = MapClusterSheet.sortForCluster([
         _report('far', distance: 900, severity: ReportSeverity.critical),
@@ -151,6 +171,8 @@ void main() {
       expect(sorted.map((r) => r.id), ['near', 'mid', 'far']);
     });
 
+    // Test Case ID: SMP-159
+    // Description: Kiểm tra MapClusterSheet.sortForCluster khi thiếu khoảng cách GPS sẽ xếp theo mức độ nguy hiểm rồi mới nhất trước.
     test('không có GPS → nguy hiểm nhất trước, rồi mới nhất trước', () {
       final sorted = MapClusterSheet.sortForCluster([
         _report('low', severity: ReportSeverity.low),
@@ -179,6 +201,8 @@ void main() {
 
     tearDown(() => container.dispose());
 
+    // Test Case ID: SMP-160
+    // Description: Kiểm tra StaffMapReportsNotifier gọi API status='processing' với limit=100 và lọc bỏ report toạ độ (0, 0).
     test('lấy việc đang xử lý, độc lập với Home, limit 100; bỏ report không có toạ độ', () async {
       expect(repo.calls.single, (status: 'processing', limit: StaffMapReportsNotifier.limit));
 
@@ -188,6 +212,8 @@ void main() {
       expect(data.truncated, isFalse);
     });
 
+    // Test Case ID: SMP-161
+    // Description: Kiểm tra StaffMapReportsNotifier đặt truncated = true khi API trả về số lượng report bằng limit (100).
     test('trả đủ limit → truncated', () async {
       repo.pending.single.complete(_ok([
         for (var i = 0; i < StaffMapReportsNotifier.limit; i++) _report('r$i'),
@@ -196,6 +222,8 @@ void main() {
       expect(data.truncated, isTrue);
     });
 
+    // Test Case ID: SMP-162
+    // Description: Kiểm tra StaffMapReportsNotifier.refresh khi gặp lỗi vẫn giữ nguyên dữ liệu reports trước đó cùng trạng thái lỗi.
     test('refresh lỗi vẫn giữ dữ liệu cũ (bản đồ không bị trống)', () async {
       repo.pending.single.complete(_ok([_report('a')]));
       await container.read(staffMapReportsProvider.future);

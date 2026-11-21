@@ -42,6 +42,8 @@ Future<ProviderContainer> _pumpBadges(WidgetTester tester, {ThemeData? theme}) a
 }
 
 void main() {
+  // Test Case ID: SMP-092
+  // Description: Kiểm tra AdminSummaryBadges hiển thị đủ 3 badge Tổng, Hoạt động, Đã khoá kèm đúng số liệu.
   testWidgets('Hiển thị đủ 3 badge kèm số liệu', (tester) async {
     await _pumpBadges(tester);
 
@@ -53,6 +55,8 @@ void main() {
     expect(find.text('1'), findsOneWidget);
   });
 
+  // Test Case ID: SMP-093
+  // Description: Kiểm tra bấm badge cập nhật adminStatusFilterProvider và bấm lại badge đang chọn sẽ bỏ lọc về all.
   testWidgets('Bấm badge → lọc; bấm lại badge đang chọn → bỏ lọc', (tester) async {
     final container = await _pumpBadges(tester);
     expect(container.read(adminStatusFilterProvider), 'all');
@@ -74,6 +78,8 @@ void main() {
     expect(container.read(adminStatusFilterProvider), 'all');
   });
 
+  // Test Case ID: SMP-094
+  // Description: Kiểm tra AdminSummaryBadges render bình thường ở Dark Mode mà không phát sinh exception.
   testWidgets('Render được ở Dark mode', (tester) async {
     await _pumpBadges(tester, theme: AppTheme.darkTheme);
 

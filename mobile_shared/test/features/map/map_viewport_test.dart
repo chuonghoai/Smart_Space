@@ -10,6 +10,8 @@ void main() {
   group('MapBounds', () {
     const bounds = MapBounds(minLat: 10, maxLat: 11, minLng: 106, maxLng: 107);
 
+    // Test Case ID: SMP-320
+    // Description: Kiểm tra MapBounds.contains trả về true khi khung con nằm hoàn toàn bên trong hoặc trùng khớp khung cha.
     test('contains: khung con nằm trọn bên trong', () {
       expect(
         bounds.contains(const MapBounds(minLat: 10.2, maxLat: 10.8, minLng: 106.1, maxLng: 106.9)),
@@ -18,6 +20,8 @@ void main() {
       expect(bounds.contains(bounds), isTrue);
     });
 
+    // Test Case ID: SMP-321
+    // Description: Kiểm tra MapBounds.contains trả về false khi khung kiểm tra vượt quá một cạnh của khung gốc.
     test('contains: khung lệch ra ngoài một cạnh', () {
       expect(
         bounds.contains(const MapBounds(minLat: 10.5, maxLat: 11.1, minLng: 106.1, maxLng: 106.9)),
@@ -25,6 +29,8 @@ void main() {
       );
     });
 
+    // Test Case ID: SMP-322
+    // Description: Kiểm tra MapBounds.expandBy giữ nguyên tâm khung nhìn và nhân kích thước lên theo hệ số factor.
     test('expandBy: giữ tâm, nhân kích thước theo factor', () {
       final expanded = bounds.expandBy(2);
       expect(expanded.minLat, closeTo(9.5, 1e-9));
@@ -33,6 +39,8 @@ void main() {
       expect(expanded.maxLng, closeTo(107.5, 1e-9));
     });
 
+    // Test Case ID: SMP-323
+    // Description: Kiểm tra MapBounds.expandBy kẹp các cạnh mở rộng trong giới hạn vĩ độ [-90, 90] và kinh độ [-180, 180].
     test('expandBy: kẹp trong giới hạn toạ độ hợp lệ', () {
       const world = MapBounds(minLat: -80, maxLat: 80, minLng: -170, maxLng: 170);
       final expanded = world.expandBy(3);
@@ -42,6 +50,8 @@ void main() {
       expect(expanded.maxLng, 180);
     });
 
+    // Test Case ID: SMP-324
+    // Description: Kiểm tra MapBounds.toQueryParameters xuất đúng tên tham số snake_case (min_lat, max_lat, min_lng, max_lng).
     test('toQueryParameters dùng tên param snake_case của API client', () {
       expect(bounds.toQueryParameters(), {
         'min_lat': 10.0,
@@ -64,29 +74,39 @@ void main() {
       gate = ViewportLoadGate(now: () => now);
     });
 
+    // Test Case ID: SMP-325
+    // Description: Kiểm tra ViewportLoadGate.begin ở lần đầu trả về request có bounds mở rộng theo prefetchFactor và cập nhật lastViewport.
     test('request đầu tiên dùng khung mở rộng theo prefetchFactor', () {
       final request = gate.begin(viewport)!;
       expect(request.bounds, viewport.expandBy(gate.prefetchFactor));
       expect(gate.lastViewport, viewport);
     });
 
+    // Test Case ID: SMP-326
+    // Description: Kiểm tra ViewportLoadGate.begin trả về null khi khung mới nằm trong vùng đã tải thành công và chưa quá hạn freshness.
     test('khung nằm trong vùng đã tải và còn mới → bỏ qua', () {
       gate.succeed(gate.begin(viewport)!, truncated: false);
       expect(gate.begin(inside), isNull);
     });
 
+    // Test Case ID: SMP-327
+    // Description: Kiểm tra ViewportLoadGate.begin tạo request mới khi dữ liệu đã tải vượt quá thời gian freshness.
     test('quá hạn freshness → tải lại', () {
       gate.succeed(gate.begin(viewport)!, truncated: false);
       now = now.add(gate.freshness + const Duration(seconds: 1));
       expect(gate.begin(inside), isNotNull);
     });
 
+    // Test Case ID: SMP-328
+    // Description: Kiểm tra khi kết quả trước bị truncated thì khung nhìn khác phải tải lại nhưng đúng khung cũ không lặp vô hạn.
     test('truncated: khung khác phải tải lại, cùng khung thì không lặp', () {
       gate.succeed(gate.begin(viewport)!, truncated: true);
       expect(gate.begin(viewport), isNull);
       expect(gate.begin(inside), isNotNull);
     });
 
+    // Test Case ID: SMP-329
+    // Description: Kiểm tra request cũ mất trạng thái isCurrent khi có request mới hơn và kết quả của request cũ không ghi đè trạng thái.
     test('request cũ không còn là current khi đã có request mới', () {
       final first = gate.begin(viewport)!;
       final second = gate.begin(inside, force: true)!;
@@ -99,12 +119,16 @@ void main() {
       expect(gate.begin(inside), isNull);
     });
 
+    // Test Case ID: SMP-330
+    // Description: Kiểm tra ViewportLoadGate.fail cho phép gọi begin lại trên chính khung viewport vừa thất bại.
     test('lỗi → cho phép thử lại cùng khung', () {
       final request = gate.begin(viewport)!;
       gate.fail(request);
       expect(gate.begin(viewport), isNotNull);
     });
 
+    // Test Case ID: SMP-331
+    // Description: Kiểm tra ViewportLoadGate.invalidate xóa bộ nhớ vùng đã tải khiến khung cũ phải tải lại.
     test('invalidate (đổi bộ lọc) → khung đã tải cũng phải tải lại', () {
       gate.succeed(gate.begin(viewport)!, truncated: false);
       gate.invalidate();
@@ -113,6 +137,8 @@ void main() {
   });
 
   group('ClusterLayerColors.fromTheme', () {
+    // Test Case ID: SMP-332
+    // Description: Kiểm tra ClusterLayerColors.fromTheme mặc định lấy màu alert từ colorScheme.error và onAlert từ colorScheme.onError.
     test('mặc định: cảnh báo dùng error / onError của theme', () {
       final theme = ThemeData.light();
       final colors = ClusterLayerColors.fromTheme(theme);
@@ -120,6 +146,8 @@ void main() {
       expect(colors.onAlert, theme.colorScheme.onError);
     });
 
+    // Test Case ID: SMP-333
+    // Description: Kiểm tra ClusterLayerColors.fromTheme tự động chọn màu chữ đen hoặc trắng theo độ tương phản khi truyền màu alert tùy chọn.
     test('màu cảnh báo tuỳ chọn: chữ chọn theo độ tương phản', () {
       final theme = ThemeData.light();
       final onYellow = ClusterLayerColors.fromTheme(theme, alert: const Color(0xFFF9A825));
@@ -141,6 +169,8 @@ void main() {
       styleKey: 'pending',
     );
 
+    // Test Case ID: SMP-334
+    // Description: Kiểm tra ClusterMapLayer.toFeatureCollection sinh GeoJSON Point theo thứ tự [lng, lat] cùng đủ properties của marker.
     test('tạo Point [lng, lat] kèm đủ thuộc tính cho layer', () {
       final json = jsonDecode(ClusterMapLayer.toFeatureCollection(
         [marker],
@@ -162,6 +192,8 @@ void main() {
       });
     });
 
+    // Test Case ID: SMP-335
+    // Description: Kiểm tra ClusterMapLayer.toFeatureCollection loại bỏ marker có toạ độ (0, 0) khỏi danh sách features.
     test('bỏ điểm có toạ độ (0,0)', () {
       const zero = ClusterMarker(
         id: 'zero',

@@ -11,6 +11,8 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:smartspace_admin/main.dart';
 
 void main() {
+  // Test Case ID: SMP-140
+  // Description: Template smoke test mặc định của Flutter kiểm tra bộ đếm '0'/'1' trên SmartSpaceAdminApp (không khớp app thực tế).
   testWidgets('Counter increments smoke test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const SmartSpaceAdminApp());

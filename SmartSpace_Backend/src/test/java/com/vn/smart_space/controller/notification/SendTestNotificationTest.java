@@ -76,6 +76,8 @@ public class SendTestNotificationTest {
         return signedJWT.serialize();
     }
 
+    // Test Case ID: SMP-196
+    // Description: Kiểm tra Admin gửi POST /notifications/broadcast-test phát thông báo thử nghiệm đa ngôn ngữ VI/EN tới người dùng
     @Test
     @DisplayName("Gửi thông báo thử nghiệm đa ngôn ngữ (VI/EN theo CSDL) tới toàn bộ người dùng")
     void testBroadcastTestNotification() throws Exception {

@@ -81,6 +81,8 @@ Future<void> _fillAndSubmit(WidgetTester tester) async {
 }
 
 void main() {
+  // Test Case ID: SMP-102
+  // Description: Kiểm tra nút Đề xuất khoá tài khoản bị vô hiệu kèm lý do khi chưa đủ 3 quản trị viên hoạt động.
   testWidgets('Không đủ admin → nút bị vô hiệu nhưng vẫn đọc được, kèm lý do', (tester) async {
     await _pump(tester, _user(blockedReason: 'not_enough_admins'));
 
@@ -89,6 +91,8 @@ void main() {
     expect(find.textContaining('Cần ít nhất 3 quản trị viên đang hoạt động'), findsOneWidget);
   });
 
+  // Test Case ID: SMP-103
+  // Description: Kiểm tra khi tài khoản đang có đề xuất khoá chờ duyệt thì hiển thị banner cùng nút Xem đề xuất và ẩn nút Đề xuất khoá tài khoản.
   testWidgets('Đang có đề xuất chờ → banner + "Xem đề xuất", không có nút đề xuất', (tester) async {
     await _pump(tester, _user(blockedReason: 'already_pending', pendingId: 'req-1'));
 
@@ -97,6 +101,8 @@ void main() {
     expect(find.text('Đề xuất khoá tài khoản'), findsNothing);
   });
 
+  // Test Case ID: SMP-104
+  // Description: Kiểm tra khi gửi form đề xuất khoá thiếu lý do và bằng chứng thì hiển thị thông báo lỗi ngay trên form.
   testWidgets('Thiếu lý do và bằng chứng → lỗi ngay tại field, không gọi API', (tester) async {
     await _pump(tester, _user());
 
@@ -109,6 +115,8 @@ void main() {
     expect(find.text('Cần ít nhất một bằng chứng: ảnh hoặc phản ánh'), findsOneWidget);
   });
 
+  // Test Case ID: SMP-105
+  // Description: Kiểm tra khi backend từ chối tạo đề xuất thì giữ form mở và hiển thị lỗi ngay bên trong form.
   testWidgets('Backend từ chối → lỗi hiện NGAY TRONG form, form vẫn mở', (tester) async {
     await _pump(
       tester,
@@ -125,6 +133,8 @@ void main() {
     );
   });
 
+  // Test Case ID: SMP-106
+  // Description: Kiểm tra khi gửi đề xuất khoá thành công thì đóng form và hiển thị dialog xác nhận có nút Xem đề xuất.
   testWidgets('Gửi thành công → form đóng và hiện dialog xác nhận có "Xem đề xuất"', (tester) async {
     await _pump(tester, _user(), result: (requestId: 'req-9', error: null));
 

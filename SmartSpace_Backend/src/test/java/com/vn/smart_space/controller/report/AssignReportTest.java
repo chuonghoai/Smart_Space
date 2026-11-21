@@ -75,6 +75,8 @@ public class AssignReportTest {
         return signedJWT.serialize();
     }
 
+    // Test Case ID: SMP-202
+    // Description: Kiểm thử tích hợp luồng Client u2 tạo phản ánh mới và Admin u1 phân công xử lý cho Staff u5 với mức độ high.
     @Test
     @DisplayName("Mô phỏng Client tạo phản ánh và Admin phân công xử lý cho Staff")
     void testCreateAndAssignReport_SimulateRealFlow() throws Exception {

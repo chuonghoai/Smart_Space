@@ -94,6 +94,8 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('AppLayout bottomNavigationBar Tests', () {
+    // Test Case ID: SMP-134
+    // Description: Kiểm tra AppLayout hiển thị bottomNavigationBar cùng nội dung chính trên bố cục mobile (400x800).
     testWidgets('renders bottomNavigationBar in Mobile layout', (tester) async {
       await tester.binding.setSurfaceSize(const Size(400, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -114,6 +116,8 @@ void main() {
   });
 
   group('AdminSearchScreen Tests', () {
+    // Test Case ID: SMP-135
+    // Description: Kiểm tra AdminSearchScreen trên kích thước mobile (400x800) hiển thị nút quay lại, ô tìm kiếm và ListView.
     testWidgets('renders correctly on Mobile size (arrow_back, search TextField, and results)', (tester) async {
       await tester.binding.setSurfaceSize(const Size(400, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -132,6 +136,8 @@ void main() {
   });
 
   group('AdminNewsListScreen Tests', () {
+    // Test Case ID: SMP-136
+    // Description: Kiểm tra AdminNewsListScreen trên mobile (400x800) hiển thị tiêu đề quản lý tin tức, nút tạo tin và CustomScrollView.
     testWidgets('renders news management header and create button on Mobile view', (tester) async {
       await tester.binding.setSurfaceSize(const Size(400, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -153,6 +159,8 @@ void main() {
   });
 
   group('AdminReportDetailScreen Tests', () {
+    // Test Case ID: SMP-137
+    // Description: Kiểm tra AdminReportDetailScreen trên mobile (400x800) hiển thị AppBar tiêu đề, tên phản ánh và widget AspectRatio.
     testWidgets('renders correctly on Mobile view (keeping original mobile scaffold & aspect ratios)', (tester) async {
       await tester.binding.setSurfaceSize(const Size(400, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -188,6 +196,8 @@ void main() {
       expect(find.byType(AspectRatio), findsWidgets);
     });
 
+    // Test Case ID: SMP-138
+    // Description: Kiểm tra AdminReportDetailScreen hiển thị tiêu đề phản ánh dài trên màn hình nhỏ (360x640) không gây tràn giao diện.
     testWidgets('renders report info without overflow on small screens', (tester) async {
       await tester.binding.setSurfaceSize(const Size(360, 640));
       addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -221,6 +231,8 @@ void main() {
   });
 
   group('AdminNotificationScreen Tests', () {
+    // Test Case ID: SMP-139
+    // Description: Kiểm tra AdminNotificationScreen trên mobile (400x800) hiển thị AppBar và nút hành động TextButton.
     testWidgets('renders notification screen on Mobile view (retains mobile layout & actions)', (tester) async {
       await tester.binding.setSurfaceSize(const Size(400, 800));
       addTearDown(() => tester.binding.setSurfaceSize(null));

@@ -55,6 +55,8 @@ class _FakeRepo implements DelegationRepo {
 
 void main() {
   group('Model', () {
+    // Test Case ID: SMP-141
+    // Description: Kiểm tra parse JSON sang DelegationModel với trạng thái, mức độ và thông tin người nhờ/được nhờ.
     test('DelegationModel.fromJson: trạng thái, mức độ, người nhờ/được nhờ', () {
       final d = DelegationModel.fromJson(_delegationJson('1', status: 'ACCEPTED'));
       expect(d.status, DelegationStatus.accepted);
@@ -67,12 +69,16 @@ void main() {
       expect(d.expiresAt, isNotNull);
     });
 
+    // Test Case ID: SMP-142
+    // Description: Kiểm tra DelegationStatus.parse trả về unknown khi gặp giá trị lạ hoặc null và isActive của completed là false.
     test('Trạng thái lạ → unknown, không crash', () {
       expect(DelegationStatus.parse('SOMETHING_NEW'), DelegationStatus.unknown);
       expect(DelegationStatus.parse(null), DelegationStatus.unknown);
       expect(DelegationStatus.completed.isActive, isFalse);
     });
 
+    // Test Case ID: SMP-143
+    // Description: Kiểm tra DelegationReportStateModel.fromJson đọc đúng canRequest, viewerRole và activeDelegation.
     test('DelegationReportStateModel: yêu cầu đang hoạt động và viewerRole', () {
       final withActive = DelegationReportStateModel.fromJson({
         'can_request': false,
@@ -85,6 +91,8 @@ void main() {
       expect(withActive.activeDelegation?.id, '2');
     });
 
+    // Test Case ID: SMP-144
+    // Description: Kiểm tra DelegationPage.fromJson đọc PageResponse dạng camelCase, tính hasMore và xử lý đầu vào null.
     test('DelegationPage đọc PageResponse (camelCase) và hasMore', () {
       final page = DelegationPage.fromJson(
         {'currentPage': 0, 'totalPages': 2, 'content': [_delegationJson('1')]},
@@ -109,6 +117,8 @@ void main() {
 
     tearDown(() => container.dispose());
 
+    // Test Case ID: SMP-145
+    // Description: Kiểm tra delegationListProvider tải trang 0 theo box và nối thêm trang kế khi gọi loadMore.
     test('Danh sách: tải trang đầu theo hộp, cuộn thì nối trang kế', () async {
       final sub = container.listen(delegationListProvider(DelegationBox.sent), (_, _) {});
       await Future<void>.delayed(Duration.zero);
@@ -126,6 +136,8 @@ void main() {
       expect(sub.read().hasMore, isFalse);
     });
 
+    // Test Case ID: SMP-146
+    // Description: Kiểm tra delegationListProvider giữ items rỗng, tắt isLoading và lưu message lỗi khi API thất bại.
     test('Danh sách lỗi → giữ trạng thái rỗng kèm error để hiện nút thử lại', () async {
       final sub = container.listen(delegationListProvider(DelegationBox.received), (_, _) {});
       await Future<void>.delayed(Duration.zero);
@@ -136,6 +148,8 @@ void main() {
       expect(sub.read().isLoading, isFalse);
     });
 
+    // Test Case ID: SMP-147
+    // Description: Kiểm tra colleagueSearchProvider debounce thao tác gõ liên tục và bỏ qua response cũ về sau.
     test('Tìm đồng nghiệp: debounce, và response của từ khoá cũ về sau bị bỏ', () async {
       final sub = container.listen(colleagueSearchProvider, (_, _) {});
       await Future<void>.delayed(Duration.zero);

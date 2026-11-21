@@ -55,6 +55,8 @@ public class CreateReportTest {
         }
     }
 
+    // Test Case ID: SMP-203
+    // Description: Kiểm thử tích hợp Client u2 gửi yêu cầu POST /reports tạo phản ánh sự cố mới và nhận về HTTP 200 kèm id.
     @Test
     @DisplayName("Mô phỏng 1 Client tạo phản ánh sự cố thực tế trên App (gọi API 1 lần duy nhất)")
     void testCreateReport_SimulateRealClient() throws Exception {

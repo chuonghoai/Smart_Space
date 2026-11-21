@@ -43,6 +43,8 @@ public class AccountLockRequestManagementTest {
         }
     }
 
+    // Test Case ID: SMP-170
+    // Description: Kiểm tra Admin lấy danh sách đề xuất khóa tài khoản pending và số lượng chờ biểu quyết
     @Test
     @DisplayName("Danh sach va dem de xuat cho admin")
     void testListAndPendingCount() throws Exception {
@@ -55,6 +57,8 @@ public class AccountLockRequestManagementTest {
         assertTrue(count.body().contains("\"awaitingMyVote\""));
     }
 
+    // Test Case ID: SMP-171
+    // Description: Kiểm tra Staff và Client bị chặn 403 khi gọi các API quản lý đề xuất khóa và mở khóa tài khoản
     @Test
     @DisplayName("Staff va client khong duoc truy cap")
     void testForbiddenForNonAdmin() throws Exception {
@@ -66,6 +70,8 @@ public class AccountLockRequestManagementTest {
                 token("user@gmail.com", "u2", "ROLE_client")).statusCode());
     }
 
+    // Test Case ID: SMP-172
+    // Description: Kiểm tra API tạo đề xuất khóa trả về 400 khi lý do ngắn/thiếu ảnh bằng chứng và 404 khi đối tượng là staff
     @Test
     @DisplayName("Tao de xuat: ly do qua ngan / thieu bang chung / doi tuong la staff bi tu choi")
     void testCreate_ValidationErrors() throws Exception {
@@ -77,6 +83,8 @@ public class AccountLockRequestManagementTest {
                 adminToken()).statusCode());
     }
 
+    // Test Case ID: SMP-173
+    // Description: Kiểm tra API bỏ phiếu đề xuất khóa trả về 400 với quyết định không hợp lệ và 404 khi đề xuất không tồn tại
     @Test
     @DisplayName("Bo phieu: phieu khong hop le / de xuat khong ton tai")
     void testVote_Errors() throws Exception {
@@ -86,6 +94,8 @@ public class AccountLockRequestManagementTest {
                 adminToken()).statusCode());
     }
 
+    // Test Case ID: SMP-174
+    // Description: Kiểm tra API mở khóa người dùng trả về 400 khi người dùng đang hoạt động hoặc thiếu lý do
     @Test
     @DisplayName("Mo khoa nguoi dung dang hoat dong bi tu choi; thieu ly do bi tu choi")
     void testUnlock_Errors() throws Exception {

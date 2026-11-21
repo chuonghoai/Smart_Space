@@ -31,6 +31,8 @@ Widget _buildTestApp(Widget child) {
 }
 
 void main() {
+  // Test Case ID: SMP-129
+  // Description: Kiểm tra MapDensityLegend hiển thị icon, tiêu đề và 3 mức chú giải mật độ phản ánh.
   testWidgets('MapDensityLegend renders 3 density levels and title', (tester) async {
     await tester.pumpWidget(_buildTestApp(const MapDensityLegend()));
     await tester.pumpAndSettle();
@@ -42,6 +44,8 @@ void main() {
     expect(find.text('Trên 5 phản ánh (Cao)'), findsOneWidget);
   });
 
+  // Test Case ID: SMP-130
+  // Description: Kiểm tra MapLegend hiển thị đủ 4 nhãn trạng thái phản ánh bằng tiếng Việt.
   testWidgets('MapLegend renders 4 status colors without exception', (tester) async {
     await tester.pumpWidget(_buildTestApp(const MapLegend()));
     await tester.pumpAndSettle();
@@ -52,6 +56,8 @@ void main() {
     expect(find.text('Từ chối'), findsOneWidget);
   });
 
+  // Test Case ID: SMP-131
+  // Description: Kiểm tra MapControls hiển thị 3 nút điều khiển, badge số bộ lọc và kích hoạt callback khi nhấn.
   testWidgets('MapControls renders settings, my location, and filter buttons', (tester) async {
     bool settingsTapped = false;
     bool locationTapped = false;
@@ -88,6 +94,8 @@ void main() {
     expect(filterTapped, isTrue);
   });
 
+  // Test Case ID: SMP-132
+  // Description: Kiểm tra MapSettingsBottomSheet hiển thị công tắc mật độ, chip trạng thái/thời gian và gọi đúng callback.
   testWidgets('MapSettingsBottomSheet renders toggle, status chips, and timeframe chips', (tester) async {
     bool? densityValue;
     String? selectedStatus;
@@ -133,6 +141,8 @@ void main() {
     expect(selectedTimeframe, ReportTimeframe.month3);
   });
 
+  // Test Case ID: SMP-133
+  // Description: Kiểm tra MapFilterBottomSheet hiển thị đầy đủ các nhóm bộ lọc và nút Xóa bộ lọc / Áp dụng.
   testWidgets('MapFilterBottomSheet renders all filter sections and clear/apply buttons', (tester) async {
     await tester.pumpWidget(_buildTestApp(const MapFilterBottomSheet()));
     await tester.pumpAndSettle();

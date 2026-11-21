@@ -138,6 +138,8 @@ public class AdminMapReportsTest {
         return new double[] { 10.70 + random.nextDouble() * 0.2, 106.60 + random.nextDouble() * 0.2 };
     }
 
+    // Test Case ID: SMP-197
+    // Description: Kiểm tra phân quyền GET /admin/reports/map trả về 401 khi thiếu token và 403 đối với tài khoản role client.
     @Test
     @DisplayName("Không có token → 401, client → 403")
     void testAdminMap_Authorization() throws Exception {
@@ -148,6 +150,8 @@ public class AdminMapReportsTest {
                 "Client không được gọi API bản đồ của admin");
     }
 
+    // Test Case ID: SMP-198
+    // Description: Kiểm tra GET /admin/reports/map không truyền bounds trả về HTTP 200 với mảng reports tối đa theo limit và trường truncated.
     @Test
     @DisplayName("Không truyền bounds → toàn bản đồ, response có reports + truncated")
     void testAdminMap_NoBoundsKeepsWholeMap() throws Exception {
@@ -161,6 +165,8 @@ public class AdminMapReportsTest {
         assertTrue(data.path("reports").size() <= 5, "Không vượt quá limit");
     }
 
+    // Test Case ID: SMP-199
+    // Description: Kiểm tra GET /admin/reports/map trả về 400 khi truyền thiếu bounds, minLat lớn hơn maxLat hoặc tọa độ ngoài phạm vi hợp lệ.
     @Test
     @DisplayName("Bounds thiếu hoặc sai → 400")
     void testAdminMap_InvalidBounds() throws Exception {
@@ -174,6 +180,8 @@ public class AdminMapReportsTest {
                 "Longitude ngoài [-180, 180] phải trả về 400");
     }
 
+    // Test Case ID: SMP-200
+    // Description: Kiểm tra GET /admin/reports/map lọc đúng report trong khung nhìn bounds và vẫn hiển thị report đã bị admin từ chối (rejected).
     @Test
     @DisplayName("Lọc đúng khung nhìn và admin vẫn thấy report rejected")
     void testAdminMap_BoundsAndRejectedVisible() throws Exception {
@@ -197,6 +205,8 @@ public class AdminMapReportsTest {
                 "Khác với client, admin vẫn phải thấy report rejected");
     }
 
+    // Test Case ID: SMP-201
+    // Description: Kiểm tra GET /admin/reports/map cắt danh sách đúng limit=1 và đặt truncated=true khi số report trong khung vượt giới hạn.
     @Test
     @DisplayName("Vượt limit trong khung → cắt bớt và truncated = true")
     void testAdminMap_LimitAndTruncated() throws Exception {

@@ -19,6 +19,8 @@ Widget _host({required ThemeData theme, required bool unreadOnly, required int c
     );
 
 void main() {
+  // Test Case ID: SMP-058
+  // Description: Kiểm tra NotificationReadFilter trên cả Light và Dark theme hiển thị 2 nửa "Tất cả"/"Chưa đọc", badge số lượng chưa đọc và gọi onChanged(true) khi chạm "Chưa đọc".
   for (final (name, theme) in [('light', AppTheme.lightTheme), ('dark', AppTheme.darkTheme)]) {
     testWidgets('[$name] hiện 2 nửa, badge số chưa đọc, chạm "Chưa đọc" gọi onChanged(true)', (tester) async {
       bool? changedTo;
@@ -33,6 +35,8 @@ void main() {
     });
   }
 
+  // Test Case ID: SMP-059
+  // Description: Kiểm tra NotificationReadFilter hiển thị "99+" khi số chưa đọc vượt quá 99 và không gọi onChanged khi chạm lại nửa đang chọn.
   testWidgets('chạm lại nửa đang chọn không gọi onChanged; quá 99 hiện 99+', (tester) async {
     var calls = 0;
     await tester.pumpWidget(_host(theme: AppTheme.lightTheme, unreadOnly: true, count: 120, onChanged: (_) => calls++));
@@ -42,6 +46,8 @@ void main() {
     expect(calls, 0);
   });
 
+  // Test Case ID: SMP-060
+  // Description: Kiểm tra NotificationReadFilter ẩn badge khi count=0 và thuộc tính Semantics phản ánh trạng thái nút được chọn.
   testWidgets('không có chưa đọc thì không hiện badge; semantics báo nửa đang chọn', (tester) async {
     final handle = tester.ensureSemantics();
     await tester.pumpWidget(_host(theme: AppTheme.lightTheme, unreadOnly: false, count: 0));

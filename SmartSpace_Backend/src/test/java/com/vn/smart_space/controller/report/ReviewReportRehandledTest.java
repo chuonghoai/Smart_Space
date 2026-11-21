@@ -75,6 +75,8 @@ public class ReviewReportRehandledTest {
         return signedJWT.serialize();
     }
 
+    // Test Case ID: SMP-218
+    // Description: Kiểm thử E2E quy trình xử lý lại phản ánh: Unresolved -> Admin reopen -> Staff hoàn tất lại reset review cũ -> Client đánh giá 5 sao mới.
     @Test
     @DisplayName("Mô phỏng quy trình xử lý lại phản ánh: Unresolved -> Admin Reopen -> Staff xử lý lại -> Client đánh giá mới ghi đè")
     void testRehandledReportReviewFlow() throws Exception {

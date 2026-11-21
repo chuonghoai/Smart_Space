@@ -59,6 +59,8 @@ void main() {
   });
 
   group('AdminMapReportsResult.fromJson', () {
+    // Test Case ID: SMP-076
+    // Description: Kiểm tra AdminMapReportsResult.fromJson parse danh sách phản ánh bản đồ và cờ truncated.
     test('parse reports và truncated', () {
       final result = AdminMapReportsResult.fromJson({
         'reports': [
@@ -71,6 +73,8 @@ void main() {
       expect(result.truncated, isTrue);
     });
 
+    // Test Case ID: SMP-077
+    // Description: Kiểm tra AdminMapReportsResult.fromJson({}) khi thiếu trường trả về danh sách rỗng và truncated là false.
     test('thiếu trường → rỗng, không truncated', () {
       final result = AdminMapReportsResult.fromJson({});
       expect(result.reports, isEmpty);
@@ -78,6 +82,8 @@ void main() {
     });
   });
 
+  // Test Case ID: SMP-078
+  // Description: Kiểm tra MapClusterSheet.sortForCluster ưu tiên phản ánh pending trước và sắp theo thời gian tạo mới nhất.
   test('MapClusterSheet.sortForCluster: chờ xử lý trước, rồi mới nhất trước', () {
     final sorted = MapClusterSheet.sortForCluster([
       _report('done-new', status: 'processed', createdAt: DateTime(2026, 3, 1)),
@@ -107,6 +113,8 @@ void main() {
 
     tearDown(() => container.dispose());
 
+    // Test Case ID: SMP-079
+    // Description: Kiểm tra MapReportsNotifier.loadForViewport tải lần đầu gọi service với bounding box mở rộng chứa viewport.
     test('tải lần đầu: gọi service với bounding box mở rộng', () async {
       final notifier = container.read(mapReportsProvider.notifier);
       final future = notifier.loadForViewport(viewport);
@@ -125,6 +133,8 @@ void main() {
       expect(state.isLoading, isFalse);
     });
 
+    // Test Case ID: SMP-080
+    // Description: Kiểm tra thay đổi mapFilterProvider tự động kích hoạt MapReportsNotifier gọi lại service với filter mới.
     test('đổi filter: kích hoạt tải lại', () async {
       container.read(mapReportsProvider);
       final notifier = container.read(mapReportsProvider.notifier);

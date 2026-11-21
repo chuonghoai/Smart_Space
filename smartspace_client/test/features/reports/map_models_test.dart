@@ -14,6 +14,8 @@ void main() {
           'severity': severity,
         };
 
+    // Test Case ID: SMP-008
+    // Description: Kiểm tra parse severity từ JSON và xác định isDangerous cho critical, high, medium, low.
     test('parse severity và isDangerous', () {
       expect(ReportModel.fromJson(json('critical')).isDangerous, isTrue);
       expect(ReportModel.fromJson(json('high')).isDangerous, isTrue);
@@ -21,6 +23,8 @@ void main() {
       expect(ReportModel.fromJson(json('low')).severity, EReportSeverity.low);
     });
 
+    // Test Case ID: SMP-009
+    // Description: Kiểm tra ReportModel.fromJson khi severity là null thì severity null và isDangerous là false.
     test('thiếu severity → null, không bị coi là nguy hiểm', () {
       final report = ReportModel.fromJson(json(null));
       expect(report.severity, isNull);
@@ -29,6 +33,8 @@ void main() {
   });
 
   group('MapReportsResult.fromJson', () {
+    // Test Case ID: SMP-010
+    // Description: Kiểm tra MapReportsResult.fromJson parse đúng danh sách reports và cờ truncated.
     test('parse reports và truncated', () {
       final result = MapReportsResult.fromJson({
         'reports': [
@@ -40,6 +46,8 @@ void main() {
       expect(result.truncated, isTrue);
     });
 
+    // Test Case ID: SMP-011
+    // Description: Kiểm tra MapReportsResult.fromJson khi JSON rỗng trả về reports rỗng và truncated là false.
     test('thiếu trường → mặc định rỗng và không truncated', () {
       final result = MapReportsResult.fromJson({});
       expect(result.reports, isEmpty);

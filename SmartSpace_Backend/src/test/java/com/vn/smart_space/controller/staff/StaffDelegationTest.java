@@ -133,6 +133,8 @@ public class StaffDelegationTest {
 
     // ===================== Tests =====================
 
+    // Test Case ID: SMP-228
+    // Description: Kiểm thử luồng nhờ làm giùm từ lúc u5 gửi yêu cầu, u6 nhận việc, chặn u5 tự hoàn tất (403) đến u6 hoàn tất và cập nhật COMPLETED.
     @Test
     @DisplayName("Luồng chính: gửi yêu cầu → nhận → người làm giùm hoàn tất; người nhờ không tự hoàn tất được")
     void testDelegation_HappyPath() throws Exception {
@@ -169,6 +171,8 @@ public class StaffDelegationTest {
         assertEquals("REQUESTER", state(reportId, requesterToken).path("viewer_role").asText());
     }
 
+    // Test Case ID: SMP-229
+    // Description: Kiểm thử các luồng đóng yêu cầu nhờ làm giùm: helper từ chối (DECLINED), requester huỷ (chặn helper huỷ/nhận lại) và admin phân công lại.
     @Test
     @DisplayName("Từ chối / huỷ / admin phân công lại → đóng yêu cầu nhờ làm giùm")
     void testDelegation_CloseFlows() throws Exception {
@@ -195,6 +199,8 @@ public class StaffDelegationTest {
         assertTrue(state(reassigned, requesterToken).path("active_delegation").isNull(), "Không còn yêu cầu đang hoạt động");
     }
 
+    // Test Case ID: SMP-230
+    // Description: Kiểm tra phân quyền và validate API delegation/colleagues: chặn người không được giao (403), tự nhờ chính mình (400), thiếu helper (400), client (403) và ẩn email đồng nghiệp.
     @Test
     @DisplayName("Phân quyền & điều kiện: không phải người được giao, nhờ chính mình, client gọi API")
     void testDelegation_Validation() throws Exception {

@@ -17,6 +17,8 @@ import 'package:smartspace_admin/ui/screen/staff/staff_shared_widgets.dart';
 
 void main() {
   group('Deadline & Reject Model Parsing', () {
+    // Test Case ID: SMP-081
+    // Description: Kiểm tra ReportDetailModel.fromJson parse đúng các trường deadline, rejectedReason và rejectedAt.
     test('ReportDetailModel parses deadline, rejectedReason, rejectedAt', () {
       final model = ReportDetailModel.fromJson({
         'id': 'r1',
@@ -35,6 +37,8 @@ void main() {
       expect(model.rejectedAt, DateTime.parse('2026-05-02T12:00:00'));
     });
 
+    // Test Case ID: SMP-082
+    // Description: Kiểm tra phát hiện trạng thái quá hạn trên ReportListItem (isOverdueActive, isOverdue) và RecentReportModel.
     test('ReportListItem & RecentReportModel detect overdue active reports', () {
       final past = DateTime.now().subtract(const Duration(days: 2));
       final future = DateTime.now().add(const Duration(days: 2));
@@ -104,6 +108,8 @@ void main() {
       );
     }
 
+    // Test Case ID: SMP-083
+    // Description: Kiểm tra StaffDeadlinePerformanceCard hiển thị tổng kết trễ hạn và từng dòng nhân viên ở Light Mode tiếng Việt.
     testWidgets('shows missed deadline summary and staff row in Light Mode (VI)', (tester) async {
       final stats = StaffStatisticsModel(
         totalStaff: 2,
@@ -151,6 +157,8 @@ void main() {
       expect(find.text('Hiệu suất công việc: 0%'), findsOneWidget);
     });
 
+    // Test Case ID: SMP-084
+    // Description: Kiểm tra StaffDeadlinePerformanceCard hiển thị banner không ai trễ hạn ở Dark Mode tiếng Anh.
     testWidgets('shows no missed deadline banner in Dark Mode (EN)', (tester) async {
       final stats = StaffStatisticsModel(
         totalStaff: 1,
@@ -190,6 +198,8 @@ void main() {
   });
 
   group('RejectReportDialog & StaffDetailSheetBody Tests', () {
+    // Test Case ID: SMP-085
+    // Description: Kiểm tra RejectReportDialog nhập lý do và xác nhận đóng dialog trả về giá trị sạch mà không crash _dependents.isEmpty.
     testWidgets('RejectReportDialog confirms cleanly without _dependents.isEmpty crash',
         (tester) async {
       String? capturedReason;
@@ -225,6 +235,8 @@ void main() {
       expect(capturedReason, 'Không hợp lệ');
     });
 
+    // Test Case ID: SMP-086
+    // Description: Kiểm tra StaffDetailSheetBody hiển thị chi tiết khối lượng công việc theo tháng, hiệu suất và nút lọc phản ánh được giao.
     testWidgets('StaffDetailSheetBody shows monthly workload breakdown',
         (tester) async {
       final staffMember = StaffModel(
@@ -305,6 +317,8 @@ void main() {
   });
 
   group('ReportCardView no-image narrow layout Tests', () {
+    // Test Case ID: SMP-087
+    // Description: Kiểm tra ReportCardView không có ảnh hiển thị các badge Xử lý lại, Quá hạn, Đang xử lý không tràn layout trên màn 320px ở cả Light và Dark Mode.
     testWidgets('renders severity, status, rehandling and date without RIGHT OVERFLOWED on 320px width',
         (tester) async {
       await tester.binding.setSurfaceSize(const Size(320, 700));

@@ -66,6 +66,8 @@ void main() {
   });
 
   group('ReportDensityCell', () {
+    // Test Case ID: SMP-071
+    // Description: Kiểm tra ReportDensityCell.fromJson parse mức mật độ LOW cùng màu và danh sách tọa độ.
     test('fromJson correctly parses LOW level', () {
       final json = {
         'cellId': 'cell_1',
@@ -87,6 +89,8 @@ void main() {
       expect(cell.coordinates.length, 2);
     });
 
+    // Test Case ID: SMP-072
+    // Description: Kiểm tra ReportDensityCell.fromJson parse mức mật độ HIGH và mã màu tương ứng.
     test('fromJson correctly parses HIGH level', () {
       final json = {
         'cellId': 'cell_2',
@@ -104,6 +108,8 @@ void main() {
   });
 
   group('ReportDensityResult', () {
+    // Test Case ID: SMP-073
+    // Description: Kiểm tra ReportDensityResult.fromJson parse danh sách cells và chuỗi geojson FeatureCollection.
     test('fromJson parses geojson and cells', () {
       final json = {
         'resolution': 11,
@@ -133,6 +139,8 @@ void main() {
   });
 
   group('ReportTimeframe', () {
+    // Test Case ID: SMP-074
+    // Description: Kiểm tra ReportTimeframe.fromCode ánh xạ đúng các mã thời gian và fallback về all khi null/không hợp lệ.
     test('fromCode maps codes correctly', () {
       expect(ReportTimeframe.fromCode('1m'), ReportTimeframe.month1);
       expect(ReportTimeframe.fromCode('3m'), ReportTimeframe.month3);
@@ -148,6 +156,8 @@ void main() {
   group('AdminReportDensityNotifier', () {
     const viewport = MapBounds(minLat: 10.7, maxLat: 10.9, minLng: 106.6, maxLng: 106.8);
 
+    // Test Case ID: SMP-075
+    // Description: Kiểm tra AdminReportDensityNotifier nạp preference, tải mật độ viewport, đổi timeframe và tắt hiển thị mật độ.
     test('loads preferences on creation and loads for viewport', () async {
       final fakeService = _FakeMapDensityService();
       final notifier = AdminReportDensityNotifier(fakeService);

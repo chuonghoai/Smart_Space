@@ -45,6 +45,8 @@ class UserServiceRegisterRoleTest {
     @InjectMocks
     UserService userService;
 
+    // Test Case ID: SMP-315
+    // Description: Từ chối tự đăng ký (createUser) với vai trò đặc quyền admin và staff trước khi tương tác DB/Redis.
     @ParameterizedTest
     @EnumSource(value = ERole.class, names = { "admin", "staff" })
     @DisplayName("createUser với admin/staff → bị chặn trước khi chạm DB/Redis")

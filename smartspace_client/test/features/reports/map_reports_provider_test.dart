@@ -73,6 +73,8 @@ void main() {
 
   tearDown(() => notifier.dispose());
 
+  // Test Case ID: SMP-012
+  // Description: Kiểm tra loadForViewport mở rộng bounds theo prefetchFactor khi gọi API và cập nhật trạng thái isLoading và reports.
   test('tải khung rộng hơn màn hình theo prefetchFactor', () async {
     final future = notifier.loadForViewport(viewport);
     expect(notifier.state.isLoading, isTrue);
@@ -85,6 +87,8 @@ void main() {
     expect(notifier.state.reports.map((r) => r.id), ['a', 'b']);
   });
 
+  // Test Case ID: SMP-013
+  // Description: Kiểm tra khi viewport mới nằm gọn trong vùng đã tải trước đó và dữ liệu còn hạn freshness thì không gọi lại API.
   test('khung mới nằm trong vùng đã tải và còn mới → không gọi lại API', () async {
     final future = notifier.loadForViewport(viewport);
     repo.pending.single.complete(_ok(['a']));
@@ -94,6 +98,8 @@ void main() {
     expect(repo.requestedBounds, hasLength(1));
   });
 
+  // Test Case ID: SMP-014
+  // Description: Kiểm tra khi thời gian vượt quá ngưỡng freshness thì loadForViewport gọi lại API dù nằm trong vùng cũ.
   test('dữ liệu quá hạn freshness → gọi lại API', () async {
     final future = notifier.loadForViewport(viewport);
     repo.pending.single.complete(_ok(['a']));
@@ -104,6 +110,8 @@ void main() {
     expect(repo.requestedBounds, hasLength(2));
   });
 
+  // Test Case ID: SMP-015
+  // Description: Kiểm tra khi response có truncated=true, gọi lại đúng viewport cũ không lặp request, còn đổi viewport khác sẽ tải lại.
   test('truncated: khung khác phải tải lại, nhưng cùng khung thì không lặp request', () async {
     final future = notifier.loadForViewport(viewport);
     repo.pending.single.complete(_ok(['a'], truncated: true));
@@ -118,6 +126,8 @@ void main() {
     expect(repo.requestedBounds, hasLength(2));
   });
 
+  // Test Case ID: SMP-016
+  // Description: Kiểm tra response của request cũ hoàn tất sau request mới hơn sẽ bị bỏ qua, giữ kết quả mới.
   test('response của request cũ về sau request mới thì bị bỏ', () async {
     final first = notifier.loadForViewport(viewport);
     final second = notifier.loadForViewport(insideViewport, force: true);
@@ -130,6 +140,8 @@ void main() {
     expect(notifier.state.reports.map((r) => r.id), ['new']);
   });
 
+  // Test Case ID: SMP-017
+  // Description: Kiểm tra khi API trả về lỗi, notifier giữ nguyên danh sách cũ, lưu thông báo error, tắt isLoading và cho phép thử lại.
   test('lỗi: giữ dữ liệu cũ, lưu error, và cho phép thử lại cùng khung', () async {
     final first = notifier.loadForViewport(viewport);
     repo.pending.single.complete(_ok(['a']));
@@ -147,6 +159,8 @@ void main() {
     expect(repo.requestedBounds, hasLength(3));
   });
 
+  // Test Case ID: SMP-018
+  // Description: Kiểm tra gọi refresh() bỏ qua cache và tải lại khung viewport gần nhất.
   test('refresh: tải lại khung gần nhất, bỏ qua cache', () async {
     final first = notifier.loadForViewport(viewport);
     repo.pending.single.complete(_ok(['a']));
@@ -156,6 +170,8 @@ void main() {
     expect(repo.requestedBounds, hasLength(2));
   });
 
+  // Test Case ID: SMP-019
+  // Description: Kiểm tra MapReportsNotifier lọc bỏ các report có tọa độ (0, 0) khỏi danh sách state.reports.
   test('bỏ report không có toạ độ (0,0)', () async {
     final future = notifier.loadForViewport(viewport);
     repo.pending.single.complete(ApiResponse(
@@ -171,11 +187,15 @@ void main() {
     expect(notifier.state.reports.map((r) => r.id), ['a']);
   });
 
+  // Test Case ID: SMP-020
+  // Description: Kiểm tra lần gọi loadForViewport mặc định gửi tham số filter là MapReportFilter.all.
   test('mặc định gửi filter=all', () async {
     unawaited(notifier.loadForViewport(viewport));
     expect(repo.requestedFilters.single, MapReportFilter.all);
   });
 
+  // Test Case ID: SMP-021
+  // Description: Kiểm tra setFilter sang giá trị mới sẽ bỏ cache và tải lại khung gần nhất với filter mới.
   test('đổi filter: bỏ cache, tải lại ngay khung gần nhất với filter mới', () async {
     final first = notifier.loadForViewport(viewport);
     repo.pending.single.complete(_ok(['a']));
@@ -193,6 +213,8 @@ void main() {
     expect(notifier.state.filter, MapReportFilter.mine);
   });
 
+  // Test Case ID: SMP-022
+  // Description: Kiểm tra gọi setFilter với chính filter hiện tại không kích hoạt gọi lại API.
   test('chọn lại filter đang dùng → không gọi lại API', () async {
     final first = notifier.loadForViewport(viewport);
     repo.pending.single.complete(_ok(['a']));
@@ -202,6 +224,8 @@ void main() {
     expect(repo.requestedBounds, hasLength(1));
   });
 
+  // Test Case ID: SMP-023
+  // Description: Kiểm tra response của filter cũ trả về sau khi đã đổi sang filter mới sẽ bị bỏ qua.
   test('response của filter cũ về sau khi đã đổi filter thì bị bỏ', () async {
     unawaited(notifier.loadForViewport(viewport));
     unawaited(notifier.setFilter(MapReportFilter.pending));
@@ -215,6 +239,8 @@ void main() {
     expect(notifier.state.filter, MapReportFilter.pending);
   });
 
+  // Test Case ID: SMP-024
+  // Description: Kiểm tra setTimeframe sang giá trị mới (month3) bỏ cache và tải lại khung gần nhất với timeframe '3m'.
   test('đổi timeframe: bỏ cache, tải lại ngay khung gần nhất với timeframe mới', () async {
     final first = notifier.loadForViewport(viewport);
     repo.pending.single.complete(_ok(['a']));

@@ -56,6 +56,8 @@ class AdminCredentialsMailTemplateTest {
         return engine.process("mail/admin-credentials", ctx);
     }
 
+    // Test Case ID: SMP-293
+    // Description: Render template mail/admin-credentials tiếng Việt đầy đủ thông tin đăng nhập, nút Admin Portal, hỗ trợ và xuất HTML preview.
     @Test
     void rendersVietnameseWithAllSections() throws IOException {
         String html = render(Locale.forLanguageTag("vi"), "Trần Thị B", true);
@@ -72,6 +74,8 @@ class AdminCredentialsMailTemplateTest {
         writePreview("admin-credentials_vi.html", html);
     }
 
+    // Test Case ID: SMP-294
+    // Description: Render template mail/admin-credentials tiếng Anh, ẩn nút portal và dòng hỗ trợ khi thiếu biến tùy chọn và không nhắc tới staff.
     @Test
     void rendersEnglishAndHidesOptionalSections() throws IOException {
         String html = render(Locale.ENGLISH, "Jane Doe", false);
@@ -86,6 +90,8 @@ class AdminCredentialsMailTemplateTest {
         writePreview("admin-credentials_en.html", html);
     }
 
+    // Test Case ID: SMP-295
+    // Description: Kiểm tra HTML-escape giá trị fullName chứa thẻ script trong template mail/admin-credentials để phòng chống XSS.
     @Test
     void escapesUserProvidedValues() {
         String html = render(Locale.forLanguageTag("vi"), "<script>alert(1)</script>", false);

@@ -172,6 +172,8 @@ public class MapReportsTest {
         return new double[] { 10.70 + random.nextDouble() * 0.2, 106.60 + random.nextDouble() * 0.2 };
     }
 
+    // Test Case ID: SMP-205
+    // Description: Kiểm tra GET /reports/map trả về HTTP 401 khi request không kèm Bearer token.
     @Test
     @DisplayName("Không có token → 401")
     void testMapReports_Unauthorized() throws Exception {
@@ -179,6 +181,8 @@ public class MapReportsTest {
         assertEquals(401, response.statusCode(), "Gọi /reports/map không có token phải trả về 401");
     }
 
+    // Test Case ID: SMP-206
+    // Description: Kiểm tra GET /reports/map trả về HTTP 400 khi min_lat > max_lat hoặc latitude/longitude nằm ngoài phạm vi hợp lệ.
     @Test
     @DisplayName("Bounds không hợp lệ → 400")
     void testMapReports_InvalidBounds() throws Exception {
@@ -194,6 +198,8 @@ public class MapReportsTest {
         assertEquals(400, badLng.statusCode(), "Longitude ngoài [-180, 180] phải trả về 400");
     }
 
+    // Test Case ID: SMP-207
+    // Description: Kiểm tra GET /reports/map chỉ trả report trong bounds kèm trường severity và ẩn report sau khi admin từ chối (rejected).
     @Test
     @DisplayName("Chỉ trả report trong khung nhìn, có severity, loại bỏ report rejected")
     void testMapReports_BoundsAndRejectedExcluded() throws Exception {
@@ -235,6 +241,8 @@ public class MapReportsTest {
                 "Report rejected không được hiện trên bản đồ");
     }
 
+    // Test Case ID: SMP-208
+    // Description: Kiểm tra GET /reports/map giới hạn số phần tử trả về đúng limit=1 và đặt truncated=true khi vượt quá.
     @Test
     @DisplayName("Vượt limit → cắt bớt và truncated = true")
     void testMapReports_LimitAndTruncated() throws Exception {
@@ -252,6 +260,8 @@ public class MapReportsTest {
         assertTrue(data.path("truncated").asBoolean(), "Có nhiều report hơn limit → truncated phải là true");
     }
 
+    // Test Case ID: SMP-209
+    // Description: Kiểm tra GET /reports/map trả về HTTP 400 khi tham số filter có giá trị không hợp lệ (ví dụ rejected).
     @Test
     @DisplayName("filter không hợp lệ → 400")
     void testMapReports_InvalidFilter() throws Exception {
@@ -260,6 +270,8 @@ public class MapReportsTest {
         assertEquals(400, response.statusCode(), "filter ngoài all|mine|pending|processing|processed phải trả về 400");
     }
 
+    // Test Case ID: SMP-210
+    // Description: Kiểm tra bộ lọc filter=pending, processing và mine trên GET /reports/map giữa chủ report và người dùng khác.
     @Test
     @DisplayName("Đang chờ / đang xử lý thấy của mọi người, mine chỉ thấy của tôi")
     void testMapReports_StatusAndMineFilters() throws Exception {
@@ -286,6 +298,8 @@ public class MapReportsTest {
                 "Report đang xử lý không được hiện ở filter=pending");
     }
 
+    // Test Case ID: SMP-211
+    // Description: Kiểm tra report trạng thái processed trên GET /reports/map chỉ hiển thị cho chính chủ sở hữu và ẩn với người dùng khác.
     @Test
     @DisplayName("Report đã xử lý chỉ hiện cho chính chủ (all, mine, processed)")
     void testMapReports_ProcessedOnlyForOwner() throws Exception {

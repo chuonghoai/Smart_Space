@@ -70,6 +70,8 @@ public class StaffChatIntegrationTest {
         return signedJWT.serialize();
     }
 
+    // Test Case ID: SMP-192
+    // Description: Kiểm tra Staff gọi API danh sách hội thoại theo bộ lọc role (all, client, admin) và unread-count trả về 200
     @Test
     @DisplayName("Kiểm tra toàn diện API hội thoại, tin nhắn, phân quyền và presence cho Staff")
     void testStaffChatFlow() throws Exception {

@@ -80,6 +80,8 @@ void main() {
   );
 
   group('Nearby Reports Alert - Scheduled & Logic Tests', () {
+    // Test Case ID: SMP-025
+    // Description: Kiểm tra checkNearbyReportsAlert gọi API getNearbyAlerts với bán kính mặc định 200m theo tọa độ truyền vào và cập nhật lastAlert cùng lastAlertedReportIds.
     test('checkNearbyReportsAlert triggers API with radius 200m and updates state', () async {
       final fakeRepo = _FakeReportRepo(responseToReturn: alertData);
       final service = ReportService(reportRepo: fakeRepo);
@@ -115,6 +117,8 @@ void main() {
       expect(notifier.state.lastAlertedReportIds, containsAll(['rep-1', 'rep-2']));
     });
 
+    // Test Case ID: SMP-026
+    // Description: Kiểm tra checkNearbyReportsAlert với forceShow=true vẫn trả về cảnh báo ở lần gọi thứ hai dù danh sách report IDs trùng lặp.
     test('checkNearbyReportsAlert with forceShow=true succeeds and returns alert even when report IDs are identical', () async {
       final fakeRepo = _FakeReportRepo(responseToReturn: alertData);
       final service = ReportService(reportRepo: fakeRepo);
@@ -149,6 +153,8 @@ void main() {
   });
 
   group('NearbyReportsAlertModal Widget Tests', () {
+    // Test Case ID: SMP-027
+    // Description: Kiểm tra NearbyReportsAlertModal render tiêu đề kèm số lượng phản ánh, nút đóng, thẻ báo cáo, khoảng cách, bộ đếm slide và nút chuyển trang.
     testWidgets('Renders modal header, report cards, distance, and action buttons', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -200,6 +206,8 @@ void main() {
       expect(find.text('Đã hiểu'), findsOneWidget);
     });
 
+    // Test Case ID: SMP-028
+    // Description: Kiểm tra nhấn nút "Đã hiểu" trên NearbyReportsAlertModal sẽ đóng modal.
     testWidgets('Tapping "Đã hiểu" dismisses modal', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -237,6 +245,8 @@ void main() {
       expect(find.text('Đã hiểu'), findsNothing);
     });
 
+    // Test Case ID: SMP-029
+    // Description: Kiểm tra nhấn nút icon "X" (close_rounded) trên NearbyReportsAlertModal sẽ đóng modal.
     testWidgets('Tapping "X" button dismisses modal', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
@@ -274,6 +284,8 @@ void main() {
       expect(find.byIcon(Icons.close_rounded), findsNothing);
     });
 
+    // Test Case ID: SMP-030
+    // Description: Kiểm tra gọi NearbyReportsAlertModal.show khi đang mở modal cũ sẽ thay thế bằng modal mới hiển thị dữ liệu secondAlertData.
     testWidgets('Preemption: calling NearbyReportsAlertModal.show replaces old modal with new alertData', (tester) async {
       final secondAlertData = NearbyReportsAlertResponse(
         count: 1,
@@ -339,6 +351,8 @@ void main() {
   });
 
   group('NotificationRouter NEARBY_REPORTS_ALERT navigation', () {
+    // Test Case ID: SMP-031
+    // Description: Kiểm tra NotificationRouter.handleAction với type NEARBY_REPORTS_ALERT điều hướng tới route /reports/:id của báo cáo gần nhất.
     testWidgets('Tapping NEARBY_REPORTS_ALERT action navigates to nearest report detail', (tester) async {
       String? navigatedLocation;
       final router = GoRouter(

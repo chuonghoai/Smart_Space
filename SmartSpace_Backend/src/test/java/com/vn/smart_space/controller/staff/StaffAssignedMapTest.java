@@ -44,12 +44,16 @@ public class StaffAssignedMapTest {
         }
     }
 
+    // Test Case ID: SMP-221
+    // Description: Kiểm tra GET /reports/staff/assigned trả về HTTP 401 khi không có token xác thực.
     @Test
     @DisplayName("Khong co token → 401")
     void testUnauthorized() throws Exception {
         assertEquals(401, get("/reports/staff/assigned?status=processing&limit=100", null).statusCode());
     }
 
+    // Test Case ID: SMP-222
+    // Description: Kiểm tra contract JSON của GET /reports/staff/assigned?status=processing&limit=100 trả về mảng task processing đủ trường cho bản đồ Staff.
     @Test
     @DisplayName("status=processing: chi tra viec dang xu ly cua staff, du truong cho ban do")
     void testProcessingContractForMap() throws Exception {
@@ -70,6 +74,8 @@ public class StaffAssignedMapTest {
         }
     }
 
+    // Test Case ID: SMP-223
+    // Description: Kiểm tra tham số limit=1 trên GET /reports/staff/assigned?status=processing giới hạn số lượng phần tử trả về không vượt quá 1.
     @Test
     @DisplayName("limit duoc ton trong (gioi han tren cua backend la 100)")
     void testLimitHonored() throws Exception {

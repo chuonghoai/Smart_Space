@@ -7,6 +7,8 @@ import 'package:smartspace_client/features/reports/services/report_service.dart'
 
 void main() {
   group('ReportModel & ReportDetailModel userId test', () {
+    // Test Case ID: SMP-035
+    // Description: Kiểm tra ReportModel.fromJson parse đúng id, user_id và status từ JSON.
     test('ReportModel parses user_id from json correctly', () {
       final json = {
         'id': 'rep-1',
@@ -26,6 +28,8 @@ void main() {
       expect(model.status, ReportStatus.pending);
     });
 
+    // Test Case ID: SMP-036
+    // Description: Kiểm tra ReportDetailModel.fromJson parse đúng id, user_id và status từ JSON.
     test('ReportDetailModel parses user_id from json correctly', () {
       final json = {
         'id': 'rep-2',
@@ -49,6 +53,8 @@ void main() {
   });
 
   group('Report Edit & Cancel Business Rules', () {
+    // Test Case ID: SMP-037
+    // Description: Kiểm tra quy tắc chỉ báo cáo trạng thái pending mới thỏa điều kiện chỉnh sửa.
     test('Only pending reports are allowed to be edited', () {
       final pendingReport = ReportModel(
         id: '1',
@@ -101,6 +107,8 @@ void main() {
       expect(rejectedReport.status == ReportStatus.pending, isFalse);
     });
 
+    // Test Case ID: SMP-038
+    // Description: Kiểm tra quy tắc chỉ báo cáo trạng thái pending mới thỏa điều kiện hủy.
     test('Only pending reports are allowed to be cancelled', () {
       final pendingReport = ReportModel(
         id: '1',
@@ -153,6 +161,8 @@ void main() {
       expect(rejectedReport.status == ReportStatus.pending, isFalse);
     });
 
+    // Test Case ID: SMP-039
+    // Description: Kiểm tra ReportService.updateReport và cancelReport với ReportRepoMock cập nhật tiêu đề và trạng thái rejected.
     test('ReportService updateReport and cancelReport with ReportRepoMock', () async {
       final mockRepo = ReportRepoMock();
       final service = ReportService(reportRepo: mockRepo);
