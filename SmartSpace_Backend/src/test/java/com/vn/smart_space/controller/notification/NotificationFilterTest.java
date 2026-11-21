@@ -46,7 +46,7 @@ public class NotificationFilterTest {
         for (JsonNode item : page.path("content")) {
             assertFalse(item.path("isRead").asBoolean(true), "Thong bao da doc lot vao bo loc Chua doc: " + item);
         }
-        long badge = data(get("/notifications/unread-count")).path("notifNumber").asLong();
+        long badge = data(get("/notifications/unread-count")).path("notif_number").asLong();
         assertTrue(page.path("totalElements").asLong() <= badge,
                 "So thong bao chua doc vuot so badge (" + badge + ")");
     }

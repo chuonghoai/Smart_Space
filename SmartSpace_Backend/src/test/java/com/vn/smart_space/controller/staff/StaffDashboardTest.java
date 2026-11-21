@@ -63,21 +63,22 @@ public class StaffDashboardTest {
     }
 
     // Test Case ID: SMP-225
-    // Description: Kiểm tra GET /admin/staffs/trend trả về đúng số lượng bucket (30 cho daily/fallback, 12 cho weekly/monthly) kèm series assigned và resolved.
+    // Description: Kiểm tra GET /admin/staffs/trend trả về đúng số lượng bucket (từ đầu tháng đến hôm nay cho daily/fallback, 12 cho weekly/monthly) kèm series assigned và resolved.
     @Test
     @DisplayName("Trend zero-fill du so bucket va co 2 series assigned/resolved")
     void testTrend_BucketCount() throws Exception {
+        int expectedDailyBuckets = java.time.LocalDate.now().getDayOfMonth();
         String daily = send("GET", "/admin/staffs/trend?period=daily", adminToken(), null).body();
-        assertEquals(30, countMatches(daily, "\"date\""));
-        assertEquals(30, countMatches(daily, "\"assigned\""));
-        assertEquals(30, countMatches(daily, "\"resolved\""));
+        assertEquals(expectedDailyBuckets, countMatches(daily, "\"date\""));
+        assertEquals(expectedDailyBuckets, countMatches(daily, "\"assigned\""));
+        assertEquals(expectedDailyBuckets, countMatches(daily, "\"resolved\""));
 
         assertEquals(12, countMatches(
                 send("GET", "/admin/staffs/trend?period=weekly", adminToken(), null).body(), "\"date\""));
         assertEquals(12, countMatches(
                 send("GET", "/admin/staffs/trend?period=monthly", adminToken(), null).body(), "\"date\""));
         // Period la → fallback daily
-        assertEquals(30, countMatches(
+        assertEquals(expectedDailyBuckets, countMatches(
                 send("GET", "/admin/staffs/trend?period=abc", adminToken(), null).body(), "\"date\""));
     }
 
@@ -92,13 +93,13 @@ public class StaffDashboardTest {
     }
 
     /**
-     * Thống kê "đã xử lý" dùng updatedAt của báo cáo processed. Giả định này chỉ đúng khi
-     * processed là trạng thái cuối. Nếu test này fail → cần chuyển sang cột resolvedAt riêng.
+     * Hệ thống đã tách cột resolvedAt riêng và cho phép mở lại processed -> processing,
+     * nhưng vẫn phải chặn chuyển từ processed về pending hoặc rejected qua PATCH /status.
      */
     // Test Case ID: SMP-227
-    // Description: Kiểm tra báo cáo trạng thái processed không thể chuyển về processing, pending hoặc rejected qua PATCH /admin/reports/{id}/status.
+    // Description: Kiểm tra báo cáo trạng thái processed không thể chuyển về pending hoặc rejected qua PATCH /admin/reports/{id}/status.
     @Test
-    @DisplayName("Bao cao processed khong duoc chuyen trang thai (khoa gia dinh dung updatedAt)")
+    @DisplayName("Bao cao processed khong duoc chuyen ve pending hoac rejected qua PATCH status")
     void testProcessedIsTerminal() throws Exception {
         // Lấy 1 báo cáo đang processed thật trong DB (không giả định theo seed)
         String list = send("GET", "/admin/reports?status=processed&size=1", adminToken(), null).body();
@@ -106,11 +107,11 @@ public class StaffDashboardTest {
         assumeTrue(idMatcher.find(), "Khong co bao cao processed nao de kiem tra");
         String reportId = idMatcher.group(1);
 
-        for (String next : new String[] { "processing", "pending", "rejected" }) {
+        for (String next : new String[] { "pending", "rejected" }) {
             HttpResponse<String> res = send("PATCH", "/admin/reports/" + reportId + "/status", adminToken(),
                     "{\"status\":\"" + next + "\"}");
             assertNotEquals(200, res.statusCode(),
-                    "processed -> " + next + " khong duoc phep (thong ke dua tren updatedAt se sai)");
+                    "processed -> " + next + " khong duoc phep qua PATCH /status");
         }
     }
 
