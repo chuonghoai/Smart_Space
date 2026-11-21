@@ -1,5 +1,6 @@
 package com.vn.smart_space.configuration;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,24 @@ public class DataInitializer implements CommandLineRunner {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
+
+    @Value("${PW_ADMIN_EMAIL:admin@gmail.com}")
+    private String defaultAdminEmail;
+
+    @Value("${PW_ADMIN_PASSWORD:Ad123456!}")
+    private String defaultAdminPassword;
+
+    @Value("${PW_STAFF_EMAIL:staff1@gmail.com}")
+    private String defaultStaffEmail;
+
+    @Value("${PW_STAFF_PASSWORD:Ad123456!}")
+    private String defaultStaffPassword;
+
+    @Value("${PW_CLIENT_EMAIL:user@gmail.com}")
+    private String defaultClientEmail;
+
+    @Value("${PW_CLIENT_PASSWORD:Ad123456!}")
+    private String defaultClientPassword;
 
     @Override
     public void run(String... args) throws Exception {
@@ -61,21 +80,58 @@ public class DataInitializer implements CommandLineRunner {
             }
         }
 
-        if (!userRepository.existsByEmailAndRole("admin@gmail.com", ERole.admin)) {
-            log.info("Khởi tạo tài khoản admin mặc định...");
-            User admin = new User();
-            admin.setEmail("admin@gmail.com");
-            admin.setPassword(passwordEncoder.encode("Ad123456!"));
-            admin.setRole(ERole.admin);
-            admin.setStatus(EUserStatus.active);
-            admin.setFullName("Nguyễn Văn Admin");
-            admin.setGender(EGender.male);
-            admin.setPhone("0901234567");
-            admin.setLanguage("vi");
-            admin.setAvatarUrl("https://ui-avatars.com/api/?name=AD&background=6366f1&color=fff&size=200&bold=true&font-size=0.4");
-            
-            userRepository.save(admin);
-            log.info("Tạo tài khoản admin thành công (admin@gmail.com / Ad123456!)");
+        seedDefaultAccount(
+                defaultAdminEmail,
+                defaultAdminPassword,
+                ERole.admin,
+                "Nguyễn Văn Admin",
+                EGender.male,
+                "0901234567",
+                "https://ui-avatars.com/api/?name=AD&background=6366f1&color=fff&size=200&bold=true&font-size=0.4");
+        seedDefaultAccount(
+                defaultStaffEmail,
+                defaultStaffPassword,
+                ERole.staff,
+                "Nguyễn Văn Nhân Viên",
+                EGender.male,
+                "0934567890",
+                "https://ui-avatars.com/api/?name=ST&background=0284c7&color=fff&size=200&bold=true&font-size=0.4");
+        seedDefaultAccount(
+                defaultClientEmail,
+                defaultClientPassword,
+                ERole.client,
+                "Trần Thị User",
+                EGender.female,
+                "0912345678",
+                "https://ui-avatars.com/api/?name=US&background=10b981&color=fff&size=200&bold=true&font-size=0.4");
+    }
+
+    private void seedDefaultAccount(
+            String email,
+            String rawPassword,
+            ERole role,
+            String fullName,
+            EGender gender,
+            String phone,
+            String avatarUrl) {
+        if (email == null || email.isBlank() || rawPassword == null || rawPassword.isBlank()) {
+            return;
+        }
+        String normalizedEmail = email.trim();
+        if (!userRepository.existsByEmailAndRole(normalizedEmail, role)) {
+            log.info("Khởi tạo tài khoản {} mặc định ({})...", role, normalizedEmail);
+            User user = new User();
+            user.setEmail(normalizedEmail);
+            user.setPassword(passwordEncoder.encode(rawPassword));
+            user.setRole(role);
+            user.setStatus(EUserStatus.active);
+            user.setFullName(fullName);
+            user.setGender(gender);
+            user.setPhone(phone);
+            user.setLanguage("vi");
+            user.setAvatarUrl(avatarUrl);
+            userRepository.save(user);
+            log.info("Tạo tài khoản {} mặc định thành công ({})", role, normalizedEmail);
         }
     }
 }

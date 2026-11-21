@@ -4,37 +4,48 @@
   "description": "Task runner for SmartSpace monorepo",
   "private": true,
   "scripts": {
-    "help": "node -e \"console.log('SmartSpace Development Commands\\n\\nDevelopment:\\n  npm run backend:dev\\n  npm run client:dev\\n  npm run admin:dev\\n  npm run staff:dev\\n\\nTesting:\\n  npm run backend:test\\n  npm run client:test\\n  npm run admin:test\\n  npm run staff:test\\n\\nBuild:\\n  npm run backend:build\\n  npm run client:build\\n  npm run admin:build\\n  npm run staff:build\\n  npm run build-all:release\\n\\nInstall:\\n  npm run install:release\\n  npm run admin:install\\n  npm run client:install\\n  npm run staff:install\\n\\nAnalyze:\\n  npm run client:analyze\\n  npm run admin:analyze\\n  npm run staff:analyze')\"",
+    "help": "node -e \"console.log('SmartSpace Development Commands\\n\\nDevelopment:\\n  npm run backend:dev\\n  npm run client:dev\\n  npm run admin:dev\\n  npm run staff:dev\\n\\nPlaywright Testing:\\n  npm run backend:test\\n  npm run admin:test\\n  npm run staff:test\\n  npm run client:test\\n  npm run test:all\\n  npm run test:smp -- SMP-XXX\\n\\nNative Testing:\\n  npm run backend:test:native\\n  npm run backend:test:integration\\n  npm run backend:test:app\\n  npm run client:test:native\\n  npm run admin:test:native\\n  npm run staff:test:native\\n  npm run shared:test:native\\n\\nBuild:\\n  npm run backend:build\\n  npm run client:build\\n  npm run admin:build\\n  npm run staff:build\\n  npm run build-all:release\\n\\nInstall:\\n  npm run install:release\\n  npm run admin:install\\n  npm run client:install\\n  npm run staff:install\\n\\nAnalyze:\\n  npm run client:analyze\\n  npm run admin:analyze\\n  npm run staff:analyze')\"",
 
     "backend:dev": "cd SmartSpace_Backend && mvn spring-boot:run",
-
+    
     "client-web:dev": "cd smartspace_client && flutter run -d chrome --web-port=9090",
     "client:dev": "powershell -ExecutionPolicy Bypass -File update_ip.ps1 && cd smartspace_client && flutter run --web-port=9090",
-
+    
     "admin-web:dev": "cd smartspace_admin && flutter run -d chrome --web-port=9090",
     "admin:dev": "powershell -ExecutionPolicy Bypass -File update_ip.ps1 && cd smartspace_admin && flutter run --web-port=9090",
-
+    
     "staff-web:dev": "cd smartspace_staff && flutter run -d chrome --web-port=9090",
     "staff:dev": "powershell -ExecutionPolicy Bypass -File update_ip.ps1 && cd smartspace_staff && flutter run --web-port=9090",
-
-    "backend:test": "cd SmartSpace_Backend && mvn test",
-    "client:test": "cd smartspace_client && flutter test",
-    "admin:test": "cd smartspace_admin && flutter test",
-    "staff:test": "cd smartspace_staff && flutter test",
+    
+    "backend:test": "node playwright/scripts/runner.mjs backend",
+    "admin:test": "node playwright/scripts/runner.mjs admin",
+    "staff:test": "node playwright/scripts/runner.mjs staff",
+    "client:test": "node playwright/scripts/runner.mjs client",
+    
+    "test:all": "node playwright/scripts/runner.mjs all",
+    "test:smp": "node playwright/scripts/run-smp.mjs",
+    
+    "backend:test:native": "cd SmartSpace_Backend && mvn test \"-Dtest=!com.vn.smart_space.controller.**.*Test,!com.vn.smart_space.SmartSpaceApplicationTests\" \"-DfailIfNoTests=true\" \"-Dfile.encoding=UTF-8\"",
+    "backend:test:integration": "cd SmartSpace_Backend && mvn test \"-Dtest=com.vn.smart_space.controller.**.*Test\" \"-DfailIfNoTests=true\" \"-Dfile.encoding=UTF-8\"",
+    "backend:test:app": "cd SmartSpace_Backend && mvn test \"-Dtest=com.vn.smart_space.SmartSpaceApplicationTests\" \"-DfailIfNoTests=true\" \"-Dfile.encoding=UTF-8\"",
+    "client:test:native": "cd smartspace_client && flutter test",
+    "admin:test:native": "cd smartspace_admin && flutter test",
+    "staff:test:native": "cd smartspace_staff && flutter test",
+    "shared:test:native": "cd mobile_shared && flutter test",
     
     "backend:build": "cd SmartSpace_Backend && mvn clean package -DskipTests",
     "client:build": "cd smartspace_client && flutter build apk",
     "admin:build": "cd smartspace_admin && flutter build apk",
     "staff:build": "cd smartspace_staff && flutter build apk",
-
+    
     "client:build:debug": "cd smartspace_client && flutter build apk --debug",
     "admin:build:debug": "cd smartspace_admin && flutter build apk --debug",
     "staff:build:debug": "cd smartspace_staff && flutter build apk --debug",
-
+    
     "admin:install": "powershell -ExecutionPolicy Bypass -File installApkRelease.ps1 admin",
     "client:install": "powershell -ExecutionPolicy Bypass -File installApkRelease.ps1 client",
     "staff:install": "powershell -ExecutionPolicy Bypass -File installApkRelease.ps1 staff",
-
+    
     "admin:install:debug": "powershell -ExecutionPolicy Bypass -File installApkDebug.ps1 admin",
     "client:install:debug": "powershell -ExecutionPolicy Bypass -File installApkDebug.ps1 client",
     "staff:install:debug": "powershell -ExecutionPolicy Bypass -File installApkDebug.ps1 staff",
@@ -45,11 +56,17 @@
     
     "flutter:get": "cd smartspace_admin && flutter pub get && cd ../smartspace_client && flutter pub get && cd ../smartspace_staff && flutter pub get && cd ../mobile_shared && flutter pub get",
     "flutter:clean": "cd smartspace_admin && flutter clean && cd ../smartspace_client && flutter clean && cd ../smartspace_staff && flutter clean && cd ../mobile_shared && flutter clean",
-
+    
     "build:release": "powershell -ExecutionPolicy Bypass -File update_ip.ps1 && powershell -ExecutionPolicy Bypass -File buildApkRelease.ps1",
     "install:release": "powershell -ExecutionPolicy Bypass -File installApkRelease.ps1",
-
+    
     "build:debug": "powershell -ExecutionPolicy Bypass -File update_ip.ps1 && npm run client:build:debug && npm run admin:build:debug && npm run staff:build:debug",
     "install:debug": "powershell -ExecutionPolicy Bypass -File installApkDebug.ps1"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.65.1",
+    "@types/node": "^26.6.6",
+    "dotenv": "^18.0.10",
+    "typescript": "^7.0.2"
   }
 }
