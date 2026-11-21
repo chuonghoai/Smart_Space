@@ -61,7 +61,7 @@ public class StaffChatIntegrationTest {
                 .jwtID(UUID.randomUUID().toString())
                 .claim("scope", role)
                 .claim("userId", userId)
-                .claim("deviceId", "test-device-" + UUID.randomUUID())
+                .claim("deviceId", "test-device-uuid")
                 .claim("tokenType", "access")
                 .build();
 

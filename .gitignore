@@ -13,5 +13,6 @@ smartspace_admin/windows/flutter/generated_plugins.cmake
 weekly_reports/
 playwright-report/
 test-results/
+native-results/
 .env.playwright
 playwright/.cache/

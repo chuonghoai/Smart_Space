@@ -276,8 +276,8 @@ public class MapReportsTest {
     @DisplayName("Đang chờ / đang xử lý thấy của mọi người, mine chỉ thấy của tôi")
     void testMapReports_StatusAndMineFilters() throws Exception {
         String ownerToken = generateToken("user@gmail.com", "u2", "client");
-        // Người xem khác: /reports/map chỉ đọc userId từ JWT
-        String otherToken = generateToken("other-viewer@gmail.com", "map-test-" + UUID.randomUUID(), "client");
+        // Người xem khác (u3): /reports/map chỉ đọc userId từ JWT và yêu cầu session Redis hợp lệ
+        String otherToken = generateToken("cudan@gmail.com", "u3", "client");
 
         double[] point = randomPoint();
         String reportId = createReport(ownerToken, point[0], point[1]);
@@ -304,7 +304,7 @@ public class MapReportsTest {
     @DisplayName("Report đã xử lý chỉ hiện cho chính chủ (all, mine, processed)")
     void testMapReports_ProcessedOnlyForOwner() throws Exception {
         String ownerToken = generateToken("user@gmail.com", "u2", "client");
-        String otherToken = generateToken("other-viewer@gmail.com", "map-test-" + UUID.randomUUID(), "client");
+        String otherToken = generateToken("cudan@gmail.com", "u3", "client");
 
         double[] point = randomPoint();
         String reportId = createReport(ownerToken, point[0], point[1]);

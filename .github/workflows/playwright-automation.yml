@@ -137,7 +137,7 @@ jobs:
           CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY || 'ci-placeholder' }}
           CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET || 'ci-placeholder' }}
         run: |
-          mkdir -p test-results/backend/surefire-unit test-results/backend/surefire-controller test-results/backend/surefire-app
+          mkdir -p native-results/backend/surefire-unit native-results/backend/surefire-controller native-results/backend/surefire-app
 
           UNIT_EXIT=0
           PW_EXIT=0
@@ -158,7 +158,7 @@ jobs:
             for i in $(seq 1 90); do
               if ! kill -0 "$BE_PID" 2>/dev/null; then
                 echo "Backend thoát sớm khi khởi chạy! Log gần nhất:"
-                tail -n 60 test-results/backend/backend.log || true
+                tail -n 60 native-results/backend/backend.log || true
                 return 1
               fi
               CODE=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8989/v3/api-docs || true)
@@ -168,7 +168,7 @@ jobs:
               sleep 1
             done
             echo "Quá thời gian chờ Backend 90s:"
-            tail -n 60 test-results/backend/backend.log || true
+            tail -n 60 native-results/backend/backend.log || true
             return 1
           }
 
@@ -177,13 +177,13 @@ jobs:
           npm run backend:test:native
           UNIT_EXIT=$?
           set -e
-          cp SmartSpace_Backend/target/surefire-reports/TEST-*.xml test-results/backend/surefire-unit/ 2>/dev/null || true
+          cp SmartSpace_Backend/target/surefire-reports/TEST-*.xml native-results/backend/surefire-unit/ 2>/dev/null || true
 
           echo "=== Build Backend JAR & Seed Ephemeral MySQL ==="
           (cd SmartSpace_Backend && mvn package -DskipTests -Dfile.encoding=UTF-8)
 
           # Khởi chạy lần 1 để Hibernate tự tạo schema bảng trước khi import seed_data.sql
-          (cd SmartSpace_Backend && java -Xmx512m -Dfile.encoding=UTF-8 -jar target/SmartSpace-0.0.1-SNAPSHOT.jar --server.port=8989) > test-results/backend/backend.log 2>&1 &
+          (cd SmartSpace_Backend && java -Xmx512m -Dfile.encoding=UTF-8 -jar target/SmartSpace-0.0.1-SNAPSHOT.jar --server.port=8989) > native-results/backend/backend.log 2>&1 &
           BE_PID=$!
           wait_backend_ready
           stop_backend
@@ -191,7 +191,7 @@ jobs:
           mysql --protocol=tcp -h 127.0.0.1 -P 3306 -uroot -p"$DB_PASSWORD" --default-character-set=utf8mb4 smart_space < SmartSpace_Backend/seed_data.sql
 
           # Khởi chạy lần 2 trên DB đã seed (chạy DataInitializer + ReportDeadlineSyncInitializer)
-          (cd SmartSpace_Backend && java -Xmx512m -Dfile.encoding=UTF-8 -jar target/SmartSpace-0.0.1-SNAPSHOT.jar --server.port=8989) >> test-results/backend/backend.log 2>&1 &
+          (cd SmartSpace_Backend && java -Xmx512m -Dfile.encoding=UTF-8 -jar target/SmartSpace-0.0.1-SNAPSHOT.jar --server.port=8989) >> native-results/backend/backend.log 2>&1 &
           BE_PID=$!
           wait_backend_ready
 
@@ -201,15 +201,58 @@ jobs:
           PW_EXIT=$?
           set -e
 
+          echo "=== Seed Redis Sessions for Controller Integration Tests ==="
+          node -e '
+            (async () => {
+              const logins = [
+                { email: "admin@gmail.com", role: "admin", deviceId: "test-device-uuid" },
+                { email: "admin@gmail.com", role: "admin", deviceId: "test-admin-device" },
+                { email: "user@gmail.com", role: "client", deviceId: "test-device-uuid" },
+                { email: "user@gmail.com", role: "client", deviceId: "test-device-client-1" },
+                { email: "cudan@gmail.com", role: "client", deviceId: "test-device-uuid" },
+                { email: "staff1@gmail.com", role: "staff", deviceId: "test-device-uuid" },
+                { email: "staff2@gmail.com", role: "staff", deviceId: "test-device-uuid" },
+              ];
+              for (const item of logins) {
+                const res = await fetch("http://localhost:8989/auth/login", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    email: item.email,
+                    password: "Ad123456!",
+                    deviceId: item.deviceId,
+                    deviceName: "CI Integration Seed",
+                    platform: "android",
+                    role: item.role,
+                    rememberMe: true,
+                  }),
+                });
+                const body = await res.text();
+                if (!res.ok) {
+                  throw new Error(`Seed Redis session thất bại cho ${item.email} (${item.deviceId}): HTTP ${res.status} - ${body}`);
+                }
+              }
+              console.log(`Seeded ${logins.length} Redis sessions successfully.`);
+            })().catch((err) => { console.error(err); process.exit(1); });
+          '
+
           echo "=== 3/4: Native Backend Controller Integration Tests ==="
           rm -f SmartSpace_Backend/target/surefire-reports/TEST-*.xml
           set +e
           npm run backend:test:integration
           CTRL_EXIT=$?
           set -e
-          cp SmartSpace_Backend/target/surefire-reports/TEST-*.xml test-results/backend/surefire-controller/ 2>/dev/null || true
+          cp SmartSpace_Backend/target/surefire-reports/TEST-*.xml native-results/backend/surefire-controller/ 2>/dev/null || true
 
           stop_backend
+
+          echo "=== Seed Overdue Reports for SmartSpaceApplicationTests ==="
+          mysql --protocol=tcp -h 127.0.0.1 -P 3306 -uroot -p"$DB_PASSWORD" --default-character-set=utf8mb4 smart_space -e "
+            INSERT IGNORE INTO reports (id, created_at, updated_at, assigned_at, resolved_at, deadline, title, description, image_url, latitude, longitude, severity, status, user_id, assigned_staff_id, image_urls, address, location_description, is_anonymous)
+            VALUES
+            ('r_ci_overdue_proc', DATE_SUB(NOW(), INTERVAL 20 DAY), DATE_SUB(NOW(), INTERVAL 20 DAY), DATE_SUB(NOW(), INTERVAL 20 DAY), NULL, NULL, 'CI Overdue Processing', 'Report seed cho SmartSpaceApplicationTests (processing qua han)', 'https://picsum.photos/400/300?random=91', 10.7626, 106.6601, 'low', 'processing', 'u2', 'u5', 'https://picsum.photos/400/300?random=91', 'Quan 10, TP.HCM', 'Seed CI', FALSE),
+            ('r_ci_overdue_done', DATE_SUB(NOW(), INTERVAL 20 DAY), DATE_SUB(NOW(), INTERVAL 1 DAY), DATE_SUB(NOW(), INTERVAL 20 DAY), DATE_SUB(NOW(), INTERVAL 1 DAY), NULL, 'CI Overdue Completed Late', 'Report seed cho SmartSpaceApplicationTests (processed tre han)', 'https://picsum.photos/400/300?random=92', 10.7636, 106.6611, 'low', 'processed', 'u2', 'u5', 'https://picsum.photos/400/300?random=92', 'Quan 10, TP.HCM', 'Seed CI', FALSE);
+          "
 
           echo "=== 4/4: Native Backend SmartSpaceApplicationTests ==="
           rm -f SmartSpace_Backend/target/surefire-reports/TEST-*.xml
@@ -217,7 +260,7 @@ jobs:
           npm run backend:test:app
           APP_EXIT=$?
           set -e
-          cp SmartSpace_Backend/target/surefire-reports/TEST-*.xml test-results/backend/surefire-app/ 2>/dev/null || true
+          cp SmartSpace_Backend/target/surefire-reports/TEST-*.xml native-results/backend/surefire-app/ 2>/dev/null || true
 
           echo "Backend stage exit codes: UNIT=$UNIT_EXIT PW=$PW_EXIT CTRL=$CTRL_EXIT APP=$APP_EXIT"
           if [ "$UNIT_EXIT" -ne 0 ] || [ "$PW_EXIT" -ne 0 ] || [ "$CTRL_EXIT" -ne 0 ] || [ "$APP_EXIT" -ne 0 ]; then
@@ -232,6 +275,7 @@ jobs:
           path: |
             playwright-report/backend/
             test-results/backend/
+            native-results/backend/
           if-no-files-found: warn
           retention-days: 14
 
@@ -321,6 +365,7 @@ jobs:
             exit 1
           fi
           printf '%s' "$FIREBASE_JSON" > SmartSpace_Backend/src/main/resources/smart-space-36687-firebase-adminsdk-fbsvc-5c08d9199a.json
+          [ -f smartspace_admin/.env ] || printf 'GOOGLE_CLIENT_ID=\nMAPBOX_ACCESS_TOKEN=\n' > smartspace_admin/.env
           (cd mobile_shared && flutter pub get)
           cd smartspace_admin && flutter pub get
 
@@ -340,12 +385,12 @@ jobs:
           PW_REBUILD_BACKEND: 'true'
           PW_REBUILD_WEB: 'true'
         run: |
-          mkdir -p test-results/admin
+          mkdir -p native-results/admin
           NATIVE_EXIT=0
           PW_EXIT=0
 
           set +e
-          (cd smartspace_admin && flutter test --file-reporter="json:../test-results/admin/native-admin.json")
+          (cd smartspace_admin && flutter test --file-reporter="json:../native-results/admin/native-admin.json")
           NATIVE_EXIT=$?
           npm run admin:test
           PW_EXIT=$?
@@ -364,6 +409,7 @@ jobs:
           path: |
             playwright-report/admin/
             test-results/admin/
+            native-results/admin/
           if-no-files-found: warn
           retention-days: 14
 
@@ -453,6 +499,7 @@ jobs:
             exit 1
           fi
           printf '%s' "$FIREBASE_JSON" > SmartSpace_Backend/src/main/resources/smart-space-36687-firebase-adminsdk-fbsvc-5c08d9199a.json
+          [ -f smartspace_staff/.env ] || printf 'GOOGLE_CLIENT_ID=\nMAPBOX_ACCESS_TOKEN=\n' > smartspace_staff/.env
           (cd mobile_shared && flutter pub get)
           cd smartspace_staff && flutter pub get
 
@@ -472,12 +519,12 @@ jobs:
           PW_REBUILD_BACKEND: 'true'
           PW_REBUILD_WEB: 'true'
         run: |
-          mkdir -p test-results/staff
+          mkdir -p native-results/staff
           NATIVE_EXIT=0
           PW_EXIT=0
 
           set +e
-          (cd smartspace_staff && flutter test --file-reporter="json:../test-results/staff/native-staff.json")
+          (cd smartspace_staff && flutter test --file-reporter="json:../native-results/staff/native-staff.json")
           NATIVE_EXIT=$?
           npm run staff:test
           PW_EXIT=$?
@@ -496,6 +543,7 @@ jobs:
           path: |
             playwright-report/staff/
             test-results/staff/
+            native-results/staff/
           if-no-files-found: warn
           retention-days: 14
 
@@ -585,6 +633,7 @@ jobs:
             exit 1
           fi
           printf '%s' "$FIREBASE_JSON" > SmartSpace_Backend/src/main/resources/smart-space-36687-firebase-adminsdk-fbsvc-5c08d9199a.json
+          [ -f smartspace_client/.env ] || printf 'GOOGLE_CLIENT_ID=\nMAPBOX_ACCESS_TOKEN=\n' > smartspace_client/.env
           (cd mobile_shared && flutter pub get)
           cd smartspace_client && flutter pub get
 
@@ -604,15 +653,15 @@ jobs:
           PW_REBUILD_BACKEND: 'true'
           PW_REBUILD_WEB: 'true'
         run: |
-          mkdir -p test-results/client
+          mkdir -p native-results/client
           SHARED_EXIT=0
           CLIENT_NATIVE_EXIT=0
           PW_EXIT=0
 
           set +e
-          (cd mobile_shared && flutter test --file-reporter="json:../test-results/client/native-shared.json")
+          (cd mobile_shared && flutter test --file-reporter="json:../native-results/client/native-shared.json")
           SHARED_EXIT=$?
-          (cd smartspace_client && flutter test --file-reporter="json:../test-results/client/native-client.json")
+          (cd smartspace_client && flutter test --file-reporter="json:../native-results/client/native-client.json")
           CLIENT_NATIVE_EXIT=$?
           npm run client:test
           PW_EXIT=$?
@@ -631,6 +680,7 @@ jobs:
           path: |
             playwright-report/client/
             test-results/client/
+            native-results/client/
           if-no-files-found: warn
           retention-days: 14
 

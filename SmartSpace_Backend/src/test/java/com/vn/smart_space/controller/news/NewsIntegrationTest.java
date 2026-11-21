@@ -57,6 +57,7 @@ public class NewsIntegrationTest {
                 .claim("userId", userId)
                 .claim("email", email)
                 .claim("scope", "ROLE_" + role)
+                .claim("tokenType", "access")
                 .issueTime(new Date())
                 .expirationTime(new Date(System.currentTimeMillis() + 1000 * 60 * 60))
                 .jwtID(UUID.randomUUID().toString())
