@@ -3,6 +3,8 @@ import 'package:flutter_map/flutter_map.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:mobile_shared/core/utils/report_category_helper.dart';
+import 'package:smartspace_client/features/reports/models/report_category_model.dart';
 import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_client/features/reports/providers/report_providers.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
@@ -124,9 +126,104 @@ class _CreateReportForm extends ConsumerWidget {
     );
   }
 
+  Widget _buildCategorySelector(
+    BuildContext context,
+    WidgetRef ref,
+    CreateReportController controller,
+    AsyncValue<List<ReportCategoryModel>> categoriesAsync,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    final locale = Localizations.localeOf(context);
+    final cs = theme.colorScheme;
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          '${l10n.reportCategoryLabel} *',
+          style: theme.textTheme.labelLarge?.copyWith(
+            fontWeight: FontWeight.w600,
+            color: controller.categoryError != null ? cs.error : cs.onSurface,
+          ),
+        ),
+        const SizedBox(height: 8),
+        categoriesAsync.when(
+          loading: () => const Padding(
+            padding: EdgeInsets.symmetric(vertical: 8),
+            child: LinearProgressIndicator(),
+          ),
+          error: (_, _) => Container(
+            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+            decoration: BoxDecoration(
+              color: cs.errorContainer.withValues(alpha: 0.4),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Row(
+              children: [
+                Icon(Icons.error_outline, size: 18, color: cs.error),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.reportCategoryLoadError,
+                    style: theme.textTheme.bodySmall?.copyWith(color: cs.error),
+                  ),
+                ),
+                TextButton(
+                  onPressed: () => ref.invalidate(reportCategoriesProvider),
+                  child: Text(l10n.retry),
+                ),
+              ],
+            ),
+          ),
+          data: (categories) {
+            if (categories.isEmpty) {
+              return Text(
+                l10n.reportCategoryEmpty,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: cs.onSurfaceVariant,
+                ),
+              );
+            }
+            return Wrap(
+              spacing: 8,
+              runSpacing: 8,
+              children: [
+                for (final category in categories)
+                  ChoiceChip(
+                    avatar: Icon(
+                      ReportCategoryHelper.iconFor(category.iconKey),
+                      size: 16,
+                      color: controller.selectedCategoryId == category.id
+                          ? cs.onPrimaryContainer
+                          : cs.onSurfaceVariant,
+                    ),
+                    label: Text(category.localizedName(locale)),
+                    selected: controller.selectedCategoryId == category.id,
+                    onSelected: (_) => controller.setCategoryId(category.id),
+                  ),
+              ],
+            );
+          },
+        ),
+        if (controller.categoryError != null) ...[
+          const SizedBox(height: 6),
+          Text(
+            controller.categoryError!,
+            style: theme.textTheme.bodySmall?.copyWith(color: cs.error),
+          ),
+        ],
+      ],
+    );
+  }
+
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final controller = ref.watch(createReportControllerProvider);
+    final categoriesAsync = ref.watch(reportCategoriesProvider);
+    final hasLoadedCategories =
+        (categoriesAsync.valueOrNull?.isNotEmpty ?? false);
+    final requireCategory = !controller.isEditing && hasLoadedCategories;
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
 
@@ -164,6 +261,17 @@ class _CreateReportForm extends ConsumerWidget {
                       ),
                     ),
                   ],
+                ),
+                const SizedBox(height: 14),
+
+                // Category Selector
+                _buildCategorySelector(
+                  context,
+                  ref,
+                  controller,
+                  categoriesAsync,
+                  l10n,
+                  theme,
                 ),
                 const SizedBox(height: 14),
 
@@ -595,6 +703,12 @@ class _CreateReportForm extends ConsumerWidget {
               onPressed: controller.isSubmittingEdit
                   ? null
                   : () async {
+                      if (!controller.validate(
+                        context,
+                        requireCategory: requireCategory,
+                      )) {
+                        return;
+                      }
                       showDialog(
                         context: context,
                         barrierDismissible: false,
@@ -611,6 +725,7 @@ class _CreateReportForm extends ConsumerWidget {
 
                       final success = await controller.submitEdit(
                         context,
+                        requireCategory: requireCategory,
                         onSuccess: (updatedReport) {
                           ref.read(reportsProvider.notifier).refreshAll();
                         },
@@ -641,6 +756,12 @@ class _CreateReportForm extends ConsumerWidget {
           else
             FilledButton.icon(
               onPressed: () {
+                if (!controller.validate(
+                  context,
+                  requireCategory: requireCategory,
+                )) {
+                  return;
+                }
                 // Show dialog
                 showDialog(
                   context: context,
@@ -664,6 +785,7 @@ class _CreateReportForm extends ConsumerWidget {
                   Navigator.of(context).pop();
                   controller.submit(
                     context,
+                    requireCategory: requireCategory,
                     onSuccess: (report) {
                       reportsNotifier.addNewReport(report);
                     },

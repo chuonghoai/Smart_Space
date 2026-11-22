@@ -54,6 +54,12 @@ class CreateReportController extends ChangeNotifier {
   String? _descError;
   String? get descError => _descError;
 
+  String? _selectedCategoryId;
+  String? get selectedCategoryId => _selectedCategoryId;
+
+  String? _categoryError;
+  String? get categoryError => _categoryError;
+
   CreateReportController() {
     latController.addListener(_onLatChanged);
     lngController.addListener(_onLngChanged);
@@ -72,6 +78,8 @@ class CreateReportController extends ChangeNotifier {
     latController.text = report.latitude.toString();
     lngController.text = report.longitude.toString();
     _isAnonymous = report.isAnonymous;
+    _selectedCategoryId = report.categoryId;
+    _categoryError = null;
     _existingImageUrls.clear();
     _existingImageUrls.addAll(report.imageUrls);
     _images.clear();
@@ -96,6 +104,12 @@ class CreateReportController extends ChangeNotifier {
 
   void setIsAnonymous(bool value) {
     _isAnonymous = value;
+    notifyListeners();
+  }
+
+  void setCategoryId(String? categoryId) {
+    _selectedCategoryId = categoryId;
+    _categoryError = null;
     notifyListeners();
   }
 
@@ -180,11 +194,18 @@ class CreateReportController extends ChangeNotifier {
     notifyListeners();
   }
 
-  bool validate(BuildContext context) {
+  bool validate(BuildContext context, {bool requireCategory = true}) {
     final l10n = AppLocalizations.of(context)!;
     bool isValid = true;
     _titleError = null;
     _descError = null;
+    _categoryError = null;
+
+    if (requireCategory &&
+        (_selectedCategoryId == null || _selectedCategoryId!.isEmpty)) {
+      _categoryError = l10n.reportCategoryRequired;
+      isValid = false;
+    }
 
     if (titleController.text.trim().isEmpty) {
       _titleError = l10n.requiredFieldError;
@@ -200,8 +221,12 @@ class CreateReportController extends ChangeNotifier {
     return isValid;
   }
 
-  void submit(BuildContext context, {Function(ReportModel)? onSuccess}) {
-    if (!validate(context)) return;
+  void submit(
+    BuildContext context, {
+    Function(ReportModel)? onSuccess,
+    bool requireCategory = true,
+  }) {
+    if (!validate(context, requireCategory: requireCategory)) return;
 
     final l10n = AppLocalizations.of(context)!;
 
@@ -214,6 +239,7 @@ class CreateReportController extends ChangeNotifier {
       isAnonymous: _isAnonymous,
       address: addressController.text.trim().isEmpty ? null : addressController.text.trim(),
       locationDescription: locationDescController.text.trim().isEmpty ? null : locationDescController.text.trim(),
+      categoryId: _selectedCategoryId,
     );
 
     // Bắt đầu background upload
@@ -242,8 +268,12 @@ class CreateReportController extends ChangeNotifier {
     Navigator.of(context).popUntil((route) => route.isFirst);
   }
 
-  Future<bool> submitEdit(BuildContext context, {Function(ReportDetailModel)? onSuccess}) async {
-    if (!validate(context)) return false;
+  Future<bool> submitEdit(
+    BuildContext context, {
+    Function(ReportDetailModel)? onSuccess,
+    bool requireCategory = true,
+  }) async {
+    if (!validate(context, requireCategory: requireCategory)) return false;
     if (_reportToEdit == null) return false;
 
     final l10n = AppLocalizations.of(context)!;
@@ -285,6 +315,7 @@ class CreateReportController extends ChangeNotifier {
         isAnonymous: _isAnonymous,
         address: addressController.text.trim().isEmpty ? null : addressController.text.trim(),
         locationDescription: locationDescController.text.trim().isEmpty ? null : locationDescController.text.trim(),
+        categoryId: _selectedCategoryId,
       );
 
       // 4. Request API

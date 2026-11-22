@@ -1,3 +1,7 @@
+import 'dart:ui' show Locale;
+
+import 'package:mobile_shared/core/utils/report_category_helper.dart';
+
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 
 export 'package:smartspace_client/features/reports/models/report_model.dart'
@@ -23,8 +27,19 @@ class ReportDetailModel extends ReportModel {
   final DateTime? reviewedAt;
   final String? rejectedReason;
   final DateTime? rejectedAt;
+  final String? categoryId;
+  final String? categoryCode;
+  final String? categoryNameVi;
+  final String? categoryNameEn;
 
   bool get hasReviewed => reviewedAt != null || isReviewResolved != null;
+
+  String? localizedCategoryName(Locale locale) =>
+      ReportCategoryHelper.localizedName(
+        locale: locale,
+        nameVi: categoryNameVi,
+        nameEn: categoryNameEn,
+      );
 
   ReportDetailModel({
     required super.id,
@@ -58,6 +73,10 @@ class ReportDetailModel extends ReportModel {
     this.reviewedAt,
     this.rejectedReason,
     this.rejectedAt,
+    this.categoryId,
+    this.categoryCode,
+    this.categoryNameVi,
+    this.categoryNameEn,
   }) : super(imageUrl: imageUrls.isNotEmpty ? imageUrls.first : '');
 
   factory ReportDetailModel.fromJson(Map<String, dynamic> json) {
@@ -138,6 +157,10 @@ class ReportDetailModel extends ReportModel {
           ? DateTime.tryParse((json['rejected_at'] ?? json['rejectedAt']).toString())
           : null,
       userId: json['user_id'] as String?,
+      categoryId: (json['category_id'] ?? json['categoryId'])?.toString(),
+      categoryCode: (json['category_code'] ?? json['categoryCode'])?.toString(),
+      categoryNameVi: (json['category_name_vi'] ?? json['categoryNameVi']) as String?,
+      categoryNameEn: (json['category_name_en'] ?? json['categoryNameEn']) as String?,
     );
   }
 
@@ -163,6 +186,10 @@ class ReportDetailModel extends ReportModel {
     map['deadline'] = deadline?.toIso8601String();
     map['rejected_reason'] = rejectedReason;
     map['rejected_at'] = rejectedAt?.toIso8601String();
+    map['category_id'] = categoryId;
+    map['category_code'] = categoryCode;
+    map['category_name_vi'] = categoryNameVi;
+    map['category_name_en'] = categoryNameEn;
     return map;
   }
 
@@ -217,6 +244,10 @@ class ReportDetailModel extends ReportModel {
     String? rejectedReason,
     DateTime? rejectedAt,
     String? userId,
+    String? categoryId,
+    String? categoryCode,
+    String? categoryNameVi,
+    String? categoryNameEn,
   }) {
     return ReportDetailModel(
       id: id ?? this.id,
@@ -249,6 +280,10 @@ class ReportDetailModel extends ReportModel {
       reviewedAt: reviewedAt ?? this.reviewedAt,
       rejectedReason: rejectedReason ?? this.rejectedReason,
       rejectedAt: rejectedAt ?? this.rejectedAt,
+      categoryId: categoryId ?? this.categoryId,
+      categoryCode: categoryCode ?? this.categoryCode,
+      categoryNameVi: categoryNameVi ?? this.categoryNameVi,
+      categoryNameEn: categoryNameEn ?? this.categoryNameEn,
     );
   }
 }

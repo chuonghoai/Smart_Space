@@ -2557,6 +2557,36 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rejected by administrator.'**
   String get noRejectionReasonProvided;
+
+  /// No description provided for @reportCategoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Incident Category'**
+  String get reportCategoryLabel;
+
+  /// No description provided for @reportCategoryHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a category'**
+  String get reportCategoryHint;
+
+  /// No description provided for @reportCategoryRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select an incident category'**
+  String get reportCategoryRequired;
+
+  /// No description provided for @reportCategoryLoadError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load categories'**
+  String get reportCategoryLoadError;
+
+  /// No description provided for @reportCategoryEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No categories available'**
+  String get reportCategoryEmpty;
 }
 
 class _AppLocalizationsDelegate

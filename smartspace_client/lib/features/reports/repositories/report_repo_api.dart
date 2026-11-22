@@ -12,9 +12,24 @@ import 'package:smartspace_client/features/reports/models/report_detail_model.da
 import 'package:smartspace_client/features/reports/models/report_dto.dart';
 import 'package:smartspace_client/features/reports/models/report_feed_model.dart';
 import 'package:smartspace_client/features/reports/models/nearby_reports_alert_model.dart';
+import 'package:smartspace_client/features/reports/models/report_category_model.dart';
 import 'package:smartspace_client/features/reports/repositories/report_repo.dart';
 
 class ReportRepoApi implements ReportRepo {
+  @override
+  Future<ApiResponse<List<ReportCategoryModel>>> getCategories() async {
+    return await apiClient.get<List<ReportCategoryModel>>(
+      '/categories',
+      decoder: (json) {
+        if (json is List) {
+          return json
+              .map((e) => ReportCategoryModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        }
+        return [];
+      },
+    );
+  }
   @override
   Future<ApiResponse<List<ReportModel>>> getDangerousReports() async {
     return await apiClient.get<List<ReportModel>>(

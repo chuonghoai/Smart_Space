@@ -517,5 +517,10 @@
   },
   "overdueOnlyFilter": "Overdue",
   "rejectedReasonTitle": "Rejection Reason",
-  "noRejectionReasonProvided": "Rejected by administrator."
+  "noRejectionReasonProvided": "Rejected by administrator.",
+  "reportCategoryLabel": "Incident Category",
+  "reportCategoryHint": "Select a category",
+  "reportCategoryRequired": "Please select an incident category",
+  "reportCategoryLoadError": "Could not load categories",
+  "reportCategoryEmpty": "No categories available"
 }

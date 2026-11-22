@@ -1313,4 +1313,19 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get noRejectionReasonProvided =>
       'Phản ánh đã bị quản trị viên từ chối.';
+
+  @override
+  String get reportCategoryLabel => 'Danh mục phản ánh';
+
+  @override
+  String get reportCategoryHint => 'Chọn danh mục';
+
+  @override
+  String get reportCategoryRequired => 'Vui lòng chọn danh mục phản ánh';
+
+  @override
+  String get reportCategoryLoadError => 'Không thể tải danh sách danh mục';
+
+  @override
+  String get reportCategoryEmpty => 'Chưa có danh mục phản ánh nào';
 }

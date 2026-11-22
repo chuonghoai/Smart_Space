@@ -12,8 +12,10 @@ import 'package:smartspace_client/features/reports/models/report_dto.dart';
 import 'package:smartspace_client/features/reports/models/report_feed_model.dart';
 
 import 'package:smartspace_client/features/reports/models/nearby_reports_alert_model.dart';
+import 'package:smartspace_client/features/reports/models/report_category_model.dart';
 
 abstract class ReportRepo {
+  Future<ApiResponse<List<ReportCategoryModel>>> getCategories();
   Future<ApiResponse<List<ReportModel>>> getDangerousReports();
   Future<ApiResponse<List<ReportModel>>> getRecentReports();
   Future<ApiResponse<ReportModel>> createReport(ReportDto reportDto);

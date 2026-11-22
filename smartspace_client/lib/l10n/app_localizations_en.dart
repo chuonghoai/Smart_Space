@@ -1321,4 +1321,19 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noRejectionReasonProvided => 'Rejected by administrator.';
+
+  @override
+  String get reportCategoryLabel => 'Incident Category';
+
+  @override
+  String get reportCategoryHint => 'Select a category';
+
+  @override
+  String get reportCategoryRequired => 'Please select an incident category';
+
+  @override
+  String get reportCategoryLoadError => 'Could not load categories';
+
+  @override
+  String get reportCategoryEmpty => 'No categories available';
 }

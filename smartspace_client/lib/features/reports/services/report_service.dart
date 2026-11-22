@@ -12,6 +12,7 @@ import 'package:smartspace_client/features/reports/models/report_detail_model.da
 import 'package:smartspace_client/features/reports/models/report_dto.dart';
 import 'package:smartspace_client/features/reports/models/nearby_reports_alert_model.dart';
 import 'package:smartspace_client/features/reports/models/report_feed_model.dart';
+import 'package:smartspace_client/features/reports/models/report_category_model.dart';
 import 'package:smartspace_client/features/reports/repositories/report_repo.dart';
 import 'package:smartspace_client/features/reports/repositories/report_repo_api.dart';
 import 'package:smartspace_client/features/reports/repositories/report_repo_mock.dart';
@@ -20,6 +21,10 @@ class ReportService {
   final ReportRepo reportRepo;
 
   const ReportService({required this.reportRepo});
+
+  Future<ApiResponse<List<ReportCategoryModel>>> getCategories() async {
+    return await reportRepo.getCategories();
+  }
 
   Future<ApiResponse<List<ReportModel>>> getDangerousReports() async {
     return await reportRepo.getDangerousReports();

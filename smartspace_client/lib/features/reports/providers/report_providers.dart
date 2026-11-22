@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smartspace_client/features/reports/models/report_category_model.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/services/report_service.dart';
 import 'package:mobile_shared/util/distance_updater_provider.dart';
@@ -184,4 +185,13 @@ final reportsProvider = StateNotifierProvider<ReportsNotifier, ReportsState>((
   ref,
 ) {
   return ReportsNotifier(reportService, ref);
+});
+
+final reportCategoriesProvider =
+    FutureProvider.autoDispose<List<ReportCategoryModel>>((ref) async {
+  final response = await reportService.getCategories();
+  if (response.success && response.data != null) {
+    return response.data!;
+  }
+  throw Exception(response.message);
 });
