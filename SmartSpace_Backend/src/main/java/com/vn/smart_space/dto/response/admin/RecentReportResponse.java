@@ -48,4 +48,9 @@ public class RecentReportResponse {
     Boolean isOverdue;
 
     Long remainingDays;
+
+    String categoryId;
+    String categoryCode;
+    String categoryNameVi;
+    String categoryNameEn;
 }

@@ -6,9 +6,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
 import com.vn.smart_space.consts.EGender;
+import com.vn.smart_space.consts.EReportSeverity;
 import com.vn.smart_space.consts.ERole;
 import com.vn.smart_space.consts.EUserStatus;
+import com.vn.smart_space.model.ReportCategory;
 import com.vn.smart_space.model.User;
+import com.vn.smart_space.repository.ReportCategoryRepository;
 import com.vn.smart_space.repository.UserRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -20,6 +23,7 @@ import lombok.extern.slf4j.Slf4j;
 public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
+    private final ReportCategoryRepository reportCategoryRepository;
     private final PasswordEncoder passwordEncoder;
     private final org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
@@ -104,6 +108,46 @@ public class DataInitializer implements CommandLineRunner {
                 EGender.female,
                 "0912345678",
                 "https://ui-avatars.com/api/?name=US&background=10b981&color=fff&size=200&bold=true&font-size=0.4");
+
+        seedDefaultCategories();
+    }
+
+    private void seedDefaultCategories() {
+        if (reportCategoryRepository.count() > 0) {
+            return;
+        }
+        seedCategory("ENVIRONMENT", "Môi trường & Rác thải", "Environment & Waste", "eco", EReportSeverity.medium, 1);
+        seedCategory("INFRASTRUCTURE", "Hạ tầng & Đường bộ", "Infrastructure & Roads", "construction",
+                EReportSeverity.high, 2);
+        seedCategory("LIGHTING_ELECTRIC", "Chiếu sáng & Điện", "Lighting & Electricity", "bolt",
+                EReportSeverity.high, 3);
+        seedCategory("WATER_DRAINAGE", "Cấp thoát nước & Ngập úng", "Water & Drainage", "water_drop",
+                EReportSeverity.high, 4);
+        seedCategory("PUBLIC_ORDER", "Trật tự & An toàn công cộng", "Public Order & Safety", "shield",
+                EReportSeverity.medium, 5);
+        log.info("Seeded default report categories");
+    }
+
+    private void seedCategory(
+            String code,
+            String nameVi,
+            String nameEn,
+            String iconKey,
+            EReportSeverity defaultSeverity,
+            int displayOrder) {
+        if (reportCategoryRepository.existsByCodeIgnoreCase(code)) {
+            return;
+        }
+        ReportCategory category = ReportCategory.builder()
+                .code(code)
+                .nameVi(nameVi)
+                .nameEn(nameEn)
+                .iconKey(iconKey)
+                .defaultSeverity(defaultSeverity)
+                .isActive(true)
+                .displayOrder(displayOrder)
+                .build();
+        reportCategoryRepository.save(category);
     }
 
     private void seedDefaultAccount(

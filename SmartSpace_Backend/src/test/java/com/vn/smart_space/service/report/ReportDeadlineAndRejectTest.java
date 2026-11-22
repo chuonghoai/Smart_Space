@@ -12,6 +12,7 @@ import com.vn.smart_space.model.Report;
 import com.vn.smart_space.model.User;
 import com.vn.smart_space.repository.ActivityHistoryRepository;
 import com.vn.smart_space.repository.PositionRepository;
+import com.vn.smart_space.repository.ReportCategoryRepository;
 import com.vn.smart_space.repository.ReportRepository;
 import com.vn.smart_space.repository.UserRepository;
 import com.vn.smart_space.service.conversation.IConversationService;
@@ -44,6 +45,7 @@ import static org.mockito.Mockito.*;
 class ReportDeadlineAndRejectTest {
 
     @Mock ReportRepository reportRepository;
+    @Mock ReportCategoryRepository reportCategoryRepository;
     @Mock UserRepository userRepository;
     @Mock SimpMessagingTemplate messagingTemplate;
     @Mock IFCMService fcmService;

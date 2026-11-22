@@ -77,4 +77,13 @@ public class User extends AbstractEntity {
     @JoinColumn(name = "position_id")
     Position position;
 
+    @Column(name = "base_latitude")
+    Double baseLatitude;
+
+    @Column(name = "base_longitude")
+    Double baseLongitude;
+
+    @Column(name = "base_address", length = 255)
+    String baseAddress;
+
 }

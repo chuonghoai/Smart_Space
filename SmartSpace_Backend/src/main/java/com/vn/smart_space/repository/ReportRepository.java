@@ -548,4 +548,9 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                      @Param("isAnonymous") Boolean isAnonymous,
                      org.springframework.data.domain.Pageable pageable);
 
+       long countByCategoryId(String categoryId);
+
+       @Query("SELECT r.category.id, COUNT(r) FROM Report r WHERE r.category IS NOT NULL GROUP BY r.category.id")
+       List<Object[]> countReportsGroupByCategory();
+
 }

@@ -51,6 +51,10 @@ public class Report extends AbstractEntity {
     User assignedStaff;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    ReportCategory category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "conversation_id")
     Conversation conversation;
 

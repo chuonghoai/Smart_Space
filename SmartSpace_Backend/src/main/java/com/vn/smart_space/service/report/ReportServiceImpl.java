@@ -49,8 +49,10 @@ import com.vn.smart_space.exception.ResourceNotFoundException;
 import com.vn.smart_space.exception.UnauthorizedException;
 import com.vn.smart_space.model.ActivityHistory;
 import com.vn.smart_space.model.Report;
+import com.vn.smart_space.model.ReportCategory;
 import com.vn.smart_space.model.User;
 import com.vn.smart_space.repository.ActivityHistoryRepository;
+import com.vn.smart_space.repository.ReportCategoryRepository;
 import com.vn.smart_space.repository.ReportRepository;
 import com.vn.smart_space.repository.UserRepository;
 import com.vn.smart_space.service.notification.IFCMService;
@@ -67,6 +69,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ReportServiceImpl implements IReportService {
 
     private final ReportRepository reportRepository;
+    private final ReportCategoryRepository reportCategoryRepository;
     private final UserRepository userRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final IFCMService fcmService;
@@ -209,6 +212,7 @@ public class ReportServiceImpl implements IReportService {
     private RecentReportResponse toRecentReportResponse(Report r, boolean maskAnonymous, boolean includeDetails) {
         User staff = r.getAssignedStaff();
         User user = r.getUser();
+        ReportCategory category = r.getCategory();
         boolean anon = Boolean.TRUE.equals(r.getIsAnonymous());
         boolean hideReporter = maskAnonymous && anon;
         String resolvedAddress = (r.getAddress() != null && !r.getAddress().trim().isEmpty())
@@ -238,11 +242,16 @@ public class ReportServiceImpl implements IReportService {
                 .resolvedAt(toLocalDateTime(r.getResolvedAt()))
                 .isOverdue(isReportOverdue(r, now))
                 .remainingDays(calculateRemainingDays(r, now))
+                .categoryId(category != null ? category.getId() : null)
+                .categoryCode(category != null ? category.getCode() : null)
+                .categoryNameVi(category != null ? category.getNameVi() : null)
+                .categoryNameEn(category != null ? category.getNameEn() : null)
                 .build();
     }
 
     private ReportResponse mapToResponse(Report report) {
         LocalDateTime now = LocalDateTime.now();
+        ReportCategory category = report.getCategory();
         return ReportResponse.builder()
                 .id(report.getId())
                 .title(report.getTitle())
@@ -260,6 +269,10 @@ public class ReportServiceImpl implements IReportService {
                 .isOverdue(isReportOverdue(report, now))
                 .remainingDays(calculateRemainingDays(report, now))
                 .userId(report.getUser() != null ? report.getUser().getId() : null)
+                .categoryId(category != null ? category.getId() : null)
+                .categoryCode(category != null ? category.getCode() : null)
+                .categoryNameVi(category != null ? category.getNameVi() : null)
+                .categoryNameEn(category != null ? category.getNameEn() : null)
                 .build();
     }
 
@@ -274,16 +287,34 @@ public class ReportServiceImpl implements IReportService {
         return R * c;
     }
 
+    private ReportCategory resolveActiveCategory(String categoryId) {
+        if (categoryId == null || categoryId.isBlank()) {
+            return null;
+        }
+        ReportCategory category = reportCategoryRepository.findById(categoryId.trim())
+                .orElseThrow(() -> new ResourceNotFoundException("category.not_found"));
+        if (!Boolean.TRUE.equals(category.getIsActive())) {
+            throw new BadRequestException("category.inactive");
+        }
+        return category;
+    }
+
     @Override
     @Transactional
     public ReportDetailResponse createReport(ReportCreateRequest request, String userId) {
+
+        ReportCategory category = resolveActiveCategory(request.getCategoryId());
+        EReportSeverity initialSeverity = (category != null && category.getDefaultSeverity() != null)
+                ? category.getDefaultSeverity()
+                : EReportSeverity.low;
 
         Report report = new Report();
         report.setTitle(request.getTitle());
         report.setDescription(request.getDescription());
         report.setLatitude(request.getLatitude());
         report.setLongitude(request.getLongitude());
-        report.setSeverity(EReportSeverity.low);
+        report.setCategory(category);
+        report.setSeverity(initialSeverity);
         report.setStatus(EReportStatus.pending);
         report.setAddress(request.getAddress());
         report.setLocationDescription(request.getLocationDescription());
@@ -347,6 +378,10 @@ public class ReportServiceImpl implements IReportService {
                 .isOverdue(isReportOverdue(report, now))
                 .remainingDays(calculateRemainingDays(report, now))
                 .userId(userId)
+                .categoryId(category != null ? category.getId() : null)
+                .categoryCode(category != null ? category.getCode() : null)
+                .categoryNameVi(category != null ? category.getNameVi() : null)
+                .categoryNameEn(category != null ? category.getNameEn() : null)
                 .build();
 
         // Notify Users
@@ -604,6 +639,7 @@ public class ReportServiceImpl implements IReportService {
     private ReportDetailResponse toDetail(Report report) {
         User user = report.getUser();
         User staff = report.getAssignedStaff();
+        ReportCategory category = report.getCategory();
 
         List<String> images = null;
         if (report.getImageUrls() != null && !report.getImageUrls().trim().isEmpty()) {
@@ -668,6 +704,10 @@ public class ReportServiceImpl implements IReportService {
                 .rejectedReason(report.getRejectedReason())
                 .rejectedAt(formatIsoDateTime(report.getRejectedAt()))
                 .userId(user != null ? user.getId() : null)
+                .categoryId(category != null ? category.getId() : null)
+                .categoryCode(category != null ? category.getCode() : null)
+                .categoryNameVi(category != null ? category.getNameVi() : null)
+                .categoryNameEn(category != null ? category.getNameEn() : null)
                 .build();
     }
 
@@ -1836,7 +1876,7 @@ public class ReportServiceImpl implements IReportService {
 
                     for (User admin : admins) {
                         try {
-                            java.util.Locale adminLocale = new java.util.Locale(
+                            Locale adminLocale = new Locale(
                                     admin.getLanguage() != null ? admin.getLanguage() : "vi");
                             String adminTitle = messageSource.getMessage(
                                     "notification.report.review.unresolved.admin.title",
@@ -2070,6 +2110,17 @@ public class ReportServiceImpl implements IReportService {
         }
         if (request.getIsAnonymous() != null) {
             report.setIsAnonymous(request.getIsAnonymous());
+        }
+        if (request.getCategoryId() != null && !request.getCategoryId().isBlank()) {
+            String requestedCategoryId = request.getCategoryId().trim();
+            ReportCategory currentCategory = report.getCategory();
+            // Giữ nguyên danh mục hiện tại (kể cả khi đã ngừng hoạt động) để người dân vẫn
+            // sửa được nội dung khác; chỉ validate khi thực sự đổi sang danh mục khác.
+            boolean categoryChanged = currentCategory == null
+                    || !requestedCategoryId.equals(currentCategory.getId());
+            if (categoryChanged) {
+                report.setCategory(resolveActiveCategory(requestedCategoryId));
+            }
         }
         if (request.getImageUrls() != null) {
             if (!request.getImageUrls().isEmpty()) {
