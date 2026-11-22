@@ -202,154 +202,180 @@ class _WebStaffViewState extends ConsumerState<WebStaffView> {
             borderRadius: BorderRadius.circular(12),
             border: Border.all(color: theme.dividerColor),
           ),
-          child: DataTable(
-            headingRowColor: WidgetStateProperty.all(
-              theme.colorScheme.surfaceContainerLow,
-            ),
-            headingTextStyle: theme.textTheme.labelMedium?.copyWith(
-              color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
-              fontWeight: FontWeight.w600,
-            ),
-            dataRowMinHeight: 56,
-            dataRowMaxHeight: 64,
-            columnSpacing: 24,
-            columns: [
-              DataColumn(label: Text(l10n.staffMember)),
-              DataColumn(label: Text(l10n.email)),
-              DataColumn(label: Text(l10n.phoneNumber)),
-              DataColumn(label: Text(l10n.processingStatus)),
-              DataColumn(label: Text(l10n.statusTitle)),
-              const DataColumn(label: Text('')),
-            ],
-            rows: data.staffs.map((staff) {
-              return DataRow(
-                color: staff.isBlocked
-                    ? WidgetStateProperty.all(
-                        theme.colorScheme.onSurface.withValues(alpha: 0.04),
-                      )
-                    : null,
-                cells: [
-                  DataCell(
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        StaffAvatar(staff: staff, radius: 16),
-                        const SizedBox(width: 10),
-                        Flexible(
-                          child: Text(
-                            staff.fullName,
-                            overflow: TextOverflow.ellipsis,
+          clipBehavior: Clip.antiAlias,
+          child: LayoutBuilder(
+            builder: (context, box) => SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(minWidth: box.maxWidth),
+                child: DataTable(
+                  headingRowColor: WidgetStateProperty.all(
+                    theme.colorScheme.surfaceContainerLow,
+                  ),
+                  headingTextStyle: theme.textTheme.labelMedium?.copyWith(
+                    color: theme.colorScheme.onSurface.withValues(alpha: 0.7),
+                    fontWeight: FontWeight.w600,
+                  ),
+                  dataRowMinHeight: 56,
+                  dataRowMaxHeight: 68,
+                  columnSpacing: 24,
+                  columns: [
+                    DataColumn(label: Text(l10n.staffMember)),
+                    DataColumn(label: Text(l10n.email)),
+                    DataColumn(label: Text(l10n.phoneNumber)),
+                    DataColumn(label: Text(l10n.staffBaseLocationSection)),
+                    DataColumn(label: Text(l10n.processingStatus)),
+                    DataColumn(label: Text(l10n.statusTitle)),
+                    const DataColumn(label: Text('')),
+                  ],
+                  rows: data.staffs.map((staff) {
+                    return DataRow(
+                      color: staff.isBlocked
+                          ? WidgetStateProperty.all(
+                              theme.colorScheme.onSurface.withValues(alpha: 0.04),
+                            )
+                          : null,
+                      cells: [
+                        DataCell(
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              StaffAvatar(staff: staff, radius: 16),
+                              const SizedBox(width: 10),
+                              Flexible(
+                                child: Text(
+                                  staff.fullName,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w500,
+                                    color: staff.isBlocked
+                                        ? theme.colorScheme.onSurface.withValues(
+                                            alpha: 0.5,
+                                          )
+                                        : null,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        DataCell(
+                          Text(
+                            staff.email,
                             style: TextStyle(
-                              fontWeight: FontWeight.w500,
                               color: staff.isBlocked
-                                  ? theme.colorScheme.onSurface.withValues(
-                                      alpha: 0.5,
-                                    )
-                                  : null,
+                                  ? theme.colorScheme.onSurface.withValues(alpha: 0.5)
+                                  : theme.colorScheme.onSurface.withValues(
+                                      alpha: 0.7,
+                                    ),
                             ),
                           ),
                         ),
-                      ],
-                    ),
-                  ),
-                  DataCell(
-                    Text(
-                      staff.email,
-                      style: TextStyle(
-                        color: staff.isBlocked
-                            ? theme.colorScheme.onSurface.withValues(alpha: 0.5)
-                            : theme.colorScheme.onSurface.withValues(
+                        DataCell(
+                          Text(
+                            staff.phoneNumber ?? '—',
+                            style: TextStyle(
+                              color: theme.colorScheme.onSurface.withValues(
                                 alpha: 0.7,
                               ),
-                      ),
-                    ),
-                  ),
-                  DataCell(
-                    Text(
-                      staff.phoneNumber ?? '—',
-                      style: TextStyle(
-                        color: theme.colorScheme.onSurface.withValues(
-                          alpha: 0.7,
+                            ),
+                          ),
                         ),
-                      ),
-                    ),
-                  ),
-                  DataCell(
-                    Text(
-                      '${staff.processingCount}',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        color: staff.processingCount > 0
-                            ? theme.colorScheme.primary
-                            : theme.colorScheme.onSurface.withValues(
-                                alpha: 0.4,
+                        DataCell(
+                          ConstrainedBox(
+                            constraints: const BoxConstraints(maxWidth: 200),
+                            child: Text(
+                              staff.formattedBaseLocation ?? '—',
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis,
+                              style: theme.textTheme.bodySmall?.copyWith(
+                                color: staff.hasBaseLocation
+                                    ? theme.colorScheme.onSurfaceVariant
+                                    : theme.colorScheme.onSurfaceVariant
+                                        .withValues(alpha: 0.5),
                               ),
-                      ),
-                    ),
-                  ),
-                  DataCell(StaffStatusChip(isActive: staff.isActive)),
-                  DataCell(
-                    Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Tooltip(
-                          message: l10n.viewDetails,
-                          child: IconButton(
-                            icon: const Icon(
-                              Icons.visibility_outlined,
-                              size: 20,
-                            ),
-                            onPressed: () => showStaffDetailSheet(
-                              context,
-                              l10n,
-                              theme,
-                              staff,
-                              ref,
                             ),
                           ),
                         ),
-                        Tooltip(
-                          message: l10n.editInfo,
-                          child: IconButton(
-                            icon: const Icon(Icons.edit_outlined, size: 20),
-                            onPressed: () => showStaffFormDialog(
-                              context,
-                              l10n,
-                              theme,
-                              ref,
-                              editingStaff: staff,
+                        DataCell(
+                          Text(
+                            '${staff.processingCount}',
+                            style: TextStyle(
+                              fontWeight: FontWeight.w600,
+                              color: staff.processingCount > 0
+                                  ? theme.colorScheme.primary
+                                  : theme.colorScheme.onSurface.withValues(
+                                      alpha: 0.4,
+                                    ),
                             ),
                           ),
                         ),
-                        Tooltip(
-                          message: staff.isActive
-                              ? l10n.lockAccount
-                              : l10n.unlockAccount,
-                          child: IconButton(
-                            icon: Icon(
-                              staff.isActive
-                                  ? Icons.lock_outline
-                                  : Icons.lock_open,
-                              size: 20,
-                              color: staff.isActive
-                                  ? theme.colorScheme.error
-                                  : theme.colorScheme.primary,
-                            ),
-                            onPressed: () => confirmToggleStaffStatus(
-                              context,
-                              l10n,
-                              theme,
-                              staff,
-                              ref,
-                            ),
+                        DataCell(StaffStatusChip(isActive: staff.isActive)),
+                        DataCell(
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Tooltip(
+                                message: l10n.viewDetails,
+                                child: IconButton(
+                                  icon: const Icon(
+                                    Icons.visibility_outlined,
+                                    size: 20,
+                                  ),
+                                  onPressed: () => showStaffDetailSheet(
+                                    context,
+                                    l10n,
+                                    theme,
+                                    staff,
+                                    ref,
+                                  ),
+                                ),
+                              ),
+                              Tooltip(
+                                message: l10n.editInfo,
+                                child: IconButton(
+                                  icon: const Icon(Icons.edit_outlined, size: 20),
+                                  onPressed: () => showStaffFormDialog(
+                                    context,
+                                    l10n,
+                                    theme,
+                                    ref,
+                                    editingStaff: staff,
+                                  ),
+                                ),
+                              ),
+                              Tooltip(
+                                message: staff.isActive
+                                    ? l10n.lockAccount
+                                    : l10n.unlockAccount,
+                                child: IconButton(
+                                  icon: Icon(
+                                    staff.isActive
+                                        ? Icons.lock_outline
+                                        : Icons.lock_open,
+                                    size: 20,
+                                    color: staff.isActive
+                                        ? theme.colorScheme.error
+                                        : theme.colorScheme.primary,
+                                  ),
+                                  onPressed: () => confirmToggleStaffStatus(
+                                    context,
+                                    l10n,
+                                    theme,
+                                    staff,
+                                    ref,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ],
-                    ),
-                  ),
-                ],
-              );
-            }).toList(),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ),
           ),
         ),
         const SizedBox(height: 16),

@@ -1,3 +1,6 @@
+import 'dart:ui' show Locale;
+
+import 'package:mobile_shared/core/utils/report_category_helper.dart';
 import 'package:mobile_shared/core/utils/report_deadline_helper.dart';
 
 class ReportDetailModel {
@@ -35,6 +38,17 @@ class ReportDetailModel {
   final DateTime? rejectedAt;
   final bool? serverIsOverdue;
   final int? serverRemainingDays;
+  final String? categoryId;
+  final String? categoryCode;
+  final String? categoryNameVi;
+  final String? categoryNameEn;
+
+  String? localizedCategoryName(Locale locale) =>
+      ReportCategoryHelper.localizedName(
+        locale: locale,
+        nameVi: categoryNameVi,
+        nameEn: categoryNameEn,
+      );
 
   ReportDetailModel({
     required this.id,
@@ -71,6 +85,10 @@ class ReportDetailModel {
     this.rejectedAt,
     this.serverIsOverdue,
     this.serverRemainingDays,
+    this.categoryId,
+    this.categoryCode,
+    this.categoryNameVi,
+    this.categoryNameEn,
   });
 
   bool get isOverdue => ReportDeadlineHelper.isOverdue(
@@ -192,6 +210,12 @@ class ReportDetailModel {
       serverIsOverdue: (json['is_overdue'] ?? json['isOverdue']) as bool?,
       serverRemainingDays:
           ((json['remaining_days'] ?? json['remainingDays']) as num?)?.toInt(),
+      categoryId: (json['category_id'] ?? json['categoryId'])?.toString(),
+      categoryCode: (json['category_code'] ?? json['categoryCode'])?.toString(),
+      categoryNameVi:
+          (json['category_name_vi'] ?? json['categoryNameVi']) as String?,
+      categoryNameEn:
+          (json['category_name_en'] ?? json['categoryNameEn']) as String?,
     );
   }
 
@@ -230,6 +254,10 @@ class ReportDetailModel {
     DateTime? rejectedAt,
     bool? serverIsOverdue,
     int? serverRemainingDays,
+    String? categoryId,
+    String? categoryCode,
+    String? categoryNameVi,
+    String? categoryNameEn,
   }) {
     return ReportDetailModel(
       id: id ?? this.id,
@@ -266,6 +294,10 @@ class ReportDetailModel {
       rejectedAt: rejectedAt ?? this.rejectedAt,
       serverIsOverdue: serverIsOverdue ?? this.serverIsOverdue,
       serverRemainingDays: serverRemainingDays ?? this.serverRemainingDays,
+      categoryId: categoryId ?? this.categoryId,
+      categoryCode: categoryCode ?? this.categoryCode,
+      categoryNameVi: categoryNameVi ?? this.categoryNameVi,
+      categoryNameEn: categoryNameEn ?? this.categoryNameEn,
     );
   }
 }

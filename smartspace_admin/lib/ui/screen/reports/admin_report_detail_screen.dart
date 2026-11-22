@@ -646,6 +646,11 @@ class _AdminReportDetailScreenState
               ],
             ),
             const Divider(height: 20),
+            if (report.localizedCategoryName(Localizations.localeOf(context))
+                case final categoryName?) ...[
+              ReportCategoryBadge(label: categoryName),
+              const SizedBox(height: 10),
+            ],
             Text(
               report.title,
               style: theme.textTheme.titleMedium?.copyWith(

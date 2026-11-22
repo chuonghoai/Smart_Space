@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
@@ -16,6 +17,7 @@ import 'package:smartspace_admin/features/staff/models/staff_model.dart';
 import 'package:smartspace_admin/features/staff/models/staff_statistics_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
+import 'package:smartspace_admin/ui/screen/staff/widgets/staff_location_picker_dialog.dart';
 import 'package:smartspace_admin/ui/shared/position/position_widgets.dart';
 
 /// Card nhân viên — hiển thị avatar, tên, email, trạng thái
@@ -81,6 +83,29 @@ class StaffCard extends StatelessWidget {
                       if (staff.positionName != null) ...[
                         const SizedBox(height: 4),
                         PositionChip(name: staff.positionName!),
+                      ],
+                      if (staff.formattedBaseLocation != null) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.location_on_outlined,
+                              size: 13,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                            const SizedBox(width: 4),
+                            Expanded(
+                              child: Text(
+                                staff.formattedBaseLocation!,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
                       ],
                       if (staff.processingCount > 0) ...[
                         const SizedBox(height: 4),
@@ -411,10 +436,15 @@ class _StaffFormState extends State<_StaffForm> {
   final _nameCtrl = TextEditingController();
   final _emailCtrl = TextEditingController();
   final _phoneCtrl = TextEditingController();
+  final _baseAddressCtrl = TextEditingController();
+  final _baseLatCtrl = TextEditingController();
+  final _baseLngCtrl = TextEditingController();
 
   DateTime? _selectedDate;
   String? _selectedGender;
   String? _selectedPositionId;
+  bool _clearBaseLocation = false;
+  bool _gettingGps = false;
 
   bool _isLoading = false;
 
@@ -436,6 +466,13 @@ class _StaffFormState extends State<_StaffForm> {
       _selectedGender = _genderValues.contains(staff.gender) ? staff.gender : null;
       _existingAvatarUrl = staff.avatarUrl;
       _selectedPositionId = staff.positionId;
+      _baseAddressCtrl.text = staff.baseAddress ?? '';
+      if (staff.baseLatitude != null) {
+        _baseLatCtrl.text = staff.baseLatitude!.toStringAsFixed(6);
+      }
+      if (staff.baseLongitude != null) {
+        _baseLngCtrl.text = staff.baseLongitude!.toStringAsFixed(6);
+      }
     }
   }
 
@@ -444,6 +481,9 @@ class _StaffFormState extends State<_StaffForm> {
     _nameCtrl.dispose();
     _emailCtrl.dispose();
     _phoneCtrl.dispose();
+    _baseAddressCtrl.dispose();
+    _baseLatCtrl.dispose();
+    _baseLngCtrl.dispose();
     super.dispose();
   }
 
@@ -512,6 +552,9 @@ class _StaffFormState extends State<_StaffForm> {
       final dateStr = _selectedDate != null
           ? '${_selectedDate!.year}-${_selectedDate!.month.toString().padLeft(2, '0')}-${_selectedDate!.day.toString().padLeft(2, '0')}'
           : null;
+      final baseLat = double.tryParse(_baseLatCtrl.text.trim());
+      final baseLng = double.tryParse(_baseLngCtrl.text.trim());
+      final baseAddress = _baseAddressCtrl.text.trim();
 
       if (widget.isEditMode) {
         final success =
@@ -524,6 +567,10 @@ class _StaffFormState extends State<_StaffForm> {
           avatarUrl: avatarUrl,
           // '' = bỏ chức vụ (backend hiểu chuỗi rỗng là xóa)
           positionId: _selectedPositionId ?? '',
+          baseLatitude: _clearBaseLocation ? null : baseLat,
+          baseLongitude: _clearBaseLocation ? null : baseLng,
+          baseAddress: _clearBaseLocation ? null : baseAddress,
+          clearBaseLocation: _clearBaseLocation,
         );
 
         if (!mounted) return;
@@ -547,6 +594,9 @@ class _StaffFormState extends State<_StaffForm> {
         gender: _selectedGender,
         avatarUrl: avatarUrl,
         positionId: _selectedPositionId,
+        baseLatitude: baseLat,
+        baseLongitude: baseLng,
+        baseAddress: baseAddress.isEmpty ? null : baseAddress,
       );
 
       if (!mounted) return;
@@ -789,6 +839,8 @@ class _StaffFormState extends State<_StaffForm> {
             Expanded(child: _buildPositionField(l10n)),
           ],
         ),
+        const SizedBox(height: 16),
+        _buildLocationSection(theme, l10n),
       ],
     );
   }
@@ -808,7 +860,231 @@ class _StaffFormState extends State<_StaffForm> {
         _buildGenderField(l10n),
         const SizedBox(height: 12),
         _buildPositionField(l10n),
+        const SizedBox(height: 12),
+        _buildLocationSection(theme, l10n),
       ],
+    );
+  }
+
+  Future<void> _openLocationPicker() async {
+    final initLat = double.tryParse(_baseLatCtrl.text.trim());
+    final initLng = double.tryParse(_baseLngCtrl.text.trim());
+    final picked = await showStaffLocationPickerDialog(
+      context,
+      initialLat: initLat,
+      initialLng: initLng,
+    );
+    if (picked == null || !mounted) return;
+    setState(() {
+      _clearBaseLocation = false;
+      _baseLatCtrl.text = picked.lat.toStringAsFixed(6);
+      _baseLngCtrl.text = picked.lng.toStringAsFixed(6);
+    });
+  }
+
+  Future<void> _useCurrentGps(AppLocalizations l10n) async {
+    setState(() => _gettingGps = true);
+    try {
+      var perm = await Geolocator.checkPermission();
+      if (perm == LocationPermission.denied) {
+        perm = await Geolocator.requestPermission();
+      }
+      if (perm == LocationPermission.denied ||
+          perm == LocationPermission.deniedForever) {
+        throw Exception('denied');
+      }
+      final pos = await Geolocator.getCurrentPosition();
+      if (!mounted) return;
+      setState(() {
+        _clearBaseLocation = false;
+        _baseLatCtrl.text = pos.latitude.toStringAsFixed(6);
+        _baseLngCtrl.text = pos.longitude.toStringAsFixed(6);
+      });
+    } catch (_) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.staffLocationGpsFailed)),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _gettingGps = false);
+    }
+  }
+
+  void _clearLocation() {
+    setState(() {
+      _clearBaseLocation = widget.isEditMode;
+      _baseAddressCtrl.clear();
+      _baseLatCtrl.clear();
+      _baseLngCtrl.clear();
+    });
+  }
+
+  Widget _buildLocationSection(ThemeData theme, AppLocalizations l10n) {
+    final cs = theme.colorScheme;
+    final hasAnyLocation =
+        _baseAddressCtrl.text.trim().isNotEmpty ||
+        _baseLatCtrl.text.trim().isNotEmpty ||
+        _baseLngCtrl.text.trim().isNotEmpty ||
+        (widget.editingStaff?.hasBaseLocation == true && !_clearBaseLocation);
+
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: cs.surfaceContainerLow,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: theme.dividerColor),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(Icons.location_on_outlined, size: 18, color: cs.primary),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.staffBaseLocationSection,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w600,
+                    color: cs.onSurface,
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          TextFormField(
+            controller: _baseAddressCtrl,
+            textInputAction: TextInputAction.next,
+            onChanged: (_) {
+              if (_clearBaseLocation) setState(() => _clearBaseLocation = false);
+            },
+            decoration: InputDecoration(
+              labelText: l10n.staffBaseAddressLabel,
+              prefixIcon: const Icon(Icons.place_outlined),
+              border: _inputBorder,
+              filled: true,
+              fillColor: cs.surface,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Expanded(
+                child: TextFormField(
+                  controller: _baseLatCtrl,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                    signed: true,
+                  ),
+                  onChanged: (_) {
+                    if (_clearBaseLocation) {
+                      setState(() => _clearBaseLocation = false);
+                    }
+                  },
+                  decoration: InputDecoration(
+                    labelText: l10n.staffBaseLatitudeLabel,
+                    prefixIcon: const Icon(Icons.explore_outlined),
+                    border: _inputBorder,
+                    filled: true,
+                    fillColor: cs.surface,
+                  ),
+                  validator: (v) {
+                    final latText = v?.trim() ?? '';
+                    final lngText = _baseLngCtrl.text.trim();
+                    if (latText.isEmpty && lngText.isEmpty) return null;
+                    if (latText.isEmpty) return l10n.staffLocationPairRequired;
+                    final parsed = double.tryParse(latText);
+                    if (parsed == null || parsed < -90 || parsed > 90) {
+                      return l10n.staffLocationInvalidLat;
+                    }
+                    return null;
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: TextFormField(
+                  controller: _baseLngCtrl,
+                  keyboardType: const TextInputType.numberWithOptions(
+                    decimal: true,
+                    signed: true,
+                  ),
+                  onChanged: (_) {
+                    if (_clearBaseLocation) {
+                      setState(() => _clearBaseLocation = false);
+                    }
+                  },
+                  decoration: InputDecoration(
+                    labelText: l10n.staffBaseLongitudeLabel,
+                    prefixIcon: const Icon(Icons.explore_outlined),
+                    border: _inputBorder,
+                    filled: true,
+                    fillColor: cs.surface,
+                  ),
+                  validator: (v) {
+                    final lngText = v?.trim() ?? '';
+                    final latText = _baseLatCtrl.text.trim();
+                    if (lngText.isEmpty && latText.isEmpty) return null;
+                    if (lngText.isEmpty) return l10n.staffLocationPairRequired;
+                    final parsed = double.tryParse(lngText);
+                    if (parsed == null || parsed < -180 || parsed > 180) {
+                      return l10n.staffLocationInvalidLng;
+                    }
+                    return null;
+                  },
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 8,
+            runSpacing: 8,
+            children: [
+              OutlinedButton.icon(
+                onPressed: _isLoading ? null : _openLocationPicker,
+                icon: const Icon(Icons.map_outlined, size: 18),
+                label: Text(l10n.staffPickLocationOnMap),
+                style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+              OutlinedButton.icon(
+                onPressed:
+                    (_isLoading || _gettingGps) ? null : () => _useCurrentGps(l10n),
+                icon: _gettingGps
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      )
+                    : const Icon(Icons.my_location_outlined, size: 18),
+                label: Text(l10n.staffUseCurrentGps),
+                style: OutlinedButton.styleFrom(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+              ),
+              if (hasAnyLocation)
+                TextButton.icon(
+                  onPressed: _isLoading ? null : _clearLocation,
+                  icon: Icon(Icons.clear, size: 18, color: cs.error),
+                  label: Text(
+                    l10n.staffClearLocation,
+                    style: TextStyle(color: cs.error),
+                  ),
+                ),
+            ],
+          ),
+        ],
+      ),
     );
   }
 
@@ -1059,6 +1335,11 @@ class StaffDetailSheetBody extends ConsumerWidget {
                   StaffDetailRow(
                     icon: Icons.phone_outlined,
                     text: staff.phoneNumber ?? '—',
+                  ),
+                  const SizedBox(height: 12),
+                  StaffDetailRow(
+                    icon: Icons.location_on_outlined,
+                    text: staff.formattedBaseLocation ?? l10n.staffLocationNotSet,
                   ),
                   if (staff.processingCount > 0) ...[
                     const SizedBox(height: 12),

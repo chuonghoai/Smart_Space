@@ -4638,6 +4638,324 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View assigned reports'**
   String get viewAssignedReportsAction;
+
+  /// No description provided for @routeCategoryManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Category Management'**
+  String get routeCategoryManagement;
+
+  /// No description provided for @manageCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get manageCategories;
+
+  /// No description provided for @addCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Category'**
+  String get addCategory;
+
+  /// No description provided for @editCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Category'**
+  String get editCategory;
+
+  /// No description provided for @deleteCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Category'**
+  String get deleteCategory;
+
+  /// No description provided for @deleteCategoryConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this category?'**
+  String get deleteCategoryConfirm;
+
+  /// No description provided for @emptyCategoryList.
+  ///
+  /// In en, this message translates to:
+  /// **'No report categories yet'**
+  String get emptyCategoryList;
+
+  /// No description provided for @categoryCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Category Code'**
+  String get categoryCode;
+
+  /// No description provided for @categoryCodeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter category code'**
+  String get categoryCodeRequired;
+
+  /// No description provided for @categoryNameVi.
+  ///
+  /// In en, this message translates to:
+  /// **'Vietnamese Name'**
+  String get categoryNameVi;
+
+  /// No description provided for @categoryNameViRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter Vietnamese name'**
+  String get categoryNameViRequired;
+
+  /// No description provided for @categoryNameEn.
+  ///
+  /// In en, this message translates to:
+  /// **'English Name'**
+  String get categoryNameEn;
+
+  /// No description provided for @categoryNameEnRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter English name'**
+  String get categoryNameEnRequired;
+
+  /// No description provided for @categoryDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get categoryDescription;
+
+  /// No description provided for @categoryIconLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Icon'**
+  String get categoryIconLabel;
+
+  /// No description provided for @categoryDefaultSeverity.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Severity'**
+  String get categoryDefaultSeverity;
+
+  /// No description provided for @categoryDisplayOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get categoryDisplayOrder;
+
+  /// No description provided for @categoryActiveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get categoryActiveLabel;
+
+  /// No description provided for @categoryInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get categoryInactive;
+
+  /// No description provided for @categoryPositionsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Positions'**
+  String get categoryPositionsLabel;
+
+  /// No description provided for @categoryPositionsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff with these positions are eligible for auto-assignment in this category'**
+  String get categoryPositionsHint;
+
+  /// No description provided for @categoryNoPositionsMapped.
+  ///
+  /// In en, this message translates to:
+  /// **'No position mapped'**
+  String get categoryNoPositionsMapped;
+
+  /// No description provided for @categoryNoActivePositions.
+  ///
+  /// In en, this message translates to:
+  /// **'No active positions available. Please create positions first.'**
+  String get categoryNoActivePositions;
+
+  /// No description provided for @categorySaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Category saved successfully'**
+  String get categorySaveSuccess;
+
+  /// No description provided for @categoryDeleteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Category deleted successfully'**
+  String get categoryDeleteSuccess;
+
+  /// No description provided for @totalCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Categories'**
+  String get totalCategories;
+
+  /// No description provided for @categoriesMappedPositions.
+  ///
+  /// In en, this message translates to:
+  /// **'Mapped to Positions'**
+  String get categoriesMappedPositions;
+
+  /// No description provided for @categoryReportCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get categoryReportCountLabel;
+
+  /// No description provided for @categoryIconEco.
+  ///
+  /// In en, this message translates to:
+  /// **'Environment'**
+  String get categoryIconEco;
+
+  /// No description provided for @categoryIconConstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Infrastructure'**
+  String get categoryIconConstruction;
+
+  /// No description provided for @categoryIconBolt.
+  ///
+  /// In en, this message translates to:
+  /// **'Electricity / Lighting'**
+  String get categoryIconBolt;
+
+  /// No description provided for @categoryIconWater.
+  ///
+  /// In en, this message translates to:
+  /// **'Water / Drainage'**
+  String get categoryIconWater;
+
+  /// No description provided for @categoryIconShield.
+  ///
+  /// In en, this message translates to:
+  /// **'Public Order'**
+  String get categoryIconShield;
+
+  /// No description provided for @categoryIconPark.
+  ///
+  /// In en, this message translates to:
+  /// **'Trees / Parks'**
+  String get categoryIconPark;
+
+  /// No description provided for @categoryIconTraffic.
+  ///
+  /// In en, this message translates to:
+  /// **'Traffic'**
+  String get categoryIconTraffic;
+
+  /// No description provided for @categoryIconGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get categoryIconGeneral;
+
+  /// No description provided for @staffBaseLocationSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Representative Area / Coordinates'**
+  String get staffBaseLocationSection;
+
+  /// No description provided for @staffBaseAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Representative Address / Area'**
+  String get staffBaseAddressLabel;
+
+  /// No description provided for @staffBaseLatitudeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude'**
+  String get staffBaseLatitudeLabel;
+
+  /// No description provided for @staffBaseLongitudeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude'**
+  String get staffBaseLongitudeLabel;
+
+  /// No description provided for @staffPickLocationOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick on Map'**
+  String get staffPickLocationOnMap;
+
+  /// No description provided for @staffUseCurrentGps.
+  ///
+  /// In en, this message translates to:
+  /// **'Current GPS'**
+  String get staffUseCurrentGps;
+
+  /// No description provided for @staffClearLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Location'**
+  String get staffClearLocation;
+
+  /// No description provided for @staffLocationNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Representative location not set'**
+  String get staffLocationNotSet;
+
+  /// No description provided for @staffLocationPairRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Both latitude and longitude are required'**
+  String get staffLocationPairRequired;
+
+  /// No description provided for @staffLocationInvalidLat.
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude must be between -90 and 90'**
+  String get staffLocationInvalidLat;
+
+  /// No description provided for @staffLocationInvalidLng.
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude must be between -180 and 180'**
+  String get staffLocationInvalidLng;
+
+  /// No description provided for @staffLocationPickerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick Representative Location'**
+  String get staffLocationPickerTitle;
+
+  /// No description provided for @staffLocationPickerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap or drag the pin on the map to set the staff member\'s representative location.'**
+  String get staffLocationPickerHint;
+
+  /// No description provided for @staffLocationConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Location'**
+  String get staffLocationConfirm;
+
+  /// No description provided for @staffLocationWebNoToken.
+  ///
+  /// In en, this message translates to:
+  /// **'MAPBOX_ACCESS_TOKEN is not configured. Please enter latitude and longitude manually.'**
+  String get staffLocationWebNoToken;
+
+  /// No description provided for @staffLocationGpsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not obtain current GPS coordinates'**
+  String get staffLocationGpsFailed;
+
+  /// No description provided for @reportCategoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get reportCategoryLabel;
 }
 
 class _AppLocalizationsDelegate

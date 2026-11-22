@@ -239,6 +239,18 @@ class Sidebar extends ConsumerWidget {
                     },
                   ),
                   _SidebarItem(
+                    icon: Icons.category_outlined,
+                    label: l10n.manageCategories,
+                    isSelected: currentPath == RouterPath.categoryManagement ||
+                        currentPath.startsWith(RouterPath.categoryManagement),
+                    onTap: () {
+                      Navigator.pop(context);
+                      if (currentPath != RouterPath.categoryManagement) {
+                        context.push(RouterPath.categoryManagement);
+                      }
+                    },
+                  ),
+                  _SidebarItem(
                     icon: Icons.newspaper_outlined,
                     label: l10n.manageNews,
                     isSelected: currentPath == RouterPath.newsManagement ||
@@ -548,6 +560,18 @@ class WebSidebar extends ConsumerWidget {
                 onTap: () {
                   if (currentPath != RouterPath.positionManagement) {
                     context.push(RouterPath.positionManagement);
+                  }
+                },
+              ),
+              _WebSidebarItem(
+                icon: Icons.category_outlined,
+                label: l10n.manageCategories,
+                isExpanded: isExpanded,
+                isSelected: currentPath == RouterPath.categoryManagement ||
+                    currentPath.startsWith(RouterPath.categoryManagement),
+                onTap: () {
+                  if (currentPath != RouterPath.categoryManagement) {
+                    context.push(RouterPath.categoryManagement);
                   }
                 },
               ),

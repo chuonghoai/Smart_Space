@@ -17,6 +17,7 @@ import 'package:smartspace_admin/ui/screen/map/admin_map_screen.dart';
 import 'package:smartspace_admin/ui/screen/staff/staff_management_screen.dart';
 import 'package:smartspace_admin/ui/screen/users/user_management_screen.dart';
 import 'package:smartspace_admin/ui/screen/position/position_management_screen.dart';
+import 'package:smartspace_admin/ui/screen/category/category_management_screen.dart';
 import 'package:smartspace_admin/ui/screen/admin_board/admin_board_screen.dart';
 import 'package:smartspace_admin/ui/shared/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
@@ -112,6 +113,10 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.positionManagement,
       builder: (context, state) => const PositionManagementScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.categoryManagement,
+      builder: (context, state) => const CategoryManagementScreen(),
     ),
     GoRoute(
       path: RouterPath.adminBoard,

@@ -2461,4 +2461,171 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get viewAssignedReportsAction => 'View assigned reports';
+
+  @override
+  String get routeCategoryManagement => 'Category Management';
+
+  @override
+  String get manageCategories => 'Categories';
+
+  @override
+  String get addCategory => 'Add Category';
+
+  @override
+  String get editCategory => 'Edit Category';
+
+  @override
+  String get deleteCategory => 'Delete Category';
+
+  @override
+  String get deleteCategoryConfirm =>
+      'Are you sure you want to delete this category?';
+
+  @override
+  String get emptyCategoryList => 'No report categories yet';
+
+  @override
+  String get categoryCode => 'Category Code';
+
+  @override
+  String get categoryCodeRequired => 'Please enter category code';
+
+  @override
+  String get categoryNameVi => 'Vietnamese Name';
+
+  @override
+  String get categoryNameViRequired => 'Please enter Vietnamese name';
+
+  @override
+  String get categoryNameEn => 'English Name';
+
+  @override
+  String get categoryNameEnRequired => 'Please enter English name';
+
+  @override
+  String get categoryDescription => 'Description';
+
+  @override
+  String get categoryIconLabel => 'Icon';
+
+  @override
+  String get categoryDefaultSeverity => 'Default Severity';
+
+  @override
+  String get categoryDisplayOrder => 'Order';
+
+  @override
+  String get categoryActiveLabel => 'Active';
+
+  @override
+  String get categoryInactive => 'Inactive';
+
+  @override
+  String get categoryPositionsLabel => 'Assigned Positions';
+
+  @override
+  String get categoryPositionsHint =>
+      'Staff with these positions are eligible for auto-assignment in this category';
+
+  @override
+  String get categoryNoPositionsMapped => 'No position mapped';
+
+  @override
+  String get categoryNoActivePositions =>
+      'No active positions available. Please create positions first.';
+
+  @override
+  String get categorySaveSuccess => 'Category saved successfully';
+
+  @override
+  String get categoryDeleteSuccess => 'Category deleted successfully';
+
+  @override
+  String get totalCategories => 'Total Categories';
+
+  @override
+  String get categoriesMappedPositions => 'Mapped to Positions';
+
+  @override
+  String get categoryReportCountLabel => 'Reports';
+
+  @override
+  String get categoryIconEco => 'Environment';
+
+  @override
+  String get categoryIconConstruction => 'Infrastructure';
+
+  @override
+  String get categoryIconBolt => 'Electricity / Lighting';
+
+  @override
+  String get categoryIconWater => 'Water / Drainage';
+
+  @override
+  String get categoryIconShield => 'Public Order';
+
+  @override
+  String get categoryIconPark => 'Trees / Parks';
+
+  @override
+  String get categoryIconTraffic => 'Traffic';
+
+  @override
+  String get categoryIconGeneral => 'General';
+
+  @override
+  String get staffBaseLocationSection => 'Representative Area / Coordinates';
+
+  @override
+  String get staffBaseAddressLabel => 'Representative Address / Area';
+
+  @override
+  String get staffBaseLatitudeLabel => 'Latitude';
+
+  @override
+  String get staffBaseLongitudeLabel => 'Longitude';
+
+  @override
+  String get staffPickLocationOnMap => 'Pick on Map';
+
+  @override
+  String get staffUseCurrentGps => 'Current GPS';
+
+  @override
+  String get staffClearLocation => 'Clear Location';
+
+  @override
+  String get staffLocationNotSet => 'Representative location not set';
+
+  @override
+  String get staffLocationPairRequired =>
+      'Both latitude and longitude are required';
+
+  @override
+  String get staffLocationInvalidLat => 'Latitude must be between -90 and 90';
+
+  @override
+  String get staffLocationInvalidLng =>
+      'Longitude must be between -180 and 180';
+
+  @override
+  String get staffLocationPickerTitle => 'Pick Representative Location';
+
+  @override
+  String get staffLocationPickerHint =>
+      'Tap or drag the pin on the map to set the staff member\'s representative location.';
+
+  @override
+  String get staffLocationConfirm => 'Confirm Location';
+
+  @override
+  String get staffLocationWebNoToken =>
+      'MAPBOX_ACCESS_TOKEN is not configured. Please enter latitude and longitude manually.';
+
+  @override
+  String get staffLocationGpsFailed =>
+      'Could not obtain current GPS coordinates';
+
+  @override
+  String get reportCategoryLabel => 'Category';
 }

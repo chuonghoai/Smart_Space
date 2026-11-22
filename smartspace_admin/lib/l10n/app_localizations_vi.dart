@@ -2457,4 +2457,169 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get viewAssignedReportsAction => 'Xem phản ánh được giao';
+
+  @override
+  String get routeCategoryManagement => 'Quản lý Danh mục';
+
+  @override
+  String get manageCategories => 'Danh mục phản ánh';
+
+  @override
+  String get addCategory => 'Thêm danh mục';
+
+  @override
+  String get editCategory => 'Sửa danh mục';
+
+  @override
+  String get deleteCategory => 'Xóa danh mục';
+
+  @override
+  String get deleteCategoryConfirm => 'Bạn có chắc muốn xóa danh mục này?';
+
+  @override
+  String get emptyCategoryList => 'Chưa có danh mục phản ánh nào';
+
+  @override
+  String get categoryCode => 'Mã danh mục';
+
+  @override
+  String get categoryCodeRequired => 'Vui lòng nhập mã danh mục';
+
+  @override
+  String get categoryNameVi => 'Tên tiếng Việt';
+
+  @override
+  String get categoryNameViRequired => 'Vui lòng nhập tên tiếng Việt';
+
+  @override
+  String get categoryNameEn => 'Tên tiếng Anh';
+
+  @override
+  String get categoryNameEnRequired => 'Vui lòng nhập tên tiếng Anh';
+
+  @override
+  String get categoryDescription => 'Mô tả';
+
+  @override
+  String get categoryIconLabel => 'Biểu tượng';
+
+  @override
+  String get categoryDefaultSeverity => 'Mức độ mặc định';
+
+  @override
+  String get categoryDisplayOrder => 'Thứ tự';
+
+  @override
+  String get categoryActiveLabel => 'Đang hoạt động';
+
+  @override
+  String get categoryInactive => 'Ngừng hoạt động';
+
+  @override
+  String get categoryPositionsLabel => 'Chức vụ phụ trách';
+
+  @override
+  String get categoryPositionsHint =>
+      'Nhân viên thuộc các chức vụ này sẽ đủ điều kiện nhận phân công tự động cho danh mục';
+
+  @override
+  String get categoryNoPositionsMapped => 'Chưa gán chức vụ';
+
+  @override
+  String get categoryNoActivePositions =>
+      'Chưa có chức vụ nào đang hoạt động. Vui lòng tạo chức vụ trước.';
+
+  @override
+  String get categorySaveSuccess => 'Đã lưu danh mục phản ánh';
+
+  @override
+  String get categoryDeleteSuccess => 'Đã xóa danh mục phản ánh';
+
+  @override
+  String get totalCategories => 'Tổng danh mục';
+
+  @override
+  String get categoriesMappedPositions => 'Đã gắn chức vụ';
+
+  @override
+  String get categoryReportCountLabel => 'Phản ánh';
+
+  @override
+  String get categoryIconEco => 'Môi trường';
+
+  @override
+  String get categoryIconConstruction => 'Hạ tầng';
+
+  @override
+  String get categoryIconBolt => 'Điện / Chiếu sáng';
+
+  @override
+  String get categoryIconWater => 'Cấp thoát nước';
+
+  @override
+  String get categoryIconShield => 'Trật tự công cộng';
+
+  @override
+  String get categoryIconPark => 'Cây xanh / Công viên';
+
+  @override
+  String get categoryIconTraffic => 'Giao thông';
+
+  @override
+  String get categoryIconGeneral => 'Chung';
+
+  @override
+  String get staffBaseLocationSection => 'Khu vực / Tọa độ đại diện';
+
+  @override
+  String get staffBaseAddressLabel => 'Địa chỉ / Khu vực phụ trách';
+
+  @override
+  String get staffBaseLatitudeLabel => 'Vĩ độ (Lat)';
+
+  @override
+  String get staffBaseLongitudeLabel => 'Kinh độ (Lng)';
+
+  @override
+  String get staffPickLocationOnMap => 'Chọn trên bản đồ';
+
+  @override
+  String get staffUseCurrentGps => 'GPS hiện tại';
+
+  @override
+  String get staffClearLocation => 'Xóa tọa độ';
+
+  @override
+  String get staffLocationNotSet => 'Chưa gắn tọa độ đại diện';
+
+  @override
+  String get staffLocationPairRequired => 'Cần nhập đủ cả vĩ độ và kinh độ';
+
+  @override
+  String get staffLocationInvalidLat =>
+      'Vĩ độ phải nằm trong khoảng -90 đến 90';
+
+  @override
+  String get staffLocationInvalidLng =>
+      'Kinh độ phải nằm trong khoảng -180 đến 180';
+
+  @override
+  String get staffLocationPickerTitle => 'Chọn tọa độ đại diện';
+
+  @override
+  String get staffLocationPickerHint =>
+      'Chạm hoặc kéo ghim trên bản đồ để đặt vị trí đại diện cho nhân viên.';
+
+  @override
+  String get staffLocationConfirm => 'Xác nhận vị trí';
+
+  @override
+  String get staffLocationWebNoToken =>
+      'Chưa cấu hình MAPBOX_ACCESS_TOKEN. Vui lòng nhập vĩ độ và kinh độ thủ công.';
+
+  @override
+  String get staffLocationGpsFailed => 'Không lấy được tọa độ GPS hiện tại';
+
+  @override
+  String get reportCategoryLabel => 'Danh mục';
 }
