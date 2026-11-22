@@ -25,6 +25,8 @@ export 'core/websocket/websocket_service.dart';
 export 'core/websocket/ws_feature_service.dart';
 export 'core/widgets/confirm_dialog.dart';
 export 'core/widgets/fullscreen_image_viewer.dart';
+export 'core/widgets/report_category_badge.dart';
+export 'core/utils/report_category_helper.dart';
 
 export 'util/distance_updater_provider.dart';
 export 'util/location_service.dart';
