@@ -4,6 +4,7 @@ import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:mobile_shared/features/map/models/map_bounds.dart';
 import '../models/admin_map_reports_result.dart';
 import '../models/report_density_model.dart';
+import '../models/spatial_analytics_model.dart';
 
 class MapRepository {
   Future<ApiResponse<AdminMapReportsResult>> getMapReports({
@@ -68,6 +69,16 @@ class MapRepository {
         }
         throw Exception('Invalid density response format');
       },
+    );
+  }
+
+  Future<ApiResponse<SpatialAnalyticsResult>> getSpatialAnalytics({int limit = 10}) async {
+    return apiClient.get(
+      '/admin/reports/spatial-analytics',
+      queryParameters: {'limit': limit},
+      decoder: (json) => json is Map<String, dynamic>
+          ? SpatialAnalyticsResult.fromJson(json)
+          : SpatialAnalyticsResult.empty,
     );
   }
 }

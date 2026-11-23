@@ -86,6 +86,14 @@ class ReportRepository {
     );
   }
 
+  Future<ApiResponse<ReportTrendData>> getReportTrendData(String period) async {
+    return apiClient.get(
+      '/admin/reports/trend',
+      queryParameters: {'period': period},
+      decoder: (json) => ReportTrendData.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
   /// [excludeRehandling]: lọc "Đang xử lý"/"Đã xử lý" thì bỏ báo cáo xử lý lại,
   /// khớp với nhóm tách riêng trên thẻ thống kê. Kanban để `false` để báo cáo
   /// vẫn nằm trong cột trạng thái gốc.

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:smartspace_admin/features/reports/application/report_list_providers.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
@@ -181,6 +182,18 @@ class _ReportCard extends StatelessWidget {
                                       l10n,
                                       onImage: true,
                                     ),
+                                  if (report.isAtRisk == true)
+                                    _buildWarningPill(
+                                      l10n.slaAtRiskShort,
+                                      AppSemanticColors.of(context).warning,
+                                      theme,
+                                    ),
+                                  if (report.isBottleneck == true)
+                                    _buildWarningPill(
+                                      l10n.bottleneckShort,
+                                      theme.colorScheme.error,
+                                      theme,
+                                    ),
                                   _buildStatusBadge(
                                     report.status,
                                     theme,
@@ -241,6 +254,18 @@ class _ReportCard extends StatelessWidget {
                                     isDark,
                                     l10n,
                                     onImage: false,
+                                  ),
+                                if (report.isAtRisk == true)
+                                  _buildWarningPill(
+                                    l10n.slaAtRiskShort,
+                                    AppSemanticColors.of(context).warning,
+                                    theme,
+                                  ),
+                                if (report.isBottleneck == true)
+                                  _buildWarningPill(
+                                    l10n.bottleneckShort,
+                                    theme.colorScheme.error,
+                                    theme,
                                   ),
                               ],
                             ),
@@ -946,6 +971,25 @@ class _ReportCard extends StatelessWidget {
           isDark ? Colors.grey[400]! : Colors.grey[600]!
         );
     }
+  }
+
+  Widget _buildWarningPill(String label, Color color, ThemeData theme) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: color.withValues(alpha: 0.35)),
+      ),
+      child: Text(
+        label,
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: color,
+          fontWeight: FontWeight.w700,
+          fontSize: 10,
+        ),
+      ),
+    );
   }
 }
 

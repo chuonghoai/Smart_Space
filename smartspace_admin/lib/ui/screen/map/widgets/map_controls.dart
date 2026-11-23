@@ -10,6 +10,9 @@ class MapControls extends StatelessWidget {
   final VoidCallback onFilterPressed;
   final bool isFilterActive;
   final int activeFilterCount;
+  final VoidCallback? onHotspotsPressed;
+  final bool isHotspotsActive;
+  final int acceleratingHotspotsCount;
 
   const MapControls({
     super.key,
@@ -19,6 +22,9 @@ class MapControls extends StatelessWidget {
     required this.onFilterPressed,
     this.isFilterActive = false,
     this.activeFilterCount = 0,
+    this.onHotspotsPressed,
+    this.isHotspotsActive = false,
+    this.acceleratingHotspotsCount = 0,
   });
 
   @override
@@ -34,6 +40,20 @@ class MapControls extends StatelessWidget {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
+            // Spatial Hotspots Toggle
+            if (onHotspotsPressed != null) ...[
+              MapControlButton(
+                icon: Icons.local_fire_department_rounded,
+                tooltip: l10n.spatialHotspotsToggle,
+                onPressed: onHotspotsPressed!,
+                isActive: isHotspotsActive,
+                activeColor: colorScheme.error,
+                badgeCount: acceleratingHotspotsCount > 0 ? acceleratingHotspotsCount : null,
+                colorScheme: colorScheme,
+              ),
+              const SizedBox(height: 8),
+            ],
+
             // Settings / Density Toggle
             if (onSettingsPressed != null) ...[
               MapControlButton(

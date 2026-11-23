@@ -13,6 +13,7 @@ import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/layout/app_layout.dart';
 import 'package:smartspace_admin/ui/screen/home/widgets/new_reports_slider.dart';
 import 'package:smartspace_admin/ui/screen/home/widgets/admin_quick_access_bar.dart';
+import 'package:smartspace_admin/ui/screen/home/widgets/smart_alerts_section.dart';
 import 'package:smartspace_admin/ui/screen/news/widgets/news_card.dart';
 import 'package:smartspace_admin/ui/shared/dashboard/stat_card_grid.dart';
 import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
@@ -97,7 +98,21 @@ class _AdminHomeScreenState extends ConsumerState<AdminHomeScreen>
 
                       // 2. Overview Stats Section (Key Metrics KPI)
                       _buildOverviewSection(context, l10n, theme, isDesktop),
-                      const SizedBox(height: 24),
+                      const SizedBox(height: 16),
+
+                      // 2b. Smart Operational Alerts & 7-Day Pulse
+                      ref.watch(adminOverviewProvider).maybeWhen(
+                            data: (overview) => overview == null
+                                ? const SizedBox.shrink()
+                                : Padding(
+                                    padding: const EdgeInsets.only(bottom: 24),
+                                    child: SmartAlertsSection(
+                                      overview: overview,
+                                      isDesktop: isDesktop,
+                                    ),
+                                  ),
+                            orElse: () => const SizedBox.shrink(),
+                          ),
 
                       // 3. Body: Desktop Bento Split vs Mobile Sequential
                       if (isDesktop) ...[

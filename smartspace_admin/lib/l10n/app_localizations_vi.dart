@@ -2457,4 +2457,143 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get viewAssignedReportsAction => 'Xem phản ánh được giao';
+
+  @override
+  String get smartAlertsTitle => 'Cảnh báo vận hành & Nhịp độ 7 ngày';
+
+  @override
+  String get smartAlertsAllHealthy =>
+      'Hệ thống ổn định — chưa phát hiện bất thường';
+
+  @override
+  String get volumeSpikeTitle => 'Phản ánh tăng đột biến hôm nay';
+
+  @override
+  String volumeSpikeSubtitle(int todayCount, String avg) {
+    return '$todayCount phản ánh hôm nay vs TB 14 ngày ($avg)';
+  }
+
+  @override
+  String volumeSpikeZScoreBadge(String zScore) {
+    return 'Z = $zScore';
+  }
+
+  @override
+  String get slaAtRiskTitle => 'Cảnh báo sắp chạm hạn SLA';
+
+  @override
+  String slaAtRiskSubtitle(int pending, int processing) {
+    return '$pending chờ nhận, $processing đang xử lý sắp hết hạn';
+  }
+
+  @override
+  String get slaAtRiskShort => 'Sắp chạm hạn';
+
+  @override
+  String get overloadedStaffTitle => 'Nhân sự quá tải công việc';
+
+  @override
+  String overloadedStaffSubtitle(int count) {
+    return '$count nhân viên vượt ngưỡng tải trọng theo mức độ';
+  }
+
+  @override
+  String get pendingOver24hTitle => 'Tồn đọng chưa phân công > 24h';
+
+  @override
+  String pendingOver24hSubtitle(int count) {
+    return '$count phản ánh đang chờ tiếp nhận quá 24 giờ';
+  }
+
+  @override
+  String get pulse7dTitle => 'Nhịp độ 7 ngày gần đây';
+
+  @override
+  String get pulseInflowLabel => 'Tiếp nhận';
+
+  @override
+  String get pulseOutflowLabel => 'Hoàn tất';
+
+  @override
+  String get trendBaselineLabel => 'TB 14 ngày';
+
+  @override
+  String get trendAnomalyBadge => 'Đột biến';
+
+  @override
+  String trendAnomalyCountBadge(int count) {
+    return '$count ngày bất thường';
+  }
+
+  @override
+  String get trendInsufficientBaseline =>
+      'Chưa đủ dữ liệu nền (cần >= 7 ngày có phát sinh)';
+
+  @override
+  String get bottleneckShort => 'Kéo dài > P90';
+
+  @override
+  String get bottleneckStatLabel => 'Xử lý kéo dài (>P90)';
+
+  @override
+  String get filterAtRiskLabel => 'Sắp chạm hạn SLA';
+
+  @override
+  String get filterBottleneckLabel => 'Kéo dài > P90';
+
+  @override
+  String get weightedLoadLabel => 'Tải quy đổi';
+
+  @override
+  String weightedLoadValue(int points, int tasks) {
+    return '$pointsđ tải ($tasks việc)';
+  }
+
+  @override
+  String teamAvgWeightedLoadLabel(String avg) {
+    return 'TB tải trọng đội ngũ: $avgđ';
+  }
+
+  @override
+  String get staffOverloadedBadge => 'Quá tải';
+
+  @override
+  String get staffRecommendedBadge => 'Khuyên giao';
+
+  @override
+  String staffBottleneckCountBadge(int count) {
+    return '$count kéo dài >P90';
+  }
+
+  @override
+  String get spatialHotspotsTitle => 'Điểm nóng khu vực (H3)';
+
+  @override
+  String get spatialHotspotsToggle => 'Điểm nóng';
+
+  @override
+  String spatialHotspotsAcceleratingCount(int count) {
+    return '$count khu vực tăng tốc';
+  }
+
+  @override
+  String get spatialHotspotAcceleratingBadge => 'Tăng tốc';
+
+  @override
+  String spatialHotspotRiskScore(int score) {
+    return 'Rủi ro $score';
+  }
+
+  @override
+  String spatialHotspotStats(int recent, String prev, int pending) {
+    return '$recent ca / 30 ngày • TB trước $prev • $pending chờ';
+  }
+
+  @override
+  String get spatialHotspotsEmpty => 'Chưa có điểm nóng rủi ro nổi bật';
+
+  @override
+  String spatialHotspotFallbackName(String shortId) {
+    return 'Ô khu vực H3 #$shortId';
+  }
 }

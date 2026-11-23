@@ -1187,5 +1187,148 @@
       }
     }
   },
-  "viewAssignedReportsAction": "View assigned reports"
+  "viewAssignedReportsAction": "View assigned reports",
+  "smartAlertsTitle": "Operational Alerts & 7-Day Pulse",
+  "smartAlertsAllHealthy": "Operations steady — no anomalies detected",
+  "volumeSpikeTitle": "Unusual report surge today",
+  "volumeSpikeSubtitle": "{todayCount} reports today vs 14d avg ({avg})",
+  "@volumeSpikeSubtitle": {
+    "placeholders": {
+      "todayCount": {
+        "type": "int"
+      },
+      "avg": {
+        "type": "String"
+      }
+    }
+  },
+  "volumeSpikeZScoreBadge": "Z = {zScore}",
+  "@volumeSpikeZScoreBadge": {
+    "placeholders": {
+      "zScore": {
+        "type": "String"
+      }
+    }
+  },
+  "slaAtRiskTitle": "Early SLA breach warning",
+  "slaAtRiskSubtitle": "{pending} pending, {processing} processing nearing deadline",
+  "@slaAtRiskSubtitle": {
+    "placeholders": {
+      "pending": {
+        "type": "int"
+      },
+      "processing": {
+        "type": "int"
+      }
+    }
+  },
+  "slaAtRiskShort": "At SLA risk",
+  "overloadedStaffTitle": "Staff workload overload",
+  "overloadedStaffSubtitle": "{count} staff exceeding severity-weighted capacity",
+  "@overloadedStaffSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pendingOver24hTitle": "Unassigned backlog > 24h",
+  "pendingOver24hSubtitle": "{count} reports waiting assignment over 24h",
+  "@pendingOver24hSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pulse7dTitle": "Last 7 days pulse",
+  "pulseInflowLabel": "Incoming",
+  "pulseOutflowLabel": "Resolved",
+  "trendBaselineLabel": "14d avg",
+  "trendAnomalyBadge": "Spike",
+  "trendAnomalyCountBadge": "{count} spike days",
+  "@trendAnomalyCountBadge": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trendInsufficientBaseline": "Insufficient baseline (needs >= 7 active days)",
+  "bottleneckShort": "Slow > P90",
+  "bottleneckStatLabel": "Bottleneck (>P90)",
+  "filterAtRiskLabel": "At SLA risk",
+  "filterBottleneckLabel": "Slow > P90",
+  "weightedLoadLabel": "Weighted load",
+  "weightedLoadValue": "{points} pts ({tasks} tasks)",
+  "@weightedLoadValue": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      },
+      "tasks": {
+        "type": "int"
+      }
+    }
+  },
+  "teamAvgWeightedLoadLabel": "Team avg load: {avg} pts",
+  "@teamAvgWeightedLoadLabel": {
+    "placeholders": {
+      "avg": {
+        "type": "String"
+      }
+    }
+  },
+  "staffOverloadedBadge": "Overloaded",
+  "staffRecommendedBadge": "Recommended",
+  "staffBottleneckCountBadge": "{count} slow >P90",
+  "@staffBottleneckCountBadge": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotsTitle": "Area Hotspots (H3)",
+  "spatialHotspotsToggle": "Hotspots",
+  "spatialHotspotsAcceleratingCount": "{count} accelerating zones",
+  "@spatialHotspotsAcceleratingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotAcceleratingBadge": "Accelerating",
+  "spatialHotspotRiskScore": "Risk {score}",
+  "@spatialHotspotRiskScore": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotStats": "{recent} in 30d • Prev avg {prev} • {pending} pending",
+  "@spatialHotspotStats": {
+    "placeholders": {
+      "recent": {
+        "type": "int"
+      },
+      "prev": {
+        "type": "String"
+      },
+      "pending": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotsEmpty": "No prominent spatial risk hotspots",
+  "spatialHotspotFallbackName": "H3 Cell #{shortId}",
+  "@spatialHotspotFallbackName": {
+    "placeholders": {
+      "shortId": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -16,6 +16,9 @@ class RecentReportModel {
   final String? resolvedAt;
   final bool? serverIsOverdue;
   final int? serverRemainingDays;
+  final bool isAtRisk;
+  final bool isBottleneck;
+  final int? elapsedMinutes;
 
   const RecentReportModel({
     required this.id,
@@ -33,6 +36,9 @@ class RecentReportModel {
     this.resolvedAt,
     this.serverIsOverdue,
     this.serverRemainingDays,
+    this.isAtRisk = false,
+    this.isBottleneck = false,
+    this.elapsedMinutes,
   });
 
   DateTime? get deadlineDate =>
@@ -86,6 +92,9 @@ class RecentReportModel {
       resolvedAt: (json['resolvedAt'] ?? json['resolved_at'])?.toString(),
       serverIsOverdue: (json['isOverdue'] ?? json['is_overdue']) as bool?,
       serverRemainingDays: (json['remainingDays'] ?? json['remaining_days'] as num?)?.toInt(),
+      isAtRisk: (json['isAtRisk'] as bool?) ?? (json['atRisk'] as bool?) ?? false,
+      isBottleneck: (json['isBottleneck'] as bool?) ?? (json['bottleneck'] as bool?) ?? false,
+      elapsedMinutes: (json['elapsedMinutes'] as num?)?.toInt(),
     );
   }
 

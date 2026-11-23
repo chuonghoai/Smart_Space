@@ -105,11 +105,21 @@ public class AdminReportController {
             @RequestParam(required = false) String to,
             @RequestParam(required = false) String search,
             @RequestParam(required = false) Boolean overdue,
-            @RequestParam(defaultValue = "false") boolean excludeRehandling) {
+            @RequestParam(defaultValue = "false") boolean excludeRehandling,
+            @RequestParam(required = false) Boolean atRisk,
+            @RequestParam(required = false) Boolean bottleneck) {
 
         return ResponseEntity.ok(ApiResponse.success("system.success",
                 reportService.getAdminReportList(page, size, status, severity, assigneeId, from, to, search,
-                        overdue, excludeRehandling)));
+                        overdue, excludeRehandling, atRisk, bottleneck)));
+    }
+
+    @GetMapping("/spatial-analytics")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<ApiResponse> getSpatialAnalytics(
+            @RequestParam(defaultValue = "10") int limit) {
+        return ResponseEntity.ok(ApiResponse.success("system.success",
+                reportService.getSpatialAnalytics(limit)));
     }
 
     // Update Status Report For Kanban & Detail (supports optional reject reason)

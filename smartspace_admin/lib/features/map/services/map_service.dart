@@ -3,6 +3,7 @@ import 'package:mobile_shared/features/map/models/map_bounds.dart';
 import '../data/map_repository.dart';
 import '../models/admin_map_reports_result.dart';
 import '../models/report_density_model.dart';
+import '../models/spatial_analytics_model.dart';
 
 class MapService {
   final MapRepository _repository;
@@ -48,6 +49,10 @@ class MapService {
       zoom: zoom,
       timeframe: timeframe,
     );
+  }
+
+  Future<ApiResponse<SpatialAnalyticsResult>> getSpatialAnalytics({int limit = 10}) {
+    return _repository.getSpatialAnalytics(limit: limit);
   }
 }
 

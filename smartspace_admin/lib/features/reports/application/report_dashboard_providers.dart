@@ -51,3 +51,24 @@ final reportTrendProvider =
       List<ReportTrendItem>,
       String
     >(ReportTrendNotifier.new);
+
+class ReportTrendDataNotifier extends FamilyAsyncNotifier<ReportTrendData, String> {
+  @override
+  Future<ReportTrendData> build(String arg) => _fetch(arg);
+
+  Future<ReportTrendData> _fetch(String period) async {
+    final response = await reportRepository.getReportTrendData(period);
+    if (response.success && response.data != null) return response.data!;
+    throw Exception(response.message);
+  }
+
+  Future<void> refresh() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() => _fetch(arg));
+  }
+}
+
+final reportTrendDataProvider =
+    AsyncNotifierProviderFamily<ReportTrendDataNotifier, ReportTrendData, String>(
+  ReportTrendDataNotifier.new,
+);

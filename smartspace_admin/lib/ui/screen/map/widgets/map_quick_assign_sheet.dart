@@ -7,6 +7,7 @@ import 'package:smartspace_admin/features/reports/models/staff_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
 import 'package:smartspace_admin/ui/shared/position/position_widgets.dart';
+import 'package:smartspace_admin/ui/screen/staff/widgets/staff_workload_badge.dart';
 import 'package:mobile_shared/mobile_shared.dart';
 
 /// Bottom sheet for quick staff assignment directly from the map.
@@ -239,19 +240,20 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
                           Wrap(
                             spacing: 6,
                             runSpacing: 4,
+                            crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
                               PositionChip(
                                 name: staff.positionName ?? l10n.noPosition,
                               ),
-                              if (staff.processingCount > 0)
-                                Text(
-                                  '${staff.processingCount} ${l10n.processingStatus.toLowerCase()}',
-                                  style: TextStyle(
-                                    color: cs.primary,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
+                              StaffWorkloadBadge(
+                                weightedLoad: staff.weightedLoad,
+                                processingCount: staff.processingCount,
+                                isOverloaded: staff.isOverloaded,
+                                assignmentHint: staff.assignmentHint,
+                                severityBreakdown: staff.severityBreakdown,
+                                showAssignmentHint: true,
+                                compact: true,
+                              ),
                             ],
                           ),
                         ],

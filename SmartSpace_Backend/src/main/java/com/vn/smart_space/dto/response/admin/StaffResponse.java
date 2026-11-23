@@ -1,6 +1,7 @@
 package com.vn.smart_space.dto.response.admin;
 
 import java.time.LocalDate;
+import java.util.Map;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -26,4 +27,11 @@ public class StaffResponse {
     long processingCount;
     String positionId;
     String positionName;
+
+    // Weighted workload & assignment recommendation
+    long weightedLoad;
+    long overdueCount;
+    boolean isOverloaded;
+    String assignmentHint; // "recommended" | "normal" | "overloaded"
+    Map<String, Long> severityBreakdown;
 }

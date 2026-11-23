@@ -6,6 +6,7 @@ import 'package:smartspace_admin/features/staff/application/staff_providers.dart
 import 'package:smartspace_admin/features/staff/models/staff_statistics_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/screen/staff/staff_shared_widgets.dart';
+import 'package:smartspace_admin/ui/screen/staff/widgets/staff_workload_badge.dart';
 import 'package:smartspace_admin/ui/shared/dashboard/chart_card.dart';
 import 'package:smartspace_admin/ui/shared/dashboard/kpi_card.dart';
 import 'package:smartspace_admin/ui/shared/dashboard/ranked_bar_list.dart';
@@ -288,10 +289,18 @@ class StaffWorkloadChart extends ConsumerWidget {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final statsAsync = ref.watch(staffStatisticsProvider);
+    final avgText = statsAsync.maybeWhen(
+      data: (stats) => NumberFormat('#,##0.#',
+              Localizations.localeOf(context).toLanguageTag())
+          .format(stats.teamAvgWeightedLoad),
+      orElse: () => null,
+    );
 
     return ChartCard(
       title: l10n.workloadChart,
-      subtitle: l10n.workloadSubtitle,
+      subtitle: avgText == null
+          ? l10n.workloadSubtitle
+          : '${l10n.workloadSubtitle} • ${l10n.teamAvgWeightedLoadLabel(avgText)}',
       child: statsAsync.when(
         data: (stats) {
           if (stats.workload.isEmpty) {
@@ -310,8 +319,17 @@ class StaffWorkloadChart extends ConsumerWidget {
                   id: item.staff.id,
                   name: item.staff.fullName,
                   avatarUrl: item.staff.avatarUrl,
-                  value: item.staff.processingCount,
-                  subtitle: l10n.resolvedMonthCount(item.resolvedCount),
+                  value: item.weightedLoad > 0
+                      ? item.weightedLoad
+                      : item.staff.processingCount,
+                  subtitle: [
+                    l10n.weightedLoadValue(
+                      item.weightedLoad,
+                      item.staff.processingCount,
+                    ),
+                    l10n.resolvedMonthCount(item.resolvedCount),
+                    if (item.isOverloaded) l10n.staffOverloadedBadge,
+                  ].join(' • '),
                 ),
             ],
             onTap: (item) {
@@ -612,24 +630,65 @@ class _DeadlineStaffRow extends StatelessWidget {
                       fontFeatures: const [FontFeature.tabularFigures()],
                     ),
                   ),
-                  const SizedBox(height: 2),
-                  Text(
-                    item.efficiencyRate == null
-                        ? l10n.staffEfficiencyNoData
-                        : l10n.staffEfficiencyLabel(
-                            NumberFormat(
-                              '#,##0.#',
-                              Localizations.localeOf(context).toLanguageTag(),
-                            ).format(item.efficiencyRate!),
+                  const SizedBox(height: 4),
+                  Wrap(
+                    spacing: 6,
+                    runSpacing: 4,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Text(
+                        item.efficiencyRate == null
+                            ? l10n.staffEfficiencyNoData
+                            : l10n.staffEfficiencyLabel(
+                                NumberFormat(
+                                  '#,##0.#',
+                                  Localizations.localeOf(context).toLanguageTag(),
+                                ).format(item.efficiencyRate!),
+                              ),
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: item.efficiencyRate == null
+                              ? cs.onSurfaceVariant
+                              : badgeColor,
+                          fontWeight: FontWeight.w600,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                      ),
+                      if (item.bottleneckCount > 0)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 6, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: cs.error.withValues(alpha: 0.12),
+                            borderRadius: BorderRadius.circular(5),
                           ),
-                    style: theme.textTheme.labelSmall?.copyWith(
-                      color: item.efficiencyRate == null
-                          ? cs.onSurfaceVariant
-                          : badgeColor,
-                      fontWeight: FontWeight.w600,
-                      fontFeatures: const [FontFeature.tabularFigures()],
-                    ),
+                          child: Text(
+                            l10n.staffBottleneckCountBadge(
+                                item.bottleneckCount),
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: cs.error,
+                              fontFeatures: const [
+                                FontFeature.tabularFigures(),
+                              ],
+                            ),
+                          ),
+                        ),
+                    ],
                   ),
+                  if (item.weightedLoad > 0 ||
+                      item.staff.processingCount > 0 ||
+                      item.isOverloaded) ...[
+                    const SizedBox(height: 4),
+                    StaffWorkloadBadge(
+                      weightedLoad: item.weightedLoad,
+                      processingCount: item.staff.processingCount,
+                      isOverloaded: item.isOverloaded,
+                      assignmentHint: item.staff.assignmentHint,
+                      severityBreakdown: item.staff.severityBreakdown,
+                      compact: true,
+                    ),
+                  ],
                 ],
               ),
             ),

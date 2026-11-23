@@ -40,6 +40,9 @@ public class StaffStatisticsResponse {
     long completedOnTime;
     long completedLate;
     Double onTimeRate; // null khi chưa có báo cáo đã hoàn tất có deadline
+    double teamAvgWeightedLoad;
+    long overloadedStaffCount;
+    long bottleneckCount;
     List<DeadlinePerformanceItem> deadlinePerformance;
 
     @Data
@@ -61,6 +64,8 @@ public class StaffStatisticsResponse {
     public static class WorkloadItem {
         StaffResponse staff; // processingCount = số báo cáo đang xử lý
         long resolvedCount; // số báo cáo đã xử lý trong tháng được chọn
+        long weightedLoad;
+        boolean isOverloaded;
     }
 
     @Data
@@ -77,6 +82,9 @@ public class StaffStatisticsResponse {
         long resolvedCount; // đã xử lý trong tháng
         long rehandlingCount; // yêu cầu xử lý lại trong tháng
         long totalTasks; // tổng công việc trong tháng
+        long weightedLoad;
+        long bottleneckCount;
+        boolean isOverloaded;
         Double efficiencyRate; // % công việc đúng hạn / tổng công việc đánh giá hạn
         boolean hasMissedDeadline;
     }

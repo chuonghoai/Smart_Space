@@ -1022,5 +1022,148 @@
       }
     }
   },
-  "viewAssignedReportsAction": "Xem phản ánh được giao"
+  "viewAssignedReportsAction": "Xem phản ánh được giao",
+  "smartAlertsTitle": "Cảnh báo vận hành & Nhịp độ 7 ngày",
+  "smartAlertsAllHealthy": "Hệ thống ổn định — chưa phát hiện bất thường",
+  "volumeSpikeTitle": "Phản ánh tăng đột biến hôm nay",
+  "volumeSpikeSubtitle": "{todayCount} phản ánh hôm nay vs TB 14 ngày ({avg})",
+  "@volumeSpikeSubtitle": {
+    "placeholders": {
+      "todayCount": {
+        "type": "int"
+      },
+      "avg": {
+        "type": "String"
+      }
+    }
+  },
+  "volumeSpikeZScoreBadge": "Z = {zScore}",
+  "@volumeSpikeZScoreBadge": {
+    "placeholders": {
+      "zScore": {
+        "type": "String"
+      }
+    }
+  },
+  "slaAtRiskTitle": "Cảnh báo sắp chạm hạn SLA",
+  "slaAtRiskSubtitle": "{pending} chờ nhận, {processing} đang xử lý sắp hết hạn",
+  "@slaAtRiskSubtitle": {
+    "placeholders": {
+      "pending": {
+        "type": "int"
+      },
+      "processing": {
+        "type": "int"
+      }
+    }
+  },
+  "slaAtRiskShort": "Sắp chạm hạn",
+  "overloadedStaffTitle": "Nhân sự quá tải công việc",
+  "overloadedStaffSubtitle": "{count} nhân viên vượt ngưỡng tải trọng theo mức độ",
+  "@overloadedStaffSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pendingOver24hTitle": "Tồn đọng chưa phân công > 24h",
+  "pendingOver24hSubtitle": "{count} phản ánh đang chờ tiếp nhận quá 24 giờ",
+  "@pendingOver24hSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pulse7dTitle": "Nhịp độ 7 ngày gần đây",
+  "pulseInflowLabel": "Tiếp nhận",
+  "pulseOutflowLabel": "Hoàn tất",
+  "trendBaselineLabel": "TB 14 ngày",
+  "trendAnomalyBadge": "Đột biến",
+  "trendAnomalyCountBadge": "{count} ngày bất thường",
+  "@trendAnomalyCountBadge": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trendInsufficientBaseline": "Chưa đủ dữ liệu nền (cần >= 7 ngày có phát sinh)",
+  "bottleneckShort": "Kéo dài > P90",
+  "bottleneckStatLabel": "Xử lý kéo dài (>P90)",
+  "filterAtRiskLabel": "Sắp chạm hạn SLA",
+  "filterBottleneckLabel": "Kéo dài > P90",
+  "weightedLoadLabel": "Tải quy đổi",
+  "weightedLoadValue": "{points}đ tải ({tasks} việc)",
+  "@weightedLoadValue": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      },
+      "tasks": {
+        "type": "int"
+      }
+    }
+  },
+  "teamAvgWeightedLoadLabel": "TB tải trọng đội ngũ: {avg}đ",
+  "@teamAvgWeightedLoadLabel": {
+    "placeholders": {
+      "avg": {
+        "type": "String"
+      }
+    }
+  },
+  "staffOverloadedBadge": "Quá tải",
+  "staffRecommendedBadge": "Khuyên giao",
+  "staffBottleneckCountBadge": "{count} kéo dài >P90",
+  "@staffBottleneckCountBadge": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotsTitle": "Điểm nóng khu vực (H3)",
+  "spatialHotspotsToggle": "Điểm nóng",
+  "spatialHotspotsAcceleratingCount": "{count} khu vực tăng tốc",
+  "@spatialHotspotsAcceleratingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotAcceleratingBadge": "Tăng tốc",
+  "spatialHotspotRiskScore": "Rủi ro {score}",
+  "@spatialHotspotRiskScore": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotStats": "{recent} ca / 30 ngày • TB trước {prev} • {pending} chờ",
+  "@spatialHotspotStats": {
+    "placeholders": {
+      "recent": {
+        "type": "int"
+      },
+      "prev": {
+        "type": "String"
+      },
+      "pending": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotsEmpty": "Chưa có điểm nóng rủi ro nổi bật",
+  "spatialHotspotFallbackName": "Ô khu vực H3 #{shortId}",
+  "@spatialHotspotFallbackName": {
+    "placeholders": {
+      "shortId": {
+        "type": "String"
+      }
+    }
+  }
 }

@@ -2461,4 +2461,143 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get viewAssignedReportsAction => 'View assigned reports';
+
+  @override
+  String get smartAlertsTitle => 'Operational Alerts & 7-Day Pulse';
+
+  @override
+  String get smartAlertsAllHealthy =>
+      'Operations steady — no anomalies detected';
+
+  @override
+  String get volumeSpikeTitle => 'Unusual report surge today';
+
+  @override
+  String volumeSpikeSubtitle(int todayCount, String avg) {
+    return '$todayCount reports today vs 14d avg ($avg)';
+  }
+
+  @override
+  String volumeSpikeZScoreBadge(String zScore) {
+    return 'Z = $zScore';
+  }
+
+  @override
+  String get slaAtRiskTitle => 'Early SLA breach warning';
+
+  @override
+  String slaAtRiskSubtitle(int pending, int processing) {
+    return '$pending pending, $processing processing nearing deadline';
+  }
+
+  @override
+  String get slaAtRiskShort => 'At SLA risk';
+
+  @override
+  String get overloadedStaffTitle => 'Staff workload overload';
+
+  @override
+  String overloadedStaffSubtitle(int count) {
+    return '$count staff exceeding severity-weighted capacity';
+  }
+
+  @override
+  String get pendingOver24hTitle => 'Unassigned backlog > 24h';
+
+  @override
+  String pendingOver24hSubtitle(int count) {
+    return '$count reports waiting assignment over 24h';
+  }
+
+  @override
+  String get pulse7dTitle => 'Last 7 days pulse';
+
+  @override
+  String get pulseInflowLabel => 'Incoming';
+
+  @override
+  String get pulseOutflowLabel => 'Resolved';
+
+  @override
+  String get trendBaselineLabel => '14d avg';
+
+  @override
+  String get trendAnomalyBadge => 'Spike';
+
+  @override
+  String trendAnomalyCountBadge(int count) {
+    return '$count spike days';
+  }
+
+  @override
+  String get trendInsufficientBaseline =>
+      'Insufficient baseline (needs >= 7 active days)';
+
+  @override
+  String get bottleneckShort => 'Slow > P90';
+
+  @override
+  String get bottleneckStatLabel => 'Bottleneck (>P90)';
+
+  @override
+  String get filterAtRiskLabel => 'At SLA risk';
+
+  @override
+  String get filterBottleneckLabel => 'Slow > P90';
+
+  @override
+  String get weightedLoadLabel => 'Weighted load';
+
+  @override
+  String weightedLoadValue(int points, int tasks) {
+    return '$points pts ($tasks tasks)';
+  }
+
+  @override
+  String teamAvgWeightedLoadLabel(String avg) {
+    return 'Team avg load: $avg pts';
+  }
+
+  @override
+  String get staffOverloadedBadge => 'Overloaded';
+
+  @override
+  String get staffRecommendedBadge => 'Recommended';
+
+  @override
+  String staffBottleneckCountBadge(int count) {
+    return '$count slow >P90';
+  }
+
+  @override
+  String get spatialHotspotsTitle => 'Area Hotspots (H3)';
+
+  @override
+  String get spatialHotspotsToggle => 'Hotspots';
+
+  @override
+  String spatialHotspotsAcceleratingCount(int count) {
+    return '$count accelerating zones';
+  }
+
+  @override
+  String get spatialHotspotAcceleratingBadge => 'Accelerating';
+
+  @override
+  String spatialHotspotRiskScore(int score) {
+    return 'Risk $score';
+  }
+
+  @override
+  String spatialHotspotStats(int recent, String prev, int pending) {
+    return '$recent in 30d • Prev avg $prev • $pending pending';
+  }
+
+  @override
+  String get spatialHotspotsEmpty => 'No prominent spatial risk hotspots';
+
+  @override
+  String spatialHotspotFallbackName(String shortId) {
+    return 'H3 Cell #$shortId';
+  }
 }

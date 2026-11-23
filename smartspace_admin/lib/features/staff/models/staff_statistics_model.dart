@@ -21,6 +21,9 @@ class StaffStatisticsModel {
   final int selectedYear;
   final int selectedMonth;
   final List<AvailableMonthItem> availableMonths;
+  final double teamAvgWeightedLoad;
+  final int overloadedStaffCount;
+  final int bottleneckCount;
 
   const StaffStatisticsModel({
     required this.totalStaff,
@@ -41,6 +44,9 @@ class StaffStatisticsModel {
     this.selectedYear = 0,
     this.selectedMonth = 0,
     this.availableMonths = const [],
+    this.teamAvgWeightedLoad = 0.0,
+    this.overloadedStaffCount = 0,
+    this.bottleneckCount = 0,
   });
 
   factory StaffStatisticsModel.fromJson(Map<String, dynamic> json) {
@@ -78,6 +84,9 @@ class StaffStatisticsModel {
       availableMonths: availableMonthsList
           .map((e) => AvailableMonthItem.fromJson(e as Map<String, dynamic>))
           .toList(),
+      teamAvgWeightedLoad: (json['teamAvgWeightedLoad'] as num?)?.toDouble() ?? 0.0,
+      overloadedStaffCount: (json['overloadedStaffCount'] as num?)?.toInt() ?? 0,
+      bottleneckCount: (json['bottleneckCount'] as num?)?.toInt() ?? 0,
     );
   }
 
@@ -92,8 +101,15 @@ class StaffWorkloadItem {
 
   /// Số báo cáo đã xử lý trong 30 ngày.
   final int resolvedCount;
+  final int weightedLoad;
+  final bool isOverloaded;
 
-  const StaffWorkloadItem({required this.staff, required this.resolvedCount});
+  const StaffWorkloadItem({
+    required this.staff,
+    required this.resolvedCount,
+    this.weightedLoad = 0,
+    this.isOverloaded = false,
+  });
 
   factory StaffWorkloadItem.fromJson(Map<String, dynamic> json) {
     return StaffWorkloadItem(
@@ -101,6 +117,8 @@ class StaffWorkloadItem {
         json['staff'] as Map<String, dynamic>? ?? const {},
       ),
       resolvedCount: (json['resolvedCount'] as num?)?.toInt() ?? 0,
+      weightedLoad: (json['weightedLoad'] as num?)?.toInt() ?? 0,
+      isOverloaded: (json['isOverloaded'] as bool?) ?? (json['overloaded'] as bool?) ?? false,
     );
   }
 }
@@ -115,6 +133,9 @@ class StaffDeadlinePerformanceItem {
   final int resolvedCount;
   final int rehandlingCount;
   final int totalTasks;
+  final int weightedLoad;
+  final int bottleneckCount;
+  final bool isOverloaded;
   final double? efficiencyRate;
 
   const StaffDeadlinePerformanceItem({
@@ -127,6 +148,9 @@ class StaffDeadlinePerformanceItem {
     this.resolvedCount = 0,
     this.rehandlingCount = 0,
     this.totalTasks = 0,
+    this.weightedLoad = 0,
+    this.bottleneckCount = 0,
+    this.isOverloaded = false,
     this.efficiencyRate,
   });
 
@@ -146,6 +170,9 @@ class StaffDeadlinePerformanceItem {
       resolvedCount: (json['resolvedCount'] as num?)?.toInt() ?? 0,
       rehandlingCount: (json['rehandlingCount'] as num?)?.toInt() ?? 0,
       totalTasks: (json['totalTasks'] as num?)?.toInt() ?? 0,
+      weightedLoad: (json['weightedLoad'] as num?)?.toInt() ?? 0,
+      bottleneckCount: (json['bottleneckCount'] as num?)?.toInt() ?? 0,
+      isOverloaded: (json['isOverloaded'] as bool?) ?? (json['overloaded'] as bool?) ?? false,
       efficiencyRate: (json['efficiencyRate'] as num?)?.toDouble(),
     );
   }

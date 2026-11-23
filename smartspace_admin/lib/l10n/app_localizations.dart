@@ -4638,6 +4638,228 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View assigned reports'**
   String get viewAssignedReportsAction;
+
+  /// No description provided for @smartAlertsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Operational Alerts & 7-Day Pulse'**
+  String get smartAlertsTitle;
+
+  /// No description provided for @smartAlertsAllHealthy.
+  ///
+  /// In en, this message translates to:
+  /// **'Operations steady — no anomalies detected'**
+  String get smartAlertsAllHealthy;
+
+  /// No description provided for @volumeSpikeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unusual report surge today'**
+  String get volumeSpikeTitle;
+
+  /// No description provided for @volumeSpikeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{todayCount} reports today vs 14d avg ({avg})'**
+  String volumeSpikeSubtitle(int todayCount, String avg);
+
+  /// No description provided for @volumeSpikeZScoreBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Z = {zScore}'**
+  String volumeSpikeZScoreBadge(String zScore);
+
+  /// No description provided for @slaAtRiskTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Early SLA breach warning'**
+  String get slaAtRiskTitle;
+
+  /// No description provided for @slaAtRiskSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{pending} pending, {processing} processing nearing deadline'**
+  String slaAtRiskSubtitle(int pending, int processing);
+
+  /// No description provided for @slaAtRiskShort.
+  ///
+  /// In en, this message translates to:
+  /// **'At SLA risk'**
+  String get slaAtRiskShort;
+
+  /// No description provided for @overloadedStaffTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff workload overload'**
+  String get overloadedStaffTitle;
+
+  /// No description provided for @overloadedStaffSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} staff exceeding severity-weighted capacity'**
+  String overloadedStaffSubtitle(int count);
+
+  /// No description provided for @pendingOver24hTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unassigned backlog > 24h'**
+  String get pendingOver24hTitle;
+
+  /// No description provided for @pendingOver24hSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} reports waiting assignment over 24h'**
+  String pendingOver24hSubtitle(int count);
+
+  /// No description provided for @pulse7dTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 7 days pulse'**
+  String get pulse7dTitle;
+
+  /// No description provided for @pulseInflowLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Incoming'**
+  String get pulseInflowLabel;
+
+  /// No description provided for @pulseOutflowLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get pulseOutflowLabel;
+
+  /// No description provided for @trendBaselineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'14d avg'**
+  String get trendBaselineLabel;
+
+  /// No description provided for @trendAnomalyBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Spike'**
+  String get trendAnomalyBadge;
+
+  /// No description provided for @trendAnomalyCountBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} spike days'**
+  String trendAnomalyCountBadge(int count);
+
+  /// No description provided for @trendInsufficientBaseline.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient baseline (needs >= 7 active days)'**
+  String get trendInsufficientBaseline;
+
+  /// No description provided for @bottleneckShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Slow > P90'**
+  String get bottleneckShort;
+
+  /// No description provided for @bottleneckStatLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottleneck (>P90)'**
+  String get bottleneckStatLabel;
+
+  /// No description provided for @filterAtRiskLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'At SLA risk'**
+  String get filterAtRiskLabel;
+
+  /// No description provided for @filterBottleneckLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Slow > P90'**
+  String get filterBottleneckLabel;
+
+  /// No description provided for @weightedLoadLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Weighted load'**
+  String get weightedLoadLabel;
+
+  /// No description provided for @weightedLoadValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{points} pts ({tasks} tasks)'**
+  String weightedLoadValue(int points, int tasks);
+
+  /// No description provided for @teamAvgWeightedLoadLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Team avg load: {avg} pts'**
+  String teamAvgWeightedLoadLabel(String avg);
+
+  /// No description provided for @staffOverloadedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Overloaded'**
+  String get staffOverloadedBadge;
+
+  /// No description provided for @staffRecommendedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get staffRecommendedBadge;
+
+  /// No description provided for @staffBottleneckCountBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} slow >P90'**
+  String staffBottleneckCountBadge(int count);
+
+  /// No description provided for @spatialHotspotsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Area Hotspots (H3)'**
+  String get spatialHotspotsTitle;
+
+  /// No description provided for @spatialHotspotsToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotspots'**
+  String get spatialHotspotsToggle;
+
+  /// No description provided for @spatialHotspotsAcceleratingCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} accelerating zones'**
+  String spatialHotspotsAcceleratingCount(int count);
+
+  /// No description provided for @spatialHotspotAcceleratingBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Accelerating'**
+  String get spatialHotspotAcceleratingBadge;
+
+  /// No description provided for @spatialHotspotRiskScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Risk {score}'**
+  String spatialHotspotRiskScore(int score);
+
+  /// No description provided for @spatialHotspotStats.
+  ///
+  /// In en, this message translates to:
+  /// **'{recent} in 30d • Prev avg {prev} • {pending} pending'**
+  String spatialHotspotStats(int recent, String prev, int pending);
+
+  /// No description provided for @spatialHotspotsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No prominent spatial risk hotspots'**
+  String get spatialHotspotsEmpty;
+
+  /// No description provided for @spatialHotspotFallbackName.
+  ///
+  /// In en, this message translates to:
+  /// **'H3 Cell #{shortId}'**
+  String spatialHotspotFallbackName(String shortId);
 }
 
 class _AppLocalizationsDelegate

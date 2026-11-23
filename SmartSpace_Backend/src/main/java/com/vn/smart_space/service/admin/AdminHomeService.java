@@ -1,14 +1,20 @@
 package com.vn.smart_space.service.admin;
 
+import com.vn.smart_space.consts.EReportSeverity;
 import com.vn.smart_space.consts.EReportStatus;
 import com.vn.smart_space.consts.ERole;
+import com.vn.smart_space.consts.EUserStatus;
 import com.vn.smart_space.dto.PageResponse;
 import com.vn.smart_space.dto.response.admin.ActivityHistoryResponse;
 import com.vn.smart_space.dto.response.admin.AdminOverviewResponse;
 import com.vn.smart_space.model.ActivityHistory;
+import com.vn.smart_space.model.Report;
+import com.vn.smart_space.model.User;
 import com.vn.smart_space.repository.ActivityHistoryRepository;
 import com.vn.smart_space.repository.ReportRepository;
 import com.vn.smart_space.repository.UserRepository;
+import com.vn.smart_space.service.report.ReportServiceImpl;
+import com.vn.smart_space.utils.AnalyticsStatHelper;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -18,8 +24,16 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,6 +54,126 @@ public class AdminHomeService {
         long processingCount = Math.max(0,
                 reportRepository.countByStatus(EReportStatus.processing) - rehandlingProcessingCount);
 
+        LocalDate today = LocalDate.now();
+        LocalDateTime now = LocalDateTime.now();
+
+        // 1. Volume Spike (14 prior days + today) & 7-day Inflow/Outflow pulse
+        LocalDateTime since14d = today.minusDays(AnalyticsStatHelper.SPIKE_WINDOW_DAYS).atStartOfDay();
+        Map<LocalDate, Long> createdCounts = new HashMap<>();
+        for (LocalDateTime dt : reportRepository.findCreatedAtSince(since14d)) {
+            if (dt != null) {
+                createdCounts.merge(dt.toLocalDate(), 1L, Long::sum);
+            }
+        }
+        List<Long> window14d = new ArrayList<>(AnalyticsStatHelper.SPIKE_WINDOW_DAYS);
+        for (int i = AnalyticsStatHelper.SPIKE_WINDOW_DAYS; i >= 1; i--) {
+            window14d.add(createdCounts.getOrDefault(today.minusDays(i), 0L));
+        }
+        long todayCount = createdCounts.getOrDefault(today, 0L);
+        AnalyticsStatHelper.VolumeSpikeEvaluation spikeEval =
+                AnalyticsStatHelper.evaluateVolumeSpike(todayCount, window14d);
+
+        AdminOverviewResponse.VolumeSpikeAlert volumeSpike = AdminOverviewResponse.VolumeSpikeAlert.builder()
+                .isSpike(spikeEval.isSpike())
+                .insufficientData(spikeEval.insufficientData())
+                .todayCount(spikeEval.todayCount())
+                .baselineAvg14d(spikeEval.baselineAvg14d())
+                .baselineStdDev14d(spikeEval.baselineStdDev14d())
+                .zScore(spikeEval.zScore())
+                .activeDays(spikeEval.activeDays())
+                .build();
+
+        Map<LocalDate, Long> resolvedCounts = new HashMap<>();
+        LocalDateTime since7d = today.minusDays(6).atStartOfDay();
+        for (LocalDateTime dt : reportRepository.findResolvedAtSince(EReportStatus.processed, since7d)) {
+            if (dt != null) {
+                resolvedCounts.merge(dt.toLocalDate(), 1L, Long::sum);
+            }
+        }
+        DateTimeFormatter dayFmt = DateTimeFormatter.ofPattern("dd/MM");
+        List<AdminOverviewResponse.DailyPulseItem> pulse7Days = AnalyticsStatHelper.buildConsecutiveDays(today, 7)
+                .stream()
+                .map(d -> AdminOverviewResponse.DailyPulseItem.builder()
+                        .date(d.format(dayFmt))
+                        .inflow(createdCounts.getOrDefault(d, 0L))
+                        .outflow(resolvedCounts.getOrDefault(d, 0L))
+                        .build())
+                .collect(Collectors.toList());
+
+        // 2. Severity historical avg resolution minutes (last 90d) for Early SLA Breach Warning
+        Map<EReportSeverity, Long> avgMinutesBySeverity = new EnumMap<>(EReportSeverity.class);
+        Map<EReportSeverity, Integer> sampleCountsBySeverity = new EnumMap<>(EReportSeverity.class);
+        List<AnalyticsStatHelper.DurationSample> durationSamples = new ArrayList<>();
+        for (Object[] row : reportRepository.findCompletedDurationsSince(EReportStatus.processed, now.minusDays(90))) {
+            EReportSeverity sev = row[0] instanceof EReportSeverity s ? s : null;
+            LocalDateTime assignedAt = AnalyticsStatHelper.toLocalDateTime(row[1] instanceof java.util.Date d ? d : null);
+            LocalDateTime resolvedAt = row[2] instanceof LocalDateTime ldt ? ldt : null;
+            if (sev != null && assignedAt != null && resolvedAt != null && !resolvedAt.isBefore(assignedAt)) {
+                durationSamples.add(new AnalyticsStatHelper.DurationSample(
+                        sev, Duration.between(assignedAt, resolvedAt).toMinutes()));
+            }
+        }
+        Map<EReportSeverity, Long> fallbackDays = new EnumMap<>(EReportSeverity.class);
+        for (EReportSeverity s : EReportSeverity.values()) {
+            fallbackDays.put(s, ReportServiceImpl.deadlineDaysForSeverity(s));
+        }
+        AnalyticsStatHelper.computeP90Thresholds(
+                durationSamples, fallbackDays, avgMinutesBySeverity, sampleCountsBySeverity, null);
+
+        // 3. Evaluate open reports (pending + processing) for At-Risk, Pending >24h & Staff Overload
+        List<Report> activeReports = reportRepository.findActiveReportsWithStaff(
+                List.of(EReportStatus.pending, EReportStatus.processing));
+        long pendingAtRisk = 0;
+        long processingAtRisk = 0;
+        long pendingOver24h = 0;
+        LocalDateTime cutoff24h = now.minusHours(24);
+
+        Map<String, Long> staffWeightedLoad = new HashMap<>();
+        Map<String, Long> staffOverdueCount = new HashMap<>();
+
+        for (Report r : activeReports) {
+            LocalDateTime deadline = ReportServiceImpl.resolveDeadline(r);
+            boolean atRisk = AnalyticsStatHelper.isSlaAtRisk(
+                    r.getStatus(), r.getCreatedAt(), deadline, r.getSeverity(),
+                    avgMinutesBySeverity, sampleCountsBySeverity, now);
+            if (atRisk) {
+                if (r.getStatus() == EReportStatus.pending) {
+                    pendingAtRisk++;
+                } else if (r.getStatus() == EReportStatus.processing) {
+                    processingAtRisk++;
+                }
+            }
+            if (r.getStatus() == EReportStatus.pending
+                    && r.getCreatedAt() != null
+                    && r.getCreatedAt().isBefore(cutoff24h)) {
+                pendingOver24h++;
+            }
+            if (r.getStatus() == EReportStatus.processing && r.getAssignedStaff() != null) {
+                String staffId = r.getAssignedStaff().getId();
+                staffWeightedLoad.merge(staffId, AnalyticsStatHelper.severityWeight(r.getSeverity()), Long::sum);
+                if (deadline != null && !deadline.isAfter(now)) {
+                    staffOverdueCount.merge(staffId, 1L, Long::sum);
+                }
+            }
+        }
+
+        List<User> activeStaffs = userRepository.findByRole(ERole.staff).stream()
+                .filter(u -> u.getStatus() != EUserStatus.blocked)
+                .collect(Collectors.toList());
+        double totalWeight = 0.0;
+        for (User u : activeStaffs) {
+            totalWeight += staffWeightedLoad.getOrDefault(u.getId(), 0L);
+        }
+        double teamAvgLoad = activeStaffs.isEmpty() ? 0.0 : totalWeight / activeStaffs.size();
+        long overloadedStaffCount = 0;
+        for (User u : activeStaffs) {
+            long w = staffWeightedLoad.getOrDefault(u.getId(), 0L);
+            long od = staffOverdueCount.getOrDefault(u.getId(), 0L);
+            if (AnalyticsStatHelper.isOverloaded(w, teamAvgLoad, od)) {
+                overloadedStaffCount++;
+            }
+        }
+
         return AdminOverviewResponse.builder()
                 .userCount(userRepository.countByRole(ERole.client))
                 .staffCount(userRepository.countByRole(ERole.staff))
@@ -50,6 +184,13 @@ public class AdminHomeService {
                 .rehandlingCount(unsatisfactoryProcessedCount + rehandlingProcessingCount)
                 .unsatisfactoryProcessedCount(unsatisfactoryProcessedCount)
                 .rehandlingProcessingCount(rehandlingProcessingCount)
+                .volumeSpike(volumeSpike)
+                .atRiskCount(pendingAtRisk + processingAtRisk)
+                .pendingAtRiskCount(pendingAtRisk)
+                .processingAtRiskCount(processingAtRisk)
+                .overloadedStaffCount(overloadedStaffCount)
+                .pendingOver24hCount(pendingOver24h)
+                .pulse7Days(pulse7Days)
                 .build();
     }
 
