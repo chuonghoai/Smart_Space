@@ -1,0 +1,116 @@
+{
+  "todotree": {
+    "tree": [
+      {
+        "key": 1795345720259,
+        "children": [],
+        "todo": {
+          "content": "Button \"Xử lý lại\" trong tổng quan của trang chủ admin và button \"Xử lý kéo dài > P90\" trong thông số tổng quan của thống kê phản ánh đang bị lỗi UI: chiều rộng của button bị kéo tối đa trên layout của các thông số khác. Sửa lại để chiều rộng của 2 nút này phải đồng bộ chiều rộng với các nút khác",
+          "id": 1795345720259,
+          "level": "default",
+          "done": false,
+          "start": 1795345720259
+        }
+      },
+      {
+        "key": 1795346134202,
+        "children": [],
+        "todo": {
+          "content": "backend thiếu key i18n \"activity.report.cancelled\"",
+          "id": 1795346134202,
+          "level": "default",
+          "done": false,
+          "start": 1795346134202
+        }
+      },
+      {
+        "key": 1795426944882,
+        "children": [],
+        "todo": {
+          "content": "trong admin home, khi bấm vào 2 nút \"Nhân sự quả tải công việc\" và \"Tồn đọng chưa phân công > 24h\", bắt buộc dùng context.push",
+          "id": 1795426944882,
+          "level": "default",
+          "done": false,
+          "start": 1795426944882
+        }
+      },
+      {
+        "key": 1795426986538,
+        "children": [],
+        "todo": {
+          "content": "Trong admin home, khi bấm vào nút \"Nhân sự quá tải công việc\", thay vì route vào giao diện quản lý nhân viên, sửa lại để hiện bottom sheet modal hiện danh sách nhân viên bị \"quá tải công việc\" kèm theo thông số định lượng minh chứng cho việc bị quá tải công việc, khi bấm vào nhân viên trong danh sách, route vào giao diện quản lý nhân viên và tự động hiện bottom sheet thông tin chi tiết nhân viên đó",
+          "id": 1795426986538,
+          "level": "default",
+          "done": false,
+          "start": 1795426986538
+        }
+      },
+      {
+        "key": 1795427069994,
+        "children": [],
+        "todo": {
+          "content": "Trong thống kê phản ánh, bên phải ngoài cùng (cùng hàng với text \"Thống kê phản ánh\"), bổ sung thêm 1 button dấu chấm than \"!\" hoặc dấu chấm hỏi \"?\", khi bấm vào thì hiện modal giải thích về các thông số, báo cáo trong thống kê phản ánh, ví dụ: P90 là gì, sắp chạm hạn là gì, báo cáo thống kê phản ánh xem như thế nào, bộ lọc quá hạn, sắp chạm hạn SLA, kéo dài > p90 là gì... Modal này phải giải thích \"là gì\", \"có tác dụng gì\", \"Cho biết điều gì\"",
+          "id": 1795427069994,
+          "level": "default",
+          "done": false,
+          "start": 1795427069994
+        }
+      },
+      {
+        "key": 1795427948354,
+        "children": [],
+        "todo": {
+          "content": "Tương tự trong giao diện quản lý nhân viên, bổ sung thêm button \"!\" hoặc \"?\" để hướng dẫn cách xem các thông số báo cáo",
+          "id": 1795427948354,
+          "level": "default",
+          "done": false,
+          "start": 1795427948354
+        }
+      },
+      {
+        "key": 1795427990666,
+        "children": [],
+        "todo": {
+          "content": "Trong giao diện quản lý nhân viên, trong bottom sheet modal chi tiết nhân viên, bổ sung thêm thông số quá tải",
+          "id": 1795427990666,
+          "level": "default",
+          "done": false,
+          "start": 1795427990666
+        }
+      },
+      {
+        "key": 1795428142642,
+        "children": [],
+        "todo": {
+          "content": "Tương tự với thống kê phản ánh và quản lý nhân viên, bổ sung nút \"!\" hoặc \"?\" trong dashboard Spatial Hotspot Acceleration của admin map screen để hướng dẫn cách xem thông số, báo cáo trên màn hình (ví dụ: Nhãn \"rủi ru [số]\" là gì, \"tăng tốc\" là gì, bị bôi đỏ là gì...)",
+          "id": 1795428142642,
+          "level": "default",
+          "done": false,
+          "start": 1795428142642
+        }
+      },
+      {
+        "key": 1795428262010,
+        "children": [],
+        "todo": {
+          "content": "Sửa 1 logic nhỏ trong giao diện quản lý nhân viên: Hiện tại khi mở giao diện này, các dashboard báo cáo bị ẩn mất, phải bấm vào nút \"Thống kê\" thì mới mở ra xem được. Sửa lại để khi mở giao diện này, các dashboard mặc định là phải hiện đầy đủ",
+          "id": 1795428262010,
+          "level": "default",
+          "done": false,
+          "start": 1795428262010
+        }
+      }
+    ],
+    "expandKeys": [],
+    "add_mode": "bottom",
+    "virtual": false,
+    "showLine": false,
+    "playFontSize": 24,
+    "title": "adminDashboard",
+    "autoSort": false,
+    "showEndTime": false,
+    "simpleMode": false,
+    "lang": "en",
+    "version": "1795428316855"
+  }
+}

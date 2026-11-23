@@ -4,8 +4,11 @@ import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.IsoFields;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
@@ -32,11 +35,14 @@ import com.vn.smart_space.dto.request.report.ReportCompleteRequest;
 import com.vn.smart_space.dto.request.report.ReportCreateRequest;
 import com.vn.smart_space.dto.PageResponse;
 import com.vn.smart_space.dto.response.admin.AdminMapReportsResponse;
+import com.vn.smart_space.dto.response.admin.AdminSpatialAnalyticsResponse;
 import com.vn.smart_space.dto.response.admin.MapReportResponse;
 import com.vn.smart_space.dto.response.admin.RecentReportResponse;
 import com.vn.smart_space.dto.response.admin.ReportListResponse;
 import com.vn.smart_space.dto.response.admin.ReportStatisticsResponse;
 import com.vn.smart_space.dto.response.admin.ReportTrendResponse;
+import com.vn.smart_space.utils.AnalyticsStatHelper;
+import com.vn.smart_space.utils.TrendBucketHelper;
 import com.vn.smart_space.dto.response.notification.NotificationEvent;
 import com.vn.smart_space.dto.response.report.MapReportsResponse;
 import com.vn.smart_space.dto.response.report.MyReportsSummaryResponse;
@@ -207,6 +213,16 @@ public class ReportServiceImpl implements IReportService {
     }
 
     private RecentReportResponse toRecentReportResponse(Report r, boolean maskAnonymous, boolean includeDetails) {
+        return toRecentReportResponse(r, maskAnonymous, includeDetails, null, null, null);
+    }
+
+    private RecentReportResponse toRecentReportResponse(
+            Report r,
+            boolean maskAnonymous,
+            boolean includeDetails,
+            Map<EReportSeverity, Long> p90BySeverity,
+            Map<EReportSeverity, Long> avgBySeverity,
+            Map<EReportSeverity, Integer> sampleCountsBySeverity) {
         User staff = r.getAssignedStaff();
         User user = r.getUser();
         boolean anon = Boolean.TRUE.equals(r.getIsAnonymous());
@@ -216,6 +232,20 @@ public class ReportServiceImpl implements IReportService {
                 : r.getLocationDescription();
 
         LocalDateTime now = LocalDateTime.now();
+        LocalDateTime deadline = resolveDeadline(r);
+        Boolean atRisk = avgBySeverity != null
+                ? AnalyticsStatHelper.isSlaAtRisk(
+                        r.getStatus(), r.getCreatedAt(), deadline, r.getSeverity(),
+                        avgBySeverity, sampleCountsBySeverity, now)
+                : null;
+        Boolean bottleneck = p90BySeverity != null
+                ? AnalyticsStatHelper.isProcessingBottleneck(
+                        r.getStatus(), r.getSeverity(), r.getAssignedAt(), r.getCreatedAt(), p90BySeverity, now)
+                : null;
+        Long elapsedMinutes = r.getStatus() == EReportStatus.processing
+                ? AnalyticsStatHelper.computeProcessingElapsedMinutes(r.getAssignedAt(), r.getCreatedAt(), now)
+                : null;
+
         return RecentReportResponse.builder()
                 .id(r.getId())
                 .title(r.getTitle())
@@ -234,10 +264,13 @@ public class ReportServiceImpl implements IReportService {
                 .userAvatarUrl(includeDetails && !hideReporter && user != null ? user.getAvatarUrl() : null)
                 .description(includeDetails ? r.getDescription() : null)
                 .isReviewResolved(r.getIsReviewResolved())
-                .deadline(resolveDeadline(r))
+                .deadline(deadline)
                 .resolvedAt(toLocalDateTime(r.getResolvedAt()))
                 .isOverdue(isReportOverdue(r, now))
                 .remainingDays(calculateRemainingDays(r, now))
+                .isAtRisk(atRisk)
+                .isBottleneck(bottleneck)
+                .elapsedMinutes(elapsedMinutes)
                 .build();
     }
 
@@ -1239,7 +1272,8 @@ public class ReportServiceImpl implements IReportService {
         byStatus.put("processing", Math.max(0, byStatus.get("processing") - rehandlingProcessing));
         byStatus.put("rehandling", rehandlingProcessed + rehandlingProcessing);
         // "Quá hạn" là chỉ số chồng lên các nhóm trên (không cộng vào tổng)
-        byStatus.put("overdue", (int) reportRepository.countAdminOverdueReports(LocalDateTime.now()));
+        LocalDateTime now = LocalDateTime.now();
+        byStatus.put("overdue", (int) reportRepository.countAdminOverdueReports(now));
 
         // Count by severity
         List<Object[]> severityRows = reportRepository.countGroupBySeverity();
@@ -1250,40 +1284,139 @@ public class ReportServiceImpl implements IReportService {
             bySeverity.put(key, count);
         }
 
+        // Smart Analytics: SLA At-Risk & P90 Processing Bottleneck
+        DurationAnalyticsBundle analytics = buildDurationAnalytics(now);
+        List<Report> activeReports = reportRepository.findActiveReportsWithStaff(
+                List.of(EReportStatus.pending, EReportStatus.processing));
+        int atRiskCount = 0;
+        int bottleneckCount = 0;
+        for (Report r : activeReports) {
+            LocalDateTime deadline = resolveDeadline(r);
+            if (AnalyticsStatHelper.isSlaAtRisk(
+                    r.getStatus(), r.getCreatedAt(), deadline, r.getSeverity(),
+                    analytics.avgBySeverity, analytics.sampleCountsBySeverity, now)) {
+                atRiskCount++;
+            }
+            if (AnalyticsStatHelper.isProcessingBottleneck(
+                    r.getStatus(), r.getSeverity(), r.getAssignedAt(), r.getCreatedAt(),
+                    analytics.p90BySeverity, now)) {
+                bottleneckCount++;
+            }
+        }
+
+        Map<String, Long> p90Out = new LinkedHashMap<>();
+        Map<String, Boolean> p90InsuffOut = new LinkedHashMap<>();
+        for (EReportSeverity sev : EReportSeverity.values()) {
+            p90Out.put(sev.name(), analytics.p90BySeverity.get(sev));
+            p90InsuffOut.put(sev.name(), analytics.insufficientSamples.getOrDefault(sev, true));
+        }
+
         return ReportStatisticsResponse.builder()
                 .total(total)
                 .byStatus(byStatus)
                 .bySeverity(bySeverity)
+                .atRiskCount(atRiskCount)
+                .bottleneckCount(bottleneckCount)
+                .p90MinutesBySeverity(p90Out)
+                .p90InsufficientSamples(p90InsuffOut)
                 .build();
     }
 
     @Override
     @Transactional(readOnly = true)
     public ReportTrendResponse getReportTrend(String period) {
-        List<Object[]> rows;
-        if ("weekly".equalsIgnoreCase(period)) {
-            rows = reportRepository.countWeeklyTrend();
-        } else if ("monthly".equalsIgnoreCase(period)) {
-            rows = reportRepository.countMonthlyTrend();
-        } else {
-            // default: daily
-            rows = reportRepository.countDailyTrend();
+        String normalized = TrendBucketHelper.normalizePeriod(period);
+        LocalDate today = LocalDate.now();
+        List<LocalDate> bucketDates = TrendBucketHelper.buckets(normalized, today);
+
+        if ("daily".equals(normalized)) {
+            int lookbackDays = TrendBucketHelper.DAILY_BUCKETS + AnalyticsStatHelper.SPIKE_WINDOW_DAYS;
+            LocalDate firstWindowDay = today.minusDays(lookbackDays - 1L);
+            Map<LocalDate, Long> dailyCounts = new HashMap<>();
+            for (LocalDateTime dt : reportRepository.findCreatedAtSince(firstWindowDay.atStartOfDay())) {
+                if (dt != null) {
+                    dailyCounts.merge(dt.toLocalDate(), 1L, Long::sum);
+                }
+            }
+
+            List<LocalDate> fullWindow = AnalyticsStatHelper.buildConsecutiveDays(today, lookbackDays);
+            List<Long> fullCounts = fullWindow.stream()
+                    .map(d -> dailyCounts.getOrDefault(d, 0L))
+                    .collect(Collectors.toList());
+            List<Boolean> fullAnomalies = AnalyticsStatHelper.detectSeriesAnomalies(fullCounts);
+
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM");
+            int offset = lookbackDays - TrendBucketHelper.DAILY_BUCKETS;
+            List<ReportTrendResponse.TrendItem> items = new ArrayList<>(TrendBucketHelper.DAILY_BUCKETS);
+            int anomalyCount = 0;
+
+            for (int i = offset; i < fullWindow.size(); i++) {
+                LocalDate day = fullWindow.get(i);
+                int winStart = Math.max(0, i - AnalyticsStatHelper.SPIKE_WINDOW_DAYS);
+                List<Long> prev14 = fullCounts.subList(winStart, i);
+                double baseline = AnalyticsStatHelper.round2(AnalyticsStatHelper.computeMean(prev14));
+                boolean isAnom = Boolean.TRUE.equals(fullAnomalies.get(i));
+                if (isAnom) {
+                    anomalyCount++;
+                }
+                items.add(ReportTrendResponse.TrendItem.builder()
+                        .label(day.format(fmt))
+                        .count(fullCounts.get(i).intValue())
+                        .anomaly(isAnom)
+                        .baselineAvg(baseline)
+                        .build());
+            }
+
+            List<Long> latest14 = fullCounts.subList(
+                    Math.max(0, fullCounts.size() - 1 - AnalyticsStatHelper.SPIKE_WINDOW_DAYS),
+                    fullCounts.size() - 1);
+            AnalyticsStatHelper.VolumeSpikeEvaluation todayEval = AnalyticsStatHelper.evaluateVolumeSpike(
+                    dailyCounts.getOrDefault(today, 0L), latest14);
+
+            return ReportTrendResponse.builder()
+                    .items(items)
+                    .baselineAvg14d(todayEval.baselineAvg14d())
+                    .anomalyCount(anomalyCount)
+                    .insufficientData(todayEval.insufficientData())
+                    .build();
         }
 
-        List<ReportTrendResponse.TrendItem> items = rows.stream()
-                .map(row -> ReportTrendResponse.TrendItem.builder()
-                        .label(row[0] != null ? row[0].toString() : "")
-                        .count(row[1] != null ? ((Number) row[1]).intValue() : 0)
-                        .build())
+        // Weekly & monthly zero-filled via TrendBucketHelper
+        LocalDateTime since = bucketDates.get(0).atStartOfDay();
+        Map<LocalDate, Long> bucketCounts = TrendBucketHelper.emptyCounts(bucketDates);
+        for (LocalDateTime dt : reportRepository.findCreatedAtSince(since)) {
+            if (dt != null) {
+                TrendBucketHelper.increment(bucketCounts, dt.toLocalDate(), normalized);
+            }
+        }
+        DateTimeFormatter monthFmt = DateTimeFormatter.ofPattern("MM/yyyy");
+        List<ReportTrendResponse.TrendItem> items = bucketDates.stream()
+                .map(b -> {
+                    String label = "weekly".equals(normalized)
+                            ? "Tuần " + b.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR)
+                            : b.format(monthFmt);
+                    return ReportTrendResponse.TrendItem.builder()
+                            .label(label)
+                            .count(bucketCounts.getOrDefault(b, 0L).intValue())
+                            .anomaly(false)
+                            .baselineAvg(null)
+                            .build();
+                })
                 .collect(Collectors.toList());
 
-        return ReportTrendResponse.builder().items(items).build();
+        return ReportTrendResponse.builder()
+                .items(items)
+                .baselineAvg14d(null)
+                .anomalyCount(0)
+                .insufficientData(false)
+                .build();
     }
 
     @Override
     @Transactional(readOnly = true)
     public ReportListResponse getAdminReportList(int page, int size, String status, String severity, String assigneeId,
-            String from, String to, String search, Boolean overdue, boolean excludeRehandling) {
+            String from, String to, String search, Boolean overdue, boolean excludeRehandling,
+            Boolean atRisk, Boolean bottleneck) {
 
         // 1. Parse enums (null = no filter)
         EReportStatus statusEnum = null;
@@ -1322,23 +1455,73 @@ public class ReportServiceImpl implements IReportService {
         String searchParam = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
         String assigneeParam = (assigneeId != null && !assigneeId.trim().isEmpty()) ? assigneeId.trim() : null;
         boolean overdueOnly = Boolean.TRUE.equals(overdue);
+        boolean atRiskOnly = Boolean.TRUE.equals(atRisk);
+        boolean bottleneckOnly = Boolean.TRUE.equals(bottleneck);
 
         // Chỉ tách "xử lý lại" khỏi nhóm Đang xử lý / Đã xử lý; lọc "Tất cả" vẫn
         // giữ nguyên để khớp với thẻ Tổng.
         boolean applyExcludeRehandling = excludeRehandling
                 && (statusEnum == EReportStatus.processing || statusEnum == EReportStatus.processed);
 
-        // 4. Query
+        LocalDateTime now = LocalDateTime.now();
+        DurationAnalyticsBundle analytics = buildDurationAnalytics(now);
         int safePage = Math.max(1, page);
         int safeSize = Math.max(1, Math.min(size, 100));
+
+        if (atRiskOnly || bottleneckOnly) {
+            List<Report> candidates = reportRepository.findAllFilteredList(
+                    statusEnum, isRehandling, applyExcludeRehandling, overdueOnly, now,
+                    severityEnum, assigneeParam, fromDt, toDt, searchParam);
+
+            List<Report> matched = candidates.stream()
+                    .filter(r -> {
+                        LocalDateTime deadline = resolveDeadline(r);
+                        boolean ok = true;
+                        if (atRiskOnly) {
+                            ok = ok && AnalyticsStatHelper.isSlaAtRisk(
+                                    r.getStatus(), r.getCreatedAt(), deadline, r.getSeverity(),
+                                    analytics.avgBySeverity, analytics.sampleCountsBySeverity, now);
+                        }
+                        if (bottleneckOnly) {
+                            ok = ok && AnalyticsStatHelper.isProcessingBottleneck(
+                                    r.getStatus(), r.getSeverity(), r.getAssignedAt(), r.getCreatedAt(),
+                                    analytics.p90BySeverity, now);
+                        }
+                        return ok;
+                    })
+                    .collect(Collectors.toList());
+
+            int totalElements = matched.size();
+            int totalPages = totalElements == 0 ? 0 : (int) Math.ceil((double) totalElements / safeSize);
+            int fromIdx = Math.min((safePage - 1) * safeSize, totalElements);
+            int toIdx = Math.min(fromIdx + safeSize, totalElements);
+
+            List<RecentReportResponse> content = matched.subList(fromIdx, toIdx).stream()
+                    .map(r -> toRecentReportResponse(r, false, false,
+                            analytics.p90BySeverity, analytics.avgBySeverity, analytics.sampleCountsBySeverity))
+                    .collect(Collectors.toList());
+
+            PageResponse<RecentReportResponse> pageResp = PageResponse.<RecentReportResponse>builder()
+                    .currentPage(safePage)
+                    .pageSize(safeSize)
+                    .totalPages(totalPages)
+                    .totalElements(totalElements)
+                    .content(content)
+                    .build();
+
+            return ReportListResponse.builder().reports(pageResp).build();
+        }
+
+        // 4. Query paginated directly
         PageRequest pageable = PageRequest.of(safePage - 1, safeSize);
         Page<Report> reportPage = reportRepository.findAllFiltered(
-                statusEnum, isRehandling, applyExcludeRehandling, overdueOnly, LocalDateTime.now(),
+                statusEnum, isRehandling, applyExcludeRehandling, overdueOnly, now,
                 severityEnum, assigneeParam, fromDt, toDt, searchParam, pageable);
 
-        // 5. Map Report -> RecentReportResponse (bổ sung userName, userEmail, deadline)
+        // 5. Map Report -> RecentReportResponse (bổ sung userName, userEmail, deadline, SLA & Bottleneck)
         List<RecentReportResponse> content = reportPage.getContent().stream()
-                .map(r -> toRecentReportResponse(r, false, false))
+                .map(r -> toRecentReportResponse(r, false, false,
+                        analytics.p90BySeverity, analytics.avgBySeverity, analytics.sampleCountsBySeverity))
                 .collect(Collectors.toList());
 
         // 6. Wrap in PageResponse
@@ -1351,6 +1534,81 @@ public class ReportServiceImpl implements IReportService {
                 .build();
 
         return ReportListResponse.builder().reports(pageResp).build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AdminSpatialAnalyticsResponse getSpatialAnalytics(int limit) {
+        LocalDateTime now = LocalDateTime.now();
+        List<Object[]> rows = reportRepository.findSpatialAnalyticsTuples(EReportStatus.rejected);
+        List<AnalyticsStatHelper.SpatialReportPoint> points = new ArrayList<>(rows.size());
+        for (Object[] row : rows) {
+            String id = row[0] != null ? row[0].toString() : null;
+            Double lat = row[1] instanceof Number n ? n.doubleValue() : null;
+            Double lng = row[2] instanceof Number n ? n.doubleValue() : null;
+            EReportStatus st = row[3] instanceof EReportStatus s ? s : null;
+            EReportSeverity sev = row[4] instanceof EReportSeverity s ? s : null;
+            LocalDateTime explicitDeadline = row[5] instanceof LocalDateTime dt ? dt : null;
+            LocalDateTime createdAt = row[6] instanceof LocalDateTime dt ? dt : null;
+            String address = row[7] != null ? row[7].toString() : null;
+            java.util.Date assignedAt = row[8] instanceof java.util.Date d ? d : null;
+
+            LocalDateTime resolvedDeadline = explicitDeadline;
+            if (resolvedDeadline == null) {
+                LocalDateTime base = assignedAt != null ? toLocalDateTime(assignedAt) : createdAt;
+                if (base != null) {
+                    resolvedDeadline = base.plusDays(deadlineDaysForSeverity(sev));
+                }
+            }
+            points.add(new AnalyticsStatHelper.SpatialReportPoint(
+                    id, lat, lng, st, sev, resolvedDeadline, createdAt, address));
+        }
+
+        List<AdminSpatialAnalyticsResponse.HotspotItem> allHotspots =
+                AnalyticsStatHelper.computeH3Hotspots(points, now, 0);
+        long acceleratingCount = allHotspots.stream()
+                .filter(AdminSpatialAnalyticsResponse.HotspotItem::isAccelerating)
+                .count();
+        int safeLimit = Math.max(1, Math.min(limit, 50));
+        List<AdminSpatialAnalyticsResponse.HotspotItem> topHotspots =
+                allHotspots.subList(0, Math.min(safeLimit, allHotspots.size()));
+
+        return AdminSpatialAnalyticsResponse.builder()
+                .h3Resolution(AnalyticsStatHelper.HOTSPOT_H3_RESOLUTION)
+                .totalHotspots(allHotspots.size())
+                .acceleratingHotspots(acceleratingCount)
+                .hotspots(topHotspots)
+                .build();
+    }
+
+    private record DurationAnalyticsBundle(
+            Map<EReportSeverity, Long> p90BySeverity,
+            Map<EReportSeverity, Long> avgBySeverity,
+            Map<EReportSeverity, Integer> sampleCountsBySeverity,
+            Map<EReportSeverity, Boolean> insufficientSamples) {
+    }
+
+    private DurationAnalyticsBundle buildDurationAnalytics(LocalDateTime now) {
+        List<AnalyticsStatHelper.DurationSample> samples = new ArrayList<>();
+        for (Object[] row : reportRepository.findCompletedDurationsSince(EReportStatus.processed, now.minusDays(90))) {
+            EReportSeverity sev = row[0] instanceof EReportSeverity s ? s : null;
+            LocalDateTime assignedAt = toLocalDateTime(row[1] instanceof java.util.Date d ? d : null);
+            LocalDateTime resolvedAt = row[2] instanceof LocalDateTime ldt ? ldt : null;
+            if (sev != null && assignedAt != null && resolvedAt != null && !resolvedAt.isBefore(assignedAt)) {
+                samples.add(new AnalyticsStatHelper.DurationSample(
+                        sev, Duration.between(assignedAt, resolvedAt).toMinutes()));
+            }
+        }
+        Map<EReportSeverity, Long> fallbackDays = new EnumMap<>(EReportSeverity.class);
+        for (EReportSeverity s : EReportSeverity.values()) {
+            fallbackDays.put(s, deadlineDaysForSeverity(s));
+        }
+        Map<EReportSeverity, Long> avgBySeverity = new EnumMap<>(EReportSeverity.class);
+        Map<EReportSeverity, Integer> sampleCounts = new EnumMap<>(EReportSeverity.class);
+        Map<EReportSeverity, Boolean> insufficientSamples = new EnumMap<>(EReportSeverity.class);
+        Map<EReportSeverity, Long> p90 = AnalyticsStatHelper.computeP90Thresholds(
+                samples, fallbackDays, avgBySeverity, sampleCounts, insufficientSamples);
+        return new DurationAnalyticsBundle(p90, avgBySeverity, sampleCounts, insufficientSamples);
     }
 
     @Override

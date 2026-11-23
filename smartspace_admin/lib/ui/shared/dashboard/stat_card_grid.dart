@@ -17,6 +17,7 @@ class StatCardGrid extends StatelessWidget {
   final double itemHeight;
   final double spacing;
   final int itemCount;
+  final bool spanOrphan;
   final Widget Function(BuildContext context, int index, bool spanned)
       itemBuilder;
 
@@ -27,6 +28,7 @@ class StatCardGrid extends StatelessWidget {
     required this.itemCount,
     required this.itemBuilder,
     this.spacing = 12,
+    this.spanOrphan = false,
   });
 
   @override
@@ -40,7 +42,7 @@ class StatCardGrid extends StatelessWidget {
             ? constraints.maxWidth
             : MediaQuery.sizeOf(context).width;
         final cellWidth = (maxWidth - spacing * (cols - 1)) / cols;
-        final hasOrphan = cols >= 2 && itemCount % cols == 1;
+        final hasOrphan = spanOrphan && cols >= 2 && itemCount % cols == 1;
 
         final rows = <Widget>[];
         for (var start = 0; start < itemCount; start += cols) {

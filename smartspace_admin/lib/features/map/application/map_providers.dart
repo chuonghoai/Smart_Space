@@ -10,6 +10,7 @@ import 'package:smartspace_admin/features/reports/data/report_repository.dart';
 import '../models/map_report_model.dart';
 import '../models/report_density_model.dart';
 import '../models/report_timeframe.dart';
+import '../models/spatial_analytics_model.dart';
 import '../services/map_service.dart';
 
 // Filter
@@ -310,4 +311,10 @@ final mapStaffListProvider = FutureProvider<List<StaffModel>>((ref) async {
   final res = await reportRepository.getStaffs();
   if (res.success && res.data != null) return res.data!;
   return [];
+});
+
+final spatialAnalyticsProvider = FutureProvider.autoDispose<SpatialAnalyticsResult>((ref) async {
+  final res = await mapService.getSpatialAnalytics(limit: 10);
+  if (res.success && res.data != null) return res.data!;
+  return SpatialAnalyticsResult.empty;
 });

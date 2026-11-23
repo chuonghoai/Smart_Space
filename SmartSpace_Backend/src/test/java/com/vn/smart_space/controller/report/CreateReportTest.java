@@ -1,10 +1,7 @@
 package com.vn.smart_space.controller.report;
 
-import com.nimbusds.jose.JWSAlgorithm;
-import com.nimbusds.jose.JWSHeader;
-import com.nimbusds.jose.crypto.MACSigner;
-import com.nimbusds.jwt.JWTClaimsSet;
-import com.nimbusds.jwt.SignedJWT;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -18,15 +15,56 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
-import java.util.Date;
-import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 public class CreateReportTest {
 
-    private static final String BASE_URL = "http://localhost:8989";
-    private static final String SIGNER_KEY = "ZpWmdK3rFAkBja/qcNOKJrmWFfhRJPLs5FbFr1xMgJVqk7BbHDYPz5blC3CueakgaikoP4vGkHQqXNqkDd63Yw==";
+    private static final String BASE_URL = System.getProperty("smartspace.baseUrl", "http://localhost:8989");
+
+    private static String envOrDefault(String propKey, String envKey, String fallback) {
+        String prop = System.getProperty(propKey);
+        if (prop != null && !prop.isBlank()) {
+            return prop.trim();
+        }
+        String env = System.getenv(envKey);
+        if (env != null && !env.isBlank()) {
+            return env.trim();
+        }
+        return fallback;
+    }
+
+    private static String loginAsClient(HttpClient client, ObjectMapper mapper) throws Exception {
+        String email = envOrDefault("pw.client.email", "PW_CLIENT_EMAIL", "user@gmail.com");
+        String password = envOrDefault("pw.client.password", "PW_CLIENT_PASSWORD", "Ad123456!");
+        String loginJson = mapper.writeValueAsString(java.util.Map.of(
+                "email", email,
+                "password", password,
+                "deviceId", "test-device-uuid",
+                "deviceName", "Integration Test Client",
+                "platform", "android",
+                "role", "client",
+                "rememberMe", true
+        ));
+
+        HttpRequest loginRequest = HttpRequest.newBuilder()
+                .uri(URI.create(BASE_URL + "/auth/login"))
+                .header("Content-Type", "application/json")
+                .POST(HttpRequest.BodyPublishers.ofString(loginJson, StandardCharsets.UTF_8))
+                .build();
+
+        HttpResponse<String> loginResponse = client.send(loginRequest, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
+        assertEquals(200, loginResponse.statusCode(),
+                "Đăng nhập Client thất bại (" + email + "): " + loginResponse.body());
+
+        JsonNode root = mapper.readTree(loginResponse.body());
+        JsonNode data = root.path("data");
+        String token = data.hasNonNull("access_token")
+                ? data.get("access_token").asText()
+                : data.path("accessToken").asText("");
+        assertFalse(token.isBlank(), "Không nhận được access_token từ /auth/login: " + loginResponse.body());
+        return token;
+    }
 
     @BeforeAll
     static void setupConsoleEncodingAndCheckBackendRunning() {
@@ -38,9 +76,10 @@ public class CreateReportTest {
         }
 
         // 2. Kiểm tra kết nối đến Backend Server (port 8989)
+        URI base = URI.create(BASE_URL);
         boolean isRunning = false;
         try (Socket socket = new Socket()) {
-            socket.connect(new InetSocketAddress("localhost", 8989), 1500);
+            socket.connect(new InetSocketAddress(base.getHost(), base.getPort()), 1500);
             isRunning = true;
         } catch (Exception ignored) {
         }
@@ -65,25 +104,13 @@ public class CreateReportTest {
         System.out.println(">> Target Server : " + BASE_URL);
         System.out.println("================================================================================");
 
-        // 1. Tạo JWT Bearer Token hợp lệ của User 'u2' (role: client)
-        Date issueTime = new Date();
-        Date expiryTime = new Date(System.currentTimeMillis() + 3600_000);
-        JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
-        JWTClaimsSet claims = new JWTClaimsSet.Builder()
-                .subject("user@gmail.com")
-                .issuer("smartspace.vn")
-                .issueTime(issueTime)
-                .expirationTime(expiryTime)
-                .jwtID(UUID.randomUUID().toString())
-                .claim("scope", "client")
-                .claim("userId", "u2")
-                .claim("deviceId", "test-device-uuid")
-                .claim("tokenType", "access")
+        HttpClient client = HttpClient.newBuilder()
+                .connectTimeout(Duration.ofSeconds(5))
                 .build();
+        ObjectMapper mapper = new ObjectMapper();
 
-        SignedJWT signedJWT = new SignedJWT(header, claims);
-        signedJWT.sign(new MACSigner(SIGNER_KEY.getBytes(StandardCharsets.UTF_8)));
-        String bearerToken = signedJWT.serialize();
+        // 1. Đăng nhập lấy JWT Bearer Token hợp lệ + khởi tạo phiên Redis cho User 'u2' (role: client)
+        String bearerToken = loginAsClient(client, mapper);
 
         // 2. Chuẩn bị Payload JSON 100% giống với smartspace_client gửi lên
         String requestJson = """
@@ -103,10 +130,6 @@ public class CreateReportTest {
         """;
 
         // 3. Thực hiện gọi HTTP POST đến /reports (1 lần duy nhất)
-        HttpClient client = HttpClient.newBuilder()
-                .connectTimeout(Duration.ofSeconds(5))
-                .build();
-
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(BASE_URL + "/reports"))
                 .header("Content-Type", "application/json")

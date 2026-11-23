@@ -48,4 +48,10 @@ public class RecentReportResponse {
     Boolean isOverdue;
 
     Long remainingDays;
+
+    Boolean isAtRisk;
+
+    Boolean isBottleneck;
+
+    Long elapsedMinutes;
 }

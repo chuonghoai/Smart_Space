@@ -9,6 +9,8 @@ class ReportFilter {
   final String? search;
   final String? timeframe;
   final bool overdueOnly;
+  final bool atRiskOnly;
+  final bool bottleneckOnly;
   final int page;
   final int size;
 
@@ -21,6 +23,8 @@ class ReportFilter {
     this.search,
     this.timeframe,
     this.overdueOnly = false,
+    this.atRiskOnly = false,
+    this.bottleneckOnly = false,
     this.page = 1,
     this.size = 20,
   });
@@ -36,6 +40,8 @@ class ReportFilter {
       if (search != null && search!.isNotEmpty) 'search': search,
       if (timeframe != null && timeframe!.isNotEmpty) 'timeframe': timeframe,
       if (overdueOnly) 'overdue': true,
+      if (atRiskOnly) 'atRisk': true,
+      if (bottleneckOnly) 'bottleneck': true,
       'page': page,
       'size': size,
     };
@@ -50,6 +56,8 @@ class ReportFilter {
     String? search,
     String? timeframe,
     bool? overdueOnly,
+    bool? atRiskOnly,
+    bool? bottleneckOnly,
     int? page,
     int? size,
     bool clearStatus = false,
@@ -68,6 +76,8 @@ class ReportFilter {
       search: clearSearch ? null : (search ?? this.search),
       timeframe: clearTimeframe ? null : (timeframe ?? this.timeframe),
       overdueOnly: overdueOnly ?? this.overdueOnly,
+      atRiskOnly: atRiskOnly ?? this.atRiskOnly,
+      bottleneckOnly: bottleneckOnly ?? this.bottleneckOnly,
       page: page ?? this.page,
       size: size ?? this.size,
     );
@@ -81,5 +91,7 @@ class ReportFilter {
       to != null ||
       (search != null && search!.isNotEmpty) ||
       (timeframe != null && timeframe!.isNotEmpty && timeframe != 'all') ||
-      overdueOnly;
+      overdueOnly ||
+      atRiskOnly ||
+      bottleneckOnly;
 }

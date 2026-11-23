@@ -4638,6 +4638,616 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'View assigned reports'**
   String get viewAssignedReportsAction;
+
+  /// No description provided for @smartAlertsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Operational Alerts & 7-Day Pulse'**
+  String get smartAlertsTitle;
+
+  /// No description provided for @smartAlertsAllHealthy.
+  ///
+  /// In en, this message translates to:
+  /// **'Operations steady — no anomalies detected'**
+  String get smartAlertsAllHealthy;
+
+  /// No description provided for @volumeSpikeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unusual report surge today'**
+  String get volumeSpikeTitle;
+
+  /// No description provided for @volumeSpikeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{todayCount} reports today vs 14d avg ({avg})'**
+  String volumeSpikeSubtitle(int todayCount, String avg);
+
+  /// No description provided for @volumeSpikeZScoreBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Z = {zScore}'**
+  String volumeSpikeZScoreBadge(String zScore);
+
+  /// No description provided for @slaAtRiskTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Early SLA breach warning'**
+  String get slaAtRiskTitle;
+
+  /// No description provided for @slaAtRiskSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{pending} pending, {processing} processing nearing deadline'**
+  String slaAtRiskSubtitle(int pending, int processing);
+
+  /// No description provided for @slaAtRiskShort.
+  ///
+  /// In en, this message translates to:
+  /// **'At SLA risk'**
+  String get slaAtRiskShort;
+
+  /// No description provided for @overloadedStaffTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff workload overload'**
+  String get overloadedStaffTitle;
+
+  /// No description provided for @overloadedStaffSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} staff exceeding severity-weighted capacity'**
+  String overloadedStaffSubtitle(int count);
+
+  /// No description provided for @pendingOver24hTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unassigned backlog > 24h'**
+  String get pendingOver24hTitle;
+
+  /// No description provided for @pendingOver24hSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} reports waiting assignment over 24h'**
+  String pendingOver24hSubtitle(int count);
+
+  /// No description provided for @pulse7dTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 7 days pulse'**
+  String get pulse7dTitle;
+
+  /// No description provided for @pulseInflowLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Incoming'**
+  String get pulseInflowLabel;
+
+  /// No description provided for @pulseOutflowLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get pulseOutflowLabel;
+
+  /// No description provided for @trendBaselineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'14d avg'**
+  String get trendBaselineLabel;
+
+  /// No description provided for @trendAnomalyBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Spike'**
+  String get trendAnomalyBadge;
+
+  /// No description provided for @trendAnomalyCountBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} spike days'**
+  String trendAnomalyCountBadge(int count);
+
+  /// No description provided for @trendInsufficientBaseline.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient baseline (needs >= 7 active days)'**
+  String get trendInsufficientBaseline;
+
+  /// No description provided for @bottleneckShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Slow > P90'**
+  String get bottleneckShort;
+
+  /// No description provided for @bottleneckStatLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottleneck (>P90)'**
+  String get bottleneckStatLabel;
+
+  /// No description provided for @filterAtRiskLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'At SLA risk'**
+  String get filterAtRiskLabel;
+
+  /// No description provided for @filterBottleneckLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Slow > P90'**
+  String get filterBottleneckLabel;
+
+  /// No description provided for @weightedLoadLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Weighted load'**
+  String get weightedLoadLabel;
+
+  /// No description provided for @weightedLoadValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{points} pts ({tasks} tasks)'**
+  String weightedLoadValue(int points, int tasks);
+
+  /// No description provided for @teamAvgWeightedLoadLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Team avg load: {avg} pts'**
+  String teamAvgWeightedLoadLabel(String avg);
+
+  /// No description provided for @staffOverloadedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Overloaded'**
+  String get staffOverloadedBadge;
+
+  /// No description provided for @staffRecommendedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get staffRecommendedBadge;
+
+  /// No description provided for @staffBottleneckCountBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} slow >P90'**
+  String staffBottleneckCountBadge(int count);
+
+  /// No description provided for @spatialHotspotsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Area Hotspots (H3)'**
+  String get spatialHotspotsTitle;
+
+  /// No description provided for @spatialHotspotsToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotspots'**
+  String get spatialHotspotsToggle;
+
+  /// No description provided for @spatialHotspotsAcceleratingCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} accelerating zones'**
+  String spatialHotspotsAcceleratingCount(int count);
+
+  /// No description provided for @spatialHotspotAcceleratingBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Accelerating'**
+  String get spatialHotspotAcceleratingBadge;
+
+  /// No description provided for @spatialHotspotRiskScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Risk {score}'**
+  String spatialHotspotRiskScore(int score);
+
+  /// No description provided for @spatialHotspotStats.
+  ///
+  /// In en, this message translates to:
+  /// **'{recent} in 30d • Prev avg {prev} • {pending} pending'**
+  String spatialHotspotStats(int recent, String prev, int pending);
+
+  /// No description provided for @spatialHotspotsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No prominent spatial risk hotspots'**
+  String get spatialHotspotsEmpty;
+
+  /// No description provided for @spatialHotspotFallbackName.
+  ///
+  /// In en, this message translates to:
+  /// **'H3 Cell #{shortId}'**
+  String spatialHotspotFallbackName(String shortId);
+
+  /// No description provided for @overloadedStaffModalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Overloaded Staff Members'**
+  String get overloadedStaffModalTitle;
+
+  /// No description provided for @overloadedStaffThresholdInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Overload threshold: > {threshold} load pts (1.5x team avg {teamAvg}) or >= 2 overdue'**
+  String overloadedStaffThresholdInfo(String threshold, String teamAvg);
+
+  /// No description provided for @overloadedStaffEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No staff members are currently overloaded'**
+  String get overloadedStaffEmpty;
+
+  /// No description provided for @overloadedStaffMetricsRow.
+  ///
+  /// In en, this message translates to:
+  /// **'{weighted} pts • {processing} active • {overdue} overdue • {bottleneck} >P90'**
+  String overloadedStaffMetricsRow(
+    int weighted,
+    int processing,
+    int overdue,
+    int bottleneck,
+  );
+
+  /// No description provided for @overloadedSeverityBreakdownLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Crit: {critical} • High: {high} • Med: {medium} • Low: {low}'**
+  String overloadedSeverityBreakdownLine(
+    int critical,
+    int high,
+    int medium,
+    int low,
+  );
+
+  /// No description provided for @staffDetailOverloadSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Workload Status'**
+  String get staffDetailOverloadSectionTitle;
+
+  /// No description provided for @staffLoadNormalBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced'**
+  String get staffLoadNormalBadge;
+
+  /// No description provided for @staffLoadComparison.
+  ///
+  /// In en, this message translates to:
+  /// **'{weighted} weighted pts (Team avg: {teamAvg} pts)'**
+  String staffLoadComparison(int weighted, String teamAvg);
+
+  /// No description provided for @analyticsGuideTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Metrics & Report Guide'**
+  String get analyticsGuideTooltip;
+
+  /// No description provided for @guideWhatLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What it is'**
+  String get guideWhatLabel;
+
+  /// No description provided for @guidePurposeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Why it matters'**
+  String get guidePurposeLabel;
+
+  /// No description provided for @guideTellsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What it tells you'**
+  String get guideTellsLabel;
+
+  /// No description provided for @reportGuideTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Statistics Guide'**
+  String get reportGuideTitle;
+
+  /// No description provided for @reportGuideSlaAtRiskTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Early SLA Risk (At-Risk)'**
+  String get reportGuideSlaAtRiskTitle;
+
+  /// No description provided for @reportGuideSlaAtRiskWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending reports past >= 50% of their time to deadline, or processing reports with <= 24h left (or below the severity\'s historical average).'**
+  String get reportGuideSlaAtRiskWhat;
+
+  /// No description provided for @reportGuideSlaAtRiskPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Warns before reports actually breach their SLA deadline.'**
+  String get reportGuideSlaAtRiskPurpose;
+
+  /// No description provided for @reportGuideSlaAtRiskTells.
+  ///
+  /// In en, this message translates to:
+  /// **'Which reports should be assigned or escalated today to avoid overdue breaches.'**
+  String get reportGuideSlaAtRiskTells;
+
+  /// No description provided for @reportGuideP90Title.
+  ///
+  /// In en, this message translates to:
+  /// **'P90 Threshold & Bottlenecks (> P90)'**
+  String get reportGuideP90Title;
+
+  /// No description provided for @reportGuideP90What.
+  ///
+  /// In en, this message translates to:
+  /// **'The duration below which 90% of resolved reports in the last 90 days finished per severity (falls back to 80% of SLA window if < 10 samples).'**
+  String get reportGuideP90What;
+
+  /// No description provided for @reportGuideP90Purpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Spots stalled tasks early even before their hard deadline expires.'**
+  String get reportGuideP90Purpose;
+
+  /// No description provided for @reportGuideP90Tells.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks taking longer than 90% of similar historical cases — worth checking for blockers.'**
+  String get reportGuideP90Tells;
+
+  /// No description provided for @reportGuideTrendAnomalyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Trend, 14d Baseline & Spikes (Z-score)'**
+  String get reportGuideTrendAnomalyTitle;
+
+  /// No description provided for @reportGuideTrendAnomalyWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashed line shows the rolling 14-day mean; red dots mark days with >= 5 reports and Z-score >= 2.0 (or >= 1.5x the 14-day average).'**
+  String get reportGuideTrendAnomalyWhat;
+
+  /// No description provided for @reportGuideTrendAnomalyPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Separates normal noise from sudden incident surges.'**
+  String get reportGuideTrendAnomalyPurpose;
+
+  /// No description provided for @reportGuideTrendAnomalyTells.
+  ///
+  /// In en, this message translates to:
+  /// **'When unusual spikes occur or when baseline data is still insufficient (< 7 active days).'**
+  String get reportGuideTrendAnomalyTells;
+
+  /// No description provided for @reportGuideFiltersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stat Cards & List Filter Chips'**
+  String get reportGuideFiltersTitle;
+
+  /// No description provided for @reportGuideFiltersWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'Click any overview card or filter chip (Overdue, At SLA risk, Slow > P90, Rehandling) to narrow down the report list.'**
+  String get reportGuideFiltersWhat;
+
+  /// No description provided for @reportGuideFiltersPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Connects high-level metrics directly to actionable records.'**
+  String get reportGuideFiltersPurpose;
+
+  /// No description provided for @reportGuideFiltersTells.
+  ///
+  /// In en, this message translates to:
+  /// **'The exact list of reports currently requiring admin attention.'**
+  String get reportGuideFiltersTells;
+
+  /// No description provided for @staffGuideTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Metrics Guide'**
+  String get staffGuideTitle;
+
+  /// No description provided for @staffGuideWeightedLoadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity-Weighted Load Points'**
+  String get staffGuideWeightedLoadTitle;
+
+  /// No description provided for @staffGuideWeightedLoadWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'Sum of active task weights by severity: Low = 1 pt, Medium = 2 pts, High = 3 pts, Critical = 5 pts.'**
+  String get staffGuideWeightedLoadWhat;
+
+  /// No description provided for @staffGuideWeightedLoadPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Measures true effort instead of treating simple and critical issues equally.'**
+  String get staffGuideWeightedLoadPurpose;
+
+  /// No description provided for @staffGuideWeightedLoadTells.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff holding fewer tasks that are mostly High/Critical still carry heavy workload.'**
+  String get staffGuideWeightedLoadTells;
+
+  /// No description provided for @staffGuideOverloadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Team Average Load & Overload'**
+  String get staffGuideOverloadTitle;
+
+  /// No description provided for @staffGuideOverloadWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'A staff member is marked Overloaded when weighted load > max(5, 1.5 x team avg) or overdue tasks >= 2.'**
+  String get staffGuideOverloadWhat;
+
+  /// No description provided for @staffGuideOverloadPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Prevents assigning new reports to already saturated staff.'**
+  String get staffGuideOverloadPurpose;
+
+  /// No description provided for @staffGuideOverloadTells.
+  ///
+  /// In en, this message translates to:
+  /// **'Who needs relief vs who has capacity (Recommended badge) for new assignments.'**
+  String get staffGuideOverloadTells;
+
+  /// No description provided for @staffGuideEfficiencyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'On-Time Efficiency & Monthly Stats'**
+  String get staffGuideEfficiencyTitle;
+
+  /// No description provided for @staffGuideEfficiencyWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'Percentage of evaluated tasks resolved before or on their deadline within the selected month.'**
+  String get staffGuideEfficiencyWhat;
+
+  /// No description provided for @staffGuideEfficiencyPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracks SLA discipline per staff member over time.'**
+  String get staffGuideEfficiencyPurpose;
+
+  /// No description provided for @staffGuideEfficiencyTells.
+  ///
+  /// In en, this message translates to:
+  /// **'Consistency in meeting deadlines and accumulated late/rehandling volume.'**
+  String get staffGuideEfficiencyTells;
+
+  /// No description provided for @staffGuideBottleneckTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Slow Tasks (> P90)'**
+  String get staffGuideBottleneckTitle;
+
+  /// No description provided for @staffGuideBottleneckWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'Count of active tasks held longer than the historical P90 resolution duration for that severity.'**
+  String get staffGuideBottleneckWhat;
+
+  /// No description provided for @staffGuideBottleneckPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Flags long-running assignments that may be blocked on-site.'**
+  String get staffGuideBottleneckPurpose;
+
+  /// No description provided for @staffGuideBottleneckTells.
+  ///
+  /// In en, this message translates to:
+  /// **'Which staff may need support or reassignment on stalled reports.'**
+  String get staffGuideBottleneckTells;
+
+  /// No description provided for @spatialGuideTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Spatial Hotspots (H3) Guide'**
+  String get spatialGuideTitle;
+
+  /// No description provided for @spatialGuideH3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'H3 Hexagon Cells (Resolution 11)'**
+  String get spatialGuideH3Title;
+
+  /// No description provided for @spatialGuideH3What.
+  ///
+  /// In en, this message translates to:
+  /// **'Groups nearby reports into uniform Uber H3 Resolution-11 hexagonal zones across campus.'**
+  String get spatialGuideH3What;
+
+  /// No description provided for @spatialGuideH3Purpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Detects real spatial clusters independent of rigid text labels.'**
+  String get spatialGuideH3Purpose;
+
+  /// No description provided for @spatialGuideH3Tells.
+  ///
+  /// In en, this message translates to:
+  /// **'Clicking a zone centers the map camera straight onto that cluster.'**
+  String get spatialGuideH3Tells;
+
+  /// No description provided for @spatialGuideRiskScoreTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Risk Score & Red Highlight'**
+  String get spatialGuideRiskScoreTitle;
+
+  /// No description provided for @spatialGuideRiskScoreWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'Computed as (Pending x 2) + (High/Critical x 3) + (Overdue x 4). Red highlights accelerating or high-priority cells.'**
+  String get spatialGuideRiskScoreWhat;
+
+  /// No description provided for @spatialGuideRiskScorePurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Ranks zones by operational urgency rather than raw count alone.'**
+  String get spatialGuideRiskScorePurpose;
+
+  /// No description provided for @spatialGuideRiskScoreTells.
+  ///
+  /// In en, this message translates to:
+  /// **'Higher Risk means more severe, overdue, or unaddressed issues clustered there.'**
+  String get spatialGuideRiskScoreTells;
+
+  /// No description provided for @spatialGuideAcceleratingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'\"Accelerating\" Badge'**
+  String get spatialGuideAcceleratingTitle;
+
+  /// No description provided for @spatialGuideAcceleratingWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'Triggered when a zone logs >= 3 reports in the last 30 days and >= 2x the 30-day average of the preceding 90 days.'**
+  String get spatialGuideAcceleratingWhat;
+
+  /// No description provided for @spatialGuideAcceleratingPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Early warning for newly emerging or worsening problem areas.'**
+  String get spatialGuideAcceleratingPurpose;
+
+  /// No description provided for @spatialGuideAcceleratingTells.
+  ///
+  /// In en, this message translates to:
+  /// **'Zones deteriorating faster than historical baseline that need field inspection.'**
+  String get spatialGuideAcceleratingTells;
+
+  /// No description provided for @spatialGuideStatsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Zone Stats (30d • Prev avg • Pending)'**
+  String get spatialGuideStatsTitle;
+
+  /// No description provided for @spatialGuideStatsWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows last-30d report count, prior 90-day 30d baseline average, and currently pending reports in the cell.'**
+  String get spatialGuideStatsWhat;
+
+  /// No description provided for @spatialGuideStatsPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Provides clear before/after context for each zone.'**
+  String get spatialGuideStatsPurpose;
+
+  /// No description provided for @spatialGuideStatsTells.
+  ///
+  /// In en, this message translates to:
+  /// **'Whether inflow in this area is outpacing local resolution.'**
+  String get spatialGuideStatsTells;
 }
 
 class _AppLocalizationsDelegate

@@ -7,19 +7,20 @@ on:
       - dev
   pull_request:
     types:
-      - closed
+      - opened
+      - synchronize
+      - reopened
     branches:
       - main
       - dev
 
-# Tự động hủy workflow cũ trên cùng branch (main hoặc dev), đồng thời gộp trùng
-# sự kiện push và Pull Request merged vào cùng một concurrency group.
-# PR đóng nhưng KHÔNG merge sẽ dùng group riêng biệt để không hủy workflow đang chạy của branch đích.
+# Tự động hủy workflow cũ trên cùng branch (main hoặc dev) hoặc cùng một Pull Request
+# khi có commit mới được đẩy lên, tránh chạy đè các bản cũ.
 concurrency:
   group: >-
-    ${{ github.event_name == 'pull_request' && !github.event.pull_request.merged
-        && format('playwright-unmerged-pr-{0}', github.run_id)
-        || format('playwright-{0}', github.event.pull_request.base.ref || github.ref_name) }}
+    ${{ github.event_name == 'pull_request'
+        && format('playwright-pr-{0}-{1}', github.event.pull_request.base.ref, github.event.pull_request.number)
+        || format('playwright-{0}', github.ref_name) }}
   cancel-in-progress: true
 
 permissions:
@@ -31,7 +32,6 @@ env:
 jobs:
   backend-test:
     name: Backend Test (Native + Playwright)
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     services:
@@ -59,8 +59,6 @@ jobs:
     steps:
       - name: Checkout exact commit
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.merge_commit_sha || github.sha }}
 
       - name: Setup Java 17
         uses: actions/setup-java@v4
@@ -281,7 +279,6 @@ jobs:
 
   admin-test:
     name: Admin Test (Native + Playwright)
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     services:
@@ -309,8 +306,6 @@ jobs:
     steps:
       - name: Checkout exact commit
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.merge_commit_sha || github.sha }}
 
       - name: Setup Java 17
         uses: actions/setup-java@v4
@@ -415,7 +410,6 @@ jobs:
 
   staff-test:
     name: Staff Test (Native + Playwright)
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     services:
@@ -443,8 +437,6 @@ jobs:
     steps:
       - name: Checkout exact commit
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.merge_commit_sha || github.sha }}
 
       - name: Setup Java 17
         uses: actions/setup-java@v4
@@ -549,7 +541,6 @@ jobs:
 
   client-test:
     name: Client & Shared Test (Native + Playwright)
-    if: ${{ github.event_name != 'pull_request' || github.event.pull_request.merged == true }}
     runs-on: ubuntu-latest
     timeout-minutes: 35
     services:
@@ -577,8 +568,6 @@ jobs:
     steps:
       - name: Checkout exact commit
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.merge_commit_sha || github.sha }}
 
       - name: Setup Java 17
         uses: actions/setup-java@v4
@@ -691,13 +680,11 @@ jobs:
       - admin-test
       - staff-test
       - client-test
-    if: ${{ always() && (github.event_name != 'pull_request' || github.event.pull_request.merged == true) }}
+    if: ${{ always() }}
     runs-on: ubuntu-latest
     steps:
       - name: Checkout exact commit
         uses: actions/checkout@v4
-        with:
-          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.merge_commit_sha || github.sha }}
 
       - name: Setup Node.js 22
         uses: actions/setup-node@v4

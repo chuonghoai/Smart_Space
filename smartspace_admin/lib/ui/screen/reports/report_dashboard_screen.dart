@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:smartspace_admin/features/reports/application/report_dashboard_providers.dart';
 import 'package:smartspace_admin/features/reports/application/report_list_providers.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/layout/app_layout.dart';
+import 'package:smartspace_admin/ui/shared/dashboard/analytics_guide_modal.dart';
 import 'package:smartspace_admin/ui/screen/reports/widgets/report_card_view.dart';
 import 'package:smartspace_admin/ui/screen/reports/widgets/report_filter_bar.dart';
 import 'package:smartspace_admin/ui/screen/reports/widgets/report_kanban_board.dart';
@@ -53,10 +55,60 @@ class _ReportDashboardScreenState
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // ── Page title ───────────────────────────────────────────────
-              Text(
-                l10n.reportDashboard,
-                style: theme.textTheme.titleLarge
-                    ?.copyWith(fontWeight: FontWeight.bold),
+              Row(
+                children: [
+                  Expanded(
+                    child: Text(
+                      l10n.reportDashboard,
+                      style: theme.textTheme.titleLarge
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                  IconButton(
+                    icon: const Icon(Icons.help_outline_rounded),
+                    tooltip: l10n.analyticsGuideTooltip,
+                    onPressed: () {
+                      final semantic = AppSemanticColors.of(context);
+                      showAnalyticsGuideModal(
+                        context,
+                        title: l10n.reportGuideTitle,
+                        whatLabel: l10n.guideWhatLabel,
+                        purposeLabel: l10n.guidePurposeLabel,
+                        tellsLabel: l10n.guideTellsLabel,
+                        sections: [
+                          AnalyticsGuideSection(
+                            title: l10n.reportGuideSlaAtRiskTitle,
+                            whatItIs: l10n.reportGuideSlaAtRiskWhat,
+                            purpose: l10n.reportGuideSlaAtRiskPurpose,
+                            whatItTells: l10n.reportGuideSlaAtRiskTells,
+                            accent: semantic.warning,
+                          ),
+                          AnalyticsGuideSection(
+                            title: l10n.reportGuideP90Title,
+                            whatItIs: l10n.reportGuideP90What,
+                            purpose: l10n.reportGuideP90Purpose,
+                            whatItTells: l10n.reportGuideP90Tells,
+                            accent: theme.colorScheme.tertiary,
+                          ),
+                          AnalyticsGuideSection(
+                            title: l10n.reportGuideTrendAnomalyTitle,
+                            whatItIs: l10n.reportGuideTrendAnomalyWhat,
+                            purpose: l10n.reportGuideTrendAnomalyPurpose,
+                            whatItTells: l10n.reportGuideTrendAnomalyTells,
+                            accent: theme.colorScheme.error,
+                          ),
+                          AnalyticsGuideSection(
+                            title: l10n.reportGuideFiltersTitle,
+                            whatItIs: l10n.reportGuideFiltersWhat,
+                            purpose: l10n.reportGuideFiltersPurpose,
+                            whatItTells: l10n.reportGuideFiltersTells,
+                            accent: theme.colorScheme.primary,
+                          ),
+                        ],
+                      );
+                    },
+                  ),
+                ],
               ),
               const SizedBox(height: 20),
 
