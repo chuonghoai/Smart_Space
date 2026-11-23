@@ -5,12 +5,15 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 
+import com.vn.smart_space.consts.EAutoAssignMode;
 import com.vn.smart_space.consts.EGender;
 import com.vn.smart_space.consts.EReportSeverity;
 import com.vn.smart_space.consts.ERole;
 import com.vn.smart_space.consts.EUserStatus;
+import com.vn.smart_space.model.AutoAssignConfig;
 import com.vn.smart_space.model.ReportCategory;
 import com.vn.smart_space.model.User;
+import com.vn.smart_space.repository.AutoAssignConfigRepository;
 import com.vn.smart_space.repository.ReportCategoryRepository;
 import com.vn.smart_space.repository.UserRepository;
 
@@ -24,6 +27,7 @@ public class DataInitializer implements CommandLineRunner {
 
     private final UserRepository userRepository;
     private final ReportCategoryRepository reportCategoryRepository;
+    private final AutoAssignConfigRepository autoAssignConfigRepository;
     private final PasswordEncoder passwordEncoder;
     private final org.springframework.jdbc.core.JdbcTemplate jdbcTemplate;
 
@@ -74,7 +78,8 @@ public class DataInitializer implements CommandLineRunner {
             "ALTER TABLE reports DROP COLUMN commission_awarded",
             "ALTER TABLE report_delegations DROP COLUMN rate_percent",
             "ALTER TABLE report_delegations DROP COLUMN commission_amount",
-            "ALTER TABLE report_delegations DROP COLUMN bonus_amount"
+            "ALTER TABLE report_delegations DROP COLUMN bonus_amount",
+            "ALTER TABLE chat_messages MODIFY COLUMN sender_id VARCHAR(255) NULL"
         };
         for (String sql : cleanupQueries) {
             try {
@@ -110,6 +115,24 @@ public class DataInitializer implements CommandLineRunner {
                 "https://ui-avatars.com/api/?name=US&background=10b981&color=fff&size=200&bold=true&font-size=0.4");
 
         seedDefaultCategories();
+        seedDefaultAutoAssignConfig();
+    }
+
+    private void seedDefaultAutoAssignConfig() {
+        if (autoAssignConfigRepository.count() > 0) {
+            return;
+        }
+        autoAssignConfigRepository.save(AutoAssignConfig.builder()
+                .mode(EAutoAssignMode.ASSIST)
+                .distanceWeight(0.45)
+                .monthlyWorkloadWeight(0.35)
+                .activeLoadWeight(0.15)
+                .onTimeRateWeight(0.05)
+                .maxRadiusKm(15.0)
+                .maxConcurrentTasks(10)
+                .targetMonthlyTasks(20)
+                .build());
+        log.info("Seeded default auto-assign config");
     }
 
     private void seedDefaultCategories() {

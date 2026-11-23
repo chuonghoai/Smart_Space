@@ -1,5 +1,6 @@
 package com.vn.smart_space.controller.report;
 
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
@@ -77,6 +78,26 @@ public class AdminReportController {
         String adminId = jwt != null ? jwt.getClaimAsString("userId") : null;
         return ResponseEntity
                 .ok(ApiResponse.success("report.assign.success", reportService.assignReport(id, request, adminId)));
+    }
+
+    @GetMapping("/{id}/recommendations")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<ApiResponse> getReportRecommendations(
+            @PathVariable String id,
+            @RequestParam(defaultValue = "3") int limit,
+            Locale locale) {
+        return ResponseEntity.ok(
+                ApiResponse.success("system.success", reportService.getReportRecommendations(id, limit, locale)));
+    }
+
+    @PostMapping("/{id}/auto-assign")
+    @PreAuthorize("hasRole('admin')")
+    public ResponseEntity<ApiResponse> autoAssignReport(
+            @PathVariable String id,
+            @AuthenticationPrincipal Jwt jwt) {
+        String adminId = jwt != null ? jwt.getClaimAsString("userId") : null;
+        return ResponseEntity.ok(
+                ApiResponse.success("auto_assign.trigger.success", reportService.autoAssignReport(id, adminId)));
     }
 
     @GetMapping("/statistics")

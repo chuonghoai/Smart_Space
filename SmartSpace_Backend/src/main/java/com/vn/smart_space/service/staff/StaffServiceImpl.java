@@ -54,6 +54,7 @@ import com.vn.smart_space.repository.ReportRepository;
 import com.vn.smart_space.repository.UserRepository;
 import com.vn.smart_space.service.auth.IAuthenticationService;
 import com.vn.smart_space.service.mail.IMailService;
+import com.vn.smart_space.utils.GeoUtils;
 import com.vn.smart_space.utils.PasswordGenerator;
 import com.vn.smart_space.utils.TrendBucketHelper;
 
@@ -390,8 +391,7 @@ public class StaffServiceImpl implements IStaffService {
                         if (lat == null || lng == null) {
                                 throw new BadRequestException("staff.location.coordinates_pair_required");
                         }
-                        if (Double.isNaN(lat) || Double.isNaN(lng) || lat < -90.0 || lat > 90.0
-                                        || lng < -180.0 || lng > 180.0) {
+                        if (!GeoUtils.isValidCoordinate(lat, lng)) {
                                 throw new BadRequestException("staff.location.invalid_coordinates");
                         }
                         staff.setBaseLatitude(lat);

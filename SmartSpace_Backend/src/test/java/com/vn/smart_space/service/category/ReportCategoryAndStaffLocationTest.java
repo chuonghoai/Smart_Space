@@ -22,6 +22,7 @@ import com.vn.smart_space.repository.ReportCategoryRepository;
 import com.vn.smart_space.repository.ReportRepository;
 import com.vn.smart_space.repository.UserRepository;
 import com.vn.smart_space.service.auth.IAuthenticationService;
+import com.vn.smart_space.service.autoassign.IAutoAssignService;
 import com.vn.smart_space.service.conversation.IConversationService;
 import com.vn.smart_space.service.delegation.IReportDelegationService;
 import com.vn.smart_space.service.mail.IMailService;
@@ -35,6 +36,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -65,6 +67,8 @@ class ReportCategoryAndStaffLocationTest {
     @Mock IReportDensityService reportDensityService;
     @Mock IReportDelegationService delegationService;
     @Mock IConversationService conversationService;
+    @Mock IAutoAssignService autoAssignService;
+    @Mock ApplicationEventPublisher eventPublisher;
 
     @InjectMocks ReportCategoryServiceImpl categoryService;
     @InjectMocks StaffServiceImpl staffService;

@@ -1,6 +1,7 @@
 package com.vn.smart_space.dto.response.report;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.vn.smart_space.dto.response.autoassign.AssignmentDecisionSummaryResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -119,4 +120,10 @@ public class ReportDetailResponse {
 
     @JsonProperty("category_name_en")
     private String categoryNameEn;
+
+    @JsonProperty("assignment_source")
+    private String assignmentSource;
+
+    @JsonProperty("auto_assign_decision")
+    private AssignmentDecisionSummaryResponse autoAssignDecision;
 }

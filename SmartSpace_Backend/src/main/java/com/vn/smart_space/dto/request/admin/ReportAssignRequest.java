@@ -15,4 +15,10 @@ import lombok.experimental.FieldDefaults;
 public class ReportAssignRequest {
     String staffId;
     String severity;
+    String source;
+
+    public ReportAssignRequest(String staffId, String severity) {
+        this.staffId = staffId;
+        this.severity = severity;
+    }
 }

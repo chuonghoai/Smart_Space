@@ -13,14 +13,19 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Limit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.vn.smart_space.consts.EAssignmentSource;
+import com.vn.smart_space.consts.EAutoAssignMode;
 import com.vn.smart_space.consts.EDensityTimeframe;
 import com.vn.smart_space.consts.EMapReportFilter;
 import com.vn.smart_space.consts.EReportSeverity;
@@ -37,6 +42,7 @@ import com.vn.smart_space.dto.response.admin.RecentReportResponse;
 import com.vn.smart_space.dto.response.admin.ReportListResponse;
 import com.vn.smart_space.dto.response.admin.ReportStatisticsResponse;
 import com.vn.smart_space.dto.response.admin.ReportTrendResponse;
+import com.vn.smart_space.dto.response.autoassign.AutoAssignRecommendationResponse;
 import com.vn.smart_space.dto.response.notification.NotificationEvent;
 import com.vn.smart_space.dto.response.report.MapReportsResponse;
 import com.vn.smart_space.dto.response.report.MyReportsSummaryResponse;
@@ -48,6 +54,9 @@ import com.vn.smart_space.exception.BadRequestException;
 import com.vn.smart_space.exception.ResourceNotFoundException;
 import com.vn.smart_space.exception.UnauthorizedException;
 import com.vn.smart_space.model.ActivityHistory;
+import com.vn.smart_space.model.AssignmentDecisionLog;
+import com.vn.smart_space.model.AutoAssignConfig;
+import com.vn.smart_space.model.Conversation;
 import com.vn.smart_space.model.Report;
 import com.vn.smart_space.model.ReportCategory;
 import com.vn.smart_space.model.User;
@@ -55,9 +64,14 @@ import com.vn.smart_space.repository.ActivityHistoryRepository;
 import com.vn.smart_space.repository.ReportCategoryRepository;
 import com.vn.smart_space.repository.ReportRepository;
 import com.vn.smart_space.repository.UserRepository;
+import com.vn.smart_space.service.autoassign.AutoAssignDispatchResult;
+import com.vn.smart_space.service.autoassign.IAutoAssignService;
+import com.vn.smart_space.service.autoassign.ReportCreatedEvent;
+import com.vn.smart_space.service.conversation.IConversationService;
 import com.vn.smart_space.service.notification.IFCMService;
 import com.vn.smart_space.service.notification.INotificationService;
 import com.vn.smart_space.service.delegation.IReportDelegationService;
+import com.vn.smart_space.utils.GeoUtils;
 import org.springframework.security.access.AccessDeniedException;
 
 import lombok.RequiredArgsConstructor;
@@ -78,7 +92,9 @@ public class ReportServiceImpl implements IReportService {
     private final MessageSource messageSource;
     private final IReportDensityService reportDensityService;
     private final IReportDelegationService delegationService;
-    private final com.vn.smart_space.service.conversation.IConversationService conversationService;
+    private final IConversationService conversationService;
+    private final IAutoAssignService autoAssignService;
+    private final ApplicationEventPublisher eventPublisher;
 
     private static final int MAP_DEFAULT_LIMIT = 300;
     private static final int MAP_MAX_LIMIT = 500;
@@ -113,7 +129,7 @@ public class ReportServiceImpl implements IReportService {
             ReportResponse res = mapToResponse(r);
             if (calcDist) {
                 res.setDistanceInMeters(
-                        calculateHaversineDistance(userLat, userLong, r.getLatitude(), r.getLongitude()));
+                        GeoUtils.haversineMeters(userLat, userLong, r.getLatitude(), r.getLongitude()));
             }
             return res;
         }).collect(Collectors.toList());
@@ -274,17 +290,6 @@ public class ReportServiceImpl implements IReportService {
                 .categoryNameVi(category != null ? category.getNameVi() : null)
                 .categoryNameEn(category != null ? category.getNameEn() : null)
                 .build();
-    }
-
-    private double calculateHaversineDistance(double lat1, double lon1, double lat2, double lon2) {
-        final int R = 6371000; // Radius of the earth in meters
-        double latDistance = Math.toRadians(lat2 - lat1);
-        double lonDistance = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                        * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
     }
 
     private ReportCategory resolveActiveCategory(String categoryId) {
@@ -478,7 +483,43 @@ public class ReportServiceImpl implements IReportService {
             log.warn("[Notify Admin] Error while notifying admins for report {}: {}", report.getId(), e.getMessage());
         }
 
+        // Phân công tự động (AUTO / ASSIST) chạy sau khi phản ánh commit, trong
+        // transaction riêng
+        // (ReportCreatedAutoAssignListener → autoAssignOnReportCreated)
+        eventPublisher.publishEvent(new ReportCreatedEvent(report.getId()));
+
         return response;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void autoAssignOnReportCreated(String reportId) {
+        // Khoá phân công phải là câu lệnh DB đầu tiên: các truy vấn đếm tải phía sau
+        // mới thấy
+        // những lượt phân công vừa commit (REPEATABLE READ chụp snapshot ở lần đọc đầu
+        // tiên)
+        AutoAssignConfig config = autoAssignService.lockDispatchConfig();
+        Report report = reportRepository.findById(reportId).orElse(null);
+        if (report == null || report.getStatus() != EReportStatus.pending || report.getAssignedStaff() != null) {
+            return;
+        }
+
+        AutoAssignDispatchResult result = autoAssignService.evaluateOnReportCreated(report, config);
+        if (result.isAssigned() && result.getSelectedStaff() != null) {
+            executeAssign(report, result.getSelectedStaff(), report.getSeverity(), EAssignmentSource.AUTO, null,
+                    result.getDecisionLog());
+            return;
+        }
+        if (result.getDecisionLog() != null) {
+            report.setDecisionLogId(result.getDecisionLog().getId());
+            reportRepository.save(report);
+        }
+        // Chỉ báo ở chế độ AUTO: Admin đang trông máy tự giao nên cần biết lượt nào máy
+        // bỏ lại.
+        // Ở ASSIST, Admin vốn tự phân công và đã nhận thông báo "có phản ánh mới".
+        if (result.getFallbackReason() != null && result.getMode() == EAutoAssignMode.AUTO) {
+            notifyAdminsAutoAssignFallback(report, result.getFallbackReason());
+        }
     }
 
     @Override
@@ -494,7 +535,10 @@ public class ReportServiceImpl implements IReportService {
     public ReportDetailResponse getReportDetail(String reportId, String viewerId, String viewerScope) {
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
-        boolean privileged = "ROLE_admin".equals(viewerScope) || "ROLE_staff".equals(viewerScope);
+        if ("ROLE_admin".equals(viewerScope)) {
+            return toAdminDetail(report);
+        }
+        boolean privileged = "ROLE_staff".equals(viewerScope);
         boolean owner = viewerId != null && report.getUser() != null && viewerId.equals(report.getUser().getId());
         if (privileged || owner) {
             return toDetail(report);
@@ -528,7 +572,7 @@ public class ReportServiceImpl implements IReportService {
 
         // "Gần tôi" chỉ khi có toạ độ hợp lệ; thiếu/sai toạ độ thì về "Mới nhất"
         boolean nearby = "nearby".equalsIgnoreCase(sort != null ? sort.trim() : null)
-                && isValidCoordinate(userLat, userLong);
+                && GeoUtils.isValidCoordinate(userLat, userLong);
         Page<Report> reportPage;
         if (nearby) {
             double cosLat = Math.cos(Math.toRadians(userLat));
@@ -542,7 +586,7 @@ public class ReportServiceImpl implements IReportService {
             ReportDetailResponse res = toPublic(toDetail(r));
             if (userLat != null && userLong != null && r.getLatitude() != null && r.getLongitude() != null) {
                 res.setDistanceInMeters(
-                        calculateHaversineDistance(userLat, userLong, r.getLatitude(), r.getLongitude()));
+                        GeoUtils.haversineMeters(userLat, userLong, r.getLatitude(), r.getLongitude()));
             }
             return res;
         }).collect(Collectors.toList());
@@ -602,8 +646,8 @@ public class ReportServiceImpl implements IReportService {
      * Shared by client & admin map: every bound present, in range, and min <= max.
      */
     private void validateMapBounds(Double minLat, Double maxLat, Double minLng, Double maxLng) {
-        if (!isValidLatitude(minLat) || !isValidLatitude(maxLat)
-                || !isValidLongitude(minLng) || !isValidLongitude(maxLng)
+        if (!GeoUtils.isValidLatitude(minLat) || !GeoUtils.isValidLatitude(maxLat)
+                || !GeoUtils.isValidLongitude(minLng) || !GeoUtils.isValidLongitude(maxLng)
                 || minLat > maxLat || minLng > maxLng) {
             throw new BadRequestException("report.map.invalid_bounds");
         }
@@ -611,14 +655,6 @@ public class ReportServiceImpl implements IReportService {
 
     private int safeMapLimit(int limit, int defaultLimit) {
         return limit <= 0 ? defaultLimit : Math.min(limit, MAP_MAX_LIMIT);
-    }
-
-    private boolean isValidLatitude(Double value) {
-        return value != null && value >= -90 && value <= 90;
-    }
-
-    private boolean isValidLongitude(Double value) {
-        return value != null && value >= -180 && value <= 180;
     }
 
     /**
@@ -633,6 +669,18 @@ public class ReportServiceImpl implements IReportService {
             res.setUserName(null);
             res.setUserAvatarUrl(null);
         }
+        return res;
+    }
+
+    /**
+     * Chi tiết cho Admin: kèm phiếu giải trình phân công tự động. Phiếu chứa email,
+     * SĐT,
+     * tọa độ trạm và điểm của các ứng viên nên KHÔNG được gắn vào response cho
+     * người dân/nhân viên.
+     */
+    private ReportDetailResponse toAdminDetail(Report report) {
+        ReportDetailResponse res = toDetail(report);
+        res.setAutoAssignDecision(autoAssignService.getDecisionSummary(report, LocaleContextHolder.getLocale()));
         return res;
     }
 
@@ -708,6 +756,7 @@ public class ReportServiceImpl implements IReportService {
                 .categoryCode(category != null ? category.getCode() : null)
                 .categoryNameVi(category != null ? category.getNameVi() : null)
                 .categoryNameEn(category != null ? category.getNameEn() : null)
+                .assignmentSource(report.getAssignmentSource() != null ? report.getAssignmentSource().name() : null)
                 .build();
     }
 
@@ -735,11 +784,44 @@ public class ReportServiceImpl implements IReportService {
     }
 
     @Override
+    @Transactional(readOnly = true)
+    public AutoAssignRecommendationResponse getReportRecommendations(String reportId, int limit, Locale locale) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
+        return autoAssignService.getRecommendations(report, limit, locale);
+    }
+
+    @Override
+    @Transactional
+    public ReportDetailResponse autoAssignReport(String reportId, String adminId) {
+        // Khoá phân công trước mọi lần đọc khác (xem autoAssignOnReportCreated)
+        AutoAssignConfig config = autoAssignService.lockDispatchConfig();
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
+        // Chỉ phản ánh đang chờ; đổi người phụ trách dùng luồng giao lại thủ công
+        if (report.getStatus() != EReportStatus.pending) {
+            throw new BadRequestException("auto_assign.invalid_report_status");
+        }
+        AutoAssignDispatchResult dispatchResult = autoAssignService.evaluateManualTrigger(report, config);
+        Report saved = executeAssign(
+                report,
+                dispatchResult.getSelectedStaff(),
+                report.getSeverity(),
+                EAssignmentSource.AUTO,
+                adminId,
+                dispatchResult.getDecisionLog());
+        return toAdminDetail(saved);
+    }
+
+    @Override
     @Transactional
     public ReportDetailResponse assignReport(
             String reportId,
             ReportAssignRequest request,
             String adminId) {
+
+        // Khoá phân công trước khi đọc report để đồng bộ tải với luồng AUTO / autoAssignReport
+        autoAssignService.lockDispatchConfig();
 
         Report report = reportRepository.findById(reportId)
                 .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
@@ -747,11 +829,43 @@ public class ReportServiceImpl implements IReportService {
         User staff = userRepository.findById(request.getStaffId())
                 .orElseThrow(() -> new ResourceNotFoundException("staff.not_found"));
 
+        EReportSeverity targetSeverity = report.getSeverity();
         if (request.getSeverity() != null && !request.getSeverity().trim().isEmpty()) {
             try {
-                report.setSeverity(EReportSeverity.valueOf(request.getSeverity().toLowerCase()));
+                targetSeverity = EReportSeverity.valueOf(request.getSeverity().toLowerCase());
             } catch (Exception ignored) {
             }
+        }
+
+        EAssignmentSource source = EAssignmentSource.MANUAL;
+        if (request.getSource() != null
+                && EAssignmentSource.RECOMMEND_CLICK.name().equalsIgnoreCase(request.getSource().trim())) {
+            source = EAssignmentSource.RECOMMEND_CLICK;
+        }
+
+        // Đánh dấu quyết định trước đó (máy giao / máy đề xuất) là bị ghi đè nếu Admin
+        // chọn người khác,
+        // rồi mới ghi log mới cho lượt chọn từ danh sách đề xuất
+        autoAssignService.markOverriddenIfNeeded(report, staff, adminId);
+        AssignmentDecisionLog decisionLog = source == EAssignmentSource.RECOMMEND_CLICK
+                ? autoAssignService.recordRecommendClick(report, staff, adminId)
+                : null;
+
+        Report saved = executeAssign(report, staff, targetSeverity, source, adminId, decisionLog);
+        return toAdminDetail(saved);
+    }
+
+    /** Lõi phân công dùng chung cho Manual, 1-chạm đề xuất và Auto. Trả về report đã lưu. */
+    protected Report executeAssign(
+            Report report,
+            User staff,
+            EReportSeverity targetSeverity,
+            EAssignmentSource source,
+            String adminId,
+            AssignmentDecisionLog decisionLog) {
+
+        if (targetSeverity != null) {
+            report.setSeverity(targetSeverity);
         }
 
         boolean assigneeChanged = report.getAssignedStaff() == null
@@ -765,22 +879,35 @@ public class ReportServiceImpl implements IReportService {
         report.setDeadline(assignedLdt != null
                 ? assignedLdt.plusDays(deadlineDaysForSeverity(report.getSeverity()))
                 : LocalDateTime.now().plusDays(deadlineDaysForSeverity(report.getSeverity())));
+        report.setAssignmentSource(source != null ? source : EAssignmentSource.MANUAL);
+        if (decisionLog != null && decisionLog.getId() != null) {
+            report.setDecisionLogId(decisionLog.getId());
+        }
         report = reportRepository.save(report);
+
+        boolean isAutoSource = source == EAssignmentSource.AUTO;
 
         // Auto-create chat conversation between staff & client and post initial system
         // message
         try {
-            com.vn.smart_space.model.Conversation conv = conversationService.getOrCreateReportConversation(report);
+            Conversation conv = conversationService.getOrCreateReportConversation(report);
             if (conv != null && report.getUser() != null) {
                 User clientUser = report.getUser();
-                java.util.Locale clientLocale = java.util.Locale.forLanguageTag(
+                Locale clientLocale = Locale.forLanguageTag(
                         clientUser.getLanguage() != null ? clientUser.getLanguage() : "vi");
                 String staffN = staff.getFullName() != null && !staff.getFullName().trim().isEmpty()
                         ? staff.getFullName().trim()
                         : (staff.getEmail() != null ? staff.getEmail().trim() : "Nhân viên");
-                String sysMsg = messageSource.getMessage("chat.system.report_assigned",
+                String chatKey = isAutoSource
+                        ? "chat.system.report_auto_assigned"
+                        : "chat.system.report_assigned";
+                String chatFallback = isAutoSource
+                        ? String.format("Hệ thống đã tự động phân công phản ánh \"%s\" cho %s", report.getTitle(),
+                                staffN)
+                        : String.format("%s đã tiếp nhận phản ánh '%s'", staffN, report.getTitle());
+                String sysMsg = messageSource.getMessage(chatKey,
                         new Object[] { staffN, report.getTitle() },
-                        String.format("%s đã tiếp nhận phản ánh '%s'", staffN, report.getTitle()),
+                        chatFallback,
                         clientLocale);
                 conversationService.sendSystemMessage(conv, sysMsg, clientUser);
             }
@@ -788,8 +915,7 @@ public class ReportServiceImpl implements IReportService {
             log.error("Failed to create conversation or send system message on assign report: {}", e.getMessage());
         }
 
-        // Phân công cho người khác → yêu cầu nhờ làm giùm cũ không còn ý nghĩa, hoàn
-        // bonus
+        // Phân công cho người khác → yêu cầu nhờ làm giùm cũ không còn ý nghĩa
         if (assigneeChanged) {
             delegationService.onReportUnassigned(report);
         }
@@ -805,7 +931,15 @@ public class ReportServiceImpl implements IReportService {
         String reportTitle = report.getTitle() != null && !report.getTitle().trim().isEmpty()
                 ? report.getTitle().trim()
                 : "Phản ánh";
-        String i18nKey = "activity.report.assigned|" + adminName + "|" + reportTitle + "|" + staffName;
+        // Máy tự giao (không có Admin): tên "Hệ thống SmartSpace" nằm trong bản dịch của key,
+        // để hiển thị đúng ngôn ngữ của người xem thay vì ghi cứng tiếng Việt vào tham số
+        String i18nKey;
+        if (isAutoSource && admin == null) {
+            i18nKey = "activity.report.assigned.system|" + reportTitle + "|" + staffName;
+        } else {
+            String activityPrefix = isAutoSource ? "activity.report.assigned.auto" : "activity.report.assigned";
+            i18nKey = activityPrefix + "|" + adminName + "|" + reportTitle + "|" + staffName;
+        }
 
         ActivityHistory activity = ActivityHistory.builder()
                 .actor(admin)
@@ -823,38 +957,63 @@ public class ReportServiceImpl implements IReportService {
                     report.getTitle() != null ? report.getTitle().replace("\"", "\\\"") : "",
                     report.getSeverity() != null ? report.getSeverity().name() : "low");
 
+            String scoreLabel = (decisionLog != null && decisionLog.getFinalScore() != null)
+                    ? String.valueOf(decisionLog.getFinalScore())
+                    : "—";
+
             for (User a : admins) {
                 try {
-                    java.util.Locale adminLocale = new java.util.Locale(
+                    Locale adminLocale = Locale.forLanguageTag(
                             a.getLanguage() != null ? a.getLanguage() : "vi");
-                    String title = messageSource.getMessage("notification.report.assigned.admin.title", null,
-                            "Phân công phản ánh thành công", adminLocale);
+                    String titleKey = isAutoSource
+                            ? "notification.report.auto_assigned.admin.title"
+                            : "notification.report.assigned.admin.title";
+                    String msgKey = isAutoSource
+                            ? "notification.report.auto_assigned.admin.message"
+                            : "notification.report.assigned.admin.message";
+                    String title = messageSource.getMessage(titleKey, null,
+                            isAutoSource ? "Đã tự động phân công phản ánh" : "Phân công phản ánh thành công",
+                            adminLocale);
                     String staffN = staff.getFullName() != null && !staff.getFullName().trim().isEmpty()
                             ? staff.getFullName().trim()
                             : (staff.getEmail() != null ? staff.getEmail().trim() : "Nhân viên");
-                    String message = messageSource.getMessage("notification.report.assigned.admin.message",
-                            new Object[] { report.getTitle(), staffN },
-                            String.format("Phản ánh '%s' đã được giao cho %s.", report.getTitle(), staffN),
-                            adminLocale);
+                    Object[] msgArgs = isAutoSource
+                            ? new Object[] { report.getTitle(), staffN, scoreLabel }
+                            : new Object[] { report.getTitle(), staffN };
+                    String fallbackMsg = isAutoSource
+                            ? String.format("Hệ thống đã tự động giao phản ánh \"%s\" cho %s (điểm %s).",
+                                    report.getTitle(), staffN, scoreLabel)
+                            : String.format("Phản ánh '%s' đã được giao cho %s.", report.getTitle(), staffN);
+                    String message = messageSource.getMessage(msgKey, msgArgs, fallbackMsg, adminLocale);
 
                     notificationService.createNotification(a.getId(), title, message, actionData, report.getImageUrl());
                     NotificationEvent event = new NotificationEvent(title, message, actionData, report.getImageUrl(),
                             Map.of("shouldRefresh", true));
                     messagingTemplate.convertAndSendToUser(a.getId(), "/queue/notifications", event);
                 } catch (Exception ex) {
+                    log.warn("[Notify Admin] Failed to notify admin {} on assign report {}: {}", a.getId(),
+                            report.getId(), ex.getMessage());
                 }
             }
-        } catch (Exception ignored) {
+        } catch (Exception ex) {
+            log.warn("[Notify Admins] Failed to notify admins on assign report {}: {}", report.getId(),
+                    ex.getMessage());
         }
 
         // Notify Staff via WebSocket & FCM
         if (staff != null) {
             try {
-                java.util.Locale staffLocale = new java.util.Locale(
+                Locale staffLocale = Locale.forLanguageTag(
                         staff.getLanguage() != null ? staff.getLanguage() : "vi");
-                String staffTitle = messageSource.getMessage("notification.report.assigned.staff.title", null,
-                        "Phân công mới", staffLocale);
-                String staffMessage = messageSource.getMessage("notification.report.assigned.staff.message",
+                String staffTitleKey = isAutoSource
+                        ? "notification.report.auto_assigned.staff.title"
+                        : "notification.report.assigned.staff.title";
+                String staffMsgKey = isAutoSource
+                        ? "notification.report.auto_assigned.staff.message"
+                        : "notification.report.assigned.staff.message";
+                String staffTitle = messageSource.getMessage(staffTitleKey, null,
+                        isAutoSource ? "Công việc mới (phân công tự động)" : "Phân công mới", staffLocale);
+                String staffMessage = messageSource.getMessage(staffMsgKey,
                         new Object[] { report.getTitle() },
                         String.format("Bạn đã được phân công xử lý phản ánh '%s'.", report.getTitle()), staffLocale);
 
@@ -874,7 +1033,9 @@ public class ReportServiceImpl implements IReportService {
                         staffTitle, staffMessage,
                         Map.of("type", "REPORT_DETAIL", "payload", "{\"reportId\":\"" + report.getId() + "\"}"));
                 fcmService.sendToUser(staff.getId(), staffNotif);
-            } catch (Exception ignored) {
+            } catch (Exception ex) {
+                log.warn("[Notify Staff] Failed to notify staff {} on assign report {}: {}", staff.getId(),
+                        report.getId(), ex.getMessage());
             }
         }
 
@@ -882,12 +1043,24 @@ public class ReportServiceImpl implements IReportService {
         if (report.getUser() != null) {
             try {
                 User client = report.getUser();
-                java.util.Locale clientLocale = new java.util.Locale(
+                Locale clientLocale = Locale.forLanguageTag(
                         client.getLanguage() != null ? client.getLanguage() : "vi");
-                String clientTitle = messageSource.getMessage("notification.report.assigned.client.title", null,
+                String staffN = staff.getFullName() != null && !staff.getFullName().trim().isEmpty()
+                        ? staff.getFullName().trim()
+                        : (staff.getEmail() != null ? staff.getEmail().trim() : "Nhân viên");
+                String clientTitleKey = isAutoSource
+                        ? "notification.report.auto_assigned.client.title"
+                        : "notification.report.assigned.client.title";
+                String clientMsgKey = isAutoSource
+                        ? "notification.report.auto_assigned.client.message"
+                        : "notification.report.assigned.client.message";
+                String clientTitle = messageSource.getMessage(clientTitleKey, null,
                         "Phản ánh đang được xử lý", clientLocale);
-                String clientMessage = messageSource.getMessage("notification.report.assigned.client.message",
-                        new Object[] { report.getTitle() },
+                Object[] clientArgs = isAutoSource
+                        ? new Object[] { report.getTitle(), staffN }
+                        : new Object[] { report.getTitle() };
+                String clientMessage = messageSource.getMessage(clientMsgKey,
+                        clientArgs,
                         String.format("Phản ánh '%s' của bạn đã được phân công xử lý.", report.getTitle()),
                         clientLocale);
 
@@ -904,11 +1077,57 @@ public class ReportServiceImpl implements IReportService {
                         clientTitle, clientMessage,
                         Map.of("type", "REPORT_DETAIL", "payload", "{\"reportId\":\"" + report.getId() + "\"}"));
                 fcmService.sendToUser(report.getUser().getId(), clientNotif);
-            } catch (Exception ignored) {
+            } catch (Exception ex) {
+                log.warn("[Notify Client] Failed to notify client {} on assign report {}: {}",
+                        report.getUser().getId(), report.getId(), ex.getMessage());
             }
         }
 
-        return getReportDetail(report.getId());
+        return report;
+    }
+
+    private void notifyAdminsAutoAssignFallback(Report report, String fallbackReasonKey) {
+        try {
+            List<User> admins = userRepository.findByRole(ERole.admin);
+            if (admins == null || admins.isEmpty()) {
+                return;
+            }
+            String actionData = String.format(
+                    "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}",
+                    report.getId());
+            Map<String, String> fcmData = Map.of(
+                    "type", "REPORT_DETAIL",
+                    "payload", "{\"reportId\":\"" + report.getId() + "\"}");
+            for (User admin : admins) {
+                try {
+                    Locale adminLocale = Locale.forLanguageTag(
+                            admin.getLanguage() != null ? admin.getLanguage() : "vi");
+                    String reasonText = messageSource.getMessage(
+                            fallbackReasonKey, null, fallbackReasonKey, adminLocale);
+                    String title = messageSource.getMessage(
+                            "notification.report.auto_assign_fallback.title",
+                            null,
+                            "Chưa thể tự động phân công phản ánh",
+                            adminLocale);
+                    String msg = messageSource.getMessage(
+                            "notification.report.auto_assign_fallback.message",
+                            new Object[] { report.getTitle(), reasonText },
+                            String.format("Phản ánh \"%s\" cần phân công thủ công: %s",
+                                    report.getTitle(), reasonText),
+                            adminLocale);
+                    notificationService.createNotification(admin.getId(), title, msg, actionData, report.getImageUrl());
+                    messagingTemplate.convertAndSendToUser(
+                            admin.getId(),
+                            "/queue/notifications",
+                            new NotificationEvent(title, msg, actionData, report.getImageUrl(),
+                                    Map.of("shouldRefresh", true)));
+                    fcmService.sendToUser(admin.getId(), new NotificationRequest(title, msg, fcmData));
+                } catch (Exception ignored) {
+                }
+            }
+        } catch (Exception e) {
+            log.warn("[AutoAssign] Failed notifying admins of fallback for {}: {}", report.getId(), e.getMessage());
+        }
     }
 
     @Override
@@ -1214,11 +1433,6 @@ public class ReportServiceImpl implements IReportService {
         return keyword.isEmpty() ? null : keyword;
     }
 
-    private boolean isValidCoordinate(Double lat, Double lng) {
-        return lat != null && lng != null && !lat.isNaN() && !lng.isNaN()
-                && lat >= -90 && lat <= 90 && lng >= -180 && lng <= 180;
-    }
-
     @Override
     @Transactional(readOnly = true)
     public MyReportsSummaryResponse getMyReportsSummary(String userId) {
@@ -1479,7 +1693,8 @@ public class ReportServiceImpl implements IReportService {
             delegationService.onReportUnassigned(saved);
         }
 
-        // When admin re-opens from processed back to processing, notify assigned Staff and Admins with new deadline
+        // When admin re-opens from processed back to processing, notify assigned Staff
+        // and Admins with new deadline
         if (current == EReportStatus.processed && next == EReportStatus.processing) {
             LocalDateTime updatedDeadline = resolveDeadline(saved);
             String formattedDeadline = updatedDeadline != null
@@ -1555,7 +1770,8 @@ public class ReportServiceImpl implements IReportService {
                         messagingTemplate.convertAndSendToUser(
                                 a.getId(),
                                 "/queue/notifications",
-                                new NotificationEvent(adminTitle, adminMsg, actionData, saved.getImageUrl(), adminExtra));
+                                new NotificationEvent(adminTitle, adminMsg, actionData, saved.getImageUrl(),
+                                        adminExtra));
                     } catch (Exception ex) {
                         log.warn("[Notify Admin] Failed to notify admin {} on reopen: {}", a.getId(), ex.getMessage());
                     }
@@ -1584,9 +1800,11 @@ public class ReportServiceImpl implements IReportService {
                 String msgKey = isStaff ? "notification.report.rejected.staff.message_with_reason"
                         : "notification.report.rejected.client.message_with_reason";
                 String fallback = isStaff
-                        ? String.format("Phản ánh '%s' bạn đang xử lý đã bị từ chối. Lý do: %s", report.getTitle(), reason)
+                        ? String.format("Phản ánh '%s' bạn đang xử lý đã bị từ chối. Lý do: %s", report.getTitle(),
+                                reason)
                         : String.format("Phản ánh '%s' của bạn đã bị từ chối. Lý do: %s", report.getTitle(), reason);
-                message = messageSource.getMessage(msgKey, new Object[] { report.getTitle(), reason }, fallback, locale);
+                message = messageSource.getMessage(msgKey, new Object[] { report.getTitle(), reason }, fallback,
+                        locale);
             } else {
                 String msgKey = isStaff ? "notification.report.rejected.staff.message"
                         : "notification.report.rejected.client.message";
@@ -1617,7 +1835,8 @@ public class ReportServiceImpl implements IReportService {
                             message,
                             Map.of("type", "REPORT_DETAIL", "payload", "{\"reportId\":\"" + report.getId() + "\"}")));
         } catch (Exception ex) {
-            log.warn("[Notify] Failed to notify {} on report reject {}: {}", recipient.getId(), report.getId(), ex.getMessage());
+            log.warn("[Notify] Failed to notify {} on report reject {}: {}", recipient.getId(), report.getId(),
+                    ex.getMessage());
         }
     }
 
@@ -1707,7 +1926,8 @@ public class ReportServiceImpl implements IReportService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, Boolean overdue, int page, int limit) {
+    public List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, Boolean overdue, int page,
+            int limit) {
         int safeLimit = Math.max(1, Math.min(limit, 100));
         int safePage = Math.max(0, page);
         boolean rehandling = "rehandling".equalsIgnoreCase(status);
@@ -1977,7 +2197,7 @@ public class ReportServiceImpl implements IReportService {
         }
 
         List<NearbyReportItemResponse> items = reports.stream().map(r -> {
-            double dist = calculateHaversineDistance(lat, lng, r.getLatitude(), r.getLongitude());
+            double dist = GeoUtils.haversineMeters(lat, lng, r.getLatitude(), r.getLongitude());
             List<String> imgUrls = extractImageUrls(r);
             String primaryImg = !imgUrls.isEmpty() ? imgUrls.get(0) : r.getImageUrl();
             return NearbyReportItemResponse.builder()

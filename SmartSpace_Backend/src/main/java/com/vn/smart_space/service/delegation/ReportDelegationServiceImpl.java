@@ -1,5 +1,6 @@
 package com.vn.smart_space.service.delegation;
 
+import com.vn.smart_space.consts.EAssignmentSource;
 import com.vn.smart_space.consts.EDelegationStatus;
 import com.vn.smart_space.consts.EReportStatus;
 import com.vn.smart_space.consts.ERole;
@@ -193,6 +194,7 @@ public class ReportDelegationServiceImpl implements IReportDelegationService {
 
                 report.setAssignedStaff(delegation.getHelper());
                 report.setAssignedAt(new java.util.Date());
+                report.setAssignmentSource(EAssignmentSource.DELEGATION);
                 reportRepository.save(report);
 
                 // Transfer conversation to helper
