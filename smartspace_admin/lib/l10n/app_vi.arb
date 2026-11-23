@@ -1075,5 +1075,73 @@
   "staffLocationConfirm": "Xác nhận vị trí",
   "staffLocationWebNoToken": "Chưa cấu hình MAPBOX_ACCESS_TOKEN. Vui lòng nhập vĩ độ và kinh độ thủ công.",
   "staffLocationGpsFailed": "Không lấy được tọa độ GPS hiện tại",
-  "reportCategoryLabel": "Danh mục"
+  "reportCategoryLabel": "Danh mục",
+  "autoAssignSectionTitle": "Phân công thông minh",
+  "autoAssignTriggerButton": "Phân công tự động",
+  "autoAssignTopCandidates": "Top {count} nhân viên đề xuất",
+  "@autoAssignTopCandidates": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignAssignNow": "Giao ngay",
+  "autoAssignSelectCandidate": "Chọn",
+  "autoAssignSelectedCandidate": "Đã chọn",
+  "autoAssignEligibleCount": "{count} ứng viên đạt chuẩn",
+  "@autoAssignEligibleCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignModeAuto": "Chế độ: Tự động",
+  "autoAssignModeAssist": "Chế độ: Gợi ý hỗ trợ",
+  "autoAssignModeManual": "Chế độ: Thủ công",
+  "autoAssignScoreLabel": "Điểm tổng",
+  "autoAssignDistanceLabel": "Khoảng cách",
+  "autoAssignMonthlyLoadLabel": "Tải tháng này",
+  "autoAssignActiveLoadLabel": "Đang xử lý",
+  "autoAssignOnTimeLabel": "Đúng hạn 30 ngày",
+  "autoAssignTasksCount": "{count} việc",
+  "@autoAssignTasksCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignScoreValue": "{score}/100",
+  "@autoAssignScoreValue": {
+    "placeholders": {
+      "score": { "type": "String" }
+    }
+  },
+  "autoAssignWeightPercent": "{percent}%",
+  "@autoAssignWeightPercent": {
+    "placeholders": {
+      "percent": { "type": "int" }
+    }
+  },
+  "autoAssignDistanceKm": "{distance} km",
+  "@autoAssignDistanceKm": {
+    "placeholders": {
+      "distance": { "type": "String" }
+    }
+  },
+  "autoAssignLoadFailed": "Không tải được danh sách đề xuất. Vui lòng thử lại.",
+  "autoAssignDecisionTitle": "Giải trình phân công tự động",
+  "autoAssignSourceAuto": "Hệ thống tự động giao",
+  "autoAssignSourceRecommendClick": "Giao từ gợi ý 1 chạm",
+  "autoAssignSourceOverridden": "Admin đã điều chỉnh",
+  "autoAssignSourceRecommended": "Chờ Admin duyệt gợi ý",
+  "autoAssignSourceFallback": "Chuyển phân công thủ công",
+  "autoAssignSourceManual": "Phân công thủ công",
+  "autoAssignOverriddenNotice": "Admin đã chuyển người phụ trách sang {staffName}.",
+  "@autoAssignOverriddenNotice": {
+    "placeholders": {
+      "staffName": { "type": "String" }
+    }
+  },
+  "autoAssignSnapshotTitle": "Xếp hạng ứng viên lúc phân công",
+  "autoAssignSuccessMessage": "Đã tự động phân công nhân viên phù hợp nhất",
+  "autoAssignFailedFallback": "Không thể tự động phân công",
+  "reassignStaffButton": "Đổi người phụ trách",
+  "autoAssignNoCandidatesDefault": "Chưa có nhân viên nào đạt chuẩn bộ lọc (chức vụ, tọa độ, bán kính, ngưỡng tải)."
 }

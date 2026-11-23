@@ -2622,4 +2622,120 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get reportCategoryLabel => 'Danh mục';
+
+  @override
+  String get autoAssignSectionTitle => 'Phân công thông minh';
+
+  @override
+  String get autoAssignTriggerButton => 'Phân công tự động';
+
+  @override
+  String autoAssignTopCandidates(int count) {
+    return 'Top $count nhân viên đề xuất';
+  }
+
+  @override
+  String get autoAssignAssignNow => 'Giao ngay';
+
+  @override
+  String get autoAssignSelectCandidate => 'Chọn';
+
+  @override
+  String get autoAssignSelectedCandidate => 'Đã chọn';
+
+  @override
+  String autoAssignEligibleCount(int count) {
+    return '$count ứng viên đạt chuẩn';
+  }
+
+  @override
+  String get autoAssignModeAuto => 'Chế độ: Tự động';
+
+  @override
+  String get autoAssignModeAssist => 'Chế độ: Gợi ý hỗ trợ';
+
+  @override
+  String get autoAssignModeManual => 'Chế độ: Thủ công';
+
+  @override
+  String get autoAssignScoreLabel => 'Điểm tổng';
+
+  @override
+  String get autoAssignDistanceLabel => 'Khoảng cách';
+
+  @override
+  String get autoAssignMonthlyLoadLabel => 'Tải tháng này';
+
+  @override
+  String get autoAssignActiveLoadLabel => 'Đang xử lý';
+
+  @override
+  String get autoAssignOnTimeLabel => 'Đúng hạn 30 ngày';
+
+  @override
+  String autoAssignTasksCount(int count) {
+    return '$count việc';
+  }
+
+  @override
+  String autoAssignScoreValue(String score) {
+    return '$score/100';
+  }
+
+  @override
+  String autoAssignWeightPercent(int percent) {
+    return '$percent%';
+  }
+
+  @override
+  String autoAssignDistanceKm(String distance) {
+    return '$distance km';
+  }
+
+  @override
+  String get autoAssignLoadFailed =>
+      'Không tải được danh sách đề xuất. Vui lòng thử lại.';
+
+  @override
+  String get autoAssignDecisionTitle => 'Giải trình phân công tự động';
+
+  @override
+  String get autoAssignSourceAuto => 'Hệ thống tự động giao';
+
+  @override
+  String get autoAssignSourceRecommendClick => 'Giao từ gợi ý 1 chạm';
+
+  @override
+  String get autoAssignSourceOverridden => 'Admin đã điều chỉnh';
+
+  @override
+  String get autoAssignSourceRecommended => 'Chờ Admin duyệt gợi ý';
+
+  @override
+  String get autoAssignSourceFallback => 'Chuyển phân công thủ công';
+
+  @override
+  String get autoAssignSourceManual => 'Phân công thủ công';
+
+  @override
+  String autoAssignOverriddenNotice(String staffName) {
+    return 'Admin đã chuyển người phụ trách sang $staffName.';
+  }
+
+  @override
+  String get autoAssignSnapshotTitle => 'Xếp hạng ứng viên lúc phân công';
+
+  @override
+  String get autoAssignSuccessMessage =>
+      'Đã tự động phân công nhân viên phù hợp nhất';
+
+  @override
+  String get autoAssignFailedFallback => 'Không thể tự động phân công';
+
+  @override
+  String get reassignStaffButton => 'Đổi người phụ trách';
+
+  @override
+  String get autoAssignNoCandidatesDefault =>
+      'Chưa có nhân viên nào đạt chuẩn bộ lọc (chức vụ, tọa độ, bán kính, ngưỡng tải).';
 }

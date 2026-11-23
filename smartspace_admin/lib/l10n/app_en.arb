@@ -1240,5 +1240,73 @@
   "staffLocationConfirm": "Confirm Location",
   "staffLocationWebNoToken": "MAPBOX_ACCESS_TOKEN is not configured. Please enter latitude and longitude manually.",
   "staffLocationGpsFailed": "Could not obtain current GPS coordinates",
-  "reportCategoryLabel": "Category"
+  "reportCategoryLabel": "Category",
+  "autoAssignSectionTitle": "Smart Assignment",
+  "autoAssignTriggerButton": "Auto-Assign",
+  "autoAssignTopCandidates": "Top {count} Recommended Staff",
+  "@autoAssignTopCandidates": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignAssignNow": "Assign Now",
+  "autoAssignSelectCandidate": "Select",
+  "autoAssignSelectedCandidate": "Selected",
+  "autoAssignEligibleCount": "{count} eligible candidates",
+  "@autoAssignEligibleCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignModeAuto": "Mode: Auto",
+  "autoAssignModeAssist": "Mode: Assist",
+  "autoAssignModeManual": "Mode: Manual",
+  "autoAssignScoreLabel": "Score",
+  "autoAssignDistanceLabel": "Distance",
+  "autoAssignMonthlyLoadLabel": "Monthly load",
+  "autoAssignActiveLoadLabel": "Active load",
+  "autoAssignOnTimeLabel": "30d on-time",
+  "autoAssignTasksCount": "{count} tasks",
+  "@autoAssignTasksCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignScoreValue": "{score}/100",
+  "@autoAssignScoreValue": {
+    "placeholders": {
+      "score": { "type": "String" }
+    }
+  },
+  "autoAssignWeightPercent": "{percent}%",
+  "@autoAssignWeightPercent": {
+    "placeholders": {
+      "percent": { "type": "int" }
+    }
+  },
+  "autoAssignDistanceKm": "{distance} km",
+  "@autoAssignDistanceKm": {
+    "placeholders": {
+      "distance": { "type": "String" }
+    }
+  },
+  "autoAssignLoadFailed": "Could not load staff recommendations. Please try again.",
+  "autoAssignDecisionTitle": "Auto-Assign Decision Breakdown",
+  "autoAssignSourceAuto": "System Auto-Assigned",
+  "autoAssignSourceRecommendClick": "1-Tap Suggested Assign",
+  "autoAssignSourceOverridden": "Overridden by Admin",
+  "autoAssignSourceRecommended": "Pending Admin Confirmation",
+  "autoAssignSourceFallback": "Fallback to Manual",
+  "autoAssignSourceManual": "Manual Assignment",
+  "autoAssignOverriddenNotice": "Admin reassigned this report to {staffName}.",
+  "@autoAssignOverriddenNotice": {
+    "placeholders": {
+      "staffName": { "type": "String" }
+    }
+  },
+  "autoAssignSnapshotTitle": "Candidate Ranking Snapshot",
+  "autoAssignSuccessMessage": "Report auto-assigned to best matching staff",
+  "autoAssignFailedFallback": "Unable to auto-assign report",
+  "reassignStaffButton": "Reassign Staff",
+  "autoAssignNoCandidatesDefault": "No staff matched the eligibility filters (position, base coordinates, radius, concurrent load limit)."
 }

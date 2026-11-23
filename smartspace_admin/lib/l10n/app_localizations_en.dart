@@ -2628,4 +2628,120 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reportCategoryLabel => 'Category';
+
+  @override
+  String get autoAssignSectionTitle => 'Smart Assignment';
+
+  @override
+  String get autoAssignTriggerButton => 'Auto-Assign';
+
+  @override
+  String autoAssignTopCandidates(int count) {
+    return 'Top $count Recommended Staff';
+  }
+
+  @override
+  String get autoAssignAssignNow => 'Assign Now';
+
+  @override
+  String get autoAssignSelectCandidate => 'Select';
+
+  @override
+  String get autoAssignSelectedCandidate => 'Selected';
+
+  @override
+  String autoAssignEligibleCount(int count) {
+    return '$count eligible candidates';
+  }
+
+  @override
+  String get autoAssignModeAuto => 'Mode: Auto';
+
+  @override
+  String get autoAssignModeAssist => 'Mode: Assist';
+
+  @override
+  String get autoAssignModeManual => 'Mode: Manual';
+
+  @override
+  String get autoAssignScoreLabel => 'Score';
+
+  @override
+  String get autoAssignDistanceLabel => 'Distance';
+
+  @override
+  String get autoAssignMonthlyLoadLabel => 'Monthly load';
+
+  @override
+  String get autoAssignActiveLoadLabel => 'Active load';
+
+  @override
+  String get autoAssignOnTimeLabel => '30d on-time';
+
+  @override
+  String autoAssignTasksCount(int count) {
+    return '$count tasks';
+  }
+
+  @override
+  String autoAssignScoreValue(String score) {
+    return '$score/100';
+  }
+
+  @override
+  String autoAssignWeightPercent(int percent) {
+    return '$percent%';
+  }
+
+  @override
+  String autoAssignDistanceKm(String distance) {
+    return '$distance km';
+  }
+
+  @override
+  String get autoAssignLoadFailed =>
+      'Could not load staff recommendations. Please try again.';
+
+  @override
+  String get autoAssignDecisionTitle => 'Auto-Assign Decision Breakdown';
+
+  @override
+  String get autoAssignSourceAuto => 'System Auto-Assigned';
+
+  @override
+  String get autoAssignSourceRecommendClick => '1-Tap Suggested Assign';
+
+  @override
+  String get autoAssignSourceOverridden => 'Overridden by Admin';
+
+  @override
+  String get autoAssignSourceRecommended => 'Pending Admin Confirmation';
+
+  @override
+  String get autoAssignSourceFallback => 'Fallback to Manual';
+
+  @override
+  String get autoAssignSourceManual => 'Manual Assignment';
+
+  @override
+  String autoAssignOverriddenNotice(String staffName) {
+    return 'Admin reassigned this report to $staffName.';
+  }
+
+  @override
+  String get autoAssignSnapshotTitle => 'Candidate Ranking Snapshot';
+
+  @override
+  String get autoAssignSuccessMessage =>
+      'Report auto-assigned to best matching staff';
+
+  @override
+  String get autoAssignFailedFallback => 'Unable to auto-assign report';
+
+  @override
+  String get reassignStaffButton => 'Reassign Staff';
+
+  @override
+  String get autoAssignNoCandidatesDefault =>
+      'No staff matched the eligibility filters (position, base coordinates, radius, concurrent load limit).';
 }

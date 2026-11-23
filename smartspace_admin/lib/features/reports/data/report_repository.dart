@@ -1,5 +1,6 @@
 import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
+import '../models/auto_assign_models.dart';
 import '../models/report_detail_model.dart';
 import '../models/report_filter_model.dart';
 import '../models/report_list_model.dart';
@@ -54,13 +55,34 @@ class ReportRepository {
     String id, {
     required String staffId,
     required String severity,
+    String source = 'MANUAL',
   }) async {
     return apiClient.post(
       '/admin/reports/$id/assign',
       data: {
         'staffId': staffId,
         'severity': severity,
+        'source': source,
       },
+      decoder: (json) => ReportDetailModel.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  Future<ApiResponse<AutoAssignRecommendationModel>> getReportRecommendations(
+    String id, {
+    int limit = 3,
+  }) async {
+    return apiClient.get(
+      '/admin/reports/$id/recommendations',
+      queryParameters: {'limit': limit},
+      decoder: (json) =>
+          AutoAssignRecommendationModel.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  Future<ApiResponse<ReportDetailModel>> autoAssignReport(String id) async {
+    return apiClient.post(
+      '/admin/reports/$id/auto-assign',
       decoder: (json) => ReportDetailModel.fromJson(json as Map<String, dynamic>),
     );
   }

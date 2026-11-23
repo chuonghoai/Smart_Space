@@ -4956,6 +4956,204 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Category'**
   String get reportCategoryLabel;
+
+  /// No description provided for @autoAssignSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Assignment'**
+  String get autoAssignSectionTitle;
+
+  /// No description provided for @autoAssignTriggerButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-Assign'**
+  String get autoAssignTriggerButton;
+
+  /// No description provided for @autoAssignTopCandidates.
+  ///
+  /// In en, this message translates to:
+  /// **'Top {count} Recommended Staff'**
+  String autoAssignTopCandidates(int count);
+
+  /// No description provided for @autoAssignAssignNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign Now'**
+  String get autoAssignAssignNow;
+
+  /// No description provided for @autoAssignSelectCandidate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get autoAssignSelectCandidate;
+
+  /// No description provided for @autoAssignSelectedCandidate.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected'**
+  String get autoAssignSelectedCandidate;
+
+  /// No description provided for @autoAssignEligibleCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} eligible candidates'**
+  String autoAssignEligibleCount(int count);
+
+  /// No description provided for @autoAssignModeAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode: Auto'**
+  String get autoAssignModeAuto;
+
+  /// No description provided for @autoAssignModeAssist.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode: Assist'**
+  String get autoAssignModeAssist;
+
+  /// No description provided for @autoAssignModeManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode: Manual'**
+  String get autoAssignModeManual;
+
+  /// No description provided for @autoAssignScoreLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Score'**
+  String get autoAssignScoreLabel;
+
+  /// No description provided for @autoAssignDistanceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get autoAssignDistanceLabel;
+
+  /// No description provided for @autoAssignMonthlyLoadLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly load'**
+  String get autoAssignMonthlyLoadLabel;
+
+  /// No description provided for @autoAssignActiveLoadLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active load'**
+  String get autoAssignActiveLoadLabel;
+
+  /// No description provided for @autoAssignOnTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'30d on-time'**
+  String get autoAssignOnTimeLabel;
+
+  /// No description provided for @autoAssignTasksCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} tasks'**
+  String autoAssignTasksCount(int count);
+
+  /// No description provided for @autoAssignScoreValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{score}/100'**
+  String autoAssignScoreValue(String score);
+
+  /// No description provided for @autoAssignWeightPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}%'**
+  String autoAssignWeightPercent(int percent);
+
+  /// No description provided for @autoAssignDistanceKm.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} km'**
+  String autoAssignDistanceKm(String distance);
+
+  /// No description provided for @autoAssignLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load staff recommendations. Please try again.'**
+  String get autoAssignLoadFailed;
+
+  /// No description provided for @autoAssignDecisionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-Assign Decision Breakdown'**
+  String get autoAssignDecisionTitle;
+
+  /// No description provided for @autoAssignSourceAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'System Auto-Assigned'**
+  String get autoAssignSourceAuto;
+
+  /// No description provided for @autoAssignSourceRecommendClick.
+  ///
+  /// In en, this message translates to:
+  /// **'1-Tap Suggested Assign'**
+  String get autoAssignSourceRecommendClick;
+
+  /// No description provided for @autoAssignSourceOverridden.
+  ///
+  /// In en, this message translates to:
+  /// **'Overridden by Admin'**
+  String get autoAssignSourceOverridden;
+
+  /// No description provided for @autoAssignSourceRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Admin Confirmation'**
+  String get autoAssignSourceRecommended;
+
+  /// No description provided for @autoAssignSourceFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Fallback to Manual'**
+  String get autoAssignSourceFallback;
+
+  /// No description provided for @autoAssignSourceManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual Assignment'**
+  String get autoAssignSourceManual;
+
+  /// No description provided for @autoAssignOverriddenNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin reassigned this report to {staffName}.'**
+  String autoAssignOverriddenNotice(String staffName);
+
+  /// No description provided for @autoAssignSnapshotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Candidate Ranking Snapshot'**
+  String get autoAssignSnapshotTitle;
+
+  /// No description provided for @autoAssignSuccessMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Report auto-assigned to best matching staff'**
+  String get autoAssignSuccessMessage;
+
+  /// No description provided for @autoAssignFailedFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to auto-assign report'**
+  String get autoAssignFailedFallback;
+
+  /// No description provided for @reassignStaffButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Reassign Staff'**
+  String get reassignStaffButton;
+
+  /// No description provided for @autoAssignNoCandidatesDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'No staff matched the eligibility filters (position, base coordinates, radius, concurrent load limit).'**
+  String get autoAssignNoCandidatesDefault;
 }
 
 class _AppLocalizationsDelegate

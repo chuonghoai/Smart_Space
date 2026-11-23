@@ -2,6 +2,7 @@ import 'dart:ui' show Locale;
 
 import 'package:mobile_shared/core/utils/report_category_helper.dart';
 import 'package:mobile_shared/core/utils/report_deadline_helper.dart';
+import 'package:smartspace_admin/features/reports/models/auto_assign_models.dart';
 
 class ReportDetailModel {
   final String id;
@@ -42,6 +43,8 @@ class ReportDetailModel {
   final String? categoryCode;
   final String? categoryNameVi;
   final String? categoryNameEn;
+  final String? assignmentSource;
+  final AssignmentDecisionSummaryModel? autoAssignDecision;
 
   String? localizedCategoryName(Locale locale) =>
       ReportCategoryHelper.localizedName(
@@ -89,6 +92,8 @@ class ReportDetailModel {
     this.categoryCode,
     this.categoryNameVi,
     this.categoryNameEn,
+    this.assignmentSource,
+    this.autoAssignDecision,
   });
 
   bool get isOverdue => ReportDeadlineHelper.isOverdue(
@@ -216,6 +221,17 @@ class ReportDetailModel {
           (json['category_name_vi'] ?? json['categoryNameVi']) as String?,
       categoryNameEn:
           (json['category_name_en'] ?? json['categoryNameEn']) as String?,
+      assignmentSource:
+          (json['assignment_source'] ?? json['assignmentSource']) as String?,
+      autoAssignDecision:
+          (json['auto_assign_decision'] ?? json['autoAssignDecision']) is Map
+              ? AssignmentDecisionSummaryModel.fromJson(
+                  Map<String, dynamic>.from(
+                    (json['auto_assign_decision'] ?? json['autoAssignDecision'])
+                        as Map,
+                  ),
+                )
+              : null,
     );
   }
 
@@ -258,6 +274,8 @@ class ReportDetailModel {
     String? categoryCode,
     String? categoryNameVi,
     String? categoryNameEn,
+    String? assignmentSource,
+    AssignmentDecisionSummaryModel? autoAssignDecision,
   }) {
     return ReportDetailModel(
       id: id ?? this.id,
@@ -298,6 +316,8 @@ class ReportDetailModel {
       categoryCode: categoryCode ?? this.categoryCode,
       categoryNameVi: categoryNameVi ?? this.categoryNameVi,
       categoryNameEn: categoryNameEn ?? this.categoryNameEn,
+      assignmentSource: assignmentSource ?? this.assignmentSource,
+      autoAssignDecision: autoAssignDecision ?? this.autoAssignDecision,
     );
   }
 }
