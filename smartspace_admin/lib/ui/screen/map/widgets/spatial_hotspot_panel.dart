@@ -5,6 +5,7 @@ import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:smartspace_admin/features/map/application/map_providers.dart';
 import 'package:smartspace_admin/features/map/models/spatial_analytics_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
+import 'package:smartspace_admin/ui/shared/dashboard/analytics_guide_modal.dart';
 
 class SpatialHotspotPanel extends ConsumerWidget {
   final ValueChanged<SpatialHotspotItem> onHotspotTap;
@@ -63,6 +64,50 @@ class SpatialHotspotPanel extends ConsumerWidget {
                     ),
                   ],
                 ),
+              ),
+              IconButton(
+                icon: const Icon(Icons.help_outline_rounded, size: 18),
+                tooltip: l10n.analyticsGuideTooltip,
+                visualDensity: VisualDensity.compact,
+                onPressed: () {
+                  showAnalyticsGuideModal(
+                    context,
+                    title: l10n.spatialGuideTitle,
+                    whatLabel: l10n.guideWhatLabel,
+                    purposeLabel: l10n.guidePurposeLabel,
+                    tellsLabel: l10n.guideTellsLabel,
+                    sections: [
+                      AnalyticsGuideSection(
+                        title: l10n.spatialGuideH3Title,
+                        whatItIs: l10n.spatialGuideH3What,
+                        purpose: l10n.spatialGuideH3Purpose,
+                        whatItTells: l10n.spatialGuideH3Tells,
+                        accent: cs.primary,
+                      ),
+                      AnalyticsGuideSection(
+                        title: l10n.spatialGuideRiskScoreTitle,
+                        whatItIs: l10n.spatialGuideRiskScoreWhat,
+                        purpose: l10n.spatialGuideRiskScorePurpose,
+                        whatItTells: l10n.spatialGuideRiskScoreTells,
+                        accent: semantic.warning,
+                      ),
+                      AnalyticsGuideSection(
+                        title: l10n.spatialGuideAcceleratingTitle,
+                        whatItIs: l10n.spatialGuideAcceleratingWhat,
+                        purpose: l10n.spatialGuideAcceleratingPurpose,
+                        whatItTells: l10n.spatialGuideAcceleratingTells,
+                        accent: cs.error,
+                      ),
+                      AnalyticsGuideSection(
+                        title: l10n.spatialGuideStatsTitle,
+                        whatItIs: l10n.spatialGuideStatsWhat,
+                        purpose: l10n.spatialGuideStatsPurpose,
+                        whatItTells: l10n.spatialGuideStatsTells,
+                        accent: semantic.info,
+                      ),
+                    ],
+                  );
+                },
               ),
               if (onClose != null)
                 IconButton(

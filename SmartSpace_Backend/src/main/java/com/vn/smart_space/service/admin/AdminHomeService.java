@@ -256,7 +256,8 @@ public class AdminHomeService {
         String message = "";
         if (a.getI18nKey() != null && !a.getI18nKey().trim().isEmpty()) {
             String raw = a.getI18nKey().trim();
-            Locale activeLocale = locale != null ? locale : Locale.forLanguageTag("vi");
+            String lang = (locale != null && "en".equalsIgnoreCase(locale.getLanguage())) ? "en" : "vi";
+            Locale activeLocale = Locale.forLanguageTag(lang);
             if (raw.contains("|")) {
                 String[] parts = raw.split("\\|", -1);
                 String key = parts[0];
@@ -292,7 +293,14 @@ public class AdminHomeService {
                     String translated = messageSource.getMessage(key, args, key, activeLocale);
                     message = prefix.isEmpty() ? translated : (translated.contains(prefix) ? translated : prefix + " " + translated);
                 } else {
-                    message = messageSource.getMessage(raw, null, raw, activeLocale);
+                    String fallbackActor = (a.getActor() != null && a.getActor().getFullName() != null
+                            && !a.getActor().getFullName().isBlank())
+                            ? a.getActor().getFullName().trim()
+                            : (a.getActor() != null && a.getActor().getEmail() != null
+                                    ? a.getActor().getEmail().trim()
+                                    : "");
+                    Object[] bareArgs = fallbackActor.isEmpty() ? null : new Object[]{fallbackActor};
+                    message = messageSource.getMessage(raw, bareArgs, raw, activeLocale);
                 }
             }
             if (message != null) {

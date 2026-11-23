@@ -7,6 +7,7 @@ import 'package:smartspace_admin/features/staff/models/staff_statistics_model.da
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/screen/staff/staff_shared_widgets.dart';
 import 'package:smartspace_admin/ui/screen/staff/widgets/staff_workload_badge.dart';
+import 'package:smartspace_admin/ui/shared/dashboard/analytics_guide_modal.dart';
 import 'package:smartspace_admin/ui/shared/dashboard/chart_card.dart';
 import 'package:smartspace_admin/ui/shared/dashboard/kpi_card.dart';
 import 'package:smartspace_admin/ui/shared/dashboard/ranked_bar_list.dart';
@@ -22,6 +23,49 @@ String formatResolutionDuration(BuildContext context, int minutes) {
   if (minutes < 60) return l10n.durationMinutes('$minutes');
   if (minutes < 48 * 60) return l10n.durationHours(format.format(minutes / 60));
   return l10n.durationDays(format.format(minutes / (24 * 60)));
+}
+
+void showStaffMetricsGuide(BuildContext context) {
+  final l10n = AppLocalizations.of(context)!;
+  final theme = Theme.of(context);
+  final semantic = AppSemanticColors.of(context);
+  showAnalyticsGuideModal(
+    context,
+    title: l10n.staffGuideTitle,
+    whatLabel: l10n.guideWhatLabel,
+    purposeLabel: l10n.guidePurposeLabel,
+    tellsLabel: l10n.guideTellsLabel,
+    sections: [
+      AnalyticsGuideSection(
+        title: l10n.staffGuideWeightedLoadTitle,
+        whatItIs: l10n.staffGuideWeightedLoadWhat,
+        purpose: l10n.staffGuideWeightedLoadPurpose,
+        whatItTells: l10n.staffGuideWeightedLoadTells,
+        accent: theme.colorScheme.primary,
+      ),
+      AnalyticsGuideSection(
+        title: l10n.staffGuideOverloadTitle,
+        whatItIs: l10n.staffGuideOverloadWhat,
+        purpose: l10n.staffGuideOverloadPurpose,
+        whatItTells: l10n.staffGuideOverloadTells,
+        accent: theme.colorScheme.error,
+      ),
+      AnalyticsGuideSection(
+        title: l10n.staffGuideEfficiencyTitle,
+        whatItIs: l10n.staffGuideEfficiencyWhat,
+        purpose: l10n.staffGuideEfficiencyPurpose,
+        whatItTells: l10n.staffGuideEfficiencyTells,
+        accent: semantic.success,
+      ),
+      AnalyticsGuideSection(
+        title: l10n.staffGuideBottleneckTitle,
+        whatItIs: l10n.staffGuideBottleneckWhat,
+        purpose: l10n.staffGuideBottleneckPurpose,
+        whatItTells: l10n.staffGuideBottleneckTells,
+        accent: semantic.warning,
+      ),
+    ],
+  );
 }
 
 /// Bộ chọn tháng thống kê dùng chung cho Web & Mobile trong màn Quản lý nhân viên.

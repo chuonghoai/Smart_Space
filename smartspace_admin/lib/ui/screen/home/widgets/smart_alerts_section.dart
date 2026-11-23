@@ -9,6 +9,7 @@ import 'package:smartspace_admin/features/reports/application/report_list_provid
 import 'package:smartspace_admin/features/reports/models/report_filter_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
+import 'package:smartspace_admin/ui/screen/home/widgets/overloaded_staff_modal.dart';
 
 class SmartAlertsSection extends ConsumerWidget {
   final AdminOverviewModel overview;
@@ -44,7 +45,7 @@ class SmartAlertsSection extends ConsumerWidget {
           onTap: () {
             ref.read(reportFilterProvider.notifier).state =
                 const ReportFilter(page: 1);
-            context.go(RouterPath.reportDashboard);
+            context.push(RouterPath.reportDashboard);
           },
         ),
       if (overview.atRiskCount > 0)
@@ -60,7 +61,7 @@ class SmartAlertsSection extends ConsumerWidget {
           onTap: () {
             ref.read(reportFilterProvider.notifier).state =
                 const ReportFilter(page: 1, atRiskOnly: true);
-            context.go(RouterPath.reportDashboard);
+            context.push(RouterPath.reportDashboard);
           },
         ),
       if (overview.overloadedStaffCount > 0)
@@ -70,7 +71,7 @@ class SmartAlertsSection extends ConsumerWidget {
           title: l10n.overloadedStaffTitle,
           subtitle: l10n.overloadedStaffSubtitle(overview.overloadedStaffCount),
           badge: overview.overloadedStaffCount.toString(),
-          onTap: () => context.go(RouterPath.staffManagement),
+          onTap: () => showOverloadedStaffModal(context),
         ),
       if (overview.pendingOver24hCount > 0)
         _AlertEntry(
@@ -82,7 +83,7 @@ class SmartAlertsSection extends ConsumerWidget {
           onTap: () {
             ref.read(reportFilterProvider.notifier).state =
                 const ReportFilter(page: 1, status: 'pending');
-            context.go(RouterPath.reportDashboard);
+            context.push(RouterPath.reportDashboard);
           },
         ),
     ];

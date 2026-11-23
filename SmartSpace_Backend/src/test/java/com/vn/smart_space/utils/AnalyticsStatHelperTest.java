@@ -11,9 +11,11 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.EnumMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.context.support.ResourceBundleMessageSource;
 
 import com.vn.smart_space.consts.EReportSeverity;
 import com.vn.smart_space.consts.EReportStatus;
@@ -119,5 +121,24 @@ class AnalyticsStatHelperTest {
         assertEquals("Khu A", h.getSampleAddress());
         // risk = pending(1)*2 + highCritical(2)*3 + overdue(1)*4 = 2 + 6 + 4 = 12
         assertEquals(12L, h.getRiskScore());
+    }
+
+    @Test
+    void messageBundles_containCancelledAndUpdatedReportActivityKeys() {
+        ResourceBundleMessageSource ms = new ResourceBundleMessageSource();
+        ms.setBasename("i18n/messages");
+        ms.setDefaultEncoding("UTF-8");
+
+        String viCancelled = ms.getMessage("activity.report.cancelled", new Object[] { "An" }, Locale.forLanguageTag("vi"));
+        String enCancelled = ms.getMessage("activity.report.cancelled", new Object[] { "An" }, Locale.ENGLISH);
+        String viUpdated = ms.getMessage("activity.report.updated", new Object[] { "An" }, Locale.forLanguageTag("vi"));
+        String enUpdated = ms.getMessage("activity.report.updated", new Object[] { "An" }, Locale.ENGLISH);
+
+        assertFalse(viCancelled.contains("activity.report.cancelled"));
+        assertTrue(viCancelled.contains("An"));
+        assertFalse(enCancelled.contains("activity.report.cancelled"));
+        assertTrue(enCancelled.contains("An"));
+        assertFalse(viUpdated.contains("activity.report.updated"));
+        assertFalse(enUpdated.contains("activity.report.updated"));
     }
 }

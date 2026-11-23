@@ -8,10 +8,20 @@ import 'package:smartspace_admin/features/map/models/spatial_analytics_model.dar
 import 'package:smartspace_admin/features/reports/models/report_statistics_model.dart';
 import 'package:smartspace_admin/features/reports/models/report_trend_model.dart';
 import 'package:smartspace_admin/features/reports/models/staff_model.dart';
+import 'package:smartspace_admin/features/staff/application/staff_providers.dart';
+import 'package:smartspace_admin/features/staff/models/staff_list_response.dart';
+import 'package:smartspace_admin/features/staff/models/staff_model.dart' as staff_mgmt;
+import 'package:smartspace_admin/features/staff/models/staff_statistics_model.dart';
+import 'package:smartspace_admin/features/staff/models/staff_summary_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
+import 'package:smartspace_admin/ui/mobile/staff/mobile_staff_view.dart';
+import 'package:smartspace_admin/ui/screen/home/widgets/overloaded_staff_modal.dart';
 import 'package:smartspace_admin/ui/screen/home/widgets/smart_alerts_section.dart';
 import 'package:smartspace_admin/ui/screen/map/widgets/spatial_hotspot_panel.dart';
+import 'package:smartspace_admin/ui/screen/staff/staff_shared_widgets.dart';
 import 'package:smartspace_admin/ui/screen/staff/widgets/staff_workload_badge.dart';
+import 'package:smartspace_admin/ui/shared/dashboard/analytics_guide_modal.dart';
+import 'package:smartspace_admin/ui/shared/dashboard/stat_card_grid.dart';
 
 void main() {
   group('Smart Analytics DTO parsing', () {
@@ -237,6 +247,179 @@ void main() {
       expect(find.text('Quá tải'), findsOneWidget);
       expect(find.text('Toa A'), findsOneWidget);
       expect(find.text('Tăng tốc'), findsOneWidget);
+      expect(find.byIcon(Icons.help_outline_rounded), findsOneWidget);
+    });
+
+    testWidgets('StatCardGrid keeps all cards equal width on orphan last row',
+        (tester) async {
+      await tester.binding.setSurfaceSize(const Size(1200, 500));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppTheme.lightTheme,
+          home: Scaffold(
+            body: SizedBox(
+              width: 1140,
+              child: StatCardGrid(
+                crossAxisCount: 6,
+                itemHeight: 84,
+                itemCount: 7,
+                itemBuilder: (_, index, _) => Card(
+                  key: Key('stat_card_$index'),
+                  child: Text('Card $index'),
+                ),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      final firstWidth = tester.getSize(find.byKey(const Key('stat_card_0'))).width;
+      final lastWidth = tester.getSize(find.byKey(const Key('stat_card_6'))).width;
+      expect(lastWidth, closeTo(firstWidth, 0.01));
+    });
+
+    testWidgets('OverloadedStaffModal & GuideModal & StaffDetailSheetBody render metrics',
+        (tester) async {
+      const staff = staff_mgmt.StaffModel(
+        id: 's1',
+        fullName: 'Nguyen Van Qua Tai',
+        email: 'quatai@ute.edu.vn',
+        status: 'active',
+        processingCount: 4,
+        weightedLoad: 12,
+        overdueCount: 2,
+        isOverloaded: true,
+        severityBreakdown: {'critical': 1, 'high': 2, 'medium': 0, 'low': 1},
+      );
+      final stats = StaffStatisticsModel(
+        totalStaff: 5,
+        activeStaff: 5,
+        blockedStaff: 0,
+        processingReports: 8,
+        resolved: 10,
+        resolvedPrevious: 8,
+        workload: const [],
+        teamAvgWeightedLoad: 4.0,
+        overloadedStaffCount: 1,
+        bottleneckCount: 1,
+        deadlinePerformance: const [
+          StaffDeadlinePerformanceItem(
+            staff: staff,
+            overdueCount: 2,
+            completedLateCount: 0,
+            completedOnTimeCount: 5,
+            hasMissedDeadline: true,
+            processingCount: 4,
+            resolvedCount: 5,
+            weightedLoad: 12,
+            bottleneckCount: 1,
+            isOverloaded: true,
+            efficiencyRate: 71.4,
+          ),
+        ],
+      );
+
+      await tester.pumpWidget(
+        wrapWithTheme(
+          brightness: Brightness.light,
+          overrides: [
+            staffStatisticsProvider.overrideWith((ref) async => stats),
+          ],
+          child: Builder(
+            builder: (ctx) => Column(
+              children: [
+                ElevatedButton(
+                  onPressed: () => showOverloadedStaffModal(ctx),
+                  child: const Text('Open Overload'),
+                ),
+                ElevatedButton(
+                  onPressed: () => showAnalyticsGuideModal(
+                    ctx,
+                    title: 'Guide Title',
+                    whatLabel: 'Là gì',
+                    purposeLabel: 'Tác dụng',
+                    tellsLabel: 'Cho biết',
+                    sections: const [
+                      AnalyticsGuideSection(
+                        title: 'P90',
+                        whatItIs: 'Mốc 90%',
+                        purpose: 'Tìm ca chậm',
+                        whatItTells: 'Cần hỗ trợ',
+                      ),
+                    ],
+                  ),
+                  child: const Text('Open Guide'),
+                ),
+                StaffDetailSheetBody(
+                  staff: staff,
+                  parentContext: ctx,
+                  sheetContext: ctx,
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      // StaffDetailSheetBody shows overload status & comparison
+      expect(find.text('Tình trạng tải trọng công việc'), findsOneWidget);
+      expect(find.text('12đ tải quy đổi (TB đội ngũ: 4đ)'), findsOneWidget);
+
+      // Open OverloadedStaffModal
+      await tester.tap(find.text('Open Overload'));
+      await tester.pumpAndSettle();
+      expect(find.text('Nhân sự đang quá tải công việc'), findsOneWidget);
+      expect(find.text('Nguyen Van Qua Tai'), findsWidgets);
+    });
+
+    testWidgets('MobileStaffView shows detailed statistics expanded by default',
+        (tester) async {
+      await tester.pumpWidget(
+        ProviderScope(
+          overrides: [
+            staffListProvider.overrideWith(() => _MockStaffListNotifier()),
+            staffStatisticsProvider.overrideWith(
+              (ref) async => const StaffStatisticsModel(
+                totalStaff: 2,
+                activeStaff: 2,
+                blockedStaff: 0,
+                processingReports: 1,
+                resolved: 2,
+                resolvedPrevious: 1,
+                workload: [],
+              ),
+            ),
+            staffTrendProvider.overrideWith((ref, arg) async => const []),
+          ],
+          child: MaterialApp(
+            theme: AppTheme.lightTheme,
+            localizationsDelegates: AppLocalizations.localizationsDelegates,
+            supportedLocales: AppLocalizations.supportedLocales,
+            locale: const Locale('vi'),
+            home: const Scaffold(body: MobileStaffView()),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('Luồng xử lý'), findsOneWidget);
+      expect(find.byIcon(Icons.help_outline_rounded), findsOneWidget);
     });
   });
+}
+
+class _MockStaffListNotifier extends StaffListNotifier {
+  @override
+  Future<StaffListResponse> build() async => const StaffListResponse(
+        summary: StaffSummaryModel(total: 0, active: 0, blocked: 0, totalProcessing: 0),
+        staffs: [],
+        currentPage: 1,
+        pageSize: 10,
+        totalPages: 1,
+        totalElements: 0,
+      );
 }

@@ -2,12 +2,20 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:smartspace_admin/features/staff/application/staff_providers.dart';
+import 'package:smartspace_admin/features/staff/models/staff_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/screen/staff/staff_dashboard_widgets.dart';
 import 'package:smartspace_admin/ui/screen/staff/staff_shared_widgets.dart';
 
 class MobileStaffView extends ConsumerStatefulWidget {
-  const MobileStaffView({super.key});
+  final String? initialStaffId;
+  final StaffModel? initialStaff;
+
+  const MobileStaffView({
+    super.key,
+    this.initialStaffId,
+    this.initialStaff,
+  });
 
   @override
   ConsumerState<MobileStaffView> createState() => _MobileStaffViewState();
@@ -15,7 +23,66 @@ class MobileStaffView extends ConsumerStatefulWidget {
 
 class _MobileStaffViewState extends ConsumerState<MobileStaffView> {
   final _searchController = TextEditingController();
-  bool _showStatistics = false;
+  bool _showStatistics = true;
+  bool _didAutoOpenDetail = false;
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialStaff != null) {
+      _didAutoOpenDetail = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!mounted) return;
+        showStaffDetailSheet(
+          context,
+          AppLocalizations.of(context)!,
+          Theme.of(context),
+          widget.initialStaff!,
+          ref,
+        );
+      });
+    }
+  }
+
+  void _maybeAutoOpenFromStatsOrList() {
+    final targetId = widget.initialStaffId;
+    if (_didAutoOpenDetail || targetId == null || targetId.isEmpty) return;
+
+    StaffModel? found;
+    final list = ref.read(staffListProvider).valueOrNull;
+    if (list != null) {
+      for (final s in list.staffs) {
+        if (s.id == targetId) {
+          found = s;
+          break;
+        }
+      }
+    }
+    if (found == null) {
+      final stats = ref.read(staffStatisticsProvider).valueOrNull;
+      if (stats != null) {
+        for (final item in stats.deadlinePerformance) {
+          if (item.staff.id == targetId) {
+            found = item.staff;
+            break;
+          }
+        }
+      }
+    }
+    if (found == null) return;
+    _didAutoOpenDetail = true;
+    final staffToOpen = found;
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      showStaffDetailSheet(
+        context,
+        AppLocalizations.of(context)!,
+        Theme.of(context),
+        staffToOpen,
+        ref,
+      );
+    });
+  }
 
   @override
   void dispose() {
@@ -68,6 +135,8 @@ class _MobileStaffViewState extends ConsumerState<MobileStaffView> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final staffAsync = ref.watch(staffListProvider);
+    ref.watch(staffStatisticsProvider);
+    _maybeAutoOpenFromStatsOrList();
 
     return RefreshIndicator(
       onRefresh: _refresh,
@@ -89,6 +158,12 @@ class _MobileStaffViewState extends ConsumerState<MobileStaffView> {
                               ?.copyWith(fontWeight: FontWeight.bold),
                         ),
                       ),
+                      IconButton(
+                        icon: const Icon(Icons.help_outline_rounded),
+                        tooltip: l10n.analyticsGuideTooltip,
+                        onPressed: () => showStaffMetricsGuide(context),
+                      ),
+                      const SizedBox(width: 4),
                       IconButton.filled(
                         onPressed: () =>
                             showStaffFormDialog(context, l10n, theme, ref),
