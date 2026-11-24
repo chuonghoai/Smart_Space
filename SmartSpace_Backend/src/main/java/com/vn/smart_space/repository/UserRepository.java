@@ -159,4 +159,11 @@ public interface UserRepository extends JpaRepository<User, String> {
             @Param("status") EUserStatus status,
             @Param("positionIds") Collection<String> positionIds);
 
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.position " +
+            "WHERE u.role = :role AND u.status = :status " +
+            "ORDER BY u.fullName ASC")
+    List<User> findAllActiveStaffWithPosition(
+            @Param("role") ERole role,
+            @Param("status") EUserStatus status);
+
 }

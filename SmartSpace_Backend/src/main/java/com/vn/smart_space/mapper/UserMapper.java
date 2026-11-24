@@ -10,6 +10,7 @@ import com.vn.smart_space.model.User;
 public interface UserMapper {
 
     @org.mapstruct.Mapping(target = "registrationStatus", expression = "java(determineRegistrationStatus(user))")
+    @org.mapstruct.Mapping(target = "positionName", expression = "java(user.getPosition() != null ? user.getPosition().getName() : null)")
     UserResponse toUserResponse(User user);
 
     default ERegistrationStatus determineRegistrationStatus(User user) {

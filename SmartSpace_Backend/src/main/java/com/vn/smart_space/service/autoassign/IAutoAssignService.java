@@ -2,8 +2,14 @@ package com.vn.smart_space.service.autoassign;
 
 import java.util.Locale;
 
+import com.vn.smart_space.dto.PageResponse;
+import com.vn.smart_space.dto.request.report.AutoAssignConfigRequest;
+import com.vn.smart_space.dto.request.report.AutoAssignSimulateRequest;
 import com.vn.smart_space.dto.response.autoassign.AssignmentDecisionSummaryResponse;
 import com.vn.smart_space.dto.response.autoassign.AutoAssignRecommendationResponse;
+import com.vn.smart_space.dto.response.report.AssignmentDecisionLogResponse;
+import com.vn.smart_space.dto.response.report.AutoAssignAnalyticsResponse;
+import com.vn.smart_space.dto.response.report.AutoAssignConfigResponse;
 import com.vn.smart_space.model.AssignmentDecisionLog;
 import com.vn.smart_space.model.AutoAssignConfig;
 import com.vn.smart_space.model.Report;
@@ -28,4 +34,20 @@ public interface IAutoAssignService {
     void markOverriddenIfNeeded(Report report, User newStaff, String adminId);
 
     AssignmentDecisionSummaryResponse getDecisionSummary(Report report, Locale locale);
+
+    AutoAssignConfigResponse getConfig();
+
+    AutoAssignConfigResponse updateConfig(AutoAssignConfigRequest request, String adminId);
+
+    AutoAssignRecommendationResponse simulate(AutoAssignSimulateRequest request, Locale locale);
+
+    AutoAssignAnalyticsResponse getAnalytics();
+
+    PageResponse<AssignmentDecisionLogResponse> getDecisionLogs(
+            String outcome,
+            String source,
+            String categoryId,
+            int page,
+            int size,
+            Locale locale);
 }

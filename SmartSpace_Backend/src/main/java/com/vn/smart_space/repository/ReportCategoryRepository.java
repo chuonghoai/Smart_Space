@@ -25,4 +25,7 @@ public interface ReportCategoryRepository extends JpaRepository<ReportCategory, 
     @EntityGraph(attributePaths = { "positions" })
     Optional<ReportCategory> findWithPositionsById(String id);
 
+    @EntityGraph(attributePaths = { "positions" })
+    Optional<ReportCategory> findWithPositionsByCodeIgnoreCase(String code);
+
 }
