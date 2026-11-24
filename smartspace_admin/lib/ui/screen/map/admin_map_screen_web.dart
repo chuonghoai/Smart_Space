@@ -294,15 +294,20 @@ class _WebMapViewState extends ConsumerState<_WebMapView>
   Future<void> flyToUserLocation() async {
     final pos = await locationService.getCurrentPosition();
     if (pos == null) return;
+    await flyToCoordinate(pos.latitude, pos.longitude, zoom: 15.0);
+  }
+
+  @override
+  Future<void> flyToCoordinate(double lat, double lng, {double zoom = 16.0}) async {
     final window = _iframe?.contentWindow;
     if (!_ready || window == null) return;
     window.postMessage(
       jsonEncode({
         'channel': _viewId,
         'type': 'fly_to',
-        'lng': pos.longitude,
-        'lat': pos.latitude,
-        'zoom': 15.0,
+        'lng': lng,
+        'lat': lat,
+        'zoom': zoom,
       }),
       '*',
     );

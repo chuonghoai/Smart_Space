@@ -2977,4 +2977,391 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get autoAssignTabLogs => 'Nhật ký quyết định';
+
+  @override
+  String get smartAlertsTitle => 'Cảnh báo vận hành & Nhịp độ 7 ngày';
+
+  @override
+  String get smartAlertsAllHealthy =>
+      'Hệ thống ổn định — chưa phát hiện bất thường';
+
+  @override
+  String get volumeSpikeTitle => 'Phản ánh tăng đột biến hôm nay';
+
+  @override
+  String volumeSpikeSubtitle(int todayCount, String avg) {
+    return '$todayCount phản ánh hôm nay vs TB 14 ngày ($avg)';
+  }
+
+  @override
+  String volumeSpikeZScoreBadge(String zScore) {
+    return 'Z = $zScore';
+  }
+
+  @override
+  String get slaAtRiskTitle => 'Cảnh báo sắp chạm hạn SLA';
+
+  @override
+  String slaAtRiskSubtitle(int pending, int processing) {
+    return '$pending chờ nhận, $processing đang xử lý sắp hết hạn';
+  }
+
+  @override
+  String get slaAtRiskShort => 'Sắp chạm hạn';
+
+  @override
+  String get overloadedStaffTitle => 'Nhân sự quá tải công việc';
+
+  @override
+  String overloadedStaffSubtitle(int count) {
+    return '$count nhân viên vượt ngưỡng tải trọng theo mức độ';
+  }
+
+  @override
+  String get pendingOver24hTitle => 'Tồn đọng chưa phân công > 24h';
+
+  @override
+  String pendingOver24hSubtitle(int count) {
+    return '$count phản ánh đang chờ tiếp nhận quá 24 giờ';
+  }
+
+  @override
+  String get pulse7dTitle => 'Nhịp độ 7 ngày gần đây';
+
+  @override
+  String get pulseInflowLabel => 'Tiếp nhận';
+
+  @override
+  String get pulseOutflowLabel => 'Hoàn tất';
+
+  @override
+  String get trendBaselineLabel => 'TB 14 ngày';
+
+  @override
+  String get trendAnomalyBadge => 'Đột biến';
+
+  @override
+  String trendAnomalyCountBadge(int count) {
+    return '$count ngày bất thường';
+  }
+
+  @override
+  String get trendInsufficientBaseline =>
+      'Chưa đủ dữ liệu nền (cần >= 7 ngày có phát sinh)';
+
+  @override
+  String get bottleneckShort => 'Kéo dài > P90';
+
+  @override
+  String get bottleneckStatLabel => 'Xử lý kéo dài (>P90)';
+
+  @override
+  String get filterAtRiskLabel => 'Sắp chạm hạn SLA';
+
+  @override
+  String get filterBottleneckLabel => 'Kéo dài > P90';
+
+  @override
+  String get weightedLoadLabel => 'Tải quy đổi';
+
+  @override
+  String weightedLoadValue(int points, int tasks) {
+    return '$pointsđ tải ($tasks việc)';
+  }
+
+  @override
+  String teamAvgWeightedLoadLabel(String avg) {
+    return 'TB tải trọng đội ngũ: $avgđ';
+  }
+
+  @override
+  String get staffOverloadedBadge => 'Quá tải';
+
+  @override
+  String get staffRecommendedBadge => 'Khuyên giao';
+
+  @override
+  String staffBottleneckCountBadge(int count) {
+    return '$count kéo dài >P90';
+  }
+
+  @override
+  String get spatialHotspotsTitle => 'Điểm nóng khu vực (H3)';
+
+  @override
+  String get spatialHotspotsToggle => 'Điểm nóng';
+
+  @override
+  String spatialHotspotsAcceleratingCount(int count) {
+    return '$count khu vực tăng tốc';
+  }
+
+  @override
+  String get spatialHotspotAcceleratingBadge => 'Tăng tốc';
+
+  @override
+  String spatialHotspotRiskScore(int score) {
+    return 'Rủi ro $score';
+  }
+
+  @override
+  String spatialHotspotStats(int recent, String prev, int pending) {
+    return '$recent ca / 30 ngày • TB trước $prev • $pending chờ';
+  }
+
+  @override
+  String get spatialHotspotsEmpty => 'Chưa có điểm nóng rủi ro nổi bật';
+
+  @override
+  String spatialHotspotFallbackName(String shortId) {
+    return 'Ô khu vực H3 #$shortId';
+  }
+
+  @override
+  String get overloadedStaffModalTitle => 'Nhân sự đang quá tải công việc';
+
+  @override
+  String overloadedStaffThresholdInfo(String threshold, String teamAvg) {
+    return 'Ngưỡng quá tải: > $thresholdđ tải (1.5x TB đội ngũ $teamAvgđ) hoặc >= 2 ca trễ hạn';
+  }
+
+  @override
+  String get overloadedStaffEmpty =>
+      'Hiện chưa ghi nhận nhân viên nào bị quá tải';
+
+  @override
+  String overloadedStaffMetricsRow(
+    int weighted,
+    int processing,
+    int overdue,
+    int bottleneck,
+  ) {
+    return '$weightedđ tải • $processing đang xử lý • $overdue trễ hạn • $bottleneck >P90';
+  }
+
+  @override
+  String overloadedSeverityBreakdownLine(
+    int critical,
+    int high,
+    int medium,
+    int low,
+  ) {
+    return 'Khẩn: $critical • Cao: $high • TB: $medium • Thấp: $low';
+  }
+
+  @override
+  String get staffDetailOverloadSectionTitle =>
+      'Tình trạng tải trọng công việc';
+
+  @override
+  String get staffLoadNormalBadge => 'Ổn định';
+
+  @override
+  String staffLoadComparison(int weighted, String teamAvg) {
+    return '$weightedđ tải quy đổi (TB đội ngũ: $teamAvgđ)';
+  }
+
+  @override
+  String get analyticsGuideTooltip => 'Giải thích chỉ số & cách đọc báo cáo';
+
+  @override
+  String get guideWhatLabel => 'Là gì';
+
+  @override
+  String get guidePurposeLabel => 'Tác dụng';
+
+  @override
+  String get guideTellsLabel => 'Cho biết';
+
+  @override
+  String get reportGuideTitle => 'Hướng dẫn đọc Thống kê phản ánh';
+
+  @override
+  String get reportGuideSlaAtRiskTitle => 'Sắp chạm hạn SLA (At-Risk)';
+
+  @override
+  String get reportGuideSlaAtRiskWhat =>
+      'Phản ánh đang chờ tiếp nhận đã tiêu tốn >= 50% quỹ thời gian đến hạn, hoặc đang xử lý nhưng chỉ còn <= 24 giờ (hoặc ít hơn thời gian xử lý TB lịch sử).';
+
+  @override
+  String get reportGuideSlaAtRiskPurpose =>
+      'Cảnh báo sớm trước khi phản ánh chuyển thành quá hạn.';
+
+  @override
+  String get reportGuideSlaAtRiskTells =>
+      'Những phản ánh cần ưu tiên phân công hoặc đôn đốc xử lý ngay trong ngày.';
+
+  @override
+  String get reportGuideP90Title => 'Ngưỡng P90 & Xử lý kéo dài (> P90)';
+
+  @override
+  String get reportGuideP90What =>
+      'P90 là mốc thời gian mà 90% phản ánh hoàn tất trong 90 ngày gần nhất xong sớm hơn mốc đó theo từng mức độ (dự phòng 80% hạn SLA nếu dưới 10 mẫu).';
+
+  @override
+  String get reportGuideP90Purpose =>
+      'Phát hiện tác vụ đang bị kẹt bất thường dù có thể chưa quá deadline.';
+
+  @override
+  String get reportGuideP90Tells =>
+      'Báo cáo đang xử lý lâu hơn 90% các ca tương tự trước đây — cần kiểm tra vướng mắc thực địa.';
+
+  @override
+  String get reportGuideTrendAnomalyTitle =>
+      'Xu hướng ngày, TB 14 ngày & Đột biến (Z-score)';
+
+  @override
+  String get reportGuideTrendAnomalyWhat =>
+      'Đường nét đứt là trung bình trượt 14 ngày trước đó; chấm đỏ là ngày có lượng phản ánh >= 5 và Z-score >= 2.0 (hoặc >= 1.5x trung bình 14 ngày).';
+
+  @override
+  String get reportGuideTrendAnomalyPurpose =>
+      'Tách biến động ngẫu nhiên khỏi sự cố phát sinh đột ngột.';
+
+  @override
+  String get reportGuideTrendAnomalyTells =>
+      'Thời điểm xảy ra sự cố diện rộng bất thường hoặc thiếu dữ liệu nền (< 7 ngày có phát sinh).';
+
+  @override
+  String get reportGuideFiltersTitle => 'Các thẻ thống kê & Bộ lọc danh sách';
+
+  @override
+  String get reportGuideFiltersWhat =>
+      'Bấm vào thẻ tổng quan hoặc chip lọc (Quá hạn, Sắp chạm hạn SLA, Kéo dài > P90, Xử lý lại) để thu gọn bảng danh sách theo nhóm tương ứng.';
+
+  @override
+  String get reportGuideFiltersPurpose =>
+      'Giúp điều hướng từ số liệu tổng hợp xuống từng hồ sơ cụ thể.';
+
+  @override
+  String get reportGuideFiltersTells =>
+      'Danh sách chi tiết những phản ánh cần admin can thiệp ngay.';
+
+  @override
+  String get staffGuideTitle => 'Hướng dẫn đọc chỉ số Nhân viên';
+
+  @override
+  String get staffGuideWeightedLoadTitle => 'Điểm tải quy đổi theo mức độ';
+
+  @override
+  String get staffGuideWeightedLoadWhat =>
+      'Tổng điểm của các việc đang xử lý, quy đổi theo độ phức tạp: Thấp = 1đ, Trung bình = 2đ, Cao = 3đ, Khẩn cấp = 5đ.';
+
+  @override
+  String get staffGuideWeightedLoadPurpose =>
+      'Đo khối lượng công việc thực chất thay vì chỉ đếm số lượng đầu việc.';
+
+  @override
+  String get staffGuideWeightedLoadTells =>
+      'Nhân viên ít việc nhưng gánh nhiều ca Khẩn/Cao vẫn có điểm tải rất lớn.';
+
+  @override
+  String get staffGuideOverloadTitle => 'TB tải trọng đội ngũ & Quá tải';
+
+  @override
+  String get staffGuideOverloadWhat =>
+      'Nhân viên bị gắn nhãn Quá tải khi điểm tải > max(5đ, 1.5 x TB đội ngũ) hoặc đang có >= 2 phản ánh trễ hạn.';
+
+  @override
+  String get staffGuideOverloadPurpose =>
+      'Tránh giao dồn việc làm giảm chất lượng và chậm SLA.';
+
+  @override
+  String get staffGuideOverloadTells =>
+      'Ai đang quá tải cần san sẻ việc, ai còn dư sức (nhãn Khuyên giao) để ưu tiên nhận ca mới.';
+
+  @override
+  String get staffGuideEfficiencyTitle => 'Hiệu suất đúng hạn & Thống kê tháng';
+
+  @override
+  String get staffGuideEfficiencyWhat =>
+      'Tỷ lệ phần trăm các phản ánh đã hoàn tất hoặc đang đánh giá hoàn thành đúng trước deadline trong tháng đã chọn.';
+
+  @override
+  String get staffGuideEfficiencyPurpose =>
+      'Theo dõi kỷ luật SLA của từng nhân viên theo từng tháng.';
+
+  @override
+  String get staffGuideEfficiencyTells =>
+      'Mức độ ổn định tiến độ và tình trạng trễ hạn tích lũy của nhân sự.';
+
+  @override
+  String get staffGuideBottleneckTitle => 'Xử lý kéo dài (> P90)';
+
+  @override
+  String get staffGuideBottleneckWhat =>
+      'Số lượng phản ánh nhân viên đang giữ quá mốc thời gian P90 lịch sử của mức độ tương ứng.';
+
+  @override
+  String get staffGuideBottleneckPurpose =>
+      'Nhận diện sớm các ca có nguy cơ bị tắc hoặc cần hỗ trợ kỹ thuật.';
+
+  @override
+  String get staffGuideBottleneckTells =>
+      'Nhân viên nào đang kẹt ca khó để admin hỗ trợ hoặc điều phối lại.';
+
+  @override
+  String get spatialGuideTitle => 'Hướng dẫn đọc Điểm nóng không gian (H3)';
+
+  @override
+  String get spatialGuideH3Title => 'Ô lưới lục giác H3 (Resolution 11)';
+
+  @override
+  String get spatialGuideH3What =>
+      'Hệ thống chia bản đồ khuôn viên thành các ô lục giác nhỏ đồng đều (Uber H3 cấp 11) để gom các phản ánh gần nhau.';
+
+  @override
+  String get spatialGuideH3Purpose =>
+      'Phát hiện cụm sự cố thực tế không phụ thuộc địa giới hành chính cứng.';
+
+  @override
+  String get spatialGuideH3Tells =>
+      'Tọa độ trung tâm cụm sự cố để bấm là camera bản đồ tự di chuyển tới.';
+
+  @override
+  String get spatialGuideRiskScoreTitle => 'Chỉ số Rủi ro [số] & Nhãn màu đỏ';
+
+  @override
+  String get spatialGuideRiskScoreWhat =>
+      'Tính bằng công thức: (Đang chờ x 2) + (Cao/Khẩn cấp x 3) + (Quá hạn x 4). Màu đỏ nhấn mạnh ô đang tăng tốc hoặc rủi ro cao.';
+
+  @override
+  String get spatialGuideRiskScorePurpose =>
+      'Xếp hạng mức độ khẩn cấp của từng cụm khu vực để ưu tiên xử lý.';
+
+  @override
+  String get spatialGuideRiskScoreTells =>
+      'Khu vực có điểm Rủi ro càng cao càng tồn nhiều việc nặng, quá hạn chưa giải quyết.';
+
+  @override
+  String get spatialGuideAcceleratingTitle =>
+      'Nhãn \"Tăng tốc\" (Accelerating)';
+
+  @override
+  String get spatialGuideAcceleratingWhat =>
+      'Gắn cờ khi ô có >= 3 phản ánh trong 30 ngày gần nhất và gấp >= 2 lần mức trung bình 30 ngày của 90 ngày liền trước.';
+
+  @override
+  String get spatialGuideAcceleratingPurpose =>
+      'Phát hiện sớm khu vực mới bùng phát sự cố bất thường.';
+
+  @override
+  String get spatialGuideAcceleratingTells =>
+      'Khu vực đang xấu đi nhanh chóng, cần kiểm tra thực địa nguyên nhân gốc.';
+
+  @override
+  String get spatialGuideStatsTitle =>
+      'Chuỗi thông số (30 ngày • TB trước • Chờ)';
+
+  @override
+  String get spatialGuideStatsWhat =>
+      'Hiển thị tổng số phản ánh 30 ngày qua, trung bình mỗi 30 ngày trong 3 tháng trước đó và số ca đang chờ xử lý tại ô.';
+
+  @override
+  String get spatialGuideStatsPurpose =>
+      'Đối chiếu xu hướng tăng/giảm tại chính khu vực đó.';
+
+  @override
+  String get spatialGuideStatsTells =>
+      'Lượng việc mới phát sinh có đang vượt khả năng tiếp nhận ở khu vực này hay không.';
 }

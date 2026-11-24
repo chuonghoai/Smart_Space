@@ -18,6 +18,7 @@ import 'package:smartspace_admin/features/staff/models/staff_statistics_model.da
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/screen/staff/widgets/staff_location_picker_dialog.dart';
+import 'package:smartspace_admin/ui/screen/staff/widgets/staff_workload_badge.dart';
 import 'package:smartspace_admin/ui/shared/position/position_widgets.dart';
 
 /// Card nhân viên — hiển thị avatar, tên, email, trạng thái
@@ -1298,6 +1299,19 @@ class StaffDetailSheetBody extends ConsumerWidget {
     final overdueTotal = perf?.totalLateCount ?? 0;
     final rehandlingCount = perf?.rehandlingCount ?? 0;
     final efficiencyRate = perf?.efficiencyRate;
+    final weightedLoad = perf?.weightedLoad ?? staff.weightedLoad;
+    final activeProcessing = perf?.staff.processingCount ?? staff.processingCount;
+    final isOverloaded = perf?.isOverloaded ?? staff.isOverloaded;
+    final activeOverdueCount = perf?.overdueCount ?? staff.overdueCount;
+    final bottleneckCount = perf?.bottleneckCount ?? 0;
+    final severityBreakdown = (perf?.staff.severityBreakdown.isNotEmpty ?? false)
+        ? perf!.staff.severityBreakdown
+        : staff.severityBreakdown;
+    final teamAvgLoad = stats?.teamAvgWeightedLoad ?? 0.0;
+    final loadFmt = NumberFormat(
+      '#,##0.#',
+      Localizations.localeOf(context).toLanguageTag(),
+    );
 
     return SafeArea(
       child: Column(
@@ -1417,6 +1431,108 @@ class StaffDetailSheetBody extends ConsumerWidget {
                             fontFeatures: const [FontFeature.tabularFigures()],
                           ),
                         ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.all(14),
+                    decoration: BoxDecoration(
+                      color: isOverloaded
+                          ? cs.error.withValues(alpha: 0.07)
+                          : cs.surfaceContainerLow,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isOverloaded
+                            ? cs.error.withValues(alpha: 0.35)
+                            : theme.dividerColor,
+                      ),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Icon(
+                              isOverloaded
+                                  ? Icons.warning_amber_rounded
+                                  : Icons.speed_rounded,
+                              size: 18,
+                              color: isOverloaded ? cs.error : semantic.success,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Text(
+                                l10n.staffDetailOverloadSectionTitle,
+                                style: theme.textTheme.titleSmall?.copyWith(
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 3,
+                              ),
+                              decoration: BoxDecoration(
+                                color: (isOverloaded ? cs.error : semantic.success)
+                                    .withValues(alpha: 0.14),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                isOverloaded
+                                    ? l10n.staffOverloadedBadge
+                                    : l10n.staffLoadNormalBadge,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: isOverloaded
+                                      ? cs.error
+                                      : semantic.success,
+                                  fontWeight: FontWeight.w700,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          l10n.staffLoadComparison(
+                            weightedLoad,
+                            loadFmt.format(teamAvgLoad),
+                          ),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: cs.onSurface,
+                            fontWeight: FontWeight.w600,
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                          ),
+                        ),
+                        const SizedBox(height: 6),
+                        StaffWorkloadBadge(
+                          weightedLoad: weightedLoad,
+                          processingCount: activeProcessing,
+                          isOverloaded: isOverloaded,
+                          severityBreakdown: severityBreakdown,
+                        ),
+                        if (activeOverdueCount > 0 || bottleneckCount > 0) ...[
+                          const SizedBox(height: 6),
+                          Text(
+                            l10n.overloadedStaffMetricsRow(
+                              weightedLoad,
+                              activeProcessing,
+                              activeOverdueCount,
+                              bottleneckCount,
+                            ),
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: isOverloaded
+                                  ? cs.error
+                                  : cs.onSurfaceVariant,
+                              fontWeight: FontWeight.w600,
+                              fontFeatures: const [
+                                FontFeature.tabularFigures(),
+                              ],
+                            ),
+                          ),
+                        ],
                       ],
                     ),
                   ),

@@ -1264,5 +1264,239 @@
   "autoAssignSectionExpand": "Mở rộng",
   "autoAssignSectionCollapse": "Thu gọn",
   "autoAssignTabFairness": "Công bằng tải tháng",
-  "autoAssignTabLogs": "Nhật ký quyết định"
+  "autoAssignTabLogs": "Nhật ký quyết định",
+  "smartAlertsTitle": "Cảnh báo vận hành & Nhịp độ 7 ngày",
+  "smartAlertsAllHealthy": "Hệ thống ổn định — chưa phát hiện bất thường",
+  "volumeSpikeTitle": "Phản ánh tăng đột biến hôm nay",
+  "volumeSpikeSubtitle": "{todayCount} phản ánh hôm nay vs TB 14 ngày ({avg})",
+  "@volumeSpikeSubtitle": {
+    "placeholders": {
+      "todayCount": {
+        "type": "int"
+      },
+      "avg": {
+        "type": "String"
+      }
+    }
+  },
+  "volumeSpikeZScoreBadge": "Z = {zScore}",
+  "@volumeSpikeZScoreBadge": {
+    "placeholders": {
+      "zScore": {
+        "type": "String"
+      }
+    }
+  },
+  "slaAtRiskTitle": "Cảnh báo sắp chạm hạn SLA",
+  "slaAtRiskSubtitle": "{pending} chờ nhận, {processing} đang xử lý sắp hết hạn",
+  "@slaAtRiskSubtitle": {
+    "placeholders": {
+      "pending": {
+        "type": "int"
+      },
+      "processing": {
+        "type": "int"
+      }
+    }
+  },
+  "slaAtRiskShort": "Sắp chạm hạn",
+  "overloadedStaffTitle": "Nhân sự quá tải công việc",
+  "overloadedStaffSubtitle": "{count} nhân viên vượt ngưỡng tải trọng theo mức độ",
+  "@overloadedStaffSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pendingOver24hTitle": "Tồn đọng chưa phân công > 24h",
+  "pendingOver24hSubtitle": "{count} phản ánh đang chờ tiếp nhận quá 24 giờ",
+  "@pendingOver24hSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pulse7dTitle": "Nhịp độ 7 ngày gần đây",
+  "pulseInflowLabel": "Tiếp nhận",
+  "pulseOutflowLabel": "Hoàn tất",
+  "trendBaselineLabel": "TB 14 ngày",
+  "trendAnomalyBadge": "Đột biến",
+  "trendAnomalyCountBadge": "{count} ngày bất thường",
+  "@trendAnomalyCountBadge": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trendInsufficientBaseline": "Chưa đủ dữ liệu nền (cần >= 7 ngày có phát sinh)",
+  "bottleneckShort": "Kéo dài > P90",
+  "bottleneckStatLabel": "Xử lý kéo dài (>P90)",
+  "filterAtRiskLabel": "Sắp chạm hạn SLA",
+  "filterBottleneckLabel": "Kéo dài > P90",
+  "weightedLoadLabel": "Tải quy đổi",
+  "weightedLoadValue": "{points}đ tải ({tasks} việc)",
+  "@weightedLoadValue": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      },
+      "tasks": {
+        "type": "int"
+      }
+    }
+  },
+  "teamAvgWeightedLoadLabel": "TB tải trọng đội ngũ: {avg}đ",
+  "@teamAvgWeightedLoadLabel": {
+    "placeholders": {
+      "avg": {
+        "type": "String"
+      }
+    }
+  },
+  "staffOverloadedBadge": "Quá tải",
+  "staffRecommendedBadge": "Khuyên giao",
+  "staffBottleneckCountBadge": "{count} kéo dài >P90",
+  "@staffBottleneckCountBadge": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotsTitle": "Điểm nóng khu vực (H3)",
+  "spatialHotspotsToggle": "Điểm nóng",
+  "spatialHotspotsAcceleratingCount": "{count} khu vực tăng tốc",
+  "@spatialHotspotsAcceleratingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotAcceleratingBadge": "Tăng tốc",
+  "spatialHotspotRiskScore": "Rủi ro {score}",
+  "@spatialHotspotRiskScore": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotStats": "{recent} ca / 30 ngày • TB trước {prev} • {pending} chờ",
+  "@spatialHotspotStats": {
+    "placeholders": {
+      "recent": {
+        "type": "int"
+      },
+      "prev": {
+        "type": "String"
+      },
+      "pending": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotsEmpty": "Chưa có điểm nóng rủi ro nổi bật",
+  "spatialHotspotFallbackName": "Ô khu vực H3 #{shortId}",
+  "@spatialHotspotFallbackName": {
+    "placeholders": {
+      "shortId": {
+        "type": "String"
+      }
+    }
+  },
+  "overloadedStaffModalTitle": "Nhân sự đang quá tải công việc",
+  "overloadedStaffThresholdInfo": "Ngưỡng quá tải: > {threshold}đ tải (1.5x TB đội ngũ {teamAvg}đ) hoặc >= 2 ca trễ hạn",
+  "@overloadedStaffThresholdInfo": {
+    "placeholders": {
+      "threshold": { "type": "String" },
+      "teamAvg": { "type": "String" }
+    }
+  },
+  "overloadedStaffEmpty": "Hiện chưa ghi nhận nhân viên nào bị quá tải",
+  "overloadedStaffMetricsRow": "{weighted}đ tải • {processing} đang xử lý • {overdue} trễ hạn • {bottleneck} >P90",
+  "@overloadedStaffMetricsRow": {
+    "placeholders": {
+      "weighted": { "type": "int" },
+      "processing": { "type": "int" },
+      "overdue": { "type": "int" },
+      "bottleneck": { "type": "int" }
+    }
+  },
+  "overloadedSeverityBreakdownLine": "Khẩn: {critical} • Cao: {high} • TB: {medium} • Thấp: {low}",
+  "@overloadedSeverityBreakdownLine": {
+    "placeholders": {
+      "critical": { "type": "int" },
+      "high": { "type": "int" },
+      "medium": { "type": "int" },
+      "low": { "type": "int" }
+    }
+  },
+  "staffDetailOverloadSectionTitle": "Tình trạng tải trọng công việc",
+  "staffLoadNormalBadge": "Ổn định",
+  "staffLoadComparison": "{weighted}đ tải quy đổi (TB đội ngũ: {teamAvg}đ)",
+  "@staffLoadComparison": {
+    "placeholders": {
+      "weighted": { "type": "int" },
+      "teamAvg": { "type": "String" }
+    }
+  },
+  "analyticsGuideTooltip": "Giải thích chỉ số & cách đọc báo cáo",
+  "guideWhatLabel": "Là gì",
+  "guidePurposeLabel": "Tác dụng",
+  "guideTellsLabel": "Cho biết",
+  "reportGuideTitle": "Hướng dẫn đọc Thống kê phản ánh",
+  "reportGuideSlaAtRiskTitle": "Sắp chạm hạn SLA (At-Risk)",
+  "reportGuideSlaAtRiskWhat": "Phản ánh đang chờ tiếp nhận đã tiêu tốn >= 50% quỹ thời gian đến hạn, hoặc đang xử lý nhưng chỉ còn <= 24 giờ (hoặc ít hơn thời gian xử lý TB lịch sử).",
+  "reportGuideSlaAtRiskPurpose": "Cảnh báo sớm trước khi phản ánh chuyển thành quá hạn.",
+  "reportGuideSlaAtRiskTells": "Những phản ánh cần ưu tiên phân công hoặc đôn đốc xử lý ngay trong ngày.",
+  "reportGuideP90Title": "Ngưỡng P90 & Xử lý kéo dài (> P90)",
+  "reportGuideP90What": "P90 là mốc thời gian mà 90% phản ánh hoàn tất trong 90 ngày gần nhất xong sớm hơn mốc đó theo từng mức độ (dự phòng 80% hạn SLA nếu dưới 10 mẫu).",
+  "reportGuideP90Purpose": "Phát hiện tác vụ đang bị kẹt bất thường dù có thể chưa quá deadline.",
+  "reportGuideP90Tells": "Báo cáo đang xử lý lâu hơn 90% các ca tương tự trước đây — cần kiểm tra vướng mắc thực địa.",
+  "reportGuideTrendAnomalyTitle": "Xu hướng ngày, TB 14 ngày & Đột biến (Z-score)",
+  "reportGuideTrendAnomalyWhat": "Đường nét đứt là trung bình trượt 14 ngày trước đó; chấm đỏ là ngày có lượng phản ánh >= 5 và Z-score >= 2.0 (hoặc >= 1.5x trung bình 14 ngày).",
+  "reportGuideTrendAnomalyPurpose": "Tách biến động ngẫu nhiên khỏi sự cố phát sinh đột ngột.",
+  "reportGuideTrendAnomalyTells": "Thời điểm xảy ra sự cố diện rộng bất thường hoặc thiếu dữ liệu nền (< 7 ngày có phát sinh).",
+  "reportGuideFiltersTitle": "Các thẻ thống kê & Bộ lọc danh sách",
+  "reportGuideFiltersWhat": "Bấm vào thẻ tổng quan hoặc chip lọc (Quá hạn, Sắp chạm hạn SLA, Kéo dài > P90, Xử lý lại) để thu gọn bảng danh sách theo nhóm tương ứng.",
+  "reportGuideFiltersPurpose": "Giúp điều hướng từ số liệu tổng hợp xuống từng hồ sơ cụ thể.",
+  "reportGuideFiltersTells": "Danh sách chi tiết những phản ánh cần admin can thiệp ngay.",
+  "staffGuideTitle": "Hướng dẫn đọc chỉ số Nhân viên",
+  "staffGuideWeightedLoadTitle": "Điểm tải quy đổi theo mức độ",
+  "staffGuideWeightedLoadWhat": "Tổng điểm của các việc đang xử lý, quy đổi theo độ phức tạp: Thấp = 1đ, Trung bình = 2đ, Cao = 3đ, Khẩn cấp = 5đ.",
+  "staffGuideWeightedLoadPurpose": "Đo khối lượng công việc thực chất thay vì chỉ đếm số lượng đầu việc.",
+  "staffGuideWeightedLoadTells": "Nhân viên ít việc nhưng gánh nhiều ca Khẩn/Cao vẫn có điểm tải rất lớn.",
+  "staffGuideOverloadTitle": "TB tải trọng đội ngũ & Quá tải",
+  "staffGuideOverloadWhat": "Nhân viên bị gắn nhãn Quá tải khi điểm tải > max(5đ, 1.5 x TB đội ngũ) hoặc đang có >= 2 phản ánh trễ hạn.",
+  "staffGuideOverloadPurpose": "Tránh giao dồn việc làm giảm chất lượng và chậm SLA.",
+  "staffGuideOverloadTells": "Ai đang quá tải cần san sẻ việc, ai còn dư sức (nhãn Khuyên giao) để ưu tiên nhận ca mới.",
+  "staffGuideEfficiencyTitle": "Hiệu suất đúng hạn & Thống kê tháng",
+  "staffGuideEfficiencyWhat": "Tỷ lệ phần trăm các phản ánh đã hoàn tất hoặc đang đánh giá hoàn thành đúng trước deadline trong tháng đã chọn.",
+  "staffGuideEfficiencyPurpose": "Theo dõi kỷ luật SLA của từng nhân viên theo từng tháng.",
+  "staffGuideEfficiencyTells": "Mức độ ổn định tiến độ và tình trạng trễ hạn tích lũy của nhân sự.",
+  "staffGuideBottleneckTitle": "Xử lý kéo dài (> P90)",
+  "staffGuideBottleneckWhat": "Số lượng phản ánh nhân viên đang giữ quá mốc thời gian P90 lịch sử của mức độ tương ứng.",
+  "staffGuideBottleneckPurpose": "Nhận diện sớm các ca có nguy cơ bị tắc hoặc cần hỗ trợ kỹ thuật.",
+  "staffGuideBottleneckTells": "Nhân viên nào đang kẹt ca khó để admin hỗ trợ hoặc điều phối lại.",
+  "spatialGuideTitle": "Hướng dẫn đọc Điểm nóng không gian (H3)",
+  "spatialGuideH3Title": "Ô lưới lục giác H3 (Resolution 11)",
+  "spatialGuideH3What": "Hệ thống chia bản đồ khuôn viên thành các ô lục giác nhỏ đồng đều (Uber H3 cấp 11) để gom các phản ánh gần nhau.",
+  "spatialGuideH3Purpose": "Phát hiện cụm sự cố thực tế không phụ thuộc địa giới hành chính cứng.",
+  "spatialGuideH3Tells": "Tọa độ trung tâm cụm sự cố để bấm là camera bản đồ tự di chuyển tới.",
+  "spatialGuideRiskScoreTitle": "Chỉ số Rủi ro [số] & Nhãn màu đỏ",
+  "spatialGuideRiskScoreWhat": "Tính bằng công thức: (Đang chờ x 2) + (Cao/Khẩn cấp x 3) + (Quá hạn x 4). Màu đỏ nhấn mạnh ô đang tăng tốc hoặc rủi ro cao.",
+  "spatialGuideRiskScorePurpose": "Xếp hạng mức độ khẩn cấp của từng cụm khu vực để ưu tiên xử lý.",
+  "spatialGuideRiskScoreTells": "Khu vực có điểm Rủi ro càng cao càng tồn nhiều việc nặng, quá hạn chưa giải quyết.",
+  "spatialGuideAcceleratingTitle": "Nhãn \"Tăng tốc\" (Accelerating)",
+  "spatialGuideAcceleratingWhat": "Gắn cờ khi ô có >= 3 phản ánh trong 30 ngày gần nhất và gấp >= 2 lần mức trung bình 30 ngày của 90 ngày liền trước.",
+  "spatialGuideAcceleratingPurpose": "Phát hiện sớm khu vực mới bùng phát sự cố bất thường.",
+  "spatialGuideAcceleratingTells": "Khu vực đang xấu đi nhanh chóng, cần kiểm tra thực địa nguyên nhân gốc.",
+  "spatialGuideStatsTitle": "Chuỗi thông số (30 ngày • TB trước • Chờ)",
+  "spatialGuideStatsWhat": "Hiển thị tổng số phản ánh 30 ngày qua, trung bình mỗi 30 ngày trong 3 tháng trước đó và số ca đang chờ xử lý tại ô.",
+  "spatialGuideStatsPurpose": "Đối chiếu xu hướng tăng/giảm tại chính khu vực đó.",
+  "spatialGuideStatsTells": "Lượng việc mới phát sinh có đang vượt khả năng tiếp nhận ở khu vực này hay không."
 }

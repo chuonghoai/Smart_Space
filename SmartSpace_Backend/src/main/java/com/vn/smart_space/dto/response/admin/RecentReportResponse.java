@@ -53,4 +53,9 @@ public class RecentReportResponse {
     String categoryCode;
     String categoryNameVi;
     String categoryNameEn;
+    Boolean isAtRisk;
+
+    Boolean isBottleneck;
+
+    Long elapsedMinutes;
 }

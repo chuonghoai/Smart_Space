@@ -281,13 +281,19 @@ class _MobileMapViewState extends ConsumerState<_MobileMapView>
     final pos = await locationService.getCurrentPosition();
     if (pos == null || _mapboxMap == null) return;
     _enableLocationPuck();
+    await flyToCoordinate(pos.latitude, pos.longitude, zoom: 15.0);
+  }
+
+  @override
+  Future<void> flyToCoordinate(double lat, double lng, {double zoom = 16.0}) async {
+    if (_mapboxMap == null) return;
     await _mapboxMap!.flyTo(
       CameraOptions(
-        center: Point(coordinates: Position(pos.longitude, pos.latitude)),
-        zoom: 15.0,
+        center: Point(coordinates: Position(lng, lat)),
+        zoom: zoom,
         pitch: 0.0,
       ),
-      MapAnimationOptions(duration: 1500),
+      MapAnimationOptions(duration: 1200),
     );
   }
 

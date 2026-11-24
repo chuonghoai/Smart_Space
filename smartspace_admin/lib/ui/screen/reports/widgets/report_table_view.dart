@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:smartspace_admin/features/reports/application/report_list_providers.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
@@ -187,6 +188,18 @@ class ReportTableView extends ConsumerWidget {
                                     StatusChip(r.status, theme),
                                     if (r.isReviewResolved == false)
                                       _RehandlingChip(theme, l10n),
+                                    if (r.isAtRisk)
+                                      _InlineAlertChip(
+                                        label: l10n.slaAtRiskShort,
+                                        color: AppSemanticColors.of(context).warning,
+                                        theme: theme,
+                                      ),
+                                    if (r.isBottleneck)
+                                      _InlineAlertChip(
+                                        label: l10n.bottleneckShort,
+                                        color: theme.colorScheme.error,
+                                        theme: theme,
+                                      ),
                                   ],
                                 ),
                               ),
@@ -516,5 +529,36 @@ class StatusChip extends _StatusChip {
 
 class SeverityChip extends _SeverityChip {
   const SeverityChip(super.severity, super.theme, super.l10n, {super.key});
+}
+
+class _InlineAlertChip extends StatelessWidget {
+  final String label;
+  final Color color;
+  final ThemeData theme;
+
+  const _InlineAlertChip({
+    required this.label,
+    required this.color,
+    required this.theme,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 5, vertical: 1.5),
+      decoration: BoxDecoration(
+        color: color.withValues(alpha: 0.14),
+        borderRadius: BorderRadius.circular(4),
+      ),
+      child: Text(
+        label,
+        style: theme.textTheme.labelSmall?.copyWith(
+          color: color,
+          fontWeight: FontWeight.w700,
+          fontSize: 9.5,
+        ),
+      ),
+    );
+  }
 }
 

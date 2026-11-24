@@ -586,4 +586,61 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                      @Param("staffIds") List<String> staffIds,
                      @Param("since") LocalDateTime since);
 
+       // --- Smart Analytics & Early Warning Queries (Section 4.1) ---
+
+       @Query("SELECT r.createdAt FROM Report r WHERE r.createdAt >= :since")
+       List<LocalDateTime> findCreatedAtSince(@Param("since") LocalDateTime since);
+
+       @Query("SELECT COALESCE(cast(r.resolvedAt as LocalDateTime), r.updatedAt) FROM Report r " +
+                     "WHERE r.status = :status " +
+                     "AND COALESCE(cast(r.resolvedAt as LocalDateTime), r.updatedAt) >= :since")
+       List<LocalDateTime> findResolvedAtSince(
+                     @Param("status") EReportStatus status,
+                     @Param("since") LocalDateTime since);
+
+       @Query("SELECT r FROM Report r LEFT JOIN FETCH r.assignedStaff WHERE r.status IN :statuses")
+       List<Report> findActiveReportsWithStaff(@Param("statuses") List<EReportStatus> statuses);
+
+       @Query("SELECT r.severity, r.assignedAt, COALESCE(cast(r.resolvedAt as LocalDateTime), r.updatedAt) " +
+                     "FROM Report r " +
+                     "WHERE r.status = :status AND r.assignedAt IS NOT NULL " +
+                     "AND COALESCE(cast(r.resolvedAt as LocalDateTime), r.updatedAt) >= :since")
+       List<Object[]> findCompletedDurationsSince(
+                     @Param("status") EReportStatus status,
+                     @Param("since") LocalDateTime since);
+
+       @Query("SELECT r.id, r.latitude, r.longitude, r.status, r.severity, r.deadline, r.createdAt, r.address, r.assignedAt " +
+                     "FROM Report r " +
+                     "WHERE r.latitude IS NOT NULL AND r.longitude IS NOT NULL AND r.status <> :excluded")
+       List<Object[]> findSpatialAnalyticsTuples(@Param("excluded") EReportStatus excluded);
+
+       @Query("SELECT r FROM Report r LEFT JOIN r.user u " +
+                     "WHERE (:status IS NULL OR r.status = :status) " +
+                     "AND (:isRehandling IS NULL OR (:isRehandling = true AND " + REHANDLING_CONDITION + ")) " +
+                     "AND (:excludeRehandling = false OR " + NOT_REHANDLING_CONDITION + ") " +
+                     "AND (:overdueOnly = false OR (" + OVERDUE_CONDITION + ")) " +
+                     "AND (:severity IS NULL OR r.severity = :severity) " +
+                     "AND (:assigneeId IS NULL OR r.assignedStaff.id = :assigneeId) " +
+                     "AND (:from IS NULL OR r.createdAt >= :from) " +
+                     "AND (:to IS NULL OR r.createdAt <= :to) " +
+                     "AND (:search IS NULL OR " +
+                     "     LOWER(r.id) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+                     "     LOWER(r.title) LIKE LOWER(CONCAT('%', :search, '%')) OR " +
+                     "     (r.isAnonymous = false AND u IS NOT NULL AND LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%'))) OR "
+                     +
+                     "     (r.isAnonymous = false AND u IS NOT NULL AND LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')))) "
+                     +
+                     "ORDER BY r.createdAt DESC")
+       List<Report> findAllFilteredList(
+                     @Param("status") EReportStatus status,
+                     @Param("isRehandling") Boolean isRehandling,
+                     @Param("excludeRehandling") boolean excludeRehandling,
+                     @Param("overdueOnly") boolean overdueOnly,
+                     @Param("now") LocalDateTime now,
+                     @Param("severity") EReportSeverity severity,
+                     @Param("assigneeId") String assigneeId,
+                     @Param("from") LocalDateTime from,
+                     @Param("to") LocalDateTime to,
+                     @Param("search") String search);
+
 }

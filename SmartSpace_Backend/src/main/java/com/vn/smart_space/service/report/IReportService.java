@@ -8,6 +8,7 @@ import com.vn.smart_space.dto.request.admin.ReportAssignRequest;
 import com.vn.smart_space.dto.request.report.ReportCompleteRequest;
 import com.vn.smart_space.dto.request.report.ReportCreateRequest;
 import com.vn.smart_space.dto.response.admin.AdminMapReportsResponse;
+import com.vn.smart_space.dto.response.admin.AdminSpatialAnalyticsResponse;
 import com.vn.smart_space.dto.response.admin.RecentReportResponse;
 import com.vn.smart_space.dto.response.admin.ReportListResponse;
 import com.vn.smart_space.dto.response.admin.ReportStatisticsResponse;
@@ -83,8 +84,17 @@ public interface IReportService {
          *                          (khớp nhóm tách riêng trên thẻ thống kê); Kanban
          *                          để false để giữ báo cáo trong cột trạng thái gốc.
          */
+        default ReportListResponse getAdminReportList(int page, int size, String status, String severity, String assigneeId,
+                        String from, String to, String search, Boolean overdue, boolean excludeRehandling) {
+                return getAdminReportList(page, size, status, severity, assigneeId, from, to, search, overdue,
+                                excludeRehandling, null, null);
+        }
+
         ReportListResponse getAdminReportList(int page, int size, String status, String severity, String assigneeId,
-                        String from, String to, String search, Boolean overdue, boolean excludeRehandling);
+                        String from, String to, String search, Boolean overdue, boolean excludeRehandling,
+                        Boolean atRisk, Boolean bottleneck);
+
+        AdminSpatialAnalyticsResponse getSpatialAnalytics(int limit);
 
         // Admin Update Status Report
         default ReportDetailResponse updateReportStatus(String reportId, String newStatus, String adminId) {

@@ -20,26 +20,27 @@ class ReportStatCards extends ConsumerWidget {
 
     return statsAsync.when(
       data: (stats) {
+        final semantic = AppSemanticColors.of(context);
         final items = [
           _CardData(l10n.totalReports, stats.total.toString(),
-              Icons.assessment_outlined, Colors.blue),
+              Icons.assessment_outlined, theme.colorScheme.primary),
           _CardData(l10n.pendingReports, stats.pending.toString(),
-              Icons.hourglass_top_outlined, Colors.orange,
+              Icons.hourglass_top_outlined, semantic.warning,
               statusFilter: 'pending'),
           _CardData(l10n.processingReportsLabel, stats.processing.toString(),
-              Icons.autorenew_rounded, Colors.teal,
+              Icons.autorenew_rounded, semantic.info,
               statusFilter: 'processing'),
           _CardData(l10n.resolvedReports, stats.resolved.toString(),
-              Icons.check_circle_outline, Colors.green,
+              Icons.check_circle_outline, semantic.success,
               statusFilter: 'processed'),
           _CardData(l10n.rejectedReports, stats.rejected.toString(),
-              Icons.cancel_outlined, Colors.red,
+              Icons.cancel_outlined, theme.colorScheme.error,
               statusFilter: 'rejected'),
           _CardData(
             l10n.rehandlingBadge,
             stats.rehandling.toString(),
             Icons.refresh_rounded,
-            AppSemanticColors.of(context).warning,
+            semantic.warning,
             statusFilter: 'rehandling',
           ),
           _CardData(
@@ -49,16 +50,28 @@ class ReportStatCards extends ConsumerWidget {
             theme.colorScheme.error,
             overdueOnly: true,
           ),
+          _CardData(
+            l10n.slaAtRiskShort,
+            stats.atRiskCount.toString(),
+            Icons.schedule_rounded,
+            semantic.warning,
+            atRiskOnly: true,
+          ),
+          _CardData(
+            l10n.bottleneckStatLabel,
+            stats.bottleneckCount.toString(),
+            Icons.timelapse_rounded,
+            theme.colorScheme.tertiary,
+            bottleneckOnly: true,
+          ),
         ];
 
         return LayoutBuilder(
           builder: (context, constraints) {
             int crossAxisCount;
-            if (constraints.maxWidth >= 1300) {
-              crossAxisCount = 7;
-            } else if (constraints.maxWidth >= 900) {
-              crossAxisCount = 4;
-            } else if (constraints.maxWidth >= 600) {
+            if (constraints.maxWidth >= 1200) {
+              crossAxisCount = 5;
+            } else if (constraints.maxWidth >= 820) {
               crossAxisCount = 3;
             } else {
               crossAxisCount = 2;
@@ -74,10 +87,19 @@ class ReportStatCards extends ConsumerWidget {
                     currentFilter.status != null && currentFilter.status!.isNotEmpty;
                 final isActive = item.overdueOnly
                     ? (currentFilter.overdueOnly && !hasStatus)
-                    : item.statusFilter == null
-                        ? (!hasStatus && !currentFilter.overdueOnly)
-                        : (currentFilter.status == item.statusFilter &&
-                            !currentFilter.overdueOnly);
+                    : item.atRiskOnly
+                        ? (currentFilter.atRiskOnly && !hasStatus)
+                        : item.bottleneckOnly
+                            ? (currentFilter.bottleneckOnly && !hasStatus)
+                            : item.statusFilter == null
+                                ? (!hasStatus &&
+                                    !currentFilter.overdueOnly &&
+                                    !currentFilter.atRiskOnly &&
+                                    !currentFilter.bottleneckOnly)
+                                : (currentFilter.status == item.statusFilter &&
+                                    !currentFilter.overdueOnly &&
+                                    !currentFilter.atRiskOnly &&
+                                    !currentFilter.bottleneckOnly);
                 return _buildCard(
                   theme,
                   item,
@@ -87,6 +109,12 @@ class ReportStatCards extends ConsumerWidget {
                     if (item.overdueOnly) {
                       ref.read(reportFilterProvider.notifier).state =
                           const ReportFilter(page: 1, overdueOnly: true);
+                    } else if (item.atRiskOnly) {
+                      ref.read(reportFilterProvider.notifier).state =
+                          const ReportFilter(page: 1, atRiskOnly: true);
+                    } else if (item.bottleneckOnly) {
+                      ref.read(reportFilterProvider.notifier).state =
+                          const ReportFilter(page: 1, bottleneckOnly: true);
                     } else if (item.statusFilter == null) {
                       ref.read(reportFilterProvider.notifier).state =
                           const ReportFilter(page: 1);
@@ -201,6 +229,8 @@ class _CardData {
   final Color color;
   final String? statusFilter;
   final bool overdueOnly;
+  final bool atRiskOnly;
+  final bool bottleneckOnly;
   const _CardData(
     this.label,
     this.value,
@@ -208,5 +238,7 @@ class _CardData {
     this.color, {
     this.statusFilter,
     this.overdueOnly = false,
+    this.atRiskOnly = false,
+    this.bottleneckOnly = false,
   });
 }

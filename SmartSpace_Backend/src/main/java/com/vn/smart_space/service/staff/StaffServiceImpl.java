@@ -31,6 +31,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.vn.smart_space.consts.EGender;
+import com.vn.smart_space.consts.EReportSeverity;
 import com.vn.smart_space.consts.EReportStatus;
 import com.vn.smart_space.consts.ERole;
 import com.vn.smart_space.consts.EUserStatus;
@@ -55,8 +56,11 @@ import com.vn.smart_space.repository.UserRepository;
 import com.vn.smart_space.service.auth.IAuthenticationService;
 import com.vn.smart_space.service.mail.IMailService;
 import com.vn.smart_space.utils.GeoUtils;
+import com.vn.smart_space.utils.AnalyticsStatHelper;
 import com.vn.smart_space.utils.PasswordGenerator;
 import com.vn.smart_space.utils.TrendBucketHelper;
+import java.util.EnumMap;
+import java.util.HashMap;
 
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
@@ -121,7 +125,7 @@ public class StaffServiceImpl implements IStaffService {
                                 pageable);
                 List<User> staffUsers = staffPage.getContent();
 
-                // 4. Batch query: count processing reports per staff
+                // 4. Batch query: count processing reports per staff + active weighted workload
                 Map<String, Long> processingCountMap = Collections.emptyMap();
                 if (!staffUsers.isEmpty()) {
                         List<String> staffIds = staffUsers.stream().map(User::getId).collect(Collectors.toList());
@@ -133,11 +137,28 @@ public class StaffServiceImpl implements IStaffService {
                                                         row -> (Long) row[1]));
                 }
 
-                // 5. Map User → StaffResponse
+                LocalDateTime now = LocalDateTime.now();
+                List<Report> activeProcessing = reportRepository.findActiveReportsWithStaff(
+                                List.of(EReportStatus.processing));
+                List<User> allActiveStaffs = userRepository.findByRole(ERole.staff).stream()
+                                .filter(u -> u.getStatus() != EUserStatus.blocked)
+                                .collect(Collectors.toList());
+                if (allActiveStaffs.isEmpty()) {
+                        allActiveStaffs = staffUsers.stream()
+                                        .filter(u -> u.getStatus() != EUserStatus.blocked)
+                                        .collect(Collectors.toList());
+                }
+                WorkloadSnapshot snapshot = buildWorkloadSnapshot(allActiveStaffs, activeProcessing, now);
+
+                // 5. Map User -> StaffResponse
                 final Map<String, Long> countMap = processingCountMap;
                 List<StaffResponse> staffResponses = staffUsers.stream().map(s -> {
                         StaffResponse response = toStaffResponse(s);
-                        response.setProcessingCount(countMap.getOrDefault(s.getId(), 0L));
+                        long activeCnt = snapshot.processingByStaff.containsKey(s.getId())
+                                        ? snapshot.processingByStaff.get(s.getId())
+                                        : countMap.getOrDefault(s.getId(), 0L);
+                        response.setProcessingCount(activeCnt);
+                        applyWorkloadFields(response, snapshot);
                         return response;
                 }).collect(Collectors.toList());
 
@@ -474,10 +495,41 @@ public class StaffServiceImpl implements IStaffService {
                         staffUsers.put(s.getId(), s);
                 }
 
-                // [0]=overdue, [1]=completedLate, [2]=completedOnTime, [3]=processing, [4]=rehandling, [5]=resolved
+                // Compute 90d P90 thresholds + active weighted workload snapshot from tracked reports
+                List<AnalyticsStatHelper.DurationSample> durationSamples = new ArrayList<>();
+                List<Report> currentActiveProcessing = new ArrayList<>();
+                LocalDateTime p90Cutoff = now.minusDays(90);
+                for (Report r : trackedReports) {
+                        if (r.getStatus() == EReportStatus.processing) {
+                                currentActiveProcessing.add(r);
+                        } else if (r.getStatus() == EReportStatus.processed && r.getAssignedAt() != null) {
+                                LocalDateTime resolvedTime = r.getResolvedAt() != null
+                                                ? toLocalDateTime(r.getResolvedAt())
+                                                : r.getUpdatedAt();
+                                LocalDateTime assignedTime = toLocalDateTime(r.getAssignedAt());
+                                if (resolvedTime != null && !resolvedTime.isBefore(p90Cutoff)
+                                                && assignedTime != null && !resolvedTime.isBefore(assignedTime)) {
+                                        durationSamples.add(new AnalyticsStatHelper.DurationSample(
+                                                        r.getSeverity(),
+                                                        Duration.between(assignedTime, resolvedTime).toMinutes()));
+                                }
+                        }
+                }
+                Map<EReportSeverity, Long> fallbackDays = new EnumMap<>(EReportSeverity.class);
+                for (EReportSeverity s : EReportSeverity.values()) {
+                        fallbackDays.put(s, ReportServiceImpl.deadlineDaysForSeverity(s));
+                }
+                Map<EReportSeverity, Long> p90BySeverity = AnalyticsStatHelper.computeP90Thresholds(
+                                durationSamples, fallbackDays, null, null, null);
+                List<User> activeStaffList = allStaffs.stream()
+                                .filter(u -> u.getStatus() != EUserStatus.blocked)
+                                .collect(Collectors.toList());
+                WorkloadSnapshot activeSnapshot = buildWorkloadSnapshot(activeStaffList, currentActiveProcessing, now);
+
+                // [0]=overdue, [1]=completedLate, [2]=completedOnTime, [3]=processing, [4]=rehandling, [5]=resolved, [6]=bottleneck
                 Map<String, long[]> countsByStaff = new LinkedHashMap<>();
                 for (String staffId : staffUsers.keySet()) {
-                        countsByStaff.put(staffId, new long[6]);
+                        countsByStaff.put(staffId, new long[7]);
                 }
 
                 long processingReports = 0;
@@ -490,6 +542,7 @@ public class StaffServiceImpl implements IStaffService {
                 long overdueReports = 0;
                 long completedLate = 0;
                 long completedOnTime = 0;
+                long totalBottlenecks = 0;
 
                 for (Report r : trackedReports) {
                         User assigned = r.getAssignedStaff();
@@ -497,7 +550,7 @@ public class StaffServiceImpl implements IStaffService {
                                 continue;
                         }
                         staffUsers.putIfAbsent(assigned.getId(), assigned);
-                        long[] c = countsByStaff.computeIfAbsent(assigned.getId(), k -> new long[6]);
+                        long[] c = countsByStaff.computeIfAbsent(assigned.getId(), k -> new long[7]);
                         LocalDateTime deadline = ReportServiceImpl.resolveDeadline(r);
 
                         if (r.getStatus() == EReportStatus.processed) {
@@ -562,6 +615,12 @@ public class StaffServiceImpl implements IStaffService {
                                         overdueReports++;
                                         c[0]++;
                                 }
+                                if (AnalyticsStatHelper.isProcessingBottleneck(
+                                                r.getStatus(), r.getSeverity(), r.getAssignedAt(), r.getCreatedAt(),
+                                                p90BySeverity, evalTime)) {
+                                        c[6]++;
+                                        totalBottlenecks++;
+                                }
                         }
                 }
 
@@ -580,17 +639,23 @@ public class StaffServiceImpl implements IStaffService {
                 List<StaffStatisticsResponse.WorkloadItem> workload = countsByStaff.entrySet().stream()
                                 .filter(entry -> entry.getValue()[3] > 0 || entry.getValue()[5] > 0)
                                 .sorted(Comparator
-                                                .<Map.Entry<String, long[]>>comparingLong(e -> e.getValue()[3])
+                                                .<Map.Entry<String, long[]>>comparingLong(e ->
+                                                                activeSnapshot.weightedByStaff.getOrDefault(e.getKey(), 0L))
                                                 .reversed()
+                                                .thenComparing(Comparator.<Map.Entry<String, long[]>>comparingLong(
+                                                                e -> e.getValue()[3]).reversed())
                                                 .thenComparing(Comparator.<Map.Entry<String, long[]>>comparingLong(
                                                                 e -> e.getValue()[5]).reversed()))
                                 .limit(WORKLOAD_LIMIT)
                                 .map(entry -> {
                                         StaffResponse staff = toStaffResponse(staffUsers.get(entry.getKey()));
                                         staff.setProcessingCount(entry.getValue()[3]);
+                                        applyWorkloadFields(staff, activeSnapshot);
                                         return StaffStatisticsResponse.WorkloadItem.builder()
                                                         .staff(staff)
                                                         .resolvedCount(entry.getValue()[5])
+                                                        .weightedLoad(staff.getWeightedLoad())
+                                                        .isOverloaded(staff.isOverloaded())
                                                         .build();
                                 })
                                 .collect(Collectors.toList());
@@ -605,6 +670,7 @@ public class StaffServiceImpl implements IStaffService {
                                         long procCnt = c[3];
                                         long rehandleCnt = c[4];
                                         long resCnt = c[5];
+                                        long bottleneckCnt = c[6];
                                         long totalTasks = procCnt + resCnt;
                                         long evaluated = overdueCnt + lateCnt + onTimeCnt;
                                         Double efficiencyRate = evaluated == 0
@@ -613,6 +679,7 @@ public class StaffServiceImpl implements IStaffService {
                                         boolean missed = overdueCnt > 0 || lateCnt > 0;
                                         StaffResponse staffDto = toStaffResponse(staffUsers.get(entry.getKey()));
                                         staffDto.setProcessingCount(procCnt);
+                                        applyWorkloadFields(staffDto, activeSnapshot);
                                         return StaffStatisticsResponse.DeadlinePerformanceItem.builder()
                                                         .staff(staffDto)
                                                         .overdueCount(overdueCnt)
@@ -622,6 +689,9 @@ public class StaffServiceImpl implements IStaffService {
                                                         .resolvedCount(resCnt)
                                                         .rehandlingCount(rehandleCnt)
                                                         .totalTasks(totalTasks)
+                                                        .weightedLoad(staffDto.getWeightedLoad())
+                                                        .bottleneckCount(bottleneckCnt)
+                                                        .isOverloaded(staffDto.isOverloaded())
                                                         .efficiencyRate(efficiencyRate)
                                                         .hasMissedDeadline(missed)
                                                         .build();
@@ -661,8 +731,85 @@ public class StaffServiceImpl implements IStaffService {
                                 .completedOnTime(completedOnTime)
                                 .completedLate(completedLate)
                                 .onTimeRate(onTimeRate)
+                                .teamAvgWeightedLoad(activeSnapshot.teamAvgWeightedLoad)
+                                .overloadedStaffCount(activeSnapshot.overloadedStaffCount)
+                                .bottleneckCount(totalBottlenecks)
                                 .deadlinePerformance(deadlinePerformance)
                                 .build();
+        }
+
+        private static final class WorkloadSnapshot {
+                final Map<String, Long> processingByStaff = new HashMap<>();
+                final Map<String, Long> weightedByStaff = new HashMap<>();
+                final Map<String, Long> overdueByStaff = new HashMap<>();
+                final Map<String, Map<String, Long>> severityByStaff = new HashMap<>();
+                double teamAvgWeightedLoad;
+                long overloadedStaffCount;
+        }
+
+        private WorkloadSnapshot buildWorkloadSnapshot(
+                        List<User> activeStaffs,
+                        List<Report> processingReports,
+                        LocalDateTime now) {
+                WorkloadSnapshot snap = new WorkloadSnapshot();
+                for (Report r : processingReports) {
+                        User assigned = r.getAssignedStaff();
+                        if (assigned == null) {
+                                continue;
+                        }
+                        String sid = assigned.getId();
+                        snap.processingByStaff.merge(sid, 1L, Long::sum);
+                        snap.weightedByStaff.merge(sid, AnalyticsStatHelper.severityWeight(r.getSeverity()), Long::sum);
+                        String sevKey = r.getSeverity() != null ? r.getSeverity().name() : EReportSeverity.low.name();
+                        snap.severityByStaff
+                                        .computeIfAbsent(sid, k -> new LinkedHashMap<>())
+                                        .merge(sevKey, 1L, Long::sum);
+                        LocalDateTime deadline = ReportServiceImpl.resolveDeadline(r);
+                        if (deadline != null && !deadline.isAfter(now)) {
+                                snap.overdueByStaff.merge(sid, 1L, Long::sum);
+                        }
+                }
+
+                double sum = 0.0;
+                for (User u : activeStaffs) {
+                        sum += snap.weightedByStaff.getOrDefault(u.getId(), 0L);
+                }
+                snap.teamAvgWeightedLoad = activeStaffs.isEmpty()
+                                ? 0.0
+                                : AnalyticsStatHelper.round2(sum / activeStaffs.size());
+
+                long overloadedCnt = 0;
+                for (User u : activeStaffs) {
+                        long w = snap.weightedByStaff.getOrDefault(u.getId(), 0L);
+                        long od = snap.overdueByStaff.getOrDefault(u.getId(), 0L);
+                        if (AnalyticsStatHelper.isOverloaded(w, snap.teamAvgWeightedLoad, od)) {
+                                overloadedCnt++;
+                        }
+                }
+                snap.overloadedStaffCount = overloadedCnt;
+                return snap;
+        }
+
+        private void applyWorkloadFields(StaffResponse staff, WorkloadSnapshot snap) {
+                if (staff == null) {
+                        return;
+                }
+                String sid = staff.getId();
+                long weighted = snap.weightedByStaff.getOrDefault(sid, 0L);
+                long overdue = snap.overdueByStaff.getOrDefault(sid, 0L);
+                boolean overloaded = AnalyticsStatHelper.isOverloaded(weighted, snap.teamAvgWeightedLoad, overdue);
+                Map<String, Long> rawBreakdown = snap.severityByStaff.getOrDefault(sid, Collections.emptyMap());
+                Map<String, Long> breakdown = new LinkedHashMap<>();
+                for (EReportSeverity s : EReportSeverity.values()) {
+                        breakdown.put(s.name(), rawBreakdown.getOrDefault(s.name(), 0L));
+                }
+
+                staff.setWeightedLoad(weighted);
+                staff.setOverdueCount(overdue);
+                staff.setOverloaded(overloaded);
+                staff.setAssignmentHint(
+                                AnalyticsStatHelper.assignmentHint(weighted, snap.teamAvgWeightedLoad, overloaded));
+                staff.setSeverityBreakdown(breakdown);
         }
 
         private List<StaffStatisticsResponse.AvailableMonthItem> buildAvailableMonths(YearMonth selectedMonth) {

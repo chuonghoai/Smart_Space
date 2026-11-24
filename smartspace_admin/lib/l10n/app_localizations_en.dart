@@ -2983,4 +2983,388 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get autoAssignTabLogs => 'Decision Logs';
+
+  @override
+  String get smartAlertsTitle => 'Operational Alerts & 7-Day Pulse';
+
+  @override
+  String get smartAlertsAllHealthy =>
+      'Operations steady — no anomalies detected';
+
+  @override
+  String get volumeSpikeTitle => 'Unusual report surge today';
+
+  @override
+  String volumeSpikeSubtitle(int todayCount, String avg) {
+    return '$todayCount reports today vs 14d avg ($avg)';
+  }
+
+  @override
+  String volumeSpikeZScoreBadge(String zScore) {
+    return 'Z = $zScore';
+  }
+
+  @override
+  String get slaAtRiskTitle => 'Early SLA breach warning';
+
+  @override
+  String slaAtRiskSubtitle(int pending, int processing) {
+    return '$pending pending, $processing processing nearing deadline';
+  }
+
+  @override
+  String get slaAtRiskShort => 'At SLA risk';
+
+  @override
+  String get overloadedStaffTitle => 'Staff workload overload';
+
+  @override
+  String overloadedStaffSubtitle(int count) {
+    return '$count staff exceeding severity-weighted capacity';
+  }
+
+  @override
+  String get pendingOver24hTitle => 'Unassigned backlog > 24h';
+
+  @override
+  String pendingOver24hSubtitle(int count) {
+    return '$count reports waiting assignment over 24h';
+  }
+
+  @override
+  String get pulse7dTitle => 'Last 7 days pulse';
+
+  @override
+  String get pulseInflowLabel => 'Incoming';
+
+  @override
+  String get pulseOutflowLabel => 'Resolved';
+
+  @override
+  String get trendBaselineLabel => '14d avg';
+
+  @override
+  String get trendAnomalyBadge => 'Spike';
+
+  @override
+  String trendAnomalyCountBadge(int count) {
+    return '$count spike days';
+  }
+
+  @override
+  String get trendInsufficientBaseline =>
+      'Insufficient baseline (needs >= 7 active days)';
+
+  @override
+  String get bottleneckShort => 'Slow > P90';
+
+  @override
+  String get bottleneckStatLabel => 'Bottleneck (>P90)';
+
+  @override
+  String get filterAtRiskLabel => 'At SLA risk';
+
+  @override
+  String get filterBottleneckLabel => 'Slow > P90';
+
+  @override
+  String get weightedLoadLabel => 'Weighted load';
+
+  @override
+  String weightedLoadValue(int points, int tasks) {
+    return '$points pts ($tasks tasks)';
+  }
+
+  @override
+  String teamAvgWeightedLoadLabel(String avg) {
+    return 'Team avg load: $avg pts';
+  }
+
+  @override
+  String get staffOverloadedBadge => 'Overloaded';
+
+  @override
+  String get staffRecommendedBadge => 'Recommended';
+
+  @override
+  String staffBottleneckCountBadge(int count) {
+    return '$count slow >P90';
+  }
+
+  @override
+  String get spatialHotspotsTitle => 'Area Hotspots (H3)';
+
+  @override
+  String get spatialHotspotsToggle => 'Hotspots';
+
+  @override
+  String spatialHotspotsAcceleratingCount(int count) {
+    return '$count accelerating zones';
+  }
+
+  @override
+  String get spatialHotspotAcceleratingBadge => 'Accelerating';
+
+  @override
+  String spatialHotspotRiskScore(int score) {
+    return 'Risk $score';
+  }
+
+  @override
+  String spatialHotspotStats(int recent, String prev, int pending) {
+    return '$recent in 30d • Prev avg $prev • $pending pending';
+  }
+
+  @override
+  String get spatialHotspotsEmpty => 'No prominent spatial risk hotspots';
+
+  @override
+  String spatialHotspotFallbackName(String shortId) {
+    return 'H3 Cell #$shortId';
+  }
+
+  @override
+  String get overloadedStaffModalTitle => 'Overloaded Staff Members';
+
+  @override
+  String overloadedStaffThresholdInfo(String threshold, String teamAvg) {
+    return 'Overload threshold: > $threshold load pts (1.5x team avg $teamAvg) or >= 2 overdue';
+  }
+
+  @override
+  String get overloadedStaffEmpty =>
+      'No staff members are currently overloaded';
+
+  @override
+  String overloadedStaffMetricsRow(
+    int weighted,
+    int processing,
+    int overdue,
+    int bottleneck,
+  ) {
+    return '$weighted pts • $processing active • $overdue overdue • $bottleneck >P90';
+  }
+
+  @override
+  String overloadedSeverityBreakdownLine(
+    int critical,
+    int high,
+    int medium,
+    int low,
+  ) {
+    return 'Crit: $critical • High: $high • Med: $medium • Low: $low';
+  }
+
+  @override
+  String get staffDetailOverloadSectionTitle => 'Workload Status';
+
+  @override
+  String get staffLoadNormalBadge => 'Balanced';
+
+  @override
+  String staffLoadComparison(int weighted, String teamAvg) {
+    return '$weighted weighted pts (Team avg: $teamAvg pts)';
+  }
+
+  @override
+  String get analyticsGuideTooltip => 'Metrics & Report Guide';
+
+  @override
+  String get guideWhatLabel => 'What it is';
+
+  @override
+  String get guidePurposeLabel => 'Why it matters';
+
+  @override
+  String get guideTellsLabel => 'What it tells you';
+
+  @override
+  String get reportGuideTitle => 'Report Statistics Guide';
+
+  @override
+  String get reportGuideSlaAtRiskTitle => 'Early SLA Risk (At-Risk)';
+
+  @override
+  String get reportGuideSlaAtRiskWhat =>
+      'Pending reports past >= 50% of their time to deadline, or processing reports with <= 24h left (or below the severity\'s historical average).';
+
+  @override
+  String get reportGuideSlaAtRiskPurpose =>
+      'Warns before reports actually breach their SLA deadline.';
+
+  @override
+  String get reportGuideSlaAtRiskTells =>
+      'Which reports should be assigned or escalated today to avoid overdue breaches.';
+
+  @override
+  String get reportGuideP90Title => 'P90 Threshold & Bottlenecks (> P90)';
+
+  @override
+  String get reportGuideP90What =>
+      'The duration below which 90% of resolved reports in the last 90 days finished per severity (falls back to 80% of SLA window if < 10 samples).';
+
+  @override
+  String get reportGuideP90Purpose =>
+      'Spots stalled tasks early even before their hard deadline expires.';
+
+  @override
+  String get reportGuideP90Tells =>
+      'Tasks taking longer than 90% of similar historical cases — worth checking for blockers.';
+
+  @override
+  String get reportGuideTrendAnomalyTitle =>
+      'Daily Trend, 14d Baseline & Spikes (Z-score)';
+
+  @override
+  String get reportGuideTrendAnomalyWhat =>
+      'Dashed line shows the rolling 14-day mean; red dots mark days with >= 5 reports and Z-score >= 2.0 (or >= 1.5x the 14-day average).';
+
+  @override
+  String get reportGuideTrendAnomalyPurpose =>
+      'Separates normal noise from sudden incident surges.';
+
+  @override
+  String get reportGuideTrendAnomalyTells =>
+      'When unusual spikes occur or when baseline data is still insufficient (< 7 active days).';
+
+  @override
+  String get reportGuideFiltersTitle => 'Stat Cards & List Filter Chips';
+
+  @override
+  String get reportGuideFiltersWhat =>
+      'Click any overview card or filter chip (Overdue, At SLA risk, Slow > P90, Rehandling) to narrow down the report list.';
+
+  @override
+  String get reportGuideFiltersPurpose =>
+      'Connects high-level metrics directly to actionable records.';
+
+  @override
+  String get reportGuideFiltersTells =>
+      'The exact list of reports currently requiring admin attention.';
+
+  @override
+  String get staffGuideTitle => 'Staff Metrics Guide';
+
+  @override
+  String get staffGuideWeightedLoadTitle => 'Severity-Weighted Load Points';
+
+  @override
+  String get staffGuideWeightedLoadWhat =>
+      'Sum of active task weights by severity: Low = 1 pt, Medium = 2 pts, High = 3 pts, Critical = 5 pts.';
+
+  @override
+  String get staffGuideWeightedLoadPurpose =>
+      'Measures true effort instead of treating simple and critical issues equally.';
+
+  @override
+  String get staffGuideWeightedLoadTells =>
+      'Staff holding fewer tasks that are mostly High/Critical still carry heavy workload.';
+
+  @override
+  String get staffGuideOverloadTitle => 'Team Average Load & Overload';
+
+  @override
+  String get staffGuideOverloadWhat =>
+      'A staff member is marked Overloaded when weighted load > max(5, 1.5 x team avg) or overdue tasks >= 2.';
+
+  @override
+  String get staffGuideOverloadPurpose =>
+      'Prevents assigning new reports to already saturated staff.';
+
+  @override
+  String get staffGuideOverloadTells =>
+      'Who needs relief vs who has capacity (Recommended badge) for new assignments.';
+
+  @override
+  String get staffGuideEfficiencyTitle => 'On-Time Efficiency & Monthly Stats';
+
+  @override
+  String get staffGuideEfficiencyWhat =>
+      'Percentage of evaluated tasks resolved before or on their deadline within the selected month.';
+
+  @override
+  String get staffGuideEfficiencyPurpose =>
+      'Tracks SLA discipline per staff member over time.';
+
+  @override
+  String get staffGuideEfficiencyTells =>
+      'Consistency in meeting deadlines and accumulated late/rehandling volume.';
+
+  @override
+  String get staffGuideBottleneckTitle => 'Slow Tasks (> P90)';
+
+  @override
+  String get staffGuideBottleneckWhat =>
+      'Count of active tasks held longer than the historical P90 resolution duration for that severity.';
+
+  @override
+  String get staffGuideBottleneckPurpose =>
+      'Flags long-running assignments that may be blocked on-site.';
+
+  @override
+  String get staffGuideBottleneckTells =>
+      'Which staff may need support or reassignment on stalled reports.';
+
+  @override
+  String get spatialGuideTitle => 'Spatial Hotspots (H3) Guide';
+
+  @override
+  String get spatialGuideH3Title => 'H3 Hexagon Cells (Resolution 11)';
+
+  @override
+  String get spatialGuideH3What =>
+      'Groups nearby reports into uniform Uber H3 Resolution-11 hexagonal zones across campus.';
+
+  @override
+  String get spatialGuideH3Purpose =>
+      'Detects real spatial clusters independent of rigid text labels.';
+
+  @override
+  String get spatialGuideH3Tells =>
+      'Clicking a zone centers the map camera straight onto that cluster.';
+
+  @override
+  String get spatialGuideRiskScoreTitle => 'Risk Score & Red Highlight';
+
+  @override
+  String get spatialGuideRiskScoreWhat =>
+      'Computed as (Pending x 2) + (High/Critical x 3) + (Overdue x 4). Red highlights accelerating or high-priority cells.';
+
+  @override
+  String get spatialGuideRiskScorePurpose =>
+      'Ranks zones by operational urgency rather than raw count alone.';
+
+  @override
+  String get spatialGuideRiskScoreTells =>
+      'Higher Risk means more severe, overdue, or unaddressed issues clustered there.';
+
+  @override
+  String get spatialGuideAcceleratingTitle => '\"Accelerating\" Badge';
+
+  @override
+  String get spatialGuideAcceleratingWhat =>
+      'Triggered when a zone logs >= 3 reports in the last 30 days and >= 2x the 30-day average of the preceding 90 days.';
+
+  @override
+  String get spatialGuideAcceleratingPurpose =>
+      'Early warning for newly emerging or worsening problem areas.';
+
+  @override
+  String get spatialGuideAcceleratingTells =>
+      'Zones deteriorating faster than historical baseline that need field inspection.';
+
+  @override
+  String get spatialGuideStatsTitle => 'Zone Stats (30d • Prev avg • Pending)';
+
+  @override
+  String get spatialGuideStatsWhat =>
+      'Shows last-30d report count, prior 90-day 30d baseline average, and currently pending reports in the cell.';
+
+  @override
+  String get spatialGuideStatsPurpose =>
+      'Provides clear before/after context for each zone.';
+
+  @override
+  String get spatialGuideStatsTells =>
+      'Whether inflow in this area is outpacing local resolution.';
 }

@@ -14,6 +14,7 @@ import 'package:smartspace_admin/ui/screen/settings/edit_profile_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/settings_screen.dart';
 import 'package:smartspace_admin/ui/screen/settings/manage_devices_screen.dart';
 import 'package:smartspace_admin/ui/screen/map/admin_map_screen.dart';
+import 'package:smartspace_admin/features/staff/models/staff_model.dart';
 import 'package:smartspace_admin/ui/screen/staff/staff_management_screen.dart';
 import 'package:smartspace_admin/ui/screen/users/user_management_screen.dart';
 import 'package:smartspace_admin/ui/screen/position/position_management_screen.dart';
@@ -105,7 +106,11 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: RouterPath.staffManagement,
-      builder: (context, state) => const StaffManagementScreen(),
+      builder: (context, state) => StaffManagementScreen(
+        initialStaffId: state.uri.queryParameters['staffId'],
+        initialStaff:
+            state.extra is StaffModel ? state.extra as StaffModel : null,
+      ),
     ),
     GoRoute(
       path: RouterPath.userManagement,

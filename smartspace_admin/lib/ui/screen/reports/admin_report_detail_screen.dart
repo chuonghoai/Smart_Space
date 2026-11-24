@@ -16,6 +16,7 @@ import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
 import 'package:smartspace_admin/features/reports/models/auto_assign_models.dart';
 import 'package:smartspace_admin/ui/screen/reports/widgets/auto_assign_widgets.dart';
 import 'package:smartspace_admin/ui/shared/position/position_widgets.dart';
+import 'package:smartspace_admin/ui/screen/staff/widgets/staff_workload_badge.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
@@ -2966,19 +2967,19 @@ class _StaffPickerBottomSheetState extends State<_StaffPickerBottomSheet> {
                           Wrap(
                             spacing: 6,
                             runSpacing: 4,
+                            crossAxisAlignment: WrapCrossAlignment.center,
                             children: [
                               PositionChip(
                                 name: staff.positionName ?? l10n.noPosition,
                               ),
-                              if (staff.processingCount > 0)
-                                Text(
-                                  '${staff.processingCount} ${l10n.processingStatus.toLowerCase()}',
-                                  style: TextStyle(
-                                    color: theme.colorScheme.primary,
-                                    fontSize: 11,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
+                              StaffWorkloadBadge(
+                                weightedLoad: staff.weightedLoad,
+                                processingCount: staff.processingCount,
+                                isOverloaded: staff.isOverloaded,
+                                assignmentHint: staff.assignmentHint,
+                                severityBreakdown: staff.severityBreakdown,
+                                showAssignmentHint: true,
+                              ),
                             ],
                           ),
                         ],

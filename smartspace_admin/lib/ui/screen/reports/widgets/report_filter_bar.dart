@@ -138,39 +138,113 @@ class ReportFilterBar extends ConsumerWidget {
           ],
         ),
         const SizedBox(height: 8),
-        FilterChip(
-          selected: filter.overdueOnly,
-          showCheckmark: false,
-          avatar: Icon(
-            Icons.warning_amber_rounded,
-            size: 16,
-            color: filter.overdueOnly
-                ? theme.colorScheme.onErrorContainer
-                : theme.colorScheme.error,
-          ),
-          label: Text(
-            l10n.overdueOnlyFilter,
-            style: theme.textTheme.labelMedium?.copyWith(
-              color: filter.overdueOnly
-                  ? theme.colorScheme.onErrorContainer
-                  : theme.colorScheme.onSurface,
-              fontWeight: filter.overdueOnly ? FontWeight.w600 : FontWeight.normal,
+        Wrap(
+          spacing: 8,
+          runSpacing: 6,
+          children: [
+            FilterChip(
+              selected: filter.overdueOnly,
+              showCheckmark: false,
+              avatar: Icon(
+                Icons.warning_amber_rounded,
+                size: 16,
+                color: filter.overdueOnly
+                    ? theme.colorScheme.onErrorContainer
+                    : theme.colorScheme.error,
+              ),
+              label: Text(
+                l10n.overdueOnlyFilter,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: filter.overdueOnly
+                      ? theme.colorScheme.onErrorContainer
+                      : theme.colorScheme.onSurface,
+                  fontWeight: filter.overdueOnly ? FontWeight.w600 : FontWeight.normal,
+                ),
+              ),
+              selectedColor: theme.colorScheme.errorContainer,
+              backgroundColor: theme.colorScheme.surface,
+              side: BorderSide(
+                color: filter.overdueOnly
+                    ? theme.colorScheme.error.withValues(alpha: 0.45)
+                    : theme.dividerColor,
+              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              onSelected: (selected) {
+                ref.read(reportFilterProvider.notifier).state = filter.copyWith(
+                  overdueOnly: selected,
+                  page: 1,
+                );
+              },
             ),
-          ),
-          selectedColor: theme.colorScheme.errorContainer,
-          backgroundColor: theme.colorScheme.surface,
-          side: BorderSide(
-            color: filter.overdueOnly
-                ? theme.colorScheme.error.withValues(alpha: 0.45)
-                : theme.dividerColor,
-          ),
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-          onSelected: (selected) {
-            ref.read(reportFilterProvider.notifier).state = filter.copyWith(
-              overdueOnly: selected,
-              page: 1,
-            );
-          },
+            FilterChip(
+              selected: filter.atRiskOnly,
+              showCheckmark: false,
+              avatar: Icon(
+                Icons.schedule_rounded,
+                size: 16,
+                color: filter.atRiskOnly
+                    ? theme.colorScheme.onSecondaryContainer
+                    : theme.colorScheme.secondary,
+              ),
+              label: Text(
+                l10n.filterAtRiskLabel,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: filter.atRiskOnly
+                      ? theme.colorScheme.onSecondaryContainer
+                      : theme.colorScheme.onSurface,
+                  fontWeight: filter.atRiskOnly ? FontWeight.w600 : FontWeight.normal,
+                ),
+              ),
+              selectedColor: theme.colorScheme.secondaryContainer,
+              backgroundColor: theme.colorScheme.surface,
+              side: BorderSide(
+                color: filter.atRiskOnly
+                    ? theme.colorScheme.secondary.withValues(alpha: 0.45)
+                    : theme.dividerColor,
+              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              onSelected: (selected) {
+                ref.read(reportFilterProvider.notifier).state = filter.copyWith(
+                  atRiskOnly: selected,
+                  page: 1,
+                );
+              },
+            ),
+            FilterChip(
+              selected: filter.bottleneckOnly,
+              showCheckmark: false,
+              avatar: Icon(
+                Icons.timelapse_rounded,
+                size: 16,
+                color: filter.bottleneckOnly
+                    ? theme.colorScheme.onTertiaryContainer
+                    : theme.colorScheme.tertiary,
+              ),
+              label: Text(
+                l10n.filterBottleneckLabel,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  color: filter.bottleneckOnly
+                      ? theme.colorScheme.onTertiaryContainer
+                      : theme.colorScheme.onSurface,
+                  fontWeight: filter.bottleneckOnly ? FontWeight.w600 : FontWeight.normal,
+                ),
+              ),
+              selectedColor: theme.colorScheme.tertiaryContainer,
+              backgroundColor: theme.colorScheme.surface,
+              side: BorderSide(
+                color: filter.bottleneckOnly
+                    ? theme.colorScheme.tertiary.withValues(alpha: 0.45)
+                    : theme.dividerColor,
+              ),
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+              onSelected: (selected) {
+                ref.read(reportFilterProvider.notifier).state = filter.copyWith(
+                  bottleneckOnly: selected,
+                  page: 1,
+                );
+              },
+            ),
+          ],
         ),
       ],
     );

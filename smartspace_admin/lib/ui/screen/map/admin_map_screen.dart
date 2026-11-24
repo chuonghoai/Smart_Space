@@ -7,6 +7,7 @@ import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:smartspace_admin/features/map/application/map_providers.dart';
 import 'package:smartspace_admin/features/map/models/map_report_model.dart';
 import 'package:smartspace_admin/features/reports/models/staff_model.dart';
+import 'package:smartspace_admin/features/map/models/spatial_analytics_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
@@ -25,6 +26,7 @@ import 'widgets/map_legend.dart';
 import 'widgets/map_report_sheet.dart';
 import 'widgets/map_quick_assign_sheet.dart';
 import 'widgets/map_settings_bottom_sheet.dart';
+import 'widgets/spatial_hotspot_panel.dart';
 
 /// Có [focus] (mở từ chi tiết report) → camera mở tại report đó; khung đầu tiên được tải mới
 /// (bỏ qua cache) rồi mở thẻ của report, hoặc báo nó không khớp bộ lọc hiện tại.
@@ -40,6 +42,7 @@ class AdminMapScreen extends ConsumerStatefulWidget {
 class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
   bool _sheetOpen = false;
   bool _didRequestFocus = false;
+  bool _showHotspotsPanel = false;
   PlatformMapController? _platformMapController;
 
   @override
@@ -56,7 +59,38 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
   Future<void> _handleRefresh() async {
     ref.invalidate(mapStaffListProvider);
     ref.read(adminMapControllerProvider.notifier).refresh();
+    ref.invalidate(spatialAnalyticsProvider);
     await _platformMapController?.refreshViewport();
+  }
+
+  void _onHotspotSelected(SpatialHotspotItem hotspot) {
+    _platformMapController?.flyToCoordinate(
+      hotspot.centerLat,
+      hotspot.centerLng,
+      zoom: 16.5,
+    );
+  }
+
+  void _toggleHotspots(bool isWide) {
+    if (isWide) {
+      setState(() => _showHotspotsPanel = !_showHotspotsPanel);
+      return;
+    }
+    showModalBottomSheet<void>(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(18)),
+      ),
+      builder: (ctx) => SpatialHotspotPanel(
+        isBottomSheet: true,
+        onClose: () => Navigator.of(ctx).pop(),
+        onHotspotTap: (item) {
+          Navigator.of(ctx).pop();
+          _onHotspotSelected(item);
+        },
+      ),
+    );
   }
 
   void _onViewportChanged(MapBounds bounds) {
@@ -491,22 +525,47 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
             ),
           ),
 
-          // Map Controls (Top Right: Settings, Staff Stations, My Location, Filter Reports)
-          MapControls(
-            isDensityActive: densityState.isEnabled,
-            onSettingsPressed: _showMapSettings,
-            isStaffStationsActive: showStaffStations,
-            onStaffStationsPressed: () {
-              ref.read(showStaffStationsProvider.notifier).state =
-                  !showStaffStations;
+          // Map Controls (Top Right: Hotspots, Settings, Staff Stations, My Location, Filter Reports)
+          Builder(
+            builder: (context) {
+              final isWide = MediaQuery.sizeOf(context).width >= 900;
+              final accelCount = ref.watch(spatialAnalyticsProvider).maybeWhen(
+                    data: (res) => res.acceleratingHotspots,
+                    orElse: () => 0,
+                  );
+              return MapControls(
+                isDensityActive: densityState.isEnabled,
+                onSettingsPressed: _showMapSettings,
+                isStaffStationsActive: showStaffStations,
+                onStaffStationsPressed: () {
+                  ref.read(showStaffStationsProvider.notifier).state =
+                      !showStaffStations;
+                },
+                onMyLocationPressed: () {
+                  _platformMapController?.flyToUserLocation();
+                },
+                onFilterPressed: _showFilterSheet,
+                isFilterActive: activeFilterCount > 0,
+                activeFilterCount: activeFilterCount,
+                onHotspotsPressed: () => _toggleHotspots(isWide),
+                isHotspotsActive: _showHotspotsPanel,
+                acceleratingHotspotsCount: accelCount,
+              );
             },
-            onMyLocationPressed: () {
-              _platformMapController?.flyToUserLocation();
-            },
-            onFilterPressed: _showFilterSheet,
-            isFilterActive: activeFilterCount > 0,
-            activeFilterCount: activeFilterCount,
           ),
+
+          // Collapsible H3 Hotspots panel on wide screens
+          if (_showHotspotsPanel && MediaQuery.sizeOf(context).width >= 900)
+            Positioned(
+              top: 16,
+              left: 16,
+              child: PointerInterceptor(
+                child: SpatialHotspotPanel(
+                  onClose: () => setState(() => _showHotspotsPanel = false),
+                  onHotspotTap: _onHotspotSelected,
+                ),
+              ),
+            ),
         ],
       ),
     );

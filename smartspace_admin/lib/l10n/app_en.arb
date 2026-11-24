@@ -1429,5 +1429,239 @@
   "autoAssignSectionExpand": "Expand",
   "autoAssignSectionCollapse": "Collapse",
   "autoAssignTabFairness": "Workload Fairness",
-  "autoAssignTabLogs": "Decision Logs"
+  "autoAssignTabLogs": "Decision Logs",
+  "smartAlertsTitle": "Operational Alerts & 7-Day Pulse",
+  "smartAlertsAllHealthy": "Operations steady — no anomalies detected",
+  "volumeSpikeTitle": "Unusual report surge today",
+  "volumeSpikeSubtitle": "{todayCount} reports today vs 14d avg ({avg})",
+  "@volumeSpikeSubtitle": {
+    "placeholders": {
+      "todayCount": {
+        "type": "int"
+      },
+      "avg": {
+        "type": "String"
+      }
+    }
+  },
+  "volumeSpikeZScoreBadge": "Z = {zScore}",
+  "@volumeSpikeZScoreBadge": {
+    "placeholders": {
+      "zScore": {
+        "type": "String"
+      }
+    }
+  },
+  "slaAtRiskTitle": "Early SLA breach warning",
+  "slaAtRiskSubtitle": "{pending} pending, {processing} processing nearing deadline",
+  "@slaAtRiskSubtitle": {
+    "placeholders": {
+      "pending": {
+        "type": "int"
+      },
+      "processing": {
+        "type": "int"
+      }
+    }
+  },
+  "slaAtRiskShort": "At SLA risk",
+  "overloadedStaffTitle": "Staff workload overload",
+  "overloadedStaffSubtitle": "{count} staff exceeding severity-weighted capacity",
+  "@overloadedStaffSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pendingOver24hTitle": "Unassigned backlog > 24h",
+  "pendingOver24hSubtitle": "{count} reports waiting assignment over 24h",
+  "@pendingOver24hSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pulse7dTitle": "Last 7 days pulse",
+  "pulseInflowLabel": "Incoming",
+  "pulseOutflowLabel": "Resolved",
+  "trendBaselineLabel": "14d avg",
+  "trendAnomalyBadge": "Spike",
+  "trendAnomalyCountBadge": "{count} spike days",
+  "@trendAnomalyCountBadge": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trendInsufficientBaseline": "Insufficient baseline (needs >= 7 active days)",
+  "bottleneckShort": "Slow > P90",
+  "bottleneckStatLabel": "Bottleneck (>P90)",
+  "filterAtRiskLabel": "At SLA risk",
+  "filterBottleneckLabel": "Slow > P90",
+  "weightedLoadLabel": "Weighted load",
+  "weightedLoadValue": "{points} pts ({tasks} tasks)",
+  "@weightedLoadValue": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      },
+      "tasks": {
+        "type": "int"
+      }
+    }
+  },
+  "teamAvgWeightedLoadLabel": "Team avg load: {avg} pts",
+  "@teamAvgWeightedLoadLabel": {
+    "placeholders": {
+      "avg": {
+        "type": "String"
+      }
+    }
+  },
+  "staffOverloadedBadge": "Overloaded",
+  "staffRecommendedBadge": "Recommended",
+  "staffBottleneckCountBadge": "{count} slow >P90",
+  "@staffBottleneckCountBadge": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotsTitle": "Area Hotspots (H3)",
+  "spatialHotspotsToggle": "Hotspots",
+  "spatialHotspotsAcceleratingCount": "{count} accelerating zones",
+  "@spatialHotspotsAcceleratingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotAcceleratingBadge": "Accelerating",
+  "spatialHotspotRiskScore": "Risk {score}",
+  "@spatialHotspotRiskScore": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotStats": "{recent} in 30d • Prev avg {prev} • {pending} pending",
+  "@spatialHotspotStats": {
+    "placeholders": {
+      "recent": {
+        "type": "int"
+      },
+      "prev": {
+        "type": "String"
+      },
+      "pending": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotsEmpty": "No prominent spatial risk hotspots",
+  "spatialHotspotFallbackName": "H3 Cell #{shortId}",
+  "@spatialHotspotFallbackName": {
+    "placeholders": {
+      "shortId": {
+        "type": "String"
+      }
+    }
+  },
+  "overloadedStaffModalTitle": "Overloaded Staff Members",
+  "overloadedStaffThresholdInfo": "Overload threshold: > {threshold} load pts (1.5x team avg {teamAvg}) or >= 2 overdue",
+  "@overloadedStaffThresholdInfo": {
+    "placeholders": {
+      "threshold": { "type": "String" },
+      "teamAvg": { "type": "String" }
+    }
+  },
+  "overloadedStaffEmpty": "No staff members are currently overloaded",
+  "overloadedStaffMetricsRow": "{weighted} pts • {processing} active • {overdue} overdue • {bottleneck} >P90",
+  "@overloadedStaffMetricsRow": {
+    "placeholders": {
+      "weighted": { "type": "int" },
+      "processing": { "type": "int" },
+      "overdue": { "type": "int" },
+      "bottleneck": { "type": "int" }
+    }
+  },
+  "overloadedSeverityBreakdownLine": "Crit: {critical} • High: {high} • Med: {medium} • Low: {low}",
+  "@overloadedSeverityBreakdownLine": {
+    "placeholders": {
+      "critical": { "type": "int" },
+      "high": { "type": "int" },
+      "medium": { "type": "int" },
+      "low": { "type": "int" }
+    }
+  },
+  "staffDetailOverloadSectionTitle": "Workload Status",
+  "staffLoadNormalBadge": "Balanced",
+  "staffLoadComparison": "{weighted} weighted pts (Team avg: {teamAvg} pts)",
+  "@staffLoadComparison": {
+    "placeholders": {
+      "weighted": { "type": "int" },
+      "teamAvg": { "type": "String" }
+    }
+  },
+  "analyticsGuideTooltip": "Metrics & Report Guide",
+  "guideWhatLabel": "What it is",
+  "guidePurposeLabel": "Why it matters",
+  "guideTellsLabel": "What it tells you",
+  "reportGuideTitle": "Report Statistics Guide",
+  "reportGuideSlaAtRiskTitle": "Early SLA Risk (At-Risk)",
+  "reportGuideSlaAtRiskWhat": "Pending reports past >= 50% of their time to deadline, or processing reports with <= 24h left (or below the severity's historical average).",
+  "reportGuideSlaAtRiskPurpose": "Warns before reports actually breach their SLA deadline.",
+  "reportGuideSlaAtRiskTells": "Which reports should be assigned or escalated today to avoid overdue breaches.",
+  "reportGuideP90Title": "P90 Threshold & Bottlenecks (> P90)",
+  "reportGuideP90What": "The duration below which 90% of resolved reports in the last 90 days finished per severity (falls back to 80% of SLA window if < 10 samples).",
+  "reportGuideP90Purpose": "Spots stalled tasks early even before their hard deadline expires.",
+  "reportGuideP90Tells": "Tasks taking longer than 90% of similar historical cases — worth checking for blockers.",
+  "reportGuideTrendAnomalyTitle": "Daily Trend, 14d Baseline & Spikes (Z-score)",
+  "reportGuideTrendAnomalyWhat": "Dashed line shows the rolling 14-day mean; red dots mark days with >= 5 reports and Z-score >= 2.0 (or >= 1.5x the 14-day average).",
+  "reportGuideTrendAnomalyPurpose": "Separates normal noise from sudden incident surges.",
+  "reportGuideTrendAnomalyTells": "When unusual spikes occur or when baseline data is still insufficient (< 7 active days).",
+  "reportGuideFiltersTitle": "Stat Cards & List Filter Chips",
+  "reportGuideFiltersWhat": "Click any overview card or filter chip (Overdue, At SLA risk, Slow > P90, Rehandling) to narrow down the report list.",
+  "reportGuideFiltersPurpose": "Connects high-level metrics directly to actionable records.",
+  "reportGuideFiltersTells": "The exact list of reports currently requiring admin attention.",
+  "staffGuideTitle": "Staff Metrics Guide",
+  "staffGuideWeightedLoadTitle": "Severity-Weighted Load Points",
+  "staffGuideWeightedLoadWhat": "Sum of active task weights by severity: Low = 1 pt, Medium = 2 pts, High = 3 pts, Critical = 5 pts.",
+  "staffGuideWeightedLoadPurpose": "Measures true effort instead of treating simple and critical issues equally.",
+  "staffGuideWeightedLoadTells": "Staff holding fewer tasks that are mostly High/Critical still carry heavy workload.",
+  "staffGuideOverloadTitle": "Team Average Load & Overload",
+  "staffGuideOverloadWhat": "A staff member is marked Overloaded when weighted load > max(5, 1.5 x team avg) or overdue tasks >= 2.",
+  "staffGuideOverloadPurpose": "Prevents assigning new reports to already saturated staff.",
+  "staffGuideOverloadTells": "Who needs relief vs who has capacity (Recommended badge) for new assignments.",
+  "staffGuideEfficiencyTitle": "On-Time Efficiency & Monthly Stats",
+  "staffGuideEfficiencyWhat": "Percentage of evaluated tasks resolved before or on their deadline within the selected month.",
+  "staffGuideEfficiencyPurpose": "Tracks SLA discipline per staff member over time.",
+  "staffGuideEfficiencyTells": "Consistency in meeting deadlines and accumulated late/rehandling volume.",
+  "staffGuideBottleneckTitle": "Slow Tasks (> P90)",
+  "staffGuideBottleneckWhat": "Count of active tasks held longer than the historical P90 resolution duration for that severity.",
+  "staffGuideBottleneckPurpose": "Flags long-running assignments that may be blocked on-site.",
+  "staffGuideBottleneckTells": "Which staff may need support or reassignment on stalled reports.",
+  "spatialGuideTitle": "Spatial Hotspots (H3) Guide",
+  "spatialGuideH3Title": "H3 Hexagon Cells (Resolution 11)",
+  "spatialGuideH3What": "Groups nearby reports into uniform Uber H3 Resolution-11 hexagonal zones across campus.",
+  "spatialGuideH3Purpose": "Detects real spatial clusters independent of rigid text labels.",
+  "spatialGuideH3Tells": "Clicking a zone centers the map camera straight onto that cluster.",
+  "spatialGuideRiskScoreTitle": "Risk Score & Red Highlight",
+  "spatialGuideRiskScoreWhat": "Computed as (Pending x 2) + (High/Critical x 3) + (Overdue x 4). Red highlights accelerating or high-priority cells.",
+  "spatialGuideRiskScorePurpose": "Ranks zones by operational urgency rather than raw count alone.",
+  "spatialGuideRiskScoreTells": "Higher Risk means more severe, overdue, or unaddressed issues clustered there.",
+  "spatialGuideAcceleratingTitle": "\"Accelerating\" Badge",
+  "spatialGuideAcceleratingWhat": "Triggered when a zone logs >= 3 reports in the last 30 days and >= 2x the 30-day average of the preceding 90 days.",
+  "spatialGuideAcceleratingPurpose": "Early warning for newly emerging or worsening problem areas.",
+  "spatialGuideAcceleratingTells": "Zones deteriorating faster than historical baseline that need field inspection.",
+  "spatialGuideStatsTitle": "Zone Stats (30d • Prev avg • Pending)",
+  "spatialGuideStatsWhat": "Shows last-30d report count, prior 90-day 30d baseline average, and currently pending reports in the cell.",
+  "spatialGuideStatsPurpose": "Provides clear before/after context for each zone.",
+  "spatialGuideStatsTells": "Whether inflow in this area is outpacing local resolution."
 }

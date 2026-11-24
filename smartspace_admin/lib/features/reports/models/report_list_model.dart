@@ -18,6 +18,9 @@ class ReportListItem {
   final DateTime? resolvedAt;
   final bool? serverIsOverdue;
   final int? serverRemainingDays;
+  final bool isAtRisk;
+  final bool isBottleneck;
+  final int? elapsedMinutes;
 
   const ReportListItem({
     required this.id,
@@ -37,6 +40,9 @@ class ReportListItem {
     this.resolvedAt,
     this.serverIsOverdue,
     this.serverRemainingDays,
+    this.isAtRisk = false,
+    this.isBottleneck = false,
+    this.elapsedMinutes,
   });
 
   bool get isOverdue => ReportDeadlineHelper.isOverdue(
@@ -103,6 +109,9 @@ class ReportListItem {
       serverIsOverdue: (json['is_overdue'] ?? json['isOverdue']) as bool?,
       serverRemainingDays:
           ((json['remaining_days'] ?? json['remainingDays']) as num?)?.toInt(),
+      isAtRisk: (json['isAtRisk'] as bool?) ?? (json['atRisk'] as bool?) ?? false,
+      isBottleneck: (json['isBottleneck'] as bool?) ?? (json['bottleneck'] as bool?) ?? false,
+      elapsedMinutes: (json['elapsedMinutes'] as num?)?.toInt(),
     );
   }
 
@@ -114,6 +123,9 @@ class ReportListItem {
     DateTime? resolvedAt,
     bool? serverIsOverdue,
     int? serverRemainingDays,
+    bool? isAtRisk,
+    bool? isBottleneck,
+    int? elapsedMinutes,
   }) =>
       ReportListItem(
         id: id,
@@ -133,6 +145,9 @@ class ReportListItem {
         resolvedAt: resolvedAt ?? this.resolvedAt,
         serverIsOverdue: serverIsOverdue ?? this.serverIsOverdue,
         serverRemainingDays: serverRemainingDays ?? this.serverRemainingDays,
+        isAtRisk: isAtRisk ?? this.isAtRisk,
+        isBottleneck: isBottleneck ?? this.isBottleneck,
+        elapsedMinutes: elapsedMinutes ?? this.elapsedMinutes,
       );
 }
 

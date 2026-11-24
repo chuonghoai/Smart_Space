@@ -19,7 +19,12 @@ public class ReportTrendResponse {
     public static class TrendItem {
         String label;   // "17/09", "Tuần 38", "Tháng 9"
         int count;
+        boolean anomaly;
+        Double baselineAvg;
     }
 
     List<TrendItem> items;
+    Double baselineAvg14d;
+    int anomalyCount;
+    boolean insufficientData;
 }
