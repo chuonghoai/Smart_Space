@@ -1255,4 +1255,27 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get noRejectionReasonProvided =>
       'Phản ánh đã bị quản trị viên từ chối.';
+
+  @override
+  String get assignedBaseLocationSection => 'Vị trí trực & Chức vụ';
+
+  @override
+  String get staffPositionLabel => 'Chức vụ chuyên môn';
+
+  @override
+  String get staffPositionNotAssigned => 'Chưa phân công chức vụ';
+
+  @override
+  String get baseStationAddressLabel => 'Khu vực / Trạm trực đại diện';
+
+  @override
+  String get baseStationCoordinatesLabel => 'Tọa độ đại diện';
+
+  @override
+  String get baseStationNotConfigured =>
+      'Chưa được quản trị viên thiết lập vị trí trực';
+
+  @override
+  String get baseStationReadOnlyHint =>
+      'Thông tin chức vụ và vị trí trực do Quản trị viên điều phối trên hệ thống.';
 }

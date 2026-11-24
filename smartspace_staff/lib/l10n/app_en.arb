@@ -499,5 +499,12 @@
   },
   "overdueOnlyFilter": "Overdue",
   "rejectedReasonTitle": "Rejection Reason",
-  "noRejectionReasonProvided": "Rejected by administrator."
+  "noRejectionReasonProvided": "Rejected by administrator.",
+  "assignedBaseLocationSection": "Assigned Station & Position",
+  "staffPositionLabel": "Assigned Position",
+  "staffPositionNotAssigned": "No position assigned",
+  "baseStationAddressLabel": "Representative Station / Area",
+  "baseStationCoordinatesLabel": "Representative Coordinates",
+  "baseStationNotConfigured": "Representative station not configured by administrator",
+  "baseStationReadOnlyHint": "Position and representative station are managed by the system administrator."
 }

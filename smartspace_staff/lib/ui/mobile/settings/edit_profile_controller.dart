@@ -38,6 +38,12 @@ class EditProfileController extends ChangeNotifier {
     _user = await userStorageService.getUser();
     _selectedGender = _user?.gender;
     notifyListeners();
+    final fresh = await _authService.getMe();
+    if (fresh != null) {
+      _user = fresh;
+      _selectedGender = _user?.gender;
+      notifyListeners();
+    }
   }
 
   void setGender(String gender) {

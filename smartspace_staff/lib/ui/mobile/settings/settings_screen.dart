@@ -50,6 +50,7 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
             children: [
               // Profile Card
               _buildProfileCard(theme, l10n),
+              _buildBaseLocationSection(theme, l10n),
               const Divider(height: 1),
 
               // Nhóm 1: Tài khoản
@@ -230,6 +231,29 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
+                if (user?.positionName != null &&
+                    user!.positionName!.trim().isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primaryContainer.withValues(
+                        alpha: 0.65,
+                      ),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      user.positionName!,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -245,6 +269,100 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
             },
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildBaseLocationSection(ThemeData theme, AppLocalizations l10n) {
+    final user = _controller.user;
+    final cs = theme.colorScheme;
+    final hasBase = user?.hasBaseLocation ?? false;
+    final address = (user?.baseAddress != null &&
+            user!.baseAddress!.trim().isNotEmpty)
+        ? user.baseAddress!.trim()
+        : null;
+    final coords = user?.formattedBaseCoordinates;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: cs.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: cs.outlineVariant.withValues(alpha: 0.65),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.my_location_outlined,
+                  size: 16,
+                  color: cs.primary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.assignedBaseLocationSection,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: cs.onSurface,
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.lock_outline,
+                  size: 14,
+                  color: cs.onSurfaceVariant,
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            if (hasBase) ...[
+              if (address != null) ...[
+                Text(
+                  address,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: cs.onSurface,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 4),
+              ],
+              if (coords != null)
+                Row(
+                  children: [
+                    Text(
+                      '${l10n.baseStationCoordinatesLabel}: ',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: cs.onSurfaceVariant,
+                      ),
+                    ),
+                    Flexible(
+                      child: Text(
+                        coords,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: cs.onSurface,
+                          fontWeight: FontWeight.w600,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+            ] else
+              Text(
+                l10n.baseStationNotConfigured,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: cs.onSurfaceVariant,
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }

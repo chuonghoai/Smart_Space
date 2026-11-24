@@ -499,5 +499,12 @@
   },
   "overdueOnlyFilter": "Quá hạn",
   "rejectedReasonTitle": "Lý do từ chối",
-  "noRejectionReasonProvided": "Phản ánh đã bị quản trị viên từ chối."
+  "noRejectionReasonProvided": "Phản ánh đã bị quản trị viên từ chối.",
+  "assignedBaseLocationSection": "Vị trí trực & Chức vụ",
+  "staffPositionLabel": "Chức vụ chuyên môn",
+  "staffPositionNotAssigned": "Chưa phân công chức vụ",
+  "baseStationAddressLabel": "Khu vực / Trạm trực đại diện",
+  "baseStationCoordinatesLabel": "Tọa độ đại diện",
+  "baseStationNotConfigured": "Chưa được quản trị viên thiết lập vị trí trực",
+  "baseStationReadOnlyHint": "Thông tin chức vụ và vị trí trực do Quản trị viên điều phối trên hệ thống."
 }
