@@ -191,6 +191,18 @@ class Sidebar extends ConsumerWidget {
                     },
                   ),
                   _SidebarItem(
+                    icon: Icons.auto_awesome_outlined,
+                    label: l10n.routeAutoAssignCenter,
+                    isSelected: currentPath == RouterPath.autoAssignCenter ||
+                        currentPath.startsWith(RouterPath.autoAssignCenter),
+                    onTap: () {
+                      Navigator.pop(context);
+                      if (currentPath != RouterPath.autoAssignCenter) {
+                        context.push(RouterPath.autoAssignCenter);
+                      }
+                    },
+                  ),
+                  _SidebarItem(
                     icon: Icons.map_outlined,
                     label: l10n.spaceMap,
                     isSelected: currentPath == RouterPath.spaceMap ||
@@ -512,6 +524,18 @@ class WebSidebar extends ConsumerWidget {
                 onTap: () {
                   if (currentPath != RouterPath.reportDashboard) {
                     context.push(RouterPath.reportDashboard);
+                  }
+                },
+              ),
+              _WebSidebarItem(
+                icon: Icons.auto_awesome_outlined,
+                label: l10n.routeAutoAssignCenter,
+                isExpanded: isExpanded,
+                isSelected: currentPath == RouterPath.autoAssignCenter ||
+                    currentPath.startsWith(RouterPath.autoAssignCenter),
+                onTap: () {
+                  if (currentPath != RouterPath.autoAssignCenter) {
+                    context.push(RouterPath.autoAssignCenter);
                   }
                 },
               ),

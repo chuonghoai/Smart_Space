@@ -1308,5 +1308,126 @@
   "autoAssignSuccessMessage": "Report auto-assigned to best matching staff",
   "autoAssignFailedFallback": "Unable to auto-assign report",
   "reassignStaffButton": "Reassign Staff",
-  "autoAssignNoCandidatesDefault": "No staff matched the eligibility filters (position, base coordinates, radius, concurrent load limit)."
+  "autoAssignNoCandidatesDefault": "No staff matched the eligibility filters (position, base coordinates, radius, concurrent load limit).",
+  "routeAutoAssignCenter": "Auto-Assign Center",
+  "autoAssignCenterTitle": "Auto-Assign Dispatch Center",
+  "autoAssignCenterSubtitle": "Configure dispatch mode, multi-criteria weights, live dry-run simulation, and monthly workload fairness",
+  "autoAssignRefreshAction": "Refresh data",
+  "autoAssignKpiTotalDecisions": "Total Decisions",
+  "autoAssignKpiBreakdown": "{autoCount} auto · {recommendCount} 1-tap · {fallbackCount} fallback",
+  "@autoAssignKpiBreakdown": {
+    "placeholders": {
+      "autoCount": { "type": "int" },
+      "recommendCount": { "type": "int" },
+      "fallbackCount": { "type": "int" }
+    }
+  },
+  "autoAssignKpiSuccessRate": "Auto-Assign Success Rate",
+  "autoAssignKpiSuccessSub": "Passed 2-stage eligibility filter",
+  "autoAssignKpiAcceptanceRate": "Admin Acceptance Rate",
+  "autoAssignKpiOverriddenSub": "{count} overridden by Admin",
+  "@autoAssignKpiOverriddenSub": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignKpiFairnessIndex": "Monthly Fairness Index",
+  "autoAssignKpiFairnessSub": "Avg {avg} tasks/staff · std ±{std}",
+  "@autoAssignKpiFairnessSub": {
+    "placeholders": {
+      "avg": { "type": "String" },
+      "std": { "type": "String" }
+    }
+  },
+  "autoAssignConfigCardTitle": "Dispatch Mode & Scoring Weights",
+  "autoAssignConfigCardDesc": "All 4 weights automatically lock to 100%. Adjusting sliders immediately updates the Dry-Run Simulator.",
+  "autoAssignModeOptionAuto": "Auto (AUTO)",
+  "autoAssignModeOptionAssist": "Assist (ASSIST)",
+  "autoAssignModeOptionManual": "Manual (MANUAL)",
+  "autoAssignModeDescAuto": "New reports are automatically scored and immediately assigned to the #1 eligible staff member.",
+  "autoAssignModeDescAssist": "System pre-calculates and recommends the Top 3 candidates for 1-tap Admin approval.",
+  "autoAssignModeDescManual": "Disables automatic dispatch on report creation; Admin assigns manually or triggers recommendations on demand.",
+  "autoAssignWeightsHeader": "Multi-Criteria Scoring Weights (Total = 100%)",
+  "autoAssignResetWeightsButton": "Default (35/30/20/15)",
+  "autoAssignThresholdsHeader": "Eligibility Thresholds & Quotas",
+  "autoAssignMaxRadiusLabel": "Max dispatch radius (km)",
+  "autoAssignMaxConcurrentLabel": "Max concurrent tasks",
+  "autoAssignTargetMonthlyLabel": "Target monthly tasks",
+  "autoAssignSaveConfigButton": "Save Configuration",
+  "autoAssignConfigSavedSuccess": "Auto-assign configuration updated successfully",
+  "autoAssignConfigSaveFailed": "Failed to save auto-assign configuration",
+  "autoAssignSimulatorTitle": "Live Dry-Run Simulator",
+  "autoAssignSimulatorDesc": "Select a category and hypothetical incident coordinates to test candidate ranking with current weights (no DB writes).",
+  "autoAssignSimCategoryLabel": "Hypothetical Incident Category",
+  "autoAssignSimPickOnMap": "Pick on Map",
+  "autoAssignSimRunButton": "Run Simulation",
+  "autoAssignSimPresetDistrict1": "District 1 Preset",
+  "autoAssignSimPresetThuDuc": "Thu Duc Preset",
+  "autoAssignSimPresetBinhThanh": "Binh Thanh Preset",
+  "autoAssignSimNoWriterBadge": "Dry-Run Only · No DB Writes",
+  "autoAssignFairnessSectionTitle": "Monthly Workload Distribution & Team Fairness",
+  "autoAssignFairnessSectionDesc": "Compare current month workload, active processing tasks, and 30-day on-time rate across active staff.",
+  "autoAssignFairnessRangeLabel": "Min: {min} tasks · Max: {max} tasks",
+  "@autoAssignFairnessRangeLabel": {
+    "placeholders": {
+      "min": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+  "autoAssignStaffMonthlyQuotaText": "{current}/{target} monthly",
+  "@autoAssignStaffMonthlyQuotaText": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "target": { "type": "int" }
+    }
+  },
+  "autoAssignStaffActiveQuotaText": "{active}/{maxActive} active",
+  "@autoAssignStaffActiveQuotaText": {
+    "placeholders": {
+      "active": { "type": "int" },
+      "maxActive": { "type": "int" }
+    }
+  },
+  "autoAssignStaffOnTimeText": "{rate}% on-time",
+  "@autoAssignStaffOnTimeText": {
+    "placeholders": {
+      "rate": { "type": "String" }
+    }
+  },
+  "autoAssignLogsSectionTitle": "Assignment Decision Logs",
+  "autoAssignLogsSectionDesc": "Detailed audit log of auto-assignments, 1-tap recommendations, fallbacks, and Admin overrides.",
+  "autoAssignLogsFilterAll": "All outcomes",
+  "autoAssignLogsFilterAssigned": "Assigned",
+  "autoAssignLogsFilterRecommended": "Recommended",
+  "autoAssignLogsFilterOverridden": "Overridden",
+  "autoAssignLogsFilterFallback": "Fallback",
+  "autoAssignLogsEmpty": "No assignment decision logs match the current filter",
+  "autoAssignLogViewReport": "Open report",
+  "autoAssignLogPageInfo": "Page {current}/{total} ({count} records)",
+  "@autoAssignLogPageInfo": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" },
+      "count": { "type": "int" }
+    }
+  },
+  "mapStaffStationsToggle": "Staff Stations",
+  "mapStaffStationsLegend": "Staff Base Station",
+  "mapStaffStationSheetTitle": "Staff Base Station",
+  "mapStaffActiveTasksCount": "Active processing: {count} reports",
+  "@mapStaffActiveTasksCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "mapFilterByThisStaff": "Filter reports assigned to this staff",
+  "autoAssignModeShortAuto": "Auto",
+  "autoAssignModeShortAssist": "Assist",
+  "autoAssignModeShortManual": "Manual",
+  "autoAssignToggleWeightsExpand": "Customize weights & thresholds",
+  "autoAssignToggleWeightsCollapse": "Collapse weights & thresholds",
+  "autoAssignSectionExpand": "Expand",
+  "autoAssignSectionCollapse": "Collapse",
+  "autoAssignTabFairness": "Workload Fairness",
+  "autoAssignTabLogs": "Decision Logs"
 }

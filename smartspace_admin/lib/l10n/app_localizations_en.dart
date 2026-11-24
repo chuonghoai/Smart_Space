@@ -2744,4 +2744,243 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get autoAssignNoCandidatesDefault =>
       'No staff matched the eligibility filters (position, base coordinates, radius, concurrent load limit).';
+
+  @override
+  String get routeAutoAssignCenter => 'Auto-Assign Center';
+
+  @override
+  String get autoAssignCenterTitle => 'Auto-Assign Dispatch Center';
+
+  @override
+  String get autoAssignCenterSubtitle =>
+      'Configure dispatch mode, multi-criteria weights, live dry-run simulation, and monthly workload fairness';
+
+  @override
+  String get autoAssignRefreshAction => 'Refresh data';
+
+  @override
+  String get autoAssignKpiTotalDecisions => 'Total Decisions';
+
+  @override
+  String autoAssignKpiBreakdown(
+    int autoCount,
+    int recommendCount,
+    int fallbackCount,
+  ) {
+    return '$autoCount auto · $recommendCount 1-tap · $fallbackCount fallback';
+  }
+
+  @override
+  String get autoAssignKpiSuccessRate => 'Auto-Assign Success Rate';
+
+  @override
+  String get autoAssignKpiSuccessSub => 'Passed 2-stage eligibility filter';
+
+  @override
+  String get autoAssignKpiAcceptanceRate => 'Admin Acceptance Rate';
+
+  @override
+  String autoAssignKpiOverriddenSub(int count) {
+    return '$count overridden by Admin';
+  }
+
+  @override
+  String get autoAssignKpiFairnessIndex => 'Monthly Fairness Index';
+
+  @override
+  String autoAssignKpiFairnessSub(String avg, String std) {
+    return 'Avg $avg tasks/staff · std ±$std';
+  }
+
+  @override
+  String get autoAssignConfigCardTitle => 'Dispatch Mode & Scoring Weights';
+
+  @override
+  String get autoAssignConfigCardDesc =>
+      'All 4 weights automatically lock to 100%. Adjusting sliders immediately updates the Dry-Run Simulator.';
+
+  @override
+  String get autoAssignModeOptionAuto => 'Auto (AUTO)';
+
+  @override
+  String get autoAssignModeOptionAssist => 'Assist (ASSIST)';
+
+  @override
+  String get autoAssignModeOptionManual => 'Manual (MANUAL)';
+
+  @override
+  String get autoAssignModeDescAuto =>
+      'New reports are automatically scored and immediately assigned to the #1 eligible staff member.';
+
+  @override
+  String get autoAssignModeDescAssist =>
+      'System pre-calculates and recommends the Top 3 candidates for 1-tap Admin approval.';
+
+  @override
+  String get autoAssignModeDescManual =>
+      'Disables automatic dispatch on report creation; Admin assigns manually or triggers recommendations on demand.';
+
+  @override
+  String get autoAssignWeightsHeader =>
+      'Multi-Criteria Scoring Weights (Total = 100%)';
+
+  @override
+  String get autoAssignResetWeightsButton => 'Default (35/30/20/15)';
+
+  @override
+  String get autoAssignThresholdsHeader => 'Eligibility Thresholds & Quotas';
+
+  @override
+  String get autoAssignMaxRadiusLabel => 'Max dispatch radius (km)';
+
+  @override
+  String get autoAssignMaxConcurrentLabel => 'Max concurrent tasks';
+
+  @override
+  String get autoAssignTargetMonthlyLabel => 'Target monthly tasks';
+
+  @override
+  String get autoAssignSaveConfigButton => 'Save Configuration';
+
+  @override
+  String get autoAssignConfigSavedSuccess =>
+      'Auto-assign configuration updated successfully';
+
+  @override
+  String get autoAssignConfigSaveFailed =>
+      'Failed to save auto-assign configuration';
+
+  @override
+  String get autoAssignSimulatorTitle => 'Live Dry-Run Simulator';
+
+  @override
+  String get autoAssignSimulatorDesc =>
+      'Select a category and hypothetical incident coordinates to test candidate ranking with current weights (no DB writes).';
+
+  @override
+  String get autoAssignSimCategoryLabel => 'Hypothetical Incident Category';
+
+  @override
+  String get autoAssignSimPickOnMap => 'Pick on Map';
+
+  @override
+  String get autoAssignSimRunButton => 'Run Simulation';
+
+  @override
+  String get autoAssignSimPresetDistrict1 => 'District 1 Preset';
+
+  @override
+  String get autoAssignSimPresetThuDuc => 'Thu Duc Preset';
+
+  @override
+  String get autoAssignSimPresetBinhThanh => 'Binh Thanh Preset';
+
+  @override
+  String get autoAssignSimNoWriterBadge => 'Dry-Run Only · No DB Writes';
+
+  @override
+  String get autoAssignFairnessSectionTitle =>
+      'Monthly Workload Distribution & Team Fairness';
+
+  @override
+  String get autoAssignFairnessSectionDesc =>
+      'Compare current month workload, active processing tasks, and 30-day on-time rate across active staff.';
+
+  @override
+  String autoAssignFairnessRangeLabel(int min, int max) {
+    return 'Min: $min tasks · Max: $max tasks';
+  }
+
+  @override
+  String autoAssignStaffMonthlyQuotaText(int current, int target) {
+    return '$current/$target monthly';
+  }
+
+  @override
+  String autoAssignStaffActiveQuotaText(int active, int maxActive) {
+    return '$active/$maxActive active';
+  }
+
+  @override
+  String autoAssignStaffOnTimeText(String rate) {
+    return '$rate% on-time';
+  }
+
+  @override
+  String get autoAssignLogsSectionTitle => 'Assignment Decision Logs';
+
+  @override
+  String get autoAssignLogsSectionDesc =>
+      'Detailed audit log of auto-assignments, 1-tap recommendations, fallbacks, and Admin overrides.';
+
+  @override
+  String get autoAssignLogsFilterAll => 'All outcomes';
+
+  @override
+  String get autoAssignLogsFilterAssigned => 'Assigned';
+
+  @override
+  String get autoAssignLogsFilterRecommended => 'Recommended';
+
+  @override
+  String get autoAssignLogsFilterOverridden => 'Overridden';
+
+  @override
+  String get autoAssignLogsFilterFallback => 'Fallback';
+
+  @override
+  String get autoAssignLogsEmpty =>
+      'No assignment decision logs match the current filter';
+
+  @override
+  String get autoAssignLogViewReport => 'Open report';
+
+  @override
+  String autoAssignLogPageInfo(int current, int total, int count) {
+    return 'Page $current/$total ($count records)';
+  }
+
+  @override
+  String get mapStaffStationsToggle => 'Staff Stations';
+
+  @override
+  String get mapStaffStationsLegend => 'Staff Base Station';
+
+  @override
+  String get mapStaffStationSheetTitle => 'Staff Base Station';
+
+  @override
+  String mapStaffActiveTasksCount(int count) {
+    return 'Active processing: $count reports';
+  }
+
+  @override
+  String get mapFilterByThisStaff => 'Filter reports assigned to this staff';
+
+  @override
+  String get autoAssignModeShortAuto => 'Auto';
+
+  @override
+  String get autoAssignModeShortAssist => 'Assist';
+
+  @override
+  String get autoAssignModeShortManual => 'Manual';
+
+  @override
+  String get autoAssignToggleWeightsExpand => 'Customize weights & thresholds';
+
+  @override
+  String get autoAssignToggleWeightsCollapse => 'Collapse weights & thresholds';
+
+  @override
+  String get autoAssignSectionExpand => 'Expand';
+
+  @override
+  String get autoAssignSectionCollapse => 'Collapse';
+
+  @override
+  String get autoAssignTabFairness => 'Workload Fairness';
+
+  @override
+  String get autoAssignTabLogs => 'Decision Logs';
 }

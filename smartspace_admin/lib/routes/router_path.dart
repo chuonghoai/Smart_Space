@@ -17,6 +17,7 @@ class RouterPath {
   static String get userManagement => RouteName.userManagement.path;
   static String get positionManagement => RouteName.positionManagement.path;
   static String get categoryManagement => RouteName.categoryManagement.path;
+  static String get autoAssignCenter => RouteName.autoAssignCenter.path;
   static String get adminBoard => RouteName.adminBoard.path;
   /// Mở tab "Đề xuất khoá" và (nếu có) một đề xuất cụ thể.
   static String adminBoardLockRequests([String? requestId]) => Uri(

@@ -5154,6 +5154,418 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No staff matched the eligibility filters (position, base coordinates, radius, concurrent load limit).'**
   String get autoAssignNoCandidatesDefault;
+
+  /// No description provided for @routeAutoAssignCenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-Assign Center'**
+  String get routeAutoAssignCenter;
+
+  /// No description provided for @autoAssignCenterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-Assign Dispatch Center'**
+  String get autoAssignCenterTitle;
+
+  /// No description provided for @autoAssignCenterSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure dispatch mode, multi-criteria weights, live dry-run simulation, and monthly workload fairness'**
+  String get autoAssignCenterSubtitle;
+
+  /// No description provided for @autoAssignRefreshAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh data'**
+  String get autoAssignRefreshAction;
+
+  /// No description provided for @autoAssignKpiTotalDecisions.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Decisions'**
+  String get autoAssignKpiTotalDecisions;
+
+  /// No description provided for @autoAssignKpiBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'{autoCount} auto · {recommendCount} 1-tap · {fallbackCount} fallback'**
+  String autoAssignKpiBreakdown(
+    int autoCount,
+    int recommendCount,
+    int fallbackCount,
+  );
+
+  /// No description provided for @autoAssignKpiSuccessRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-Assign Success Rate'**
+  String get autoAssignKpiSuccessRate;
+
+  /// No description provided for @autoAssignKpiSuccessSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Passed 2-stage eligibility filter'**
+  String get autoAssignKpiSuccessSub;
+
+  /// No description provided for @autoAssignKpiAcceptanceRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Acceptance Rate'**
+  String get autoAssignKpiAcceptanceRate;
+
+  /// No description provided for @autoAssignKpiOverriddenSub.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} overridden by Admin'**
+  String autoAssignKpiOverriddenSub(int count);
+
+  /// No description provided for @autoAssignKpiFairnessIndex.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Fairness Index'**
+  String get autoAssignKpiFairnessIndex;
+
+  /// No description provided for @autoAssignKpiFairnessSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg {avg} tasks/staff · std ±{std}'**
+  String autoAssignKpiFairnessSub(String avg, String std);
+
+  /// No description provided for @autoAssignConfigCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch Mode & Scoring Weights'**
+  String get autoAssignConfigCardTitle;
+
+  /// No description provided for @autoAssignConfigCardDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'All 4 weights automatically lock to 100%. Adjusting sliders immediately updates the Dry-Run Simulator.'**
+  String get autoAssignConfigCardDesc;
+
+  /// No description provided for @autoAssignModeOptionAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto (AUTO)'**
+  String get autoAssignModeOptionAuto;
+
+  /// No description provided for @autoAssignModeOptionAssist.
+  ///
+  /// In en, this message translates to:
+  /// **'Assist (ASSIST)'**
+  String get autoAssignModeOptionAssist;
+
+  /// No description provided for @autoAssignModeOptionManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual (MANUAL)'**
+  String get autoAssignModeOptionManual;
+
+  /// No description provided for @autoAssignModeDescAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'New reports are automatically scored and immediately assigned to the #1 eligible staff member.'**
+  String get autoAssignModeDescAuto;
+
+  /// No description provided for @autoAssignModeDescAssist.
+  ///
+  /// In en, this message translates to:
+  /// **'System pre-calculates and recommends the Top 3 candidates for 1-tap Admin approval.'**
+  String get autoAssignModeDescAssist;
+
+  /// No description provided for @autoAssignModeDescManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Disables automatic dispatch on report creation; Admin assigns manually or triggers recommendations on demand.'**
+  String get autoAssignModeDescManual;
+
+  /// No description provided for @autoAssignWeightsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Multi-Criteria Scoring Weights (Total = 100%)'**
+  String get autoAssignWeightsHeader;
+
+  /// No description provided for @autoAssignResetWeightsButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Default (35/30/20/15)'**
+  String get autoAssignResetWeightsButton;
+
+  /// No description provided for @autoAssignThresholdsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Eligibility Thresholds & Quotas'**
+  String get autoAssignThresholdsHeader;
+
+  /// No description provided for @autoAssignMaxRadiusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Max dispatch radius (km)'**
+  String get autoAssignMaxRadiusLabel;
+
+  /// No description provided for @autoAssignMaxConcurrentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Max concurrent tasks'**
+  String get autoAssignMaxConcurrentLabel;
+
+  /// No description provided for @autoAssignTargetMonthlyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Target monthly tasks'**
+  String get autoAssignTargetMonthlyLabel;
+
+  /// No description provided for @autoAssignSaveConfigButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Configuration'**
+  String get autoAssignSaveConfigButton;
+
+  /// No description provided for @autoAssignConfigSavedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-assign configuration updated successfully'**
+  String get autoAssignConfigSavedSuccess;
+
+  /// No description provided for @autoAssignConfigSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save auto-assign configuration'**
+  String get autoAssignConfigSaveFailed;
+
+  /// No description provided for @autoAssignSimulatorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Dry-Run Simulator'**
+  String get autoAssignSimulatorTitle;
+
+  /// No description provided for @autoAssignSimulatorDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a category and hypothetical incident coordinates to test candidate ranking with current weights (no DB writes).'**
+  String get autoAssignSimulatorDesc;
+
+  /// No description provided for @autoAssignSimCategoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Hypothetical Incident Category'**
+  String get autoAssignSimCategoryLabel;
+
+  /// No description provided for @autoAssignSimPickOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick on Map'**
+  String get autoAssignSimPickOnMap;
+
+  /// No description provided for @autoAssignSimRunButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Run Simulation'**
+  String get autoAssignSimRunButton;
+
+  /// No description provided for @autoAssignSimPresetDistrict1.
+  ///
+  /// In en, this message translates to:
+  /// **'District 1 Preset'**
+  String get autoAssignSimPresetDistrict1;
+
+  /// No description provided for @autoAssignSimPresetThuDuc.
+  ///
+  /// In en, this message translates to:
+  /// **'Thu Duc Preset'**
+  String get autoAssignSimPresetThuDuc;
+
+  /// No description provided for @autoAssignSimPresetBinhThanh.
+  ///
+  /// In en, this message translates to:
+  /// **'Binh Thanh Preset'**
+  String get autoAssignSimPresetBinhThanh;
+
+  /// No description provided for @autoAssignSimNoWriterBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Dry-Run Only · No DB Writes'**
+  String get autoAssignSimNoWriterBadge;
+
+  /// No description provided for @autoAssignFairnessSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Workload Distribution & Team Fairness'**
+  String get autoAssignFairnessSectionTitle;
+
+  /// No description provided for @autoAssignFairnessSectionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare current month workload, active processing tasks, and 30-day on-time rate across active staff.'**
+  String get autoAssignFairnessSectionDesc;
+
+  /// No description provided for @autoAssignFairnessRangeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Min: {min} tasks · Max: {max} tasks'**
+  String autoAssignFairnessRangeLabel(int min, int max);
+
+  /// No description provided for @autoAssignStaffMonthlyQuotaText.
+  ///
+  /// In en, this message translates to:
+  /// **'{current}/{target} monthly'**
+  String autoAssignStaffMonthlyQuotaText(int current, int target);
+
+  /// No description provided for @autoAssignStaffActiveQuotaText.
+  ///
+  /// In en, this message translates to:
+  /// **'{active}/{maxActive} active'**
+  String autoAssignStaffActiveQuotaText(int active, int maxActive);
+
+  /// No description provided for @autoAssignStaffOnTimeText.
+  ///
+  /// In en, this message translates to:
+  /// **'{rate}% on-time'**
+  String autoAssignStaffOnTimeText(String rate);
+
+  /// No description provided for @autoAssignLogsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Assignment Decision Logs'**
+  String get autoAssignLogsSectionTitle;
+
+  /// No description provided for @autoAssignLogsSectionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed audit log of auto-assignments, 1-tap recommendations, fallbacks, and Admin overrides.'**
+  String get autoAssignLogsSectionDesc;
+
+  /// No description provided for @autoAssignLogsFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All outcomes'**
+  String get autoAssignLogsFilterAll;
+
+  /// No description provided for @autoAssignLogsFilterAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned'**
+  String get autoAssignLogsFilterAssigned;
+
+  /// No description provided for @autoAssignLogsFilterRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get autoAssignLogsFilterRecommended;
+
+  /// No description provided for @autoAssignLogsFilterOverridden.
+  ///
+  /// In en, this message translates to:
+  /// **'Overridden'**
+  String get autoAssignLogsFilterOverridden;
+
+  /// No description provided for @autoAssignLogsFilterFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Fallback'**
+  String get autoAssignLogsFilterFallback;
+
+  /// No description provided for @autoAssignLogsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No assignment decision logs match the current filter'**
+  String get autoAssignLogsEmpty;
+
+  /// No description provided for @autoAssignLogViewReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Open report'**
+  String get autoAssignLogViewReport;
+
+  /// No description provided for @autoAssignLogPageInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {current}/{total} ({count} records)'**
+  String autoAssignLogPageInfo(int current, int total, int count);
+
+  /// No description provided for @mapStaffStationsToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Stations'**
+  String get mapStaffStationsToggle;
+
+  /// No description provided for @mapStaffStationsLegend.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Base Station'**
+  String get mapStaffStationsLegend;
+
+  /// No description provided for @mapStaffStationSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Base Station'**
+  String get mapStaffStationSheetTitle;
+
+  /// No description provided for @mapStaffActiveTasksCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Active processing: {count} reports'**
+  String mapStaffActiveTasksCount(int count);
+
+  /// No description provided for @mapFilterByThisStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter reports assigned to this staff'**
+  String get mapFilterByThisStaff;
+
+  /// No description provided for @autoAssignModeShortAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto'**
+  String get autoAssignModeShortAuto;
+
+  /// No description provided for @autoAssignModeShortAssist.
+  ///
+  /// In en, this message translates to:
+  /// **'Assist'**
+  String get autoAssignModeShortAssist;
+
+  /// No description provided for @autoAssignModeShortManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual'**
+  String get autoAssignModeShortManual;
+
+  /// No description provided for @autoAssignToggleWeightsExpand.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize weights & thresholds'**
+  String get autoAssignToggleWeightsExpand;
+
+  /// No description provided for @autoAssignToggleWeightsCollapse.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse weights & thresholds'**
+  String get autoAssignToggleWeightsCollapse;
+
+  /// No description provided for @autoAssignSectionExpand.
+  ///
+  /// In en, this message translates to:
+  /// **'Expand'**
+  String get autoAssignSectionExpand;
+
+  /// No description provided for @autoAssignSectionCollapse.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse'**
+  String get autoAssignSectionCollapse;
+
+  /// No description provided for @autoAssignTabFairness.
+  ///
+  /// In en, this message translates to:
+  /// **'Workload Fairness'**
+  String get autoAssignTabFairness;
+
+  /// No description provided for @autoAssignTabLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision Logs'**
+  String get autoAssignTabLogs;
 }
 
 class _AppLocalizationsDelegate
