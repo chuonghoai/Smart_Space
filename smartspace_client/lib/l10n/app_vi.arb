@@ -517,5 +517,10 @@
   },
   "overdueOnlyFilter": "Quá hạn",
   "rejectedReasonTitle": "Lý do từ chối",
-  "noRejectionReasonProvided": "Phản ánh đã bị quản trị viên từ chối."
+  "noRejectionReasonProvided": "Phản ánh đã bị quản trị viên từ chối.",
+  "reportCategoryLabel": "Danh mục phản ánh",
+  "reportCategoryHint": "Chọn danh mục",
+  "reportCategoryRequired": "Vui lòng chọn danh mục phản ánh",
+  "reportCategoryLoadError": "Không thể tải danh sách danh mục",
+  "reportCategoryEmpty": "Chưa có danh mục phản ánh nào"
 }

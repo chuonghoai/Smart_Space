@@ -11,9 +11,65 @@ import 'package:smartspace_client/features/reports/models/report_detail_model.da
 import 'package:smartspace_client/features/reports/models/report_dto.dart';
 import 'package:smartspace_client/features/reports/models/nearby_reports_alert_model.dart';
 import 'package:smartspace_client/features/reports/models/report_feed_model.dart';
+import 'package:smartspace_client/features/reports/models/report_category_model.dart';
 import 'package:smartspace_client/features/reports/repositories/report_repo.dart';
 
 class ReportRepoMock implements ReportRepo {
+  @override
+  Future<ApiResponse<List<ReportCategoryModel>>> getCategories() async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: const [
+        ReportCategoryModel(
+          id: 'cat-env',
+          code: 'ENVIRONMENT',
+          nameVi: 'Môi trường & Rác thải',
+          nameEn: 'Environment & Waste',
+          iconKey: 'eco',
+          defaultSeverity: 'medium',
+          displayOrder: 1,
+        ),
+        ReportCategoryModel(
+          id: 'cat-infra',
+          code: 'INFRASTRUCTURE',
+          nameVi: 'Hạ tầng & Đường bộ',
+          nameEn: 'Infrastructure & Roads',
+          iconKey: 'construction',
+          defaultSeverity: 'high',
+          displayOrder: 2,
+        ),
+        ReportCategoryModel(
+          id: 'cat-light',
+          code: 'LIGHTING_ELECTRIC',
+          nameVi: 'Chiếu sáng & Điện',
+          nameEn: 'Lighting & Electricity',
+          iconKey: 'bolt',
+          defaultSeverity: 'high',
+          displayOrder: 3,
+        ),
+        ReportCategoryModel(
+          id: 'cat-water',
+          code: 'WATER_DRAINAGE',
+          nameVi: 'Cấp thoát nước & Ngập úng',
+          nameEn: 'Water & Drainage',
+          iconKey: 'water_drop',
+          defaultSeverity: 'high',
+          displayOrder: 4,
+        ),
+        ReportCategoryModel(
+          id: 'cat-order',
+          code: 'PUBLIC_ORDER',
+          nameVi: 'Trật tự & An toàn công cộng',
+          nameEn: 'Public Order & Safety',
+          iconKey: 'shield',
+          defaultSeverity: 'medium',
+          displayOrder: 5,
+        ),
+      ],
+    );
+  }
   @override
   Future<ApiResponse<List<ReportModel>>> getDangerousReports() async {
     await Future.delayed(const Duration(seconds: 1));

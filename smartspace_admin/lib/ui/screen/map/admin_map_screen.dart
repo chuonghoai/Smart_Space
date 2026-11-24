@@ -6,9 +6,11 @@ import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:pointer_interceptor/pointer_interceptor.dart';
 import 'package:smartspace_admin/features/map/application/map_providers.dart';
 import 'package:smartspace_admin/features/map/models/map_report_model.dart';
+import 'package:smartspace_admin/features/reports/models/staff_model.dart';
 import 'package:smartspace_admin/features/map/models/spatial_analytics_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
+import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
 
 import 'admin_map_controller.dart';
 // Conditional import: web vs mobile
@@ -55,6 +57,7 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
   }
 
   Future<void> _handleRefresh() async {
+    ref.invalidate(mapStaffListProvider);
     ref.read(adminMapControllerProvider.notifier).refresh();
     ref.invalidate(spatialAnalyticsProvider);
     await _platformMapController?.refreshViewport();
@@ -243,6 +246,157 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
     _sheetOpen = false;
   }
 
+  void _onStaffStationTap(StaffModel staff) {
+    if (_sheetOpen) {
+      Navigator.of(context).pop();
+      _sheetOpen = false;
+    }
+
+    _sheetOpen = true;
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.transparent,
+      builder: (sheetContext) {
+        final l10n = AppLocalizations.of(sheetContext)!;
+        final theme = Theme.of(sheetContext);
+        final cs = theme.colorScheme;
+        return PointerInterceptor(
+          child: Container(
+            margin: const EdgeInsets.all(12),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: cs.surface,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: cs.outlineVariant.withValues(alpha: 0.65),
+              ),
+            ),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    AppNetworkImage(
+                      url: staff.avatarUrl,
+                      width: 48,
+                      height: 48,
+                      isCircle: true,
+                      errorWidget: CircleAvatar(
+                        radius: 24,
+                        backgroundColor: cs.primaryContainer,
+                        child: Icon(
+                          Icons.person_outline,
+                          color: cs.onPrimaryContainer,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 14),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            staff.fullName,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                          if (staff.positionName != null &&
+                              staff.positionName!.isNotEmpty)
+                            Padding(
+                              padding: const EdgeInsets.only(top: 2),
+                              child: Text(
+                                staff.positionName!,
+                                style: theme.textTheme.bodySmall?.copyWith(
+                                  color: cs.primary,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                    ),
+                    IconButton(
+                      onPressed: () => Navigator.of(sheetContext).pop(),
+                      icon: const Icon(Icons.close),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 14),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: cs.surfaceContainerLowest,
+                    borderRadius: BorderRadius.circular(10),
+                    border: Border.all(
+                      color: cs.outlineVariant.withValues(alpha: 0.55),
+                    ),
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        l10n.mapStaffStationSheetTitle,
+                        style: theme.textTheme.labelMedium?.copyWith(
+                          color: cs.onSurfaceVariant,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 4),
+                      if (staff.baseAddress != null &&
+                          staff.baseAddress!.trim().isNotEmpty) ...[
+                        Text(
+                          staff.baseAddress!.trim(),
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                      ],
+                      if (staff.formattedBaseCoordinates != null)
+                        Text(
+                          staff.formattedBaseCoordinates!,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: cs.onSurfaceVariant,
+                            fontFeatures: const [FontFeature.tabularFigures()],
+                          ),
+                        ),
+                      const SizedBox(height: 8),
+                      Text(
+                        l10n.mapStaffActiveTasksCount(staff.processingCount),
+                        style: theme.textTheme.labelLarge?.copyWith(
+                          color: cs.primary,
+                          fontWeight: FontWeight.w700,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 14),
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: () {
+                      Navigator.of(sheetContext).pop();
+                      final currentFilter = ref.read(mapFilterProvider);
+                      ref.read(mapFilterProvider.notifier).state =
+                          currentFilter.copyWith(assigneeId: staff.id);
+                    },
+                    icon: const Icon(Icons.filter_alt_outlined, size: 18),
+                    label: Text(l10n.mapFilterByThisStaff),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    ).whenComplete(() => _sheetOpen = false);
+  }
+
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
@@ -252,6 +406,9 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
     final reportsState = ref.watch(mapReportsProvider);
     final densityState = ref.watch(adminReportDensityProvider);
     final filter = ref.watch(mapFilterProvider);
+    final showStaffStations = ref.watch(showStaffStationsProvider);
+    // Keep mapStaffListProvider warm so staff stations render immediately
+    ref.watch(mapStaffListProvider);
 
     int activeFilterCount = 0;
     if (filter.status != null && filter.status!.isNotEmpty) activeFilterCount++;
@@ -313,6 +470,7 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
               onMarkerTap: _onReportTap,
               onClusterTap: _showClusterSheet,
               onViewportChanged: _onViewportChanged,
+              onStaffTap: _onStaffStationTap,
               initialFocus: widget.focus,
               onMapControllerCreated: (controller) {
                 _platformMapController = controller;
@@ -361,13 +519,13 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
                     const MapDensityLegend(),
                     const SizedBox(height: 8),
                   ],
-                  const MapLegend(),
+                  MapLegend(showStaffStations: showStaffStations),
                 ],
               ),
             ),
           ),
 
-          // Map Controls (Top Right: Hotspots, Settings, My Location, Filter Reports)
+          // Map Controls (Top Right: Hotspots, Settings, Staff Stations, My Location, Filter Reports)
           Builder(
             builder: (context) {
               final isWide = MediaQuery.sizeOf(context).width >= 900;
@@ -378,6 +536,11 @@ class _AdminMapScreenState extends ConsumerState<AdminMapScreen> {
               return MapControls(
                 isDensityActive: densityState.isEnabled,
                 onSettingsPressed: _showMapSettings,
+                isStaffStationsActive: showStaffStations,
+                onStaffStationsPressed: () {
+                  ref.read(showStaffStationsProvider.notifier).state =
+                      !showStaffStations;
+                },
                 onMyLocationPressed: () {
                   _platformMapController?.flyToUserLocation();
                 },

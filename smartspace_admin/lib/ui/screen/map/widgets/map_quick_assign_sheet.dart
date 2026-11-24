@@ -3,6 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartspace_admin/features/map/application/map_providers.dart';
 import 'package:smartspace_admin/features/map/models/map_report_model.dart';
 import 'package:smartspace_admin/features/reports/application/report_providers.dart';
+import 'package:smartspace_admin/features/reports/models/auto_assign_models.dart';
 import 'package:smartspace_admin/features/reports/models/staff_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
@@ -37,6 +38,15 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
   static const _severities = ['low', 'medium', 'high', 'critical'];
 
   @override
+  void initState() {
+    super.initState();
+    final initialSeverity = widget.report.severity?.toLowerCase();
+    if (initialSeverity != null && _severities.contains(initialSeverity)) {
+      _selectedSeverity = initialSeverity;
+    }
+  }
+
+  @override
   void dispose() {
     _searchController.dispose();
     super.dispose();
@@ -47,8 +57,10 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
     final cs = theme.colorScheme;
+    final semantic = AppSemanticColors.of(context);
     final staffsAsync = ref.watch(mapStaffListProvider);
     final assignState = ref.watch(reportAssignProvider);
+    final recsAsync = ref.watch(reportRecommendationsProvider(widget.report.id));
 
     final mq = MediaQuery.of(context);
     final bottomInset = mq.viewInsets.bottom;
@@ -108,8 +120,38 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
                     ),
                   ),
                 ),
+                FilledButton.tonalIcon(
+                  onPressed: assignState.isLoading ||
+                          recsAsync.isLoading ||
+                          (recsAsync.valueOrNull?.candidates.isEmpty ?? false)
+                      ? null
+                      : _submitAutoAssign,
+                  icon: const Icon(Icons.bolt_rounded, size: 16),
+                  label: Text(l10n.autoAssignTriggerButton),
+                  style: FilledButton.styleFrom(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 10,
+                      vertical: 6,
+                    ),
+                    visualDensity: VisualDensity.compact,
+                    textStyle: theme.textTheme.labelSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                  ),
+                ),
               ],
             ),
+          ),
+
+          // Top-3 Smart Recommendations strip
+          _buildRecommendationsStrip(
+            context: context,
+            theme: theme,
+            cs: cs,
+            semantic: semantic,
+            l10n: l10n,
+            recsAsync: recsAsync,
+            isSubmitting: assignState.isLoading,
           ),
 
           // Report title subtitle
@@ -336,6 +378,269 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
     );
   }
 
+  Widget _buildRecommendationsStrip({
+    required BuildContext context,
+    required ThemeData theme,
+    required ColorScheme cs,
+    required AppSemanticColors semantic,
+    required AppLocalizations l10n,
+    required AsyncValue<AutoAssignRecommendationModel> recsAsync,
+    required bool isSubmitting,
+  }) {
+    return recsAsync.when(
+      loading: () => Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+        child: Container(
+          height: 74,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: cs.surfaceContainerLow,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: cs.outlineVariant.withValues(alpha: 0.5)),
+          ),
+          child: const SizedBox(
+            width: 18,
+            height: 18,
+            child: CircularProgressIndicator(strokeWidth: 2),
+          ),
+        ),
+      ),
+      error: (_, _) => const SizedBox.shrink(),
+      data: (recs) {
+        if (recs.candidates.isEmpty) {
+          return Padding(
+            padding: const EdgeInsets.fromLTRB(16, 0, 16, 8),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+              decoration: BoxDecoration(
+                color: semantic.warning.withValues(alpha: 0.1),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: semantic.warning.withValues(alpha: 0.35),
+                ),
+              ),
+              child: Row(
+                children: [
+                  Icon(Icons.info_outline_rounded,
+                      size: 16, color: semantic.warning),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: Text(
+                      recs.fallbackMessage ??
+                          l10n.autoAssignNoCandidatesDefault,
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: cs.onSurface,
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        return Padding(
+          padding: const EdgeInsets.only(bottom: 10),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Icon(Icons.auto_awesome_outlined,
+                        size: 15, color: cs.primary),
+                    const SizedBox(width: 6),
+                    Text(
+                      l10n.autoAssignTopCandidates(recs.candidates.length),
+                      style: theme.textTheme.labelMedium?.copyWith(
+                        color: cs.primary,
+                        fontWeight: FontWeight.w700,
+                      ),
+                    ),
+                    const Spacer(),
+                    Text(
+                      l10n.autoAssignEligibleCount(
+                        recs.totalEligibleCandidates,
+                      ),
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: semantic.info,
+                        fontWeight: FontWeight.w600,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 8),
+              SizedBox(
+                height: 112,
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  itemCount: recs.candidates.length,
+                  separatorBuilder: (_, _) => const SizedBox(width: 8),
+                  itemBuilder: (_, index) {
+                    final candidate = recs.candidates[index];
+                    final isSelected = _selectedStaff?.id == candidate.staffId;
+                    final scoreColor = candidate.finalScore >= 75
+                        ? semantic.success
+                        : candidate.finalScore >= 50
+                            ? cs.primary
+                            : semantic.warning;
+
+                    return Material(
+                      color: isSelected
+                          ? cs.primaryContainer.withValues(alpha: 0.35)
+                          : cs.surfaceContainerLow,
+                      borderRadius: BorderRadius.circular(12),
+                      child: InkWell(
+                        onTap: () {
+                          setState(
+                              () => _selectedStaff = candidate.toStaffModel());
+                        },
+                        borderRadius: BorderRadius.circular(12),
+                        child: Container(
+                          width: 224,
+                          padding: const EdgeInsets.all(10),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isSelected
+                                  ? cs.primary
+                                  : cs.outlineVariant.withValues(alpha: 0.6),
+                              width: isSelected ? 1.5 : 1,
+                            ),
+                          ),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: candidate.rank == 1
+                                          ? cs.primary
+                                          : cs.secondaryContainer,
+                                      borderRadius: BorderRadius.circular(6),
+                                    ),
+                                    child: Text(
+                                      '#${candidate.rank}',
+                                      style: theme.textTheme.labelSmall
+                                          ?.copyWith(
+                                        color: candidate.rank == 1
+                                            ? cs.onPrimary
+                                            : cs.onSecondaryContainer,
+                                        fontWeight: FontWeight.bold,
+                                        fontFeatures: const [
+                                          FontFeature.tabularFigures(),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Expanded(
+                                    child: Text(
+                                      candidate.fullName,
+                                      style: theme.textTheme.bodySmall
+                                          ?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                        color: cs.onSurface,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Container(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 6,
+                                      vertical: 2,
+                                    ),
+                                    decoration: BoxDecoration(
+                                      color: scoreColor.withValues(alpha: 0.14),
+                                      borderRadius: BorderRadius.circular(8),
+                                    ),
+                                    child: Text(
+                                      l10n.autoAssignScoreValue(
+                                        candidate.finalScore.toStringAsFixed(0),
+                                      ),
+                                      style: theme.textTheme.labelSmall
+                                          ?.copyWith(
+                                        color: scoreColor,
+                                        fontWeight: FontWeight.bold,
+                                        fontFeatures: const [
+                                          FontFeature.tabularFigures(),
+                                        ],
+                                      ),
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Row(
+                                children: [
+                                  Icon(Icons.near_me_outlined,
+                                      size: 13, color: cs.onSurfaceVariant),
+                                  const SizedBox(width: 4),
+                                  Expanded(
+                                    child: Text(
+                                      '${l10n.autoAssignDistanceKm(candidate.distanceKm.toStringAsFixed(1))} · ${l10n.autoAssignTasksCount(candidate.monthlyWorkload)}',
+                                      style: theme.textTheme.labelSmall
+                                          ?.copyWith(
+                                        color: cs.onSurfaceVariant,
+                                        fontFeatures: const [
+                                          FontFeature.tabularFigures(),
+                                        ],
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                              Align(
+                                alignment: Alignment.centerRight,
+                                child: SizedBox(
+                                  height: 28,
+                                  child: FilledButton(
+                                    onPressed: isSubmitting
+                                        ? null
+                                        : () => _submitRecommendClick(candidate),
+                                    style: FilledButton.styleFrom(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                      ),
+                                      visualDensity: VisualDensity.compact,
+                                      textStyle: theme.textTheme.labelSmall
+                                          ?.copyWith(
+                                        fontWeight: FontWeight.w700,
+                                      ),
+                                    ),
+                                    child: Text(l10n.autoAssignAssignNow),
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   Future<void> _submit() async {
     final l10n = AppLocalizations.of(context)!;
     final success =
@@ -343,15 +648,66 @@ class _MapQuickAssignSheetState extends ConsumerState<MapQuickAssignSheet> {
               reportId: widget.report.id,
               staffId: _selectedStaff!.id,
               severity: _selectedSeverity,
+              source: 'MANUAL',
             );
 
     if (!mounted) return;
     if (success) {
+      ref.invalidate(mapStaffListProvider);
       Toast.show(ToastType.success, l10n.assignSuccessMessage);
       Navigator.of(context).pop();
       widget.onAssigned();
     } else {
       Toast.show(ToastType.error, l10n.assignFailedMessage);
+    }
+  }
+
+  Future<void> _submitRecommendClick(StaffCandidateScoreModel candidate) async {
+    final l10n = AppLocalizations.of(context)!;
+    setState(() => _selectedStaff = candidate.toStaffModel());
+
+    final success =
+        await ref.read(reportAssignProvider.notifier).assignReport(
+              reportId: widget.report.id,
+              staffId: candidate.staffId,
+              severity: _selectedSeverity,
+              source: 'RECOMMEND_CLICK',
+            );
+
+    if (!mounted) return;
+    if (success) {
+      ref.invalidate(mapStaffListProvider);
+      Toast.show(ToastType.success, l10n.assignSuccessMessage);
+      Navigator.of(context).pop();
+      widget.onAssigned();
+    } else {
+      final err = ref.read(reportAssignProvider).error;
+      Toast.show(
+        ToastType.error,
+        (err != null && err.isNotEmpty) ? err : l10n.assignFailedMessage,
+      );
+    }
+  }
+
+  Future<void> _submitAutoAssign() async {
+    final l10n = AppLocalizations.of(context)!;
+    final success =
+        await ref.read(reportAssignProvider.notifier).autoAssignReport(
+              reportId: widget.report.id,
+            );
+
+    if (!mounted) return;
+    if (success) {
+      ref.invalidate(mapStaffListProvider);
+      Toast.show(ToastType.success, l10n.autoAssignSuccessMessage);
+      Navigator.of(context).pop();
+      widget.onAssigned();
+    } else {
+      final err = ref.read(reportAssignProvider).error;
+      Toast.show(
+        ToastType.error,
+        (err != null && err.isNotEmpty) ? err : l10n.autoAssignFailedFallback,
+      );
     }
   }
 

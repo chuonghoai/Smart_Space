@@ -46,4 +46,16 @@ public class ReportResponse {
 
     @JsonProperty("user_id")
     private String userId;
+
+    @JsonProperty("category_id")
+    private String categoryId;
+
+    @JsonProperty("category_code")
+    private String categoryCode;
+
+    @JsonProperty("category_name_vi")
+    private String categoryNameVi;
+
+    @JsonProperty("category_name_en")
+    private String categoryNameEn;
 }

@@ -60,6 +60,9 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
     String? gender,
     String? avatarUrl,
     String? positionId,
+    double? baseLatitude,
+    double? baseLongitude,
+    String? baseAddress,
   }) async {
     final response = await staffRepository.createStaff(
       fullName: fullName,
@@ -69,6 +72,9 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
       gender: gender,
       avatarUrl: avatarUrl,
       positionId: positionId,
+      baseLatitude: baseLatitude,
+      baseLongitude: baseLongitude,
+      baseAddress: baseAddress,
     );
     if (response.success) {
       ref.invalidateSelf();
@@ -87,6 +93,10 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
     String? gender,
     String? avatarUrl,
     String? positionId,
+    double? baseLatitude,
+    double? baseLongitude,
+    String? baseAddress,
+    bool clearBaseLocation = false,
   }) async {
     final response = await staffRepository.updateStaff(
       staffId: staffId,
@@ -96,6 +106,10 @@ class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
       gender: gender,
       avatarUrl: avatarUrl,
       positionId: positionId,
+      baseLatitude: baseLatitude,
+      baseLongitude: baseLongitude,
+      baseAddress: baseAddress,
+      clearBaseLocation: clearBaseLocation,
     );
     if (response.success) {
       ref.invalidateSelf();

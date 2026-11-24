@@ -305,7 +305,7 @@ final adminReportDensityProvider =
   return AdminReportDensityNotifier(mapService);
 });
 
-// Staff list for filter dropdown
+// Staff list for filter dropdown & map staff base stations layer
 
 final mapStaffListProvider = FutureProvider<List<StaffModel>>((ref) async {
   final res = await reportRepository.getStaffs();
@@ -313,6 +313,7 @@ final mapStaffListProvider = FutureProvider<List<StaffModel>>((ref) async {
   return [];
 });
 
+final showStaffStationsProvider = StateProvider<bool>((ref) => true);
 final spatialAnalyticsProvider = FutureProvider.autoDispose<SpatialAnalyticsResult>((ref) async {
   final res = await mapService.getSpatialAnalytics(limit: 10);
   if (res.success && res.data != null) return res.data!;

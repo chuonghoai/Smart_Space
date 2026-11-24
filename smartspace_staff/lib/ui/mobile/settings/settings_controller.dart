@@ -19,6 +19,11 @@ class SettingsController extends ChangeNotifier {
   Future<void> loadUser() async {
     _user = await userStorageService.getUser();
     notifyListeners();
+    final fresh = await authService.getMe();
+    if (fresh != null) {
+      _user = fresh;
+      notifyListeners();
+    }
   }
 
   Future<void> logout() async {

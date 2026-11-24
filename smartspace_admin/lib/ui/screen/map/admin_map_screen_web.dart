@@ -13,6 +13,7 @@ import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:mobile_shared/util/location_service.dart';
 import 'package:smartspace_admin/features/map/application/map_providers.dart';
 import 'package:smartspace_admin/features/map/models/map_report_model.dart';
+import 'package:smartspace_admin/features/reports/models/staff_model.dart';
 import 'package:smartspace_admin/ui/shared/report_status/report_status_style.dart';
 import 'platform_map_controller.dart';
 import 'widgets/map_cluster_colors.dart';
@@ -20,14 +21,15 @@ import 'widgets/map_cluster_colors.dart';
 /// Web map — Mapbox GL JS trong iframe, report gom cụm (cluster) + mật độ H3.
 ///
 /// Giao tiếp 2 chiều qua `postMessage`, mọi message mang `channel` riêng của view:
-/// - iframe → Flutter: `ready`, `viewport`, `marker_click`, `cluster_list`, `map_click`
-/// - Flutter → iframe: `set_reports`, `set_density`, `fly_to`, `get_viewport`
+/// - iframe → Flutter: `ready`, `viewport`, `marker_click`, `cluster_list`, `staff_click`, `map_click`
+/// - Flutter → iframe: `set_reports`, `set_density`, `set_staff_stations`, `fly_to`, `get_viewport`
 Widget buildPlatformMap({
   required BuildContext context,
   required List<MapReportModel> reports,
   required void Function(MapReportModel report) onMarkerTap,
   required void Function(List<MapReportModel> reports) onClusterTap,
   required void Function(MapBounds bounds) onViewportChanged,
+  void Function(StaffModel staff)? onStaffTap,
   VoidCallback? onMapTap,
   MapFocusTarget? initialFocus,
   void Function(PlatformMapController controller)? onMapControllerCreated,
@@ -37,6 +39,7 @@ Widget buildPlatformMap({
     onMarkerTap: onMarkerTap,
     onClusterTap: onClusterTap,
     onViewportChanged: onViewportChanged,
+    onStaffTap: onStaffTap,
     onMapTap: onMapTap,
     initialFocus: initialFocus,
     onMapControllerCreated: onMapControllerCreated,
@@ -48,6 +51,7 @@ class _WebMapView extends ConsumerStatefulWidget {
   final void Function(MapReportModel report) onMarkerTap;
   final void Function(List<MapReportModel> reports) onClusterTap;
   final void Function(MapBounds bounds) onViewportChanged;
+  final void Function(StaffModel staff)? onStaffTap;
   final VoidCallback? onMapTap;
   final MapFocusTarget? initialFocus;
   final void Function(PlatformMapController controller)? onMapControllerCreated;
@@ -57,6 +61,7 @@ class _WebMapView extends ConsumerStatefulWidget {
     required this.onMarkerTap,
     required this.onClusterTap,
     required this.onViewportChanged,
+    this.onStaffTap,
     this.onMapTap,
     this.initialFocus,
     this.onMapControllerCreated,
@@ -94,6 +99,7 @@ class _WebMapViewState extends ConsumerState<_WebMapView>
     // Theme có thể đã đổi → gửi lại màu
     _pushReports();
     _pushDensity();
+    _pushStaffStations();
   }
 
   @override
@@ -153,6 +159,7 @@ class _WebMapViewState extends ConsumerState<_WebMapView>
         _lastPayload = null;
         _pushReports();
         _pushDensity();
+        _pushStaffStations();
       case 'viewport':
         final bounds = _boundsOf(message);
         if (bounds != null) {
@@ -172,6 +179,14 @@ class _WebMapViewState extends ConsumerState<_WebMapView>
         };
         final reports = widget.reports.where((r) => ids.contains(r.id)).toList();
         if (reports.isNotEmpty) widget.onClusterTap(reports);
+      case 'staff_click':
+        final staffId = message['id']?.toString();
+        if (staffId != null) {
+          final staffs =
+              ref.read(mapStaffListProvider).valueOrNull ?? const [];
+          final staff = staffs.where((s) => s.id == staffId).firstOrNull;
+          if (staff != null) widget.onStaffTap?.call(staff);
+        }
       case 'map_click':
         widget.onMapTap?.call();
     }
@@ -237,6 +252,39 @@ class _WebMapViewState extends ConsumerState<_WebMapView>
         'type': 'set_density',
         'geojson': density.geojsonString,
         'visible': density.isEnabled,
+      }),
+      '*',
+    );
+  }
+
+  void _pushStaffStations() {
+    final window = _iframe?.contentWindow;
+    if (!_ready || window == null || !mounted) return;
+    final staffs = ref.read(mapStaffListProvider).valueOrNull ?? const [];
+    final visible = ref.read(showStaffStationsProvider);
+    final cs = Theme.of(context).colorScheme;
+
+    window.postMessage(
+      jsonEncode({
+        'channel': _viewId,
+        'type': 'set_staff_stations',
+        'visible': visible,
+        'primaryColor': ClusterLayerColors.toRgba(cs.primary),
+        'onPrimaryColor': ClusterLayerColors.toRgba(cs.onPrimary),
+        'surfaceColor': ClusterLayerColors.toRgba(cs.surface),
+        'textColor': ClusterLayerColors.toRgba(cs.onSurface),
+        'staffs': [
+          for (final s in staffs)
+            if (s.hasBaseLocation)
+              {
+                'id': s.id,
+                'lat': s.baseLatitude,
+                'lng': s.baseLongitude,
+                'fullName': s.fullName,
+                'positionName': s.positionName ?? '',
+                'processingCount': s.processingCount,
+              },
+        ],
       }),
       '*',
     );
@@ -343,6 +391,33 @@ class _WebMapViewState extends ConsumerState<_WebMapView>
     border-right: 8px solid transparent;
     margin: -2px auto 0;
   }
+  .staff-station-pin {
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 8px 4px 6px;
+    border-radius: 8px;
+    border: 1.5px solid #2563eb;
+    background: #ffffff;
+    color: #0f172a;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-size: 11.5px;
+    font-weight: 600;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.22);
+    white-space: nowrap;
+  }
+  .staff-station-pin .station-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 5px;
+    font-size: 10.5px;
+    font-weight: 700;
+  }
 ''';
 
   static const String _mapScript = r'''
@@ -372,6 +447,7 @@ class _WebMapViewState extends ConsumerState<_WebMapView>
   var colors = null;
   var markers = {};
   var markersOnScreen = {};
+  var staffMarkers = [];
   var markerClicked = false;
 
   function clamp(v, min, max) { return Math.max(min, Math.min(max, v)); }
@@ -522,12 +598,50 @@ class _WebMapViewState extends ConsumerState<_WebMapView>
     if (map.getLayer('density-line')) map.setLayoutProperty('density-line', 'visibility', vis);
   }
 
+  function applyStaffStations(msg) {
+    staffMarkers.forEach(function(m) { m.remove(); });
+    staffMarkers = [];
+    if (!msg.visible || !Array.isArray(msg.staffs)) return;
+
+    msg.staffs.forEach(function(s) {
+      var el = document.createElement('div');
+      el.className = 'staff-station-pin';
+      el.style.borderColor = msg.primaryColor || '#2563eb';
+      el.style.background = msg.surfaceColor || '#ffffff';
+      el.style.color = msg.textColor || '#0f172a';
+
+      var badge = document.createElement('span');
+      badge.className = 'station-badge';
+      badge.style.background = msg.primaryColor || '#2563eb';
+      badge.style.color = msg.onPrimaryColor || '#ffffff';
+      badge.textContent = String(s.processingCount || 0);
+
+      var nameSpan = document.createElement('span');
+      nameSpan.textContent = s.fullName || '';
+
+      el.appendChild(badge);
+      el.appendChild(nameSpan);
+
+      el.addEventListener('click', function(e) {
+        e.stopPropagation();
+        markerClicked = true;
+        post({ type: 'staff_click', id: s.id });
+      });
+
+      var m = new mapboxgl.Marker({ element: el, anchor: 'center' })
+        .setLngLat([s.lng, s.lat])
+        .addTo(map);
+      staffMarkers.push(m);
+    });
+  }
+
   window.addEventListener('message', function(e) {
     var msg;
     try { msg = JSON.parse(e.data); } catch (_) { return; }
     if (!msg || msg.channel !== CHANNEL) return;
     if (msg.type === 'set_reports') applyReports(msg);
     if (msg.type === 'set_density') applyDensity(msg.geojson, msg.visible);
+    if (msg.type === 'set_staff_stations') applyStaffStations(msg);
     if (msg.type === 'fly_to') {
       map.flyTo({
         center: [msg.lng, msg.lat],
@@ -656,6 +770,14 @@ class _WebMapViewState extends ConsumerState<_WebMapView>
     // Listen to Density Toggle on/off
     ref.listen(adminReportDensityProvider.select((s) => s.isEnabled), (_, _) {
       _pushDensity();
+    });
+
+    ref.listen(mapStaffListProvider, (_, _) {
+      _pushStaffStations();
+    });
+
+    ref.listen(showStaffStationsProvider, (_, _) {
+      _pushStaffStations();
     });
 
     if (!_registered) {

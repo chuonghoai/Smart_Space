@@ -2459,6 +2459,526 @@ class AppLocalizationsVi extends AppLocalizations {
   String get viewAssignedReportsAction => 'Xem phản ánh được giao';
 
   @override
+  String get routeCategoryManagement => 'Quản lý Danh mục';
+
+  @override
+  String get manageCategories => 'Danh mục phản ánh';
+
+  @override
+  String get addCategory => 'Thêm danh mục';
+
+  @override
+  String get editCategory => 'Sửa danh mục';
+
+  @override
+  String get deleteCategory => 'Xóa danh mục';
+
+  @override
+  String get deleteCategoryConfirm => 'Bạn có chắc muốn xóa danh mục này?';
+
+  @override
+  String get emptyCategoryList => 'Chưa có danh mục phản ánh nào';
+
+  @override
+  String get categoryCode => 'Mã danh mục';
+
+  @override
+  String get categoryCodeRequired => 'Vui lòng nhập mã danh mục';
+
+  @override
+  String get categoryNameVi => 'Tên tiếng Việt';
+
+  @override
+  String get categoryNameViRequired => 'Vui lòng nhập tên tiếng Việt';
+
+  @override
+  String get categoryNameEn => 'Tên tiếng Anh';
+
+  @override
+  String get categoryNameEnRequired => 'Vui lòng nhập tên tiếng Anh';
+
+  @override
+  String get categoryDescription => 'Mô tả';
+
+  @override
+  String get categoryIconLabel => 'Biểu tượng';
+
+  @override
+  String get categoryDefaultSeverity => 'Mức độ mặc định';
+
+  @override
+  String get categoryDisplayOrder => 'Thứ tự';
+
+  @override
+  String get categoryActiveLabel => 'Đang hoạt động';
+
+  @override
+  String get categoryInactive => 'Ngừng hoạt động';
+
+  @override
+  String get categoryPositionsLabel => 'Chức vụ phụ trách';
+
+  @override
+  String get categoryPositionsHint =>
+      'Nhân viên thuộc các chức vụ này sẽ đủ điều kiện nhận phân công tự động cho danh mục';
+
+  @override
+  String get categoryNoPositionsMapped => 'Chưa gán chức vụ';
+
+  @override
+  String get categoryNoActivePositions =>
+      'Chưa có chức vụ nào đang hoạt động. Vui lòng tạo chức vụ trước.';
+
+  @override
+  String get categorySaveSuccess => 'Đã lưu danh mục phản ánh';
+
+  @override
+  String get categoryDeleteSuccess => 'Đã xóa danh mục phản ánh';
+
+  @override
+  String get totalCategories => 'Tổng danh mục';
+
+  @override
+  String get categoriesMappedPositions => 'Đã gắn chức vụ';
+
+  @override
+  String get categoryReportCountLabel => 'Phản ánh';
+
+  @override
+  String get categoryIconEco => 'Môi trường';
+
+  @override
+  String get categoryIconConstruction => 'Hạ tầng';
+
+  @override
+  String get categoryIconBolt => 'Điện / Chiếu sáng';
+
+  @override
+  String get categoryIconWater => 'Cấp thoát nước';
+
+  @override
+  String get categoryIconShield => 'Trật tự công cộng';
+
+  @override
+  String get categoryIconPark => 'Cây xanh / Công viên';
+
+  @override
+  String get categoryIconTraffic => 'Giao thông';
+
+  @override
+  String get categoryIconGeneral => 'Chung';
+
+  @override
+  String get staffBaseLocationSection => 'Khu vực / Tọa độ đại diện';
+
+  @override
+  String get staffBaseAddressLabel => 'Địa chỉ / Khu vực phụ trách';
+
+  @override
+  String get staffBaseLatitudeLabel => 'Vĩ độ (Lat)';
+
+  @override
+  String get staffBaseLongitudeLabel => 'Kinh độ (Lng)';
+
+  @override
+  String get staffPickLocationOnMap => 'Chọn trên bản đồ';
+
+  @override
+  String get staffUseCurrentGps => 'GPS hiện tại';
+
+  @override
+  String get staffClearLocation => 'Xóa tọa độ';
+
+  @override
+  String get staffLocationNotSet => 'Chưa gắn tọa độ đại diện';
+
+  @override
+  String get staffLocationPairRequired => 'Cần nhập đủ cả vĩ độ và kinh độ';
+
+  @override
+  String get staffLocationInvalidLat =>
+      'Vĩ độ phải nằm trong khoảng -90 đến 90';
+
+  @override
+  String get staffLocationInvalidLng =>
+      'Kinh độ phải nằm trong khoảng -180 đến 180';
+
+  @override
+  String get staffLocationPickerTitle => 'Chọn tọa độ đại diện';
+
+  @override
+  String get staffLocationPickerHint =>
+      'Chạm hoặc kéo ghim trên bản đồ để đặt vị trí đại diện cho nhân viên.';
+
+  @override
+  String get staffLocationConfirm => 'Xác nhận vị trí';
+
+  @override
+  String get staffLocationWebNoToken =>
+      'Chưa cấu hình MAPBOX_ACCESS_TOKEN. Vui lòng nhập vĩ độ và kinh độ thủ công.';
+
+  @override
+  String get staffLocationGpsFailed => 'Không lấy được tọa độ GPS hiện tại';
+
+  @override
+  String get reportCategoryLabel => 'Danh mục';
+
+  @override
+  String get autoAssignSectionTitle => 'Phân công thông minh';
+
+  @override
+  String get autoAssignTriggerButton => 'Phân công tự động';
+
+  @override
+  String autoAssignTopCandidates(int count) {
+    return 'Top $count nhân viên đề xuất';
+  }
+
+  @override
+  String get autoAssignAssignNow => 'Giao ngay';
+
+  @override
+  String get autoAssignSelectCandidate => 'Chọn';
+
+  @override
+  String get autoAssignSelectedCandidate => 'Đã chọn';
+
+  @override
+  String autoAssignEligibleCount(int count) {
+    return '$count ứng viên đạt chuẩn';
+  }
+
+  @override
+  String get autoAssignModeAuto => 'Chế độ: Tự động';
+
+  @override
+  String get autoAssignModeAssist => 'Chế độ: Gợi ý hỗ trợ';
+
+  @override
+  String get autoAssignModeManual => 'Chế độ: Thủ công';
+
+  @override
+  String get autoAssignScoreLabel => 'Điểm tổng';
+
+  @override
+  String get autoAssignDistanceLabel => 'Khoảng cách';
+
+  @override
+  String get autoAssignMonthlyLoadLabel => 'Tải tháng này';
+
+  @override
+  String get autoAssignActiveLoadLabel => 'Đang xử lý';
+
+  @override
+  String get autoAssignOnTimeLabel => 'Đúng hạn 30 ngày';
+
+  @override
+  String autoAssignTasksCount(int count) {
+    return '$count việc';
+  }
+
+  @override
+  String autoAssignScoreValue(String score) {
+    return '$score/100';
+  }
+
+  @override
+  String autoAssignWeightPercent(int percent) {
+    return '$percent%';
+  }
+
+  @override
+  String autoAssignDistanceKm(String distance) {
+    return '$distance km';
+  }
+
+  @override
+  String get autoAssignLoadFailed =>
+      'Không tải được danh sách đề xuất. Vui lòng thử lại.';
+
+  @override
+  String get autoAssignDecisionTitle => 'Giải trình phân công tự động';
+
+  @override
+  String get autoAssignSourceAuto => 'Hệ thống tự động giao';
+
+  @override
+  String get autoAssignSourceRecommendClick => 'Giao từ gợi ý 1 chạm';
+
+  @override
+  String get autoAssignSourceOverridden => 'Admin đã điều chỉnh';
+
+  @override
+  String get autoAssignSourceRecommended => 'Chờ Admin duyệt gợi ý';
+
+  @override
+  String get autoAssignSourceFallback => 'Chuyển phân công thủ công';
+
+  @override
+  String get autoAssignSourceManual => 'Phân công thủ công';
+
+  @override
+  String autoAssignOverriddenNotice(String staffName) {
+    return 'Admin đã chuyển người phụ trách sang $staffName.';
+  }
+
+  @override
+  String get autoAssignSnapshotTitle => 'Xếp hạng ứng viên lúc phân công';
+
+  @override
+  String get autoAssignSuccessMessage =>
+      'Đã tự động phân công nhân viên phù hợp nhất';
+
+  @override
+  String get autoAssignFailedFallback => 'Không thể tự động phân công';
+
+  @override
+  String get reassignStaffButton => 'Đổi người phụ trách';
+
+  @override
+  String get autoAssignNoCandidatesDefault =>
+      'Chưa có nhân viên nào đạt chuẩn bộ lọc (chức vụ, tọa độ, bán kính, ngưỡng tải).';
+
+  @override
+  String get routeAutoAssignCenter => 'Điều phối tự động';
+
+  @override
+  String get autoAssignCenterTitle => 'Trung tâm Điều phối Tự động';
+
+  @override
+  String get autoAssignCenterSubtitle =>
+      'Cấu hình chế độ, trọng số đa tiêu chí, mô phỏng xếp hạng trực tiếp và giám sát công bằng tải tháng';
+
+  @override
+  String get autoAssignRefreshAction => 'Làm mới dữ liệu';
+
+  @override
+  String get autoAssignKpiTotalDecisions => 'Tổng lượt điều phối';
+
+  @override
+  String autoAssignKpiBreakdown(
+    int autoCount,
+    int recommendCount,
+    int fallbackCount,
+  ) {
+    return '$autoCount tự động · $recommendCount gợi ý · $fallbackCount thủ công';
+  }
+
+  @override
+  String get autoAssignKpiSuccessRate => 'Tỷ lệ tự động thành công';
+
+  @override
+  String get autoAssignKpiSuccessSub => 'Đạt chuẩn bộ lọc 2 giai đoạn';
+
+  @override
+  String get autoAssignKpiAcceptanceRate => 'Tỷ lệ Admin chấp nhận';
+
+  @override
+  String autoAssignKpiOverriddenSub(int count) {
+    return '$count lượt Admin điều chỉnh';
+  }
+
+  @override
+  String get autoAssignKpiFairnessIndex => 'Chỉ số cân bằng tải tháng';
+
+  @override
+  String autoAssignKpiFairnessSub(String avg, String std) {
+    return 'TB $avg việc/người · độ lệch ±$std';
+  }
+
+  @override
+  String get autoAssignConfigCardTitle => 'Chế độ Vận hành & Bộ Trọng số';
+
+  @override
+  String get autoAssignConfigCardDesc =>
+      'Tổng 4 trọng số luôn tự động khóa ở mức 100%. Thay đổi thanh kéo sẽ cập nhật ngay kết quả ở khung Mô phỏng bên cạnh.';
+
+  @override
+  String get autoAssignModeOptionAuto => 'Tự động (AUTO)';
+
+  @override
+  String get autoAssignModeOptionAssist => 'Gợi ý (ASSIST)';
+
+  @override
+  String get autoAssignModeOptionManual => 'Thủ công (MANUAL)';
+
+  @override
+  String get autoAssignModeDescAuto =>
+      'Khi có phản ánh mới, hệ thống tự động chấm điểm và giao ngay cho nhân viên hạng 1 đạt chuẩn.';
+
+  @override
+  String get autoAssignModeDescAssist =>
+      'Hệ thống tính sẵn ứng viên tốt nhất và đề xuất Top 3 để Admin duyệt giao chỉ với 1 chạm.';
+
+  @override
+  String get autoAssignModeDescManual =>
+      'Tắt tự động điều phối khi tạo phản ánh; Admin phân công thủ công hoặc bấm gợi ý khi cần.';
+
+  @override
+  String get autoAssignWeightsHeader =>
+      'Trọng số chấm điểm đa tiêu chí (Tổng = 100%)';
+
+  @override
+  String get autoAssignResetWeightsButton => 'Mặc định (35/30/20/15)';
+
+  @override
+  String get autoAssignThresholdsHeader => 'Ngưỡng lọc & Định mức vận hành';
+
+  @override
+  String get autoAssignMaxRadiusLabel => 'Bán kính tối đa (km)';
+
+  @override
+  String get autoAssignMaxConcurrentLabel => 'Giới hạn việc đang xử lý';
+
+  @override
+  String get autoAssignTargetMonthlyLabel => 'Định mức việc trong tháng';
+
+  @override
+  String get autoAssignSaveConfigButton => 'Lưu cấu hình điều phối';
+
+  @override
+  String get autoAssignConfigSavedSuccess =>
+      'Đã cập nhật cấu hình điều phối tự động';
+
+  @override
+  String get autoAssignConfigSaveFailed => 'Không thể lưu cấu hình điều phối';
+
+  @override
+  String get autoAssignSimulatorTitle =>
+      'Mô phỏng Xếp hạng (Dry-Run Simulator)';
+
+  @override
+  String get autoAssignSimulatorDesc =>
+      'Chọn danh mục và tọa độ sự cố giả định để kiểm thử thứ hạng ứng viên theo bộ trọng số hiện tại (không ghi vào cơ sở dữ liệu).';
+
+  @override
+  String get autoAssignSimCategoryLabel => 'Danh mục sự cố giả định';
+
+  @override
+  String get autoAssignSimPickOnMap => 'Chấm điểm trên bản đồ';
+
+  @override
+  String get autoAssignSimRunButton => 'Chạy mô phỏng';
+
+  @override
+  String get autoAssignSimPresetDistrict1 => 'Mẫu Q.1 (Trung tâm)';
+
+  @override
+  String get autoAssignSimPresetThuDuc => 'Mẫu TP. Thủ Đức';
+
+  @override
+  String get autoAssignSimPresetBinhThanh => 'Mẫu Q. Bình Thạnh';
+
+  @override
+  String get autoAssignSimNoWriterBadge => 'Chỉ mô phỏng · Không lưu DB';
+
+  @override
+  String get autoAssignFairnessSectionTitle =>
+      'Phân bổ Tải tháng & Công bằng Đội ngũ';
+
+  @override
+  String get autoAssignFairnessSectionDesc =>
+      'So sánh khối lượng việc trong tháng hiện tại, số việc đang xử lý và tỷ lệ đúng hạn 30 ngày giữa các nhân viên đang hoạt động.';
+
+  @override
+  String autoAssignFairnessRangeLabel(int min, int max) {
+    return 'Thấp nhất: $min việc · Cao nhất: $max việc';
+  }
+
+  @override
+  String autoAssignStaffMonthlyQuotaText(int current, int target) {
+    return '$current/$target việc tháng';
+  }
+
+  @override
+  String autoAssignStaffActiveQuotaText(int active, int maxActive) {
+    return '$active/$maxActive đang xử lý';
+  }
+
+  @override
+  String autoAssignStaffOnTimeText(String rate) {
+    return '$rate% đúng hạn';
+  }
+
+  @override
+  String get autoAssignLogsSectionTitle => 'Nhật ký Quyết định Phân công';
+
+  @override
+  String get autoAssignLogsSectionDesc =>
+      'Lịch sử chi tiết các lượt hệ thống tự động giao, gợi ý 1 chạm, chuyển thủ công hoặc Admin ghi đè.';
+
+  @override
+  String get autoAssignLogsFilterAll => 'Tất cả kết quả';
+
+  @override
+  String get autoAssignLogsFilterAssigned => 'Đã phân công';
+
+  @override
+  String get autoAssignLogsFilterRecommended => 'Đề xuất (Assist)';
+
+  @override
+  String get autoAssignLogsFilterOverridden => 'Admin ghi đè';
+
+  @override
+  String get autoAssignLogsFilterFallback => 'Fallback thủ công';
+
+  @override
+  String get autoAssignLogsEmpty =>
+      'Chưa có nhật ký quyết định phân công nào khớp bộ lọc';
+
+  @override
+  String get autoAssignLogViewReport => 'Mở phản ánh';
+
+  @override
+  String autoAssignLogPageInfo(int current, int total, int count) {
+    return 'Trang $current/$total ($count bản ghi)';
+  }
+
+  @override
+  String get mapStaffStationsToggle => 'Trạm trực nhân sự';
+
+  @override
+  String get mapStaffStationsLegend => 'Vị trí trực nhân sự';
+
+  @override
+  String get mapStaffStationSheetTitle => 'Trạm trực nhân viên';
+
+  @override
+  String mapStaffActiveTasksCount(int count) {
+    return 'Đang xử lý: $count phản ánh';
+  }
+
+  @override
+  String get mapFilterByThisStaff => 'Lọc phản ánh của nhân viên này';
+
+  @override
+  String get autoAssignModeShortAuto => 'Tự động';
+
+  @override
+  String get autoAssignModeShortAssist => 'Gợi ý';
+
+  @override
+  String get autoAssignModeShortManual => 'Thủ công';
+
+  @override
+  String get autoAssignToggleWeightsExpand => 'Tùy chỉnh trọng số & ngưỡng lọc';
+
+  @override
+  String get autoAssignToggleWeightsCollapse => 'Thu gọn bộ trọng số';
+
+  @override
+  String get autoAssignSectionExpand => 'Mở rộng';
+
+  @override
+  String get autoAssignSectionCollapse => 'Thu gọn';
+
+  @override
+  String get autoAssignTabFairness => 'Công bằng tải tháng';
+
+  @override
+  String get autoAssignTabLogs => 'Nhật ký quyết định';
+
+  @override
   String get smartAlertsTitle => 'Cảnh báo vận hành & Nhịp độ 7 ngày';
 
   @override

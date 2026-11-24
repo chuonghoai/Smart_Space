@@ -1023,6 +1023,248 @@
     }
   },
   "viewAssignedReportsAction": "Xem phản ánh được giao",
+  "routeCategoryManagement": "Quản lý Danh mục",
+  "manageCategories": "Danh mục phản ánh",
+  "addCategory": "Thêm danh mục",
+  "editCategory": "Sửa danh mục",
+  "deleteCategory": "Xóa danh mục",
+  "deleteCategoryConfirm": "Bạn có chắc muốn xóa danh mục này?",
+  "emptyCategoryList": "Chưa có danh mục phản ánh nào",
+  "categoryCode": "Mã danh mục",
+  "categoryCodeRequired": "Vui lòng nhập mã danh mục",
+  "categoryNameVi": "Tên tiếng Việt",
+  "categoryNameViRequired": "Vui lòng nhập tên tiếng Việt",
+  "categoryNameEn": "Tên tiếng Anh",
+  "categoryNameEnRequired": "Vui lòng nhập tên tiếng Anh",
+  "categoryDescription": "Mô tả",
+  "categoryIconLabel": "Biểu tượng",
+  "categoryDefaultSeverity": "Mức độ mặc định",
+  "categoryDisplayOrder": "Thứ tự",
+  "categoryActiveLabel": "Đang hoạt động",
+  "categoryInactive": "Ngừng hoạt động",
+  "categoryPositionsLabel": "Chức vụ phụ trách",
+  "categoryPositionsHint": "Nhân viên thuộc các chức vụ này sẽ đủ điều kiện nhận phân công tự động cho danh mục",
+  "categoryNoPositionsMapped": "Chưa gán chức vụ",
+  "categoryNoActivePositions": "Chưa có chức vụ nào đang hoạt động. Vui lòng tạo chức vụ trước.",
+  "categorySaveSuccess": "Đã lưu danh mục phản ánh",
+  "categoryDeleteSuccess": "Đã xóa danh mục phản ánh",
+  "totalCategories": "Tổng danh mục",
+  "categoriesMappedPositions": "Đã gắn chức vụ",
+  "categoryReportCountLabel": "Phản ánh",
+  "categoryIconEco": "Môi trường",
+  "categoryIconConstruction": "Hạ tầng",
+  "categoryIconBolt": "Điện / Chiếu sáng",
+  "categoryIconWater": "Cấp thoát nước",
+  "categoryIconShield": "Trật tự công cộng",
+  "categoryIconPark": "Cây xanh / Công viên",
+  "categoryIconTraffic": "Giao thông",
+  "categoryIconGeneral": "Chung",
+  "staffBaseLocationSection": "Khu vực / Tọa độ đại diện",
+  "staffBaseAddressLabel": "Địa chỉ / Khu vực phụ trách",
+  "staffBaseLatitudeLabel": "Vĩ độ (Lat)",
+  "staffBaseLongitudeLabel": "Kinh độ (Lng)",
+  "staffPickLocationOnMap": "Chọn trên bản đồ",
+  "staffUseCurrentGps": "GPS hiện tại",
+  "staffClearLocation": "Xóa tọa độ",
+  "staffLocationNotSet": "Chưa gắn tọa độ đại diện",
+  "staffLocationPairRequired": "Cần nhập đủ cả vĩ độ và kinh độ",
+  "staffLocationInvalidLat": "Vĩ độ phải nằm trong khoảng -90 đến 90",
+  "staffLocationInvalidLng": "Kinh độ phải nằm trong khoảng -180 đến 180",
+  "staffLocationPickerTitle": "Chọn tọa độ đại diện",
+  "staffLocationPickerHint": "Chạm hoặc kéo ghim trên bản đồ để đặt vị trí đại diện cho nhân viên.",
+  "staffLocationConfirm": "Xác nhận vị trí",
+  "staffLocationWebNoToken": "Chưa cấu hình MAPBOX_ACCESS_TOKEN. Vui lòng nhập vĩ độ và kinh độ thủ công.",
+  "staffLocationGpsFailed": "Không lấy được tọa độ GPS hiện tại",
+  "reportCategoryLabel": "Danh mục",
+  "autoAssignSectionTitle": "Phân công thông minh",
+  "autoAssignTriggerButton": "Phân công tự động",
+  "autoAssignTopCandidates": "Top {count} nhân viên đề xuất",
+  "@autoAssignTopCandidates": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignAssignNow": "Giao ngay",
+  "autoAssignSelectCandidate": "Chọn",
+  "autoAssignSelectedCandidate": "Đã chọn",
+  "autoAssignEligibleCount": "{count} ứng viên đạt chuẩn",
+  "@autoAssignEligibleCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignModeAuto": "Chế độ: Tự động",
+  "autoAssignModeAssist": "Chế độ: Gợi ý hỗ trợ",
+  "autoAssignModeManual": "Chế độ: Thủ công",
+  "autoAssignScoreLabel": "Điểm tổng",
+  "autoAssignDistanceLabel": "Khoảng cách",
+  "autoAssignMonthlyLoadLabel": "Tải tháng này",
+  "autoAssignActiveLoadLabel": "Đang xử lý",
+  "autoAssignOnTimeLabel": "Đúng hạn 30 ngày",
+  "autoAssignTasksCount": "{count} việc",
+  "@autoAssignTasksCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignScoreValue": "{score}/100",
+  "@autoAssignScoreValue": {
+    "placeholders": {
+      "score": { "type": "String" }
+    }
+  },
+  "autoAssignWeightPercent": "{percent}%",
+  "@autoAssignWeightPercent": {
+    "placeholders": {
+      "percent": { "type": "int" }
+    }
+  },
+  "autoAssignDistanceKm": "{distance} km",
+  "@autoAssignDistanceKm": {
+    "placeholders": {
+      "distance": { "type": "String" }
+    }
+  },
+  "autoAssignLoadFailed": "Không tải được danh sách đề xuất. Vui lòng thử lại.",
+  "autoAssignDecisionTitle": "Giải trình phân công tự động",
+  "autoAssignSourceAuto": "Hệ thống tự động giao",
+  "autoAssignSourceRecommendClick": "Giao từ gợi ý 1 chạm",
+  "autoAssignSourceOverridden": "Admin đã điều chỉnh",
+  "autoAssignSourceRecommended": "Chờ Admin duyệt gợi ý",
+  "autoAssignSourceFallback": "Chuyển phân công thủ công",
+  "autoAssignSourceManual": "Phân công thủ công",
+  "autoAssignOverriddenNotice": "Admin đã chuyển người phụ trách sang {staffName}.",
+  "@autoAssignOverriddenNotice": {
+    "placeholders": {
+      "staffName": { "type": "String" }
+    }
+  },
+  "autoAssignSnapshotTitle": "Xếp hạng ứng viên lúc phân công",
+  "autoAssignSuccessMessage": "Đã tự động phân công nhân viên phù hợp nhất",
+  "autoAssignFailedFallback": "Không thể tự động phân công",
+  "reassignStaffButton": "Đổi người phụ trách",
+  "autoAssignNoCandidatesDefault": "Chưa có nhân viên nào đạt chuẩn bộ lọc (chức vụ, tọa độ, bán kính, ngưỡng tải).",
+  "routeAutoAssignCenter": "Điều phối tự động",
+  "autoAssignCenterTitle": "Trung tâm Điều phối Tự động",
+  "autoAssignCenterSubtitle": "Cấu hình chế độ, trọng số đa tiêu chí, mô phỏng xếp hạng trực tiếp và giám sát công bằng tải tháng",
+  "autoAssignRefreshAction": "Làm mới dữ liệu",
+  "autoAssignKpiTotalDecisions": "Tổng lượt điều phối",
+  "autoAssignKpiBreakdown": "{autoCount} tự động · {recommendCount} gợi ý · {fallbackCount} thủ công",
+  "@autoAssignKpiBreakdown": {
+    "placeholders": {
+      "autoCount": { "type": "int" },
+      "recommendCount": { "type": "int" },
+      "fallbackCount": { "type": "int" }
+    }
+  },
+  "autoAssignKpiSuccessRate": "Tỷ lệ tự động thành công",
+  "autoAssignKpiSuccessSub": "Đạt chuẩn bộ lọc 2 giai đoạn",
+  "autoAssignKpiAcceptanceRate": "Tỷ lệ Admin chấp nhận",
+  "autoAssignKpiOverriddenSub": "{count} lượt Admin điều chỉnh",
+  "@autoAssignKpiOverriddenSub": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignKpiFairnessIndex": "Chỉ số cân bằng tải tháng",
+  "autoAssignKpiFairnessSub": "TB {avg} việc/người · độ lệch ±{std}",
+  "@autoAssignKpiFairnessSub": {
+    "placeholders": {
+      "avg": { "type": "String" },
+      "std": { "type": "String" }
+    }
+  },
+  "autoAssignConfigCardTitle": "Chế độ Vận hành & Bộ Trọng số",
+  "autoAssignConfigCardDesc": "Tổng 4 trọng số luôn tự động khóa ở mức 100%. Thay đổi thanh kéo sẽ cập nhật ngay kết quả ở khung Mô phỏng bên cạnh.",
+  "autoAssignModeOptionAuto": "Tự động (AUTO)",
+  "autoAssignModeOptionAssist": "Gợi ý (ASSIST)",
+  "autoAssignModeOptionManual": "Thủ công (MANUAL)",
+  "autoAssignModeDescAuto": "Khi có phản ánh mới, hệ thống tự động chấm điểm và giao ngay cho nhân viên hạng 1 đạt chuẩn.",
+  "autoAssignModeDescAssist": "Hệ thống tính sẵn ứng viên tốt nhất và đề xuất Top 3 để Admin duyệt giao chỉ với 1 chạm.",
+  "autoAssignModeDescManual": "Tắt tự động điều phối khi tạo phản ánh; Admin phân công thủ công hoặc bấm gợi ý khi cần.",
+  "autoAssignWeightsHeader": "Trọng số chấm điểm đa tiêu chí (Tổng = 100%)",
+  "autoAssignResetWeightsButton": "Mặc định (35/30/20/15)",
+  "autoAssignThresholdsHeader": "Ngưỡng lọc & Định mức vận hành",
+  "autoAssignMaxRadiusLabel": "Bán kính tối đa (km)",
+  "autoAssignMaxConcurrentLabel": "Giới hạn việc đang xử lý",
+  "autoAssignTargetMonthlyLabel": "Định mức việc trong tháng",
+  "autoAssignSaveConfigButton": "Lưu cấu hình điều phối",
+  "autoAssignConfigSavedSuccess": "Đã cập nhật cấu hình điều phối tự động",
+  "autoAssignConfigSaveFailed": "Không thể lưu cấu hình điều phối",
+  "autoAssignSimulatorTitle": "Mô phỏng Xếp hạng (Dry-Run Simulator)",
+  "autoAssignSimulatorDesc": "Chọn danh mục và tọa độ sự cố giả định để kiểm thử thứ hạng ứng viên theo bộ trọng số hiện tại (không ghi vào cơ sở dữ liệu).",
+  "autoAssignSimCategoryLabel": "Danh mục sự cố giả định",
+  "autoAssignSimPickOnMap": "Chấm điểm trên bản đồ",
+  "autoAssignSimRunButton": "Chạy mô phỏng",
+  "autoAssignSimPresetDistrict1": "Mẫu Q.1 (Trung tâm)",
+  "autoAssignSimPresetThuDuc": "Mẫu TP. Thủ Đức",
+  "autoAssignSimPresetBinhThanh": "Mẫu Q. Bình Thạnh",
+  "autoAssignSimNoWriterBadge": "Chỉ mô phỏng · Không lưu DB",
+  "autoAssignFairnessSectionTitle": "Phân bổ Tải tháng & Công bằng Đội ngũ",
+  "autoAssignFairnessSectionDesc": "So sánh khối lượng việc trong tháng hiện tại, số việc đang xử lý và tỷ lệ đúng hạn 30 ngày giữa các nhân viên đang hoạt động.",
+  "autoAssignFairnessRangeLabel": "Thấp nhất: {min} việc · Cao nhất: {max} việc",
+  "@autoAssignFairnessRangeLabel": {
+    "placeholders": {
+      "min": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+  "autoAssignStaffMonthlyQuotaText": "{current}/{target} việc tháng",
+  "@autoAssignStaffMonthlyQuotaText": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "target": { "type": "int" }
+    }
+  },
+  "autoAssignStaffActiveQuotaText": "{active}/{maxActive} đang xử lý",
+  "@autoAssignStaffActiveQuotaText": {
+    "placeholders": {
+      "active": { "type": "int" },
+      "maxActive": { "type": "int" }
+    }
+  },
+  "autoAssignStaffOnTimeText": "{rate}% đúng hạn",
+  "@autoAssignStaffOnTimeText": {
+    "placeholders": {
+      "rate": { "type": "String" }
+    }
+  },
+  "autoAssignLogsSectionTitle": "Nhật ký Quyết định Phân công",
+  "autoAssignLogsSectionDesc": "Lịch sử chi tiết các lượt hệ thống tự động giao, gợi ý 1 chạm, chuyển thủ công hoặc Admin ghi đè.",
+  "autoAssignLogsFilterAll": "Tất cả kết quả",
+  "autoAssignLogsFilterAssigned": "Đã phân công",
+  "autoAssignLogsFilterRecommended": "Đề xuất (Assist)",
+  "autoAssignLogsFilterOverridden": "Admin ghi đè",
+  "autoAssignLogsFilterFallback": "Fallback thủ công",
+  "autoAssignLogsEmpty": "Chưa có nhật ký quyết định phân công nào khớp bộ lọc",
+  "autoAssignLogViewReport": "Mở phản ánh",
+  "autoAssignLogPageInfo": "Trang {current}/{total} ({count} bản ghi)",
+  "@autoAssignLogPageInfo": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" },
+      "count": { "type": "int" }
+    }
+  },
+  "mapStaffStationsToggle": "Trạm trực nhân sự",
+  "mapStaffStationsLegend": "Vị trí trực nhân sự",
+  "mapStaffStationSheetTitle": "Trạm trực nhân viên",
+  "mapStaffActiveTasksCount": "Đang xử lý: {count} phản ánh",
+  "@mapStaffActiveTasksCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "mapFilterByThisStaff": "Lọc phản ánh của nhân viên này",
+  "autoAssignModeShortAuto": "Tự động",
+  "autoAssignModeShortAssist": "Gợi ý",
+  "autoAssignModeShortManual": "Thủ công",
+  "autoAssignToggleWeightsExpand": "Tùy chỉnh trọng số & ngưỡng lọc",
+  "autoAssignToggleWeightsCollapse": "Thu gọn bộ trọng số",
+  "autoAssignSectionExpand": "Mở rộng",
+  "autoAssignSectionCollapse": "Thu gọn",
+  "autoAssignTabFairness": "Công bằng tải tháng",
+  "autoAssignTabLogs": "Nhật ký quyết định",
   "smartAlertsTitle": "Cảnh báo vận hành & Nhịp độ 7 ngày",
   "smartAlertsAllHealthy": "Hệ thống ổn định — chưa phát hiện bất thường",
   "volumeSpikeTitle": "Phản ánh tăng đột biến hôm nay",

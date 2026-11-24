@@ -4639,6 +4639,934 @@ abstract class AppLocalizations {
   /// **'View assigned reports'**
   String get viewAssignedReportsAction;
 
+  /// No description provided for @routeCategoryManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Category Management'**
+  String get routeCategoryManagement;
+
+  /// No description provided for @manageCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get manageCategories;
+
+  /// No description provided for @addCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Category'**
+  String get addCategory;
+
+  /// No description provided for @editCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Category'**
+  String get editCategory;
+
+  /// No description provided for @deleteCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Category'**
+  String get deleteCategory;
+
+  /// No description provided for @deleteCategoryConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this category?'**
+  String get deleteCategoryConfirm;
+
+  /// No description provided for @emptyCategoryList.
+  ///
+  /// In en, this message translates to:
+  /// **'No report categories yet'**
+  String get emptyCategoryList;
+
+  /// No description provided for @categoryCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Category Code'**
+  String get categoryCode;
+
+  /// No description provided for @categoryCodeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter category code'**
+  String get categoryCodeRequired;
+
+  /// No description provided for @categoryNameVi.
+  ///
+  /// In en, this message translates to:
+  /// **'Vietnamese Name'**
+  String get categoryNameVi;
+
+  /// No description provided for @categoryNameViRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter Vietnamese name'**
+  String get categoryNameViRequired;
+
+  /// No description provided for @categoryNameEn.
+  ///
+  /// In en, this message translates to:
+  /// **'English Name'**
+  String get categoryNameEn;
+
+  /// No description provided for @categoryNameEnRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter English name'**
+  String get categoryNameEnRequired;
+
+  /// No description provided for @categoryDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get categoryDescription;
+
+  /// No description provided for @categoryIconLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Icon'**
+  String get categoryIconLabel;
+
+  /// No description provided for @categoryDefaultSeverity.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Severity'**
+  String get categoryDefaultSeverity;
+
+  /// No description provided for @categoryDisplayOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get categoryDisplayOrder;
+
+  /// No description provided for @categoryActiveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get categoryActiveLabel;
+
+  /// No description provided for @categoryInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get categoryInactive;
+
+  /// No description provided for @categoryPositionsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Positions'**
+  String get categoryPositionsLabel;
+
+  /// No description provided for @categoryPositionsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff with these positions are eligible for auto-assignment in this category'**
+  String get categoryPositionsHint;
+
+  /// No description provided for @categoryNoPositionsMapped.
+  ///
+  /// In en, this message translates to:
+  /// **'No position mapped'**
+  String get categoryNoPositionsMapped;
+
+  /// No description provided for @categoryNoActivePositions.
+  ///
+  /// In en, this message translates to:
+  /// **'No active positions available. Please create positions first.'**
+  String get categoryNoActivePositions;
+
+  /// No description provided for @categorySaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Category saved successfully'**
+  String get categorySaveSuccess;
+
+  /// No description provided for @categoryDeleteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Category deleted successfully'**
+  String get categoryDeleteSuccess;
+
+  /// No description provided for @totalCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Categories'**
+  String get totalCategories;
+
+  /// No description provided for @categoriesMappedPositions.
+  ///
+  /// In en, this message translates to:
+  /// **'Mapped to Positions'**
+  String get categoriesMappedPositions;
+
+  /// No description provided for @categoryReportCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get categoryReportCountLabel;
+
+  /// No description provided for @categoryIconEco.
+  ///
+  /// In en, this message translates to:
+  /// **'Environment'**
+  String get categoryIconEco;
+
+  /// No description provided for @categoryIconConstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Infrastructure'**
+  String get categoryIconConstruction;
+
+  /// No description provided for @categoryIconBolt.
+  ///
+  /// In en, this message translates to:
+  /// **'Electricity / Lighting'**
+  String get categoryIconBolt;
+
+  /// No description provided for @categoryIconWater.
+  ///
+  /// In en, this message translates to:
+  /// **'Water / Drainage'**
+  String get categoryIconWater;
+
+  /// No description provided for @categoryIconShield.
+  ///
+  /// In en, this message translates to:
+  /// **'Public Order'**
+  String get categoryIconShield;
+
+  /// No description provided for @categoryIconPark.
+  ///
+  /// In en, this message translates to:
+  /// **'Trees / Parks'**
+  String get categoryIconPark;
+
+  /// No description provided for @categoryIconTraffic.
+  ///
+  /// In en, this message translates to:
+  /// **'Traffic'**
+  String get categoryIconTraffic;
+
+  /// No description provided for @categoryIconGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get categoryIconGeneral;
+
+  /// No description provided for @staffBaseLocationSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Representative Area / Coordinates'**
+  String get staffBaseLocationSection;
+
+  /// No description provided for @staffBaseAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Representative Address / Area'**
+  String get staffBaseAddressLabel;
+
+  /// No description provided for @staffBaseLatitudeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude'**
+  String get staffBaseLatitudeLabel;
+
+  /// No description provided for @staffBaseLongitudeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude'**
+  String get staffBaseLongitudeLabel;
+
+  /// No description provided for @staffPickLocationOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick on Map'**
+  String get staffPickLocationOnMap;
+
+  /// No description provided for @staffUseCurrentGps.
+  ///
+  /// In en, this message translates to:
+  /// **'Current GPS'**
+  String get staffUseCurrentGps;
+
+  /// No description provided for @staffClearLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Location'**
+  String get staffClearLocation;
+
+  /// No description provided for @staffLocationNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Representative location not set'**
+  String get staffLocationNotSet;
+
+  /// No description provided for @staffLocationPairRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Both latitude and longitude are required'**
+  String get staffLocationPairRequired;
+
+  /// No description provided for @staffLocationInvalidLat.
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude must be between -90 and 90'**
+  String get staffLocationInvalidLat;
+
+  /// No description provided for @staffLocationInvalidLng.
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude must be between -180 and 180'**
+  String get staffLocationInvalidLng;
+
+  /// No description provided for @staffLocationPickerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick Representative Location'**
+  String get staffLocationPickerTitle;
+
+  /// No description provided for @staffLocationPickerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap or drag the pin on the map to set the staff member\'s representative location.'**
+  String get staffLocationPickerHint;
+
+  /// No description provided for @staffLocationConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Location'**
+  String get staffLocationConfirm;
+
+  /// No description provided for @staffLocationWebNoToken.
+  ///
+  /// In en, this message translates to:
+  /// **'MAPBOX_ACCESS_TOKEN is not configured. Please enter latitude and longitude manually.'**
+  String get staffLocationWebNoToken;
+
+  /// No description provided for @staffLocationGpsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not obtain current GPS coordinates'**
+  String get staffLocationGpsFailed;
+
+  /// No description provided for @reportCategoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get reportCategoryLabel;
+
+  /// No description provided for @autoAssignSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Assignment'**
+  String get autoAssignSectionTitle;
+
+  /// No description provided for @autoAssignTriggerButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-Assign'**
+  String get autoAssignTriggerButton;
+
+  /// No description provided for @autoAssignTopCandidates.
+  ///
+  /// In en, this message translates to:
+  /// **'Top {count} Recommended Staff'**
+  String autoAssignTopCandidates(int count);
+
+  /// No description provided for @autoAssignAssignNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign Now'**
+  String get autoAssignAssignNow;
+
+  /// No description provided for @autoAssignSelectCandidate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get autoAssignSelectCandidate;
+
+  /// No description provided for @autoAssignSelectedCandidate.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected'**
+  String get autoAssignSelectedCandidate;
+
+  /// No description provided for @autoAssignEligibleCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} eligible candidates'**
+  String autoAssignEligibleCount(int count);
+
+  /// No description provided for @autoAssignModeAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode: Auto'**
+  String get autoAssignModeAuto;
+
+  /// No description provided for @autoAssignModeAssist.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode: Assist'**
+  String get autoAssignModeAssist;
+
+  /// No description provided for @autoAssignModeManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode: Manual'**
+  String get autoAssignModeManual;
+
+  /// No description provided for @autoAssignScoreLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Score'**
+  String get autoAssignScoreLabel;
+
+  /// No description provided for @autoAssignDistanceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get autoAssignDistanceLabel;
+
+  /// No description provided for @autoAssignMonthlyLoadLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly load'**
+  String get autoAssignMonthlyLoadLabel;
+
+  /// No description provided for @autoAssignActiveLoadLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active load'**
+  String get autoAssignActiveLoadLabel;
+
+  /// No description provided for @autoAssignOnTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'30d on-time'**
+  String get autoAssignOnTimeLabel;
+
+  /// No description provided for @autoAssignTasksCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} tasks'**
+  String autoAssignTasksCount(int count);
+
+  /// No description provided for @autoAssignScoreValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{score}/100'**
+  String autoAssignScoreValue(String score);
+
+  /// No description provided for @autoAssignWeightPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}%'**
+  String autoAssignWeightPercent(int percent);
+
+  /// No description provided for @autoAssignDistanceKm.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} km'**
+  String autoAssignDistanceKm(String distance);
+
+  /// No description provided for @autoAssignLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load staff recommendations. Please try again.'**
+  String get autoAssignLoadFailed;
+
+  /// No description provided for @autoAssignDecisionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-Assign Decision Breakdown'**
+  String get autoAssignDecisionTitle;
+
+  /// No description provided for @autoAssignSourceAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'System Auto-Assigned'**
+  String get autoAssignSourceAuto;
+
+  /// No description provided for @autoAssignSourceRecommendClick.
+  ///
+  /// In en, this message translates to:
+  /// **'1-Tap Suggested Assign'**
+  String get autoAssignSourceRecommendClick;
+
+  /// No description provided for @autoAssignSourceOverridden.
+  ///
+  /// In en, this message translates to:
+  /// **'Overridden by Admin'**
+  String get autoAssignSourceOverridden;
+
+  /// No description provided for @autoAssignSourceRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Admin Confirmation'**
+  String get autoAssignSourceRecommended;
+
+  /// No description provided for @autoAssignSourceFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Fallback to Manual'**
+  String get autoAssignSourceFallback;
+
+  /// No description provided for @autoAssignSourceManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual Assignment'**
+  String get autoAssignSourceManual;
+
+  /// No description provided for @autoAssignOverriddenNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin reassigned this report to {staffName}.'**
+  String autoAssignOverriddenNotice(String staffName);
+
+  /// No description provided for @autoAssignSnapshotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Candidate Ranking Snapshot'**
+  String get autoAssignSnapshotTitle;
+
+  /// No description provided for @autoAssignSuccessMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Report auto-assigned to best matching staff'**
+  String get autoAssignSuccessMessage;
+
+  /// No description provided for @autoAssignFailedFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to auto-assign report'**
+  String get autoAssignFailedFallback;
+
+  /// No description provided for @reassignStaffButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Reassign Staff'**
+  String get reassignStaffButton;
+
+  /// No description provided for @autoAssignNoCandidatesDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'No staff matched the eligibility filters (position, base coordinates, radius, concurrent load limit).'**
+  String get autoAssignNoCandidatesDefault;
+
+  /// No description provided for @routeAutoAssignCenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-Assign Center'**
+  String get routeAutoAssignCenter;
+
+  /// No description provided for @autoAssignCenterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-Assign Dispatch Center'**
+  String get autoAssignCenterTitle;
+
+  /// No description provided for @autoAssignCenterSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure dispatch mode, multi-criteria weights, live dry-run simulation, and monthly workload fairness'**
+  String get autoAssignCenterSubtitle;
+
+  /// No description provided for @autoAssignRefreshAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh data'**
+  String get autoAssignRefreshAction;
+
+  /// No description provided for @autoAssignKpiTotalDecisions.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Decisions'**
+  String get autoAssignKpiTotalDecisions;
+
+  /// No description provided for @autoAssignKpiBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'{autoCount} auto · {recommendCount} 1-tap · {fallbackCount} fallback'**
+  String autoAssignKpiBreakdown(
+    int autoCount,
+    int recommendCount,
+    int fallbackCount,
+  );
+
+  /// No description provided for @autoAssignKpiSuccessRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-Assign Success Rate'**
+  String get autoAssignKpiSuccessRate;
+
+  /// No description provided for @autoAssignKpiSuccessSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Passed 2-stage eligibility filter'**
+  String get autoAssignKpiSuccessSub;
+
+  /// No description provided for @autoAssignKpiAcceptanceRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Acceptance Rate'**
+  String get autoAssignKpiAcceptanceRate;
+
+  /// No description provided for @autoAssignKpiOverriddenSub.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} overridden by Admin'**
+  String autoAssignKpiOverriddenSub(int count);
+
+  /// No description provided for @autoAssignKpiFairnessIndex.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Fairness Index'**
+  String get autoAssignKpiFairnessIndex;
+
+  /// No description provided for @autoAssignKpiFairnessSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg {avg} tasks/staff · std ±{std}'**
+  String autoAssignKpiFairnessSub(String avg, String std);
+
+  /// No description provided for @autoAssignConfigCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch Mode & Scoring Weights'**
+  String get autoAssignConfigCardTitle;
+
+  /// No description provided for @autoAssignConfigCardDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'All 4 weights automatically lock to 100%. Adjusting sliders immediately updates the Dry-Run Simulator.'**
+  String get autoAssignConfigCardDesc;
+
+  /// No description provided for @autoAssignModeOptionAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto (AUTO)'**
+  String get autoAssignModeOptionAuto;
+
+  /// No description provided for @autoAssignModeOptionAssist.
+  ///
+  /// In en, this message translates to:
+  /// **'Assist (ASSIST)'**
+  String get autoAssignModeOptionAssist;
+
+  /// No description provided for @autoAssignModeOptionManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual (MANUAL)'**
+  String get autoAssignModeOptionManual;
+
+  /// No description provided for @autoAssignModeDescAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'New reports are automatically scored and immediately assigned to the #1 eligible staff member.'**
+  String get autoAssignModeDescAuto;
+
+  /// No description provided for @autoAssignModeDescAssist.
+  ///
+  /// In en, this message translates to:
+  /// **'System pre-calculates and recommends the Top 3 candidates for 1-tap Admin approval.'**
+  String get autoAssignModeDescAssist;
+
+  /// No description provided for @autoAssignModeDescManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Disables automatic dispatch on report creation; Admin assigns manually or triggers recommendations on demand.'**
+  String get autoAssignModeDescManual;
+
+  /// No description provided for @autoAssignWeightsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Multi-Criteria Scoring Weights (Total = 100%)'**
+  String get autoAssignWeightsHeader;
+
+  /// No description provided for @autoAssignResetWeightsButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Default (35/30/20/15)'**
+  String get autoAssignResetWeightsButton;
+
+  /// No description provided for @autoAssignThresholdsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Eligibility Thresholds & Quotas'**
+  String get autoAssignThresholdsHeader;
+
+  /// No description provided for @autoAssignMaxRadiusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Max dispatch radius (km)'**
+  String get autoAssignMaxRadiusLabel;
+
+  /// No description provided for @autoAssignMaxConcurrentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Max concurrent tasks'**
+  String get autoAssignMaxConcurrentLabel;
+
+  /// No description provided for @autoAssignTargetMonthlyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Target monthly tasks'**
+  String get autoAssignTargetMonthlyLabel;
+
+  /// No description provided for @autoAssignSaveConfigButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Configuration'**
+  String get autoAssignSaveConfigButton;
+
+  /// No description provided for @autoAssignConfigSavedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-assign configuration updated successfully'**
+  String get autoAssignConfigSavedSuccess;
+
+  /// No description provided for @autoAssignConfigSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save auto-assign configuration'**
+  String get autoAssignConfigSaveFailed;
+
+  /// No description provided for @autoAssignSimulatorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Dry-Run Simulator'**
+  String get autoAssignSimulatorTitle;
+
+  /// No description provided for @autoAssignSimulatorDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a category and hypothetical incident coordinates to test candidate ranking with current weights (no DB writes).'**
+  String get autoAssignSimulatorDesc;
+
+  /// No description provided for @autoAssignSimCategoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Hypothetical Incident Category'**
+  String get autoAssignSimCategoryLabel;
+
+  /// No description provided for @autoAssignSimPickOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick on Map'**
+  String get autoAssignSimPickOnMap;
+
+  /// No description provided for @autoAssignSimRunButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Run Simulation'**
+  String get autoAssignSimRunButton;
+
+  /// No description provided for @autoAssignSimPresetDistrict1.
+  ///
+  /// In en, this message translates to:
+  /// **'District 1 Preset'**
+  String get autoAssignSimPresetDistrict1;
+
+  /// No description provided for @autoAssignSimPresetThuDuc.
+  ///
+  /// In en, this message translates to:
+  /// **'Thu Duc Preset'**
+  String get autoAssignSimPresetThuDuc;
+
+  /// No description provided for @autoAssignSimPresetBinhThanh.
+  ///
+  /// In en, this message translates to:
+  /// **'Binh Thanh Preset'**
+  String get autoAssignSimPresetBinhThanh;
+
+  /// No description provided for @autoAssignSimNoWriterBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Dry-Run Only · No DB Writes'**
+  String get autoAssignSimNoWriterBadge;
+
+  /// No description provided for @autoAssignFairnessSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Workload Distribution & Team Fairness'**
+  String get autoAssignFairnessSectionTitle;
+
+  /// No description provided for @autoAssignFairnessSectionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare current month workload, active processing tasks, and 30-day on-time rate across active staff.'**
+  String get autoAssignFairnessSectionDesc;
+
+  /// No description provided for @autoAssignFairnessRangeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Min: {min} tasks · Max: {max} tasks'**
+  String autoAssignFairnessRangeLabel(int min, int max);
+
+  /// No description provided for @autoAssignStaffMonthlyQuotaText.
+  ///
+  /// In en, this message translates to:
+  /// **'{current}/{target} monthly'**
+  String autoAssignStaffMonthlyQuotaText(int current, int target);
+
+  /// No description provided for @autoAssignStaffActiveQuotaText.
+  ///
+  /// In en, this message translates to:
+  /// **'{active}/{maxActive} active'**
+  String autoAssignStaffActiveQuotaText(int active, int maxActive);
+
+  /// No description provided for @autoAssignStaffOnTimeText.
+  ///
+  /// In en, this message translates to:
+  /// **'{rate}% on-time'**
+  String autoAssignStaffOnTimeText(String rate);
+
+  /// No description provided for @autoAssignLogsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Assignment Decision Logs'**
+  String get autoAssignLogsSectionTitle;
+
+  /// No description provided for @autoAssignLogsSectionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed audit log of auto-assignments, 1-tap recommendations, fallbacks, and Admin overrides.'**
+  String get autoAssignLogsSectionDesc;
+
+  /// No description provided for @autoAssignLogsFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All outcomes'**
+  String get autoAssignLogsFilterAll;
+
+  /// No description provided for @autoAssignLogsFilterAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned'**
+  String get autoAssignLogsFilterAssigned;
+
+  /// No description provided for @autoAssignLogsFilterRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get autoAssignLogsFilterRecommended;
+
+  /// No description provided for @autoAssignLogsFilterOverridden.
+  ///
+  /// In en, this message translates to:
+  /// **'Overridden'**
+  String get autoAssignLogsFilterOverridden;
+
+  /// No description provided for @autoAssignLogsFilterFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Fallback'**
+  String get autoAssignLogsFilterFallback;
+
+  /// No description provided for @autoAssignLogsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No assignment decision logs match the current filter'**
+  String get autoAssignLogsEmpty;
+
+  /// No description provided for @autoAssignLogViewReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Open report'**
+  String get autoAssignLogViewReport;
+
+  /// No description provided for @autoAssignLogPageInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {current}/{total} ({count} records)'**
+  String autoAssignLogPageInfo(int current, int total, int count);
+
+  /// No description provided for @mapStaffStationsToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Stations'**
+  String get mapStaffStationsToggle;
+
+  /// No description provided for @mapStaffStationsLegend.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Base Station'**
+  String get mapStaffStationsLegend;
+
+  /// No description provided for @mapStaffStationSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Base Station'**
+  String get mapStaffStationSheetTitle;
+
+  /// No description provided for @mapStaffActiveTasksCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Active processing: {count} reports'**
+  String mapStaffActiveTasksCount(int count);
+
+  /// No description provided for @mapFilterByThisStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter reports assigned to this staff'**
+  String get mapFilterByThisStaff;
+
+  /// No description provided for @autoAssignModeShortAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto'**
+  String get autoAssignModeShortAuto;
+
+  /// No description provided for @autoAssignModeShortAssist.
+  ///
+  /// In en, this message translates to:
+  /// **'Assist'**
+  String get autoAssignModeShortAssist;
+
+  /// No description provided for @autoAssignModeShortManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual'**
+  String get autoAssignModeShortManual;
+
+  /// No description provided for @autoAssignToggleWeightsExpand.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize weights & thresholds'**
+  String get autoAssignToggleWeightsExpand;
+
+  /// No description provided for @autoAssignToggleWeightsCollapse.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse weights & thresholds'**
+  String get autoAssignToggleWeightsCollapse;
+
+  /// No description provided for @autoAssignSectionExpand.
+  ///
+  /// In en, this message translates to:
+  /// **'Expand'**
+  String get autoAssignSectionExpand;
+
+  /// No description provided for @autoAssignSectionCollapse.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse'**
+  String get autoAssignSectionCollapse;
+
+  /// No description provided for @autoAssignTabFairness.
+  ///
+  /// In en, this message translates to:
+  /// **'Workload Fairness'**
+  String get autoAssignTabFairness;
+
+  /// No description provided for @autoAssignTabLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision Logs'**
+  String get autoAssignTabLogs;
+
   /// No description provided for @smartAlertsTitle.
   ///
   /// In en, this message translates to:

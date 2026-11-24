@@ -55,6 +55,7 @@ import com.vn.smart_space.repository.ReportRepository;
 import com.vn.smart_space.repository.UserRepository;
 import com.vn.smart_space.service.auth.IAuthenticationService;
 import com.vn.smart_space.service.mail.IMailService;
+import com.vn.smart_space.utils.GeoUtils;
 import com.vn.smart_space.utils.AnalyticsStatHelper;
 import com.vn.smart_space.utils.PasswordGenerator;
 import com.vn.smart_space.utils.TrendBucketHelper;
@@ -92,6 +93,11 @@ public class StaffServiceImpl implements IStaffService {
                                 .phoneNumber(s.getPhone())
                                 .avatarUrl(s.getAvatarUrl())
                                 .status(s.getStatus() != null ? s.getStatus().name() : null)
+                                .positionId(s.getPosition() != null ? s.getPosition().getId() : null)
+                                .positionName(s.getPosition() != null ? s.getPosition().getName() : null)
+                                .baseLatitude(s.getBaseLatitude())
+                                .baseLongitude(s.getBaseLongitude())
+                                .baseAddress(s.getBaseAddress())
                                 .build()).collect(Collectors.toList());
         }
 
@@ -261,6 +267,7 @@ public class StaffServiceImpl implements IStaffService {
                                 .position(resolvePosition(request.positionId()))
                                 .build();
 
+                applyBaseLocation(staff, request.baseLatitude(), request.baseLongitude(), request.baseAddress(), false);
                 staff = userRepository.save(staff);
 
                 // 5. Ghi Activity Log
@@ -331,6 +338,8 @@ public class StaffServiceImpl implements IStaffService {
                                 staff.setPosition(resolvePosition(request.positionId()));
                         }
                 }
+                applyBaseLocation(staff, request.baseLatitude(), request.baseLongitude(), request.baseAddress(),
+                                request.clearBaseLocation());
 
                 staff = userRepository.save(staff);
 
@@ -392,6 +401,29 @@ public class StaffServiceImpl implements IStaffService {
                 return position;
         }
 
+        private void applyBaseLocation(User staff, Double lat, Double lng, String address, Boolean clear) {
+                if (Boolean.TRUE.equals(clear)) {
+                        staff.setBaseLatitude(null);
+                        staff.setBaseLongitude(null);
+                        staff.setBaseAddress(null);
+                        return;
+                }
+                if (lat != null || lng != null) {
+                        if (lat == null || lng == null) {
+                                throw new BadRequestException("staff.location.coordinates_pair_required");
+                        }
+                        if (!GeoUtils.isValidCoordinate(lat, lng)) {
+                                throw new BadRequestException("staff.location.invalid_coordinates");
+                        }
+                        staff.setBaseLatitude(lat);
+                        staff.setBaseLongitude(lng);
+                }
+                if (address != null) {
+                        String trimmed = address.trim();
+                        staff.setBaseAddress(trimmed.isEmpty() ? null : trimmed);
+                }
+        }
+
         private StaffResponse toStaffResponse(User s) {
                 Position position = s.getPosition();
                 return StaffResponse.builder()
@@ -406,6 +438,9 @@ public class StaffServiceImpl implements IStaffService {
                                 .processingCount(0)
                                 .positionId(position != null ? position.getId() : null)
                                 .positionName(position != null ? position.getName() : null)
+                                .baseLatitude(s.getBaseLatitude())
+                                .baseLongitude(s.getBaseLongitude())
+                                .baseAddress(s.getBaseAddress())
                                 .build();
         }
 

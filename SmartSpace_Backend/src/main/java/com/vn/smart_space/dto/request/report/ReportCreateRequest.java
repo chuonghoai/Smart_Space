@@ -29,4 +29,7 @@ public class ReportCreateRequest {
     
     @JsonProperty("location_description")
     private String locationDescription;
+
+    @JsonProperty("category_id")
+    private String categoryId;
 }

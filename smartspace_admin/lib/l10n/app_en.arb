@@ -1188,6 +1188,248 @@
     }
   },
   "viewAssignedReportsAction": "View assigned reports",
+  "routeCategoryManagement": "Category Management",
+  "manageCategories": "Categories",
+  "addCategory": "Add Category",
+  "editCategory": "Edit Category",
+  "deleteCategory": "Delete Category",
+  "deleteCategoryConfirm": "Are you sure you want to delete this category?",
+  "emptyCategoryList": "No report categories yet",
+  "categoryCode": "Category Code",
+  "categoryCodeRequired": "Please enter category code",
+  "categoryNameVi": "Vietnamese Name",
+  "categoryNameViRequired": "Please enter Vietnamese name",
+  "categoryNameEn": "English Name",
+  "categoryNameEnRequired": "Please enter English name",
+  "categoryDescription": "Description",
+  "categoryIconLabel": "Icon",
+  "categoryDefaultSeverity": "Default Severity",
+  "categoryDisplayOrder": "Order",
+  "categoryActiveLabel": "Active",
+  "categoryInactive": "Inactive",
+  "categoryPositionsLabel": "Assigned Positions",
+  "categoryPositionsHint": "Staff with these positions are eligible for auto-assignment in this category",
+  "categoryNoPositionsMapped": "No position mapped",
+  "categoryNoActivePositions": "No active positions available. Please create positions first.",
+  "categorySaveSuccess": "Category saved successfully",
+  "categoryDeleteSuccess": "Category deleted successfully",
+  "totalCategories": "Total Categories",
+  "categoriesMappedPositions": "Mapped to Positions",
+  "categoryReportCountLabel": "Reports",
+  "categoryIconEco": "Environment",
+  "categoryIconConstruction": "Infrastructure",
+  "categoryIconBolt": "Electricity / Lighting",
+  "categoryIconWater": "Water / Drainage",
+  "categoryIconShield": "Public Order",
+  "categoryIconPark": "Trees / Parks",
+  "categoryIconTraffic": "Traffic",
+  "categoryIconGeneral": "General",
+  "staffBaseLocationSection": "Representative Area / Coordinates",
+  "staffBaseAddressLabel": "Representative Address / Area",
+  "staffBaseLatitudeLabel": "Latitude",
+  "staffBaseLongitudeLabel": "Longitude",
+  "staffPickLocationOnMap": "Pick on Map",
+  "staffUseCurrentGps": "Current GPS",
+  "staffClearLocation": "Clear Location",
+  "staffLocationNotSet": "Representative location not set",
+  "staffLocationPairRequired": "Both latitude and longitude are required",
+  "staffLocationInvalidLat": "Latitude must be between -90 and 90",
+  "staffLocationInvalidLng": "Longitude must be between -180 and 180",
+  "staffLocationPickerTitle": "Pick Representative Location",
+  "staffLocationPickerHint": "Tap or drag the pin on the map to set the staff member's representative location.",
+  "staffLocationConfirm": "Confirm Location",
+  "staffLocationWebNoToken": "MAPBOX_ACCESS_TOKEN is not configured. Please enter latitude and longitude manually.",
+  "staffLocationGpsFailed": "Could not obtain current GPS coordinates",
+  "reportCategoryLabel": "Category",
+  "autoAssignSectionTitle": "Smart Assignment",
+  "autoAssignTriggerButton": "Auto-Assign",
+  "autoAssignTopCandidates": "Top {count} Recommended Staff",
+  "@autoAssignTopCandidates": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignAssignNow": "Assign Now",
+  "autoAssignSelectCandidate": "Select",
+  "autoAssignSelectedCandidate": "Selected",
+  "autoAssignEligibleCount": "{count} eligible candidates",
+  "@autoAssignEligibleCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignModeAuto": "Mode: Auto",
+  "autoAssignModeAssist": "Mode: Assist",
+  "autoAssignModeManual": "Mode: Manual",
+  "autoAssignScoreLabel": "Score",
+  "autoAssignDistanceLabel": "Distance",
+  "autoAssignMonthlyLoadLabel": "Monthly load",
+  "autoAssignActiveLoadLabel": "Active load",
+  "autoAssignOnTimeLabel": "30d on-time",
+  "autoAssignTasksCount": "{count} tasks",
+  "@autoAssignTasksCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignScoreValue": "{score}/100",
+  "@autoAssignScoreValue": {
+    "placeholders": {
+      "score": { "type": "String" }
+    }
+  },
+  "autoAssignWeightPercent": "{percent}%",
+  "@autoAssignWeightPercent": {
+    "placeholders": {
+      "percent": { "type": "int" }
+    }
+  },
+  "autoAssignDistanceKm": "{distance} km",
+  "@autoAssignDistanceKm": {
+    "placeholders": {
+      "distance": { "type": "String" }
+    }
+  },
+  "autoAssignLoadFailed": "Could not load staff recommendations. Please try again.",
+  "autoAssignDecisionTitle": "Auto-Assign Decision Breakdown",
+  "autoAssignSourceAuto": "System Auto-Assigned",
+  "autoAssignSourceRecommendClick": "1-Tap Suggested Assign",
+  "autoAssignSourceOverridden": "Overridden by Admin",
+  "autoAssignSourceRecommended": "Pending Admin Confirmation",
+  "autoAssignSourceFallback": "Fallback to Manual",
+  "autoAssignSourceManual": "Manual Assignment",
+  "autoAssignOverriddenNotice": "Admin reassigned this report to {staffName}.",
+  "@autoAssignOverriddenNotice": {
+    "placeholders": {
+      "staffName": { "type": "String" }
+    }
+  },
+  "autoAssignSnapshotTitle": "Candidate Ranking Snapshot",
+  "autoAssignSuccessMessage": "Report auto-assigned to best matching staff",
+  "autoAssignFailedFallback": "Unable to auto-assign report",
+  "reassignStaffButton": "Reassign Staff",
+  "autoAssignNoCandidatesDefault": "No staff matched the eligibility filters (position, base coordinates, radius, concurrent load limit).",
+  "routeAutoAssignCenter": "Auto-Assign Center",
+  "autoAssignCenterTitle": "Auto-Assign Dispatch Center",
+  "autoAssignCenterSubtitle": "Configure dispatch mode, multi-criteria weights, live dry-run simulation, and monthly workload fairness",
+  "autoAssignRefreshAction": "Refresh data",
+  "autoAssignKpiTotalDecisions": "Total Decisions",
+  "autoAssignKpiBreakdown": "{autoCount} auto · {recommendCount} 1-tap · {fallbackCount} fallback",
+  "@autoAssignKpiBreakdown": {
+    "placeholders": {
+      "autoCount": { "type": "int" },
+      "recommendCount": { "type": "int" },
+      "fallbackCount": { "type": "int" }
+    }
+  },
+  "autoAssignKpiSuccessRate": "Auto-Assign Success Rate",
+  "autoAssignKpiSuccessSub": "Passed 2-stage eligibility filter",
+  "autoAssignKpiAcceptanceRate": "Admin Acceptance Rate",
+  "autoAssignKpiOverriddenSub": "{count} overridden by Admin",
+  "@autoAssignKpiOverriddenSub": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignKpiFairnessIndex": "Monthly Fairness Index",
+  "autoAssignKpiFairnessSub": "Avg {avg} tasks/staff · std ±{std}",
+  "@autoAssignKpiFairnessSub": {
+    "placeholders": {
+      "avg": { "type": "String" },
+      "std": { "type": "String" }
+    }
+  },
+  "autoAssignConfigCardTitle": "Dispatch Mode & Scoring Weights",
+  "autoAssignConfigCardDesc": "All 4 weights automatically lock to 100%. Adjusting sliders immediately updates the Dry-Run Simulator.",
+  "autoAssignModeOptionAuto": "Auto (AUTO)",
+  "autoAssignModeOptionAssist": "Assist (ASSIST)",
+  "autoAssignModeOptionManual": "Manual (MANUAL)",
+  "autoAssignModeDescAuto": "New reports are automatically scored and immediately assigned to the #1 eligible staff member.",
+  "autoAssignModeDescAssist": "System pre-calculates and recommends the Top 3 candidates for 1-tap Admin approval.",
+  "autoAssignModeDescManual": "Disables automatic dispatch on report creation; Admin assigns manually or triggers recommendations on demand.",
+  "autoAssignWeightsHeader": "Multi-Criteria Scoring Weights (Total = 100%)",
+  "autoAssignResetWeightsButton": "Default (35/30/20/15)",
+  "autoAssignThresholdsHeader": "Eligibility Thresholds & Quotas",
+  "autoAssignMaxRadiusLabel": "Max dispatch radius (km)",
+  "autoAssignMaxConcurrentLabel": "Max concurrent tasks",
+  "autoAssignTargetMonthlyLabel": "Target monthly tasks",
+  "autoAssignSaveConfigButton": "Save Configuration",
+  "autoAssignConfigSavedSuccess": "Auto-assign configuration updated successfully",
+  "autoAssignConfigSaveFailed": "Failed to save auto-assign configuration",
+  "autoAssignSimulatorTitle": "Live Dry-Run Simulator",
+  "autoAssignSimulatorDesc": "Select a category and hypothetical incident coordinates to test candidate ranking with current weights (no DB writes).",
+  "autoAssignSimCategoryLabel": "Hypothetical Incident Category",
+  "autoAssignSimPickOnMap": "Pick on Map",
+  "autoAssignSimRunButton": "Run Simulation",
+  "autoAssignSimPresetDistrict1": "District 1 Preset",
+  "autoAssignSimPresetThuDuc": "Thu Duc Preset",
+  "autoAssignSimPresetBinhThanh": "Binh Thanh Preset",
+  "autoAssignSimNoWriterBadge": "Dry-Run Only · No DB Writes",
+  "autoAssignFairnessSectionTitle": "Monthly Workload Distribution & Team Fairness",
+  "autoAssignFairnessSectionDesc": "Compare current month workload, active processing tasks, and 30-day on-time rate across active staff.",
+  "autoAssignFairnessRangeLabel": "Min: {min} tasks · Max: {max} tasks",
+  "@autoAssignFairnessRangeLabel": {
+    "placeholders": {
+      "min": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+  "autoAssignStaffMonthlyQuotaText": "{current}/{target} monthly",
+  "@autoAssignStaffMonthlyQuotaText": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "target": { "type": "int" }
+    }
+  },
+  "autoAssignStaffActiveQuotaText": "{active}/{maxActive} active",
+  "@autoAssignStaffActiveQuotaText": {
+    "placeholders": {
+      "active": { "type": "int" },
+      "maxActive": { "type": "int" }
+    }
+  },
+  "autoAssignStaffOnTimeText": "{rate}% on-time",
+  "@autoAssignStaffOnTimeText": {
+    "placeholders": {
+      "rate": { "type": "String" }
+    }
+  },
+  "autoAssignLogsSectionTitle": "Assignment Decision Logs",
+  "autoAssignLogsSectionDesc": "Detailed audit log of auto-assignments, 1-tap recommendations, fallbacks, and Admin overrides.",
+  "autoAssignLogsFilterAll": "All outcomes",
+  "autoAssignLogsFilterAssigned": "Assigned",
+  "autoAssignLogsFilterRecommended": "Recommended",
+  "autoAssignLogsFilterOverridden": "Overridden",
+  "autoAssignLogsFilterFallback": "Fallback",
+  "autoAssignLogsEmpty": "No assignment decision logs match the current filter",
+  "autoAssignLogViewReport": "Open report",
+  "autoAssignLogPageInfo": "Page {current}/{total} ({count} records)",
+  "@autoAssignLogPageInfo": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" },
+      "count": { "type": "int" }
+    }
+  },
+  "mapStaffStationsToggle": "Staff Stations",
+  "mapStaffStationsLegend": "Staff Base Station",
+  "mapStaffStationSheetTitle": "Staff Base Station",
+  "mapStaffActiveTasksCount": "Active processing: {count} reports",
+  "@mapStaffActiveTasksCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "mapFilterByThisStaff": "Filter reports assigned to this staff",
+  "autoAssignModeShortAuto": "Auto",
+  "autoAssignModeShortAssist": "Assist",
+  "autoAssignModeShortManual": "Manual",
+  "autoAssignToggleWeightsExpand": "Customize weights & thresholds",
+  "autoAssignToggleWeightsCollapse": "Collapse weights & thresholds",
+  "autoAssignSectionExpand": "Expand",
+  "autoAssignSectionCollapse": "Collapse",
+  "autoAssignTabFairness": "Workload Fairness",
+  "autoAssignTabLogs": "Decision Logs",
   "smartAlertsTitle": "Operational Alerts & 7-Day Pulse",
   "smartAlertsAllHealthy": "Operations steady — no anomalies detected",
   "volumeSpikeTitle": "Unusual report surge today",

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong2/latlong.dart';
+import 'package:mobile_shared/core/widgets/report_category_badge.dart';
 import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:intl/intl.dart';
@@ -624,6 +625,12 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
                                 ),
                               ),
                             ),
+
+                            // Category Pill
+                            if (report.localizedCategoryName(
+                                  Localizations.localeOf(context),
+                                ) case final categoryName?)
+                              ReportCategoryBadge(label: categoryName),
 
                             // My Report Badge ("Bạn là người tạo phản ánh này" / "Bạn đã tạo phản ánh này dưới hình thức ẩn danh")
                             if (isMyReport)

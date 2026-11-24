@@ -1268,4 +1268,27 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get noRejectionReasonProvided => 'Rejected by administrator.';
+
+  @override
+  String get assignedBaseLocationSection => 'Assigned Station & Position';
+
+  @override
+  String get staffPositionLabel => 'Assigned Position';
+
+  @override
+  String get staffPositionNotAssigned => 'No position assigned';
+
+  @override
+  String get baseStationAddressLabel => 'Representative Station / Area';
+
+  @override
+  String get baseStationCoordinatesLabel => 'Representative Coordinates';
+
+  @override
+  String get baseStationNotConfigured =>
+      'Representative station not configured by administrator';
+
+  @override
+  String get baseStationReadOnlyHint =>
+      'Position and representative station are managed by the system administrator.';
 }

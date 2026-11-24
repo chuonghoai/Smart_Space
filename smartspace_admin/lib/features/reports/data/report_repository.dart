@@ -1,5 +1,6 @@
 import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
+import '../models/auto_assign_models.dart';
 import '../models/report_detail_model.dart';
 import '../models/report_filter_model.dart';
 import '../models/report_list_model.dart';
@@ -54,13 +55,34 @@ class ReportRepository {
     String id, {
     required String staffId,
     required String severity,
+    String source = 'MANUAL',
   }) async {
     return apiClient.post(
       '/admin/reports/$id/assign',
       data: {
         'staffId': staffId,
         'severity': severity,
+        'source': source,
       },
+      decoder: (json) => ReportDetailModel.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  Future<ApiResponse<AutoAssignRecommendationModel>> getReportRecommendations(
+    String id, {
+    int limit = 3,
+  }) async {
+    return apiClient.get(
+      '/admin/reports/$id/recommendations',
+      queryParameters: {'limit': limit},
+      decoder: (json) =>
+          AutoAssignRecommendationModel.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  Future<ApiResponse<ReportDetailModel>> autoAssignReport(String id) async {
+    return apiClient.post(
+      '/admin/reports/$id/auto-assign',
       decoder: (json) => ReportDetailModel.fromJson(json as Map<String, dynamic>),
     );
   }
@@ -133,6 +155,68 @@ class ReportRepository {
       decoder: (json) => (json as List<dynamic>)
           .map((e) => RecentReportModel.fromJson(e as Map<String, dynamic>))
           .toList(),
+    );
+  }
+
+  Future<ApiResponse<AutoAssignConfigModel>> getAutoAssignConfig() async {
+    return apiClient.get(
+      '/admin/auto-assign/config',
+      decoder: (json) =>
+          AutoAssignConfigModel.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  Future<ApiResponse<AutoAssignConfigModel>> updateAutoAssignConfig(
+    AutoAssignConfigModel config,
+  ) async {
+    return apiClient.put(
+      '/admin/auto-assign/config',
+      data: config.toRequestJson(),
+      decoder: (json) =>
+          AutoAssignConfigModel.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  Future<ApiResponse<AutoAssignRecommendationModel>> simulateAutoAssign(
+    AutoAssignSimulateRequestModel request,
+  ) async {
+    return apiClient.post(
+      '/admin/auto-assign/simulate',
+      data: request.toJson(),
+      decoder: (json) =>
+          AutoAssignRecommendationModel.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  Future<ApiResponse<AutoAssignAnalyticsModel>> getAutoAssignAnalytics() async {
+    return apiClient.get(
+      '/admin/auto-assign/analytics',
+      decoder: (json) =>
+          AutoAssignAnalyticsModel.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  Future<ApiResponse<AssignmentDecisionLogPageModel>> getAutoAssignLogs({
+    String? outcome,
+    String? source,
+    String? categoryId,
+    int page = 1,
+    int size = 15,
+  }) async {
+    return apiClient.get(
+      '/admin/auto-assign/logs',
+      queryParameters: {
+        'page': page,
+        'size': size,
+        if (outcome != null && outcome.isNotEmpty && outcome != 'all')
+          'outcome': outcome,
+        if (source != null && source.isNotEmpty && source != 'all')
+          'source': source,
+        if (categoryId != null && categoryId.isNotEmpty && categoryId != 'all')
+          'categoryId': categoryId,
+      },
+      decoder: (json) =>
+          AssignmentDecisionLogPageModel.fromJson(json as Map<String, dynamic>),
     );
   }
 }

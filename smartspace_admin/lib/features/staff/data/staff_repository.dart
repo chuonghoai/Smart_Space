@@ -49,6 +49,9 @@ class StaffRepository {
     String? gender,
     String? avatarUrl,
     String? positionId,
+    double? baseLatitude,
+    double? baseLongitude,
+    String? baseAddress,
   }) async {
     return apiClient.post(
       '/admin/staffs',
@@ -61,6 +64,10 @@ class StaffRepository {
         if (gender != null) 'gender': gender,
         if (avatarUrl != null) 'avatarUrl': avatarUrl,
         if (positionId != null) 'positionId': positionId,
+        'baseLatitude': ?baseLatitude,
+        'baseLongitude': ?baseLongitude,
+        if (baseAddress != null && baseAddress.isNotEmpty)
+          'baseAddress': baseAddress,
       },
     );
   }
@@ -75,6 +82,10 @@ class StaffRepository {
     String? gender,
     String? avatarUrl,
     String? positionId,
+    double? baseLatitude,
+    double? baseLongitude,
+    String? baseAddress,
+    bool clearBaseLocation = false,
   }) async {
     return apiClient.put(
       '/admin/staffs/$staffId',
@@ -85,6 +96,13 @@ class StaffRepository {
         if (gender != null) 'gender': gender,
         if (avatarUrl != null) 'avatarUrl': avatarUrl,
         if (positionId != null) 'positionId': positionId,
+        if (clearBaseLocation)
+          'clearBaseLocation': true
+        else ...{
+          'baseLatitude': ?baseLatitude,
+          'baseLongitude': ?baseLongitude,
+          if (baseAddress != null) 'baseAddress': baseAddress,
+        },
       },
     );
   }

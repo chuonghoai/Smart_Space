@@ -49,6 +49,10 @@ public class RecentReportResponse {
 
     Long remainingDays;
 
+    String categoryId;
+    String categoryCode;
+    String categoryNameVi;
+    String categoryNameEn;
     Boolean isAtRisk;
 
     Boolean isBottleneck;

@@ -1,4 +1,3 @@
-
 class ReportDto {
   final String title;
   final String description;
@@ -8,6 +7,7 @@ class ReportDto {
   final bool isAnonymous;
   final String? address;
   final String? locationDescription;
+  final String? categoryId;
 
   ReportDto({
     required this.title,
@@ -16,8 +16,9 @@ class ReportDto {
     required this.latitude,
     required this.longitude,
     required this.isAnonymous,
-    this.address, 
+    this.address,
     this.locationDescription,
+    this.categoryId,
   });
 
   ReportDto copyWith({
@@ -29,6 +30,7 @@ class ReportDto {
     bool? isAnonymous,
     String? address,
     String? locationDescription,
+    String? categoryId,
   }) {
     return ReportDto(
       title: title ?? this.title,
@@ -39,6 +41,7 @@ class ReportDto {
       isAnonymous: isAnonymous ?? this.isAnonymous,
       address: address ?? this.address,
       locationDescription: locationDescription ?? this.locationDescription,
+      categoryId: categoryId ?? this.categoryId,
     );
   }
 
@@ -52,6 +55,7 @@ class ReportDto {
       'is_anonymous': isAnonymous,
       'address': address,
       'location_description': locationDescription,
+      if (categoryId != null && categoryId!.isNotEmpty) 'category_id': categoryId,
     };
   }
 }

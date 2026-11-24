@@ -1,5 +1,9 @@
 package com.vn.smart_space.model;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
+import com.vn.smart_space.consts.EAssignmentSource;
 import com.vn.smart_space.consts.EReportSeverity;
 import com.vn.smart_space.consts.EReportStatus;
 
@@ -51,6 +55,10 @@ public class Report extends AbstractEntity {
     User assignedStaff;
 
     @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    ReportCategory category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "conversation_id")
     Conversation conversation;
 
@@ -70,7 +78,7 @@ public class Report extends AbstractEntity {
     Double distanceInMeters;
 
     @Column(name = "assigned_at")
-    java.util.Date assignedAt;
+    Date assignedAt;
 
     @Column(name = "resolved_note", columnDefinition = "TEXT")
     String resolvedNote;
@@ -97,11 +105,18 @@ public class Report extends AbstractEntity {
     java.util.Date reviewedAt;
 
     @Column(name = "deadline")
-    java.time.LocalDateTime deadline;
+    LocalDateTime deadline;
 
     @Column(name = "rejected_reason", columnDefinition = "TEXT")
     String rejectedReason;
 
     @Column(name = "rejected_at")
     java.util.Date rejectedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "assignment_source", length = 30)
+    EAssignmentSource assignmentSource;
+
+    @Column(name = "decision_log_id")
+    String decisionLogId;
 }

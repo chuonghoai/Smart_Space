@@ -2463,6 +2463,528 @@ class AppLocalizationsEn extends AppLocalizations {
   String get viewAssignedReportsAction => 'View assigned reports';
 
   @override
+  String get routeCategoryManagement => 'Category Management';
+
+  @override
+  String get manageCategories => 'Categories';
+
+  @override
+  String get addCategory => 'Add Category';
+
+  @override
+  String get editCategory => 'Edit Category';
+
+  @override
+  String get deleteCategory => 'Delete Category';
+
+  @override
+  String get deleteCategoryConfirm =>
+      'Are you sure you want to delete this category?';
+
+  @override
+  String get emptyCategoryList => 'No report categories yet';
+
+  @override
+  String get categoryCode => 'Category Code';
+
+  @override
+  String get categoryCodeRequired => 'Please enter category code';
+
+  @override
+  String get categoryNameVi => 'Vietnamese Name';
+
+  @override
+  String get categoryNameViRequired => 'Please enter Vietnamese name';
+
+  @override
+  String get categoryNameEn => 'English Name';
+
+  @override
+  String get categoryNameEnRequired => 'Please enter English name';
+
+  @override
+  String get categoryDescription => 'Description';
+
+  @override
+  String get categoryIconLabel => 'Icon';
+
+  @override
+  String get categoryDefaultSeverity => 'Default Severity';
+
+  @override
+  String get categoryDisplayOrder => 'Order';
+
+  @override
+  String get categoryActiveLabel => 'Active';
+
+  @override
+  String get categoryInactive => 'Inactive';
+
+  @override
+  String get categoryPositionsLabel => 'Assigned Positions';
+
+  @override
+  String get categoryPositionsHint =>
+      'Staff with these positions are eligible for auto-assignment in this category';
+
+  @override
+  String get categoryNoPositionsMapped => 'No position mapped';
+
+  @override
+  String get categoryNoActivePositions =>
+      'No active positions available. Please create positions first.';
+
+  @override
+  String get categorySaveSuccess => 'Category saved successfully';
+
+  @override
+  String get categoryDeleteSuccess => 'Category deleted successfully';
+
+  @override
+  String get totalCategories => 'Total Categories';
+
+  @override
+  String get categoriesMappedPositions => 'Mapped to Positions';
+
+  @override
+  String get categoryReportCountLabel => 'Reports';
+
+  @override
+  String get categoryIconEco => 'Environment';
+
+  @override
+  String get categoryIconConstruction => 'Infrastructure';
+
+  @override
+  String get categoryIconBolt => 'Electricity / Lighting';
+
+  @override
+  String get categoryIconWater => 'Water / Drainage';
+
+  @override
+  String get categoryIconShield => 'Public Order';
+
+  @override
+  String get categoryIconPark => 'Trees / Parks';
+
+  @override
+  String get categoryIconTraffic => 'Traffic';
+
+  @override
+  String get categoryIconGeneral => 'General';
+
+  @override
+  String get staffBaseLocationSection => 'Representative Area / Coordinates';
+
+  @override
+  String get staffBaseAddressLabel => 'Representative Address / Area';
+
+  @override
+  String get staffBaseLatitudeLabel => 'Latitude';
+
+  @override
+  String get staffBaseLongitudeLabel => 'Longitude';
+
+  @override
+  String get staffPickLocationOnMap => 'Pick on Map';
+
+  @override
+  String get staffUseCurrentGps => 'Current GPS';
+
+  @override
+  String get staffClearLocation => 'Clear Location';
+
+  @override
+  String get staffLocationNotSet => 'Representative location not set';
+
+  @override
+  String get staffLocationPairRequired =>
+      'Both latitude and longitude are required';
+
+  @override
+  String get staffLocationInvalidLat => 'Latitude must be between -90 and 90';
+
+  @override
+  String get staffLocationInvalidLng =>
+      'Longitude must be between -180 and 180';
+
+  @override
+  String get staffLocationPickerTitle => 'Pick Representative Location';
+
+  @override
+  String get staffLocationPickerHint =>
+      'Tap or drag the pin on the map to set the staff member\'s representative location.';
+
+  @override
+  String get staffLocationConfirm => 'Confirm Location';
+
+  @override
+  String get staffLocationWebNoToken =>
+      'MAPBOX_ACCESS_TOKEN is not configured. Please enter latitude and longitude manually.';
+
+  @override
+  String get staffLocationGpsFailed =>
+      'Could not obtain current GPS coordinates';
+
+  @override
+  String get reportCategoryLabel => 'Category';
+
+  @override
+  String get autoAssignSectionTitle => 'Smart Assignment';
+
+  @override
+  String get autoAssignTriggerButton => 'Auto-Assign';
+
+  @override
+  String autoAssignTopCandidates(int count) {
+    return 'Top $count Recommended Staff';
+  }
+
+  @override
+  String get autoAssignAssignNow => 'Assign Now';
+
+  @override
+  String get autoAssignSelectCandidate => 'Select';
+
+  @override
+  String get autoAssignSelectedCandidate => 'Selected';
+
+  @override
+  String autoAssignEligibleCount(int count) {
+    return '$count eligible candidates';
+  }
+
+  @override
+  String get autoAssignModeAuto => 'Mode: Auto';
+
+  @override
+  String get autoAssignModeAssist => 'Mode: Assist';
+
+  @override
+  String get autoAssignModeManual => 'Mode: Manual';
+
+  @override
+  String get autoAssignScoreLabel => 'Score';
+
+  @override
+  String get autoAssignDistanceLabel => 'Distance';
+
+  @override
+  String get autoAssignMonthlyLoadLabel => 'Monthly load';
+
+  @override
+  String get autoAssignActiveLoadLabel => 'Active load';
+
+  @override
+  String get autoAssignOnTimeLabel => '30d on-time';
+
+  @override
+  String autoAssignTasksCount(int count) {
+    return '$count tasks';
+  }
+
+  @override
+  String autoAssignScoreValue(String score) {
+    return '$score/100';
+  }
+
+  @override
+  String autoAssignWeightPercent(int percent) {
+    return '$percent%';
+  }
+
+  @override
+  String autoAssignDistanceKm(String distance) {
+    return '$distance km';
+  }
+
+  @override
+  String get autoAssignLoadFailed =>
+      'Could not load staff recommendations. Please try again.';
+
+  @override
+  String get autoAssignDecisionTitle => 'Auto-Assign Decision Breakdown';
+
+  @override
+  String get autoAssignSourceAuto => 'System Auto-Assigned';
+
+  @override
+  String get autoAssignSourceRecommendClick => '1-Tap Suggested Assign';
+
+  @override
+  String get autoAssignSourceOverridden => 'Overridden by Admin';
+
+  @override
+  String get autoAssignSourceRecommended => 'Pending Admin Confirmation';
+
+  @override
+  String get autoAssignSourceFallback => 'Fallback to Manual';
+
+  @override
+  String get autoAssignSourceManual => 'Manual Assignment';
+
+  @override
+  String autoAssignOverriddenNotice(String staffName) {
+    return 'Admin reassigned this report to $staffName.';
+  }
+
+  @override
+  String get autoAssignSnapshotTitle => 'Candidate Ranking Snapshot';
+
+  @override
+  String get autoAssignSuccessMessage =>
+      'Report auto-assigned to best matching staff';
+
+  @override
+  String get autoAssignFailedFallback => 'Unable to auto-assign report';
+
+  @override
+  String get reassignStaffButton => 'Reassign Staff';
+
+  @override
+  String get autoAssignNoCandidatesDefault =>
+      'No staff matched the eligibility filters (position, base coordinates, radius, concurrent load limit).';
+
+  @override
+  String get routeAutoAssignCenter => 'Auto-Assign Center';
+
+  @override
+  String get autoAssignCenterTitle => 'Auto-Assign Dispatch Center';
+
+  @override
+  String get autoAssignCenterSubtitle =>
+      'Configure dispatch mode, multi-criteria weights, live dry-run simulation, and monthly workload fairness';
+
+  @override
+  String get autoAssignRefreshAction => 'Refresh data';
+
+  @override
+  String get autoAssignKpiTotalDecisions => 'Total Decisions';
+
+  @override
+  String autoAssignKpiBreakdown(
+    int autoCount,
+    int recommendCount,
+    int fallbackCount,
+  ) {
+    return '$autoCount auto · $recommendCount 1-tap · $fallbackCount fallback';
+  }
+
+  @override
+  String get autoAssignKpiSuccessRate => 'Auto-Assign Success Rate';
+
+  @override
+  String get autoAssignKpiSuccessSub => 'Passed 2-stage eligibility filter';
+
+  @override
+  String get autoAssignKpiAcceptanceRate => 'Admin Acceptance Rate';
+
+  @override
+  String autoAssignKpiOverriddenSub(int count) {
+    return '$count overridden by Admin';
+  }
+
+  @override
+  String get autoAssignKpiFairnessIndex => 'Monthly Fairness Index';
+
+  @override
+  String autoAssignKpiFairnessSub(String avg, String std) {
+    return 'Avg $avg tasks/staff · std ±$std';
+  }
+
+  @override
+  String get autoAssignConfigCardTitle => 'Dispatch Mode & Scoring Weights';
+
+  @override
+  String get autoAssignConfigCardDesc =>
+      'All 4 weights automatically lock to 100%. Adjusting sliders immediately updates the Dry-Run Simulator.';
+
+  @override
+  String get autoAssignModeOptionAuto => 'Auto (AUTO)';
+
+  @override
+  String get autoAssignModeOptionAssist => 'Assist (ASSIST)';
+
+  @override
+  String get autoAssignModeOptionManual => 'Manual (MANUAL)';
+
+  @override
+  String get autoAssignModeDescAuto =>
+      'New reports are automatically scored and immediately assigned to the #1 eligible staff member.';
+
+  @override
+  String get autoAssignModeDescAssist =>
+      'System pre-calculates and recommends the Top 3 candidates for 1-tap Admin approval.';
+
+  @override
+  String get autoAssignModeDescManual =>
+      'Disables automatic dispatch on report creation; Admin assigns manually or triggers recommendations on demand.';
+
+  @override
+  String get autoAssignWeightsHeader =>
+      'Multi-Criteria Scoring Weights (Total = 100%)';
+
+  @override
+  String get autoAssignResetWeightsButton => 'Default (35/30/20/15)';
+
+  @override
+  String get autoAssignThresholdsHeader => 'Eligibility Thresholds & Quotas';
+
+  @override
+  String get autoAssignMaxRadiusLabel => 'Max dispatch radius (km)';
+
+  @override
+  String get autoAssignMaxConcurrentLabel => 'Max concurrent tasks';
+
+  @override
+  String get autoAssignTargetMonthlyLabel => 'Target monthly tasks';
+
+  @override
+  String get autoAssignSaveConfigButton => 'Save Configuration';
+
+  @override
+  String get autoAssignConfigSavedSuccess =>
+      'Auto-assign configuration updated successfully';
+
+  @override
+  String get autoAssignConfigSaveFailed =>
+      'Failed to save auto-assign configuration';
+
+  @override
+  String get autoAssignSimulatorTitle => 'Live Dry-Run Simulator';
+
+  @override
+  String get autoAssignSimulatorDesc =>
+      'Select a category and hypothetical incident coordinates to test candidate ranking with current weights (no DB writes).';
+
+  @override
+  String get autoAssignSimCategoryLabel => 'Hypothetical Incident Category';
+
+  @override
+  String get autoAssignSimPickOnMap => 'Pick on Map';
+
+  @override
+  String get autoAssignSimRunButton => 'Run Simulation';
+
+  @override
+  String get autoAssignSimPresetDistrict1 => 'District 1 Preset';
+
+  @override
+  String get autoAssignSimPresetThuDuc => 'Thu Duc Preset';
+
+  @override
+  String get autoAssignSimPresetBinhThanh => 'Binh Thanh Preset';
+
+  @override
+  String get autoAssignSimNoWriterBadge => 'Dry-Run Only · No DB Writes';
+
+  @override
+  String get autoAssignFairnessSectionTitle =>
+      'Monthly Workload Distribution & Team Fairness';
+
+  @override
+  String get autoAssignFairnessSectionDesc =>
+      'Compare current month workload, active processing tasks, and 30-day on-time rate across active staff.';
+
+  @override
+  String autoAssignFairnessRangeLabel(int min, int max) {
+    return 'Min: $min tasks · Max: $max tasks';
+  }
+
+  @override
+  String autoAssignStaffMonthlyQuotaText(int current, int target) {
+    return '$current/$target monthly';
+  }
+
+  @override
+  String autoAssignStaffActiveQuotaText(int active, int maxActive) {
+    return '$active/$maxActive active';
+  }
+
+  @override
+  String autoAssignStaffOnTimeText(String rate) {
+    return '$rate% on-time';
+  }
+
+  @override
+  String get autoAssignLogsSectionTitle => 'Assignment Decision Logs';
+
+  @override
+  String get autoAssignLogsSectionDesc =>
+      'Detailed audit log of auto-assignments, 1-tap recommendations, fallbacks, and Admin overrides.';
+
+  @override
+  String get autoAssignLogsFilterAll => 'All outcomes';
+
+  @override
+  String get autoAssignLogsFilterAssigned => 'Assigned';
+
+  @override
+  String get autoAssignLogsFilterRecommended => 'Recommended';
+
+  @override
+  String get autoAssignLogsFilterOverridden => 'Overridden';
+
+  @override
+  String get autoAssignLogsFilterFallback => 'Fallback';
+
+  @override
+  String get autoAssignLogsEmpty =>
+      'No assignment decision logs match the current filter';
+
+  @override
+  String get autoAssignLogViewReport => 'Open report';
+
+  @override
+  String autoAssignLogPageInfo(int current, int total, int count) {
+    return 'Page $current/$total ($count records)';
+  }
+
+  @override
+  String get mapStaffStationsToggle => 'Staff Stations';
+
+  @override
+  String get mapStaffStationsLegend => 'Staff Base Station';
+
+  @override
+  String get mapStaffStationSheetTitle => 'Staff Base Station';
+
+  @override
+  String mapStaffActiveTasksCount(int count) {
+    return 'Active processing: $count reports';
+  }
+
+  @override
+  String get mapFilterByThisStaff => 'Filter reports assigned to this staff';
+
+  @override
+  String get autoAssignModeShortAuto => 'Auto';
+
+  @override
+  String get autoAssignModeShortAssist => 'Assist';
+
+  @override
+  String get autoAssignModeShortManual => 'Manual';
+
+  @override
+  String get autoAssignToggleWeightsExpand => 'Customize weights & thresholds';
+
+  @override
+  String get autoAssignToggleWeightsCollapse => 'Collapse weights & thresholds';
+
+  @override
+  String get autoAssignSectionExpand => 'Expand';
+
+  @override
+  String get autoAssignSectionCollapse => 'Collapse';
+
+  @override
+  String get autoAssignTabFairness => 'Workload Fairness';
+
+  @override
+  String get autoAssignTabLogs => 'Decision Logs';
+
+  @override
   String get smartAlertsTitle => 'Operational Alerts & 7-Day Pulse';
 
   @override

@@ -41,6 +41,10 @@ class AppRouteInfo {
         return l10n.routeNotifications;
       case 'routePositionManagement':
         return l10n.routePositionManagement;
+      case 'routeCategoryManagement':
+        return l10n.routeCategoryManagement;
+      case 'routeAutoAssignCenter':
+        return l10n.routeAutoAssignCenter;
       case 'routeManageDevices':
         return l10n.routeManageDevices;
       case 'routeUnsatisfactoryReports':
@@ -135,6 +139,18 @@ class RouteName {
     nameKey: 'routePositionManagement',
     icon: Icons.workspace_premium,
     priority: 2,
+  );
+  static const categoryManagement = AppRouteInfo(
+    path: '/category-management',
+    nameKey: 'routeCategoryManagement',
+    icon: Icons.category_outlined,
+    priority: 3,
+  );
+  static const autoAssignCenter = AppRouteInfo(
+    path: '/auto-assign',
+    nameKey: 'routeAutoAssignCenter',
+    icon: Icons.auto_awesome_outlined,
+    priority: 3,
   );
   static const adminBoard = AppRouteInfo(
     path: '/admin-board',
@@ -249,6 +265,8 @@ class RouteName {
     staffManagement,
     userManagement,
     positionManagement,
+    categoryManagement,
+    autoAssignCenter,
     adminBoard,
     reportDashboard,
     reportList,

@@ -260,6 +260,15 @@ class _MobileEditProfileScreenState extends State<MobileEditProfileScreen> {
                           prefixIcon: const Icon(Icons.phone_outlined),
                         ),
                       ),
+                      const SizedBox(height: 24),
+
+                      // Read-only Assigned Position & Representative Base Location
+                      _buildReadOnlyAssignmentCard(
+                        theme: theme,
+                        colorScheme: colorScheme,
+                        textTheme: textTheme,
+                        l10n: l10n,
+                      ),
                     ],
                   ),
                 ),
@@ -338,6 +347,122 @@ class _MobileEditProfileScreenState extends State<MobileEditProfileScreen> {
       style: textTheme.labelLarge?.copyWith(fontWeight: FontWeight.bold),
     ),
   );
+
+  Widget _buildReadOnlyAssignmentCard({
+    required ThemeData theme,
+    required ColorScheme colorScheme,
+    required TextTheme textTheme,
+    required AppLocalizations l10n,
+  }) {
+    final user = _controller.user;
+    final positionText =
+        (user?.positionName != null && user!.positionName!.trim().isNotEmpty)
+        ? user.positionName!.trim()
+        : l10n.staffPositionNotAssigned;
+    final hasBase = user?.hasBaseLocation ?? false;
+    final address =
+        (user?.baseAddress != null && user!.baseAddress!.trim().isNotEmpty)
+        ? user.baseAddress!.trim()
+        : null;
+    final coords = user?.formattedBaseCoordinates;
+
+    return Container(
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: colorScheme.surfaceContainerHighest.withValues(alpha: 0.35),
+        borderRadius: BorderRadius.circular(10),
+        border: Border.all(
+          color: colorScheme.outlineVariant.withValues(alpha: 0.65),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.badge_outlined,
+                size: 18,
+                color: colorScheme.primary,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.assignedBaseLocationSection,
+                  style: textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.w700,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+              ),
+              Icon(
+                Icons.lock_outline,
+                size: 16,
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            l10n.staffPositionLabel,
+            style: textTheme.labelSmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 2),
+          Text(
+            positionText,
+            style: textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurface,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 12),
+          Text(
+            l10n.baseStationAddressLabel,
+            style: textTheme.labelSmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+          const SizedBox(height: 2),
+          if (hasBase) ...[
+            if (address != null) ...[
+              Text(
+                address,
+                style: textTheme.bodyMedium?.copyWith(
+                  color: colorScheme.onSurface,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 4),
+            ],
+            if (coords != null)
+              Text(
+                '${l10n.baseStationCoordinatesLabel}: $coords',
+                style: textTheme.bodySmall?.copyWith(
+                  color: colorScheme.onSurfaceVariant,
+                  fontFeatures: const [FontFeature.tabularFigures()],
+                ),
+              ),
+          ] else
+            Text(
+              l10n.baseStationNotConfigured,
+              style: textTheme.bodyMedium?.copyWith(
+                color: colorScheme.onSurfaceVariant,
+              ),
+            ),
+          const SizedBox(height: 10),
+          Text(
+            l10n.baseStationReadOnlyHint,
+            style: textTheme.bodySmall?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+              fontSize: 11.5,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
 
   void _save(BuildContext context) {
     _controller.saveProfile(

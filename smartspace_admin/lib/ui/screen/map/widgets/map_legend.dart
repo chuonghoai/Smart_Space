@@ -5,7 +5,9 @@ import 'package:smartspace_admin/ui/shared/report_status/report_status_style.dar
 
 /// Color legend overlay for the map — shows status→color mapping.
 class MapLegend extends StatelessWidget {
-  const MapLegend({super.key});
+  final bool showStaffStations;
+
+  const MapLegend({super.key, this.showStaffStations = false});
 
   @override
   Widget build(BuildContext context) {
@@ -50,6 +52,31 @@ class MapLegend extends StatelessWidget {
                       label,
                       style: theme.textTheme.labelSmall?.copyWith(
                         color: cs.onSurface,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            if (showStaffStations)
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 10,
+                      height: 10,
+                      decoration: BoxDecoration(
+                        color: cs.primary,
+                        borderRadius: BorderRadius.circular(3),
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      l10n.mapStaffStationsLegend,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: cs.onSurface,
+                        fontWeight: FontWeight.w600,
                       ),
                     ),
                   ],

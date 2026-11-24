@@ -10,11 +10,13 @@ import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:mobile_shared/util/location_service.dart';
 import 'package:smartspace_admin/features/map/application/map_providers.dart';
 import 'package:smartspace_admin/features/map/models/map_report_model.dart';
+import 'package:smartspace_admin/features/reports/models/staff_model.dart';
 import 'package:smartspace_admin/ui/shared/report_status/report_status_style.dart';
 import 'platform_map_controller.dart';
 import 'widgets/density_map_layer.dart';
 import 'widgets/map_cluster_colors.dart';
 import 'widgets/marker_image_generator.dart';
+import 'widgets/staff_base_map_layer.dart';
 
 /// Mobile/Desktop map — uses mapbox_maps_flutter native SDK, report gom cụm (cluster).
 Widget buildPlatformMap({
@@ -23,6 +25,7 @@ Widget buildPlatformMap({
   required void Function(MapReportModel report) onMarkerTap,
   required void Function(List<MapReportModel> reports) onClusterTap,
   required void Function(MapBounds bounds) onViewportChanged,
+  void Function(StaffModel staff)? onStaffTap,
   VoidCallback? onMapTap,
   MapFocusTarget? initialFocus,
   void Function(PlatformMapController controller)? onMapControllerCreated,
@@ -32,6 +35,7 @@ Widget buildPlatformMap({
     onMarkerTap: onMarkerTap,
     onClusterTap: onClusterTap,
     onViewportChanged: onViewportChanged,
+    onStaffTap: onStaffTap,
     onMapTap: onMapTap,
     initialFocus: initialFocus,
     onMapControllerCreated: onMapControllerCreated,
@@ -43,6 +47,7 @@ class _MobileMapView extends ConsumerStatefulWidget {
   final void Function(MapReportModel report) onMarkerTap;
   final void Function(List<MapReportModel> reports) onClusterTap;
   final void Function(MapBounds bounds) onViewportChanged;
+  final void Function(StaffModel staff)? onStaffTap;
   final VoidCallback? onMapTap;
   final MapFocusTarget? initialFocus;
   final void Function(PlatformMapController controller)? onMapControllerCreated;
@@ -52,6 +57,7 @@ class _MobileMapView extends ConsumerStatefulWidget {
     required this.onMarkerTap,
     required this.onClusterTap,
     required this.onViewportChanged,
+    this.onStaffTap,
     this.onMapTap,
     this.initialFocus,
     this.onMapControllerCreated,
@@ -66,6 +72,7 @@ class _MobileMapViewState extends ConsumerState<_MobileMapView>
   MapboxMap? _mapboxMap;
   ClusterMapLayer? _clusterLayer;
   DensityMapLayer? _densityLayer;
+  StaffBaseMapLayer? _staffBaseLayer;
   final MarkerImageGenerator _markerGenerator = MarkerImageGenerator();
 
   ClusterLayerColors? _colors;
@@ -109,6 +116,7 @@ class _MobileMapViewState extends ConsumerState<_MobileMapView>
   void dispose() {
     _markerGenerator.clearCache();
     _densityLayer?.remove();
+    _staffBaseLayer?.remove();
     super.dispose();
   }
 
@@ -137,6 +145,7 @@ class _MobileMapViewState extends ConsumerState<_MobileMapView>
   void _onMapCreated(MapboxMap mapboxMap) async {
     _mapboxMap = mapboxMap;
     _densityLayer = DensityMapLayer(map: mapboxMap);
+    _staffBaseLayer = StaffBaseMapLayer(map: mapboxMap);
     _clusterLayer = ClusterMapLayer(
       map: mapboxMap,
       imageBuilder: _buildMarkerImage,
@@ -176,6 +185,16 @@ class _MobileMapViewState extends ConsumerState<_MobileMapView>
     }
 
     await _clusterLayer?.install(_markers());
+    if (!mounted) return;
+    final cs = Theme.of(context).colorScheme;
+    final staffs = ref.read(mapStaffListProvider).valueOrNull ?? const [];
+    final showStaff = ref.read(showStaffStationsProvider);
+    await _staffBaseLayer?.install(
+      staffs: staffs,
+      primaryColor: cs.primary,
+      onPrimaryColor: cs.onPrimary,
+      visible: showStaff,
+    );
     _emitViewport(force: true);
   }
 
@@ -225,6 +244,18 @@ class _MobileMapViewState extends ConsumerState<_MobileMapView>
       case ClusterZoomedIn():
         break;
       case null:
+        if (ref.read(showStaffStationsProvider)) {
+          final staffId = await _staffBaseLayer?.handleTap(gestureContext);
+          if (staffId != null && mounted) {
+            final staffs =
+                ref.read(mapStaffListProvider).valueOrNull ?? const [];
+            final staff = staffs.where((s) => s.id == staffId).firstOrNull;
+            if (staff != null) {
+              widget.onStaffTap?.call(staff);
+              return;
+            }
+          }
+        }
         widget.onMapTap?.call();
     }
   }
@@ -295,6 +326,15 @@ class _MobileMapViewState extends ConsumerState<_MobileMapView>
       if (isEnabled) {
         _emitViewport(force: true);
       }
+    });
+
+    ref.listen(mapStaffListProvider, (_, next) {
+      final staffs = next.valueOrNull ?? const [];
+      _staffBaseLayer?.updateData(staffs);
+    });
+
+    ref.listen(showStaffStationsProvider, (_, visible) {
+      _staffBaseLayer?.setVisible(visible);
     });
 
     return MapWidget(

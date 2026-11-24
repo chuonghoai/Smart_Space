@@ -548,6 +548,44 @@ public interface ReportRepository extends JpaRepository<Report, String> {
                      @Param("isAnonymous") Boolean isAnonymous,
                      org.springframework.data.domain.Pageable pageable);
 
+       long countByCategoryId(String categoryId);
+
+       @Query("SELECT r.category.id, COUNT(r) FROM Report r WHERE r.category IS NOT NULL GROUP BY r.category.id")
+       List<Object[]> countReportsGroupByCategory();
+
+       @Query("SELECT r.assignedStaff.id, COUNT(r) FROM Report r " +
+                     "WHERE r.assignedStaff.id IN :staffIds " +
+                     "AND r.status <> com.vn.smart_space.consts.EReportStatus.rejected " +
+                     "AND ((r.assignedAt IS NOT NULL AND r.assignedAt >= :monthStart AND r.assignedAt < :monthEnd) " +
+                     "     OR (r.assignedAt IS NULL AND r.createdAt >= :monthStartLdt AND r.createdAt < :monthEndLdt)) " +
+                     "GROUP BY r.assignedStaff.id")
+       List<Object[]> countMonthlyWorkloadByStaffIds(
+                     @Param("staffIds") List<String> staffIds,
+                     @Param("monthStart") Date monthStart,
+                     @Param("monthEnd") Date monthEnd,
+                     @Param("monthStartLdt") LocalDateTime monthStartLdt,
+                     @Param("monthEndLdt") LocalDateTime monthEndLdt);
+
+       @Query("SELECT r.assignedStaff.id, MAX(r.assignedAt) FROM Report r " +
+                     "WHERE r.assignedStaff.id IN :staffIds AND r.assignedAt IS NOT NULL " +
+                     "GROUP BY r.assignedStaff.id")
+       List<Object[]> findLastAssignedAtByStaffIds(@Param("staffIds") List<String> staffIds);
+
+       // Chỉ tính phản ánh đã xử lý có đủ deadline & thời điểm hoàn tất (thiếu dữ liệu thì
+       // không đo được đúng hạn, không mặc định là đúng hạn)
+       @Query("SELECT r.assignedStaff.id, " +
+                     "SUM(CASE WHEN cast(r.resolvedAt as LocalDateTime) <= r.deadline THEN 1 ELSE 0 END), " +
+                     "COUNT(r) " +
+                     "FROM Report r " +
+                     "WHERE r.assignedStaff.id IN :staffIds " +
+                     "AND r.status = com.vn.smart_space.consts.EReportStatus.processed " +
+                     "AND r.deadline IS NOT NULL AND r.resolvedAt IS NOT NULL " +
+                     "AND cast(r.resolvedAt as LocalDateTime) >= :since " +
+                     "GROUP BY r.assignedStaff.id")
+       List<Object[]> countOnTimeResolvedSinceByStaffIds(
+                     @Param("staffIds") List<String> staffIds,
+                     @Param("since") LocalDateTime since);
+
        // --- Smart Analytics & Early Warning Queries (Section 4.1) ---
 
        @Query("SELECT r.createdAt FROM Report r WHERE r.createdAt >= :since")

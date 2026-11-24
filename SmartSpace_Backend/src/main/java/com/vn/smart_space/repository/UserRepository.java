@@ -1,6 +1,7 @@
 package com.vn.smart_space.repository;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +32,7 @@ public interface UserRepository extends JpaRepository<User, String> {
 
     List<User> findByRole(ERole role);
 
-    List<User> findByRoleIn(java.util.Collection<ERole> roles);
+    List<User> findByRoleIn(Collection<ERole> roles);
 
     @Query("SELECT u FROM User u LEFT JOIN FETCH u.position " +
             "WHERE u.role = :role AND u.id <> :excludeUserId AND u.status = 'active' " +
@@ -149,5 +150,20 @@ public interface UserRepository extends JpaRepository<User, String> {
             @Param("excludeId") String excludeId,
             @Param("search") String search,
             Pageable pageable);
+
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.position " +
+            "WHERE u.role = :role AND u.status = :status " +
+            "AND u.position.id IN :positionIds")
+    List<User> findActiveStaffByPositionIds(
+            @Param("role") ERole role,
+            @Param("status") EUserStatus status,
+            @Param("positionIds") Collection<String> positionIds);
+
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.position " +
+            "WHERE u.role = :role AND u.status = :status " +
+            "ORDER BY u.fullName ASC")
+    List<User> findAllActiveStaffWithPosition(
+            @Param("role") ERole role,
+            @Param("status") EUserStatus status);
 
 }

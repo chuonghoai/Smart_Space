@@ -13,6 +13,8 @@ import 'package:smartspace_admin/features/reports/models/report_detail_model.dar
 import 'package:smartspace_admin/features/reports/models/staff_model.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
+import 'package:smartspace_admin/features/reports/models/auto_assign_models.dart';
+import 'package:smartspace_admin/ui/screen/reports/widgets/auto_assign_widgets.dart';
 import 'package:smartspace_admin/ui/shared/position/position_widgets.dart';
 import 'package:smartspace_admin/ui/screen/staff/widgets/staff_workload_badge.dart';
 import 'package:go_router/go_router.dart';
@@ -42,6 +44,7 @@ class _AdminReportDetailScreenState
   bool _isReopening = false;
   StaffModel? _selectedStaff;
   String _selectedSeverity = 'low';
+  String? _lastSyncedReportId;
 
   Future<void> _handlePhoneCall(String? phone) async {
     final l10n = AppLocalizations.of(context)!;
@@ -204,6 +207,17 @@ class _AdminReportDetailScreenState
     ReportAssignState assignState,
     bool isDesktop,
   ) {
+    if (_lastSyncedReportId != report.id) {
+      _lastSyncedReportId = report.id;
+      final normalizedSev = report.severity?.toLowerCase();
+      if (normalizedSev == 'low' ||
+          normalizedSev == 'medium' ||
+          normalizedSev == 'high' ||
+          normalizedSev == 'critical') {
+        _selectedSeverity = normalizedSev!;
+      }
+    }
+
     final isPending = report.status.toUpperCase() == 'PENDING';
     final isDone = report.status.toUpperCase() == 'PROCESSED' ||
         report.status.toUpperCase() == 'RESOLVED' ||
@@ -237,11 +251,43 @@ class _AdminReportDetailScreenState
         _buildLocationCard(context, report, l10n, theme),
         const SizedBox(height: 16),
 
-        // 6. Assign Staff & Severity 2-Column Section
-        if (isPending)
-          _buildAssignStaffTwoColumnSection(context, report, l10n, theme)
-        else
+        // 6. Smart Recommendations + Assign Staff & Severity / Decision Card
+        if (isPending) ...[
+          SmartRecommendationPanel(
+            report: report,
+            selectedStaffId: _selectedStaff?.id,
+            isSubmitting: assignState.isLoading,
+            onSelectCandidate: (candidate) {
+              setState(() => _selectedStaff = candidate.toStaffModel());
+            },
+            onAssignNow: (candidate) =>
+                _submitAssignCandidate(context, l10n, candidate),
+            onAutoAssign: () => _submitAutoAssign(context, l10n),
+          ),
+          const SizedBox(height: 16),
+          _buildAssignStaffTwoColumnSection(context, report, l10n, theme),
+        ] else ...[
           _buildAssignedStaffTwoColumnCard(context, report, l10n, theme),
+          if (report.status.toUpperCase() == 'PROCESSING') ...[
+            const SizedBox(height: 10),
+            Align(
+              alignment: Alignment.centerRight,
+              child: OutlinedButton.icon(
+                onPressed: assignState.isLoading
+                    ? null
+                    : () => _openReassignStaffSheet(context, report, l10n),
+                icon: const Icon(Icons.swap_horiz_rounded, size: 18),
+                label: Text(l10n.reassignStaffButton),
+              ),
+            ),
+          ],
+          if (report.autoAssignDecision != null) ...[
+            const SizedBox(height: 12),
+            AutoAssignDecisionExplanationCard(
+              decision: report.autoAssignDecision!,
+            ),
+          ],
+        ],
 
         // 7. Staff Resolution Section (when status is Done/Processed)
         if (isDone) ...[
@@ -647,6 +693,11 @@ class _AdminReportDetailScreenState
               ],
             ),
             const Divider(height: 20),
+            if (report.localizedCategoryName(Localizations.localeOf(context))
+                case final categoryName?) ...[
+              ReportCategoryBadge(label: categoryName),
+              const SizedBox(height: 10),
+            ],
             Text(
               report.title,
               style: theme.textTheme.titleMedium?.copyWith(
@@ -2092,6 +2143,7 @@ class _AdminReportDetailScreenState
           reportId: widget.reportId,
           staffId: _selectedStaff!.id,
           severity: _selectedSeverity,
+          source: 'MANUAL',
         );
 
     if (mounted) {
@@ -2099,6 +2151,138 @@ class _AdminReportDetailScreenState
         Toast.show(ToastType.success, l10n.assignSuccessMessage);
       } else {
         Toast.show(ToastType.error, l10n.assignFailedMessage);
+      }
+    }
+  }
+
+  Future<void> _submitAssignCandidate(
+    BuildContext context,
+    AppLocalizations l10n,
+    StaffCandidateScoreModel candidate,
+  ) async {
+    setState(() => _selectedStaff = candidate.toStaffModel());
+
+    final success = await ref.read(reportAssignProvider.notifier).assignReport(
+          reportId: widget.reportId,
+          staffId: candidate.staffId,
+          severity: _selectedSeverity,
+          source: 'RECOMMEND_CLICK',
+        );
+
+    if (mounted) {
+      if (success) {
+        Toast.show(ToastType.success, l10n.assignSuccessMessage);
+      } else {
+        final err = ref.read(reportAssignProvider).error;
+        Toast.show(
+          ToastType.error,
+          (err != null && err.isNotEmpty) ? err : l10n.assignFailedMessage,
+        );
+      }
+    }
+  }
+
+  Future<void> _submitAutoAssign(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) async {
+    final success =
+        await ref.read(reportAssignProvider.notifier).autoAssignReport(
+              reportId: widget.reportId,
+            );
+
+    if (mounted) {
+      if (success) {
+        Toast.show(ToastType.success, l10n.autoAssignSuccessMessage);
+      } else {
+        final err = ref.read(reportAssignProvider).error;
+        Toast.show(
+          ToastType.error,
+          (err != null && err.isNotEmpty) ? err : l10n.autoAssignFailedFallback,
+        );
+      }
+    }
+  }
+
+  Future<void> _openReassignStaffSheet(
+    BuildContext context,
+    ReportDetailModel report,
+    AppLocalizations l10n,
+  ) async {
+    final StaffModel? picked = await showModalBottomSheet<StaffModel>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) {
+        return Consumer(
+          builder: (ctx, sheetRef, _) {
+            final theme = Theme.of(ctx);
+            final cs = theme.colorScheme;
+            final staffsAsync = sheetRef.watch(staffsProvider);
+
+            return staffsAsync.when(
+              loading: () => const SizedBox(
+                height: 280,
+                child: Center(
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+              error: (_, _) => SizedBox(
+                height: 240,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(
+                      l10n.assignFailedMessage,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: cs.error,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              data: (staffs) => _StaffPickerBottomSheet(
+                staffs: staffs,
+                selectedStaff: null,
+                title: l10n.reassignStaffButton,
+                currentStaffId: report.assignedStaffId,
+                onSelect: (staff) => Navigator.of(sheetContext).pop(staff),
+              ),
+            );
+          },
+        );
+      },
+    );
+
+    if (picked == null || !mounted) return;
+
+    final rawSev = report.severity?.toLowerCase();
+    final severity = (rawSev == 'low' ||
+            rawSev == 'medium' ||
+            rawSev == 'high' ||
+            rawSev == 'critical')
+        ? rawSev!
+        : 'medium';
+
+    final success = await ref.read(reportAssignProvider.notifier).assignReport(
+          reportId: report.id,
+          staffId: picked.id,
+          severity: severity,
+          source: 'MANUAL',
+        );
+
+    if (mounted) {
+      if (success) {
+        Toast.show(ToastType.success, l10n.assignSuccessMessage);
+      } else {
+        final err = ref.read(reportAssignProvider).error;
+        Toast.show(
+          ToastType.error,
+          (err != null && err.isNotEmpty) ? err : l10n.assignFailedMessage,
+        );
       }
     }
   }
@@ -2622,11 +2806,15 @@ class _RejectReportDialogState extends State<RejectReportDialog> {
 class _StaffPickerBottomSheet extends StatefulWidget {
   final List<StaffModel> staffs;
   final StaffModel? selectedStaff;
+  final String? title;
+  final String? currentStaffId;
   final ValueChanged<StaffModel> onSelect;
 
   const _StaffPickerBottomSheet({
     required this.staffs,
     required this.selectedStaff,
+    this.title,
+    this.currentStaffId,
     required this.onSelect,
   });
 
@@ -2674,7 +2862,7 @@ class _StaffPickerBottomSheetState extends State<_StaffPickerBottomSheet> {
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
               child: Text(
-                l10n.selectStaffPrompt,
+                widget.title ?? l10n.selectStaffPrompt,
                 style: theme.textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
@@ -2732,9 +2920,12 @@ class _StaffPickerBottomSheetState extends State<_StaffPickerBottomSheet> {
                       const Divider(height: 1),
                   itemBuilder: (context, index) {
                     final staff = filtered[index];
+                    final isCurrent = widget.currentStaffId != null &&
+                        widget.currentStaffId == staff.id;
                     final isSelected = widget.selectedStaff?.id == staff.id;
 
                     return ListTile(
+                      enabled: !isCurrent,
                       leading: AppNetworkImage(
                         url: staff.avatarUrl,
                         width: 40,
@@ -2757,8 +2948,9 @@ class _StaffPickerBottomSheetState extends State<_StaffPickerBottomSheet> {
                       title: Text(
                         staff.fullName,
                         style: TextStyle(
-                          fontWeight:
-                              isSelected ? FontWeight.bold : FontWeight.normal,
+                          fontWeight: (isSelected || isCurrent)
+                              ? FontWeight.bold
+                              : FontWeight.normal,
                         ),
                       ),
                       subtitle: Column(
@@ -2792,13 +2984,31 @@ class _StaffPickerBottomSheetState extends State<_StaffPickerBottomSheet> {
                           ),
                         ],
                       ),
-                      trailing: isSelected
-                          ? Icon(
-                              Icons.check_circle,
-                              color: theme.colorScheme.primary,
+                      trailing: isCurrent
+                          ? Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                l10n.assignedTo,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: theme.colorScheme.onPrimaryContainer,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
                             )
-                          : null,
-                      onTap: () => widget.onSelect(staff),
+                          : isSelected
+                              ? Icon(
+                                  Icons.check_circle,
+                                  color: theme.colorScheme.primary,
+                                )
+                              : null,
+                      onTap: isCurrent ? null : () => widget.onSelect(staff),
                     );
                   },
                 ),

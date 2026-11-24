@@ -1,6 +1,7 @@
 package com.vn.smart_space.service.report;
 
 import java.util.List;
+import java.util.Locale;
 
 import com.vn.smart_space.dto.PageResponse;
 import com.vn.smart_space.dto.request.admin.ReportAssignRequest;
@@ -12,6 +13,7 @@ import com.vn.smart_space.dto.response.admin.RecentReportResponse;
 import com.vn.smart_space.dto.response.admin.ReportListResponse;
 import com.vn.smart_space.dto.response.admin.ReportStatisticsResponse;
 import com.vn.smart_space.dto.response.admin.ReportTrendResponse;
+import com.vn.smart_space.dto.response.autoassign.AutoAssignRecommendationResponse;
 import com.vn.smart_space.dto.response.report.MapReportsResponse;
 import com.vn.smart_space.dto.response.report.MyReportsSummaryResponse;
 import com.vn.smart_space.dto.response.report.ReportDetailResponse;
@@ -45,6 +47,13 @@ public interface IReportService {
         List<RecentReportResponse> getAdminRecentReports(String tab, int limit);
 
         ReportDetailResponse assignReport(String reportId, ReportAssignRequest request, String adminId);
+
+        AutoAssignRecommendationResponse getReportRecommendations(String reportId, int limit, Locale locale);
+
+        ReportDetailResponse autoAssignReport(String reportId, String adminId);
+
+        /** Chạy phân công AUTO / ASSIST cho phản ánh vừa tạo (gọi sau khi phản ánh đã commit). */
+        void autoAssignOnReportCreated(String reportId);
 
         ReportDetailResponse completeReport(String reportId, ReportCompleteRequest request, String staffId);
 

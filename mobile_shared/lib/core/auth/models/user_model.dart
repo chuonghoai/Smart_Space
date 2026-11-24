@@ -11,6 +11,10 @@ class UserModel {
   final String? phone;
   final String? dateOfBirth;
   final String? gender;
+  final String? positionName;
+  final double? baseLatitude;
+  final double? baseLongitude;
+  final String? baseAddress;
 
   UserModel({
     required this.id,
@@ -22,7 +26,23 @@ class UserModel {
     this.phone,
     this.dateOfBirth,
     this.gender,
+    this.positionName,
+    this.baseLatitude,
+    this.baseLongitude,
+    this.baseAddress,
   });
+
+  bool get hasBaseLocation =>
+      baseLatitude != null &&
+      baseLongitude != null &&
+      baseLatitude! >= -90 &&
+      baseLatitude! <= 90 &&
+      baseLongitude! >= -180 &&
+      baseLongitude! <= 180;
+
+  String? get formattedBaseCoordinates => hasBaseLocation
+      ? '${baseLatitude!.toStringAsFixed(5)}, ${baseLongitude!.toStringAsFixed(5)}'
+      : null;
 
   factory UserModel.fromJson(Map<String, dynamic> json) {
     return UserModel(
@@ -37,6 +57,15 @@ class UserModel {
       phone: json['phone'] as String?,
       dateOfBirth: json['date_of_birth'] as String?,
       gender: json['gender'] as String?,
+      positionName:
+          (json['position_name'] ?? json['positionName']) as String?,
+      baseLatitude:
+          ((json['base_latitude'] ?? json['baseLatitude']) as num?)?.toDouble(),
+      baseLongitude:
+          ((json['base_longitude'] ?? json['baseLongitude']) as num?)
+              ?.toDouble(),
+      baseAddress:
+          (json['base_address'] ?? json['baseAddress']) as String?,
     );
   }
 
@@ -50,6 +79,10 @@ class UserModel {
       if (phone != null) 'phone': phone,
       if (dateOfBirth != null) 'date_of_birth': dateOfBirth,
       if (gender != null) 'gender': gender,
+      if (positionName != null) 'position_name': positionName,
+      if (baseLatitude != null) 'base_latitude': baseLatitude,
+      if (baseLongitude != null) 'base_longitude': baseLongitude,
+      if (baseAddress != null) 'base_address': baseAddress,
     };
   }
 }

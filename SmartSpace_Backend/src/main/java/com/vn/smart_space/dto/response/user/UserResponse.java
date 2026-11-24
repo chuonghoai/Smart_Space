@@ -42,4 +42,16 @@ public class UserResponse {
     LocalDate dateOfBirth;
     EGender gender;
 
+    @JsonProperty("position_name")
+    String positionName;
+
+    @JsonProperty("base_latitude")
+    Double baseLatitude;
+
+    @JsonProperty("base_longitude")
+    Double baseLongitude;
+
+    @JsonProperty("base_address")
+    String baseAddress;
+
 }

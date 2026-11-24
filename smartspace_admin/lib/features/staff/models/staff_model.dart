@@ -10,6 +10,9 @@ class StaffModel {
   final int processingCount;
   final String? positionId;
   final String? positionName;
+  final double? baseLatitude;
+  final double? baseLongitude;
+  final String? baseAddress;
   final int weightedLoad;
   final int overdueCount;
   final bool isOverloaded;
@@ -28,6 +31,9 @@ class StaffModel {
     this.processingCount = 0,
     this.positionId,
     this.positionName,
+    this.baseLatitude,
+    this.baseLongitude,
+    this.baseAddress,
     this.weightedLoad = 0,
     this.overdueCount = 0,
     this.isOverloaded = false,
@@ -54,6 +60,12 @@ class StaffModel {
       processingCount: (json['processingCount'] as num?)?.toInt() ?? 0,
       positionId: json['positionId'] as String?,
       positionName: json['positionName'] as String?,
+      baseLatitude: ((json['baseLatitude'] ?? json['base_latitude']) as num?)
+          ?.toDouble(),
+      baseLongitude:
+          ((json['baseLongitude'] ?? json['base_longitude']) as num?)
+              ?.toDouble(),
+      baseAddress: (json['baseAddress'] ?? json['base_address']) as String?,
       weightedLoad: (json['weightedLoad'] as num?)?.toInt() ?? 0,
       overdueCount: (json['overdueCount'] as num?)?.toInt() ?? 0,
       isOverloaded: (json['isOverloaded'] as bool?) ?? (json['overloaded'] as bool?) ?? false,
@@ -64,4 +76,14 @@ class StaffModel {
 
   bool get isActive => status == 'active';
   bool get isBlocked => status == 'blocked';
+  bool get hasBaseLocation => baseLatitude != null && baseLongitude != null;
+
+  String? get formattedBaseLocation {
+    final addr = baseAddress?.trim();
+    if (addr != null && addr.isNotEmpty) return addr;
+    if (hasBaseLocation) {
+      return '${baseLatitude!.toStringAsFixed(5)}, ${baseLongitude!.toStringAsFixed(5)}';
+    }
+    return null;
+  }
 }

@@ -2461,6 +2461,48 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Rejected by administrator.'**
   String get noRejectionReasonProvided;
+
+  /// No description provided for @assignedBaseLocationSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Station & Position'**
+  String get assignedBaseLocationSection;
+
+  /// No description provided for @staffPositionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Position'**
+  String get staffPositionLabel;
+
+  /// No description provided for @staffPositionNotAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'No position assigned'**
+  String get staffPositionNotAssigned;
+
+  /// No description provided for @baseStationAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Representative Station / Area'**
+  String get baseStationAddressLabel;
+
+  /// No description provided for @baseStationCoordinatesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Representative Coordinates'**
+  String get baseStationCoordinatesLabel;
+
+  /// No description provided for @baseStationNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Representative station not configured by administrator'**
+  String get baseStationNotConfigured;
+
+  /// No description provided for @baseStationReadOnlyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Position and representative station are managed by the system administrator.'**
+  String get baseStationReadOnlyHint;
 }
 
 class _AppLocalizationsDelegate

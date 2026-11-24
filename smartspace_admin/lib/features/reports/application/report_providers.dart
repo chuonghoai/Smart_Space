@@ -2,6 +2,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:smartspace_admin/features/home/models/recent_report_model.dart';
 import '../../home/application/home_providers.dart';
 import '../data/report_repository.dart';
+import '../models/auto_assign_models.dart';
 import '../models/report_detail_model.dart';
 import '../models/staff_model.dart';
 import 'report_dashboard_providers.dart';
@@ -28,6 +29,15 @@ class ReportDetailNotifier extends FamilyAsyncNotifier<ReportDetailModel, String
     state = await AsyncValue.guard(() => _fetchReportDetail(arg));
   }
 }
+
+final reportRecommendationsProvider = FutureProvider.autoDispose
+    .family<AutoAssignRecommendationModel, String>((ref, reportId) async {
+  final response = await reportRepository.getReportRecommendations(reportId);
+  if (response.success && response.data != null) {
+    return response.data!;
+  }
+  throw Exception(response.message);
+});
 
 final staffsProvider = AsyncNotifierProvider<StaffsNotifier, List<StaffModel>>(() => StaffsNotifier());
 
@@ -72,6 +82,7 @@ class ReportAssignNotifier extends StateNotifier<ReportAssignState> {
     required String reportId,
     required String staffId,
     required String severity,
+    String source = 'MANUAL',
   }) async {
     state = const ReportAssignState(isLoading: true);
     try {
@@ -79,15 +90,49 @@ class ReportAssignNotifier extends StateNotifier<ReportAssignState> {
         reportId,
         staffId: staffId,
         severity: severity,
+        source: source,
       );
 
       if (response.success && response.data != null) {
         state = const ReportAssignState(isSuccess: true);
 
-        // Refresh detail
+        // Refresh detail & recommendations
         ref.invalidate(reportDetailProvider(reportId));
+        ref.invalidate(reportRecommendationsProvider(reportId));
+        ref.invalidate(staffsProvider);
 
         // Refresh home APIs
+        ref.read(adminOverviewProvider.notifier).refresh();
+        ref.read(recentActivityProvider.notifier).refresh();
+        ref.invalidate(recentReportProvider);
+        ref.invalidate(reportListProvider);
+        ref.invalidate(reportStatisticsProvider);
+        ref.invalidate(kanbanColumnProvider);
+
+        return true;
+      } else {
+        state = ReportAssignState(error: response.message);
+        return false;
+      }
+    } catch (e) {
+      state = ReportAssignState(error: e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> autoAssignReport({
+    required String reportId,
+  }) async {
+    state = const ReportAssignState(isLoading: true);
+    try {
+      final response = await reportRepository.autoAssignReport(reportId);
+
+      if (response.success && response.data != null) {
+        state = const ReportAssignState(isSuccess: true);
+
+        ref.invalidate(reportDetailProvider(reportId));
+        ref.invalidate(reportRecommendationsProvider(reportId));
+        ref.invalidate(staffsProvider);
         ref.read(adminOverviewProvider.notifier).refresh();
         ref.read(recentActivityProvider.notifier).refresh();
         ref.invalidate(recentReportProvider);

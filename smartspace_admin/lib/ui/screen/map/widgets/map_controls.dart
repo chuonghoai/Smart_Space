@@ -6,6 +6,8 @@ import 'package:smartspace_admin/l10n/app_localizations.dart';
 class MapControls extends StatelessWidget {
   final bool isDensityActive;
   final VoidCallback? onSettingsPressed;
+  final bool isStaffStationsActive;
+  final VoidCallback? onStaffStationsPressed;
   final VoidCallback onMyLocationPressed;
   final VoidCallback onFilterPressed;
   final bool isFilterActive;
@@ -18,6 +20,8 @@ class MapControls extends StatelessWidget {
     super.key,
     this.isDensityActive = false,
     this.onSettingsPressed,
+    this.isStaffStationsActive = false,
+    this.onStaffStationsPressed,
     required this.onMyLocationPressed,
     required this.onFilterPressed,
     this.isFilterActive = false,
@@ -61,6 +65,19 @@ class MapControls extends StatelessWidget {
                 tooltip: l10n.mapSettings,
                 onPressed: onSettingsPressed!,
                 isActive: isDensityActive,
+                activeColor: colorScheme.primary,
+                colorScheme: colorScheme,
+              ),
+              const SizedBox(height: 8),
+            ],
+
+            // Staff Base Stations Toggle
+            if (onStaffStationsPressed != null) ...[
+              MapControlButton(
+                icon: Icons.badge_outlined,
+                tooltip: l10n.mapStaffStationsToggle,
+                onPressed: onStaffStationsPressed!,
+                isActive: isStaffStationsActive,
                 activeColor: colorScheme.primary,
                 colorScheme: colorScheme,
               ),

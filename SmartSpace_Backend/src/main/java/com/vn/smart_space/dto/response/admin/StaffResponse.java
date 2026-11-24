@@ -27,6 +27,9 @@ public class StaffResponse {
     long processingCount;
     String positionId;
     String positionName;
+    Double baseLatitude;
+    Double baseLongitude;
+    String baseAddress;
 
     // Weighted workload & assignment recommendation
     long weightedLoad;
