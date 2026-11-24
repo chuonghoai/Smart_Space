@@ -137,83 +137,97 @@ class _CreateReportForm extends ConsumerWidget {
     final locale = Localizations.localeOf(context);
     final cs = theme.colorScheme;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          '${l10n.reportCategoryLabel} *',
-          style: theme.textTheme.labelLarge?.copyWith(
-            fontWeight: FontWeight.w600,
-            color: controller.categoryError != null ? cs.error : cs.onSurface,
-          ),
+    return categoriesAsync.when(
+      loading: () => const Padding(
+        padding: EdgeInsets.symmetric(vertical: 8),
+        child: LinearProgressIndicator(),
+      ),
+      error: (_, _) => Container(
+        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+        decoration: BoxDecoration(
+          color: cs.errorContainer.withValues(alpha: 0.4),
+          borderRadius: BorderRadius.circular(10),
         ),
-        const SizedBox(height: 8),
-        categoriesAsync.when(
-          loading: () => const Padding(
-            padding: EdgeInsets.symmetric(vertical: 8),
-            child: LinearProgressIndicator(),
-          ),
-          error: (_, _) => Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-            decoration: BoxDecoration(
-              color: cs.errorContainer.withValues(alpha: 0.4),
-              borderRadius: BorderRadius.circular(10),
+        child: Row(
+          children: [
+            Icon(Icons.error_outline, size: 18, color: cs.error),
+            const SizedBox(width: 8),
+            Expanded(
+              child: Text(
+                l10n.reportCategoryLoadError,
+                style: theme.textTheme.bodySmall?.copyWith(color: cs.error),
+              ),
             ),
-            child: Row(
-              children: [
-                Icon(Icons.error_outline, size: 18, color: cs.error),
-                const SizedBox(width: 8),
-                Expanded(
-                  child: Text(
-                    l10n.reportCategoryLoadError,
-                    style: theme.textTheme.bodySmall?.copyWith(color: cs.error),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () => ref.invalidate(reportCategoriesProvider),
-                  child: Text(l10n.retry),
-                ),
-              ],
+            TextButton(
+              onPressed: () => ref.invalidate(reportCategoriesProvider),
+              child: Text(l10n.retry),
+            ),
+          ],
+        ),
+      ),
+      data: (categories) {
+        if (categories.isEmpty) {
+          return Text(
+            l10n.reportCategoryEmpty,
+            style: theme.textTheme.bodySmall?.copyWith(
+              color: cs.onSurfaceVariant,
+            ),
+          );
+        }
+        final selectedCategory = categories
+            .where((c) => c.id == controller.selectedCategoryId)
+            .firstOrNull;
+
+        return DropdownButtonFormField<String>(
+          key: ValueKey(selectedCategory?.id),
+          initialValue: selectedCategory?.id,
+          isExpanded: true,
+          menuMaxHeight: 320,
+          hint: Text(l10n.reportCategoryHint),
+          decoration: InputDecoration(
+            labelText: '${l10n.reportCategoryLabel} *',
+            errorText: controller.categoryError,
+            prefixIcon: Icon(
+              selectedCategory != null
+                  ? ReportCategoryHelper.iconFor(selectedCategory.iconKey)
+                  : Icons.category_outlined,
             ),
           ),
-          data: (categories) {
-            if (categories.isEmpty) {
-              return Text(
-                l10n.reportCategoryEmpty,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: cs.onSurfaceVariant,
-                ),
-              );
-            }
-            return Wrap(
-              spacing: 8,
-              runSpacing: 8,
-              children: [
-                for (final category in categories)
-                  ChoiceChip(
-                    avatar: Icon(
+          items: [
+            for (final category in categories)
+              DropdownMenuItem<String>(
+                value: category.id,
+                child: Row(
+                  children: [
+                    Icon(
                       ReportCategoryHelper.iconFor(category.iconKey),
-                      size: 16,
-                      color: controller.selectedCategoryId == category.id
-                          ? cs.onPrimaryContainer
-                          : cs.onSurfaceVariant,
+                      size: 18,
+                      color: cs.primary,
                     ),
-                    label: Text(category.localizedName(locale)),
-                    selected: controller.selectedCategoryId == category.id,
-                    onSelected: (_) => controller.setCategoryId(category.id),
-                  ),
-              ],
-            );
-          },
-        ),
-        if (controller.categoryError != null) ...[
-          const SizedBox(height: 6),
-          Text(
-            controller.categoryError!,
-            style: theme.textTheme.bodySmall?.copyWith(color: cs.error),
-          ),
-        ],
-      ],
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Text(
+                        category.localizedName(locale),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+          ],
+          selectedItemBuilder: (context) => [
+            for (final category in categories)
+              Align(
+                alignment: AlignmentDirectional.centerStart,
+                child: Text(
+                  category.localizedName(locale),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ),
+          ],
+          onChanged: (val) => controller.setCategoryId(val),
+        );
+      },
     );
   }
 
