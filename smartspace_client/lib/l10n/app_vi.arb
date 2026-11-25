@@ -525,5 +525,113 @@
   "reportCategoryEmpty": "Chưa có danh mục phản ánh nào",
   "callFreeVoiceDesc": "Gọi thoại miễn phí qua internet",
   "callPermissionDenied": "Không khả dụng cuộc gọi thoại cho hội thoại này",
-  "callActionLabel": "Gọi điện"
+  "callActionLabel": "Gọi điện",
+  "emergencyContacts": "Liên hệ khẩn cấp",
+  "emergencyTabMine": "Của tôi",
+  "emergencyTabGuardian": "Tôi bảo hộ",
+  "emergencyAddContact": "Thêm liên hệ",
+  "emergencyCapacity": "{count}/{max} · Nhận SOS của bạn",
+  "@emergencyCapacity": {
+    "placeholders": {
+      "count": {},
+      "max": {}
+    }
+  },
+  "emergencyLimitShort": "Đã đủ 5 liên hệ",
+  "emergencyEmptyMineTitle": "Chưa có liên hệ khẩn cấp",
+  "emergencyReorder": "Sắp xếp",
+  "emergencyReorderDone": "Xong",
+  "emergencyInviteFrom": "{name} muốn thêm bạn",
+  "@emergencyInviteFrom": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyEmptyMine": "Chưa có ai trong danh sách khẩn cấp. Thêm người thân để họ được báo khi bạn gặp sự cố.",
+  "emergencyStatusAwaitingInvite": "Chờ chấp nhận",
+  "emergencyStatusRejected": "Đã từ chối",
+  "emergencyStatusRevoked": "Đã rời",
+  "emergencyChannelApp": "Nhận cảnh báo qua ứng dụng",
+  "emergencyChannelSms": "Nhận cảnh báo qua SMS",
+  "emergencyRelationParent": "Cha / Mẹ",
+  "emergencyRelationSpouse": "Vợ / Chồng",
+  "emergencyRelationChild": "Con",
+  "emergencyRelationSibling": "Anh / Chị / Em",
+  "emergencyRelationRelative": "Họ hàng",
+  "emergencyRelationFriend": "Bạn bè",
+  "emergencyRelationNeighbor": "Hàng xóm",
+  "emergencyRelationOther": "Khác",
+  "emergencyEdit": "Sửa",
+  "emergencyDelete": "Xoá",
+  "emergencyMoreActions": "Thao tác khác",
+  "emergencyDragHandle": "Kéo để đổi thứ tự ưu tiên",
+  "emergencyDeleteTitle": "Xoá {name} khỏi danh sách khẩn cấp?",
+  "@emergencyDeleteTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyDeleteMessage": "{name} sẽ không nhận cảnh báo SOS của bạn nữa.",
+  "@emergencyDeleteMessage": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyDeleted": "Đã xoá liên hệ",
+  "emergencyFormAddTitle": "Thêm liên hệ khẩn cấp",
+  "emergencyFormEditTitle": "Sửa liên hệ khẩn cấp",
+  "emergencyFormName": "Tên người liên hệ",
+  "emergencyFormNameRequired": "Vui lòng nhập tên",
+  "emergencyFormPhoneRequired": "Vui lòng nhập số điện thoại",
+  "emergencyFormPhoneInvalid": "Số di động Việt Nam không hợp lệ",
+  "emergencyFormRelationship": "Mối quan hệ",
+  "emergencyFormRelationshipRequired": "Vui lòng chọn mối quan hệ",
+  "emergencyFormAccountEmail": "Email tài khoản SmartSpace (không bắt buộc)",
+  "emergencyFormAccountEmailHelp": "Nếu người này dùng SmartSpace, họ nhận lời mời và cảnh báo trong ứng dụng. Để trống thì hệ thống liên hệ qua SMS.",
+  "emergencyFormEmailInvalid": "Email không hợp lệ",
+  "emergencyFormConsent": "Tôi xác nhận người này đã đồng ý nhận cảnh báo khẩn cấp của tôi qua SMS",
+  "emergencyFormConsentRequired": "Vui lòng xác nhận người này đã đồng ý",
+  "emergencyFormReconfirmNote": "Đổi số điện thoại hoặc tài khoản liên kết sẽ cần người này đồng ý lại.",
+  "emergencyFormSave": "Lưu",
+  "emergencyInviteSent": "Đã gửi lời mời tới {name} trong ứng dụng",
+  "@emergencyInviteSent": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyContactSaved": "Đã lưu liên hệ",
+  "emergencyGuardianIntro": "Những người đã thêm bạn vào danh sách khẩn cấp. Bạn sẽ nhận cảnh báo khi họ gửi SOS.",
+  "emergencyInvitationsHeader": "Lời mời",
+  "emergencyGuardingHeader": "Đang bảo hộ",
+  "emergencyListedAs": "Bạn là: {relationship}",
+  "@emergencyListedAs": {
+    "placeholders": {
+      "relationship": {}
+    }
+  },
+  "emergencyAccept": "Chấp nhận",
+  "emergencyDecline": "Từ chối",
+  "emergencyLeave": "Rời danh sách",
+  "emergencyLeaveTitle": "Rời danh sách khẩn cấp của {name}?",
+  "@emergencyLeaveTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyLeaveMessage": "Bạn sẽ không nhận cảnh báo SOS của {name} nữa. Họ sẽ được thông báo.",
+  "@emergencyLeaveMessage": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyAccepted": "Bạn đã là liên hệ khẩn cấp của {name}",
+  "@emergencyAccepted": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyDeclined": "Đã từ chối lời mời",
+  "emergencyLeft": "Đã rời danh sách khẩn cấp",
+  "emergencyEmptyGuardian": "Chưa có ai thêm bạn vào danh sách khẩn cấp.",
+  "emergencyLoadFailed": "Không tải được danh sách khẩn cấp."
 }

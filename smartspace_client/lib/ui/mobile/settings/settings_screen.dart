@@ -73,6 +73,12 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
               ),
               _buildItem(
                 theme: theme,
+                icon: Icons.contact_phone_outlined,
+                label: l10n.emergencyContacts,
+                onTap: () => context.push(RouterPath.emergencyContacts),
+              ),
+              _buildItem(
+                theme: theme,
                 icon: Icons.notifications_outlined,
                 label: l10n.notificationSettings,
               ),

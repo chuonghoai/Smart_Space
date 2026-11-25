@@ -37,6 +37,8 @@ class AppRouteInfo {
         return l10n.routeChangePassword;
       case 'routeManageDevices':
         return l10n.routeManageDevices;
+      case 'routeEmergencyContacts':
+        return l10n.emergencyContacts;
       case 'routeNotifications':
         return l10n.routeNotifications;
       case 'routeConversations':
@@ -114,6 +116,12 @@ class RouteName {
     path: '/manage-devices',
     nameKey: 'routeManageDevices',
     icon: Icons.devices,
+    priority: 7,
+  );
+  static const emergencyContacts = AppRouteInfo(
+    path: '/emergency-contacts',
+    nameKey: 'routeEmergencyContacts',
+    icon: Icons.contact_phone_outlined,
     priority: 7,
   );
   static const editProfile = AppRouteInfo(
@@ -213,6 +221,7 @@ class RouteName {
     settings,
     changePassword,
     manageDevices,
+    emergencyContacts,
     editProfile,
     createReport,
     map,

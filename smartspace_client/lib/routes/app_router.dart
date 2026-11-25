@@ -11,6 +11,7 @@ import 'package:smartspace_client/ui/mobile/map/map_screen.dart';
 import 'package:smartspace_client/ui/mobile/settings/change_password_screen.dart';
 import 'package:smartspace_client/ui/mobile/settings/edit_profile_screen.dart';
 import 'package:smartspace_client/ui/mobile/settings/manage_devices_screen.dart';
+import 'package:smartspace_client/ui/mobile/emergency/emergency_contacts_screen.dart';
 import 'package:smartspace_client/ui/mobile/settings/settings_screen.dart';
 import 'package:smartspace_client/ui/shared/splash/splash_screen.dart';
 import 'package:smartspace_client/ui/mobile/auth/register/complete_profile_screen.dart';
@@ -81,6 +82,12 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.manageDevices,
       builder: (context, state) => const MobileManageDevicesScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.emergencyContacts,
+      builder: (context, state) => MobileEmergencyContactsScreen(
+        initialTab: EmergencyContactsTab.fromQuery(state.uri.queryParameters['tab']),
+      ),
     ),
     GoRoute(
       path: RouterPath.editProfile,

@@ -525,5 +525,113 @@
   "reportCategoryEmpty": "No categories available",
   "callFreeVoiceDesc": "Free internet voice call",
   "callPermissionDenied": "Voice call unavailable for this conversation",
-  "callActionLabel": "Call"
+  "callActionLabel": "Call",
+  "emergencyContacts": "Emergency contacts",
+  "emergencyTabMine": "My contacts",
+  "emergencyTabGuardian": "I look out for",
+  "emergencyAddContact": "Add contact",
+  "emergencyCapacity": "{count}/{max} · Receive your SOS",
+  "@emergencyCapacity": {
+    "placeholders": {
+      "count": {},
+      "max": {}
+    }
+  },
+  "emergencyLimitShort": "All 5 contacts added",
+  "emergencyEmptyMineTitle": "No emergency contacts yet",
+  "emergencyReorder": "Reorder",
+  "emergencyReorderDone": "Done",
+  "emergencyInviteFrom": "{name} wants to add you",
+  "@emergencyInviteFrom": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyEmptyMine": "No one is on your emergency list yet. Add family or friends so they are alerted if something happens to you.",
+  "emergencyStatusAwaitingInvite": "Awaiting reply",
+  "emergencyStatusRejected": "Declined",
+  "emergencyStatusRevoked": "Left",
+  "emergencyChannelApp": "Alerts in the app",
+  "emergencyChannelSms": "Alerts by SMS",
+  "emergencyRelationParent": "Parent",
+  "emergencyRelationSpouse": "Spouse",
+  "emergencyRelationChild": "Child",
+  "emergencyRelationSibling": "Sibling",
+  "emergencyRelationRelative": "Relative",
+  "emergencyRelationFriend": "Friend",
+  "emergencyRelationNeighbor": "Neighbour",
+  "emergencyRelationOther": "Other",
+  "emergencyEdit": "Edit",
+  "emergencyDelete": "Remove",
+  "emergencyMoreActions": "More actions",
+  "emergencyDragHandle": "Drag to change priority",
+  "emergencyDeleteTitle": "Remove {name} from your emergency list?",
+  "@emergencyDeleteTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyDeleteMessage": "{name} will no longer receive your SOS alerts.",
+  "@emergencyDeleteMessage": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyDeleted": "Contact removed",
+  "emergencyFormAddTitle": "Add emergency contact",
+  "emergencyFormEditTitle": "Edit emergency contact",
+  "emergencyFormName": "Contact name",
+  "emergencyFormNameRequired": "Please enter a name",
+  "emergencyFormPhoneRequired": "Please enter a phone number",
+  "emergencyFormPhoneInvalid": "Enter a valid Vietnamese mobile number",
+  "emergencyFormRelationship": "Relationship",
+  "emergencyFormRelationshipRequired": "Please choose a relationship",
+  "emergencyFormAccountEmail": "SmartSpace account email (optional)",
+  "emergencyFormAccountEmailHelp": "If this person uses SmartSpace, they get the invitation and alerts in the app. Leave it empty to reach them by SMS.",
+  "emergencyFormEmailInvalid": "Enter a valid email",
+  "emergencyFormConsent": "I confirm this person agreed to receive my emergency alerts by SMS",
+  "emergencyFormConsentRequired": "Please confirm this person agreed",
+  "emergencyFormReconfirmNote": "Changing the phone number or linked account asks this person to agree again.",
+  "emergencyFormSave": "Save",
+  "emergencyInviteSent": "Invitation sent to {name} in the app",
+  "@emergencyInviteSent": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyContactSaved": "Contact saved",
+  "emergencyGuardianIntro": "People who added you to their emergency list. You are alerted when they send an SOS.",
+  "emergencyInvitationsHeader": "Invitations",
+  "emergencyGuardingHeader": "Looking out for",
+  "emergencyListedAs": "Listed as: {relationship}",
+  "@emergencyListedAs": {
+    "placeholders": {
+      "relationship": {}
+    }
+  },
+  "emergencyAccept": "Accept",
+  "emergencyDecline": "Decline",
+  "emergencyLeave": "Leave list",
+  "emergencyLeaveTitle": "Leave {name}'s emergency list?",
+  "@emergencyLeaveTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyLeaveMessage": "You will stop receiving SOS alerts from {name}. They will be told.",
+  "@emergencyLeaveMessage": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyAccepted": "You are now {name}'s emergency contact",
+  "@emergencyAccepted": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyDeclined": "Invitation declined",
+  "emergencyLeft": "You left the emergency list",
+  "emergencyEmptyGuardian": "No one has added you to their emergency list.",
+  "emergencyLoadFailed": "Could not load your emergency contacts."
 }

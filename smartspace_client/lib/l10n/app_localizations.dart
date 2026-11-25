@@ -2605,6 +2605,378 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Call'**
   String get callActionLabel;
+
+  /// No description provided for @emergencyContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency contacts'**
+  String get emergencyContacts;
+
+  /// No description provided for @emergencyTabMine.
+  ///
+  /// In en, this message translates to:
+  /// **'My contacts'**
+  String get emergencyTabMine;
+
+  /// No description provided for @emergencyTabGuardian.
+  ///
+  /// In en, this message translates to:
+  /// **'I look out for'**
+  String get emergencyTabGuardian;
+
+  /// No description provided for @emergencyAddContact.
+  ///
+  /// In en, this message translates to:
+  /// **'Add contact'**
+  String get emergencyAddContact;
+
+  /// No description provided for @emergencyCapacity.
+  ///
+  /// In en, this message translates to:
+  /// **'{count}/{max} · Receive your SOS'**
+  String emergencyCapacity(Object count, Object max);
+
+  /// No description provided for @emergencyLimitShort.
+  ///
+  /// In en, this message translates to:
+  /// **'All 5 contacts added'**
+  String get emergencyLimitShort;
+
+  /// No description provided for @emergencyEmptyMineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No emergency contacts yet'**
+  String get emergencyEmptyMineTitle;
+
+  /// No description provided for @emergencyReorder.
+  ///
+  /// In en, this message translates to:
+  /// **'Reorder'**
+  String get emergencyReorder;
+
+  /// No description provided for @emergencyReorderDone.
+  ///
+  /// In en, this message translates to:
+  /// **'Done'**
+  String get emergencyReorderDone;
+
+  /// No description provided for @emergencyInviteFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} wants to add you'**
+  String emergencyInviteFrom(Object name);
+
+  /// No description provided for @emergencyEmptyMine.
+  ///
+  /// In en, this message translates to:
+  /// **'No one is on your emergency list yet. Add family or friends so they are alerted if something happens to you.'**
+  String get emergencyEmptyMine;
+
+  /// No description provided for @emergencyStatusAwaitingInvite.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting reply'**
+  String get emergencyStatusAwaitingInvite;
+
+  /// No description provided for @emergencyStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Declined'**
+  String get emergencyStatusRejected;
+
+  /// No description provided for @emergencyStatusRevoked.
+  ///
+  /// In en, this message translates to:
+  /// **'Left'**
+  String get emergencyStatusRevoked;
+
+  /// No description provided for @emergencyChannelApp.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts in the app'**
+  String get emergencyChannelApp;
+
+  /// No description provided for @emergencyChannelSms.
+  ///
+  /// In en, this message translates to:
+  /// **'Alerts by SMS'**
+  String get emergencyChannelSms;
+
+  /// No description provided for @emergencyRelationParent.
+  ///
+  /// In en, this message translates to:
+  /// **'Parent'**
+  String get emergencyRelationParent;
+
+  /// No description provided for @emergencyRelationSpouse.
+  ///
+  /// In en, this message translates to:
+  /// **'Spouse'**
+  String get emergencyRelationSpouse;
+
+  /// No description provided for @emergencyRelationChild.
+  ///
+  /// In en, this message translates to:
+  /// **'Child'**
+  String get emergencyRelationChild;
+
+  /// No description provided for @emergencyRelationSibling.
+  ///
+  /// In en, this message translates to:
+  /// **'Sibling'**
+  String get emergencyRelationSibling;
+
+  /// No description provided for @emergencyRelationRelative.
+  ///
+  /// In en, this message translates to:
+  /// **'Relative'**
+  String get emergencyRelationRelative;
+
+  /// No description provided for @emergencyRelationFriend.
+  ///
+  /// In en, this message translates to:
+  /// **'Friend'**
+  String get emergencyRelationFriend;
+
+  /// No description provided for @emergencyRelationNeighbor.
+  ///
+  /// In en, this message translates to:
+  /// **'Neighbour'**
+  String get emergencyRelationNeighbor;
+
+  /// No description provided for @emergencyRelationOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get emergencyRelationOther;
+
+  /// No description provided for @emergencyEdit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get emergencyEdit;
+
+  /// No description provided for @emergencyDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get emergencyDelete;
+
+  /// No description provided for @emergencyMoreActions.
+  ///
+  /// In en, this message translates to:
+  /// **'More actions'**
+  String get emergencyMoreActions;
+
+  /// No description provided for @emergencyDragHandle.
+  ///
+  /// In en, this message translates to:
+  /// **'Drag to change priority'**
+  String get emergencyDragHandle;
+
+  /// No description provided for @emergencyDeleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove {name} from your emergency list?'**
+  String emergencyDeleteTitle(Object name);
+
+  /// No description provided for @emergencyDeleteMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} will no longer receive your SOS alerts.'**
+  String emergencyDeleteMessage(Object name);
+
+  /// No description provided for @emergencyDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact removed'**
+  String get emergencyDeleted;
+
+  /// No description provided for @emergencyFormAddTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Add emergency contact'**
+  String get emergencyFormAddTitle;
+
+  /// No description provided for @emergencyFormEditTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit emergency contact'**
+  String get emergencyFormEditTitle;
+
+  /// No description provided for @emergencyFormName.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact name'**
+  String get emergencyFormName;
+
+  /// No description provided for @emergencyFormNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a name'**
+  String get emergencyFormNameRequired;
+
+  /// No description provided for @emergencyFormPhoneRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a phone number'**
+  String get emergencyFormPhoneRequired;
+
+  /// No description provided for @emergencyFormPhoneInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid Vietnamese mobile number'**
+  String get emergencyFormPhoneInvalid;
+
+  /// No description provided for @emergencyFormRelationship.
+  ///
+  /// In en, this message translates to:
+  /// **'Relationship'**
+  String get emergencyFormRelationship;
+
+  /// No description provided for @emergencyFormRelationshipRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please choose a relationship'**
+  String get emergencyFormRelationshipRequired;
+
+  /// No description provided for @emergencyFormAccountEmail.
+  ///
+  /// In en, this message translates to:
+  /// **'SmartSpace account email (optional)'**
+  String get emergencyFormAccountEmail;
+
+  /// No description provided for @emergencyFormAccountEmailHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'If this person uses SmartSpace, they get the invitation and alerts in the app. Leave it empty to reach them by SMS.'**
+  String get emergencyFormAccountEmailHelp;
+
+  /// No description provided for @emergencyFormEmailInvalid.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid email'**
+  String get emergencyFormEmailInvalid;
+
+  /// No description provided for @emergencyFormConsent.
+  ///
+  /// In en, this message translates to:
+  /// **'I confirm this person agreed to receive my emergency alerts by SMS'**
+  String get emergencyFormConsent;
+
+  /// No description provided for @emergencyFormConsentRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please confirm this person agreed'**
+  String get emergencyFormConsentRequired;
+
+  /// No description provided for @emergencyFormReconfirmNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Changing the phone number or linked account asks this person to agree again.'**
+  String get emergencyFormReconfirmNote;
+
+  /// No description provided for @emergencyFormSave.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get emergencyFormSave;
+
+  /// No description provided for @emergencyInviteSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation sent to {name} in the app'**
+  String emergencyInviteSent(Object name);
+
+  /// No description provided for @emergencyContactSaved.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact saved'**
+  String get emergencyContactSaved;
+
+  /// No description provided for @emergencyGuardianIntro.
+  ///
+  /// In en, this message translates to:
+  /// **'People who added you to their emergency list. You are alerted when they send an SOS.'**
+  String get emergencyGuardianIntro;
+
+  /// No description provided for @emergencyInvitationsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitations'**
+  String get emergencyInvitationsHeader;
+
+  /// No description provided for @emergencyGuardingHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Looking out for'**
+  String get emergencyGuardingHeader;
+
+  /// No description provided for @emergencyListedAs.
+  ///
+  /// In en, this message translates to:
+  /// **'Listed as: {relationship}'**
+  String emergencyListedAs(Object relationship);
+
+  /// No description provided for @emergencyAccept.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get emergencyAccept;
+
+  /// No description provided for @emergencyDecline.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get emergencyDecline;
+
+  /// No description provided for @emergencyLeave.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave list'**
+  String get emergencyLeave;
+
+  /// No description provided for @emergencyLeaveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Leave {name}\'s emergency list?'**
+  String emergencyLeaveTitle(Object name);
+
+  /// No description provided for @emergencyLeaveMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You will stop receiving SOS alerts from {name}. They will be told.'**
+  String emergencyLeaveMessage(Object name);
+
+  /// No description provided for @emergencyAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'You are now {name}\'s emergency contact'**
+  String emergencyAccepted(Object name);
+
+  /// No description provided for @emergencyDeclined.
+  ///
+  /// In en, this message translates to:
+  /// **'Invitation declined'**
+  String get emergencyDeclined;
+
+  /// No description provided for @emergencyLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'You left the emergency list'**
+  String get emergencyLeft;
+
+  /// No description provided for @emergencyEmptyGuardian.
+  ///
+  /// In en, this message translates to:
+  /// **'No one has added you to their emergency list.'**
+  String get emergencyEmptyGuardian;
+
+  /// No description provided for @emergencyLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load your emergency contacts.'**
+  String get emergencyLoadFailed;
 }
 
 class _AppLocalizationsDelegate

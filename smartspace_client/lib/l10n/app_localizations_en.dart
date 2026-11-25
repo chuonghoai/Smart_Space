@@ -1346,4 +1346,217 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get callActionLabel => 'Call';
+
+  @override
+  String get emergencyContacts => 'Emergency contacts';
+
+  @override
+  String get emergencyTabMine => 'My contacts';
+
+  @override
+  String get emergencyTabGuardian => 'I look out for';
+
+  @override
+  String get emergencyAddContact => 'Add contact';
+
+  @override
+  String emergencyCapacity(Object count, Object max) {
+    return '$count/$max · Receive your SOS';
+  }
+
+  @override
+  String get emergencyLimitShort => 'All 5 contacts added';
+
+  @override
+  String get emergencyEmptyMineTitle => 'No emergency contacts yet';
+
+  @override
+  String get emergencyReorder => 'Reorder';
+
+  @override
+  String get emergencyReorderDone => 'Done';
+
+  @override
+  String emergencyInviteFrom(Object name) {
+    return '$name wants to add you';
+  }
+
+  @override
+  String get emergencyEmptyMine =>
+      'No one is on your emergency list yet. Add family or friends so they are alerted if something happens to you.';
+
+  @override
+  String get emergencyStatusAwaitingInvite => 'Awaiting reply';
+
+  @override
+  String get emergencyStatusRejected => 'Declined';
+
+  @override
+  String get emergencyStatusRevoked => 'Left';
+
+  @override
+  String get emergencyChannelApp => 'Alerts in the app';
+
+  @override
+  String get emergencyChannelSms => 'Alerts by SMS';
+
+  @override
+  String get emergencyRelationParent => 'Parent';
+
+  @override
+  String get emergencyRelationSpouse => 'Spouse';
+
+  @override
+  String get emergencyRelationChild => 'Child';
+
+  @override
+  String get emergencyRelationSibling => 'Sibling';
+
+  @override
+  String get emergencyRelationRelative => 'Relative';
+
+  @override
+  String get emergencyRelationFriend => 'Friend';
+
+  @override
+  String get emergencyRelationNeighbor => 'Neighbour';
+
+  @override
+  String get emergencyRelationOther => 'Other';
+
+  @override
+  String get emergencyEdit => 'Edit';
+
+  @override
+  String get emergencyDelete => 'Remove';
+
+  @override
+  String get emergencyMoreActions => 'More actions';
+
+  @override
+  String get emergencyDragHandle => 'Drag to change priority';
+
+  @override
+  String emergencyDeleteTitle(Object name) {
+    return 'Remove $name from your emergency list?';
+  }
+
+  @override
+  String emergencyDeleteMessage(Object name) {
+    return '$name will no longer receive your SOS alerts.';
+  }
+
+  @override
+  String get emergencyDeleted => 'Contact removed';
+
+  @override
+  String get emergencyFormAddTitle => 'Add emergency contact';
+
+  @override
+  String get emergencyFormEditTitle => 'Edit emergency contact';
+
+  @override
+  String get emergencyFormName => 'Contact name';
+
+  @override
+  String get emergencyFormNameRequired => 'Please enter a name';
+
+  @override
+  String get emergencyFormPhoneRequired => 'Please enter a phone number';
+
+  @override
+  String get emergencyFormPhoneInvalid =>
+      'Enter a valid Vietnamese mobile number';
+
+  @override
+  String get emergencyFormRelationship => 'Relationship';
+
+  @override
+  String get emergencyFormRelationshipRequired =>
+      'Please choose a relationship';
+
+  @override
+  String get emergencyFormAccountEmail => 'SmartSpace account email (optional)';
+
+  @override
+  String get emergencyFormAccountEmailHelp =>
+      'If this person uses SmartSpace, they get the invitation and alerts in the app. Leave it empty to reach them by SMS.';
+
+  @override
+  String get emergencyFormEmailInvalid => 'Enter a valid email';
+
+  @override
+  String get emergencyFormConsent =>
+      'I confirm this person agreed to receive my emergency alerts by SMS';
+
+  @override
+  String get emergencyFormConsentRequired =>
+      'Please confirm this person agreed';
+
+  @override
+  String get emergencyFormReconfirmNote =>
+      'Changing the phone number or linked account asks this person to agree again.';
+
+  @override
+  String get emergencyFormSave => 'Save';
+
+  @override
+  String emergencyInviteSent(Object name) {
+    return 'Invitation sent to $name in the app';
+  }
+
+  @override
+  String get emergencyContactSaved => 'Contact saved';
+
+  @override
+  String get emergencyGuardianIntro =>
+      'People who added you to their emergency list. You are alerted when they send an SOS.';
+
+  @override
+  String get emergencyInvitationsHeader => 'Invitations';
+
+  @override
+  String get emergencyGuardingHeader => 'Looking out for';
+
+  @override
+  String emergencyListedAs(Object relationship) {
+    return 'Listed as: $relationship';
+  }
+
+  @override
+  String get emergencyAccept => 'Accept';
+
+  @override
+  String get emergencyDecline => 'Decline';
+
+  @override
+  String get emergencyLeave => 'Leave list';
+
+  @override
+  String emergencyLeaveTitle(Object name) {
+    return 'Leave $name\'s emergency list?';
+  }
+
+  @override
+  String emergencyLeaveMessage(Object name) {
+    return 'You will stop receiving SOS alerts from $name. They will be told.';
+  }
+
+  @override
+  String emergencyAccepted(Object name) {
+    return 'You are now $name\'s emergency contact';
+  }
+
+  @override
+  String get emergencyDeclined => 'Invitation declined';
+
+  @override
+  String get emergencyLeft => 'You left the emergency list';
+
+  @override
+  String get emergencyEmptyGuardian =>
+      'No one has added you to their emergency list.';
+
+  @override
+  String get emergencyLoadFailed => 'Could not load your emergency contacts.';
 }

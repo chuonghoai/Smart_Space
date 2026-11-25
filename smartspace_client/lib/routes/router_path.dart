@@ -13,6 +13,9 @@ class RouterPath {
   static String get settings => RouteName.settings.path;
   static String get changePassword => RouteName.changePassword.path;
   static String get manageDevices => RouteName.manageDevices.path;
+  static String get emergencyContacts => RouteName.emergencyContacts.path;
+  static String emergencyContactsWithTab(String tab) =>
+      Uri(path: RouteName.emergencyContacts.path, queryParameters: {'tab': tab}).toString();
   static String get editProfile => RouteName.editProfile.path;
   static String get createReport => RouteName.createReport.path;
   static String get map => RouteName.map.path;

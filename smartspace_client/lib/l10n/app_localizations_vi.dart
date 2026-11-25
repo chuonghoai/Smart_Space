@@ -1338,4 +1338,216 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get callActionLabel => 'Gọi điện';
+
+  @override
+  String get emergencyContacts => 'Liên hệ khẩn cấp';
+
+  @override
+  String get emergencyTabMine => 'Của tôi';
+
+  @override
+  String get emergencyTabGuardian => 'Tôi bảo hộ';
+
+  @override
+  String get emergencyAddContact => 'Thêm liên hệ';
+
+  @override
+  String emergencyCapacity(Object count, Object max) {
+    return '$count/$max · Nhận SOS của bạn';
+  }
+
+  @override
+  String get emergencyLimitShort => 'Đã đủ 5 liên hệ';
+
+  @override
+  String get emergencyEmptyMineTitle => 'Chưa có liên hệ khẩn cấp';
+
+  @override
+  String get emergencyReorder => 'Sắp xếp';
+
+  @override
+  String get emergencyReorderDone => 'Xong';
+
+  @override
+  String emergencyInviteFrom(Object name) {
+    return '$name muốn thêm bạn';
+  }
+
+  @override
+  String get emergencyEmptyMine =>
+      'Chưa có ai trong danh sách khẩn cấp. Thêm người thân để họ được báo khi bạn gặp sự cố.';
+
+  @override
+  String get emergencyStatusAwaitingInvite => 'Chờ chấp nhận';
+
+  @override
+  String get emergencyStatusRejected => 'Đã từ chối';
+
+  @override
+  String get emergencyStatusRevoked => 'Đã rời';
+
+  @override
+  String get emergencyChannelApp => 'Nhận cảnh báo qua ứng dụng';
+
+  @override
+  String get emergencyChannelSms => 'Nhận cảnh báo qua SMS';
+
+  @override
+  String get emergencyRelationParent => 'Cha / Mẹ';
+
+  @override
+  String get emergencyRelationSpouse => 'Vợ / Chồng';
+
+  @override
+  String get emergencyRelationChild => 'Con';
+
+  @override
+  String get emergencyRelationSibling => 'Anh / Chị / Em';
+
+  @override
+  String get emergencyRelationRelative => 'Họ hàng';
+
+  @override
+  String get emergencyRelationFriend => 'Bạn bè';
+
+  @override
+  String get emergencyRelationNeighbor => 'Hàng xóm';
+
+  @override
+  String get emergencyRelationOther => 'Khác';
+
+  @override
+  String get emergencyEdit => 'Sửa';
+
+  @override
+  String get emergencyDelete => 'Xoá';
+
+  @override
+  String get emergencyMoreActions => 'Thao tác khác';
+
+  @override
+  String get emergencyDragHandle => 'Kéo để đổi thứ tự ưu tiên';
+
+  @override
+  String emergencyDeleteTitle(Object name) {
+    return 'Xoá $name khỏi danh sách khẩn cấp?';
+  }
+
+  @override
+  String emergencyDeleteMessage(Object name) {
+    return '$name sẽ không nhận cảnh báo SOS của bạn nữa.';
+  }
+
+  @override
+  String get emergencyDeleted => 'Đã xoá liên hệ';
+
+  @override
+  String get emergencyFormAddTitle => 'Thêm liên hệ khẩn cấp';
+
+  @override
+  String get emergencyFormEditTitle => 'Sửa liên hệ khẩn cấp';
+
+  @override
+  String get emergencyFormName => 'Tên người liên hệ';
+
+  @override
+  String get emergencyFormNameRequired => 'Vui lòng nhập tên';
+
+  @override
+  String get emergencyFormPhoneRequired => 'Vui lòng nhập số điện thoại';
+
+  @override
+  String get emergencyFormPhoneInvalid => 'Số di động Việt Nam không hợp lệ';
+
+  @override
+  String get emergencyFormRelationship => 'Mối quan hệ';
+
+  @override
+  String get emergencyFormRelationshipRequired => 'Vui lòng chọn mối quan hệ';
+
+  @override
+  String get emergencyFormAccountEmail =>
+      'Email tài khoản SmartSpace (không bắt buộc)';
+
+  @override
+  String get emergencyFormAccountEmailHelp =>
+      'Nếu người này dùng SmartSpace, họ nhận lời mời và cảnh báo trong ứng dụng. Để trống thì hệ thống liên hệ qua SMS.';
+
+  @override
+  String get emergencyFormEmailInvalid => 'Email không hợp lệ';
+
+  @override
+  String get emergencyFormConsent =>
+      'Tôi xác nhận người này đã đồng ý nhận cảnh báo khẩn cấp của tôi qua SMS';
+
+  @override
+  String get emergencyFormConsentRequired =>
+      'Vui lòng xác nhận người này đã đồng ý';
+
+  @override
+  String get emergencyFormReconfirmNote =>
+      'Đổi số điện thoại hoặc tài khoản liên kết sẽ cần người này đồng ý lại.';
+
+  @override
+  String get emergencyFormSave => 'Lưu';
+
+  @override
+  String emergencyInviteSent(Object name) {
+    return 'Đã gửi lời mời tới $name trong ứng dụng';
+  }
+
+  @override
+  String get emergencyContactSaved => 'Đã lưu liên hệ';
+
+  @override
+  String get emergencyGuardianIntro =>
+      'Những người đã thêm bạn vào danh sách khẩn cấp. Bạn sẽ nhận cảnh báo khi họ gửi SOS.';
+
+  @override
+  String get emergencyInvitationsHeader => 'Lời mời';
+
+  @override
+  String get emergencyGuardingHeader => 'Đang bảo hộ';
+
+  @override
+  String emergencyListedAs(Object relationship) {
+    return 'Bạn là: $relationship';
+  }
+
+  @override
+  String get emergencyAccept => 'Chấp nhận';
+
+  @override
+  String get emergencyDecline => 'Từ chối';
+
+  @override
+  String get emergencyLeave => 'Rời danh sách';
+
+  @override
+  String emergencyLeaveTitle(Object name) {
+    return 'Rời danh sách khẩn cấp của $name?';
+  }
+
+  @override
+  String emergencyLeaveMessage(Object name) {
+    return 'Bạn sẽ không nhận cảnh báo SOS của $name nữa. Họ sẽ được thông báo.';
+  }
+
+  @override
+  String emergencyAccepted(Object name) {
+    return 'Bạn đã là liên hệ khẩn cấp của $name';
+  }
+
+  @override
+  String get emergencyDeclined => 'Đã từ chối lời mời';
+
+  @override
+  String get emergencyLeft => 'Đã rời danh sách khẩn cấp';
+
+  @override
+  String get emergencyEmptyGuardian =>
+      'Chưa có ai thêm bạn vào danh sách khẩn cấp.';
+
+  @override
+  String get emergencyLoadFailed => 'Không tải được danh sách khẩn cấp.';
 }

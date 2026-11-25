@@ -60,6 +60,10 @@ class NotificationRouter {
           GoRouter.of(ctx).push(RouterPath.conversations);
         }
         break;
+      case 'EMERGENCY_CONTACT':
+        final tab = action.payload['view'] == 'guardian' ? 'guardian' : 'mine';
+        GoRouter.of(ctx).push(RouterPath.emergencyContactsWithTab(tab));
+        break;
       default:
         debugPrint('[NotificationRouter] Unhandled action type: ${action.type}');
     }
