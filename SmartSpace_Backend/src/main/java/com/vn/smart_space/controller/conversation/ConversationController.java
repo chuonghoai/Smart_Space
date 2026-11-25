@@ -15,12 +15,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.vn.smart_space.dto.ApiResponse;
 import com.vn.smart_space.dto.request.conversation.CreateConversationRequest;
+import com.vn.smart_space.dto.response.call.CommunicationEligibilityResponse;
 import com.vn.smart_space.dto.response.conversation.ConversationDetailResponse;
 import com.vn.smart_space.dto.response.conversation.ConversationInfoResponse;
 import com.vn.smart_space.dto.response.conversation.CreateConversationResponse;
 import com.vn.smart_space.service.chat.ChatPresenceService;
 import com.vn.smart_space.service.conversation.IConversationService;
 import com.vn.smart_space.service.position.IPositionService;
+
+import org.springframework.security.access.prepost.PreAuthorize;
 
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -220,6 +223,41 @@ public class ConversationController {
                 .success(true)
                 .data(positionService.getPositions(true))
                 .message("position.list.success")
+                .build());
+    }
+
+    // 11. Check Messaging & Voice Call Eligibility (single backend source of truth)
+    @GetMapping("/eligibility")
+    public ResponseEntity<ApiResponse> checkCommunicationEligibility(
+            @AuthenticationPrincipal Jwt jwt,
+            @RequestParam String targetUserId,
+            @RequestParam(required = false) String conversationId,
+            @RequestParam(required = false) Boolean isAnonymous) {
+        var userId = jwt.getClaim("userId").toString();
+        CommunicationEligibilityResponse data = conversationService.checkCommunicationEligibility(
+                userId, targetUserId, conversationId, isAnonymous);
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .data(data)
+                .message("system.success")
+                .build());
+    }
+
+    // 12. Admin: Get Client's Rehandling Reports currently in 'processing' status (attachable in Admin <-> Client chat)
+    @PreAuthorize("hasRole('admin')")
+    @GetMapping("/admin-client/{clientId}/rehandling-reports")
+    public ResponseEntity<ApiResponse> getAdminClientRehandlingReports(
+            @AuthenticationPrincipal Jwt jwt,
+            @PathVariable String clientId,
+            @RequestParam(required = false) Boolean isAnonymous,
+            @RequestParam(required = false, defaultValue = "1") int page,
+            @RequestParam(required = false, defaultValue = "20") int size) {
+        var adminId = jwt.getClaim("userId").toString();
+        var data = conversationService.getAdminClientRehandlingReports(adminId, clientId, isAnonymous, page, size);
+        return ResponseEntity.ok(ApiResponse.builder()
+                .success(true)
+                .data(data)
+                .message("conversation.reports.success")
                 .build());
     }
 }

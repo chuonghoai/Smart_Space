@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.vn.smart_space.consts.EMessageType;
-import com.vn.smart_space.consts.EReportStatus;
 import com.vn.smart_space.consts.ERole;
 import com.vn.smart_space.dto.PageResponse;
 import com.vn.smart_space.dto.request.chat.ChatMessageRequest;
@@ -26,6 +25,7 @@ import com.vn.smart_space.dto.response.chat.ChatMessageResponse;
 import com.vn.smart_space.dto.response.chat.ChatReadReceiptResponse;
 import com.vn.smart_space.dto.response.chat.MessageMediaResponse;
 import com.vn.smart_space.dto.response.conversation.ConversationDetailResponse;
+import com.vn.smart_space.dto.response.conversation.LinkedReportResponse;
 import com.vn.smart_space.exception.BadRequestException;
 import com.vn.smart_space.mapper.ConversationMapper;
 import com.vn.smart_space.model.ChatMessage;
@@ -37,8 +37,8 @@ import com.vn.smart_space.model.User;
 import com.vn.smart_space.repository.ChatMessageRepository;
 import com.vn.smart_space.repository.ConversationParticipantRepository;
 import com.vn.smart_space.repository.ConversationRepository;
-import com.vn.smart_space.repository.ReportRepository;
 import com.vn.smart_space.repository.UserRepository;
+import com.vn.smart_space.service.communication.ICommunicationPermissionService;
 import com.vn.smart_space.service.conversation.IConversationService;
 import com.vn.smart_space.service.notification.IFCMService;
 
@@ -54,12 +54,12 @@ public class ChatMessageService implements IChatMessageService {
     private final ConversationRepository conversationRepository;
     private final ConversationParticipantRepository conversationParticipantRepository;
     private final ChatMessageRepository chatMessageRepository;
-    private final ReportRepository reportRepository;
     private final SimpMessagingTemplate messagingTemplate;
     private final ChatPresenceService chatPresenceService;
     private final IFCMService fcmService;
     private final MessageSource messageSource;
     private final IConversationService conversationService;
+    private final ICommunicationPermissionService communicationPermissionService;
 
     private static final Map<String, IdempotentRecord> IDEMPOTENT_CACHE = new java.util.concurrent.ConcurrentHashMap<>();
 
@@ -85,46 +85,46 @@ public class ChatMessageService implements IChatMessageService {
         Conversation conversation = conversationRepository.findByIdAndMember(request.conversationId(), senderId)
                 .orElseThrow(() -> new BadRequestException("conversation.not_found"));
 
-        // 3. Permission & Report status check
-        List<Report> linkedReports = reportRepository.findByConversationIdOrderByCreatedAtDesc(conversation.getId());
-        if (!linkedReports.isEmpty()) {
-            boolean hasActive = linkedReports.stream()
-                    .anyMatch(r -> r.getStatus() == EReportStatus.processing
-                            || (r.getStatus() == EReportStatus.processed && Boolean.FALSE.equals(r.getIsReviewResolved())));
-            if (!hasActive) {
-                throw new BadRequestException("chat.report.not_processing");
-            }
-        } else if (conversation.getReport() != null) {
-            Report report = conversation.getReport();
-            boolean isAssignedStaff = report.getAssignedStaff() != null && report.getAssignedStaff().getId().equals(senderId);
-            boolean isReportCreator = report.getUser() != null && report.getUser().getId().equals(senderId);
-            boolean isAdmin = sender.getRole() == ERole.admin;
+        // 3. Unified Permission check (Client<->Staff, Admin<->Client rehandling+processing, etc.)
+        communicationPermissionService.assertCanSendMessage(sender, conversation);
 
-            if (!isAssignedStaff && !isReportCreator && !isAdmin) {
-                throw new BadRequestException("chat.permission_denied");
-            }
-
-            boolean isRehandling = report.getStatus() == EReportStatus.processed && Boolean.FALSE.equals(report.getIsReviewResolved());
-            if (report.getStatus() != EReportStatus.processing && !isRehandling) {
-                throw new BadRequestException("chat.report.not_processing");
+        // 4. Validate & resolve attached report(s) strictly
+        List<String> requestedReportIds = new ArrayList<>();
+        if (request.reportId() != null && !request.reportId().isBlank()) {
+            requestedReportIds.add(request.reportId().trim());
+        }
+        if (request.reportIds() != null && !request.reportIds().isEmpty()) {
+            for (String rid : request.reportIds()) {
+                if (rid != null && !rid.isBlank()) {
+                    requestedReportIds.add(rid.trim());
+                }
             }
         }
 
-        // 4. Report & Effective content
-        Report attachedReport = null;
-        if (request.messageType() == EMessageType.report && request.reportId() != null && !request.reportId().isBlank()) {
-            attachedReport = reportRepository.findById(request.reportId()).orElse(null);
+        List<Report> attachedReports = communicationPermissionService.validateAndResolveAttachableReports(
+                sender, conversation, requestedReportIds);
+        Report primaryAttachedReport = attachedReports.isEmpty() ? null : attachedReports.get(0);
+
+        EMessageType effectiveMessageType = request.messageType();
+        if (!attachedReports.isEmpty() && effectiveMessageType == EMessageType.text) {
+            effectiveMessageType = EMessageType.report;
         }
 
         String effectiveContent = request.content();
         if (effectiveContent == null || effectiveContent.isBlank()) {
-            if (request.messageType() == EMessageType.report) {
-                effectiveContent = attachedReport != null ? "[Phản ánh: " + attachedReport.getTitle() + "]" : "[Phản ánh]";
-            } else if (request.messageType() == EMessageType.audio) {
+            if (effectiveMessageType == EMessageType.report) {
+                if (attachedReports.size() > 1) {
+                    effectiveContent = "[" + attachedReports.size() + " phản ánh đính kèm]";
+                } else {
+                    effectiveContent = primaryAttachedReport != null
+                            ? "[Phản ánh: " + primaryAttachedReport.getTitle() + "]"
+                            : "[Phản ánh]";
+                }
+            } else if (effectiveMessageType == EMessageType.audio) {
                 effectiveContent = "[Tin nhắn thoại]";
-            } else if (request.messageType() == EMessageType.image) {
+            } else if (effectiveMessageType == EMessageType.image) {
                 effectiveContent = "[Hình ảnh]";
-            } else if (request.messageType() == EMessageType.video) {
+            } else if (effectiveMessageType == EMessageType.video) {
                 effectiveContent = "[Video]";
             } else {
                 effectiveContent = "";
@@ -136,8 +136,9 @@ public class ChatMessageService implements IChatMessageService {
                 .conversation(conversation)
                 .sender(sender)
                 .content(effectiveContent)
-                .messageType(request.messageType())
-                .report(attachedReport)
+                .messageType(effectiveMessageType)
+                .report(primaryAttachedReport)
+                .attachedReports(new ArrayList<>(attachedReports))
                 .sentAt(LocalDateTime.now())
                 .mediaFiles(new ArrayList<>())
                 .build();
@@ -233,6 +234,9 @@ public class ChatMessageService implements IChatMessageService {
                     convResponse = conversationService.getMergedClientConversation(recipient.getId(), convPartner, conversation);
                 } else {
                     convResponse = ConversationMapper.toConversationDetailResponse(recipient.getId(), conversation);
+                    var eligibility = communicationPermissionService.evaluateConversationEligibility(recipient.getId(), conversation);
+                    convResponse.setCanSendMessage(eligibility.canMessage());
+                    convResponse.setCanVoiceCall(eligibility.canVoiceCall());
                 }
 
                 // Compute recipient's total unread count and attach to response & dedicated queue
@@ -309,6 +313,22 @@ public class ChatMessageService implements IChatMessageService {
     }
 
     private ChatMessageResponse toChatMessageResponse(ChatMessage message, String tempId, Boolean isRead) {
+        List<LinkedReportResponse> reportResponses = null;
+        if (message.getAttachedReports() != null && !message.getAttachedReports().isEmpty()) {
+            reportResponses = message.getAttachedReports().stream()
+                    .map(ConversationMapper::toLinkedReportResponse)
+                    .filter(Objects::nonNull)
+                    .toList();
+        } else if (message.getReport() != null) {
+            LinkedReportResponse single = ConversationMapper.toLinkedReportResponse(message.getReport());
+            if (single != null) {
+                reportResponses = List.of(single);
+            }
+        }
+        LinkedReportResponse primaryReport = (reportResponses != null && !reportResponses.isEmpty())
+                ? reportResponses.get(0)
+                : ConversationMapper.toLinkedReportResponse(message.getReport());
+
         return ChatMessageResponse.builder()
                 .id(message.getId())
                 .tempId(tempId)
@@ -328,7 +348,8 @@ public class ChatMessageService implements IChatMessageService {
                                         .build())
                                 .toList()
                         : List.of())
-                .report(ConversationMapper.toLinkedReportResponse(message.getReport()))
+                .report(primaryReport)
+                .reports(reportResponses)
                 .createdAt(message.getSentAt())
                 .isRead(isRead != null ? isRead : false)
                 .build();

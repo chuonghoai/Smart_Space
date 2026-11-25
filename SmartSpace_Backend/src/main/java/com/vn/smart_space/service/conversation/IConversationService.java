@@ -38,4 +38,10 @@ public interface IConversationService {
 
     PageResponse<com.vn.smart_space.dto.response.conversation.LinkedReportResponse> getConversationReports(String userId, String conversationId, Boolean isAnonymous, int page, int size);
 
+    com.vn.smart_space.dto.response.call.CommunicationEligibilityResponse checkCommunicationEligibility(String currentUserId, String targetUserId, String conversationId, Boolean isAnonymous);
+
+    PageResponse<com.vn.smart_space.dto.response.conversation.LinkedReportResponse> getAdminClientRehandlingReports(String adminId, String clientId, Boolean isAnonymous, int page, int size);
+
+    void notifyAdminClientConversationsUpdated(String clientId);
+
 }

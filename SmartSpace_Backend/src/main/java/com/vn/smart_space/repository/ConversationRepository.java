@@ -114,4 +114,11 @@ public interface ConversationRepository extends JpaRepository<Conversation, Stri
     Optional<Conversation> findByIdAndMember(@Param("conversationId") String conversationId,
             @Param("userId") String userId);
 
+    @EntityGraph(attributePaths = { "participants", "participants.user", "participants.user.position", "report" })
+    @Query("SELECT DISTINCT c FROM Conversation c " +
+            "WHERE c.conversationType = com.vn.smart_space.consts.EConversationType.PRIVATE " +
+            "AND EXISTS (SELECT p1 FROM c.participants p1 WHERE p1.user.id = :clientId AND p1.user.role = com.vn.smart_space.consts.ERole.client) " +
+            "AND EXISTS (SELECT p2 FROM c.participants p2 WHERE p2.user.role = com.vn.smart_space.consts.ERole.admin)")
+    java.util.List<Conversation> findAdminClientConversationsByClientId(@Param("clientId") String clientId);
+
 }

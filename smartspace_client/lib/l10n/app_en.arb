@@ -522,5 +522,8 @@
   "reportCategoryHint": "Select a category",
   "reportCategoryRequired": "Please select an incident category",
   "reportCategoryLoadError": "Could not load categories",
-  "reportCategoryEmpty": "No categories available"
+  "reportCategoryEmpty": "No categories available",
+  "callFreeVoiceDesc": "Free internet voice call",
+  "callPermissionDenied": "Voice call unavailable for this conversation",
+  "callActionLabel": "Call"
 }

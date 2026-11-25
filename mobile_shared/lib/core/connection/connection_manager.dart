@@ -10,6 +10,11 @@ import 'package:mobile_shared/features/auth/services/auth_service.dart';
 class ConnectionManagerService {
   bool _isRunning = false;
   bool _isUserLoggedIn = false;
+  bool _keepAliveForActiveCall = false;
+
+  void setKeepAliveForActiveCall(bool active) {
+    _keepAliveForActiveCall = active;
+  }
   
   // Variables for Exponential Backoff
   Timer? _fcmRetryTimer;
@@ -91,9 +96,17 @@ class ConnectionManagerService {
     });
   }
 
+  void onAppBackgrounded() {
+    debugPrint('[ConnectionManager] App backgrounded (preserving OS-managed WebSocket)');
+  }
+
   void pauseConnections() {
     if (!_isRunning) return;
-    debugPrint('[ConnectionManager] Pausing connections (Background)');
+    if (_keepAliveForActiveCall) {
+      debugPrint('[ConnectionManager] Keeping WebSocket alive for active call');
+      return;
+    }
+    debugPrint('[ConnectionManager] Pausing connections (Detached)');
     _isRunning = false;
     _fcmRetryTimer?.cancel();
     webSocketService.removeListener(_onSocketStateChanged);
@@ -102,7 +115,13 @@ class ConnectionManagerService {
   }
 
   Future<void> resumeConnections() async {
-    if (_isRunning) return;
+    if (_isRunning) {
+      if (!webSocketService.isConnected) {
+        debugPrint('[ConnectionManager] Reconnecting dropped WebSocket on Foreground');
+        webSocketService.connect();
+      }
+      return;
+    }
     if (_isUserLoggedIn) {
       debugPrint('[ConnectionManager] Resuming connections (Foreground)');
       startConnections();

@@ -1760,7 +1760,7 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get cannotMessageClientMessage =>
-      'Quản trị viên không thể tự ý gửi tin nhắn riêng cho cư dân ngoài quy trình xử lý phản ánh. Bạn có thể gọi điện thoại trực tiếp hoặc trao đổi qua nhân viên xử lý.';
+      'Chỉ được nhắn tin hoặc gọi miễn phí cho cư dân khi cư dân có ít nhất một phản ánh đang xử lý lại.';
 
   @override
   String get phoneNotAvailable => 'Số điện thoại không khả dụng';
@@ -3364,4 +3364,24 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get spatialGuideStatsTells =>
       'Lượng việc mới phát sinh có đang vượt khả năng tiếp nhận ở khu vực này hay không.';
+
+  @override
+  String get callFreeVoiceDesc => 'Gọi thoại miễn phí qua internet';
+
+  @override
+  String get callPermissionDenied =>
+      'Không khả dụng cuộc gọi thoại cho hội thoại này';
+
+  @override
+  String get rehandlingReportsSection => 'Phản ánh xử lý lại';
+
+  @override
+  String get checkingEligibility => 'Đang kiểm tra điều kiện...';
+
+  @override
+  String get attachRehandlingReports => 'Đính kèm phản ánh xử lý lại';
+
+  @override
+  String get cannotMessageAnonymousNotice =>
+      'Người dùng ẩn danh: chỉ hỗ trợ nhắn tin và gọi miễn phí trong ứng dụng.';
 }

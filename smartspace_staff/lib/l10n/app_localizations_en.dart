@@ -1291,4 +1291,11 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get baseStationReadOnlyHint =>
       'Position and representative station are managed by the system administrator.';
+
+  @override
+  String get callFreeVoiceDesc => 'Free internet voice call';
+
+  @override
+  String get callPermissionDenied =>
+      'Voice call unavailable for this conversation';
 }

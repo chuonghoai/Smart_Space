@@ -750,7 +750,7 @@
   "applyFilter": "Áp dụng",
   "resetFilter": "Đặt lại",
   "cannotMessageClientTitle": "Không thể nhắn tin trực tiếp",
-  "cannotMessageClientMessage": "Quản trị viên không thể tự ý gửi tin nhắn riêng cho cư dân ngoài quy trình xử lý phản ánh. Bạn có thể gọi điện thoại trực tiếp hoặc trao đổi qua nhân viên xử lý.",
+  "cannotMessageClientMessage": "Chỉ được nhắn tin hoặc gọi miễn phí cho cư dân khi cư dân có ít nhất một phản ánh đang xử lý lại.",
   "phoneNotAvailable": "Số điện thoại không khả dụng",
   "cannotLaunchPhone": "Không thể khởi chạy ứng dụng gọi điện thoại",
   "chatWithUser": "Nhắn tin",
@@ -1498,5 +1498,11 @@
   "spatialGuideStatsTitle": "Chuỗi thông số (30 ngày • TB trước • Chờ)",
   "spatialGuideStatsWhat": "Hiển thị tổng số phản ánh 30 ngày qua, trung bình mỗi 30 ngày trong 3 tháng trước đó và số ca đang chờ xử lý tại ô.",
   "spatialGuideStatsPurpose": "Đối chiếu xu hướng tăng/giảm tại chính khu vực đó.",
-  "spatialGuideStatsTells": "Lượng việc mới phát sinh có đang vượt khả năng tiếp nhận ở khu vực này hay không."
+  "spatialGuideStatsTells": "Lượng việc mới phát sinh có đang vượt khả năng tiếp nhận ở khu vực này hay không.",
+  "callFreeVoiceDesc": "Gọi thoại miễn phí qua internet",
+  "callPermissionDenied": "Không khả dụng cuộc gọi thoại cho hội thoại này",
+  "rehandlingReportsSection": "Phản ánh xử lý lại",
+  "checkingEligibility": "Đang kiểm tra điều kiện...",
+  "attachRehandlingReports": "Đính kèm phản ánh xử lý lại",
+  "cannotMessageAnonymousNotice": "Người dùng ẩn danh: chỉ hỗ trợ nhắn tin và gọi miễn phí trong ứng dụng."
 }

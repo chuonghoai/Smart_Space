@@ -15,6 +15,7 @@ class WebSocketService extends ChangeNotifier {
   WebSocketService();
 
   StompClient? _client;
+  Timer? _callPingTimer;
 
   WebSocketStatus _status = WebSocketStatus.disconnected;
   WebSocketStatus get status => _status;
@@ -77,6 +78,8 @@ class WebSocketService extends ChangeNotifier {
         onDisconnect: _onDisconnected,
         onStompError: _onError,
         onWebSocketError: _onWebSocketError,
+        heartbeatIncoming: const Duration(seconds: 10),
+        heartbeatOutgoing: const Duration(seconds: 10),
         // Tự động reconnect sau 5 giây nếu mất kết nối
         reconnectDelay: const Duration(seconds: 5),
       ),
@@ -100,6 +103,7 @@ class WebSocketService extends ChangeNotifier {
   void _onConnected(StompFrame frame) {
     debugPrint('🟢 [WS] Connected!');
     _setStatus(WebSocketStatus.connected);
+    _startCallPingTimer();
     if (!(_connectionCompleter?.isCompleted ?? true)) {
       _connectionCompleter?.complete(true);
     }
@@ -107,8 +111,21 @@ class WebSocketService extends ChangeNotifier {
     WsServicesRegistry.setupAll();
   }
 
+  void _startCallPingTimer() {
+    _callPingTimer?.cancel();
+    _callPingTimer = Timer.periodic(const Duration(seconds: 15), (_) {
+      if (isConnected && _client != null) {
+        try {
+          _client!.send(destination: '/smartspace/call.ping', body: '{}');
+        } catch (_) {}
+      }
+    });
+  }
+
   void _onDisconnected(StompFrame frame) {
     debugPrint('🔴 [WS] Disconnected!');
+    _callPingTimer?.cancel();
+    _callPingTimer = null;
     _setStatus(WebSocketStatus.disconnected);
     WsServicesRegistry.resetAll();
   }
@@ -171,6 +188,8 @@ class WebSocketService extends ChangeNotifier {
 
   /// Ngắt kết nối khi logout
   void disconnect() {
+    _callPingTimer?.cancel();
+    _callPingTimer = null;
     _client?.deactivate();
     _client = null;
     _setStatus(WebSocketStatus.disconnected);

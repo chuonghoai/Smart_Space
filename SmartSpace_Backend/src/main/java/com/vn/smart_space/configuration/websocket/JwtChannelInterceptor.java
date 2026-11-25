@@ -1,5 +1,7 @@
 package com.vn.smart_space.configuration.websocket;
 
+import java.time.Instant;
+
 import org.springframework.messaging.Message;
 import org.springframework.messaging.MessageChannel;
 import org.springframework.messaging.MessagingException;
@@ -23,12 +25,19 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
 
     private final JwtDecoder jwtDecoder;
     private final JwtAuthenticationConverter jwtAuthenticationConverter;
+    private final WebSocketSessionRegistry wsSessionRegistry;
 
     @Override
     public Message<?> preSend(Message<?> message, MessageChannel channel) {
         StompHeaderAccessor accessor = MessageHeaderAccessor.getAccessor(message, StompHeaderAccessor.class);
+        if (accessor == null) {
+            return message;
+        }
 
-        if (accessor != null && StompCommand.CONNECT.equals(accessor.getCommand())) {
+        String sessionId = accessor.getSessionId();
+        StompCommand command = accessor.getCommand();
+
+        if (StompCommand.CONNECT.equals(command)) {
             String authHeader = accessor.getFirstNativeHeader("Authorization");
 
             if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -41,6 +50,8 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
                 AbstractAuthenticationToken auth = jwtAuthenticationConverter.convert(jwt);
 
                 String userId = jwt.getClaimAsString("userId");
+                String deviceId = jwt.getClaimAsString("deviceId");
+                Instant tokenExpiresAt = jwt.getExpiresAt();
 
                 // Wrap auth so that principal.getName() returns userId (not email/subject).
                 // This is required because convertAndSendToUser() matches by
@@ -53,12 +64,29 @@ public class JwtChannelInterceptor implements ChannelInterceptor {
 
                 if (accessor.getSessionAttributes() != null && userId != null) {
                     accessor.getSessionAttributes().put("userId", userId);
+                    if (deviceId != null && !deviceId.isBlank()) {
+                        accessor.getSessionAttributes().put("deviceId", deviceId);
+                    }
+                    if (tokenExpiresAt != null) {
+                        accessor.getSessionAttributes().put("tokenExpiresAt", tokenExpiresAt);
+                    }
                 }
 
-                log.info("WebSocket CONNECT authenticated: user={}", jwt.getSubject());
+                wsSessionRegistry.registerSession(sessionId, userId, deviceId, tokenExpiresAt);
+                log.info("WebSocket CONNECT authenticated: user={}, session={}", jwt.getSubject(), sessionId);
             } catch (Exception e) {
                 log.error("WebSocket Authentication failed: {}", e.getMessage());
                 throw new MessagingException("auth.token.invalid");
+            }
+        } else {
+            if (sessionId != null && !StompCommand.DISCONNECT.equals(command)) {
+                wsSessionRegistry.touchSession(sessionId);
+            }
+            if (StompCommand.SUBSCRIBE.equals(command) && sessionId != null) {
+                String dest = accessor.getDestination();
+                if ("/user/queue/call".equals(dest)) {
+                    wsSessionRegistry.markCallQueueSubscribed(sessionId, true);
+                }
             }
         }
         return message;

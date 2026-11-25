@@ -11,6 +11,15 @@ public record CreateConversationRequest(
         String conversationAvatar,
         @NotNull(message = "{conversation.type.required}") EConversationType conversationType,
         List<String> participantIds,
-        String reportId
+        String reportId,
+        Boolean isAnonymous
 ) {
+    public CreateConversationRequest(
+            String name,
+            String conversationAvatar,
+            EConversationType conversationType,
+            List<String> participantIds,
+            String reportId) {
+        this(name, conversationAvatar, conversationType, participantIds, reportId, null);
+    }
 }

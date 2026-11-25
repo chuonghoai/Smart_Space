@@ -14,6 +14,7 @@ class ConversationModel {
   final String? reportTitle;
   final String? reportStatus;
   final bool canSendMessage;
+  final bool canVoiceCall;
   final int unreadCount;
   final int? totalUnreadCount;
   final String? lastMessageId;
@@ -46,6 +47,7 @@ class ConversationModel {
     this.reportTitle,
     this.reportStatus,
     this.canSendMessage = true,
+    bool? canVoiceCall,
     this.unreadCount = 0,
     this.totalUnreadCount,
     this.lastMessageId,
@@ -61,7 +63,7 @@ class ConversationModel {
     this.identifiedUnreadCount = 0,
     this.anonymousUnreadCount = 0,
     this.partnerLastReadAt,
-  });
+  }) : canVoiceCall = canVoiceCall ?? canSendMessage;
 
   bool get isClient => partnerRole?.toLowerCase() == 'client';
   bool get isStaff => partnerRole?.toLowerCase() == 'staff';
@@ -84,6 +86,7 @@ class ConversationModel {
       reportTitle: json['reportTitle'] as String? ?? json['report_title'] as String?,
       reportStatus: json['reportStatus'] as String? ?? json['report_status'] as String?,
       canSendMessage: json['canSendMessage'] as bool? ?? json['can_send_message'] as bool? ?? true,
+      canVoiceCall: json['canVoiceCall'] as bool? ?? json['can_voice_call'] as bool? ?? (json['canSendMessage'] as bool? ?? json['can_send_message'] as bool? ?? true),
       unreadCount: (json['unreadCount'] as num?)?.toInt() ?? (json['unread_count'] as num?)?.toInt() ?? 0,
       totalUnreadCount: (json['totalUnreadCount'] as num?)?.toInt() ?? (json['total_unread_count'] as num?)?.toInt(),
       lastMessageId: json['lastMessageId'] as String? ?? json['last_message_id'] as String?,
@@ -125,6 +128,7 @@ class ConversationModel {
       'reportTitle': reportTitle,
       'reportStatus': reportStatus,
       'canSendMessage': canSendMessage,
+      'canVoiceCall': canVoiceCall,
       'unreadCount': unreadCount,
       'totalUnreadCount': totalUnreadCount,
       'lastMessageId': lastMessageId,
@@ -159,6 +163,7 @@ class ConversationModel {
     String? reportTitle,
     String? reportStatus,
     bool? canSendMessage,
+    bool? canVoiceCall,
     int? unreadCount,
     int? totalUnreadCount,
     String? lastMessageId,
@@ -191,6 +196,7 @@ class ConversationModel {
       reportTitle: reportTitle ?? this.reportTitle,
       reportStatus: reportStatus ?? this.reportStatus,
       canSendMessage: canSendMessage ?? this.canSendMessage,
+      canVoiceCall: canVoiceCall ?? this.canVoiceCall,
       unreadCount: unreadCount ?? this.unreadCount,
       totalUnreadCount: totalUnreadCount ?? this.totalUnreadCount,
       lastMessageId: lastMessageId ?? this.lastMessageId,

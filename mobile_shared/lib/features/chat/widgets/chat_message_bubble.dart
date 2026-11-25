@@ -2,6 +2,7 @@ import 'dart:io';
 import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:mobile_shared/features/chat/models/chat_message_model.dart';
 import 'package:mobile_shared/features/chat/models/linked_report_model.dart';
 import 'package:mobile_shared/features/chat/widgets/chat_media_gallery_viewer.dart';
@@ -182,7 +183,7 @@ class ChatMessageBubble extends StatelessWidget {
                                   Icons.done_all_rounded,
                                   size: 13,
                                   color: isMe && !isReportMsg
-                                      ? Colors.lightBlueAccent
+                                      ? theme.colorScheme.onPrimary.withValues(alpha: 0.9)
                                       : theme.colorScheme.primary,
                                 )
                               else
@@ -398,180 +399,274 @@ class ChatMessageBubble extends StatelessWidget {
     );
   }
 
-  Widget _buildReportBubble(BuildContext context, ThemeData theme, Color textColor) {
-    final report = message.report;
-    final reportTitle = report?.title ?? message.content;
-    final reportStatus = report?.status ?? 'PROCESSING';
-    final reportSeverity = report?.severity;
-    final address = report?.address;
-    final sharedL10n = SharedLocalizations.of(context);
+  String _localizedReportStatus(String status, SharedLocalizations? l10n) {
+    switch (status.toLowerCase()) {
+      case 'processing':
+        return l10n?.statusProcessingLabel ?? 'Processing';
+      case 'processed':
+      case 'resolved':
+        return l10n?.statusProcessedLabel ?? 'Processed';
+      case 'pending':
+        return l10n?.statusPendingLabel ?? 'Pending';
+      default:
+        return status.toUpperCase();
+    }
+  }
 
-    // Accent color based on issue status
+  String? _formatReportDate(String? iso) {
+    if (iso == null || iso.isEmpty) return null;
+    final dt = DateTime.tryParse(iso);
+    if (dt == null) return null;
+    return DateFormat('dd/MM/yyyy').format(dt.toLocal());
+  }
+
+  Widget _buildReportBubble(BuildContext context, ThemeData theme, Color textColor) {
+    final reports = message.effectiveReports;
+    final sharedL10n = SharedLocalizations.of(context);
+    final trimmedContent = message.content.trim();
+    final hasCustomText = trimmedContent.isNotEmpty &&
+        (reports.length != 1 || trimmedContent != reports.first.title.trim());
+
+    if (reports.isEmpty) {
+      return _buildSingleReportCard(
+        context,
+        theme,
+        sharedL10n,
+        LinkedReportModel(id: '', title: message.content),
+      );
+    }
+
+    return Padding(
+      padding: const EdgeInsets.all(10),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          if (hasCustomText) ...[
+            Padding(
+              padding: const EdgeInsets.fromLTRB(4, 2, 4, 8),
+              child: Text(
+                trimmedContent,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: textColor,
+                  height: 1.35,
+                ),
+              ),
+            ),
+          ],
+          for (int i = 0; i < reports.length; i++) ...[
+            if (i > 0) const SizedBox(height: 8),
+            _buildSingleReportCard(context, theme, sharedL10n, reports[i]),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Widget _buildSingleReportCard(
+    BuildContext context,
+    ThemeData theme,
+    SharedLocalizations? sharedL10n,
+    LinkedReportModel report,
+  ) {
+    final semantic = AppSemanticColors.of(context);
+    final reportTitle = report.title;
+    final reportStatus = report.status ?? 'PROCESSING';
+    final reportSeverity = report.severity;
+    final address = report.address;
+    final shortId = report.id.length > 8 ? report.id.substring(0, 8) : report.id;
+    final formattedDate = _formatReportDate(report.createdAt);
+
     Color accentColor = theme.colorScheme.primary;
-    if (report?.isRehandling == true) {
-      accentColor = Colors.deepOrange;
+    if (report.isRehandling) {
+      accentColor = semantic.warning;
     } else if (reportStatus.toLowerCase() == 'processing') {
-      accentColor = Colors.amber.shade800;
-    } else if (reportStatus.toLowerCase() == 'processed' || reportStatus.toLowerCase() == 'resolved') {
-      accentColor = Colors.green.shade700;
+      accentColor = semantic.warning;
+    } else if (reportStatus.toLowerCase() == 'processed' ||
+        reportStatus.toLowerCase() == 'resolved') {
+      accentColor = semantic.success;
     }
 
     return InkWell(
       onTap: () {
-        if (report != null && onTapReport != null) {
+        if (report.id.isNotEmpty && onTapReport != null) {
           onTapReport!(report);
         }
       },
+      borderRadius: BorderRadius.circular(12),
       child: Container(
         constraints: const BoxConstraints(minWidth: 230),
-        padding: const EdgeInsets.all(12),
-        child: IntrinsicWidth(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Ticket Header Pill & Left Accent Tag
-              Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Container(
-                    width: 3.5,
-                    height: 16,
-                    decoration: BoxDecoration(
-                      color: accentColor,
-                      borderRadius: BorderRadius.circular(2),
+        padding: const EdgeInsets.all(10),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.45),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Wrap(
+              spacing: 6,
+              runSpacing: 4,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Container(
+                  width: 3.5,
+                  height: 16,
+                  decoration: BoxDecoration(
+                    color: accentColor,
+                    borderRadius: BorderRadius.circular(2),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
+                  decoration: BoxDecoration(
+                    color: accentColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.assignment_rounded,
+                        size: 13,
+                        color: accentColor,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        report.isRehandling
+                            ? (sharedL10n?.rehandlingLabel ?? 'Re-handling')
+                            : (sharedL10n?.attachedReport ?? 'Phản ánh đính kèm'),
+                        style: TextStyle(
+                          fontSize: 10.5,
+                          fontWeight: FontWeight.bold,
+                          color: accentColor,
+                          letterSpacing: 0.2,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                if (shortId.isNotEmpty)
+                  Text(
+                    '#$shortId',
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-                  const SizedBox(width: 6),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 3),
-                    decoration: BoxDecoration(
-                      color: accentColor.withValues(alpha: 0.12),
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Icon(
-                          Icons.assignment_rounded,
-                          size: 13,
-                          color: accentColor,
-                        ),
-                        const SizedBox(width: 4),
-                        Text(
-                          sharedL10n?.attachedReport ?? 'Phản ánh đính kèm',
-                          style: TextStyle(
-                            fontSize: 10.5,
-                            fontWeight: FontWeight.bold,
-                            color: accentColor,
-                            letterSpacing: 0.2,
-                          ),
-                        ),
-                      ],
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            if (report.imageUrl != null && report.imageUrl!.isNotEmpty) ...[
+              ClipRRect(
+                borderRadius: BorderRadius.circular(8),
+                child: Image.network(
+                  report.imageUrl!,
+                  height: 110,
+                  width: double.infinity,
+                  fit: BoxFit.cover,
+                  errorBuilder: (context, error, stackTrace) =>
+                      const SizedBox.shrink(),
+                ),
+              ),
+              const SizedBox(height: 8),
+            ],
+
+            Text(
+              reportTitle,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+                color: theme.colorScheme.onSurface,
+                height: 1.25,
+              ),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+
+            if (address != null && address.isNotEmpty) ...[
+              const SizedBox(height: 5),
+              Row(
+                children: [
+                  Icon(
+                    Icons.place_outlined,
+                    size: 13,
+                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
+                  ),
+                  const SizedBox(width: 3),
+                  Expanded(
+                    child: Text(
+                      address,
+                      style: TextStyle(
+                        fontSize: 11,
+                        color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.85),
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
                     ),
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+            ],
 
-              // Thumbnail (if available)
-              if (report?.imageUrl != null && report!.imageUrl!.isNotEmpty) ...[
-                ClipRRect(
-                  borderRadius: BorderRadius.circular(8),
-                  child: Image.network(
-                    report.imageUrl!,
-                    height: 110,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                    errorBuilder: (context, error, stackTrace) => const SizedBox.shrink(),
+            const SizedBox(height: 8),
+
+            Wrap(
+              spacing: 6,
+              runSpacing: 4,
+              crossAxisAlignment: WrapCrossAlignment.center,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
+                  decoration: BoxDecoration(
+                    color: accentColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(5),
+                    border: Border.all(
+                      color: accentColor.withValues(alpha: 0.3),
+                      width: 0.7,
+                    ),
+                  ),
+                  child: Text(
+                    _localizedReportStatus(reportStatus, sharedL10n),
+                    style: TextStyle(
+                      fontSize: 9.5,
+                      fontWeight: FontWeight.bold,
+                      color: accentColor,
+                    ),
                   ),
                 ),
-                const SizedBox(height: 8),
-              ],
-
-              // Report Title
-              Text(
-                reportTitle,
-                style: theme.textTheme.bodyMedium?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: theme.colorScheme.onSurface,
-                  height: 1.25,
-                ),
-                maxLines: 2,
-                overflow: TextOverflow.ellipsis,
-              ),
-
-              // Address line (if available)
-              if (address != null && address.isNotEmpty) ...[
-                const SizedBox(height: 5),
-                Row(
-                  children: [
-                    Icon(
-                      Icons.place_outlined,
-                      size: 13,
-                      color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.8),
-                    ),
-                    const SizedBox(width: 3),
-                    Expanded(
-                      child: Text(
-                        address,
-                        style: TextStyle(
-                          fontSize: 11,
-                          color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.85),
-                        ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ],
-                ),
-              ],
-
-              const SizedBox(height: 8),
-
-              // Status and Severity chips
-              Wrap(
-                spacing: 6,
-                runSpacing: 4,
-                children: [
+                if (reportSeverity != null && reportSeverity.isNotEmpty)
                   Container(
                     padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
                     decoration: BoxDecoration(
-                      color: accentColor.withValues(alpha: 0.12),
+                      color: theme.colorScheme.surfaceContainerHighest,
                       borderRadius: BorderRadius.circular(5),
-                      border: Border.all(
-                        color: accentColor.withValues(alpha: 0.3),
-                        width: 0.7,
-                      ),
                     ),
                     child: Text(
-                      reportStatus.toUpperCase(),
+                      reportSeverity.toUpperCase(),
                       style: TextStyle(
                         fontSize: 9.5,
-                        fontWeight: FontWeight.bold,
-                        color: accentColor,
+                        fontWeight: FontWeight.w600,
+                        color: theme.colorScheme.onSurfaceVariant,
                       ),
                     ),
                   ),
-                  if (reportSeverity != null && reportSeverity.isNotEmpty)
-                    Container(
-                      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2.5),
-                      decoration: BoxDecoration(
-                        color: theme.colorScheme.surfaceContainerHighest,
-                        borderRadius: BorderRadius.circular(5),
-                      ),
-                      child: Text(
-                        reportSeverity.toUpperCase(),
-                        style: TextStyle(
-                          fontSize: 9.5,
-                          fontWeight: FontWeight.w600,
-                          color: theme.colorScheme.onSurfaceVariant,
-                        ),
-                      ),
+                if (formattedDate != null)
+                  Text(
+                    formattedDate,
+                    style: theme.textTheme.labelSmall?.copyWith(
+                      fontSize: 10,
+                      color: theme.colorScheme.onSurfaceVariant,
                     ),
-                ],
-              ),
+                  ),
+              ],
+            ),
 
+            if (report.id.isNotEmpty && onTapReport != null) ...[
               const SizedBox(height: 8),
               Divider(
                 height: 1,
@@ -579,8 +674,6 @@ class ChatMessageBubble extends StatelessWidget {
                 color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
               ),
               const SizedBox(height: 6),
-
-              // Action link: Tap to view details
               Row(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -601,7 +694,7 @@ class ChatMessageBubble extends StatelessWidget {
                 ],
               ),
             ],
-          ),
+          ],
         ),
       ),
     );

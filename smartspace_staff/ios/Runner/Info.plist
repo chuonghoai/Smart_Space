@@ -51,5 +51,7 @@
 	<string>Ứng dụng cần quyền vị trí để tính toán khoảng cách đến các phản ánh nhằm hỗ trợ xử lý công việc hiệu quả.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
 	<string>Ứng dụng cần quyền để lưu hình ảnh và video vào thư viện của bạn.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>Ứng dụng cần quyền truy cập micro để thực hiện cuộc gọi thoại miễn phí và ghi âm tin nhắn.</string>
 </dict>
 </plist>

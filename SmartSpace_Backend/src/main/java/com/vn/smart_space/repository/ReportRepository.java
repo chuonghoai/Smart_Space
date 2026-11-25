@@ -550,6 +550,39 @@ public interface ReportRepository extends JpaRepository<Report, String> {
 
        long countByCategoryId(String categoryId);
 
+       @Query("SELECT r FROM Report r WHERE r.user.id = :clientId " +
+                     "AND r.isReviewResolved = false " +
+                     "AND r.status = com.vn.smart_space.consts.EReportStatus.processing " +
+                     "AND (:isAnonymous IS NULL " +
+                     "     OR (:isAnonymous = true AND r.isAnonymous = true) " +
+                     "     OR (:isAnonymous = false AND (r.isAnonymous IS NULL OR r.isAnonymous = false))) " +
+                     "ORDER BY r.updatedAt DESC, r.createdAt DESC")
+       List<Report> findAdminRehandlingProcessingReportsByClient(
+                     @Param("clientId") String clientId,
+                     @Param("isAnonymous") Boolean isAnonymous);
+
+       @Query("SELECT r FROM Report r WHERE r.user.id = :clientId " +
+                     "AND r.isReviewResolved = false " +
+                     "AND r.status = com.vn.smart_space.consts.EReportStatus.processing " +
+                     "AND (:isAnonymous IS NULL " +
+                     "     OR (:isAnonymous = true AND r.isAnonymous = true) " +
+                     "     OR (:isAnonymous = false AND (r.isAnonymous IS NULL OR r.isAnonymous = false))) " +
+                     "ORDER BY r.updatedAt DESC, r.createdAt DESC")
+       Page<Report> findAdminRehandlingProcessingReportsByClient(
+                     @Param("clientId") String clientId,
+                     @Param("isAnonymous") Boolean isAnonymous,
+                     Pageable pageable);
+
+       @Query("SELECT COUNT(r) FROM Report r WHERE r.user.id = :clientId " +
+                     "AND r.isReviewResolved = false " +
+                     "AND r.status = com.vn.smart_space.consts.EReportStatus.processing " +
+                     "AND (:isAnonymous IS NULL " +
+                     "     OR (:isAnonymous = true AND r.isAnonymous = true) " +
+                     "     OR (:isAnonymous = false AND (r.isAnonymous IS NULL OR r.isAnonymous = false)))")
+       long countAdminRehandlingProcessingReportsByClient(
+                     @Param("clientId") String clientId,
+                     @Param("isAnonymous") Boolean isAnonymous);
+
        @Query("SELECT r.category.id, COUNT(r) FROM Report r WHERE r.category IS NOT NULL GROUP BY r.category.id")
        List<Object[]> countReportsGroupByCategory();
 

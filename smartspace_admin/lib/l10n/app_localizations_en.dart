@@ -1767,7 +1767,7 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get cannotMessageClientMessage =>
-      'Administrators cannot initiate direct messages with residents outside the report resolution workflow. You may call the resident directly or communicate via the assigned staff.';
+      'You can only message or make a free call to a resident when there is at least one re-handling report from them that is currently being processed.';
 
   @override
   String get phoneNotAvailable => 'Phone number is not available';
@@ -3367,4 +3367,24 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get spatialGuideStatsTells =>
       'Whether inflow in this area is outpacing local resolution.';
+
+  @override
+  String get callFreeVoiceDesc => 'Free internet voice call';
+
+  @override
+  String get callPermissionDenied =>
+      'Voice call unavailable for this conversation';
+
+  @override
+  String get rehandlingReportsSection => 'Re-handling reports';
+
+  @override
+  String get checkingEligibility => 'Checking eligibility...';
+
+  @override
+  String get attachRehandlingReports => 'Attach re-handling reports';
+
+  @override
+  String get cannotMessageAnonymousNotice =>
+      'Anonymous user: only in-app chat and free calls are supported.';
 }

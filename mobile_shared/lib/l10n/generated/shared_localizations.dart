@@ -265,6 +265,228 @@ abstract class SharedLocalizations {
   /// In vi, this message translates to:
   /// **'Lỗi tải danh sách phản ánh'**
   String get errorLoadingReports;
+
+  /// No description provided for @callStatusConnecting.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang kết nối'**
+  String get callStatusConnecting;
+
+  /// No description provided for @callStatusRinging.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang đổ chuông'**
+  String get callStatusRinging;
+
+  /// No description provided for @callStatusIncoming.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cuộc gọi thoại đến'**
+  String get callStatusIncoming;
+
+  /// No description provided for @callStatusAccepted.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang thiết lập âm thanh...'**
+  String get callStatusAccepted;
+
+  /// No description provided for @callStatusEnded.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã kết thúc cuộc gọi'**
+  String get callStatusEnded;
+
+  /// No description provided for @callStatusRejected.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã kết thúc cuộc gọi'**
+  String get callStatusRejected;
+
+  /// No description provided for @callStatusCancelled.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã hủy cuộc gọi'**
+  String get callStatusCancelled;
+
+  /// No description provided for @callStatusMissed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cuộc gọi nhỡ'**
+  String get callStatusMissed;
+
+  /// No description provided for @callStatusFailed.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không thể kết nối'**
+  String get callStatusFailed;
+
+  /// No description provided for @callMute.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tắt mic'**
+  String get callMute;
+
+  /// No description provided for @callUnmute.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bật mic'**
+  String get callUnmute;
+
+  /// No description provided for @callSpeaker.
+  ///
+  /// In vi, this message translates to:
+  /// **'Loa ngoài'**
+  String get callSpeaker;
+
+  /// No description provided for @callEarpiece.
+  ///
+  /// In vi, this message translates to:
+  /// **'Loa trong'**
+  String get callEarpiece;
+
+  /// No description provided for @callBluetooth.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bluetooth'**
+  String get callBluetooth;
+
+  /// No description provided for @callWiredHeadset.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tai nghe'**
+  String get callWiredHeadset;
+
+  /// No description provided for @callAudioOutput.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đầu ra âm thanh'**
+  String get callAudioOutput;
+
+  /// No description provided for @callEnd.
+  ///
+  /// In vi, this message translates to:
+  /// **'Kết thúc'**
+  String get callEnd;
+
+  /// No description provided for @callAccept.
+  ///
+  /// In vi, this message translates to:
+  /// **'Trả lời'**
+  String get callAccept;
+
+  /// No description provided for @callReject.
+  ///
+  /// In vi, this message translates to:
+  /// **'Từ chối'**
+  String get callReject;
+
+  /// No description provided for @callMicPermissionDenied.
+  ///
+  /// In vi, this message translates to:
+  /// **'Cần quyền microphone để thực hiện cuộc gọi thoại'**
+  String get callMicPermissionDenied;
+
+  /// No description provided for @callPermissionDenied.
+  ///
+  /// In vi, this message translates to:
+  /// **'Bạn không có quyền gọi điện cho người dùng này'**
+  String get callPermissionDenied;
+
+  /// No description provided for @callAnonymousUser.
+  ///
+  /// In vi, this message translates to:
+  /// **'Người dùng ẩn danh'**
+  String get callAnonymousUser;
+
+  /// No description provided for @callFreeVoiceDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gọi thoại miễn phí qua Internet'**
+  String get callFreeVoiceDesc;
+
+  /// No description provided for @callCellularUnavailable.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có số điện thoại khả dụng'**
+  String get callCellularUnavailable;
+
+  /// No description provided for @callFreeUnavailable.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chưa đủ điều kiện gọi miễn phí'**
+  String get callFreeUnavailable;
+
+  /// No description provided for @callOptionsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Tùy chọn cuộc gọi'**
+  String get callOptionsTitle;
+
+  /// No description provided for @callCellularTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gọi thường'**
+  String get callCellularTitle;
+
+  /// No description provided for @callCellularDesc.
+  ///
+  /// In vi, this message translates to:
+  /// **'Mở ứng dụng gọi điện mặc định'**
+  String get callCellularDesc;
+
+  /// No description provided for @callFreeTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Gọi miễn phí'**
+  String get callFreeTitle;
+
+  /// No description provided for @callClose.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đóng'**
+  String get callClose;
+
+  /// No description provided for @rehandlingLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Xử lý lại'**
+  String get rehandlingLabel;
+
+  /// No description provided for @statusProcessingLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đang xử lý'**
+  String get statusProcessingLabel;
+
+  /// No description provided for @statusProcessedLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đã xử lý'**
+  String get statusProcessedLabel;
+
+  /// No description provided for @statusPendingLabel.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chờ xử lý'**
+  String get statusPendingLabel;
+
+  /// No description provided for @attachSelectedCount.
+  ///
+  /// In vi, this message translates to:
+  /// **'Đính kèm ({count})'**
+  String attachSelectedCount(int count);
+
+  /// No description provided for @selectRehandlingReportsTitle.
+  ///
+  /// In vi, this message translates to:
+  /// **'Chọn phản ánh xử lý lại'**
+  String get selectRehandlingReportsTitle;
+
+  /// No description provided for @noRehandlingReportsAvailable.
+  ///
+  /// In vi, this message translates to:
+  /// **'Không có phản ánh xử lý lại nào đang xử lý'**
+  String get noRehandlingReportsAvailable;
 }
 
 class _SharedLocalizationsDelegate

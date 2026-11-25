@@ -506,5 +506,7 @@
   "baseStationAddressLabel": "Representative Station / Area",
   "baseStationCoordinatesLabel": "Representative Coordinates",
   "baseStationNotConfigured": "Representative station not configured by administrator",
-  "baseStationReadOnlyHint": "Position and representative station are managed by the system administrator."
+  "baseStationReadOnlyHint": "Position and representative station are managed by the system administrator.",
+  "callFreeVoiceDesc": "Free internet voice call",
+  "callPermissionDenied": "Voice call unavailable for this conversation"
 }

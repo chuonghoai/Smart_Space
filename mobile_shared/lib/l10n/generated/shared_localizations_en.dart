@@ -94,4 +94,121 @@ class SharedLocalizationsEn extends SharedLocalizations {
 
   @override
   String get errorLoadingReports => 'Failed to load reports';
+
+  @override
+  String get callStatusConnecting => 'Connecting';
+
+  @override
+  String get callStatusRinging => 'Ringing';
+
+  @override
+  String get callStatusIncoming => 'Incoming voice call';
+
+  @override
+  String get callStatusAccepted => 'Setting up audio...';
+
+  @override
+  String get callStatusEnded => 'Call ended';
+
+  @override
+  String get callStatusRejected => 'Call ended';
+
+  @override
+  String get callStatusCancelled => 'Call cancelled';
+
+  @override
+  String get callStatusMissed => 'Missed call';
+
+  @override
+  String get callStatusFailed => 'Unable to connect';
+
+  @override
+  String get callMute => 'Mute';
+
+  @override
+  String get callUnmute => 'Unmute';
+
+  @override
+  String get callSpeaker => 'Speaker';
+
+  @override
+  String get callEarpiece => 'Earpiece';
+
+  @override
+  String get callBluetooth => 'Bluetooth';
+
+  @override
+  String get callWiredHeadset => 'Headset';
+
+  @override
+  String get callAudioOutput => 'Audio output';
+
+  @override
+  String get callEnd => 'End';
+
+  @override
+  String get callAccept => 'Answer';
+
+  @override
+  String get callReject => 'Decline';
+
+  @override
+  String get callMicPermissionDenied =>
+      'Microphone permission is required for voice calls';
+
+  @override
+  String get callPermissionDenied =>
+      'You do not have permission to call this user';
+
+  @override
+  String get callAnonymousUser => 'Anonymous User';
+
+  @override
+  String get callFreeVoiceDesc => 'Free internet voice call';
+
+  @override
+  String get callCellularUnavailable => 'Phone number unavailable';
+
+  @override
+  String get callFreeUnavailable =>
+      'Voice call unavailable for this conversation';
+
+  @override
+  String get callOptionsTitle => 'Call options';
+
+  @override
+  String get callCellularTitle => 'Regular call';
+
+  @override
+  String get callCellularDesc => 'Open default phone dialer';
+
+  @override
+  String get callFreeTitle => 'Free call';
+
+  @override
+  String get callClose => 'Close';
+
+  @override
+  String get rehandlingLabel => 'Re-handling';
+
+  @override
+  String get statusProcessingLabel => 'Processing';
+
+  @override
+  String get statusProcessedLabel => 'Processed';
+
+  @override
+  String get statusPendingLabel => 'Pending';
+
+  @override
+  String attachSelectedCount(int count) {
+    return 'Attach ($count)';
+  }
+
+  @override
+  String get selectRehandlingReportsTitle => 'Select re-handling reports';
+
+  @override
+  String get noRehandlingReportsAvailable =>
+      'No re-handling reports currently in progress';
 }

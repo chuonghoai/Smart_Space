@@ -2,6 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
+import 'package:mobile_shared/features/call/models/call_models.dart';
+import 'package:mobile_shared/features/call/providers/call_controller.dart';
+import 'package:mobile_shared/features/chat/data/chat_repository.dart';
+import 'package:mobile_shared/features/chat/models/conversation_model.dart';
+import 'package:mobile_shared/features/chat/widgets/chat_call_bottom_sheet.dart';
 import 'package:smartspace_admin/features/account_lock/application/account_lock_providers.dart';
 import 'package:smartspace_admin/features/users/application/user_providers.dart';
 import 'package:smartspace_admin/ui/screen/admin_board/lock_requests/lock_request_form.dart';
@@ -11,7 +16,6 @@ import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/screen/users/user_shared_widgets.dart';
 import 'package:smartspace_admin/ui/shared/image/person_avatar.dart';
 import 'package:smartspace_admin/ui/shared/report_status/report_status_style.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 /// Mở chi tiết người dùng: Dialog (màn rộng) hoặc bottom sheet (màn hẹp).
 void showUserDetail(BuildContext context, String userId) {
@@ -137,39 +141,109 @@ class UserDetailContent extends ConsumerWidget {
   }
 }
 
-class _UserDetailBody extends StatelessWidget {
+class _UserDetailBody extends ConsumerStatefulWidget {
   final UserDetailModel user;
   final ValueChanged<String> onReportTap;
 
   const _UserDetailBody({required this.user, required this.onReportTap});
 
-  Future<void> _handlePhoneCall(BuildContext context, String? phone) async {
-    final l10n = AppLocalizations.of(context)!;
-    if (phone == null || phone.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.phoneNotAvailable)),
-      );
-      return;
-    }
-    final cleanPhone = phone.replaceAll(RegExp(r'\s+'), '');
-    final uri = Uri.parse('tel:$cleanPhone');
+  @override
+  ConsumerState<_UserDetailBody> createState() => _UserDetailBodyState();
+}
+
+class _UserDetailBodyState extends ConsumerState<_UserDetailBody> {
+  CommunicationEligibilityModel? _eligibility;
+  bool _eligibilityLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadEligibility();
+  }
+
+  Future<void> _loadEligibility() async {
     try {
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri);
-      } else {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      }
+      final res = await chatRepository.checkCommunicationEligibility(
+        targetUserId: widget.user.id,
+        isAnonymous: false,
+      );
+      if (!mounted) return;
+      setState(() {
+        _eligibility = res.data;
+        _eligibilityLoaded = true;
+      });
     } catch (_) {
-      if (context.mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.cannotLaunchPhone)),
-        );
+      if (mounted) {
+        setState(() => _eligibilityLoaded = true);
       }
     }
   }
 
+  Future<CommunicationEligibilityModel?> _ensureEligibility() async {
+    if (_eligibilityLoaded) return _eligibility;
+    await _loadEligibility();
+    return _eligibility;
+  }
+
+  Future<void> _openCallSheet(BuildContext context, UserDetailModel user) async {
+    final l10n = AppLocalizations.of(context)!;
+    final eligibility = await _ensureEligibility();
+    if (!mounted) return;
+
+    final phone = user.phoneNumber?.trim();
+    final hasPhone = phone != null && phone.isNotEmpty;
+    final canFreeCall = eligibility?.canVoiceCall ?? false;
+    final displayName = user.fullName.isEmpty ? user.email : user.fullName;
+
+    await ChatCallBottomSheet.show(
+      context,
+      partnerName: displayName,
+      partnerPhone: hasPhone ? phone : null,
+      canCellularCall: hasPhone,
+      canFreeCall: canFreeCall,
+      freeCallDisabledReason:
+          eligibility?.reasonMessage ?? l10n.cannotMessageClientMessage,
+      titleText: l10n.callOptionsTitle,
+      cellularCallTitle: l10n.cellularCall,
+      cellularCallDesc: l10n.cellularCallDesc,
+      freeCallTitle: l10n.freeCall,
+      freeCallDesc: l10n.callFreeVoiceDesc,
+      phoneNotAvailableText: l10n.phoneNotAvailable,
+      onFreeCallTap: () {
+        ref.read(callControllerProvider.notifier).startCall(
+              targetUserId: user.id,
+              isAnonymous: false,
+              peerName: displayName,
+              peerAvatar: user.avatarUrl,
+              peerRole: 'client',
+            );
+      },
+    );
+  }
+
   Future<void> _handleStartChat(BuildContext context, UserDetailModel user) async {
     final l10n = AppLocalizations.of(context)!;
+    final eligibility = await _ensureEligibility();
+    if (!mounted) return;
+
+    if (eligibility?.canMessage == true) {
+      final router = GoRouter.of(context);
+      final displayName = user.fullName.isEmpty ? user.email : user.fullName;
+      if (Navigator.of(context).canPop()) {
+        Navigator.of(context).pop();
+      }
+      router.push(
+        RouterPath.chatDetailWithId('new_client_${user.id}'),
+        extra: ParticipantModel(
+          userId: user.id,
+          name: displayName,
+          avatarUrl: user.avatarUrl,
+          role: 'client',
+        ),
+      );
+      return;
+    }
+
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
@@ -190,6 +264,8 @@ class _UserDetailBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final l10n = AppLocalizations.of(context)!;
+    final user = widget.user;
+    final onReportTap = widget.onReportTap;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -253,7 +329,7 @@ class _UserDetailBody extends StatelessWidget {
               child: OutlinedButton.icon(
                 icon: const Icon(Icons.phone_outlined, size: 18),
                 label: Text(l10n.callUser),
-                onPressed: () => _handlePhoneCall(context, user.phoneNumber),
+                onPressed: () => _openCallSheet(context, user),
               ),
             ),
           ],

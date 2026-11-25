@@ -522,5 +522,8 @@
   "reportCategoryHint": "Chọn danh mục",
   "reportCategoryRequired": "Vui lòng chọn danh mục phản ánh",
   "reportCategoryLoadError": "Không thể tải danh sách danh mục",
-  "reportCategoryEmpty": "Chưa có danh mục phản ánh nào"
+  "reportCategoryEmpty": "Chưa có danh mục phản ánh nào",
+  "callFreeVoiceDesc": "Gọi thoại miễn phí qua internet",
+  "callPermissionDenied": "Không khả dụng cuộc gọi thoại cho hội thoại này",
+  "callActionLabel": "Gọi điện"
 }

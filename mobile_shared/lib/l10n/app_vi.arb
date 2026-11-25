@@ -36,5 +36,49 @@
   "playbackPreview": "Nghe lại âm thanh",
   "retry": "Thử lại",
   "noLinkedReportsAvailable": "Không có phản ánh liên kết khả dụng",
-  "errorLoadingReports": "Lỗi tải danh sách phản ánh"
+  "errorLoadingReports": "Lỗi tải danh sách phản ánh",
+  "callStatusConnecting": "Đang kết nối",
+  "callStatusRinging": "Đang đổ chuông",
+  "callStatusIncoming": "Cuộc gọi thoại đến",
+  "callStatusAccepted": "Đang thiết lập âm thanh...",
+  "callStatusEnded": "Đã kết thúc cuộc gọi",
+  "callStatusRejected": "Đã kết thúc cuộc gọi",
+  "callStatusCancelled": "Đã hủy cuộc gọi",
+  "callStatusMissed": "Cuộc gọi nhỡ",
+  "callStatusFailed": "Không thể kết nối",
+  "callMute": "Tắt mic",
+  "callUnmute": "Bật mic",
+  "callSpeaker": "Loa ngoài",
+  "callEarpiece": "Loa trong",
+  "callBluetooth": "Bluetooth",
+  "callWiredHeadset": "Tai nghe",
+  "callAudioOutput": "Đầu ra âm thanh",
+  "callEnd": "Kết thúc",
+  "callAccept": "Trả lời",
+  "callReject": "Từ chối",
+  "callMicPermissionDenied": "Cần quyền microphone để thực hiện cuộc gọi thoại",
+  "callPermissionDenied": "Bạn không có quyền gọi điện cho người dùng này",
+  "callAnonymousUser": "Người dùng ẩn danh",
+  "callFreeVoiceDesc": "Gọi thoại miễn phí qua Internet",
+  "callCellularUnavailable": "Không có số điện thoại khả dụng",
+  "callFreeUnavailable": "Chưa đủ điều kiện gọi miễn phí",
+  "callOptionsTitle": "Tùy chọn cuộc gọi",
+  "callCellularTitle": "Gọi thường",
+  "callCellularDesc": "Mở ứng dụng gọi điện mặc định",
+  "callFreeTitle": "Gọi miễn phí",
+  "callClose": "Đóng",
+  "rehandlingLabel": "Xử lý lại",
+  "statusProcessingLabel": "Đang xử lý",
+  "statusProcessedLabel": "Đã xử lý",
+  "statusPendingLabel": "Chờ xử lý",
+  "attachSelectedCount": "Đính kèm ({count})",
+  "@attachSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectRehandlingReportsTitle": "Chọn phản ánh xử lý lại",
+  "noRehandlingReportsAvailable": "Không có phản ánh xử lý lại nào đang xử lý"
 }

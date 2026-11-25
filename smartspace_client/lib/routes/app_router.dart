@@ -28,6 +28,7 @@ import 'package:mobile_shared/features/chat/models/conversation_model.dart';
 import 'package:smartspace_client/ui/mobile/chat/client_conversations_screen.dart';
 import 'package:smartspace_client/ui/mobile/chat/client_chat_detail_screen.dart';
 import 'package:smartspace_client/ui/mobile/chat/client_conversation_info_screen.dart';
+import 'package:mobile_shared/features/call/widgets/voice_call_screen.dart';
 import 'package:flutter/material.dart';
 
 /// Re-export for convenience so existing callers of navigatorKey still compile.
@@ -162,6 +163,18 @@ final appRouter = GoRouter(
         final convId = state.pathParameters['id'] ?? '';
         return ClientConversationInfoScreen(
           conversationId: convId,
+        );
+      },
+    ),
+    GoRoute(
+      path: RouterPath.voiceCall,
+      builder: (context, state) {
+        final callId = state.pathParameters['callId'] ?? '';
+        return VoiceCallScreen(
+          callId: callId,
+          onClose: () {
+            if (context.canPop()) context.pop();
+          },
         );
       },
     ),

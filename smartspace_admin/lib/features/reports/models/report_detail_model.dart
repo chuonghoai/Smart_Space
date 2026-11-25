@@ -18,6 +18,7 @@ class ReportDetailModel {
   final bool isAnonymous;
   final DateTime createdAt;
   final DateTime updatedAt;
+  final String? userId;
   final String? userName;
   final String? userPhone;
   final String? userAvatarUrl;
@@ -67,6 +68,7 @@ class ReportDetailModel {
     required this.isAnonymous,
     required this.createdAt,
     required this.updatedAt,
+    this.userId,
     this.userName,
     this.userPhone,
     this.userAvatarUrl,
@@ -185,6 +187,7 @@ class ReportDetailModel {
       updatedAt: json['updated_at'] != null || json['updatedAt'] != null
           ? DateTime.tryParse((json['updated_at'] ?? json['updatedAt']).toString()) ?? DateTime.now()
           : DateTime.now(),
+      userId: (json['user_id'] ?? json['userId'])?.toString(),
       userName: (json['user_name'] ?? json['userName']) as String?,
       userPhone: (json['user_phone'] ?? json['userPhone']) as String?,
       userAvatarUrl: (json['user_avatar_url'] ?? json['userAvatarUrl']) as String?,

@@ -78,3 +78,23 @@ app:
     staff-app-url: ${MAIL_STAFF_APP_URL:}
     admin-portal-url: ${MAIL_ADMIN_PORTAL_URL:}
     support-email: ${MAIL_SUPPORT_EMAIL:}
+
+# WebRTC Audio Call & STUN/TURN Config
+webrtc:
+  stun-urls: ${WEBRTC_STUN_URLS:stun:stun.l.google.com:19302,stun:stun1.l.google.com:19302}
+  turn:
+    mode: ${WEBRTC_TURN_MODE:stun_only} # stun_only | coturn_hmac | cloudflare | static_env
+    urls: ${WEBRTC_TURN_URLS:}
+    shared-secret: ${WEBRTC_TURN_SHARED_SECRET:}
+    ttl-seconds: ${WEBRTC_TURN_TTL_SECONDS:43200}
+    username: ${WEBRTC_TURN_USERNAME:}
+    credential: ${WEBRTC_TURN_CREDENTIAL:}
+    cloudflare-token-id: ${WEBRTC_CF_TURN_TOKEN_ID:}
+    cloudflare-api-token: ${WEBRTC_CF_TURN_API_TOKEN:}
+  ws:
+    heartbeat-timeout-seconds: ${WEBRTC_WS_HEARTBEAT_TIMEOUT_SECONDS:35}
+  call:
+    connecting-timeout-seconds: ${CALL_CONNECTING_TIMEOUT_SECONDS:10}
+    ring-timeout-seconds: ${CALL_RING_TIMEOUT_SECONDS:45}
+    signaling-timeout-seconds: ${CALL_SIGNALING_TIMEOUT_SECONDS:25}
+    max-duration-seconds: ${CALL_MAX_DURATION_SECONDS:3600}

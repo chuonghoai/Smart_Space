@@ -89,6 +89,10 @@ $TestRegistry = @{
         TestClass   = "com.vn.smart_space.controller.notification.SendTestNotificationTest"
         Description = "Kich hoat Backend gui thong bao fake kiem thu da ngon ngu (VI/EN theo DB) toi toan bo Admin, Staff va Client"
     }
+    "WebRtcCallAndAdminChat" = @{
+        TestClass   = "com.vn.smart_space.controller.call.WebRtcCallAndAdminChatIntegrationTest"
+        Description = "Kiem tra API WebRTC ICE servers, phan quyen goi dien va dieu kien nhan tin Admin <-> Client"
+    }
 }
 
 # -----------------------------------------------------------------------------

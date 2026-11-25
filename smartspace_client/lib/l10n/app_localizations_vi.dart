@@ -1328,4 +1328,14 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get reportCategoryEmpty => 'Chưa có danh mục phản ánh nào';
+
+  @override
+  String get callFreeVoiceDesc => 'Gọi thoại miễn phí qua internet';
+
+  @override
+  String get callPermissionDenied =>
+      'Không khả dụng cuộc gọi thoại cho hội thoại này';
+
+  @override
+  String get callActionLabel => 'Gọi điện';
 }

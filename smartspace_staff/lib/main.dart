@@ -56,6 +56,7 @@ void main() async {
   WsServicesRegistry.register(SessionWsService());
   WsServicesRegistry.register(NotificationWsService());
   WsServicesRegistry.register(chatWsService);
+  WsServicesRegistry.register(callWsService);
 
   runApp(
     ValueListenableBuilder<Key>(
@@ -93,8 +94,10 @@ class _SmartSpaceAppState extends State<SmartSpaceStaffApp> with WidgetsBindingO
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.detached || state == AppLifecycleState.hidden) {
+    if (state == AppLifecycleState.detached) {
       connectionManager.pauseConnections();
+    } else if (state == AppLifecycleState.paused || state == AppLifecycleState.hidden) {
+      connectionManager.onAppBackgrounded();
     } else if (state == AppLifecycleState.resumed) {
       connectionManager.resumeConnections();
     }

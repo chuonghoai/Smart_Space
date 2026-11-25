@@ -1209,6 +1209,11 @@ public class ReportServiceImpl implements IReportService {
 
         report = reportRepository.save(report);
 
+        // Notify any Admin <-> Client conversations for this client so lock/call status updates immediately
+        if (report.getUser() != null) {
+            conversationService.notifyAdminClientConversationsUpdated(report.getUser().getId());
+        }
+
         // Send system message to report conversation that report is resolved
         try {
             com.vn.smart_space.model.Conversation conv = report.getConversation();
@@ -1913,6 +1918,11 @@ public class ReportServiceImpl implements IReportService {
             report.setDeadline(rehandleApprovedAt.plusDays(deadlineDaysForSeverity(report.getSeverity())));
         }
         Report saved = reportRepository.save(report);
+
+        // Notify any Admin <-> Client conversations for this client so lock/call status updates immediately
+        if (saved.getUser() != null) {
+            conversationService.notifyAdminClientConversationsUpdated(saved.getUser().getId());
+        }
 
         if (next == EReportStatus.rejected) {
             try {

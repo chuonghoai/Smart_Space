@@ -1,23 +1,33 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
 import 'package:mobile_shared/features/chat/data/chat_repository.dart';
 import 'package:mobile_shared/features/chat/models/linked_report_model.dart';
 import 'package:mobile_shared/l10n/generated/shared_localizations.dart';
 
 class LinkedReportPickerSheet extends StatefulWidget {
   final String conversationId;
+  final String? adminClientId;
   final bool? isAnonymous;
-  final ValueChanged<LinkedReportModel> onSelect;
+  final bool multiSelect;
+  final List<String> initialSelectedIds;
+  final ValueChanged<LinkedReportModel>? onSelect;
+  final ValueChanged<List<LinkedReportModel>>? onSelectMultiple;
 
   const LinkedReportPickerSheet({
     super.key,
     required this.conversationId,
+    this.adminClientId,
     this.isAnonymous,
-    required this.onSelect,
+    this.multiSelect = false,
+    this.initialSelectedIds = const [],
+    this.onSelect,
+    this.onSelectMultiple,
   });
 
   static Future<LinkedReportModel?> show({
     required BuildContext context,
     required String conversationId,
+    String? adminClientId,
     bool? isAnonymous,
   }) {
     return showModalBottomSheet<LinkedReportModel>(
@@ -26,8 +36,31 @@ class LinkedReportPickerSheet extends StatefulWidget {
       backgroundColor: Colors.transparent,
       builder: (ctx) => LinkedReportPickerSheet(
         conversationId: conversationId,
+        adminClientId: adminClientId,
         isAnonymous: isAnonymous,
         onSelect: (report) => Navigator.pop(ctx, report),
+      ),
+    );
+  }
+
+  static Future<List<LinkedReportModel>?> showMulti({
+    required BuildContext context,
+    required String conversationId,
+    String? adminClientId,
+    bool? isAnonymous,
+    List<String> initialSelectedIds = const [],
+  }) {
+    return showModalBottomSheet<List<LinkedReportModel>>(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (ctx) => LinkedReportPickerSheet(
+        conversationId: conversationId,
+        adminClientId: adminClientId,
+        isAnonymous: isAnonymous,
+        multiSelect: true,
+        initialSelectedIds: initialSelectedIds,
+        onSelectMultiple: (reports) => Navigator.pop(ctx, reports),
       ),
     );
   }
@@ -40,6 +73,7 @@ class _LinkedReportPickerSheetState extends State<LinkedReportPickerSheet> {
   bool _isLoading = true;
   String? _errorMessage;
   List<LinkedReportModel> _reports = [];
+  late final Set<String> _selectedIds = widget.initialSelectedIds.toSet();
 
   @override
   void initState() {
@@ -54,12 +88,21 @@ class _LinkedReportPickerSheetState extends State<LinkedReportPickerSheet> {
     });
 
     try {
-      final res = await chatRepository.getConversationReports(
-        widget.conversationId,
-        isAnonymous: widget.isAnonymous,
-        page: 1,
-        size: 50,
-      );
+      final res = (widget.adminClientId != null &&
+              widget.adminClientId!.isNotEmpty &&
+              widget.conversationId.startsWith('new_'))
+          ? await chatRepository.getAdminClientRehandlingReports(
+              widget.adminClientId!,
+              isAnonymous: widget.isAnonymous,
+              page: 1,
+              size: 50,
+            )
+          : await chatRepository.getConversationReports(
+              widget.conversationId,
+              isAnonymous: widget.isAnonymous,
+              page: 1,
+              size: 50,
+            );
 
       if (mounted) {
         if (res.success && res.data != null) {
@@ -87,15 +130,42 @@ class _LinkedReportPickerSheetState extends State<LinkedReportPickerSheet> {
     }
   }
 
+  String _localizedStatus(LinkedReportModel report, SharedLocalizations? l10n) {
+    switch ((report.status ?? '').toLowerCase()) {
+      case 'processing':
+        return l10n?.statusProcessingLabel ?? 'Processing';
+      case 'processed':
+      case 'resolved':
+        return l10n?.statusProcessedLabel ?? 'Processed';
+      case 'pending':
+        return l10n?.statusPendingLabel ?? 'Pending';
+      default:
+        return (report.status ?? '').toUpperCase();
+    }
+  }
+
+  String? _formatDate(String? iso) {
+    if (iso == null || iso.isEmpty) return null;
+    final dt = DateTime.tryParse(iso);
+    if (dt == null) return null;
+    final local = dt.toLocal();
+    final dd = local.day.toString().padLeft(2, '0');
+    final mm = local.month.toString().padLeft(2, '0');
+    return '$dd/$mm/${local.year}';
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final sharedL10n = SharedLocalizations.of(context);
-    final titleText = sharedL10n?.selectReportToAttach ?? 'Chọn phản ánh để gửi';
+    final isAdminMode = widget.adminClientId != null && widget.adminClientId!.isNotEmpty;
+    final titleText = isAdminMode
+        ? (sharedL10n?.selectRehandlingReportsTitle ?? 'Chọn phản ánh xử lý lại')
+        : (sharedL10n?.selectReportToAttach ?? 'Chọn phản ánh để gửi');
 
     return Container(
       constraints: BoxConstraints(
-        maxHeight: MediaQuery.of(context).size.height * 0.75,
+        maxHeight: MediaQuery.of(context).size.height * 0.78,
       ),
       decoration: BoxDecoration(
         color: theme.colorScheme.surface,
@@ -140,16 +210,47 @@ class _LinkedReportPickerSheetState extends State<LinkedReportPickerSheet> {
             ),
             const Divider(height: 1),
             Expanded(
-              child: _buildContent(context, theme),
+              child: _buildContent(context, theme, isAdminMode),
             ),
+            if (widget.multiSelect && _selectedIds.isNotEmpty)
+              Container(
+                padding: const EdgeInsets.fromLTRB(16, 10, 16, 12),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.surfaceContainerLow,
+                  border: Border(
+                    top: BorderSide(
+                      color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+                    ),
+                  ),
+                ),
+                child: FilledButton(
+                  onPressed: () {
+                    final selected = _reports
+                        .where((r) => _selectedIds.contains(r.id))
+                        .toList();
+                    widget.onSelectMultiple?.call(selected);
+                  },
+                  style: FilledButton.styleFrom(
+                    minimumSize: const Size.fromHeight(48),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                  ),
+                  child: Text(
+                    sharedL10n?.attachSelectedCount(_selectedIds.length) ??
+                        'Attach (${_selectedIds.length})',
+                  ),
+                ),
+              ),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildContent(BuildContext context, ThemeData theme) {
+  Widget _buildContent(BuildContext context, ThemeData theme, bool isAdminMode) {
     final sharedL10n = SharedLocalizations.of(context);
+    final semantic = AppSemanticColors.of(context);
     if (_isLoading) {
       return const Center(child: CircularProgressIndicator());
     }
@@ -185,7 +286,11 @@ class _LinkedReportPickerSheetState extends State<LinkedReportPickerSheet> {
               Icon(Icons.inbox_rounded, size: 48, color: theme.colorScheme.outlineVariant),
               const SizedBox(height: 12),
               Text(
-                sharedL10n?.noLinkedReportsAvailable ?? 'Không có phản ánh liên kết khả dụng',
+                isAdminMode
+                    ? (sharedL10n?.noRehandlingReportsAvailable ??
+                        'Không có phản ánh xử lý lại đang thực hiện')
+                    : (sharedL10n?.noLinkedReportsAvailable ??
+                        'Không có phản ánh liên kết khả dụng'),
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),
@@ -203,22 +308,56 @@ class _LinkedReportPickerSheetState extends State<LinkedReportPickerSheet> {
       separatorBuilder: (context, index) => const SizedBox(height: 8),
       itemBuilder: (context, index) {
         final report = _reports[index];
+        final isSelected = _selectedIds.contains(report.id);
+        final shortId = report.id.length > 8 ? report.id.substring(0, 8) : report.id;
+        final formattedDate = _formatDate(report.createdAt);
+
         return InkWell(
-          onTap: () => widget.onSelect(report),
+          onTap: () {
+            if (widget.multiSelect) {
+              setState(() {
+                if (isSelected) {
+                  _selectedIds.remove(report.id);
+                } else {
+                  _selectedIds.add(report.id);
+                }
+              });
+            } else {
+              widget.onSelect?.call(report);
+            }
+          },
           borderRadius: BorderRadius.circular(12),
           child: Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
-              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+              color: isSelected
+                  ? theme.colorScheme.primaryContainer.withValues(alpha: 0.25)
+                  : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
               borderRadius: BorderRadius.circular(12),
               border: Border.all(
-                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
-                width: 0.8,
+                color: isSelected
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+                width: isSelected ? 1.4 : 0.8,
               ),
             ),
             child: Row(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                if (widget.multiSelect) ...[
+                  Padding(
+                    padding: const EdgeInsets.only(top: 10, right: 8),
+                    child: Icon(
+                      isSelected
+                          ? Icons.check_circle_rounded
+                          : Icons.radio_button_unchecked_rounded,
+                      color: isSelected
+                          ? theme.colorScheme.primary
+                          : theme.colorScheme.onSurfaceVariant,
+                      size: 22,
+                    ),
+                  ),
+                ],
                 if (report.imageUrl != null && report.imageUrl!.isNotEmpty)
                   ClipRRect(
                     borderRadius: BorderRadius.circular(8),
@@ -237,6 +376,31 @@ class _LinkedReportPickerSheetState extends State<LinkedReportPickerSheet> {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      if (shortId.isNotEmpty || formattedDate != null)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: 2),
+                          child: Row(
+                            children: [
+                              if (shortId.isNotEmpty)
+                                Text(
+                                  '#$shortId',
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              if (formattedDate != null) ...[
+                                const SizedBox(width: 8),
+                                Text(
+                                  formattedDate,
+                                  style: theme.textTheme.labelSmall?.copyWith(
+                                    color: theme.colorScheme.onSurfaceVariant,
+                                  ),
+                                ),
+                              ],
+                            ],
+                          ),
+                        ),
                       Text(
                         report.title,
                         style: theme.textTheme.titleSmall?.copyWith(
@@ -245,9 +409,27 @@ class _LinkedReportPickerSheetState extends State<LinkedReportPickerSheet> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                       ),
-                      const SizedBox(height: 4),
-                      Row(
+                      const SizedBox(height: 6),
+                      Wrap(
+                        spacing: 6,
+                        runSpacing: 4,
                         children: [
+                          if (report.isRehandling)
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: semantic.warning.withValues(alpha: 0.14),
+                                borderRadius: BorderRadius.circular(6),
+                              ),
+                              child: Text(
+                                sharedL10n?.rehandlingLabel ?? 'Re-handling',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: semantic.warning,
+                                ),
+                              ),
+                            ),
                           if (report.status != null)
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
@@ -256,7 +438,7 @@ class _LinkedReportPickerSheetState extends State<LinkedReportPickerSheet> {
                                 borderRadius: BorderRadius.circular(6),
                               ),
                               child: Text(
-                                report.status!.toUpperCase(),
+                                _localizedStatus(report, sharedL10n),
                                 style: TextStyle(
                                   fontSize: 10,
                                   fontWeight: FontWeight.bold,
@@ -264,8 +446,7 @@ class _LinkedReportPickerSheetState extends State<LinkedReportPickerSheet> {
                                 ),
                               ),
                             ),
-                          if (report.severity != null) ...[
-                            const SizedBox(width: 6),
+                          if (report.severity != null)
                             Container(
                               padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                               decoration: BoxDecoration(
@@ -281,17 +462,17 @@ class _LinkedReportPickerSheetState extends State<LinkedReportPickerSheet> {
                                 ),
                               ),
                             ),
-                          ],
                         ],
                       ),
                     ],
                   ),
                 ),
-                Icon(
-                  Icons.arrow_forward_ios_rounded,
-                  size: 14,
-                  color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
-                ),
+                if (!widget.multiSelect)
+                  Icon(
+                    Icons.arrow_forward_ios_rounded,
+                    size: 14,
+                    color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
+                  ),
               ],
             ),
           ),

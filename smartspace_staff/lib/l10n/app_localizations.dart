@@ -2503,6 +2503,18 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Position and representative station are managed by the system administrator.'**
   String get baseStationReadOnlyHint;
+
+  /// No description provided for @callFreeVoiceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Free internet voice call'**
+  String get callFreeVoiceDesc;
+
+  /// No description provided for @callPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice call unavailable for this conversation'**
+  String get callPermissionDenied;
 }
 
 class _AppLocalizationsDelegate

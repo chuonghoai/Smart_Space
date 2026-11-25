@@ -36,5 +36,49 @@
   "playbackPreview": "Audio playback preview",
   "retry": "Retry",
   "noLinkedReportsAvailable": "No linked reports available",
-  "errorLoadingReports": "Failed to load reports"
+  "errorLoadingReports": "Failed to load reports",
+  "callStatusConnecting": "Connecting",
+  "callStatusRinging": "Ringing",
+  "callStatusIncoming": "Incoming voice call",
+  "callStatusAccepted": "Setting up audio...",
+  "callStatusEnded": "Call ended",
+  "callStatusRejected": "Call ended",
+  "callStatusCancelled": "Call cancelled",
+  "callStatusMissed": "Missed call",
+  "callStatusFailed": "Unable to connect",
+  "callMute": "Mute",
+  "callUnmute": "Unmute",
+  "callSpeaker": "Speaker",
+  "callEarpiece": "Earpiece",
+  "callBluetooth": "Bluetooth",
+  "callWiredHeadset": "Headset",
+  "callAudioOutput": "Audio output",
+  "callEnd": "End",
+  "callAccept": "Answer",
+  "callReject": "Decline",
+  "callMicPermissionDenied": "Microphone permission is required for voice calls",
+  "callPermissionDenied": "You do not have permission to call this user",
+  "callAnonymousUser": "Anonymous User",
+  "callFreeVoiceDesc": "Free internet voice call",
+  "callCellularUnavailable": "Phone number unavailable",
+  "callFreeUnavailable": "Voice call unavailable for this conversation",
+  "callOptionsTitle": "Call options",
+  "callCellularTitle": "Regular call",
+  "callCellularDesc": "Open default phone dialer",
+  "callFreeTitle": "Free call",
+  "callClose": "Close",
+  "rehandlingLabel": "Re-handling",
+  "statusProcessingLabel": "Processing",
+  "statusProcessedLabel": "Processed",
+  "statusPendingLabel": "Pending",
+  "attachSelectedCount": "Attach ({count})",
+  "@attachSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "selectRehandlingReportsTitle": "Select re-handling reports",
+  "noRehandlingReportsAvailable": "No re-handling reports currently in progress"
 }

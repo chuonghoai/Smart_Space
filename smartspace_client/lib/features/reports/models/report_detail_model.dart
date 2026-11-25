@@ -19,6 +19,7 @@ class ReportDetailModel extends ReportModel {
   final String? assignedStaffId;
   final String? assignedStaffName;
   final String? assignedStaffAvatarUrl;
+  final String? assignedStaffPhone;
   final String? resolvedNote;
   final List<String> resolvedImageUrls;
   final int? rating;
@@ -65,6 +66,7 @@ class ReportDetailModel extends ReportModel {
     this.assignedStaffId,
     this.assignedStaffName,
     this.assignedStaffAvatarUrl,
+    this.assignedStaffPhone,
     this.resolvedNote,
     this.resolvedImageUrls = const [],
     this.rating,
@@ -135,6 +137,7 @@ class ReportDetailModel extends ReportModel {
       assignedStaffId: json['assigned_staff_id'] as String?,
       assignedStaffName: json['assigned_staff_name'] as String?,
       assignedStaffAvatarUrl: json['assigned_staff_avatar_url'] as String?,
+      assignedStaffPhone: (json['assigned_staff_phone'] ?? json['assignedStaffPhone']) as String?,
       resolvedNote: json['resolved_note'] as String?,
       resolvedImageUrls: parsedResolvedImageUrls,
       resolvedAt: json['resolved_at'] != null
@@ -175,6 +178,7 @@ class ReportDetailModel extends ReportModel {
     map['assigned_staff_id'] = assignedStaffId;
     map['assigned_staff_name'] = assignedStaffName;
     map['assigned_staff_avatar_url'] = assignedStaffAvatarUrl;
+    map['assigned_staff_phone'] = assignedStaffPhone;
     map['resolved_note'] = resolvedNote;
     map['resolved_image_urls'] = resolvedImageUrls;
     map['resolved_at'] = resolvedAt?.toIso8601String();

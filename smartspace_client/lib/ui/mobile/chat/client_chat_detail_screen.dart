@@ -4,13 +4,16 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mobile_shared/features/call/providers/call_controller.dart';
 import 'package:mobile_shared/features/chat/models/conversation_model.dart';
+import 'package:mobile_shared/features/chat/models/linked_report_model.dart';
 import 'package:mobile_shared/features/chat/providers/chat_detail_provider.dart';
 import 'package:mobile_shared/features/chat/services/chat_ws_service.dart';
 import 'package:mobile_shared/features/chat/widgets/chat_audio_recorder_bar.dart';
 import 'package:mobile_shared/features/chat/widgets/chat_call_bottom_sheet.dart';
 import 'package:mobile_shared/features/chat/widgets/chat_message_bubble.dart';
 import 'package:mobile_shared/features/chat/widgets/linked_report_picker_sheet.dart';
+import 'package:mobile_shared/features/chat/widgets/selected_reports_preview_bar.dart';
 import 'package:mobile_shared/features/chat/widgets/typing_indicator_widget.dart';
 import 'package:smartspace_client/features/chat/providers/client_conversations_provider.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
@@ -324,19 +327,46 @@ class _ClientChatDetailScreenState
             tooltip: l10n.callOptionsTitle,
             onPressed: () {
               final activeState = ref.read(chatDetailProvider(activeConvId));
-              final partnerPhone = activeState.conversation?.partnerPhone;
+              final activeConv = activeState.conversation;
+              final partnerPhone = activeConv?.partnerPhone;
+              final isAnonConv = activeConv?.isAnonymous ?? false;
+              final targetUserId = activeConv?.partnerId ??
+                  initialPartner?.userId ??
+                  activeState.draftPartnerId ??
+                  '';
+              final canVoiceCall =
+                  activeState.canVoiceCall && targetUserId.isNotEmpty;
+              final hasPhone =
+                  !isAnonConv && (partnerPhone?.trim().isNotEmpty ?? false);
+
               ChatCallBottomSheet.show(
                 context,
                 partnerName: displayName,
-                partnerPhone: partnerPhone,
+                partnerPhone: hasPhone ? partnerPhone : null,
+                canCellularCall: hasPhone,
+                canFreeCall: canVoiceCall,
+                freeCallDisabledReason: l10n.callPermissionDenied,
                 titleText: l10n.callOptionsTitle,
                 cellularCallTitle: l10n.cellularCall,
                 cellularCallDesc: l10n.cellularCallDesc,
                 freeCallTitle: l10n.freeCall,
-                freeCallDesc: l10n.featureUnderDevelopment,
-                comingSoonText: l10n.comingSoon,
+                freeCallDesc: l10n.callFreeVoiceDesc,
                 phoneNotAvailableText: l10n.phoneNotAvailable,
-                freeCallComingSoonText: l10n.freeCallComingSoon,
+                onFreeCallTap: canVoiceCall
+                    ? () {
+                        ref.read(callControllerProvider.notifier).startCall(
+                              targetUserId: targetUserId,
+                              conversationId: activeConv?.id,
+                              isAnonymous: isAnonConv,
+                              peerName: displayName,
+                              peerAvatar: isAnonConv
+                                  ? null
+                                  : (activeConv?.partnerAvatarUrl ??
+                                      initialPartner?.avatarUrl),
+                              peerRole: partnerRole,
+                            );
+                      }
+                    : null,
               );
             },
           ),
@@ -624,6 +654,7 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
   final ScrollController _scrollController = ScrollController();
   bool _canSend = false;
   bool _isAudioMode = false;
+  List<LinkedReportModel> _selectedReports = [];
   Timer? _typingTimer;
 
   @override
@@ -714,13 +745,21 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
 
   void _sendMessage() {
     final text = _textController.text.trim();
-    if (text.isEmpty) return;
+    if (text.isEmpty && _selectedReports.isEmpty) return;
 
     _typingTimer?.cancel();
-    ref.read(chatDetailProvider(widget.conversationId).notifier).sendTyping(false);
-    ref
-        .read(chatDetailProvider(widget.conversationId).notifier)
-        .sendMessage(text);
+    final notifier = ref.read(chatDetailProvider(widget.conversationId).notifier);
+    notifier.sendTyping(false);
+
+    if (_selectedReports.isNotEmpty) {
+      final reportsToSend = List<LinkedReportModel>.from(_selectedReports);
+      setState(() => _selectedReports = []);
+      _textController.clear();
+      notifier.sendMessageWithReports(content: text, reports: reportsToSend);
+      return;
+    }
+
+    notifier.sendMessage(text);
     _textController.clear();
   }
 
@@ -833,13 +872,15 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
                   title: Text(l10n.attachReport),
                   onTap: () async {
                     Navigator.pop(ctx);
-                    final selected = await LinkedReportPickerSheet.show(
+                    final selected = await LinkedReportPickerSheet.showMulti(
                       context: context,
                       conversationId: widget.conversationId,
                       isAnonymous: widget.isAnonymous,
+                      initialSelectedIds:
+                          _selectedReports.map((e) => e.id).toList(),
                     );
                     if (selected != null && mounted) {
-                      ref.read(chatDetailProvider(widget.conversationId).notifier).sendReportMessage(selected);
+                      setState(() => _selectedReports = selected);
                     }
                   },
                 ),
@@ -1045,6 +1086,18 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
               typingText: l10n.typingText,
             ),
           ),
+        SelectedReportsPreviewBar(
+          reports: _selectedReports,
+          onRemove: (report) {
+            setState(() {
+              _selectedReports =
+                  _selectedReports.where((r) => r.id != report.id).toList();
+            });
+          },
+          onClearAll: () {
+            setState(() => _selectedReports = []);
+          },
+        ),
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 250),
           child: _isAudioMode
@@ -1116,7 +1169,7 @@ class _ContextChatPaneState extends ConsumerState<_ContextChatPane>
                         ),
                       ),
                       const SizedBox(width: 4),
-                      if (_canSend)
+                      if (_canSend || _selectedReports.isNotEmpty)
                         IconButton(
                           onPressed: _sendMessage,
                           icon: Icon(

@@ -11,6 +11,7 @@ class ConversationInfoModel {
   final String? partnerEmail;
   final bool isAnonymous;
   final bool canSendMessage;
+  final bool canVoiceCall;
   final List<LinkedReportModel> activeReports;
   final DateTime? createdAt;
   final String? identifiedConversationId;
@@ -34,6 +35,7 @@ class ConversationInfoModel {
     this.partnerEmail,
     this.isAnonymous = false,
     this.canSendMessage = true,
+    bool? canVoiceCall,
     this.activeReports = const [],
     this.createdAt,
     this.identifiedConversationId,
@@ -45,7 +47,7 @@ class ConversationInfoModel {
     this.anonymousUnreadCount = 0,
     this.canSendIdentifiedMessage = true,
     this.canSendAnonymousMessage = true,
-  });
+  }) : canVoiceCall = canVoiceCall ?? canSendMessage;
 
   factory ConversationInfoModel.fromJson(Map<String, dynamic> json) {
     var rawReports = json['activeReports'] as List<dynamic>? ?? [];
@@ -64,6 +66,7 @@ class ConversationInfoModel {
       partnerEmail: json['partnerEmail'] as String?,
       isAnonymous: json['isAnonymous'] as bool? ?? false,
       canSendMessage: json['canSendMessage'] as bool? ?? true,
+      canVoiceCall: json['canVoiceCall'] as bool? ?? (json['canSendMessage'] as bool? ?? true),
       activeReports: reports,
       createdAt: json['createdAt'] != null
           ? DateTime.tryParse(json['createdAt'].toString())

@@ -212,9 +212,15 @@ class _AdminConversationInfoScreenState
 
           const SizedBox(height: 24),
 
-          // 3. Section: Active Linked Reports
+          // 3. Section: Active Linked Reports / Rehandling Reports
           if (state.reports.isNotEmpty) ...[
-            _buildActiveReportsSection(context, theme, l10n, state),
+            _buildActiveReportsSection(
+              context,
+              theme,
+              l10n,
+              state,
+              isClient: info.partnerRole?.toLowerCase() == 'client',
+            ),
             const SizedBox(height: 24),
           ],
 
@@ -355,70 +361,114 @@ class _AdminConversationInfoScreenState
     ConversationInfoModel info,
     bool isAnonymous,
   ) {
-    if (isAnonymous) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-          ),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              Icons.privacy_tip_outlined,
-              size: 20,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                l10n.anonymousUserProtectionNote,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w500,
-                ),
+    final semantic = AppSemanticColors.of(context);
+    final hasPhone =
+        !isAnonymous && (info.partnerPhone?.trim().isNotEmpty ?? false);
+    final canFreeCall =
+        info.canVoiceCall && (info.partnerId?.trim().isNotEmpty ?? false);
+    final isClient = info.partnerRole?.toLowerCase() == 'client';
+    final displayName = isAnonymous
+        ? l10n.anonymousPerson
+        : (info.partnerName?.isNotEmpty == true
+            ? info.partnerName!
+            : l10n.otherUsers);
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (isAnonymous) ...[
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainer,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
               ),
             ),
-          ],
-        ),
-      );
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildRoundActionButton(
-            theme: theme,
-            icon: Icons.phone_rounded,
-            label: l10n.callButtonLabel,
-            color: Colors.green,
-            onTap: () => _makePhoneCall(context, info.partnerPhone, l10n),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.privacy_tip_outlined,
+                  size: 20,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    l10n.anonymousUserProtectionNote,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-          _buildRoundActionButton(
-            theme: theme,
-            icon: Icons.videocam_rounded,
-            label: l10n.videoCallButtonLabel,
-            color: theme.colorScheme.primary,
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.videoCallComingSoon)),
-              );
-            },
-          ),
+          const SizedBox(height: 12),
         ],
-      ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainer,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildRoundActionButton(
+                theme: theme,
+                icon: Icons.phone_rounded,
+                label: l10n.cellularCall,
+                color: hasPhone
+                    ? semantic.success
+                    : theme.colorScheme.onSurfaceVariant,
+                enabled: hasPhone,
+                onTap: () => _makePhoneCall(
+                  context,
+                  hasPhone ? info.partnerPhone : null,
+                  l10n,
+                ),
+              ),
+              _buildRoundActionButton(
+                theme: theme,
+                icon: Icons.call_rounded,
+                label: l10n.freeCall,
+                color: canFreeCall
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurfaceVariant,
+                enabled: canFreeCall,
+                onTap: () {
+                  if (!canFreeCall) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(
+                          isClient
+                              ? l10n.cannotMessageClientMessage
+                              : l10n.callPermissionDenied,
+                        ),
+                      ),
+                    );
+                    return;
+                  }
+                  ref.read(callControllerProvider.notifier).startCall(
+                        targetUserId: info.partnerId!,
+                        conversationId: info.id,
+                        isAnonymous: isAnonymous,
+                        peerName: displayName,
+                        peerAvatar: isAnonymous ? null : info.partnerAvatarUrl,
+                        peerRole: info.partnerRole,
+                      );
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -427,38 +477,42 @@ class _AdminConversationInfoScreenState
     required IconData icon,
     required String label,
     required Color color,
+    bool enabled = true,
     required VoidCallback onTap,
   }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
+    return Opacity(
+      opacity: enabled ? 1.0 : 0.45,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: 24,
+                ),
               ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 24,
+              const SizedBox(height: 6),
+              Text(
+                label,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.onSurface,
+                ),
               ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              label,
-              style: theme.textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onSurface,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );
@@ -468,10 +522,12 @@ class _AdminConversationInfoScreenState
     BuildContext context,
     ThemeData theme,
     AppLocalizations l10n,
-    ConversationReportsState state,
-  ) {
+    ConversationReportsState state, {
+    bool isClient = false,
+  }) {
     final reports = state.reports;
     final isDark = theme.brightness == Brightness.dark;
+    final semantic = AppSemanticColors.of(context);
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -480,7 +536,9 @@ class _AdminConversationInfoScreenState
         Row(
           children: [
             Text(
-              l10n.activeReportsSection,
+              isClient
+                  ? l10n.rehandlingReportsSection
+                  : l10n.activeReportsSection,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
                 color: theme.colorScheme.onSurface,
@@ -519,7 +577,7 @@ class _AdminConversationInfoScreenState
               children: [
                 Icon(
                   Icons.check_circle_outline_rounded,
-                  color: Colors.green.shade600,
+                  color: semantic.success,
                   size: 28,
                 ),
                 const SizedBox(width: 12),
@@ -571,18 +629,14 @@ class _AdminConversationInfoScreenState
     LinkedReportModel report,
     bool isDark,
   ) {
+    final semantic = AppSemanticColors.of(context);
     final isRehandling = report.isRehandling;
-    final rehandlingBgColor = isDark
-        ? Colors.amber.shade900.withValues(alpha: 0.3)
-        : Colors.orange.shade50;
-    final rehandlingTextColor =
-        isDark ? Colors.amber.shade300 : Colors.orange.shade800;
+    final rehandlingBgColor = semantic.warning.withValues(alpha: 0.14);
+    final rehandlingTextColor = semantic.warning;
 
-    final processingBgColor = isDark
-        ? Colors.blue.shade900.withValues(alpha: 0.3)
-        : Colors.blue.shade50;
-    final processingTextColor =
-        isDark ? Colors.blue.shade300 : Colors.blue.shade700;
+    final processingBgColor =
+        theme.colorScheme.primaryContainer.withValues(alpha: 0.65);
+    final processingTextColor = theme.colorScheme.onPrimaryContainer;
 
     return Container(
       decoration: BoxDecoration(
@@ -590,7 +644,7 @@ class _AdminConversationInfoScreenState
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
           color: isRehandling
-              ? (isDark ? Colors.amber.shade800 : Colors.orange.shade300)
+              ? semantic.warning.withValues(alpha: 0.6)
               : theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
         ),
       ),

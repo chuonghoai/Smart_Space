@@ -1336,4 +1336,14 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get reportCategoryEmpty => 'No categories available';
+
+  @override
+  String get callFreeVoiceDesc => 'Free internet voice call';
+
+  @override
+  String get callPermissionDenied =>
+      'Voice call unavailable for this conversation';
+
+  @override
+  String get callActionLabel => 'Call';
 }
