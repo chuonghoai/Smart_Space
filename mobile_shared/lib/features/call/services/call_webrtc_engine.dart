@@ -21,7 +21,14 @@ class CallWebRtcEngine {
       onAudioRoutesChanged;
 
   bool get isMuted => _isMuted;
+  bool get isInitialized => !_disposed && _peerConnection != null;
   RTCVideoRenderer? get remoteRenderer => _remoteRenderer;
+
+  String _extractCandidateType(String? candidateLine) {
+    if (candidateLine == null || candidateLine.isEmpty) return 'unknown';
+    final match = RegExp(r'\btyp\s+(\S+)').firstMatch(candidateLine);
+    return match?.group(1) ?? 'unknown';
+  }
 
   Future<void> initialize({required List<IceServerModel> iceServers}) async {
     if (_disposed) return;
@@ -40,12 +47,17 @@ class CallWebRtcEngine {
     _remoteRenderer = RTCVideoRenderer();
     await _remoteRenderer!.initialize();
 
+    final rtcIceServers = iceServers.isEmpty
+        ? [
+            {'urls': 'stun:stun.l.google.com:19302'},
+          ]
+        : iceServers.map((s) => s.toRtcMap()).toList();
+    debugPrint(
+      '[CallWebRtcEngine] Initializing PeerConnection with ${rtcIceServers.length} ICE server entries',
+    );
+
     final config = <String, dynamic>{
-      'iceServers': iceServers.isEmpty
-          ? [
-              {'urls': 'stun:stun.l.google.com:19302'},
-            ]
-          : iceServers.map((s) => s.toRtcMap()).toList(),
+      'iceServers': rtcIceServers,
       'sdpSemantics': 'unified-plan',
     };
 
@@ -58,7 +70,15 @@ class CallWebRtcEngine {
 
     _peerConnection!.onIceCandidate = (RTCIceCandidate candidate) {
       if (!_disposed && candidate.candidate != null && candidate.candidate!.isNotEmpty) {
+        final candType = _extractCandidateType(candidate.candidate);
+        debugPrint('[CallWebRtcEngine] Local ICE candidate generated (typ=$candType)');
         onIceCandidate?.call(candidate);
+      }
+    };
+
+    _peerConnection!.onIceGatheringState = (RTCIceGatheringState state) {
+      if (!_disposed) {
+        debugPrint('[CallWebRtcEngine] ICE gathering state -> $state');
       }
     };
 
@@ -72,12 +92,14 @@ class CallWebRtcEngine {
 
     _peerConnection!.onConnectionState = (RTCPeerConnectionState state) {
       if (!_disposed) {
+        debugPrint('[CallWebRtcEngine] PeerConnection state -> $state');
         onPeerConnectionStateChanged?.call(state);
       }
     };
 
     _peerConnection!.onIceConnectionState = (RTCIceConnectionState state) {
       if (_disposed) return;
+      debugPrint('[CallWebRtcEngine] ICE connection state -> $state');
       if (state == RTCIceConnectionState.RTCIceConnectionStateConnected ||
           state == RTCIceConnectionState.RTCIceConnectionStateCompleted) {
         onPeerConnectionStateChanged?.call(RTCPeerConnectionState.RTCPeerConnectionStateConnected);
@@ -105,6 +127,9 @@ class CallWebRtcEngine {
   }
 
   Future<RTCSessionDescription> createOffer() async {
+    if (_peerConnection == null) {
+      throw StateError('PeerConnection is not initialized');
+    }
     final offer = await _peerConnection!.createOffer({
       'offerToReceiveAudio': true,
       'offerToReceiveVideo': false,
@@ -114,6 +139,9 @@ class CallWebRtcEngine {
   }
 
   Future<RTCSessionDescription> handleRemoteOfferAndCreateAnswer(String sdp) async {
+    if (_peerConnection == null) {
+      throw StateError('PeerConnection is not initialized');
+    }
     await _peerConnection!.setRemoteDescription(RTCSessionDescription(sdp, 'offer'));
     _remoteDescriptionSet = true;
     await _flushPendingCandidates();
@@ -127,6 +155,9 @@ class CallWebRtcEngine {
   }
 
   Future<void> handleRemoteAnswer(String sdp) async {
+    if (_peerConnection == null) {
+      throw StateError('PeerConnection is not initialized');
+    }
     await _peerConnection!.setRemoteDescription(RTCSessionDescription(sdp, 'answer'));
     _remoteDescriptionSet = true;
     await _flushPendingCandidates();

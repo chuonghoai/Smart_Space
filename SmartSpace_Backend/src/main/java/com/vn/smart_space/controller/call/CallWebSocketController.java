@@ -35,7 +35,6 @@ public class CallWebSocketController {
         String sessionId = accessor.getSessionId();
         if (sessionId != null) {
             wsSessionRegistry.touchSession(sessionId);
-            wsSessionRegistry.markCallQueueSubscribed(sessionId, true);
         }
     }
 

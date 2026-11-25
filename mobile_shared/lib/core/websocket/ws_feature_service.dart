@@ -18,6 +18,8 @@ abstract class WsFeatureService {
 class WsServicesRegistry {
   static final List<WsFeatureService> _services = [];
 
+  static int get registeredCount => _services.length;
+
   /// Đăng ký một service vào hệ thống.
   static void register(WsFeatureService service) {
     if (!_services.contains(service)) {

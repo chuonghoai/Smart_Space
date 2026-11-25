@@ -22,6 +22,7 @@ class ConnectionManagerService {
   final int _maxBackoffSeconds = 30;
   
   bool _isFcmConnected = false;
+  bool _isFcmConnecting = false;
   bool get isFcmConnected => _isFcmConnected;
   bool get isWebSocketConnected => webSocketService.isConnected;
 
@@ -30,6 +31,7 @@ class ConnectionManagerService {
     if (_isRunning) return;
     _isRunning = true;
     _fcmRetryAttempt = 0;
+    _isFcmConnected = FirebaseService.isBackendRegistered;
     
     connectionStateProvider.setConnecting();
     
@@ -41,8 +43,20 @@ class ConnectionManagerService {
     webSocketService.addListener(_onSocketStateChanged);
     webSocketService.connect();
     
-    // 2. FCM connects
+    // 2. FCM connects & tracks backend registration independently of other app APIs
+    FirebaseService.onBackendRegistrationChanged = _onFcmRegistrationChanged;
     _startFcmRegistration();
+  }
+
+  void _onFcmRegistrationChanged(bool registered) {
+    if (!_isRunning) return;
+    _isFcmConnected = registered;
+    if (registered) {
+      _isFcmConnecting = false;
+      _fcmRetryAttempt = 0;
+      _fcmRetryTimer?.cancel();
+    }
+    _updateGlobalState();
   }
 
   void _onSocketStateChanged() {
@@ -51,12 +65,29 @@ class ConnectionManagerService {
 
   void _updateGlobalState() {
     if (!_isRunning) return;
-    
     final socketStatus = webSocketService.status;
-    
-    if (socketStatus == WebSocketStatus.connected && _isFcmConnected) {
+    evaluateGlobalConnectionState(
+      wsConnected: socketStatus == WebSocketStatus.connected,
+      wsConnecting: socketStatus == WebSocketStatus.connecting,
+      fcmConnected: _isFcmConnected,
+      fcmConnecting: _isFcmConnecting,
+    );
+  }
+
+  /// Pure status rule: Green ONLY when BOTH WebSocket and Firebase are connected
+  /// to the backend; Red otherwise (Connecting only while an active initial/retry
+  /// handshake is in flight and neither side has failed).
+  @visibleForTesting
+  static void evaluateGlobalConnectionState({
+    required bool wsConnected,
+    required bool wsConnecting,
+    required bool fcmConnected,
+    required bool fcmConnecting,
+  }) {
+    if (wsConnected && fcmConnected) {
       connectionStateProvider.setConnected();
-    } else if (socketStatus == WebSocketStatus.error || socketStatus == WebSocketStatus.disconnected) {
+    } else if ((!wsConnected && !wsConnecting) ||
+        (!fcmConnected && !fcmConnecting)) {
       connectionStateProvider.setError();
     } else {
       connectionStateProvider.setConnecting();
@@ -64,10 +95,14 @@ class ConnectionManagerService {
   }
 
   Future<void> _startFcmRegistration() async {
-    if (!_isRunning) return;
-    
+    if (!_isRunning || _isFcmConnecting) return;
+    _isFcmConnecting = true;
+    _updateGlobalState();
+
     try {
       final token = await FirebaseService.getAndRegisterToken();
+      if (!_isRunning) return;
+      _isFcmConnecting = false;
       if (token != null) {
         _isFcmConnected = true;
         _fcmRetryAttempt = 0;
@@ -76,7 +111,10 @@ class ConnectionManagerService {
         _scheduleFcmRetry();
       }
     } catch (e) {
-      _scheduleFcmRetry();
+      _isFcmConnecting = false;
+      if (_isRunning) {
+        _scheduleFcmRetry();
+      }
     }
   }
 
@@ -84,6 +122,7 @@ class ConnectionManagerService {
     if (!_isRunning) return;
     
     _isFcmConnected = false;
+    _isFcmConnecting = false;
     _updateGlobalState();
     
     _fcmRetryAttempt++;
@@ -109,6 +148,8 @@ class ConnectionManagerService {
     debugPrint('[ConnectionManager] Pausing connections (Detached)');
     _isRunning = false;
     _fcmRetryTimer?.cancel();
+    _isFcmConnecting = false;
+    FirebaseService.onBackendRegistrationChanged = null;
     webSocketService.removeListener(_onSocketStateChanged);
     webSocketService.disconnect();
     connectionStateProvider.setDisconnected();
@@ -116,9 +157,14 @@ class ConnectionManagerService {
 
   Future<void> resumeConnections() async {
     if (_isRunning) {
-      if (!webSocketService.isConnected) {
+      if (!webSocketService.isConnected &&
+          webSocketService.status != WebSocketStatus.connecting) {
         debugPrint('[ConnectionManager] Reconnecting dropped WebSocket on Foreground');
         webSocketService.connect();
+      }
+      if (!_isFcmConnected && !_isFcmConnecting) {
+        debugPrint('[ConnectionManager] Retrying Firebase backend registration');
+        _startFcmRegistration();
       }
       return;
     }
@@ -146,6 +192,8 @@ class ConnectionManagerService {
     _fcmRetryTimer?.cancel();
     _fcmRetryAttempt = 0;
     _isFcmConnected = false;
+    _isFcmConnecting = false;
+    FirebaseService.onBackendRegistrationChanged = null;
     
     webSocketService.removeListener(_onSocketStateChanged);
     webSocketService.disconnect();

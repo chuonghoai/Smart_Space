@@ -1,10 +1,17 @@
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobile_shared/core/api/api_response.dart';
+import 'package:mobile_shared/core/connection/connection_manager.dart';
+import 'package:mobile_shared/core/connection/connection_state_provider.dart';
 import 'package:mobile_shared/core/websocket/websocket_service.dart';
 import 'package:mobile_shared/features/call/models/call_models.dart';
 import 'package:mobile_shared/features/call/providers/call_controller.dart';
+import 'package:mobile_shared/features/chat/data/chat_repository.dart';
 import 'package:mobile_shared/features/chat/models/chat_message_model.dart';
 import 'package:mobile_shared/features/chat/models/conversation_model.dart';
 import 'package:mobile_shared/features/chat/models/linked_report_model.dart';
+import 'package:mobile_shared/features/chat/providers/chat_detail_provider.dart';
+import 'package:mobile_shared/features/chat/services/chat_ws_service.dart';
 
 void main() {
   group('CallStatus', () {
@@ -177,4 +184,147 @@ void main() {
       controller.dispose();
     });
   });
+
+  group('ConnectionManagerService independent WS + Firebase state rule', () {
+    test('turns green only when both WebSocket and Firebase are connected, red otherwise', () {
+      ConnectionManagerService.evaluateGlobalConnectionState(
+        wsConnected: true,
+        wsConnecting: false,
+        fcmConnected: true,
+        fcmConnecting: false,
+      );
+      expect(connectionStateProvider.state, GlobalConnectionState.connected);
+
+      // FCM failed while WS is connected -> must turn red (error), not stay green or spin
+      ConnectionManagerService.evaluateGlobalConnectionState(
+        wsConnected: true,
+        wsConnecting: false,
+        fcmConnected: false,
+        fcmConnecting: false,
+      );
+      expect(connectionStateProvider.state, GlobalConnectionState.error);
+
+      // WS dropped while FCM is connected -> must turn red (error)
+      ConnectionManagerService.evaluateGlobalConnectionState(
+        wsConnected: false,
+        wsConnecting: false,
+        fcmConnected: true,
+        fcmConnecting: false,
+      );
+      expect(connectionStateProvider.state, GlobalConnectionState.error);
+
+      // Active initial/retry handshake -> connecting
+      ConnectionManagerService.evaluateGlobalConnectionState(
+        wsConnected: true,
+        wsConnecting: false,
+        fcmConnected: false,
+        fcmConnecting: true,
+      );
+      expect(connectionStateProvider.state, GlobalConnectionState.connecting);
+
+      // WebSocketService send/subscribe no longer throws ConnectionNotReadyException
+      connectionStateProvider.setError();
+      webSocketService.setStatusForTest(WebSocketStatus.disconnected);
+      expect(() => webSocketService.send(destination: '/smartspace/test', body: '{}'), returnsNormally);
+    });
+  });
+
+  group('ChatDetailNotifier draft resolution', () {
+    test('ensureConversationCreated resolves real conversation ID and loads messages', () async {
+      TestWidgetsFlutterBinding.ensureInitialized();
+      FlutterSecureStorage.setMockInitialValues({});
+      final fakeRepo = _FakeChatRepoForDraftTest();
+      final notifier = ChatDetailNotifier(
+        conversationId: 'new_client_u-99',
+        repository: fakeRepo,
+        wsService: ChatWsService(),
+      );
+
+      expect(notifier.state.isDraft, isTrue);
+      final resolvedId = await notifier.ensureConversationCreated();
+      expect(resolvedId, 'conv-real-99');
+      expect(notifier.state.isDraft, isFalse);
+      expect(notifier.state.conversationId, 'conv-real-99');
+      expect(notifier.state.messages.length, 1);
+      expect(notifier.state.messages.first.content, 'Existing hello');
+
+      notifier.dispose();
+    });
+  });
+}
+
+class _FakeChatRepoForDraftTest extends ChatRepositoryImpl {
+  @override
+  Future<ApiResponse<ConversationModel>> createOrGetConversation({
+    List<String>? participantIds,
+    String? reportId,
+    String conversationType = 'PRIVATE',
+    String? name,
+    bool? isAnonymous,
+  }) async {
+    return ApiResponse(
+      success: true,
+      message: 'ok',
+      data: ConversationModel(
+        id: 'conv-real-99',
+        conversationType: 'PRIVATE',
+        partnerId: 'u-99',
+        partnerName: 'Client 99',
+        partnerRole: 'client',
+        createdAt: DateTime.utc(2026, 11, 25, 10, 0),
+      ),
+    );
+  }
+
+  @override
+  Future<ApiResponse<ConversationModel>> getConversationDetail(
+    String conversationId,
+  ) async {
+    return ApiResponse(
+      success: true,
+      message: 'ok',
+      data: ConversationModel(
+        id: conversationId,
+        conversationType: 'PRIVATE',
+        partnerId: 'u-99',
+        partnerName: 'Client 99',
+        partnerRole: 'client',
+        createdAt: DateTime.utc(2026, 11, 25, 10, 0),
+      ),
+    );
+  }
+
+  @override
+  Future<ApiResponse<List<ChatMessageModel>>> getMessages(
+    String conversationId, {
+    int page = 1,
+    int size = 20,
+  }) async {
+    return ApiResponse(
+      success: true,
+      message: 'ok',
+      data: [
+        ChatMessageModel(
+          id: 'msg-1',
+          conversationId: conversationId,
+          senderId: 'u-99',
+          content: 'Existing hello',
+          messageType: 'TEXT',
+          createdAt: DateTime.utc(2026, 11, 25, 10, 0),
+        ),
+      ],
+    );
+  }
+
+  @override
+  Future<ApiResponse<void>> enterPresence(String conversationId) async =>
+      ApiResponse(success: true, message: 'ok');
+
+  @override
+  Future<ApiResponse<void>> leavePresence(String conversationId) async =>
+      ApiResponse(success: true, message: 'ok');
+
+  @override
+  Future<ApiResponse<void>> markAsRead(String conversationId) async =>
+      ApiResponse(success: true, message: 'ok');
 }

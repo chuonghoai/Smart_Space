@@ -364,8 +364,20 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen>
           ),
           IconButton(
             icon: const Icon(Icons.more_vert_rounded),
-            onPressed: () {
-              context.push(RouterPath.conversationInfoWithId(widget.conversationId));
+            onPressed: () async {
+              var targetId = state.conversationId;
+              if (state.isDraft) {
+                try {
+                  targetId = await ref
+                      .read(chatDetailProvider(widget.conversationId).notifier)
+                      .ensureConversationCreated();
+                } catch (_) {
+                  return;
+                }
+              }
+              if (context.mounted) {
+                context.push(RouterPath.conversationInfoWithId(targetId));
+              }
             },
           ),
         ],

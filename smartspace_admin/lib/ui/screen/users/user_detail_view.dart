@@ -227,23 +227,33 @@ class _UserDetailBodyState extends ConsumerState<_UserDetailBody> {
     if (!mounted) return;
 
     if (eligibility?.canMessage == true) {
-      final router = GoRouter.of(context);
-      final displayName = user.fullName.isEmpty ? user.email : user.fullName;
-      if (Navigator.of(context).canPop()) {
-        Navigator.of(context).pop();
-      }
-      router.push(
-        RouterPath.chatDetailWithId('new_client_${user.id}'),
-        extra: ParticipantModel(
-          userId: user.id,
-          name: displayName,
-          avatarUrl: user.avatarUrl,
-          role: 'client',
-        ),
-      );
-      return;
+      try {
+        final convRes = await chatRepository.createOrGetConversation(
+          participantIds: [user.id],
+          isAnonymous: false,
+        );
+        if (!mounted) return;
+        if (convRes.success && convRes.data != null) {
+          final router = GoRouter.of(context);
+          final displayName = user.fullName.isEmpty ? user.email : user.fullName;
+          if (Navigator.of(context).canPop()) {
+            Navigator.of(context).pop();
+          }
+          router.push(
+            RouterPath.chatDetailWithId(convRes.data!.id),
+            extra: ParticipantModel(
+              userId: user.id,
+              name: displayName,
+              avatarUrl: user.avatarUrl,
+              role: 'client',
+            ),
+          );
+          return;
+        }
+      } catch (_) {}
     }
 
+    if (!mounted) return;
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(

@@ -25,7 +25,7 @@ class AppServicesInitializer extends ConsumerStatefulWidget {
 class _AppServicesInitializerState
     extends ConsumerState<AppServicesInitializer> with WidgetsBindingObserver {
   StreamSubscription<Map<String, dynamic>>? _fcmTapSub;
-  VoidCallback? _connectionStateListener;
+  VoidCallback? _wsStateListener;
 
   @override
   void initState() {
@@ -50,22 +50,22 @@ class _AppServicesInitializerState
       }
     };
 
-    _connectionStateListener = () {
-      if (connectionStateProvider.isReady()) {
-        debugPrint('[AppServices] connectionStateProvider → READY, setting up WebSocket listeners...');
+    _wsStateListener = () {
+      if (webSocketService.isConnected) {
+        debugPrint('[AppServices] WebSocket → CONNECTED, setting up WebSocket listeners...');
         _setupWebSockets();
       } else {
         WsServicesRegistry.resetAll();
       }
     };
-    connectionStateProvider.addListener(_connectionStateListener!);
+    webSocketService.addListener(_wsStateListener!);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FirebaseService.checkInitialMessage();
       FirebaseService.requestPermission();
 
-      if (connectionStateProvider.isReady()) {
-        debugPrint('[AppServices] Already connected on first frame, setting up WebSocket listeners...');
+      if (webSocketService.isConnected) {
+        debugPrint('[AppServices] WebSocket already connected on first frame, setting up listeners...');
         _setupWebSockets();
       }
     });
@@ -102,10 +102,10 @@ class _AppServicesInitializerState
   void dispose() {
     WidgetsBinding.instance.removeObserver(this);
     _fcmTapSub?.cancel();
-    if (_connectionStateListener != null) {
-      connectionStateProvider.removeListener(_connectionStateListener!);
+    if (_wsStateListener != null) {
+      webSocketService.removeListener(_wsStateListener!);
     }
-    WsServicesRegistry.disposeAll();
+    WsServicesRegistry.resetAll();
     super.dispose();
   }
 

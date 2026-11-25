@@ -14,6 +14,17 @@ class CallWsService implements WsFeatureService {
   Stream<Map<String, dynamic>> get events => _eventController.stream;
 
   bool get isConnected => webSocketService.isConnected;
+  bool get isSubscribed => _callSub != null;
+
+  bool ensureSubscribed() {
+    if (!webSocketService.isConnected) {
+      return false;
+    }
+    if (_callSub == null) {
+      setup();
+    }
+    return _callSub != null;
+  }
 
   @override
   void setup() {

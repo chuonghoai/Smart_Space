@@ -214,7 +214,7 @@ class _AdminChatDetailScreenState extends ConsumerState<AdminChatDetailScreen> {
                           state.draftPartnerId;
                       final selected = await LinkedReportPickerSheet.showMulti(
                         context: context,
-                        conversationId: widget.conversationId,
+                        conversationId: state.conversationId,
                         adminClientId: clientId,
                         isAnonymous: isAnonymous,
                         initialSelectedIds:
@@ -356,8 +356,25 @@ class _AdminChatDetailScreenState extends ConsumerState<AdminChatDetailScreen> {
           IconButton(
             icon: const Icon(Icons.more_vert_rounded),
             tooltip: l10n.conversationInfoTitle,
-            onPressed: () {
-              context.push(RouterPath.conversationInfoWithId(widget.conversationId));
+            onPressed: () async {
+              var targetId = state.conversationId;
+              if (state.isDraft) {
+                try {
+                  targetId = await ref
+                      .read(chatDetailProvider(widget.conversationId).notifier)
+                      .ensureConversationCreated();
+                } catch (_) {
+                  if (context.mounted) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(l10n.connectionUnstable)),
+                    );
+                  }
+                  return;
+                }
+              }
+              if (context.mounted) {
+                context.push(RouterPath.conversationInfoWithId(targetId));
+              }
             },
           ),
           const SizedBox(width: 4),
@@ -412,7 +429,7 @@ class _AdminChatDetailScreenState extends ConsumerState<AdminChatDetailScreen> {
                             message: message,
                             isMe: isMe,
                             conversationMessages: state.messages,
-                            conversationId: widget.conversationId,
+                            conversationId: state.conversationId,
                             onRetry: () {
                               ref
                                   .read(chatDetailProvider(widget.conversationId).notifier)

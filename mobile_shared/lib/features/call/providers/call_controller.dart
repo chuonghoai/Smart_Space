@@ -83,10 +83,30 @@ class CallState {
 }
 
 class CallController extends StateNotifier<CallState> {
-  CallController() : super(const CallState()) {
-    _wsSub = callWsService.events.listen(_handleWsEvent);
+  CallController({
+    CallWsService? wsService,
+    CallApiService? apiService,
+    CallWebRtcEngine Function()? engineFactory,
+    bool Function()? isWsConnected,
+    Duration setupSyncInterval = const Duration(seconds: 3),
+  })  : _wsService = wsService ?? callWsService,
+        _apiService = apiService ?? callApiService,
+        _engineFactory = engineFactory ?? (() => CallWebRtcEngine()),
+        _isWsConnected = isWsConnected ?? (() => webSocketService.isConnected),
+        _setupSyncInterval = setupSyncInterval,
+        super(const CallState()) {
+    _wsSub = _wsService.events.listen(_handleWsEvent);
     webSocketService.addListener(_onWebSocketStateChanged);
+    if (_isWsConnected()) {
+      _wsService.ensureSubscribed();
+    }
   }
+
+  final CallWsService _wsService;
+  final CallApiService _apiService;
+  final CallWebRtcEngine Function() _engineFactory;
+  final bool Function() _isWsConnected;
+  final Duration _setupSyncInterval;
 
   StreamSubscription<Map<String, dynamic>>? _wsSub;
   CallWebRtcEngine? _engine;
@@ -94,11 +114,19 @@ class CallController extends StateNotifier<CallState> {
   Timer? _durationTimer;
   Timer? _disconnectGraceTimer;
   Timer? _autoDismissTimer;
+  Timer? _setupSyncTimer;
   bool _ringingAckSent = false;
   bool _connectedSent = false;
   bool _acceptedLocally = false;
   bool _isAppForeground = true;
   bool _isDisposed = false;
+  bool _isEngineReady = false;
+  String? _engineCallId;
+  bool _offerStarted = false;
+  bool _isFlushingSignals = false;
+  bool _isSyncingSetupState = false;
+  final List<Map<String, dynamic>> _pendingSignals = [];
+  final Map<String, List<Map<String, dynamic>>> _earlyWsEventsByCallId = {};
 
   void Function(String callId)? onCallScreenRequested;
   RTCVideoRenderer? get remoteRenderer => _engine?.remoteRenderer;
@@ -123,7 +151,7 @@ class CallController extends StateNotifier<CallState> {
       return;
     }
 
-    final res = await callApiService.getCallStatus(callId);
+    final res = await _apiService.getCallStatus(callId);
     if (_isDisposed) return;
 
     if (!res.success || res.data == null) {
@@ -164,14 +192,18 @@ class CallController extends StateNotifier<CallState> {
   }
 
   void _onWebSocketStateChanged() {
-    if (_isDisposed || webSocketService.isConnected) return;
+    if (_isDisposed) return;
+    if (_isWsConnected()) {
+      _wsService.ensureSubscribed();
+      return;
+    }
     if (state.status == CallStatus.connecting ||
         state.status == CallStatus.ringing ||
         state.status == CallStatus.incoming ||
         state.status == CallStatus.accepted) {
       final callId = state.callId;
       if (callId != null && !callId.startsWith('pending_')) {
-        callApiService.markFailed(callId, reason: 'WS_DISCONNECTED');
+        _apiService.markFailed(callId, reason: 'WS_DISCONNECTED');
       }
       _transitionToTerminal(CallStatus.failed);
     }
@@ -205,7 +237,7 @@ class CallController extends StateNotifier<CallState> {
       isAnonymous: isAnonymous ?? false,
     );
 
-    if (!webSocketService.isConnected) {
+    if (!_isWsConnected() || !_wsService.ensureSubscribed()) {
       _showImmediateConnectFailure(requestedPeer, conversationId);
       return false;
     }
@@ -236,7 +268,7 @@ class CallController extends StateNotifier<CallState> {
     );
     onCallScreenRequested?.call(pendingId);
 
-    final res = await callApiService.initiateCall(
+    final res = await _apiService.initiateCall(
       receiverId: targetUserId,
       conversationId: conversationId,
       isAnonymous: isAnonymous,
@@ -262,6 +294,19 @@ class CallController extends StateNotifier<CallState> {
       isScreenPresented: true,
       clearError: true,
     );
+    _startSetupSyncTimer(session.callId);
+
+    final earlyEvents = _earlyWsEventsByCallId.remove(session.callId);
+    if (earlyEvents != null && earlyEvents.isNotEmpty) {
+      for (final ev in earlyEvents) {
+        await _handleWsEvent(ev);
+        if (_isDisposed ||
+            state.callId != session.callId ||
+            state.status.isTerminal) {
+          break;
+        }
+      }
+    }
     return true;
   }
 
@@ -303,9 +348,9 @@ class CallController extends StateNotifier<CallState> {
 
     await callRingtoneService.startRinging(callId);
 
-    final sentWs = callWsService.sendRinging(callId);
+    final sentWs = _wsService.sendRinging(callId);
     if (!sentWs) {
-      await callApiService.acknowledgeRinging(callId);
+      await _apiService.acknowledgeRinging(callId);
     }
   }
 
@@ -324,7 +369,7 @@ class CallController extends StateNotifier<CallState> {
       return;
     }
 
-    final res = await callApiService.acceptCall(callId);
+    final res = await _apiService.acceptCall(callId);
     if (!res.success || res.data == null) {
       _transitionToTerminal(CallStatus.failed, errorMessage: res.message);
       return;
@@ -333,6 +378,7 @@ class CallController extends StateNotifier<CallState> {
     final session = res.data!;
     _iceServers = session.iceServers;
     state = state.copyWith(status: CallStatus.accepted, clearError: true);
+    _startSetupSyncTimer(callId);
 
     await _initEngine(callId);
   }
@@ -344,9 +390,9 @@ class CallController extends StateNotifier<CallState> {
     await callRingtoneService.stopRinging(callId);
     await FirebaseService.dismissActiveWsCallNotice(callId);
 
-    final sentWs = callWsService.sendReject(callId, reason: reason);
+    final sentWs = _wsService.sendReject(callId, reason: reason);
     if (!sentWs) {
-      await callApiService.rejectCall(callId, reason: reason);
+      await _apiService.rejectCall(callId, reason: reason);
     }
     _transitionToTerminal(CallStatus.rejected, immediate: true);
   }
@@ -355,9 +401,9 @@ class CallController extends StateNotifier<CallState> {
     final callId = state.callId;
     if (callId == null) return;
     if (!callId.startsWith('pending_')) {
-      final sentWs = callWsService.sendCancel(callId);
+      final sentWs = _wsService.sendCancel(callId);
       if (!sentWs) {
-        await callApiService.cancelCall(callId);
+        await _apiService.cancelCall(callId);
       }
     }
     _transitionToTerminal(CallStatus.cancelled, immediate: true);
@@ -381,9 +427,9 @@ class CallController extends StateNotifier<CallState> {
     }
 
     if (!callId.startsWith('pending_')) {
-      final sentWs = callWsService.sendEnd(callId, reason: reason);
+      final sentWs = _wsService.sendEnd(callId, reason: reason);
       if (!sentWs) {
-        await callApiService.endCall(callId, reason: reason);
+        await _apiService.endCall(callId, reason: reason);
       }
     }
     _transitionToTerminal(CallStatus.ended, immediate: true);
@@ -403,12 +449,14 @@ class CallController extends StateNotifier<CallState> {
   }
 
   Future<void> _initEngine(String callId) async {
+    _isEngineReady = false;
+    _engineCallId = callId;
     await _engine?.dispose();
-    final engine = CallWebRtcEngine();
+    final engine = _engineFactory();
     _engine = engine;
 
     engine.onIceCandidate = (candidate) {
-      final sent = callWsService.sendSignal(
+      final sent = _wsService.sendSignal(
         callId: callId,
         signalType: 'ICE_CANDIDATE',
         candidate: candidate.candidate,
@@ -416,7 +464,7 @@ class CallController extends StateNotifier<CallState> {
         sdpMLineIndex: candidate.sdpMLineIndex,
       );
       if (!sent) {
-        callApiService.relaySignal(
+        _apiService.relaySignal(
           callId: callId,
           signalType: 'ICE_CANDIDATE',
           candidate: candidate.candidate,
@@ -441,9 +489,9 @@ class CallController extends StateNotifier<CallState> {
         _disconnectGraceTimer?.cancel();
         if (!_connectedSent) {
           _connectedSent = true;
-          final sent = callWsService.sendConnected(callId);
+          final sent = _wsService.sendConnected(callId);
           if (!sent) {
-            callApiService.markConnected(callId);
+            _apiService.markConnected(callId);
           }
           _enterOngoingState();
         }
@@ -452,28 +500,38 @@ class CallController extends StateNotifier<CallState> {
         _disconnectGraceTimer?.cancel();
         _disconnectGraceTimer = Timer(const Duration(seconds: 8), () {
           if (!_isDisposed && state.callId == callId && state.hasActiveCall) {
-            callApiService.markFailed(callId, reason: 'NETWORK_LOST');
+            _apiService.markFailed(callId, reason: 'NETWORK_LOST');
             _transitionToTerminal(CallStatus.failed);
           }
         });
       } else if (rtcState ==
           RTCPeerConnectionState.RTCPeerConnectionStateFailed) {
-        callApiService.markFailed(callId, reason: 'ICE_FAILED');
+        _apiService.markFailed(callId, reason: 'ICE_FAILED');
         _transitionToTerminal(CallStatus.failed);
       }
     };
 
     try {
       await engine.initialize(iceServers: _iceServers);
+      if (_isDisposed || state.callId != callId || _engine != engine) {
+        await engine.dispose();
+        return;
+      }
+      _isEngineReady = true;
       state = state.copyWith(isMuted: engine.isMuted);
+      await _flushPendingSignals(callId);
     } catch (e) {
       debugPrint('[CallController] Engine init failed: $e');
-      await callApiService.markFailed(callId, reason: 'MEDIA_INIT_FAILED');
-      _transitionToTerminal(CallStatus.failed, errorMessage: e.toString());
+      if (!_isDisposed && state.callId == callId) {
+        await _apiService.markFailed(callId, reason: 'MEDIA_INIT_FAILED');
+        _transitionToTerminal(CallStatus.failed, errorMessage: e.toString());
+      }
     }
   }
 
   void _enterOngoingState() {
+    _setupSyncTimer?.cancel();
+    _setupSyncTimer = null;
     if (state.status == CallStatus.ongoing) return;
     state = state.copyWith(status: CallStatus.ongoing, elapsedSeconds: 0);
     _durationTimer?.cancel();
@@ -482,6 +540,107 @@ class CallController extends StateNotifier<CallState> {
         state = state.copyWith(elapsedSeconds: state.elapsedSeconds + 1);
       }
     });
+  }
+
+  void _startSetupSyncTimer(String callId) {
+    _setupSyncTimer?.cancel();
+    if (callId.startsWith('pending_')) return;
+    _setupSyncTimer = Timer.periodic(_setupSyncInterval, (_) {
+      _syncCallSetupState(callId);
+    });
+  }
+
+  Future<void> _syncCallSetupState(String callId) async {
+    if (_isDisposed ||
+        state.callId != callId ||
+        !state.hasActiveCall ||
+        state.status == CallStatus.ongoing) {
+      _setupSyncTimer?.cancel();
+      _setupSyncTimer = null;
+      return;
+    }
+    if (_isSyncingSetupState) return;
+    _isSyncingSetupState = true;
+    try {
+      final res = await _apiService.getCallStatus(callId);
+      if (_isDisposed || state.callId != callId || !state.hasActiveCall) {
+        return;
+      }
+      if (!res.success || res.data == null) return;
+
+      final remote = res.data!;
+      if (remote.status.isTerminal) {
+        debugPrint(
+          '[CallController] Watchdog synced terminal state ${remote.status} for call $callId',
+        );
+        _transitionToTerminal(
+          remote.status,
+          immediate: !state.isOutgoing && state.status == CallStatus.incoming,
+          errorMessage: remote.endReason,
+        );
+        return;
+      }
+
+      if (state.isOutgoing &&
+          remote.status == CallStatus.ringing &&
+          state.status == CallStatus.connecting) {
+        state = state.copyWith(status: CallStatus.ringing);
+      } else if (state.isOutgoing &&
+          remote.status == CallStatus.accepted &&
+          !_offerStarted) {
+        if (remote.iceServers.isNotEmpty) {
+          _iceServers = remote.iceServers;
+        }
+        debugPrint('[CallController] Watchdog recovered missed CALL_ACCEPTED for $callId');
+        await _startOutgoingWebRtcOffer(callId);
+      } else if (remote.status == CallStatus.ongoing) {
+        _enterOngoingState();
+      }
+    } catch (e) {
+      debugPrint('[CallController] Setup sync check error: $e');
+    } finally {
+      _isSyncingSetupState = false;
+    }
+  }
+
+  Future<void> _startOutgoingWebRtcOffer(String callId) async {
+    if (_isDisposed ||
+        state.callId != callId ||
+        !state.isOutgoing ||
+        _offerStarted) {
+      return;
+    }
+    _offerStarted = true;
+    state = state.copyWith(status: CallStatus.accepted);
+    await _initEngine(callId);
+    if (_isDisposed ||
+        state.callId != callId ||
+        !_isEngineReady ||
+        _engine == null ||
+        !_engine!.isInitialized) {
+      return;
+    }
+    try {
+      final offer = await _engine!.createOffer();
+      final sent = _wsService.sendSignal(
+        callId: callId,
+        signalType: 'OFFER',
+        sdp: offer.sdp,
+      );
+      if (!sent) {
+        await _apiService.relaySignal(
+          callId: callId,
+          signalType: 'OFFER',
+          sdp: offer.sdp,
+        );
+      }
+    } catch (e) {
+      debugPrint('[CallController] Failed creating/sending OFFER: $e');
+      if (!_isDisposed && state.callId == callId) {
+        await _apiService.markFailed(callId, reason: 'SIGNALING_ERROR');
+        _transitionToTerminal(CallStatus.failed, errorMessage: e.toString());
+      }
+    }
   }
 
   Future<void> _handleWsEvent(Map<String, dynamic> event) async {
@@ -519,6 +678,7 @@ class CallController extends StateNotifier<CallState> {
             kIsWeb ? AudioOutputRoute.browserDefault : AudioOutputRoute.earpiece,
         isScreenPresented: _isAppForeground,
       );
+      _startSetupSyncTimer(callId);
 
       if (_isAppForeground) {
         onCallScreenRequested?.call(callId);
@@ -537,9 +697,21 @@ class CallController extends StateNotifier<CallState> {
         );
         if (shown && !_ringingAckSent && state.callId == callId) {
           _ringingAckSent = true;
-          callWsService.sendRinging(callId);
+          _wsService.sendRinging(callId);
         }
       }
+      return;
+    }
+
+    if (callId.isNotEmpty &&
+        state.callId != callId &&
+        state.isOutgoing &&
+        state.status == CallStatus.connecting &&
+        (state.callId?.startsWith('pending_') ?? false)) {
+      _earlyWsEventsByCallId
+          .putIfAbsent(callId, () => [])
+          .add(Map<String, dynamic>.from(event));
+      debugPrint('[CallController] Buffered early WS event $eventType for $callId');
       return;
     }
 
@@ -556,23 +728,7 @@ class CallController extends StateNotifier<CallState> {
         if (state.isOutgoing &&
             (state.status == CallStatus.connecting ||
                 state.status == CallStatus.ringing)) {
-          state = state.copyWith(status: CallStatus.accepted);
-          await _initEngine(callId);
-          if (_engine != null) {
-            final offer = await _engine!.createOffer();
-            final sent = callWsService.sendSignal(
-              callId: callId,
-              signalType: 'OFFER',
-              sdp: offer.sdp,
-            );
-            if (!sent) {
-              await callApiService.relaySignal(
-                callId: callId,
-                signalType: 'OFFER',
-                sdp: offer.sdp,
-              );
-            }
-          }
+          await _startOutgoingWebRtcOffer(callId);
         }
         break;
 
@@ -617,19 +773,38 @@ class CallController extends StateNotifier<CallState> {
   }
 
   Future<void> _handleSignalEvent(String callId, Map<String, dynamic> event) async {
-    if (_engine == null) return;
+    if (_engine == null ||
+        !_engine!.isInitialized ||
+        !_isEngineReady ||
+        _engineCallId != callId) {
+      _pendingSignals.add(Map<String, dynamic>.from(event));
+      debugPrint(
+        '[CallController] Buffered ${event['signalType']} for call $callId (pending=${_pendingSignals.length})',
+      );
+      return;
+    }
+    await _processSignalEvent(callId, event);
+  }
+
+  Future<void> _processSignalEvent(String callId, Map<String, dynamic> event) async {
+    if (_isDisposed ||
+        state.callId != callId ||
+        _engine == null ||
+        !_engine!.isInitialized) {
+      return;
+    }
     final signalType = event['signalType']?.toString() ?? '';
     try {
       if (signalType == 'OFFER') {
         final sdp = event['sdp']?.toString() ?? '';
         final answer = await _engine!.handleRemoteOfferAndCreateAnswer(sdp);
-        final sent = callWsService.sendSignal(
+        final sent = _wsService.sendSignal(
           callId: callId,
           signalType: 'ANSWER',
           sdp: answer.sdp,
         );
         if (!sent) {
-          await callApiService.relaySignal(
+          await _apiService.relaySignal(
             callId: callId,
             signalType: 'ANSWER',
             sdp: answer.sdp,
@@ -650,6 +825,29 @@ class CallController extends StateNotifier<CallState> {
       }
     } catch (e) {
       debugPrint('[CallController] Signal handling error ($signalType): $e');
+    }
+  }
+
+  Future<void> _flushPendingSignals(String callId) async {
+    if (_isFlushingSignals) return;
+    _isFlushingSignals = true;
+    try {
+      while (!_isDisposed &&
+          _isEngineReady &&
+          state.callId == callId &&
+          _pendingSignals.isNotEmpty) {
+        int nextIndex = _pendingSignals.indexWhere((e) {
+          final t = e['signalType']?.toString() ?? '';
+          return t == 'OFFER' || t == 'ANSWER';
+        });
+        if (nextIndex < 0) {
+          nextIndex = 0;
+        }
+        final nextEvent = _pendingSignals.removeAt(nextIndex);
+        await _processSignalEvent(callId, nextEvent);
+      }
+    } finally {
+      _isFlushingSignals = false;
     }
   }
 
@@ -709,6 +907,14 @@ class CallController extends StateNotifier<CallState> {
     _disconnectGraceTimer = null;
     _autoDismissTimer?.cancel();
     _autoDismissTimer = null;
+    _setupSyncTimer?.cancel();
+    _setupSyncTimer = null;
+    _isSyncingSetupState = false;
+    _isEngineReady = false;
+    _engineCallId = null;
+    _offerStarted = false;
+    _pendingSignals.clear();
+    _earlyWsEventsByCallId.clear();
     _engine?.dispose();
     _engine = null;
   }

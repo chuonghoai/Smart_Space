@@ -41,69 +41,107 @@ class _AdminReportDetailScreenState
   int _currentResolvedImageIndex = 0;
   int _currentReviewImageIndex = 0;
   bool _isReopening = false;
+  bool _isOpeningChat = false;
   StaffModel? _selectedStaff;
   String _selectedSeverity = 'low';
   String? _lastSyncedReportId;
 
-  void _handleMessageStaff(String? staffId, {String? staffName, String? staffAvatar}) {
-    if (staffId == null || staffId.isEmpty) return;
+  Future<void> _handleMessageStaff(String? staffId, {String? staffName, String? staffAvatar}) async {
+    if (staffId == null || staffId.isEmpty || _isOpeningChat) return;
+    _isOpeningChat = true;
     final l10n = AppLocalizations.of(context);
-    context.push(
-      RouterPath.chatDetailWithId('new_$staffId'),
-      extra: ParticipantModel(
-        userId: staffId,
-        name: staffName ?? l10n?.filterRoleStaff ?? 'Nhân viên',
-        avatarUrl: staffAvatar,
-        role: 'staff',
-      ),
-    );
+    try {
+      final res = await chatRepository.createOrGetConversation(
+        participantIds: [staffId],
+      );
+      if (!mounted) return;
+      if (res.success && res.data != null) {
+        context.push(
+          RouterPath.chatDetailWithId(res.data!.id),
+          extra: ParticipantModel(
+            userId: staffId,
+            name: staffName ?? l10n?.filterRoleStaff ?? 'Nhân viên',
+            avatarUrl: staffAvatar,
+            role: 'staff',
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              res.message.isNotEmpty
+                  ? res.message
+                  : (l10n?.connectionUnstable ?? ''),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n?.connectionUnstable ?? e.toString())),
+        );
+      }
+    } finally {
+      _isOpeningChat = false;
+    }
   }
 
   Future<void> _handleMessageReporter(ReportDetailModel report) async {
+    if (_isOpeningChat) return;
+    _isOpeningChat = true;
     final l10n = AppLocalizations.of(context)!;
     final userId = report.userId;
-    if (userId != null && userId.isNotEmpty) {
-      try {
-        final res = await chatRepository.checkCommunicationEligibility(
-          targetUserId: userId,
-          isAnonymous: report.isAnonymous,
-        );
-        if (!mounted) return;
-        if (res.success && res.data?.canMessage == true) {
-          final draftId = report.isAnonymous
-              ? 'new_client_anon_$userId'
-              : 'new_client_$userId';
-          context.push(
-            RouterPath.chatDetailWithId(draftId),
-            extra: ParticipantModel(
-              userId: userId,
-              name: report.isAnonymous
-                  ? l10n.anonymousUser
-                  : (report.userName ?? l10n.user),
-              avatarUrl: report.isAnonymous ? null : report.userAvatarUrl,
-              role: 'client',
-            ),
+    try {
+      if (userId != null && userId.isNotEmpty) {
+        try {
+          final eligRes = await chatRepository.checkCommunicationEligibility(
+            targetUserId: userId,
+            isAnonymous: report.isAnonymous,
           );
-          return;
-        }
-      } catch (_) {}
-    }
+          if (!mounted) return;
+          if (eligRes.success && eligRes.data?.canMessage == true) {
+            final convRes = await chatRepository.createOrGetConversation(
+              participantIds: [userId],
+              isAnonymous: report.isAnonymous,
+            );
+            if (!mounted) return;
+            if (convRes.success && convRes.data != null) {
+              context.push(
+                RouterPath.chatDetailWithId(convRes.data!.id),
+                extra: ParticipantModel(
+                  userId: userId,
+                  name: report.isAnonymous
+                      ? l10n.anonymousUser
+                      : (report.userName ?? l10n.user),
+                  avatarUrl: report.isAnonymous ? null : report.userAvatarUrl,
+                  role: 'client',
+                ),
+              );
+              return;
+            }
+          }
+        } catch (_) {}
+      }
 
-    if (!mounted) return;
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        icon: Icon(Icons.info_outline_rounded, color: Theme.of(ctx).colorScheme.primary, size: 28),
-        title: Text(l10n.cannotMessageClientTitle),
-        content: Text(l10n.cannotMessageClientMessage),
-        actions: [
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(l10n.closeAction),
-          ),
-        ],
-      ),
-    );
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          icon: Icon(Icons.info_outline_rounded, color: Theme.of(ctx).colorScheme.primary, size: 28),
+          title: Text(l10n.cannotMessageClientTitle),
+          content: Text(l10n.cannotMessageClientMessage),
+          actions: [
+            FilledButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text(l10n.closeAction),
+            ),
+          ],
+        ),
+      );
+    } finally {
+      _isOpeningChat = false;
+    }
   }
 
   Future<void> _openReporterCallSheet(ReportDetailModel report) async {

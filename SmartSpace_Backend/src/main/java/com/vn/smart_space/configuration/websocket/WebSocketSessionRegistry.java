@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.messaging.simp.user.SimpUser;
@@ -35,7 +36,7 @@ public class WebSocketSessionRegistry {
     private final Map<String, Set<String>> sessionIdsByUser = new ConcurrentHashMap<>();
 
     @Autowired(required = false)
-    private SimpUserRegistry simpUserRegistry;
+    private ObjectProvider<SimpUserRegistry> simpUserRegistryProvider;
 
     @Value("${webrtc.ws.heartbeat-timeout-seconds:35}")
     private long heartbeatTimeoutSeconds = 35L;
@@ -164,6 +165,9 @@ public class WebSocketSessionRegistry {
         if (Duration.between(s.lastHeartbeatAt(), now).getSeconds() > timeout) {
             return false;
         }
+        SimpUserRegistry simpUserRegistry = simpUserRegistryProvider != null
+                ? simpUserRegistryProvider.getIfAvailable()
+                : null;
         if (simpUserRegistry != null
                 && Duration.between(s.connectedAt(), now).getSeconds() >= 5L) {
             SimpUser brokerUser = simpUserRegistry.getUser(s.userId());

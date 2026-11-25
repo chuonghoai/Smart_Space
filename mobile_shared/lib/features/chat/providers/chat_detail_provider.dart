@@ -439,6 +439,15 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
     }
   }
 
+  Future<String> ensureConversationCreated() async {
+    final wasEmpty = state.messages.isEmpty;
+    final id = await _ensureConversationCreated();
+    if (wasEmpty && !_isDisposed) {
+      await syncLatestMessages();
+    }
+    return id;
+  }
+
   Future<String> _ensureConversationCreated() async {
     if (!state.isDraft || state.draftPartnerId == null) {
       return state.conversationId;

@@ -31,6 +31,10 @@ class FirebaseService {
   static String? _currentFcmToken;
   static String? get currentFcmToken => _currentFcmToken;
 
+  static bool _isBackendRegistered = false;
+  static bool get isBackendRegistered => _isBackendRegistered;
+  static void Function(bool registered)? onBackendRegistrationChanged;
+
   /// Stream emitted when user taps a notification (foreground, background, or launched).
   /// Payload: data map (e.g. { "reportId": "...", "type": "REPORT_CREATED" })
   static final StreamController<Map<String, dynamic>> _tapController =
@@ -48,9 +52,11 @@ class FirebaseService {
     _listenForeground();
     _listenOnMessageOpenedApp();
 
-    _messaging.onTokenRefresh.listen((newToken) {
+    _messaging.onTokenRefresh.listen((newToken) async {
       _currentFcmToken = newToken;
-      _sendTokenToServer(newToken);
+      final registered = await _sendTokenToServer(newToken);
+      _isBackendRegistered = registered;
+      onBackendRegistrationChanged?.call(registered);
     });
 
     debugPrint('[FCM] Firebase initialized');
@@ -181,21 +187,31 @@ class FirebaseService {
       } else {
         _currentFcmToken = await _messaging.getToken();
       }
-      if (_currentFcmToken != null) {
-        await _sendTokenToServer(_currentFcmToken!);
-        debugPrint('[FCM] Token: ${_currentFcmToken!.substring(0, 20)}...');
+      if (_currentFcmToken != null && _currentFcmToken!.isNotEmpty) {
+        final registered = await _sendTokenToServer(_currentFcmToken!);
+        _isBackendRegistered = registered;
+        onBackendRegistrationChanged?.call(registered);
+        if (registered) {
+          debugPrint('[FCM] Token: ${_currentFcmToken!.substring(0, 20)}...');
+          return _currentFcmToken;
+        }
+        return null;
       }
-      return _currentFcmToken;
+      _isBackendRegistered = false;
+      onBackendRegistrationChanged?.call(false);
+      return null;
     } catch (e) {
       debugPrint('[FCM] getToken failed: $e');
+      _isBackendRegistered = false;
+      onBackendRegistrationChanged?.call(false);
       return null;
     }
   }
 
-  static Future<void> _sendTokenToServer(String token) async {
+  static Future<bool> _sendTokenToServer(String token) async {
     try {
       final platform = kIsWeb ? 'web' : 'android';
-      await apiClient.post(
+      final response = await apiClient.post(
         '/devices/fcm-token',
         data: {
           'fcmToken': token,
@@ -203,13 +219,21 @@ class FirebaseService {
           'deviceName': kIsWeb ? 'Web Browser' : null,
         },
       );
-      debugPrint('[FCM] Token registered on server');
+      if (response.success) {
+        debugPrint('[FCM] Token registered on server');
+        return true;
+      }
+      debugPrint('[FCM] Token register rejected: ${response.message}');
+      return false;
     } catch (e) {
       debugPrint('[FCM] Token register failed: $e');
+      return false;
     }
   }
 
   static Future<void> clearTokenOnServer() async {
+    _isBackendRegistered = false;
+    onBackendRegistrationChanged?.call(false);
     if (_currentFcmToken == null) return;
     try {
       await apiClient.delete('/devices/fcm-token?fcmToken=$_currentFcmToken');
