@@ -29,7 +29,8 @@ class ErrorInterceptor extends Interceptor {
         !requestUrl.contains('/auth/login') &&
         !requestUrl.contains('/auth/refresh-token') &&
         !requestUrl.contains('/auth/logout') &&
-        !requestUrl.contains('/devices/fcm-token') &&
+        !(requestUrl.contains('/devices/fcm-token') &&
+            err.requestOptions.method.toUpperCase() == 'DELETE') &&
         err.requestOptions.extra['isRetry'] != true) {
       
       final now = DateTime.now();

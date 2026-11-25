@@ -1,44 +1,54 @@
 import 'package:flutter/material.dart';
+import 'package:mobile_shared/l10n/generated/shared_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class ChatCallBottomSheet extends StatelessWidget {
   final String partnerName;
   final String? partnerPhone;
-  final String titleText;
-  final String cellularCallTitle;
-  final String cellularCallDesc;
-  final String freeCallTitle;
-  final String freeCallDesc;
-  final String comingSoonText;
-  final String phoneNotAvailableText;
-  final String freeCallComingSoonText;
+  final bool canCellularCall;
+  final bool canFreeCall;
+  final String? cellularCallDisabledReason;
+  final String? freeCallDisabledReason;
+  final VoidCallback? onFreeCallTap;
+  final String? titleText;
+  final String? cellularCallTitle;
+  final String? cellularCallDesc;
+  final String? freeCallTitle;
+  final String? freeCallDesc;
+  final String? phoneNotAvailableText;
 
   const ChatCallBottomSheet({
     super.key,
     required this.partnerName,
     this.partnerPhone,
-    this.titleText = 'Tùy chọn cuộc gọi',
-    this.cellularCallTitle = 'Gọi điện qua di động',
-    this.cellularCallDesc = 'Mở ứng dụng gọi điện mặc định',
-    this.freeCallTitle = 'Gọi miễn phí qua ứng dụng',
-    this.freeCallDesc = 'Tính năng đang được phát triển',
-    this.comingSoonText = 'Sắp ra mắt',
-    this.phoneNotAvailableText = 'Số điện thoại không khả dụng',
-    this.freeCallComingSoonText = 'Tính năng gọi miễn phí qua internet đang được phát triển',
+    this.canCellularCall = true,
+    this.canFreeCall = true,
+    this.cellularCallDisabledReason,
+    this.freeCallDisabledReason,
+    this.onFreeCallTap,
+    this.titleText,
+    this.cellularCallTitle,
+    this.cellularCallDesc,
+    this.freeCallTitle,
+    this.freeCallDesc,
+    this.phoneNotAvailableText,
   });
 
   static Future<void> show(
     BuildContext context, {
     required String partnerName,
     String? partnerPhone,
+    bool canCellularCall = true,
+    bool canFreeCall = true,
+    String? cellularCallDisabledReason,
+    String? freeCallDisabledReason,
+    VoidCallback? onFreeCallTap,
     String? titleText,
     String? cellularCallTitle,
     String? cellularCallDesc,
     String? freeCallTitle,
     String? freeCallDesc,
-    String? comingSoonText,
     String? phoneNotAvailableText,
-    String? freeCallComingSoonText,
   }) {
     return showModalBottomSheet<void>(
       context: context,
@@ -47,25 +57,36 @@ class ChatCallBottomSheet extends StatelessWidget {
       builder: (ctx) => ChatCallBottomSheet(
         partnerName: partnerName,
         partnerPhone: partnerPhone,
-        titleText: titleText ?? 'Tùy chọn cuộc gọi',
-        cellularCallTitle: cellularCallTitle ?? 'Gọi điện qua di động',
-        cellularCallDesc: cellularCallDesc ?? 'Mở ứng dụng gọi điện mặc định',
-        freeCallTitle: freeCallTitle ?? 'Gọi miễn phí qua ứng dụng',
-        freeCallDesc: freeCallDesc ?? 'Tính năng đang được phát triển',
-        comingSoonText: comingSoonText ?? 'Sắp ra mắt',
-        phoneNotAvailableText: phoneNotAvailableText ?? 'Số điện thoại không khả dụng',
-        freeCallComingSoonText: freeCallComingSoonText ?? 'Tính năng gọi miễn phí qua internet đang được phát triển',
+        canCellularCall: canCellularCall,
+        canFreeCall: canFreeCall,
+        cellularCallDisabledReason: cellularCallDisabledReason,
+        freeCallDisabledReason: freeCallDisabledReason,
+        onFreeCallTap: onFreeCallTap,
+        titleText: titleText,
+        cellularCallTitle: cellularCallTitle,
+        cellularCallDesc: cellularCallDesc,
+        freeCallTitle: freeCallTitle,
+        freeCallDesc: freeCallDesc,
+        phoneNotAvailableText: phoneNotAvailableText,
       ),
     );
   }
 
-  Future<void> _makePhoneCall(BuildContext context) async {
+  bool get _hasValidPhone {
+    final phone = partnerPhone?.trim();
+    return canCellularCall && phone != null && phone.isNotEmpty;
+  }
+
+  Future<void> _makePhoneCall(BuildContext context, SharedLocalizations l10n) async {
+    final fallbackMsg = phoneNotAvailableText ??
+        cellularCallDisabledReason ??
+        l10n.callCellularUnavailable;
     Navigator.of(context).pop();
     final phone = partnerPhone?.trim();
-    if (phone == null || phone.isEmpty) {
+    if (!_hasValidPhone || phone == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(phoneNotAvailableText),
+          content: Text(fallbackMsg),
           behavior: SnackBarBehavior.floating,
         ),
       );
@@ -84,7 +105,7 @@ class ChatCallBottomSheet extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text(phoneNotAvailableText),
+            content: Text(fallbackMsg),
             behavior: SnackBarBehavior.floating,
           ),
         );
@@ -92,21 +113,39 @@ class ChatCallBottomSheet extends StatelessWidget {
     }
   }
 
-  void _onFreeCallTap(BuildContext context) {
+  void _handleFreeCallTap(BuildContext context, SharedLocalizations l10n) {
     Navigator.of(context).pop();
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(freeCallComingSoonText),
-        behavior: SnackBarBehavior.floating,
-      ),
-    );
+    if (!canFreeCall || onFreeCallTap == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(freeCallDisabledReason ?? l10n.callFreeUnavailable),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+      return;
+    }
+    onFreeCallTap!.call();
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
+    final l10n = SharedLocalizations.of(context)!;
     final isDark = theme.brightness == Brightness.dark;
+
+    final resolvedTitle = titleText ?? l10n.callOptionsTitle;
+    final resolvedCellularTitle = cellularCallTitle ?? l10n.callCellularTitle;
+    final resolvedCellularDesc = _hasValidPhone
+        ? partnerPhone!.trim()
+        : (cellularCallDisabledReason ??
+            phoneNotAvailableText ??
+            cellularCallDesc ??
+            l10n.callCellularUnavailable);
+    final resolvedFreeTitle = freeCallTitle ?? l10n.callFreeTitle;
+    final resolvedFreeDesc = canFreeCall
+        ? (freeCallDesc ?? l10n.callFreeVoiceDesc)
+        : (freeCallDisabledReason ?? l10n.callFreeUnavailable);
 
     return Container(
       decoration: BoxDecoration(
@@ -114,7 +153,7 @@ class ChatCallBottomSheet extends StatelessWidget {
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.4 : 0.08),
+            color: colorScheme.shadow.withValues(alpha: isDark ? 0.35 : 0.08),
             blurRadius: 16,
             offset: const Offset(0, -4),
           ),
@@ -148,7 +187,7 @@ class ChatCallBottomSheet extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(
-                      titleText,
+                      resolvedTitle,
                       style: theme.textTheme.titleMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: colorScheme.onSurface,
@@ -168,163 +207,123 @@ class ChatCallBottomSheet extends StatelessWidget {
               ),
               const SizedBox(height: 12),
 
-              // Option 1: Cellular Call
-              Material(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(16),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(16),
-                  onTap: () => _makePhoneCall(context),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    decoration: BoxDecoration(
-                      border: Border.all(
-                        color: colorScheme.outlineVariant.withValues(alpha: 0.4),
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: colorScheme.primaryContainer.withValues(alpha: 0.7),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Icon(
-                            Icons.phone_outlined,
-                            color: colorScheme.onPrimaryContainer,
-                            size: 22,
-                          ),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                cellularCallTitle,
-                                style: theme.textTheme.titleSmall?.copyWith(
-                                  fontWeight: FontWeight.w600,
-                                  color: colorScheme.onSurface,
-                                ),
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                (partnerPhone != null && partnerPhone!.trim().isNotEmpty)
-                                    ? partnerPhone!
-                                    : cellularCallDesc,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 14,
-                          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              // Option 1: Regular Cellular Call
+              _CallOptionTile(
+                enabled: _hasValidPhone,
+                icon: Icons.phone_outlined,
+                iconBg: colorScheme.primaryContainer.withValues(alpha: 0.8),
+                iconColor: colorScheme.onPrimaryContainer,
+                title: resolvedCellularTitle,
+                subtitle: resolvedCellularDesc,
+                onTap: () => _makePhoneCall(context, l10n),
               ),
               const SizedBox(height: 10),
 
-              // Option 2: Free In-App Call
-              Material(
-                color: Colors.transparent,
-                borderRadius: BorderRadius.circular(16),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(16),
-                  onTap: () => _onFreeCallTap(context),
-                  child: Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
-                    decoration: BoxDecoration(
-                      color: colorScheme.surfaceContainerLow,
-                      border: Border.all(
-                        color: colorScheme.outlineVariant.withValues(alpha: 0.3),
-                      ),
-                      borderRadius: BorderRadius.circular(16),
-                    ),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 44,
-                          height: 44,
-                          decoration: BoxDecoration(
-                            color: colorScheme.tertiaryContainer.withValues(alpha: 0.6),
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Icon(
-                            Icons.headset_mic_outlined,
-                            color: colorScheme.onTertiaryContainer,
-                            size: 22,
-                          ),
-                        ),
-                        const SizedBox(width: 14),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Flexible(
-                                    child: Text(
-                                      freeCallTitle,
-                                      style: theme.textTheme.titleSmall?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                        color: colorScheme.onSurface,
-                                      ),
-                                      maxLines: 1,
-                                      overflow: TextOverflow.ellipsis,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 8),
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
-                                    decoration: BoxDecoration(
-                                      color: colorScheme.surfaceContainerHighest,
-                                      borderRadius: BorderRadius.circular(6),
-                                      border: Border.all(
-                                        color: colorScheme.outlineVariant.withValues(alpha: 0.5),
-                                      ),
-                                    ),
-                                    child: Text(
-                                      comingSoonText,
-                                      style: theme.textTheme.labelSmall?.copyWith(
-                                        fontSize: 10,
-                                        fontWeight: FontWeight.w500,
-                                        color: colorScheme.primary,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 2),
-                              Text(
-                                freeCallDesc,
-                                style: theme.textTheme.bodySmall?.copyWith(
-                                  color: colorScheme.onSurfaceVariant,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(
-                          Icons.arrow_forward_ios_rounded,
-                          size: 14,
-                          color: colorScheme.onSurfaceVariant.withValues(alpha: 0.6),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
+              // Option 2: Free WebRTC Call
+              _CallOptionTile(
+                enabled: canFreeCall && onFreeCallTap != null,
+                icon: Icons.call_rounded,
+                iconBg: colorScheme.tertiaryContainer.withValues(alpha: 0.8),
+                iconColor: colorScheme.onTertiaryContainer,
+                title: resolvedFreeTitle,
+                subtitle: resolvedFreeDesc,
+                onTap: () => _handleFreeCallTap(context, l10n),
               ),
             ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CallOptionTile extends StatelessWidget {
+  final bool enabled;
+  final IconData icon;
+  final Color iconBg;
+  final Color iconColor;
+  final String title;
+  final String subtitle;
+  final VoidCallback onTap;
+
+  const _CallOptionTile({
+    required this.enabled,
+    required this.icon,
+    required this.iconBg,
+    required this.iconColor,
+    required this.title,
+    required this.subtitle,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final cs = theme.colorScheme;
+
+    return Opacity(
+      opacity: enabled ? 1.0 : 0.55,
+      child: Material(
+        color: Colors.transparent,
+        borderRadius: BorderRadius.circular(16),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(16),
+          onTap: onTap,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: enabled ? Colors.transparent : cs.surfaceContainerLow,
+              border: Border.all(
+                color: cs.outlineVariant.withValues(alpha: enabled ? 0.5 : 0.3),
+              ),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Row(
+              children: [
+                Container(
+                  width: 48,
+                  height: 48,
+                  decoration: BoxDecoration(
+                    color: enabled ? iconBg : cs.surfaceContainerHighest,
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: enabled ? iconColor : cs.onSurfaceVariant,
+                    size: 22,
+                  ),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.w600,
+                          color: cs.onSurface,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        subtitle,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: cs.onSurfaceVariant,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 14,
+                  color: cs.onSurfaceVariant.withValues(alpha: 0.6),
+                ),
+              ],
+            ),
           ),
         ),
       ),

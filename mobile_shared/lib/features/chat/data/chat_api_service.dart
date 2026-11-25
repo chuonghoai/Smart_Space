@@ -1,5 +1,6 @@
 import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
+import 'package:mobile_shared/features/call/models/call_models.dart';
 import 'package:mobile_shared/features/chat/models/chat_message_model.dart';
 import 'package:mobile_shared/features/chat/models/conversation_info_model.dart';
 import 'package:mobile_shared/features/chat/models/conversation_model.dart';
@@ -55,6 +56,7 @@ class ChatApiService {
     String? reportId,
     String conversationType = 'PRIVATE',
     String? name,
+    bool? isAnonymous,
   }) async {
     return apiClient.post<ConversationModel>(
       '/conversations',
@@ -63,6 +65,7 @@ class ChatApiService {
         'conversationType': conversationType,
         if (reportId != null && reportId.isNotEmpty) 'reportId': reportId,
         if (name != null && name.isNotEmpty) 'name': name,
+        if (isAnonymous != null) 'isAnonymous': isAnonymous,
       },
       decoder: (json) => ConversationModel.fromJson(json as Map<String, dynamic>),
     );
@@ -102,6 +105,7 @@ class ChatApiService {
     String messageType = 'text',
     List<Map<String, dynamic>>? messageMedia,
     String? reportId,
+    List<String>? reportIds,
   }) async {
     return apiClient.post<ChatMessageModel>(
       '/chat-messages',
@@ -112,6 +116,7 @@ class ChatApiService {
         'messageType': messageType,
         if (messageMedia != null && messageMedia.isNotEmpty) 'messageMedia': messageMedia,
         if (reportId != null && reportId.isNotEmpty) 'reportId': reportId,
+        if (reportIds != null && reportIds.isNotEmpty) 'reportIds': reportIds,
       },
       decoder: (json) => ChatMessageModel.fromJson(json as Map<String, dynamic>),
     );
@@ -193,6 +198,53 @@ class ChatApiService {
   }) async {
     return apiClient.get<List<LinkedReportModel>>(
       '/conversations/$conversationId/reports',
+      queryParameters: {
+        if (isAnonymous != null) 'isAnonymous': isAnonymous,
+        'page': page,
+        'size': size,
+      },
+      decoder: (json) {
+        if (json is Map && json['content'] is List) {
+          return (json['content'] as List)
+              .map((e) => LinkedReportModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        }
+        if (json is List) {
+          return json
+              .map((e) => LinkedReportModel.fromJson(e as Map<String, dynamic>))
+              .toList();
+        }
+        return <LinkedReportModel>[];
+      },
+    );
+  }
+
+  Future<ApiResponse<CommunicationEligibilityModel>> checkCommunicationEligibility({
+    required String targetUserId,
+    String? conversationId,
+    bool? isAnonymous,
+  }) async {
+    return apiClient.get<CommunicationEligibilityModel>(
+      '/conversations/eligibility',
+      queryParameters: {
+        'targetUserId': targetUserId,
+        if (conversationId != null && conversationId.isNotEmpty)
+          'conversationId': conversationId,
+        if (isAnonymous != null) 'isAnonymous': isAnonymous,
+      },
+      decoder: (json) =>
+          CommunicationEligibilityModel.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  Future<ApiResponse<List<LinkedReportModel>>> getAdminClientRehandlingReports(
+    String clientId, {
+    bool? isAnonymous,
+    int page = 1,
+    int size = 20,
+  }) async {
+    return apiClient.get<List<LinkedReportModel>>(
+      '/conversations/admin-client/$clientId/rehandling-reports',
       queryParameters: {
         if (isAnonymous != null) 'isAnonymous': isAnonymous,
         'page': page,

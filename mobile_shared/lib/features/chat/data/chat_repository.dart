@@ -1,5 +1,6 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:mobile_shared/core/api/api_response.dart';
+import 'package:mobile_shared/features/call/models/call_models.dart';
 import 'package:mobile_shared/features/chat/data/chat_api_service.dart';
 import 'package:mobile_shared/features/chat/models/chat_message_model.dart';
 import 'package:mobile_shared/features/chat/models/conversation_info_model.dart';
@@ -24,6 +25,7 @@ abstract class ChatRepository {
     String? reportId,
     String conversationType = 'PRIVATE',
     String? name,
+    bool? isAnonymous,
   });
 
   Future<ApiResponse<List<ChatMessageModel>>> getMessages(
@@ -41,6 +43,7 @@ abstract class ChatRepository {
     String messageType = 'text',
     List<Map<String, dynamic>>? messageMedia,
     String? reportId,
+    List<String>? reportIds,
   });
 
   Future<ApiResponse<ChatMessageModel>> sendMessage({
@@ -50,6 +53,7 @@ abstract class ChatRepository {
     String messageType = 'text',
     List<Map<String, dynamic>>? messageMedia,
     String? reportId,
+    List<String>? reportIds,
   });
 
   Future<ApiResponse<void>> markAsRead(String conversationId);
@@ -77,6 +81,19 @@ abstract class ChatRepository {
     bool? isAnonymous,
     int page = 1,
     int size = 10,
+  });
+
+  Future<ApiResponse<CommunicationEligibilityModel>> checkCommunicationEligibility({
+    required String targetUserId,
+    String? conversationId,
+    bool? isAnonymous,
+  });
+
+  Future<ApiResponse<List<LinkedReportModel>>> getAdminClientRehandlingReports(
+    String clientId, {
+    bool? isAnonymous,
+    int page = 1,
+    int size = 20,
   });
 }
 
@@ -114,12 +131,14 @@ class ChatRepositoryImpl implements ChatRepository {
     String? reportId,
     String conversationType = 'PRIVATE',
     String? name,
+    bool? isAnonymous,
   }) {
     return _apiService.createOrGetConversation(
       participantIds: participantIds,
       reportId: reportId,
       conversationType: conversationType,
       name: name,
+      isAnonymous: isAnonymous,
     );
   }
 
@@ -143,6 +162,7 @@ class ChatRepositoryImpl implements ChatRepository {
     String messageType = 'text',
     List<Map<String, dynamic>>? messageMedia,
     String? reportId,
+    List<String>? reportIds,
   }) {
     return chatWsService.sendMessage(
       conversationId: conversationId,
@@ -151,6 +171,7 @@ class ChatRepositoryImpl implements ChatRepository {
       messageType: messageType,
       messageMedia: messageMedia,
       reportId: reportId,
+      reportIds: reportIds,
     );
   }
 
@@ -162,6 +183,7 @@ class ChatRepositoryImpl implements ChatRepository {
     String messageType = 'text',
     List<Map<String, dynamic>>? messageMedia,
     String? reportId,
+    List<String>? reportIds,
   }) {
     return _apiService.sendMessage(
       conversationId: conversationId,
@@ -170,6 +192,7 @@ class ChatRepositoryImpl implements ChatRepository {
       messageType: messageType,
       messageMedia: messageMedia,
       reportId: reportId,
+      reportIds: reportIds,
     );
   }
 
@@ -229,6 +252,34 @@ class ChatRepositoryImpl implements ChatRepository {
     int size = 10,
   }) {
     return _apiService.getConversationReports(conversationId, isAnonymous: isAnonymous, page: page, size: size);
+  }
+
+  @override
+  Future<ApiResponse<CommunicationEligibilityModel>> checkCommunicationEligibility({
+    required String targetUserId,
+    String? conversationId,
+    bool? isAnonymous,
+  }) {
+    return _apiService.checkCommunicationEligibility(
+      targetUserId: targetUserId,
+      conversationId: conversationId,
+      isAnonymous: isAnonymous,
+    );
+  }
+
+  @override
+  Future<ApiResponse<List<LinkedReportModel>>> getAdminClientRehandlingReports(
+    String clientId, {
+    bool? isAnonymous,
+    int page = 1,
+    int size = 20,
+  }) {
+    return _apiService.getAdminClientRehandlingReports(
+      clientId,
+      isAnonymous: isAnonymous,
+      page: page,
+      size: size,
+    );
   }
 }
 

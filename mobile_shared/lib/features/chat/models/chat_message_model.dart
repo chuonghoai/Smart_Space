@@ -45,6 +45,7 @@ class ChatMessageModel {
   final bool isFailed;
   final List<MessageMediaModel> messageMedia;
   final LinkedReportModel? report;
+  final List<LinkedReportModel> reports;
   final String? localMediaPath;
   final bool isRead;
 
@@ -52,7 +53,9 @@ class ChatMessageModel {
   bool get isImage => messageType.toUpperCase() == 'IMAGE';
   bool get isVideo => messageType.toUpperCase() == 'VIDEO';
   bool get isAudio => messageType.toUpperCase() == 'AUDIO';
-  bool get isReport => messageType.toUpperCase() == 'REPORT';
+  bool get isReport => messageType.toUpperCase() == 'REPORT' || reports.isNotEmpty || report != null;
+  List<LinkedReportModel> get effectiveReports =>
+      reports.isNotEmpty ? reports : (report != null ? [report!] : const []);
 
   const ChatMessageModel({
     this.id,
@@ -67,6 +70,7 @@ class ChatMessageModel {
     this.isFailed = false,
     this.messageMedia = const [],
     this.report,
+    this.reports = const [],
     this.localMediaPath,
     this.isRead = false,
   });
@@ -85,6 +89,17 @@ class ChatMessageModel {
       reportModel = LinkedReportModel.fromJson(json['report'] as Map<String, dynamic>);
     }
 
+    List<LinkedReportModel> reportList = [];
+    if (json['reports'] is List) {
+      reportList = (json['reports'] as List)
+          .whereType<Map<String, dynamic>>()
+          .map(LinkedReportModel.fromJson)
+          .toList();
+    }
+    if (reportList.isEmpty && reportModel != null) {
+      reportList = [reportModel];
+    }
+
     return ChatMessageModel(
       id: json['id']?.toString(),
       tempId: json['tempId'] as String?,
@@ -99,7 +114,8 @@ class ChatMessageModel {
       isSending: false,
       isFailed: false,
       messageMedia: mediaList,
-      report: reportModel,
+      report: reportModel ?? (reportList.isNotEmpty ? reportList.first : null),
+      reports: reportList,
       isRead: json['isRead'] as bool? ?? json['is_read'] as bool? ?? false,
     );
   }
@@ -116,6 +132,7 @@ class ChatMessageModel {
       'createdAt': createdAt.toIso8601String(),
       if (messageMedia.isNotEmpty) 'messageMedia': messageMedia.map((m) => m.toJson()).toList(),
       if (report != null) 'report': report!.toJson(),
+      if (reports.isNotEmpty) 'reports': reports.map((r) => r.toJson()).toList(),
       'isRead': isRead,
     };
   }
@@ -133,6 +150,7 @@ class ChatMessageModel {
     bool? isFailed,
     List<MessageMediaModel>? messageMedia,
     LinkedReportModel? report,
+    List<LinkedReportModel>? reports,
     String? localMediaPath,
     bool? isRead,
   }) {
@@ -149,6 +167,7 @@ class ChatMessageModel {
       isFailed: isFailed ?? this.isFailed,
       messageMedia: messageMedia ?? this.messageMedia,
       report: report ?? this.report,
+      reports: reports ?? this.reports,
       localMediaPath: localMediaPath ?? this.localMediaPath,
       isRead: isRead ?? this.isRead,
     );

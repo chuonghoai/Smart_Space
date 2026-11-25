@@ -45,6 +45,7 @@ class ChatDetailState {
   });
 
   bool get canSendMessage => conversation?.canSendMessage ?? true;
+  bool get canVoiceCall => conversation?.canVoiceCall ?? canSendMessage;
 
   ChatDetailState copyWith({
     String? conversationId,
@@ -90,7 +91,21 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
   StompUnsubscribe? _topicSub;
   bool _isDisposed = false;
   bool _isActive = true;
+  bool? _draftIsAnonymous;
   bool get isActive => _isActive;
+
+  static String? _extractDraftPartnerId(String id) {
+    if (id.startsWith('new_client_anon_')) {
+      return id.substring('new_client_anon_'.length);
+    }
+    if (id.startsWith('new_client_')) {
+      return id.substring('new_client_'.length);
+    }
+    if (id.startsWith('new_')) {
+      return id.substring(4);
+    }
+    return null;
+  }
 
   void setActive(bool active) {
     if (_isActive == active) return;
@@ -112,8 +127,13 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
         super(ChatDetailState(
           conversationId: conversationId,
           isDraft: conversationId.startsWith('new_'),
-          draftPartnerId: conversationId.startsWith('new_') ? conversationId.substring(4) : null,
+          draftPartnerId: _extractDraftPartnerId(conversationId),
         )) {
+    if (conversationId.startsWith('new_client_anon_')) {
+      _draftIsAnonymous = true;
+    } else if (conversationId.startsWith('new_client_')) {
+      _draftIsAnonymous = false;
+    }
     if (!state.isDraft) {
       _init();
     } else {
@@ -419,6 +439,15 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
     }
   }
 
+  Future<String> ensureConversationCreated() async {
+    final wasEmpty = state.messages.isEmpty;
+    final id = await _ensureConversationCreated();
+    if (wasEmpty && !_isDisposed) {
+      await syncLatestMessages();
+    }
+    return id;
+  }
+
   Future<String> _ensureConversationCreated() async {
     if (!state.isDraft || state.draftPartnerId == null) {
       return state.conversationId;
@@ -426,6 +455,7 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
 
     final convRes = await _repository.createOrGetConversation(
       participantIds: [state.draftPartnerId!],
+      isAnonymous: _draftIsAnonymous,
     );
     if (convRes.success && convRes.data != null) {
       final realConv = convRes.data!;
@@ -696,19 +726,33 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
     }
   }
 
-  Future<void> sendReportMessage(LinkedReportModel report) async {
-    if (!state.canSendMessage) return;
+  Future<void> sendReportMessage(LinkedReportModel report) {
+    return sendMessageWithReports(reports: [report]);
+  }
 
+  Future<void> sendMessageWithReports({
+    String content = '',
+    required List<LinkedReportModel> reports,
+  }) async {
+    if (!state.canSendMessage || reports.isEmpty) return;
+
+    final trimmedContent = content.trim();
+    final displayContent =
+        trimmedContent.isNotEmpty ? trimmedContent : reports.first.title;
+    final reportIds =
+        reports.map((r) => r.id).where((id) => id.isNotEmpty).toList();
+    final primaryReportId = reportIds.length == 1 ? reportIds.first : null;
     final tempId = 'temp_report_${DateTime.now().microsecondsSinceEpoch}';
     final optimisticMsg = ChatMessageModel(
       tempId: tempId,
       conversationId: conversationId,
       senderId: state.currentUserId ?? '',
-      content: report.title,
+      content: displayContent,
       messageType: 'REPORT',
       createdAt: DateTime.now(),
       isSending: true,
-      report: report,
+      report: reports.length == 1 ? reports.first : null,
+      reports: reports,
     );
 
     state = state.copyWith(
@@ -723,20 +767,22 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
       if (_repository.isWsConnected) {
         sentViaWs = _repository.sendMessageWs(
           conversationId: targetConvId,
-          content: report.title,
+          content: trimmedContent,
           tempId: tempId,
           messageType: 'report',
-          reportId: report.id,
+          reportId: primaryReportId,
+          reportIds: reportIds,
         );
       }
 
       if (!sentViaWs) {
         await _sendViaRest(
           targetConvId,
-          report.title,
+          trimmedContent,
           tempId,
           messageType: 'report',
-          reportId: report.id,
+          reportId: primaryReportId,
+          reportIds: reportIds,
         );
       } else {
         Timer(const Duration(seconds: 5), () {
@@ -745,16 +791,17 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
           if (msgStillSending) {
             _sendViaRest(
               targetConvId,
-              report.title,
+              trimmedContent,
               tempId,
               messageType: 'report',
-              reportId: report.id,
+              reportId: primaryReportId,
+              reportIds: reportIds,
             );
           }
         });
       }
     } catch (e) {
-      debugPrint('[ChatDetailProvider] sendReportMessage error: $e');
+      debugPrint('[ChatDetailProvider] sendMessageWithReports error: $e');
       if (!_isDisposed) {
         _markMessageFailed(tempId);
       }
@@ -768,6 +815,7 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
     String messageType = 'text',
     List<Map<String, dynamic>>? messageMedia,
     String? reportId,
+    List<String>? reportIds,
   }) async {
     try {
       final res = await _repository.sendMessage(
@@ -777,6 +825,7 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
         messageType: messageType,
         messageMedia: messageMedia,
         reportId: reportId,
+        reportIds: reportIds,
       );
 
       if (_isDisposed) return;
@@ -853,6 +902,13 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
       }
     }
 
+    final retryReportIds = failedMsg.effectiveReports
+        .map((r) => r.id)
+        .where((id) => id.isNotEmpty)
+        .toList();
+    final retrySingleReportId =
+        retryReportIds.length == 1 ? retryReportIds.first : failedMsg.report?.id;
+
     bool sentViaWs = false;
     if (_repository.isWsConnected) {
       sentViaWs = _repository.sendMessageWs(
@@ -861,7 +917,8 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
         tempId: tempId,
         messageType: failedMsg.messageType.toLowerCase(),
         messageMedia: mediaDto,
-        reportId: failedMsg.report?.id,
+        reportId: retrySingleReportId,
+        reportIds: retryReportIds.isNotEmpty ? retryReportIds : null,
       );
     }
 
@@ -872,7 +929,8 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
         tempId,
         messageType: failedMsg.messageType.toLowerCase(),
         messageMedia: mediaDto,
-        reportId: failedMsg.report?.id,
+        reportId: retrySingleReportId,
+        reportIds: retryReportIds.isNotEmpty ? retryReportIds : null,
       );
     } else {
       Timer(const Duration(seconds: 10), () {
@@ -885,7 +943,8 @@ class ChatDetailNotifier extends StateNotifier<ChatDetailState> {
             tempId,
             messageType: failedMsg.messageType.toLowerCase(),
             messageMedia: mediaDto,
-            reportId: failedMsg.report?.id,
+            reportId: retrySingleReportId,
+            reportIds: retryReportIds.isNotEmpty ? retryReportIds : null,
           );
         }
       });

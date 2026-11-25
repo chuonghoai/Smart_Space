@@ -309,6 +309,19 @@ class _ClientConversationInfoScreenState
     AppLocalizations l10n,
     ConversationInfoModel info,
   ) {
+    final semantic = AppSemanticColors.of(context);
+    final hasPhone =
+        !info.isAnonymous && (info.partnerPhone?.trim().isNotEmpty ?? false);
+    final canFreeCall =
+        info.canVoiceCall && (info.partnerId?.trim().isNotEmpty ?? false);
+    final displayName = info.isAnonymous
+        ? l10n.anonymousPerson
+        : (info.partnerName?.isNotEmpty == true
+            ? info.partnerName!
+            : (info.partnerRole?.toLowerCase() == 'admin'
+                ? l10n.managementBoard
+                : l10n.supportStaff));
+
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       decoration: BoxDecoration(
@@ -324,19 +337,38 @@ class _ClientConversationInfoScreenState
           _buildRoundActionButton(
             theme: theme,
             icon: Icons.phone_rounded,
-            label: l10n.callButtonLabel,
-            color: Colors.green,
-            onTap: () => _makePhoneCall(context, info.partnerPhone, l10n),
+            label: l10n.cellularCall,
+            color: hasPhone ? semantic.success : theme.colorScheme.onSurfaceVariant,
+            enabled: hasPhone,
+            onTap: () => _makePhoneCall(
+              context,
+              hasPhone ? info.partnerPhone : null,
+              l10n,
+            ),
           ),
           _buildRoundActionButton(
             theme: theme,
-            icon: Icons.videocam_rounded,
-            label: l10n.videoCallButtonLabel,
-            color: theme.colorScheme.primary,
+            icon: Icons.call_rounded,
+            label: l10n.freeCall,
+            color: canFreeCall
+                ? theme.colorScheme.primary
+                : theme.colorScheme.onSurfaceVariant,
+            enabled: canFreeCall,
             onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.videoCallComingSoon)),
-              );
+              if (!canFreeCall) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  SnackBar(content: Text(l10n.callPermissionDenied)),
+                );
+                return;
+              }
+              ref.read(callControllerProvider.notifier).startCall(
+                    targetUserId: info.partnerId!,
+                    conversationId: info.id,
+                    isAnonymous: info.isAnonymous,
+                    peerName: displayName,
+                    peerAvatar: info.isAnonymous ? null : info.partnerAvatarUrl,
+                    peerRole: info.partnerRole,
+                  );
             },
           ),
         ],
@@ -349,38 +381,42 @@ class _ClientConversationInfoScreenState
     required IconData icon,
     required String label,
     required Color color,
+    bool enabled = true,
     required VoidCallback onTap,
   }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
+    return Opacity(
+      opacity: enabled ? 1.0 : 0.45,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: 24,
+                ),
               ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 24,
+              const SizedBox(height: 6),
+              Text(
+                label,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.onSurface,
+                ),
               ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              label,
-              style: theme.textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onSurface,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

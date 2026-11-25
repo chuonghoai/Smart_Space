@@ -37,6 +37,7 @@ export 'features/news/models/news_model.dart';
 export 'features/news/data/news_repository.dart';
 export 'features/news/application/news_providers.dart';
 export 'features/chat/chat.dart';
+export 'features/call/call.dart';
 
 export 'l10n/generated/shared_localizations.dart';
 export 'util/distance_formatter.dart';

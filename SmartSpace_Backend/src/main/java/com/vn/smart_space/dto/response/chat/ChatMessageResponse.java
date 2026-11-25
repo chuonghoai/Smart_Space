@@ -27,6 +27,7 @@ public class ChatMessageResponse implements Serializable {
     private EMessageType messageType;
     private List<MessageMediaResponse> messageMedia;
     private LinkedReportResponse report;
+    private List<LinkedReportResponse> reports;
     private LocalDateTime createdAt;
     @JsonProperty("isRead")
     private Boolean isRead;

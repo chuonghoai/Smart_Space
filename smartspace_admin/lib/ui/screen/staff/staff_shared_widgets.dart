@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
+import 'package:mobile_shared/features/chat/data/chat_repository.dart';
 import 'package:mobile_shared/features/chat/models/conversation_model.dart';
 import 'package:mobile_shared/util/media_upload.dart';
 import 'package:smartspace_admin/features/position/application/position_providers.dart';
@@ -1550,17 +1551,39 @@ class StaffDetailSheetBody extends ConsumerWidget {
                 SizedBox(
                   width: double.infinity,
                   child: FilledButton.icon(
-                    onPressed: () {
+                    onPressed: () async {
+                      final router = GoRouter.of(parentContext);
+                      final messenger = ScaffoldMessenger.of(parentContext);
+                      final fallbackMsg = l10n.connectionUnstable;
                       Navigator.of(sheetContext).pop();
-                      parentContext.push(
-                        RouterPath.chatDetailWithId('new_${staff.id}'),
-                        extra: ParticipantModel(
-                          userId: staff.id,
-                          name: staff.fullName,
-                          avatarUrl: staff.avatarUrl,
-                          role: 'staff',
-                        ),
-                      );
+                      try {
+                        final res = await chatRepository.createOrGetConversation(
+                          participantIds: [staff.id],
+                        );
+                        if (res.success && res.data != null) {
+                          router.push(
+                            RouterPath.chatDetailWithId(res.data!.id),
+                            extra: ParticipantModel(
+                              userId: staff.id,
+                              name: staff.fullName,
+                              avatarUrl: staff.avatarUrl,
+                              role: 'staff',
+                            ),
+                          );
+                        } else {
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                res.message.isNotEmpty ? res.message : fallbackMsg,
+                              ),
+                            ),
+                          );
+                        }
+                      } catch (_) {
+                        messenger.showSnackBar(
+                          SnackBar(content: Text(fallbackMsg)),
+                        );
+                      }
                     },
                     icon: const Icon(Icons.chat_outlined),
                     label: Text(l10n.messageStaff),

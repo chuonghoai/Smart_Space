@@ -51,6 +51,16 @@ public class ChatMessage {
     @BatchSize(size = 20)
     private List<MessageMedia> mediaFiles = new ArrayList<>();
 
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "chat_message_reports",
+            joinColumns = @JoinColumn(name = "message_id"),
+            inverseJoinColumns = @JoinColumn(name = "report_id")
+    )
+    @Builder.Default
+    @BatchSize(size = 20)
+    private List<Report> attachedReports = new ArrayList<>();
+
     public void addMedia(MessageMedia media) {
         if (this.mediaFiles == null) {
             this.mediaFiles = new ArrayList<>();

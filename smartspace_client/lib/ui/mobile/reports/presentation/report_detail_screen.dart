@@ -22,8 +22,11 @@ import 'package:smartspace_client/routes/router_path.dart';
 import 'package:smartspace_client/ui/mobile/reports/presentation/widgets/fullscreen_image_viewer.dart';
 import 'package:smartspace_client/ui/mobile/reports/presentation/widgets/report_resolution_card.dart';
 import 'package:smartspace_client/ui/mobile/reports/presentation/widgets/report_review_dialog.dart';
+import 'package:mobile_shared/features/call/models/call_models.dart';
+import 'package:mobile_shared/features/call/providers/call_controller.dart';
 import 'package:mobile_shared/features/chat/data/chat_repository.dart';
 import 'package:mobile_shared/features/chat/models/conversation_model.dart';
+import 'package:mobile_shared/features/chat/widgets/chat_call_bottom_sheet.dart';
 
 class ReportDetailScreen extends ConsumerStatefulWidget {
   final String reportId;
@@ -107,6 +110,55 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
         ),
       );
     }
+  }
+
+  Future<void> _openStaffCallSheet(ReportDetailModel report) async {
+    final l10n = AppLocalizations.of(context)!;
+    final staffId = report.assignedStaffId;
+    if (staffId == null || staffId.isEmpty) return;
+
+    CommunicationEligibilityModel? eligibility;
+    try {
+      final res = await chatRepository.checkCommunicationEligibility(
+        targetUserId: staffId,
+        isAnonymous: report.isAnonymous,
+      );
+      if (res.success) {
+        eligibility = res.data;
+      }
+    } catch (_) {}
+
+    if (!mounted) return;
+    final canVoiceCall =
+        eligibility?.canVoiceCall ?? (report.status == ReportStatus.processing);
+    final phone = report.assignedStaffPhone?.trim();
+    final hasPhone = phone != null && phone.isNotEmpty;
+    final staffName = report.assignedStaffName ?? l10n.supportStaff;
+
+    await ChatCallBottomSheet.show(
+      context,
+      partnerName: staffName,
+      partnerPhone: hasPhone ? phone : null,
+      canCellularCall: hasPhone,
+      canFreeCall: canVoiceCall,
+      freeCallDisabledReason:
+          eligibility?.reasonMessage ?? l10n.callPermissionDenied,
+      titleText: l10n.callOptionsTitle,
+      cellularCallTitle: l10n.cellularCall,
+      cellularCallDesc: l10n.cellularCallDesc,
+      freeCallTitle: l10n.freeCall,
+      freeCallDesc: l10n.callFreeVoiceDesc,
+      phoneNotAvailableText: l10n.phoneNotAvailable,
+      onFreeCallTap: () {
+        ref.read(callControllerProvider.notifier).startCall(
+              targetUserId: staffId,
+              isAnonymous: report.isAnonymous,
+              peerName: staffName,
+              peerAvatar: report.assignedStaffAvatarUrl,
+              peerRole: 'staff',
+            );
+      },
+    );
   }
 
   Future<void> _handleEditReport(ReportDetailModel report) async {
@@ -967,23 +1019,44 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen>
                                   ],
                                 ),
                                 const SizedBox(height: 12),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: OutlinedButton.icon(
-                                    icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
-                                    label: Text(
-                                      (report.status == ReportStatus.processing)
-                                          ? l10n.chatWithStaff
-                                          : l10n.viewStaffChat,
-                                    ),
-                                    style: OutlinedButton.styleFrom(
-                                      padding: const EdgeInsets.symmetric(vertical: 10),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(10),
+                                Row(
+                                  children: [
+                                    Expanded(
+                                      child: OutlinedButton.icon(
+                                        icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
+                                        label: Text(
+                                          (report.status == ReportStatus.processing)
+                                              ? l10n.chatWithStaff
+                                              : l10n.viewStaffChat,
+                                        ),
+                                        style: OutlinedButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(vertical: 12),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                        ),
+                                        onPressed: () => _openStaffChat(report),
                                       ),
                                     ),
-                                    onPressed: () => _openStaffChat(report),
-                                  ),
+                                    if (report.assignedStaffId != null &&
+                                        report.assignedStaffId!.isNotEmpty) ...[
+                                      const SizedBox(width: 8),
+                                      FilledButton.tonalIcon(
+                                        icon: const Icon(Icons.call_outlined, size: 18),
+                                        label: Text(l10n.callActionLabel),
+                                        style: FilledButton.styleFrom(
+                                          padding: const EdgeInsets.symmetric(
+                                            horizontal: 14,
+                                            vertical: 12,
+                                          ),
+                                          shape: RoundedRectangleBorder(
+                                            borderRadius: BorderRadius.circular(10),
+                                          ),
+                                        ),
+                                        onPressed: () => _openStaffCallSheet(report),
+                                      ),
+                                    ],
+                                  ],
                                 ),
                               ],
                             ),

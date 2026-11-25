@@ -1278,4 +1278,11 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get baseStationReadOnlyHint =>
       'Thông tin chức vụ và vị trí trực do Quản trị viên điều phối trên hệ thống.';
+
+  @override
+  String get callFreeVoiceDesc => 'Gọi thoại miễn phí qua internet';
+
+  @override
+  String get callPermissionDenied =>
+      'Không khả dụng cuộc gọi thoại cho hội thoại này';
 }

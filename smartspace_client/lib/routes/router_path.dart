@@ -31,6 +31,9 @@ class RouterPath {
   static String get conversationInfo => RouteName.conversationInfo.path;
   static String conversationInfoWithId(String id) =>
       RouteName.conversationInfo.path.replaceAll(':id', id);
+  static String get voiceCall => RouteName.voiceCall.path;
+  static String voiceCallWithId(String callId) =>
+      RouteName.voiceCall.path.replaceAll(':callId', callId);
   static String get news => RouteName.news.path;
   static String newsDetailWithId(String id) =>
       RouteName.newsDetail.path.replaceAll(':id', id);

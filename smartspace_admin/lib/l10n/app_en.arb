@@ -750,7 +750,7 @@
   "applyFilter": "Apply",
   "resetFilter": "Reset",
   "cannotMessageClientTitle": "Cannot Message Resident Directly",
-  "cannotMessageClientMessage": "Administrators cannot initiate direct messages with residents outside the report resolution workflow. You may call the resident directly or communicate via the assigned staff.",
+  "cannotMessageClientMessage": "You can only message or make a free call to a resident when there is at least one re-handling report from them that is currently being processed.",
   "phoneNotAvailable": "Phone number is not available",
   "cannotLaunchPhone": "Cannot launch phone dialer",
   "chatWithUser": "Message",
@@ -1663,5 +1663,11 @@
   "spatialGuideStatsTitle": "Zone Stats (30d • Prev avg • Pending)",
   "spatialGuideStatsWhat": "Shows last-30d report count, prior 90-day 30d baseline average, and currently pending reports in the cell.",
   "spatialGuideStatsPurpose": "Provides clear before/after context for each zone.",
-  "spatialGuideStatsTells": "Whether inflow in this area is outpacing local resolution."
+  "spatialGuideStatsTells": "Whether inflow in this area is outpacing local resolution.",
+  "callFreeVoiceDesc": "Free internet voice call",
+  "callPermissionDenied": "Voice call unavailable for this conversation",
+  "rehandlingReportsSection": "Re-handling reports",
+  "checkingEligibility": "Checking eligibility...",
+  "attachRehandlingReports": "Attach re-handling reports",
+  "cannotMessageAnonymousNotice": "Anonymous user: only in-app chat and free calls are supported."
 }

@@ -248,6 +248,12 @@ class RouteName {
     icon: Icons.info_outline_rounded,
     isHiddenInSearch: true,
   );
+  static const voiceCall = AppRouteInfo(
+    path: '/call/:callId',
+    nameKey: 'routeVoiceCall',
+    icon: Icons.call_rounded,
+    isHiddenInSearch: true,
+  );
 
   static const List<AppRouteInfo> allRoutes = [
     splash,
@@ -256,6 +262,7 @@ class RouteName {
     conversations,
     chatDetail,
     conversationInfo,
+    voiceCall,
     reportDetail,
     completeProfile,
     forgotPassword,

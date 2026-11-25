@@ -14,6 +14,7 @@ export 'widgets/chat_call_bottom_sheet.dart';
 export 'widgets/chat_media_gallery_viewer.dart';
 export 'widgets/chat_audio_recorder_bar.dart';
 export 'widgets/linked_report_picker_sheet.dart';
+export 'widgets/selected_reports_preview_bar.dart';
 export 'widgets/typing_indicator_widget.dart';
 export 'widgets/conversation_options_sheet.dart';
 

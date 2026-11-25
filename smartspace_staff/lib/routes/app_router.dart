@@ -24,6 +24,7 @@ import 'package:smartspace_staff/features/chat/models/conversation_model.dart';
 import 'package:smartspace_staff/ui/mobile/chat/conversations_screen.dart';
 import 'package:smartspace_staff/ui/mobile/chat/chat_detail_screen.dart';
 import 'package:smartspace_staff/ui/mobile/chat/conversation_info_screen.dart';
+import 'package:mobile_shared/features/call/widgets/voice_call_screen.dart';
 
 final GlobalKey<NavigatorState> navigatorKey = sharedNavigatorKey;
 
@@ -136,6 +137,18 @@ final appRouter = GoRouter(
       builder: (context, state) {
         final conversationId = state.pathParameters['id'] ?? '';
         return ConversationInfoScreen(conversationId: conversationId);
+      },
+    ),
+    GoRoute(
+      path: RouterPath.voiceCall,
+      builder: (context, state) {
+        final callId = state.pathParameters['callId'] ?? '';
+        return VoiceCallScreen(
+          callId: callId,
+          onClose: () {
+            if (context.canPop()) context.pop();
+          },
+        );
       },
     ),
   ],

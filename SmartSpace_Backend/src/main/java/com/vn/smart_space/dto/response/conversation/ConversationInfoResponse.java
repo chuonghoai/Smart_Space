@@ -36,6 +36,9 @@ public class ConversationInfoResponse {
     @Builder.Default
     private Boolean canSendMessage = true;
 
+    @Builder.Default
+    private Boolean canVoiceCall = true;
+
     // Context-based messaging for Client
     private String identifiedConversationId;
     private String anonymousConversationId;

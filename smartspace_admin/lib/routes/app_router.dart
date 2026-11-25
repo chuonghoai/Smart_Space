@@ -33,6 +33,7 @@ import 'package:smartspace_admin/ui/screen/home/admin_all_activities_screen.dart
 import 'package:smartspace_admin/ui/screen/chat/admin_conversations_screen.dart';
 import 'package:smartspace_admin/ui/screen/chat/admin_chat_detail_screen.dart';
 import 'package:smartspace_admin/ui/screen/chat/admin_conversation_info_screen.dart';
+import 'package:mobile_shared/features/call/widgets/voice_call_screen.dart';
 
 /// Re-export for convenience so existing callers of navigatorKey still compile.
 final GlobalKey<NavigatorState> navigatorKey = sharedNavigatorKey;
@@ -194,6 +195,18 @@ final appRouter = GoRouter(
     GoRoute(
       path: RouterPath.allActivities,
       builder: (context, state) => const AdminAllActivitiesScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.voiceCall,
+      builder: (context, state) {
+        final callId = state.pathParameters['callId'] ?? '';
+        return VoiceCallScreen(
+          callId: callId,
+          onClose: () {
+            if (context.canPop()) context.pop();
+          },
+        );
+      },
     ),
   ],
 );

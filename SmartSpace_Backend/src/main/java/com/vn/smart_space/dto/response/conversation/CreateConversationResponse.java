@@ -38,6 +38,7 @@ public class CreateConversationResponse {
     private String reportTitle;
     private String reportStatus;
     private Boolean canSendMessage;
+    private Boolean canVoiceCall;
 
     private LocalDateTime createdAt;
 }

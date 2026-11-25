@@ -201,6 +201,7 @@ class ChatWsService implements WsFeatureService {
     String messageType = 'text',
     List<Map<String, dynamic>>? messageMedia,
     String? reportId,
+    List<String>? reportIds,
   }) {
     if (!webSocketService.isConnected) {
       debugPrint('[ChatWsService] WebSocket is not connected, cannot send via WS');
@@ -215,6 +216,7 @@ class ChatWsService implements WsFeatureService {
         'messageType': messageType,
         if (messageMedia != null && messageMedia.isNotEmpty) 'messageMedia': messageMedia,
         if (reportId != null && reportId.isNotEmpty) 'reportId': reportId,
+        if (reportIds != null && reportIds.isNotEmpty) 'reportIds': reportIds,
       };
 
       debugPrint('[ChatWsService] Sending message via WS to /smartspace/chat.send: $payload');

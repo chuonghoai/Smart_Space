@@ -54,6 +54,9 @@ public class ConversationDetailResponse {
     @Builder.Default
     private Boolean canSendMessage = true;
 
+    @Builder.Default
+    private Boolean canVoiceCall = true;
+
     // Unread count for current user
     @Builder.Default
     private Integer unreadCount = 0;

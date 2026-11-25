@@ -1,10 +1,16 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/foundation.dart';
-import 'package:mobile_shared/core/api/api_client.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:mobile_shared/core/api/api_client.dart';
+
+const String _wsCallNoticeChannelId = 'smartspace_ws_call_notice';
+const String _wsCallNoticeChannelName = 'Active Call Alerts';
+
+int _wsCallNotificationId(String callId) => callId.hashCode & 0x7fffffff;
 
 @pragma('vm:entry-point')
 Future<void> _firebaseBackgroundHandler(RemoteMessage message) async {
@@ -22,15 +28,17 @@ class FirebaseService {
   static FlutterLocalNotificationsPlugin get localNotificationsPlugin =>
       _localNotifications;
 
-  // Save token
   static String? _currentFcmToken;
   static String? get currentFcmToken => _currentFcmToken;
 
-  /// Stream emitted when user taps a notification (foreground, background, or terminated).
-  /// Payload: FCM data map (e.g. { "reportId": "...", "type": "REPORT_CREATED" })
+  static bool _isBackendRegistered = false;
+  static bool get isBackendRegistered => _isBackendRegistered;
+  static void Function(bool registered)? onBackendRegistrationChanged;
+
+  /// Stream emitted when user taps a notification (foreground, background, or launched).
+  /// Payload: data map (e.g. { "reportId": "...", "type": "REPORT_CREATED" })
   static final StreamController<Map<String, dynamic>> _tapController =
       StreamController<Map<String, dynamic>>.broadcast();
-
   static Stream<Map<String, dynamic>> get onNotificationTapped =>
       _tapController.stream;
 
@@ -41,15 +49,14 @@ class FirebaseService {
 
     FirebaseMessaging.onBackgroundMessage(_firebaseBackgroundHandler);
 
-
     _listenForeground();
-
     _listenOnMessageOpenedApp();
 
-    // Listen for token refresh once during initialization
-    _messaging.onTokenRefresh.listen((newToken) {
+    _messaging.onTokenRefresh.listen((newToken) async {
       _currentFcmToken = newToken;
-      _sendTokenToServer(newToken);
+      final registered = await _sendTokenToServer(newToken);
+      _isBackendRegistered = registered;
+      onBackendRegistrationChanged?.call(registered);
     });
 
     debugPrint('[FCM] Firebase initialized');
@@ -60,10 +67,24 @@ class FirebaseService {
   static Future<void> checkInitialMessage() async {
     final RemoteMessage? initial = await _messaging.getInitialMessage();
     if (initial != null && initial.data.isNotEmpty) {
-      debugPrint('[FCM] Initial message (terminated tap): ${initial.data}');
-      // Small delay to ensure navigator is ready
+      debugPrint('[FCM] Initial message: ${initial.data}');
       await Future.delayed(const Duration(milliseconds: 500));
       _tapController.add(initial.data);
+    }
+
+    if (!kIsWeb) {
+      try {
+        final details =
+            await _localNotifications.getNotificationAppLaunchDetails();
+        if (details != null &&
+            details.didNotificationLaunchApp &&
+            details.notificationResponse?.payload != null) {
+          final data = jsonDecode(details.notificationResponse!.payload!)
+              as Map<String, dynamic>;
+          await Future.delayed(const Duration(milliseconds: 400));
+          _tapController.add(data);
+        }
+      } catch (_) {}
     }
   }
 
@@ -74,22 +95,76 @@ class FirebaseService {
     await _localNotifications.initialize(
       settings: settings,
       onDidReceiveNotificationResponse: (response) {
-        // Handle tap on a local notification (foreground FCM or upload progress).
-        // FCM payload is a JSON string: {"reportId":"...","type":"..."}.
-        // Upload-progress payload is a plain UUID string.
         if (response.payload == null || response.payload!.isEmpty) return;
         try {
-          // FCM-style JSON payload
           final data = jsonDecode(response.payload!) as Map<String, dynamic>;
-          debugPrint('[FCM] Local notification tapped (JSON payload): $data');
+          debugPrint('[FCM] Local notification tapped: $data');
           _tapController.add(data);
         } catch (_) {
-          // Plain UUID from upload-progress notification
-          debugPrint('[FCM] Local notification tapped (plain UUID): ${response.payload}');
           _tapController.add({'reportId': response.payload});
         }
       },
     );
+
+    if (!kIsWeb) {
+      final androidImpl = _localNotifications
+          .resolvePlatformSpecificImplementation<
+              AndroidFlutterLocalNotificationsPlugin>();
+      await androidImpl?.createNotificationChannel(
+        const AndroidNotificationChannel(
+          _wsCallNoticeChannelId,
+          _wsCallNoticeChannelName,
+          description: 'Incoming call notices while app is running in background',
+          importance: Importance.high,
+          playSound: true,
+          enableVibration: true,
+        ),
+      );
+    }
+  }
+
+  /// Standard OS notification shown ONLY when the live app process receives
+  /// a CALL_INCOMING event over an active WebSocket while in background.
+  /// Does not use full-screen intent, call category, or FCM wake-up.
+  static Future<bool> showActiveWsCallNotice({
+    required String callId,
+    required String title,
+    required String body,
+  }) async {
+    if (kIsWeb || callId.isEmpty) return false;
+    try {
+      await _localNotifications.show(
+        id: _wsCallNotificationId(callId),
+        title: title,
+        body: body,
+        notificationDetails: const NotificationDetails(
+          android: AndroidNotificationDetails(
+            _wsCallNoticeChannelId,
+            _wsCallNoticeChannelName,
+            importance: Importance.high,
+            priority: Priority.high,
+            fullScreenIntent: false,
+            autoCancel: true,
+          ),
+          iOS: DarwinNotificationDetails(presentSound: true),
+        ),
+        payload: jsonEncode({
+          'type': 'WS_CALL_INCOMING',
+          'callId': callId,
+        }),
+      );
+      return true;
+    } catch (e) {
+      debugPrint('[WS-CALL-NOTICE] showActiveWsCallNotice failed: $e');
+      return false;
+    }
+  }
+
+  static Future<void> dismissActiveWsCallNotice(String callId) async {
+    if (kIsWeb || callId.isEmpty) return;
+    try {
+      await _localNotifications.cancel(id: _wsCallNotificationId(callId));
+    } catch (_) {}
   }
 
   static Future<void> requestPermission() async {
@@ -101,13 +176,10 @@ class FirebaseService {
     debugPrint('[FCM] Permission: ${settings.authorizationStatus}');
   }
 
-  /// Lấy FCM token và đăng ký với backend
   static Future<String?> getAndRegisterToken() async {
     try {
       if (kIsWeb) {
-        // Web cần xin quyền Notification trước khi lấy token
         await requestPermission();
-        // Web cần VAPID key từ Firebase Console -> Cloud Messaging -> Web Push certificates
         _currentFcmToken = await _messaging.getToken(
           vapidKey:
               'BBLFiE3Jmbsbm9mxtGID5umVMiyJ8yo2PuVBKuJWr9pJvs8zcWbs9KQf7c53Hkn1uFBadTBpXbperl8NHjFlcOM',
@@ -115,22 +187,31 @@ class FirebaseService {
       } else {
         _currentFcmToken = await _messaging.getToken();
       }
-      if (_currentFcmToken != null) {
-        await _sendTokenToServer(_currentFcmToken!);
-        debugPrint('[FCM] Token: ${_currentFcmToken!.substring(0, 20)}...');
+      if (_currentFcmToken != null && _currentFcmToken!.isNotEmpty) {
+        final registered = await _sendTokenToServer(_currentFcmToken!);
+        _isBackendRegistered = registered;
+        onBackendRegistrationChanged?.call(registered);
+        if (registered) {
+          debugPrint('[FCM] Token: ${_currentFcmToken!.substring(0, 20)}...');
+          return _currentFcmToken;
+        }
+        return null;
       }
-      return _currentFcmToken;
+      _isBackendRegistered = false;
+      onBackendRegistrationChanged?.call(false);
+      return null;
     } catch (e) {
       debugPrint('[FCM] getToken failed: $e');
+      _isBackendRegistered = false;
+      onBackendRegistrationChanged?.call(false);
       return null;
     }
   }
 
-  /// Gửi FCM token lên backend để lưu vào DB
-  static Future<void> _sendTokenToServer(String token) async {
+  static Future<bool> _sendTokenToServer(String token) async {
     try {
       final platform = kIsWeb ? 'web' : 'android';
-      await apiClient.post(
+      final response = await apiClient.post(
         '/devices/fcm-token',
         data: {
           'fcmToken': token,
@@ -138,13 +219,21 @@ class FirebaseService {
           'deviceName': kIsWeb ? 'Web Browser' : null,
         },
       );
-      debugPrint('[FCM] Token registered on server');
+      if (response.success) {
+        debugPrint('[FCM] Token registered on server');
+        return true;
+      }
+      debugPrint('[FCM] Token register rejected: ${response.message}');
+      return false;
     } catch (e) {
       debugPrint('[FCM] Token register failed: $e');
+      return false;
     }
   }
 
   static Future<void> clearTokenOnServer() async {
+    _isBackendRegistered = false;
+    onBackendRegistrationChanged?.call(false);
     if (_currentFcmToken == null) return;
     try {
       await apiClient.delete('/devices/fcm-token?fcmToken=$_currentFcmToken');
@@ -157,13 +246,10 @@ class FirebaseService {
   static void _listenForeground() {
     FirebaseMessaging.onMessage.listen((RemoteMessage message) {
       debugPrint('[FCM] Foreground: ${message.notification?.title}');
-
       final notification = message.notification;
       if (notification != null) {
-        // Encode FCM data as payload so we can navigate on tap
-        final payload = message.data.isNotEmpty
-            ? jsonEncode(message.data)
-            : null;
+        final payload =
+            message.data.isNotEmpty ? jsonEncode(message.data) : null;
 
         _localNotifications.show(
           id: notification.hashCode,
@@ -184,7 +270,6 @@ class FirebaseService {
     });
   }
 
-  /// User tap vào notification khi app đang background
   static void _listenOnMessageOpenedApp() {
     FirebaseMessaging.onMessageOpenedApp.listen((RemoteMessage message) {
       debugPrint('[FCM] Tapped (background): ${message.data}');

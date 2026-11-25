@@ -2,10 +2,13 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mobile_shared/features/auth/services/auth_service.dart';
 import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_staff/features/notifications/services/notification_router.dart';
 import 'package:smartspace_staff/features/notifications/models/notification_action.dart';
 import 'package:smartspace_staff/features/app_services/ws_services_registry.dart';
+import 'package:smartspace_staff/routes/router_path.dart';
 
 /// Global widget that initializes app-level services once and keeps them alive
 /// for the entire lifecycle of the app, regardless of which screen is visible.
@@ -20,33 +23,49 @@ class AppServicesInitializer extends ConsumerStatefulWidget {
 }
 
 class _AppServicesInitializerState
-    extends ConsumerState<AppServicesInitializer> {
+    extends ConsumerState<AppServicesInitializer> with WidgetsBindingObserver {
   StreamSubscription<Map<String, dynamic>>? _fcmTapSub;
-  VoidCallback? _connectionStateListener;
+  VoidCallback? _wsStateListener;
 
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
 
     // Setup FCM tap → navigate listener
     _fcmTapSub = FirebaseService.onNotificationTapped.listen(_handleFcmTap);
 
-    _connectionStateListener = () {
-      if (connectionStateProvider.isReady()) {
-        debugPrint('[AppServices] connectionStateProvider → READY, setting up WebSocket listeners...');
+    final callCtrl = ref.read(callControllerProvider.notifier);
+    callCtrl.onCallScreenRequested = (callId) {
+      final ctx = sharedNavigatorKey.currentContext;
+      if (ctx == null || !ctx.mounted) return;
+      final router = GoRouter.of(ctx);
+      final targetPath = RouterPath.voiceCallWithId(callId);
+      if (router.routeInformationProvider.value.uri.path == targetPath) return;
+      router.push(targetPath);
+    };
+    AuthService.onBeforeLogout = () async {
+      if (mounted) {
+        await callCtrl.cleanupOnLogout();
+      }
+    };
+
+    _wsStateListener = () {
+      if (webSocketService.isConnected) {
+        debugPrint('[AppServices] WebSocket → CONNECTED, setting up WebSocket listeners...');
         _setupWebSockets();
       } else {
         WsServicesRegistry.resetAll();
       }
     };
-    connectionStateProvider.addListener(_connectionStateListener!);
+    webSocketService.addListener(_wsStateListener!);
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
       FirebaseService.checkInitialMessage();
       FirebaseService.requestPermission();
 
-      if (connectionStateProvider.isReady()) {
-        debugPrint('[AppServices] Already connected on first frame, setting up WebSocket listeners...');
+      if (webSocketService.isConnected) {
+        debugPrint('[AppServices] WebSocket already connected on first frame, setting up listeners...');
         _setupWebSockets();
       }
     });
@@ -55,6 +74,13 @@ class _AppServicesInitializerState
   /// Navigate based on FCM data payload
   void _handleFcmTap(Map<String, dynamic> data) {
     debugPrint('[AppServices] FCM tap received — data=$data');
+    final type = data['type']?.toString() ?? '';
+    if (type == 'WS_CALL_INCOMING') {
+      ref
+          .read(callControllerProvider.notifier)
+          .openActiveCallFromNotice(data['callId']?.toString() ?? '');
+      return;
+    }
     final action = NotificationAction.fromJson(data);
     if (action.type.isNotEmpty) {
       NotificationRouter.handleAction(action);
@@ -63,22 +89,29 @@ class _AppServicesInitializerState
     }
   }
 
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    ref.read(callControllerProvider.notifier).onAppLifecycleChanged(state);
+  }
+
   void _setupWebSockets() {
     WsServicesRegistry.setupAll();
   }
 
   @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _fcmTapSub?.cancel();
-    if (_connectionStateListener != null) {
-      connectionStateProvider.removeListener(_connectionStateListener!);
+    if (_wsStateListener != null) {
+      webSocketService.removeListener(_wsStateListener!);
     }
-    WsServicesRegistry.disposeAll();
+    WsServicesRegistry.resetAll();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    ref.listen<CallState>(callControllerProvider, (_, _) {});
     return widget.child;
   }
 }

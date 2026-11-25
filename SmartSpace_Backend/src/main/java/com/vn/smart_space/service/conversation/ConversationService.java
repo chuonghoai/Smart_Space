@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -24,6 +25,7 @@ import com.vn.smart_space.consts.ERole;
 import com.vn.smart_space.dto.PageResponse;
 import com.vn.smart_space.dto.request.conversation.CreateConversationRequest;
 import com.vn.smart_space.dto.request.notification.NotificationRequest;
+import com.vn.smart_space.dto.response.call.CommunicationEligibilityResponse;
 import com.vn.smart_space.dto.response.chat.ChatMessageResponse;
 import com.vn.smart_space.dto.response.chat.ChatReadReceiptResponse;
 import com.vn.smart_space.dto.response.conversation.ConversationDetailResponse;
@@ -44,6 +46,9 @@ import com.vn.smart_space.repository.ConversationRepository;
 import com.vn.smart_space.repository.ReportRepository;
 import com.vn.smart_space.repository.UserRepository;
 import com.vn.smart_space.service.chat.ChatPresenceService;
+import com.vn.smart_space.service.communication.CommunicationEligibility;
+import com.vn.smart_space.service.communication.CommunicationPermissionService;
+import com.vn.smart_space.service.communication.ICommunicationPermissionService;
 import com.vn.smart_space.service.notification.FCMService;
 
 import lombok.RequiredArgsConstructor;
@@ -63,6 +68,7 @@ public class ConversationService implements IConversationService {
     private final ChatPresenceService chatPresenceService;
     private final FCMService fcmService;
     private final MessageSource messageSource;
+    private final ICommunicationPermissionService communicationPermissionService;
 
     @Override
     @Transactional
@@ -112,6 +118,7 @@ public class ConversationService implements IConversationService {
 
         EConversationType conversationType = request.conversationType();
         String participantHash = null;
+        boolean isAnonymousConversation = false;
 
         if (conversationType == EConversationType.PRIVATE) {
             if (participantIds.size() != 2) {
@@ -133,20 +140,39 @@ public class ConversationService implements IConversationService {
                 throw new BadRequestException("conversation.client_staff_must_have_report");
             }
 
-            // Rule 3: Admin and Client cannot chat privately outside of a report
+            // Rule 3: Admin and Client can only open/chat when Client has at least one unsatisfactory report currently processing
             boolean hasAdmin = u1.getRole() == ERole.admin || u2.getRole() == ERole.admin;
             if (hasAdmin && hasClient) {
-                throw new BadRequestException("conversation.admin_client_direct_forbidden");
-            }
+                User adminUser = u1.getRole() == ERole.admin ? u1 : u2;
+                User clientUser = u1.getRole() == ERole.client ? u1 : u2;
 
-            participantHash = participantInfos.stream()
-                    .map(User::getId)
-                    .sorted()
-                    .collect(Collectors.joining("_"));
+                CommunicationEligibility eligibility = communicationPermissionService.evaluateAdminClientEligibility(
+                        clientUser.getId(), request.isAnonymous());
+                if (!eligibility.canMessage()) {
+                    throw new BadRequestException("conversation.admin_client_rehandling_required");
+                }
 
-            Optional<Conversation> existing = conversationRepository.findByParticipantHash(participantHash);
-            if (existing.isPresent()) {
-                return ConversationMapper.toConversationResponse(creatorId, existing.get());
+                isAnonymousConversation = eligibility.isAnonymous();
+                participantHash = CommunicationPermissionService.buildAdminClientParticipantHash(
+                        adminUser.getId(), clientUser.getId(), isAnonymousConversation);
+
+                Optional<Conversation> existing = conversationRepository.findByParticipantHash(participantHash);
+                if (existing.isPresent()) {
+                    CreateConversationResponse res = ConversationMapper.toConversationResponse(creatorId, existing.get());
+                    res.setCanSendMessage(eligibility.canMessage());
+                    res.setCanVoiceCall(eligibility.canVoiceCall());
+                    return res;
+                }
+            } else {
+                participantHash = participantInfos.stream()
+                        .map(User::getId)
+                        .sorted()
+                        .collect(Collectors.joining("_"));
+
+                Optional<Conversation> existing = conversationRepository.findByParticipantHash(participantHash);
+                if (existing.isPresent()) {
+                    return ConversationMapper.toConversationResponse(creatorId, existing.get());
+                }
             }
         } else if (conversationType == EConversationType.GROUP) {
             boolean anyClient = participantInfos.stream().anyMatch(u -> u.getRole() == ERole.client);
@@ -162,17 +188,22 @@ public class ConversationService implements IConversationService {
         }
 
         Conversation conversation = Conversation.builder()
-                .name(request.name())
+                .name(isAnonymousConversation ? "Người dùng ẩn danh" : request.name())
                 .conversationType(conversationType)
                 .conversationAvatar(request.conversationAvatar())
                 .participantHash(participantHash)
+                .isAnonymous(isAnonymousConversation)
                 .createdAt(LocalDateTime.now())
                 .build();
 
         participantInfos.forEach(conversation::addParticipants);
         conversationRepository.save(conversation);
 
-        return ConversationMapper.toConversationResponse(creatorId, conversation);
+        CreateConversationResponse response = ConversationMapper.toConversationResponse(creatorId, conversation);
+        CommunicationEligibility eligibility = communicationPermissionService.evaluateConversationEligibility(creatorId, conversation);
+        response.setCanSendMessage(eligibility.canMessage());
+        response.setCanVoiceCall(eligibility.canVoiceCall());
+        return response;
     }
 
     @Override
@@ -408,13 +439,13 @@ public class ConversationService implements IConversationService {
                         mergedList.add(getMergedClientConversation(userId, partner, c));
                     }
                 } else {
-                    mergedList.add(ConversationMapper.toConversationDetailResponse(userId, c));
+                    mergedList.add(toEnrichedDetailResponse(userId, c));
                 }
             }
             responses = mergedList;
         } else {
             responses = conversationPage.getContent().stream()
-                    .map(c -> ConversationMapper.toConversationDetailResponse(userId, c))
+                    .map(c -> toEnrichedDetailResponse(userId, c))
                     .toList();
         }
 
@@ -570,7 +601,7 @@ public class ConversationService implements IConversationService {
             return getMergedClientConversation(userId, partner, conversation);
         }
 
-        return ConversationMapper.toConversationDetailResponse(userId, conversation);
+        return toEnrichedDetailResponse(userId, conversation);
     }
 
     @Override
@@ -606,7 +637,7 @@ public class ConversationService implements IConversationService {
                 if (user != null && user.getRole() == ERole.client && partner != null && partner.getRole() == ERole.staff) {
                     convRes = getMergedClientConversation(userId, partner, conversation);
                 } else {
-                    convRes = ConversationMapper.toConversationDetailResponse(userId, conversation);
+                    convRes = toEnrichedDetailResponse(userId, conversation);
                 }
 
                 // Compute total unread count and attach to response & dedicated queue
@@ -653,15 +684,24 @@ public class ConversationService implements IConversationService {
                 .orElse(null);
 
         User currentUser = userRepository.findById(userId).orElse(null);
+        boolean isAdminClient = communicationPermissionService.isAdminClientConversation(conversation);
+        boolean convAnonymousFlag = Boolean.TRUE.equals(conversation.getIsAnonymous());
+
         List<Report> activeProcessingReports;
-        if (currentUser != null && currentUser.getRole() == ERole.client && partner != null && partner.getRole() == ERole.staff) {
+        if (isAdminClient) {
+            User clientUser = (currentUser != null && currentUser.getRole() == ERole.client) ? currentUser : partner;
+            activeProcessingReports = clientUser != null
+                    ? reportRepository.findAdminRehandlingProcessingReportsByClient(clientUser.getId(), convAnonymousFlag)
+                    : List.of();
+        } else if (currentUser != null && currentUser.getRole() == ERole.client && partner != null && partner.getRole() == ERole.staff) {
             activeProcessingReports = reportRepository.findActiveReportsByClientAndStaff(userId, partner.getId());
         } else {
             activeProcessingReports = reportRepository.findActiveReportsByConversationId(conversationId);
         }
 
-        List<Report> allLinkedReports = reportRepository
-                .findByConversationIdOrderByCreatedAtDesc(conversationId);
+        List<Report> allLinkedReports = isAdminClient
+                ? List.of()
+                : reportRepository.findByConversationIdOrderByCreatedAtDesc(conversationId);
 
         boolean hasAnonymousReport = allLinkedReports.stream()
                 .anyMatch(r -> Boolean.TRUE.equals(r.getIsAnonymous()));
@@ -669,16 +709,12 @@ public class ConversationService implements IConversationService {
             hasAnonymousReport = Boolean.TRUE.equals(conversation.getReport().getIsAnonymous());
         }
 
-        boolean isAnonymous = (Boolean.TRUE.equals(conversation.getIsAnonymous()) || hasAnonymousReport)
+        boolean isAnonymous = (convAnonymousFlag || hasAnonymousReport)
                 && partner != null && partner.getRole() == ERole.client;
 
-        boolean hasAnyLinkedReport = !allLinkedReports.isEmpty() || conversation.getReport() != null;
-        boolean canSendMessage;
-        if (hasAnyLinkedReport || (partner != null && partner.getRole() == ERole.client)) {
-            canSendMessage = !activeProcessingReports.isEmpty();
-        } else {
-            canSendMessage = true;
-        }
+        CommunicationEligibility eligibility = communicationPermissionService.evaluateConversationEligibility(userId, conversation);
+        boolean canSendMessage = eligibility.canMessage();
+        boolean canVoiceCall = eligibility.canVoiceCall();
 
         String partnerName = null;
         String partnerAvatar = null;
@@ -793,6 +829,7 @@ public class ConversationService implements IConversationService {
                 .partnerEmail(partnerEmail)
                 .isAnonymous(isAnonymous)
                 .canSendMessage(canSendMessage)
+                .canVoiceCall(canVoiceCall)
                 .activeReports(reportResponses)
                 .createdAt(conversation.getCreatedAt())
                 .identifiedConversationId(identifiedConversationId)
@@ -825,7 +862,13 @@ public class ConversationService implements IConversationService {
                 .orElse(null);
 
         org.springframework.data.domain.Page<Report> reportPage;
-        if (currentUser != null && currentUser.getRole() == ERole.client && partner != null && partner.getRole() == ERole.staff) {
+        if (communicationPermissionService.isAdminClientConversation(conversation)) {
+            User clientUser = (currentUser != null && currentUser.getRole() == ERole.client) ? currentUser : partner;
+            boolean convAnon = Boolean.TRUE.equals(conversation.getIsAnonymous());
+            reportPage = clientUser != null
+                    ? reportRepository.findAdminRehandlingProcessingReportsByClient(clientUser.getId(), convAnon, pageable)
+                    : Page.empty(pageable);
+        } else if (currentUser != null && currentUser.getRole() == ERole.client && partner != null && partner.getRole() == ERole.staff) {
             if (isAnonymous != null) {
                 reportPage = reportRepository.findActiveReportsByClientAndStaffAndAnonymous(userId, partner.getId(), isAnonymous, pageable);
             } else {
@@ -836,22 +879,7 @@ public class ConversationService implements IConversationService {
         }
 
         List<LinkedReportResponse> content = reportPage.getContent().stream()
-                .map(r -> {
-                    boolean isRehandling = (r.getStatus() == EReportStatus.processing || r.getStatus() == EReportStatus.processed)
-                            && Boolean.FALSE.equals(r.getIsReviewResolved());
-                    return LinkedReportResponse.builder()
-                            .id(r.getId())
-                            .title(r.getTitle())
-                            .description(r.getDescription())
-                            .imageUrl(r.getImageUrl())
-                            .status(r.getStatus() != null ? r.getStatus().name() : null)
-                            .severity(r.getSeverity() != null ? r.getSeverity().name() : null)
-                            .createdAt(r.getCreatedAt() != null ? r.getCreatedAt().toString() : null)
-                            .address(r.getAddress())
-                            .isReviewResolved(r.getIsReviewResolved())
-                            .needsRehandling(isRehandling)
-                            .build();
-                })
+                .map(ConversationMapper::toLinkedReportResponse)
                 .collect(Collectors.toList());
 
         return PageResponse.<LinkedReportResponse>builder()
@@ -861,6 +889,106 @@ public class ConversationService implements IConversationService {
                 .totalPages(reportPage.getTotalPages())
                 .content(content)
                 .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public CommunicationEligibilityResponse checkCommunicationEligibility(
+            String currentUserId,
+            String targetUserId,
+            String conversationId,
+            Boolean isAnonymous) {
+        User actor = userRepository.findById(currentUserId)
+                .orElseThrow(() -> new BadRequestException("user.not_found"));
+        User target = userRepository.findById(targetUserId)
+                .orElseThrow(() -> new BadRequestException("user.not_found"));
+
+        CommunicationEligibility eligibility = communicationPermissionService.evaluatePairEligibility(
+                actor, target, conversationId, isAnonymous);
+
+        String reasonMessage = null;
+        if ((!eligibility.canMessage() || !eligibility.canVoiceCall()) && eligibility.reasonCode() != null) {
+            Locale locale = LocaleContextHolder.getLocale();
+            reasonMessage = messageSource.getMessage(
+                    eligibility.reasonCode(), null, eligibility.reasonCode(), locale);
+        }
+
+        return CommunicationEligibilityResponse.builder()
+                .canMessage(eligibility.canMessage())
+                .canVoiceCall(eligibility.canVoiceCall())
+                .isAnonymous(eligibility.isAnonymous())
+                .reasonCode(eligibility.reasonCode())
+                .reasonMessage(reasonMessage)
+                .eligibleRehandlingReportCount(eligibility.eligibleRehandlingReportCount())
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponse<LinkedReportResponse> getAdminClientRehandlingReports(
+            String adminId,
+            String clientId,
+            Boolean isAnonymous,
+            int page,
+            int size) {
+        User admin = userRepository.findById(adminId)
+                .orElseThrow(() -> new BadRequestException("user.not_found"));
+        if (admin.getRole() != ERole.admin) {
+            throw new BadRequestException("auth.forbidden");
+        }
+        userRepository.findById(clientId)
+                .orElseThrow(() -> new BadRequestException("user.not_found"));
+
+        int safePage = Math.max(0, page - 1);
+        int safeSize = Math.max(1, Math.min(size, 50));
+        Pageable pageable = PageRequest.of(safePage, safeSize);
+
+        Page<Report> reportPage = reportRepository.findAdminRehandlingProcessingReportsByClient(
+                clientId, isAnonymous, pageable);
+
+        List<LinkedReportResponse> content = reportPage.getContent().stream()
+                .map(ConversationMapper::toLinkedReportResponse)
+                .toList();
+
+        return PageResponse.<LinkedReportResponse>builder()
+                .currentPage(page)
+                .pageSize(safeSize)
+                .totalElements(reportPage.getTotalElements())
+                .totalPages(reportPage.getTotalPages())
+                .content(content)
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public void notifyAdminClientConversationsUpdated(String clientId) {
+        if (clientId == null || clientId.isBlank()) {
+            return;
+        }
+        try {
+            List<Conversation> conversations = conversationRepository.findAdminClientConversationsByClientId(clientId);
+            for (Conversation conv : conversations) {
+                for (ConversationParticipant cp : conv.getParticipants()) {
+                    if (cp.getUser() == null) continue;
+                    String participantId = cp.getUser().getId();
+                    try {
+                        ConversationDetailResponse res = toEnrichedDetailResponse(participantId, conv);
+                        messagingTemplate.convertAndSendToUser(participantId, "/queue/conversations", res);
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.warn("Failed to notify Admin<->Client conversations for client {}: {}", clientId, e.getMessage());
+        }
+    }
+
+    private ConversationDetailResponse toEnrichedDetailResponse(String userId, Conversation conversation) {
+        ConversationDetailResponse res = ConversationMapper.toConversationDetailResponse(userId, conversation);
+        CommunicationEligibility eligibility = communicationPermissionService.evaluateConversationEligibility(userId, conversation);
+        res.setCanSendMessage(eligibility.canMessage());
+        res.setCanVoiceCall(eligibility.canVoiceCall());
+        return res;
     }
 
 }

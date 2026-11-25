@@ -14,9 +14,11 @@ import 'package:mobile_shared/features/auth/repositories/auth_repo.dart';
 import 'package:mobile_shared/features/auth/repositories/auth_repo_api.dart';
 import 'package:mobile_shared/features/auth/repositories/auth_repo_mock.dart';
 import 'package:mobile_shared/core/auth/models/user_model.dart';
+import 'package:mobile_shared/features/call/services/call_ringtone_service.dart';
 import 'package:mobile_shared/features/chat/services/chat_local_storage_service.dart';
 
 class AuthService {
+  static Future<void> Function()? onBeforeLogout;
   final AuthRepo authRepo;
 
   const AuthService({required this.authRepo});
@@ -93,6 +95,9 @@ class AuthService {
 
   Future<ApiResponse<void>> logout() async {
     try {
+      await onBeforeLogout?.call();
+      await callRingtoneService.stopRinging();
+      connectionManager.setKeepAliveForActiveCall(false);
       // Xóa FCM token TRƯỚC khi gọi API logout: sau logout access token bị blacklist nên
       // DELETE /devices/fcm-token sẽ bị 401. (Backend cũng tự xoá FCM token theo deviceId
       // khi logout; bước này dọn cả token cũ đăng ký trước khi có cột device_id.)

@@ -4,9 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mobile_shared/features/call/providers/call_controller.dart';
+import 'package:mobile_shared/features/chat/models/linked_report_model.dart';
 import 'package:mobile_shared/features/chat/widgets/chat_audio_recorder_bar.dart';
 import 'package:mobile_shared/features/chat/widgets/chat_call_bottom_sheet.dart';
 import 'package:mobile_shared/features/chat/widgets/linked_report_picker_sheet.dart';
+import 'package:mobile_shared/features/chat/widgets/selected_reports_preview_bar.dart';
 import 'package:mobile_shared/features/chat/widgets/typing_indicator_widget.dart';
 import 'package:smartspace_staff/features/chat/models/conversation_model.dart';
 import 'package:smartspace_staff/features/chat/providers/chat_detail_provider.dart';
@@ -36,6 +39,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen>
   final ScrollController _scrollController = ScrollController();
   bool _canSend = false;
   bool _isAudioMode = false;
+  List<LinkedReportModel> _selectedReports = [];
   Timer? _typingTimer;
 
   @override
@@ -100,11 +104,21 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen>
 
   void _sendMessage() {
     final text = _textController.text.trim();
-    if (text.isEmpty) return;
+    if (text.isEmpty && _selectedReports.isEmpty) return;
 
     _typingTimer?.cancel();
-    ref.read(chatDetailProvider(widget.conversationId).notifier).sendTyping(false);
-    ref.read(chatDetailProvider(widget.conversationId).notifier).sendMessage(text);
+    final notifier = ref.read(chatDetailProvider(widget.conversationId).notifier);
+    notifier.sendTyping(false);
+
+    if (_selectedReports.isNotEmpty) {
+      final reportsToSend = List<LinkedReportModel>.from(_selectedReports);
+      setState(() => _selectedReports = []);
+      _textController.clear();
+      notifier.sendMessageWithReports(content: text, reports: reportsToSend);
+      return;
+    }
+
+    notifier.sendMessage(text);
     _textController.clear();
   }
 
@@ -224,13 +238,15 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen>
                     title: Text(l10n.attachReport),
                     onTap: () async {
                       Navigator.pop(ctx);
-                      final selected = await LinkedReportPickerSheet.show(
+                      final selected = await LinkedReportPickerSheet.showMulti(
                         context: context,
                         conversationId: widget.conversationId,
                         isAnonymous: isAnonymous,
+                        initialSelectedIds:
+                            _selectedReports.map((e) => e.id).toList(),
                       );
                       if (selected != null && mounted) {
-                        ref.read(chatDetailProvider(widget.conversationId).notifier).sendReportMessage(selected);
+                        setState(() => _selectedReports = selected);
                       }
                     },
                   ),
@@ -263,8 +279,11 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen>
     final isAnonymous = conv?.isAnonymous ?? false;
     final partnerRole = conv?.partnerRole ?? initialPartner?.role;
     final partnerPosition = conv?.partnerPosition ?? initialPartner?.position;
-    final isClient = partnerRole?.toLowerCase() == 'client';
-    final canCall = isClient ? !isAnonymous : true;
+    final targetUserId =
+        conv?.partnerId ?? initialPartner?.userId ?? state.draftPartnerId ?? '';
+    final canVoiceCall = state.canVoiceCall && targetUserId.isNotEmpty;
+    final hasPhone =
+        !isAnonymous && (conv?.partnerPhone?.trim().isNotEmpty ?? false);
 
     return Scaffold(
       backgroundColor: theme.colorScheme.surface,
@@ -307,31 +326,58 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen>
           ],
         ),
         actions: [
-          if (canCall)
-            IconButton(
-              icon: const Icon(Icons.call_outlined),
-              tooltip: l10n.callOptionsTitle,
-              onPressed: () {
-                final partnerPhone = conv?.partnerPhone;
-                ChatCallBottomSheet.show(
-                  context,
-                  partnerName: displayName,
-                  partnerPhone: partnerPhone,
-                  titleText: l10n.callOptionsTitle,
-                  cellularCallTitle: l10n.cellularCall,
-                  cellularCallDesc: l10n.cellularCallDesc,
-                  freeCallTitle: l10n.freeCall,
-                  freeCallDesc: l10n.featureUnderDevelopment,
-                  comingSoonText: l10n.comingSoon,
-                  phoneNotAvailableText: l10n.phoneNotAvailable,
-                  freeCallComingSoonText: l10n.freeCallComingSoon,
-                );
-              },
-            ),
+          IconButton(
+            icon: const Icon(Icons.call_outlined),
+            tooltip: l10n.callOptionsTitle,
+            onPressed: () {
+              final partnerPhone = conv?.partnerPhone;
+              ChatCallBottomSheet.show(
+                context,
+                partnerName: displayName,
+                partnerPhone: hasPhone ? partnerPhone : null,
+                canCellularCall: hasPhone,
+                canFreeCall: canVoiceCall,
+                freeCallDisabledReason: l10n.callPermissionDenied,
+                titleText: l10n.callOptionsTitle,
+                cellularCallTitle: l10n.cellularCall,
+                cellularCallDesc: l10n.cellularCallDesc,
+                freeCallTitle: l10n.freeCall,
+                freeCallDesc: l10n.callFreeVoiceDesc,
+                phoneNotAvailableText: l10n.phoneNotAvailable,
+                onFreeCallTap: canVoiceCall
+                    ? () {
+                        ref.read(callControllerProvider.notifier).startCall(
+                              targetUserId: targetUserId,
+                              conversationId: conv?.id,
+                              isAnonymous: isAnonymous,
+                              peerName: displayName,
+                              peerAvatar: isAnonymous
+                                  ? null
+                                  : (conv?.partnerAvatarUrl ??
+                                      initialPartner?.avatarUrl),
+                              peerRole: partnerRole,
+                            );
+                      }
+                    : null,
+              );
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.more_vert_rounded),
-            onPressed: () {
-              context.push(RouterPath.conversationInfoWithId(widget.conversationId));
+            onPressed: () async {
+              var targetId = state.conversationId;
+              if (state.isDraft) {
+                try {
+                  targetId = await ref
+                      .read(chatDetailProvider(widget.conversationId).notifier)
+                      .ensureConversationCreated();
+                } catch (_) {
+                  return;
+                }
+              }
+              if (context.mounted) {
+                context.push(RouterPath.conversationInfoWithId(targetId));
+              }
             },
           ),
         ],
@@ -541,6 +587,18 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen>
               typingText: l10n.typingText,
             ),
           ),
+        SelectedReportsPreviewBar(
+          reports: _selectedReports,
+          onRemove: (report) {
+            setState(() {
+              _selectedReports =
+                  _selectedReports.where((r) => r.id != report.id).toList();
+            });
+          },
+          onClearAll: () {
+            setState(() => _selectedReports = []);
+          },
+        ),
         AnimatedSwitcher(
           duration: const Duration(milliseconds: 250),
           child: _isAudioMode
@@ -610,7 +668,7 @@ class _ChatDetailScreenState extends ConsumerState<ChatDetailScreen>
                         ),
                       ),
                       const SizedBox(width: 4),
-                      if (_canSend)
+                      if (_canSend || _selectedReports.isNotEmpty)
                         IconButton(
                           onPressed: _sendMessage,
                           icon: Icon(

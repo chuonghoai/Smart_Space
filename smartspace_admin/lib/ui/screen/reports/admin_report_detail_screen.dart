@@ -21,7 +21,6 @@ import 'package:go_router/go_router.dart';
 import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:smartspace_admin/routes/router_path.dart';
 import 'package:smartspace_admin/ui/shared/report_status/report_status_style.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class AdminReportDetailScreen extends ConsumerStatefulWidget {
   final String reportId;
@@ -42,64 +41,194 @@ class _AdminReportDetailScreenState
   int _currentResolvedImageIndex = 0;
   int _currentReviewImageIndex = 0;
   bool _isReopening = false;
+  bool _isOpeningChat = false;
   StaffModel? _selectedStaff;
   String _selectedSeverity = 'low';
   String? _lastSyncedReportId;
 
-  Future<void> _handlePhoneCall(String? phone) async {
-    final l10n = AppLocalizations.of(context)!;
-    if (phone == null || phone.trim().isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(l10n.phoneNotAvailable)),
-      );
-      return;
-    }
-    final cleanPhone = phone.replaceAll(RegExp(r'\s+'), '');
-    final uri = Uri.parse('tel:$cleanPhone');
+  Future<void> _handleMessageStaff(String? staffId, {String? staffName, String? staffAvatar}) async {
+    if (staffId == null || staffId.isEmpty || _isOpeningChat) return;
+    _isOpeningChat = true;
+    final l10n = AppLocalizations.of(context);
     try {
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri);
+      final res = await chatRepository.createOrGetConversation(
+        participantIds: [staffId],
+      );
+      if (!mounted) return;
+      if (res.success && res.data != null) {
+        context.push(
+          RouterPath.chatDetailWithId(res.data!.id),
+          extra: ParticipantModel(
+            userId: staffId,
+            name: staffName ?? l10n?.filterRoleStaff ?? 'Nhân viên',
+            avatarUrl: staffAvatar,
+            role: 'staff',
+          ),
+        );
       } else {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      }
-    } catch (_) {
-      if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.cannotLaunchPhone)),
+          SnackBar(
+            content: Text(
+              res.message.isNotEmpty
+                  ? res.message
+                  : (l10n?.connectionUnstable ?? ''),
+            ),
+          ),
         );
       }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n?.connectionUnstable ?? e.toString())),
+        );
+      }
+    } finally {
+      _isOpeningChat = false;
     }
   }
 
-  void _handleMessageStaff(String? staffId, {String? staffName, String? staffAvatar}) {
-    if (staffId == null || staffId.isEmpty) return;
-    final l10n = AppLocalizations.of(context);
-    context.push(
-      RouterPath.chatDetailWithId('new_$staffId'),
-      extra: ParticipantModel(
-        userId: staffId,
-        name: staffName ?? l10n?.filterRoleStaff ?? 'Nhân viên',
-        avatarUrl: staffAvatar,
-        role: 'staff',
-      ),
+  Future<void> _handleMessageReporter(ReportDetailModel report) async {
+    if (_isOpeningChat) return;
+    _isOpeningChat = true;
+    final l10n = AppLocalizations.of(context)!;
+    final userId = report.userId;
+    try {
+      if (userId != null && userId.isNotEmpty) {
+        try {
+          final eligRes = await chatRepository.checkCommunicationEligibility(
+            targetUserId: userId,
+            isAnonymous: report.isAnonymous,
+          );
+          if (!mounted) return;
+          if (eligRes.success && eligRes.data?.canMessage == true) {
+            final convRes = await chatRepository.createOrGetConversation(
+              participantIds: [userId],
+              isAnonymous: report.isAnonymous,
+            );
+            if (!mounted) return;
+            if (convRes.success && convRes.data != null) {
+              context.push(
+                RouterPath.chatDetailWithId(convRes.data!.id),
+                extra: ParticipantModel(
+                  userId: userId,
+                  name: report.isAnonymous
+                      ? l10n.anonymousUser
+                      : (report.userName ?? l10n.user),
+                  avatarUrl: report.isAnonymous ? null : report.userAvatarUrl,
+                  role: 'client',
+                ),
+              );
+              return;
+            }
+          }
+        } catch (_) {}
+      }
+
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          icon: Icon(Icons.info_outline_rounded, color: Theme.of(ctx).colorScheme.primary, size: 28),
+          title: Text(l10n.cannotMessageClientTitle),
+          content: Text(l10n.cannotMessageClientMessage),
+          actions: [
+            FilledButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text(l10n.closeAction),
+            ),
+          ],
+        ),
+      );
+    } finally {
+      _isOpeningChat = false;
+    }
+  }
+
+  Future<void> _openReporterCallSheet(ReportDetailModel report) async {
+    final l10n = AppLocalizations.of(context)!;
+    final userId = report.userId;
+    if (userId == null || userId.isEmpty) return;
+
+    CommunicationEligibilityModel? eligibility;
+    try {
+      final res = await chatRepository.checkCommunicationEligibility(
+        targetUserId: userId,
+        isAnonymous: report.isAnonymous,
+      );
+      if (res.success) {
+        eligibility = res.data;
+      }
+    } catch (_) {}
+
+    if (!mounted) return;
+    final phone = report.userPhone?.trim();
+    final hasPhone =
+        !report.isAnonymous && phone != null && phone.isNotEmpty;
+    final canFreeCall = eligibility?.canVoiceCall ?? false;
+    final reporterName = report.isAnonymous
+        ? l10n.anonymousUser
+        : (report.userName?.isNotEmpty == true ? report.userName! : l10n.user);
+
+    await ChatCallBottomSheet.show(
+      context,
+      partnerName: reporterName,
+      partnerPhone: hasPhone ? phone : null,
+      canCellularCall: hasPhone,
+      canFreeCall: canFreeCall,
+      freeCallDisabledReason:
+          eligibility?.reasonMessage ?? l10n.cannotMessageClientMessage,
+      titleText: l10n.callOptionsTitle,
+      cellularCallTitle: l10n.cellularCall,
+      cellularCallDesc: l10n.cellularCallDesc,
+      freeCallTitle: l10n.freeCall,
+      freeCallDesc: l10n.callFreeVoiceDesc,
+      phoneNotAvailableText: l10n.phoneNotAvailable,
+      onFreeCallTap: () {
+        ref.read(callControllerProvider.notifier).startCall(
+              targetUserId: userId,
+              isAnonymous: report.isAnonymous,
+              peerName: reporterName,
+              peerAvatar: report.isAnonymous ? null : report.userAvatarUrl,
+              peerRole: 'client',
+            );
+      },
     );
   }
 
-  void _handleMessageReporter() {
+  Future<void> _openStaffCallSheet(ReportDetailModel report) async {
     final l10n = AppLocalizations.of(context)!;
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        icon: Icon(Icons.info_outline_rounded, color: Theme.of(ctx).colorScheme.primary, size: 28),
-        title: Text(l10n.cannotMessageClientTitle),
-        content: Text(l10n.cannotMessageClientMessage),
-        actions: [
-          FilledButton(
-            onPressed: () => Navigator.of(ctx).pop(),
-            child: Text(l10n.closeAction),
-          ),
-        ],
-      ),
+    final staffId = report.assignedStaffId;
+    final phone = report.assignedStaffPhone?.trim();
+    final hasPhone = phone != null && phone.isNotEmpty;
+    final canFreeCall = staffId != null && staffId.isNotEmpty;
+    final staffName = report.assignedStaffName?.trim().isNotEmpty == true
+        ? report.assignedStaffName!
+        : l10n.staff;
+
+    await ChatCallBottomSheet.show(
+      context,
+      partnerName: staffName,
+      partnerPhone: hasPhone ? phone : null,
+      canCellularCall: hasPhone,
+      canFreeCall: canFreeCall,
+      freeCallDisabledReason: l10n.callPermissionDenied,
+      titleText: l10n.callOptionsTitle,
+      cellularCallTitle: l10n.cellularCall,
+      cellularCallDesc: l10n.cellularCallDesc,
+      freeCallTitle: l10n.freeCall,
+      freeCallDesc: l10n.callFreeVoiceDesc,
+      phoneNotAvailableText: l10n.phoneNotAvailable,
+      onFreeCallTap: canFreeCall
+          ? () {
+              ref.read(callControllerProvider.notifier).startCall(
+                    targetUserId: staffId,
+                    isAnonymous: false,
+                    peerName: staffName,
+                    peerAvatar: report.assignedStaffAvatarUrl,
+                    peerRole: 'staff',
+                  );
+            }
+          : null,
     );
   }
 
@@ -1010,11 +1139,11 @@ class _AdminReportDetailScreenState
                     ],
                   ),
                 ),
-                if (!report.isAnonymous) ...[
+                if (report.userId != null && report.userId!.isNotEmpty) ...[
                   IconButton.outlined(
                     icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
                     tooltip: l10n.messageReporter,
-                    onPressed: _handleMessageReporter,
+                    onPressed: () => _handleMessageReporter(report),
                     constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
                     padding: EdgeInsets.zero,
                   ),
@@ -1022,7 +1151,7 @@ class _AdminReportDetailScreenState
                   IconButton.filledTonal(
                     icon: const Icon(Icons.phone_outlined, size: 18),
                     tooltip: l10n.callReporter,
-                    onPressed: () => _handlePhoneCall(report.userPhone),
+                    onPressed: () => _openReporterCallSheet(report),
                     constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
                     padding: EdgeInsets.zero,
                   ),
@@ -1699,7 +1828,7 @@ class _AdminReportDetailScreenState
                 IconButton.filledTonal(
                   icon: const Icon(Icons.phone_outlined, size: 18),
                   tooltip: l10n.callStaff,
-                  onPressed: () => _handlePhoneCall(report.assignedStaffPhone),
+                  onPressed: () => _openStaffCallSheet(report),
                   constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
                   padding: EdgeInsets.zero,
                 ),

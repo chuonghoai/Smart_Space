@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
+import 'package:mobile_shared/features/call/providers/call_controller.dart';
 import 'package:smartspace_staff/features/chat/models/conversation_info_model.dart';
 import 'package:smartspace_staff/features/chat/models/linked_report_model.dart';
 import 'package:smartspace_staff/features/chat/providers/conversation_reports_provider.dart';
@@ -354,70 +356,105 @@ class _ConversationInfoScreenState
     ConversationInfoModel info,
     bool isAnonymous,
   ) {
-    if (isAnonymous) {
-      return Container(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-        decoration: BoxDecoration(
-          color: theme.colorScheme.surfaceContainer,
-          borderRadius: BorderRadius.circular(16),
-          border: Border.all(
-            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-          ),
-        ),
-        child: Row(
-          children: [
-            Icon(
-              Icons.privacy_tip_outlined,
-              size: 20,
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-            const SizedBox(width: 10),
-            Expanded(
-              child: Text(
-                l10n.anonymousUserProtectionNote,
-                style: theme.textTheme.bodySmall?.copyWith(
-                  color: theme.colorScheme.onSurfaceVariant,
-                  fontWeight: FontWeight.w500,
-                ),
+    final semantic = AppSemanticColors.of(context);
+    final hasPhone =
+        !isAnonymous && (info.partnerPhone?.trim().isNotEmpty ?? false);
+    final canFreeCall =
+        info.canVoiceCall && (info.partnerId?.trim().isNotEmpty ?? false);
+    final displayName = isAnonymous
+        ? l10n.anonymousUser
+        : (info.partnerName?.isNotEmpty == true ? info.partnerName! : '');
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        if (isAnonymous) ...[
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainer,
+              borderRadius: BorderRadius.circular(16),
+              border: Border.all(
+                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
               ),
             ),
-          ],
-        ),
-      );
-    }
-
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
-      decoration: BoxDecoration(
-        color: theme.colorScheme.surfaceContainer,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
-        ),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-        children: [
-          _buildRoundActionButton(
-            theme: theme,
-            icon: Icons.phone_rounded,
-            label: l10n.callButtonLabel,
-            color: Colors.green,
-            onTap: () => _makePhoneCall(context, info.partnerPhone, l10n),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.privacy_tip_outlined,
+                  size: 20,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: Text(
+                    l10n.anonymousUserProtectionNote,
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontWeight: FontWeight.w500,
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
-          _buildRoundActionButton(
-            theme: theme,
-            icon: Icons.videocam_rounded,
-            label: l10n.videoCallButtonLabel,
-            color: theme.colorScheme.primary,
-            onTap: () {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text(l10n.videoCallComingSoon)),
-              );
-            },
-          ),
+          const SizedBox(height: 12),
         ],
-      ),
+        Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surfaceContainer,
+            borderRadius: BorderRadius.circular(18),
+            border: Border.all(
+              color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+            ),
+          ),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [
+              _buildRoundActionButton(
+                theme: theme,
+                icon: Icons.phone_rounded,
+                label: l10n.cellularCall,
+                color: hasPhone
+                    ? semantic.success
+                    : theme.colorScheme.onSurfaceVariant,
+                enabled: hasPhone,
+                onTap: () => _makePhoneCall(
+                  context,
+                  hasPhone ? info.partnerPhone : null,
+                  l10n,
+                ),
+              ),
+              _buildRoundActionButton(
+                theme: theme,
+                icon: Icons.call_rounded,
+                label: l10n.freeCall,
+                color: canFreeCall
+                    ? theme.colorScheme.primary
+                    : theme.colorScheme.onSurfaceVariant,
+                enabled: canFreeCall,
+                onTap: () {
+                  if (!canFreeCall) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(l10n.callPermissionDenied)),
+                    );
+                    return;
+                  }
+                  ref.read(callControllerProvider.notifier).startCall(
+                        targetUserId: info.partnerId!,
+                        conversationId: info.id,
+                        isAnonymous: isAnonymous,
+                        peerName: displayName,
+                        peerAvatar: isAnonymous ? null : info.partnerAvatarUrl,
+                        peerRole: info.partnerRole,
+                      );
+                },
+              ),
+            ],
+          ),
+        ),
+      ],
     );
   }
 
@@ -426,38 +463,42 @@ class _ConversationInfoScreenState
     required IconData icon,
     required String label,
     required Color color,
+    bool enabled = true,
     required VoidCallback onTap,
   }) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: BorderRadius.circular(16),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Container(
-              width: 50,
-              height: 50,
-              decoration: BoxDecoration(
-                color: color.withValues(alpha: 0.12),
-                shape: BoxShape.circle,
+    return Opacity(
+      opacity: enabled ? 1.0 : 0.45,
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(16),
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 50,
+                height: 50,
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(
+                  icon,
+                  color: color,
+                  size: 24,
+                ),
               ),
-              child: Icon(
-                icon,
-                color: color,
-                size: 24,
+              const SizedBox(height: 6),
+              Text(
+                label,
+                style: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: FontWeight.w600,
+                  color: theme.colorScheme.onSurface,
+                ),
               ),
-            ),
-            const SizedBox(height: 6),
-            Text(
-              label,
-              style: theme.textTheme.labelMedium?.copyWith(
-                fontWeight: FontWeight.w600,
-                color: theme.colorScheme.onSurface,
-              ),
-            ),
-          ],
+            ],
+          ),
         ),
       ),
     );

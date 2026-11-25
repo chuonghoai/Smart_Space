@@ -68,6 +68,7 @@ public final class ConversationMapper {
                 .reportTitle(reportTitle)
                 .reportStatus(reportStatus)
                 .canSendMessage(canSendMessage)
+                .canVoiceCall(canSendMessage)
                 .createdAt(conversation.getCreatedAt())
                 .build();
     }
@@ -136,6 +137,7 @@ public final class ConversationMapper {
                 .reportTitle(reportTitle)
                 .reportStatus(reportStatus)
                 .canSendMessage(canSendMessage)
+                .canVoiceCall(canSendMessage)
                 .unreadCount(unreadCount)
                 .partnerLastReadAt(partnerLastReadAt)
                 .lastMessageId(conversation.getLastMessageId())

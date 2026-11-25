@@ -18,13 +18,15 @@ import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:smartspace_staff/ui/mobile/reports/presentation/widgets/fullscreen_image_viewer.dart';
 import 'package:smartspace_staff/ui/mobile/reports/presentation/widgets/handling_progress_dialog.dart';
 import 'package:mobile_shared/core/theme/app_semantic_colors.dart';
+import 'package:mobile_shared/features/call/models/call_models.dart';
+import 'package:mobile_shared/features/call/providers/call_controller.dart';
+import 'package:mobile_shared/features/chat/widgets/chat_call_bottom_sheet.dart';
 import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
 import 'package:smartspace_staff/features/delegation/providers/delegation_providers.dart';
 import 'package:smartspace_staff/ui/mobile/delegation/widgets/delegation_section.dart';
 import 'package:smartspace_staff/features/chat/data/chat_repository.dart';
 import 'package:smartspace_staff/features/chat/models/conversation_model.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 class ReportDetailScreen extends ConsumerStatefulWidget {
   final String reportId;
@@ -153,33 +155,55 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
   }
 
   Future<void> _callReporter(ReportDetailModel? report) async {
-    final phone = report?.userPhone;
-    if (phone == null || phone.trim().isEmpty) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(AppLocalizations.of(context)!.noPhoneNumber),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
-      );
+    if (report == null || report.userId == null || report.userId!.isEmpty) {
       return;
     }
-    final uri = Uri.parse('tel:${phone.trim()}');
+    final l10n = AppLocalizations.of(context)!;
+    final staffChatRepo = chatRepository;
+    CommunicationEligibilityModel? eligibility;
     try {
-      if (await canLaunchUrl(uri)) {
-        await launchUrl(uri);
-      } else {
-        await launchUrl(uri, mode: LaunchMode.externalApplication);
-      }
-    } catch (e) {
-      if (!mounted) return;
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: Theme.of(context).colorScheme.error,
-        ),
+      final res = await staffChatRepo.checkCommunicationEligibility(
+        targetUserId: report.userId!,
+        isAnonymous: report.isAnonymous,
       );
-    }
+      if (res.success) {
+        eligibility = res.data;
+      }
+    } catch (_) {}
+
+    if (!mounted) return;
+    final phone = report.userPhone?.trim();
+    final hasPhone =
+        !report.isAnonymous && phone != null && phone.isNotEmpty;
+    final canFreeCall = eligibility?.canVoiceCall ?? false;
+    final reporterName = report.isAnonymous
+        ? l10n.anonymousUser
+        : (report.userName?.isNotEmpty == true ? report.userName! : 'Unknown');
+
+    await ChatCallBottomSheet.show(
+      context,
+      partnerName: reporterName,
+      partnerPhone: hasPhone ? phone : null,
+      canCellularCall: hasPhone,
+      canFreeCall: canFreeCall,
+      freeCallDisabledReason:
+          eligibility?.reasonMessage ?? l10n.callPermissionDenied,
+      titleText: l10n.callOptionsTitle,
+      cellularCallTitle: l10n.cellularCall,
+      cellularCallDesc: l10n.cellularCallDesc,
+      freeCallTitle: l10n.freeCall,
+      freeCallDesc: l10n.callFreeVoiceDesc,
+      phoneNotAvailableText: l10n.phoneNotAvailable,
+      onFreeCallTap: () {
+        ref.read(callControllerProvider.notifier).startCall(
+              targetUserId: report.userId!,
+              isAnonymous: report.isAnonymous,
+              peerName: reporterName,
+              peerAvatar: report.isAnonymous ? null : report.userAvatarUrl,
+              peerRole: 'client',
+            );
+      },
+    );
   }
 
   @override
@@ -860,8 +884,9 @@ class _ReportDetailScreenState extends ConsumerState<ReportDetailScreen> with Wi
                                       ),
                                     ),
                                     const SizedBox(width: 8),
-                                    // 2 circular buttons on the far right: Call (if not anonymous) and Message
-                                    if (!report.isAnonymous) ...[
+                                    // 2 circular buttons on the far right: Call and Message
+                                    if (report.userId != null &&
+                                        report.userId!.isNotEmpty) ...[
                                       Material(
                                         color: theme.colorScheme.primaryContainer,
                                         shape: const CircleBorder(),

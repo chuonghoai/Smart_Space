@@ -2587,6 +2587,24 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No categories available'**
   String get reportCategoryEmpty;
+
+  /// No description provided for @callFreeVoiceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Free internet voice call'**
+  String get callFreeVoiceDesc;
+
+  /// No description provided for @callPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice call unavailable for this conversation'**
+  String get callPermissionDenied;
+
+  /// No description provided for @callActionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get callActionLabel;
 }
 
 class _AppLocalizationsDelegate

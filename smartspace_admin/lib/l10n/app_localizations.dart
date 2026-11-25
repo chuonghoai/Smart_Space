@@ -3437,7 +3437,7 @@ abstract class AppLocalizations {
   /// No description provided for @cannotMessageClientMessage.
   ///
   /// In en, this message translates to:
-  /// **'Administrators cannot initiate direct messages with residents outside the report resolution workflow. You may call the resident directly or communicate via the assigned staff.'**
+  /// **'You can only message or make a free call to a resident when there is at least one re-handling report from them that is currently being processed.'**
   String get cannotMessageClientMessage;
 
   /// No description provided for @phoneNotAvailable.
@@ -6176,6 +6176,42 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Whether inflow in this area is outpacing local resolution.'**
   String get spatialGuideStatsTells;
+
+  /// No description provided for @callFreeVoiceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Free internet voice call'**
+  String get callFreeVoiceDesc;
+
+  /// No description provided for @callPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice call unavailable for this conversation'**
+  String get callPermissionDenied;
+
+  /// No description provided for @rehandlingReportsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-handling reports'**
+  String get rehandlingReportsSection;
+
+  /// No description provided for @checkingEligibility.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking eligibility...'**
+  String get checkingEligibility;
+
+  /// No description provided for @attachRehandlingReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach re-handling reports'**
+  String get attachRehandlingReports;
+
+  /// No description provided for @cannotMessageAnonymousNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous user: only in-app chat and free calls are supported.'**
+  String get cannotMessageAnonymousNotice;
 }
 
 class _AppLocalizationsDelegate
