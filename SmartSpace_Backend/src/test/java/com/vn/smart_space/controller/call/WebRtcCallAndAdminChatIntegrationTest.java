@@ -67,8 +67,8 @@ public class WebRtcCallAndAdminChatIntegrationTest {
     void testCallAndEligibilityEndpoints() throws Exception {
         HttpClient client = HttpClient.newBuilder().connectTimeout(Duration.ofSeconds(5)).build();
         String adminToken = createBearerToken("u1", "admin@gmail.com", "admin");
-        String clientToken = createBearerToken("u2", "client@gmail.com", "client");
-        String staffToken = createBearerToken("u3", "staff@gmail.com", "staff");
+        String clientToken = createBearerToken("u2", "user@gmail.com", "client");
+        String staffToken = createBearerToken("u5", "staff1@gmail.com", "staff");
 
         // 1. ICE servers endpoint returns STUN config without leaking secrets to unauthenticated callers
         HttpRequest unauthIce = HttpRequest.newBuilder()
@@ -84,7 +84,7 @@ public class WebRtcCallAndAdminChatIntegrationTest {
                 .build();
         HttpResponse<String> iceRes = client.send(authIce, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         assertEquals(200, iceRes.statusCode());
-        assertTrue(iceRes.body().contains("\"iceServers\""));
+        assertTrue(iceRes.body().contains("\"iceServers\""), "Unexpected ice-servers response: " + iceRes.body());
 
         // 2. Staff -> Admin call permission must be allowed
         HttpRequest staffToAdmin = HttpRequest.newBuilder()
@@ -94,17 +94,20 @@ public class WebRtcCallAndAdminChatIntegrationTest {
                 .build();
         HttpResponse<String> s2aRes = client.send(staffToAdmin, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         assertEquals(200, s2aRes.statusCode());
-        assertTrue(s2aRes.body().contains("\"allowed\":true"));
+        assertTrue(s2aRes.body().contains("\"allowed\":true"), "Unexpected staff->admin response: " + s2aRes.body());
 
         // 3. Client -> Client call permission must be denied
         HttpRequest clientToClient = HttpRequest.newBuilder()
-                .uri(URI.create(BASE_URL + "/calls/permission?targetUserId=u2"))
+                .uri(URI.create(BASE_URL + "/calls/permission?targetUserId=u3"))
                 .header("Authorization", "Bearer " + clientToken)
                 .GET()
                 .build();
         HttpResponse<String> c2cRes = client.send(clientToClient, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         assertEquals(200, c2cRes.statusCode());
-        assertTrue(c2cRes.body().contains("\"allowed\":false"));
+        assertTrue(c2cRes.body().contains("\"allowed\":false"), "Unexpected client->client response: " + c2cRes.body());
+        assertTrue(
+                c2cRes.body().contains("conversation.client_client_forbidden"),
+                "Unexpected client->client reason: " + c2cRes.body());
 
         // 4. Admin -> Client eligibility endpoint responds 200
         HttpRequest adminEligibility = HttpRequest.newBuilder()
@@ -114,6 +117,6 @@ public class WebRtcCallAndAdminChatIntegrationTest {
                 .build();
         HttpResponse<String> eligRes = client.send(adminEligibility, HttpResponse.BodyHandlers.ofString(StandardCharsets.UTF_8));
         assertEquals(200, eligRes.statusCode());
-        assertTrue(eligRes.body().contains("\"canMessage\""));
+        assertTrue(eligRes.body().contains("\"canMessage\""), "Unexpected admin eligibility response: " + eligRes.body());
     }
 }
