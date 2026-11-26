@@ -33,4 +33,13 @@ public interface EmergencyContactRepository extends JpaRepository<EmergencyConta
     Optional<EmergencyContact> findByIdAndLinkedUser(@Param("id") String id, @Param("userId") String userId);
 
     long countByOwnerId(String ownerId);
+
+    /** Liên hệ đang nhận cảnh báo SOS của owner, theo thứ tự ưu tiên. */
+    @Query("SELECT c FROM EmergencyContact c LEFT JOIN FETCH c.linkedUser "
+            + "WHERE c.owner.id = :ownerId AND c.status = :status ORDER BY c.priority ASC")
+    List<EmergencyContact> findByOwnerAndStatus(@Param("ownerId") String ownerId,
+            @Param("status") EEmergencyContactStatus status);
+
+    boolean existsByOwnerIdAndLinkedUserIdAndStatus(String ownerId, String linkedUserId,
+            EEmergencyContactStatus status);
 }
