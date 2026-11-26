@@ -129,11 +129,6 @@ class SosAlertModel {
 
   bool get isOpen => status.isOpen;
 
-  /// Mở vị trí bằng ứng dụng bản đồ trên thiết bị.
-  Uri get mapsUri => Uri.parse(
-        'https://www.google.com/maps/search/?api=1&query=${latitude.toStringAsFixed(6)},${longitude.toStringAsFixed(6)}',
-      );
-
   factory SosAlertModel.fromJson(Map<String, dynamic> json) {
     SosUserModel? user(String key) {
       final value = json[key];

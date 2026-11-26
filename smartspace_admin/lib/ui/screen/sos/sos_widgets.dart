@@ -19,17 +19,6 @@ String formatSosDateTime(BuildContext context, DateTime? time) {
   return DateFormat('HH:mm:ss · dd/MM', locale).format(time.toLocal());
 }
 
-Future<void> openSosMap(BuildContext context, SosAlertModel sos) async {
-  final l10n = AppLocalizations.of(context)!;
-  final messenger = ScaffoldMessenger.of(context);
-  try {
-    final ok = await launchUrl(sos.mapsUri, mode: LaunchMode.externalApplication);
-    if (!ok) messenger.showSnackBar(SnackBar(content: Text(l10n.sosCannotOpenMap)));
-  } catch (_) {
-    messenger.showSnackBar(SnackBar(content: Text(l10n.sosCannotOpenMap)));
-  }
-}
-
 Future<void> callSosPhone(BuildContext context, String? phone) async {
   final l10n = AppLocalizations.of(context)!;
   final messenger = ScaffoldMessenger.of(context);

@@ -7,8 +7,8 @@ import 'package:smartspace_client/features/sos/providers/sos_provider.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/routes/router_path.dart';
 import 'package:smartspace_client/ui/mobile/emergency/widgets/emergency_contact_widgets.dart';
+import 'package:smartspace_client/ui/mobile/sos/widgets/sos_mapbox_view.dart';
 import 'package:smartspace_client/ui/mobile/sos/widgets/sos_widgets.dart';
-import 'package:url_launcher/url_launcher.dart';
 
 /// Người bảo hộ theo dõi SOS: trạng thái, vị trí mới nhất, mở bản đồ và gọi cho người gặp nạn.
 /// Nếu phát hiện đây là SOS của chính người đang đăng nhập (vd. mở từ FCM lúc cold start),
@@ -40,17 +40,6 @@ class _MobileSosWatchScreenState extends ConsumerState<MobileSosWatchScreen> {
       _currentUserId = user?.id;
       _userChecked = true;
     });
-  }
-
-  Future<void> _openMap(BuildContext context, SosAlertModel sos) async {
-    final l10n = AppLocalizations.of(context)!;
-    final messenger = ScaffoldMessenger.of(context);
-    try {
-      final ok = await launchUrl(sos.mapsUri, mode: LaunchMode.externalApplication);
-      if (!ok) messenger.showSnackBar(SnackBar(content: Text(l10n.cannotOpenGoogleMapsError)));
-    } catch (_) {
-      messenger.showSnackBar(SnackBar(content: Text(l10n.cannotOpenGoogleMapsError)));
-    }
   }
 
   @override
@@ -142,8 +131,22 @@ class _MobileSosWatchScreenState extends ConsumerState<MobileSosWatchScreen> {
                 ),
               ),
             const SizedBox(height: 12),
+            SosMapboxView(
+              sos: sos,
+              height: 240,
+              onExpand: () => showSosMapboxFullscreen(
+                context,
+                title: l10n.sosWatchTitle(name),
+                initialSos: sos,
+              ),
+            ),
+            const SizedBox(height: 12),
             FilledButton.icon(
-              onPressed: () => _openMap(context, sos),
+              onPressed: () => showSosMapboxFullscreen(
+                context,
+                title: l10n.sosWatchTitle(name),
+                initialSos: sos,
+              ),
               style: FilledButton.styleFrom(minimumSize: const Size.fromHeight(52)),
               icon: const Icon(Icons.map_outlined),
               label: Text(l10n.sosOpenMap),

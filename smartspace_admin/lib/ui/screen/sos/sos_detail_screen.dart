@@ -6,6 +6,7 @@ import 'package:smartspace_admin/features/sos/application/sos_admin_providers.da
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/ui/layout/app_layout.dart';
 import 'package:smartspace_admin/ui/screen/sos/sos_widgets.dart';
+import 'package:smartspace_admin/ui/screen/sos/widgets/sos_mapbox_map.dart';
 
 /// Chi tiết một SOS: người gửi, vị trí mới nhất, đường đi gần đây, tiếp nhận và kết thúc.
 class SosDetailScreen extends ConsumerStatefulWidget {
@@ -253,10 +254,12 @@ class _LocationSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 12),
+        SosMapboxCard(sos: sos, height: 300),
+        const SizedBox(height: 12),
         FilledButton.tonalIcon(
-          onPressed: () => openSosMap(context, sos),
+          onPressed: () => showSosMapboxDialog(context, sos),
           style: FilledButton.styleFrom(minimumSize: const Size(0, 44)),
-          icon: const Icon(Icons.map_outlined),
+          icon: const Icon(Icons.open_in_full_rounded, size: 18),
           label: Text(l10n.sosOpenMap),
         ),
       ],
