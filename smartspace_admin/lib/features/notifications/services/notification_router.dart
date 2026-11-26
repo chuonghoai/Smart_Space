@@ -54,6 +54,12 @@ class NotificationRouter {
         debugPrint('[NotificationRouter] Navigating to $path');
         GoRouter.of(ctx).push(path);
         break;
+      case 'SOS_ALERT':
+        final sosId = (action.payload['sosId'] ?? action.payload['id']) as String?;
+        GoRouter.of(ctx).push(
+          sosId != null && sosId.isNotEmpty ? RouterPath.sosDetailWithId(sosId) : RouterPath.sosCenter,
+        );
+        break;
       // Add other feature cases here, e.g. INVOICE_DETAIL, CHAT_MESSAGE
       default:
         debugPrint('[NotificationRouter] Unhandled action type: ${action.type}');

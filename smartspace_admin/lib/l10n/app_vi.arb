@@ -1504,5 +1504,80 @@
   "rehandlingReportsSection": "Phản ánh xử lý lại",
   "checkingEligibility": "Đang kiểm tra điều kiện...",
   "attachRehandlingReports": "Đính kèm phản ánh xử lý lại",
-  "cannotMessageAnonymousNotice": "Người dùng ẩn danh: chỉ hỗ trợ nhắn tin và gọi miễn phí trong ứng dụng."
+  "cannotMessageAnonymousNotice": "Người dùng ẩn danh: chỉ hỗ trợ nhắn tin và gọi miễn phí trong ứng dụng.",
+  "routeSosCenter": "Tín hiệu SOS",
+  "sosTabOpen": "Đang mở",
+  "sosTabResolved": "Đã kết thúc",
+  "sosEmptyOpen": "Không có tín hiệu SOS nào đang mở.",
+  "sosEmptyResolved": "Chưa có SOS nào kết thúc.",
+  "sosStatusActive": "Chờ tiếp nhận",
+  "sosStatusAcknowledged": "Đang hỗ trợ",
+  "sosResolutionSafe": "Người gửi đã an toàn",
+  "sosResolutionHandled": "Đã hỗ trợ xong",
+  "sosResolutionFalseAlarm": "Báo động nhầm",
+  "sosSentAt": "Gửi lúc {time}",
+  "@sosSentAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosHandledBy": "{name} đang hỗ trợ",
+  "@sosHandledBy": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosLocationUpdatedAt": "Vị trí cập nhật lúc {time}",
+  "@sosLocationUpdatedAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosSignalLost": "Không nhận được vị trí mới từ {time}",
+  "@sosSignalLost": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosAccuracy": "Sai số khoảng {meters} m",
+  "@sosAccuracy": {
+    "placeholders": {
+      "meters": {}
+    }
+  },
+  "sosNotifiedContacts": "Đã báo {count} liên hệ khẩn cấp",
+  "@sosNotifiedContacts": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "sosOpenMap": "Mở bản đồ",
+  "sosCallSender": "Gọi {name}",
+  "@sosCallSender": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosAcknowledge": "Tiếp nhận",
+  "sosResolve": "Kết thúc SOS",
+  "sosResolveTitle": "Kết thúc SOS của {name}?",
+  "@sosResolveTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosResolveHandled": "Đã hỗ trợ xong",
+  "sosResolveFalseAlarm": "Báo động nhầm",
+  "sosResolveNote": "Ghi chú (không bắt buộc)",
+  "sosAcknowledgedToast": "Đã tiếp nhận SOS",
+  "sosResolvedToast": "Đã kết thúc SOS",
+  "sosTrackTitle": "Vị trí gần đây",
+  "sosLoadFailed": "Không tải được tín hiệu SOS.",
+  "sosEndedAt": "Kết thúc lúc {time}",
+  "@sosEndedAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosCannotOpenMap": "Không mở được bản đồ"
 }

@@ -6,6 +6,7 @@ import 'package:go_router/go_router.dart';
 import 'package:mobile_shared/features/auth/services/auth_service.dart';
 import 'package:smartspace_admin/features/notifications/providers/notification_provider.dart';
 import 'package:smartspace_admin/features/chat/providers/admin_conversations_provider.dart';
+import 'package:smartspace_admin/features/sos/application/sos_admin_providers.dart';
 import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_admin/l10n/app_localizations.dart';
 import 'package:smartspace_admin/routes/app_router.dart';
@@ -30,6 +31,7 @@ class Sidebar extends ConsumerWidget {
     final notificationState = ref.watch(notificationProvider);
     final unreadCount = notificationState.countModel?.notifNumber ?? 0;
     final chatUnreadCount = ref.watch(adminChatTotalUnreadProvider);
+    final sosOpenCount = ref.watch(sosOpenCountProvider).valueOrNull ?? 0;
     final currentPath = _getCurrentPath(context);
 
     return Drawer(
@@ -162,6 +164,33 @@ class Sidebar extends ConsumerWidget {
                       Navigator.pop(context);
                       if (currentPath != RouterPath.conversations) {
                         context.push(RouterPath.conversations);
+                      }
+                    },
+                  ),
+                  _SidebarItem(
+                    icon: Icons.sos,
+                    label: l10n.routeSosCenter,
+                    trailing: sosOpenCount > 0
+                        ? Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.error,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Text(
+                              sosOpenCount > 99 ? '99+' : sosOpenCount.toString(),
+                              style: theme.textTheme.labelSmall?.copyWith(
+                                color: theme.colorScheme.onError,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          )
+                        : null,
+                    isSelected: currentPath.startsWith(RouterPath.sosCenter),
+                    onTap: () {
+                      Navigator.pop(context);
+                      if (currentPath != RouterPath.sosCenter) {
+                        context.push(RouterPath.sosCenter);
                       }
                     },
                   ),
@@ -401,6 +430,7 @@ class WebSidebar extends ConsumerWidget {
     final notificationState = ref.watch(notificationProvider);
     final unreadCount = notificationState.countModel?.notifNumber ?? 0;
     final chatUnreadCount = ref.watch(adminChatTotalUnreadProvider);
+    final sosOpenCount = ref.watch(sosOpenCountProvider).valueOrNull ?? 0;
     final currentPath = _getCurrentPath(context);
 
     return Column(
@@ -499,6 +529,18 @@ class WebSidebar extends ConsumerWidget {
                 onTap: () {
                   if (currentPath != RouterPath.conversations) {
                     context.push(RouterPath.conversations);
+                  }
+                },
+              ),
+              _WebSidebarItem(
+                icon: Icons.sos,
+                label: l10n.routeSosCenter,
+                isExpanded: isExpanded,
+                isSelected: currentPath.startsWith(RouterPath.sosCenter),
+                badge: sosOpenCount > 0 ? sosOpenCount : null,
+                onTap: () {
+                  if (currentPath != RouterPath.sosCenter) {
+                    context.push(RouterPath.sosCenter);
                   }
                 },
               ),
