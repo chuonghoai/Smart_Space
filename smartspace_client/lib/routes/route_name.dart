@@ -39,6 +39,12 @@ class AppRouteInfo {
         return l10n.routeManageDevices;
       case 'routeEmergencyContacts':
         return l10n.emergencyContacts;
+      case 'routeSosCountdown':
+        return l10n.sosCountdownTitle;
+      case 'routeSosActive':
+        return l10n.sosActiveTitle;
+      case 'routeSosWatch':
+        return l10n.sosSlideSemantics;
       case 'routeNotifications':
         return l10n.routeNotifications;
       case 'routeConversations':
@@ -123,6 +129,24 @@ class RouteName {
     nameKey: 'routeEmergencyContacts',
     icon: Icons.contact_phone_outlined,
     priority: 7,
+  );
+  static const sosCountdown = AppRouteInfo(
+    path: '/sos/countdown',
+    nameKey: 'routeSosCountdown',
+    icon: Icons.sos,
+    isHiddenInSearch: true,
+  );
+  static const sosActive = AppRouteInfo(
+    path: '/sos/active',
+    nameKey: 'routeSosActive',
+    icon: Icons.sos,
+    isHiddenInSearch: true,
+  );
+  static const sosWatch = AppRouteInfo(
+    path: '/sos/:id/watch',
+    nameKey: 'routeSosWatch',
+    icon: Icons.sos,
+    isHiddenInSearch: true,
   );
   static const editProfile = AppRouteInfo(
     path: '/edit-profile',
@@ -222,6 +246,9 @@ class RouteName {
     changePassword,
     manageDevices,
     emergencyContacts,
+    sosCountdown,
+    sosActive,
+    sosWatch,
     editProfile,
     createReport,
     map,

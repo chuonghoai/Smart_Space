@@ -633,5 +633,100 @@
   "emergencyDeclined": "Đã từ chối lời mời",
   "emergencyLeft": "Đã rời danh sách khẩn cấp",
   "emergencyEmptyGuardian": "Chưa có ai thêm bạn vào danh sách khẩn cấp.",
-  "emergencyLoadFailed": "Không tải được danh sách khẩn cấp."
+  "emergencyLoadFailed": "Không tải được danh sách khẩn cấp.",
+  "sosSlideLabel": "Trượt để gửi SOS",
+  "sosSlideSemantics": "Gửi tín hiệu SOS",
+  "sosSlideHint": "Ban quản trị và liên hệ khẩn cấp sẽ nhận vị trí của bạn",
+  "sosConfirmTitle": "Gửi tín hiệu SOS?",
+  "sosConfirmMessage": "Ban quản trị và liên hệ khẩn cấp sẽ nhận vị trí của bạn ngay.",
+  "sosConfirmSend": "Gửi SOS",
+  "sosActiveBanner": "SOS của bạn đang hoạt động",
+  "sosActiveBannerHint": "Nhấn để xem trạng thái hoặc kết thúc",
+  "sosCountdownTitle": "Đang gửi SOS",
+  "sosCountdownMessage": "Tín hiệu sẽ được gửi sau {seconds} giây",
+  "@sosCountdownMessage": {
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "sosLocating": "Đang lấy vị trí…",
+  "sosSending": "Đang gửi…",
+  "sosLocationUnavailable": "Không lấy được vị trí. Hãy bật định vị và thử lại, hoặc gọi ngay số khẩn cấp.",
+  "sosLocationPermissionDenied": "SmartSpace cần quyền vị trí để gửi SOS.",
+  "sosOpenSettings": "Mở cài đặt",
+  "sosSendFailed": "Không gửi được SOS. Hãy thử lại hoặc gọi ngay số khẩn cấp.",
+  "sosActiveTitle": "SOS đang hoạt động",
+  "sosWaitingAck": "Đã báo Ban quản trị và {count} liên hệ. Đang chờ tiếp nhận.",
+  "@sosWaitingAck": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "sosAcknowledgedBy": "{name} đã tiếp nhận và đang hỗ trợ bạn.",
+  "@sosAcknowledgedBy": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosLocationUpdatedAt": "Vị trí cập nhật lúc {time}",
+  "@sosLocationUpdatedAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosSharingLocation": "Đang chia sẻ vị trí mỗi 15 giây",
+  "sosCallEmergency": "Gọi khẩn cấp",
+  "sosCallPolice": "Công an 113",
+  "sosCallFire": "Cứu hỏa 114",
+  "sosCallAmbulance": "Cấp cứu 115",
+  "sosCallRescue": "Cứu nạn 112",
+  "sosImSafe": "Tôi đã an toàn",
+  "sosSafeConfirmTitle": "Kết thúc SOS?",
+  "sosSafeConfirmMessage": "Ban quản trị và liên hệ khẩn cấp sẽ được báo là bạn đã an toàn.",
+  "sosEndedTitle": "SOS đã kết thúc",
+  "sosEndedSafe": "Rất vui vì bạn an toàn. Mọi người đã được báo.",
+  "sosEndedByAdmin": "Ban quản trị đã kết thúc tín hiệu SOS của bạn.",
+  "sosBackHome": "Về trang chủ",
+  "sosTrackingNotifTitle": "SOS đang hoạt động",
+  "sosTrackingNotifText": "Đang chia sẻ vị trí với Ban quản trị và liên hệ khẩn cấp",
+  "sosWatchTitle": "SOS của {name}",
+  "@sosWatchTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosWatchActive": "{name} đang cần giúp đỡ khẩn cấp",
+  "@sosWatchActive": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosWatchAcknowledged": "Ban quản trị đã tiếp nhận",
+  "sosWatchSafe": "{name} đã an toàn",
+  "@sosWatchSafe": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosWatchClosed": "SOS này đã kết thúc",
+  "sosOpenMap": "Mở bản đồ",
+  "sosCallPerson": "Gọi {name}",
+  "@sosCallPerson": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosLoadFailed": "Không tải được tín hiệu SOS.",
+  "sosSentAt": "Gửi lúc {time}",
+  "@sosSentAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosAccuracy": "Sai số khoảng {meters} m",
+  "@sosAccuracy": {
+    "placeholders": {
+      "meters": {}
+    }
+  }
 }

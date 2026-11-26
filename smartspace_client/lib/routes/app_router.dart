@@ -12,6 +12,9 @@ import 'package:smartspace_client/ui/mobile/settings/change_password_screen.dart
 import 'package:smartspace_client/ui/mobile/settings/edit_profile_screen.dart';
 import 'package:smartspace_client/ui/mobile/settings/manage_devices_screen.dart';
 import 'package:smartspace_client/ui/mobile/emergency/emergency_contacts_screen.dart';
+import 'package:smartspace_client/ui/mobile/sos/sos_active_screen.dart';
+import 'package:smartspace_client/ui/mobile/sos/sos_countdown_screen.dart';
+import 'package:smartspace_client/ui/mobile/sos/sos_watch_screen.dart';
 import 'package:smartspace_client/ui/mobile/settings/settings_screen.dart';
 import 'package:smartspace_client/ui/shared/splash/splash_screen.dart';
 import 'package:smartspace_client/ui/mobile/auth/register/complete_profile_screen.dart';
@@ -88,6 +91,18 @@ final appRouter = GoRouter(
       builder: (context, state) => MobileEmergencyContactsScreen(
         initialTab: EmergencyContactsTab.fromQuery(state.uri.queryParameters['tab']),
       ),
+    ),
+    GoRoute(
+      path: RouterPath.sosCountdown,
+      builder: (context, state) => const MobileSosCountdownScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.sosActive,
+      builder: (context, state) => const MobileSosActiveScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.sosWatch,
+      builder: (context, state) => MobileSosWatchScreen(sosId: state.pathParameters['id'] ?? ''),
     ),
     GoRoute(
       path: RouterPath.editProfile,

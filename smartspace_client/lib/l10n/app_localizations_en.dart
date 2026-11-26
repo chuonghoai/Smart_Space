@@ -1559,4 +1559,166 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get emergencyLoadFailed => 'Could not load your emergency contacts.';
+
+  @override
+  String get sosSlideLabel => 'Slide to send SOS';
+
+  @override
+  String get sosSlideSemantics => 'Send SOS';
+
+  @override
+  String get sosSlideHint =>
+      'The management board and your emergency contacts get your location';
+
+  @override
+  String get sosConfirmTitle => 'Send an SOS?';
+
+  @override
+  String get sosConfirmMessage =>
+      'The management board and your emergency contacts will get your location right away.';
+
+  @override
+  String get sosConfirmSend => 'Send SOS';
+
+  @override
+  String get sosActiveBanner => 'Your SOS is active';
+
+  @override
+  String get sosActiveBannerHint => 'Tap to see status or end it';
+
+  @override
+  String get sosCountdownTitle => 'Sending SOS';
+
+  @override
+  String sosCountdownMessage(Object seconds) {
+    return 'Your SOS goes out in $seconds s';
+  }
+
+  @override
+  String get sosLocating => 'Getting your location…';
+
+  @override
+  String get sosSending => 'Sending…';
+
+  @override
+  String get sosLocationUnavailable =>
+      'Could not get your location. Turn on location and try again, or call an emergency number now.';
+
+  @override
+  String get sosLocationPermissionDenied =>
+      'SmartSpace needs location access to send an SOS.';
+
+  @override
+  String get sosOpenSettings => 'Open settings';
+
+  @override
+  String get sosSendFailed =>
+      'Could not send the SOS. Try again or call an emergency number now.';
+
+  @override
+  String get sosActiveTitle => 'SOS active';
+
+  @override
+  String sosWaitingAck(Object count) {
+    return 'The management board and $count contacts were alerted. Waiting for a response.';
+  }
+
+  @override
+  String sosAcknowledgedBy(Object name) {
+    return '$name received your SOS and is helping you.';
+  }
+
+  @override
+  String sosLocationUpdatedAt(Object time) {
+    return 'Location updated at $time';
+  }
+
+  @override
+  String get sosSharingLocation => 'Sharing your location every 15 seconds';
+
+  @override
+  String get sosCallEmergency => 'Emergency numbers';
+
+  @override
+  String get sosCallPolice => 'Police 113';
+
+  @override
+  String get sosCallFire => 'Fire 114';
+
+  @override
+  String get sosCallAmbulance => 'Ambulance 115';
+
+  @override
+  String get sosCallRescue => 'Rescue 112';
+
+  @override
+  String get sosImSafe => 'I am safe';
+
+  @override
+  String get sosSafeConfirmTitle => 'End your SOS?';
+
+  @override
+  String get sosSafeConfirmMessage =>
+      'The management board and your emergency contacts will be told you are safe.';
+
+  @override
+  String get sosEndedTitle => 'SOS ended';
+
+  @override
+  String get sosEndedSafe => 'Glad you are safe. Everyone has been told.';
+
+  @override
+  String get sosEndedByAdmin => 'The management board closed your SOS.';
+
+  @override
+  String get sosBackHome => 'Back to home';
+
+  @override
+  String get sosTrackingNotifTitle => 'SOS active';
+
+  @override
+  String get sosTrackingNotifText =>
+      'Sharing your location with the management board and your emergency contacts';
+
+  @override
+  String sosWatchTitle(Object name) {
+    return 'SOS from $name';
+  }
+
+  @override
+  String sosWatchActive(Object name) {
+    return '$name needs urgent help';
+  }
+
+  @override
+  String get sosWatchAcknowledged => 'The management board is handling it';
+
+  @override
+  String sosWatchSafe(Object name) {
+    return '$name is safe';
+  }
+
+  @override
+  String get sosWatchClosed => 'This SOS has ended';
+
+  @override
+  String get sosOpenMap => 'Open map';
+
+  @override
+  String sosCallPerson(Object name) {
+    return 'Call $name';
+  }
+
+  @override
+  String get sosLoadFailed => 'Could not load this SOS.';
+
+  @override
+  String sosSentAt(Object time) {
+    return 'Sent at $time';
+  }
+
+  @override
+  String sosAccuracy(Object meters) {
+    return 'Accurate to about $meters m';
+  }
 }

@@ -633,5 +633,100 @@
   "emergencyDeclined": "Invitation declined",
   "emergencyLeft": "You left the emergency list",
   "emergencyEmptyGuardian": "No one has added you to their emergency list.",
-  "emergencyLoadFailed": "Could not load your emergency contacts."
+  "emergencyLoadFailed": "Could not load your emergency contacts.",
+  "sosSlideLabel": "Slide to send SOS",
+  "sosSlideSemantics": "Send SOS",
+  "sosSlideHint": "The management board and your emergency contacts get your location",
+  "sosConfirmTitle": "Send an SOS?",
+  "sosConfirmMessage": "The management board and your emergency contacts will get your location right away.",
+  "sosConfirmSend": "Send SOS",
+  "sosActiveBanner": "Your SOS is active",
+  "sosActiveBannerHint": "Tap to see status or end it",
+  "sosCountdownTitle": "Sending SOS",
+  "sosCountdownMessage": "Your SOS goes out in {seconds} s",
+  "@sosCountdownMessage": {
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "sosLocating": "Getting your location…",
+  "sosSending": "Sending…",
+  "sosLocationUnavailable": "Could not get your location. Turn on location and try again, or call an emergency number now.",
+  "sosLocationPermissionDenied": "SmartSpace needs location access to send an SOS.",
+  "sosOpenSettings": "Open settings",
+  "sosSendFailed": "Could not send the SOS. Try again or call an emergency number now.",
+  "sosActiveTitle": "SOS active",
+  "sosWaitingAck": "The management board and {count} contacts were alerted. Waiting for a response.",
+  "@sosWaitingAck": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "sosAcknowledgedBy": "{name} received your SOS and is helping you.",
+  "@sosAcknowledgedBy": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosLocationUpdatedAt": "Location updated at {time}",
+  "@sosLocationUpdatedAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosSharingLocation": "Sharing your location every 15 seconds",
+  "sosCallEmergency": "Emergency numbers",
+  "sosCallPolice": "Police 113",
+  "sosCallFire": "Fire 114",
+  "sosCallAmbulance": "Ambulance 115",
+  "sosCallRescue": "Rescue 112",
+  "sosImSafe": "I am safe",
+  "sosSafeConfirmTitle": "End your SOS?",
+  "sosSafeConfirmMessage": "The management board and your emergency contacts will be told you are safe.",
+  "sosEndedTitle": "SOS ended",
+  "sosEndedSafe": "Glad you are safe. Everyone has been told.",
+  "sosEndedByAdmin": "The management board closed your SOS.",
+  "sosBackHome": "Back to home",
+  "sosTrackingNotifTitle": "SOS active",
+  "sosTrackingNotifText": "Sharing your location with the management board and your emergency contacts",
+  "sosWatchTitle": "SOS from {name}",
+  "@sosWatchTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosWatchActive": "{name} needs urgent help",
+  "@sosWatchActive": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosWatchAcknowledged": "The management board is handling it",
+  "sosWatchSafe": "{name} is safe",
+  "@sosWatchSafe": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosWatchClosed": "This SOS has ended",
+  "sosOpenMap": "Open map",
+  "sosCallPerson": "Call {name}",
+  "@sosCallPerson": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosLoadFailed": "Could not load this SOS.",
+  "sosSentAt": "Sent at {time}",
+  "@sosSentAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosAccuracy": "Accurate to about {meters} m",
+  "@sosAccuracy": {
+    "placeholders": {
+      "meters": {}
+    }
+  }
 }

@@ -14,6 +14,10 @@ class RouterPath {
   static String get changePassword => RouteName.changePassword.path;
   static String get manageDevices => RouteName.manageDevices.path;
   static String get emergencyContacts => RouteName.emergencyContacts.path;
+  static String get sosCountdown => RouteName.sosCountdown.path;
+  static String get sosActive => RouteName.sosActive.path;
+  static String get sosWatch => RouteName.sosWatch.path;
+  static String sosWatchWithId(String id) => RouteName.sosWatch.path.replaceAll(':id', id);
   static String emergencyContactsWithTab(String tab) =>
       Uri(path: RouteName.emergencyContacts.path, queryParameters: {'tab': tab}).toString();
   static String get editProfile => RouteName.editProfile.path;
