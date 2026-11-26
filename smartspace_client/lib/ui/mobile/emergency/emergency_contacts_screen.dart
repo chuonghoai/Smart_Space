@@ -300,7 +300,13 @@ class _MyContactsTab extends ConsumerWidget {
               ),
               padding: const EdgeInsets.only(bottom: 8),
               itemCount: contacts.length,
-              onReorderItem: (oldIndex, newIndex) => _reorder(ref, l10n, oldIndex, newIndex),
+              // Dùng onReorder + chuẩn hóa newIndex để tương thích cả Flutter 3.41 và 3.47+.
+              // ignore: deprecated_member_use
+              onReorder: (oldIndex, newIndex) {
+                final targetIndex = newIndex > oldIndex ? newIndex - 1 : newIndex;
+                if (oldIndex == targetIndex) return;
+                _reorder(ref, l10n, oldIndex, targetIndex);
+              },
               itemBuilder: (context, index) {
                 final contact = contacts[index];
                 return Padding(
