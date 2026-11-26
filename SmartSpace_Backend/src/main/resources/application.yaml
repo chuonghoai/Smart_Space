@@ -78,6 +78,19 @@ app:
     staff-app-url: ${MAIL_STAFF_APP_URL:}
     admin-portal-url: ${MAIL_ADMIN_PORTAL_URL:}
     support-email: ${MAIL_SUPPORT_EMAIL:}
+  # SMS Brandname (eSMS). Tắt -> chỉ ghi log nội dung tin (dùng cho local/dev).
+  # Nội dung tin phải khớp mẫu (template) đã đăng ký với eSMS.
+  sms:
+    enabled: ${SMS_ENABLED:false}
+    esms:
+      base-url: ${ESMS_BASE_URL:https://rest.esms.vn/MainService.svc/json}
+      api-key: ${ESMS_API_KEY:}
+      secret-key: ${ESMS_SECRET_KEY:}
+      brandname: ${ESMS_BRANDNAME:}
+      sms-type: ${ESMS_SMS_TYPE:2}
+      sandbox: ${ESMS_SANDBOX:true}
+      unicode: ${ESMS_UNICODE:false}
+      timeout-ms: ${ESMS_TIMEOUT_MS:10000}
 
 # WebRTC Audio Call & STUN/TURN Config
 webrtc:
