@@ -92,10 +92,13 @@ public class GlobalExceptionHandler {
     // Lỗi 400: Dữ liệu khách gửi lên sai định dạng
     @ExceptionHandler(BadRequestException.class)
     public ResponseEntity<ApiResponse> handleBadRequest(BadRequestException e) {
+        String translated = (e.getArgs() != null && e.getArgs().length > 0)
+                ? messageService.get(e.getMessage(), e.getArgs())
+                : messageService.get(e.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.builder()
                         .success(false)
-                        .message(messageService.get(e.getMessage()))
+                        .message(translated)
                         .build());
     }
 

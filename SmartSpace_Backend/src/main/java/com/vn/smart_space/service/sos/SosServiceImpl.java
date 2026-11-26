@@ -42,11 +42,13 @@ import com.vn.smart_space.utils.PhoneNumberUtils;
 import lombok.AccessLevel;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.FieldDefaults;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * SOS của cư dân: báo toàn bộ admin và các liên hệ khẩn cấp đã đồng ý,
  * nhận vị trí định kỳ cho tới khi người gửi an toàn hoặc admin kết thúc.
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @FieldDefaults(level = AccessLevel.PRIVATE, makeFinal = true)
@@ -62,6 +64,7 @@ public class SosServiceImpl implements ISosService {
     UserRepository userRepository;
     EmergencyContactRepository contactRepository;
     SosNotifier notifier;
+    SosRateLimitService rateLimitService;
 
     // Cư dân
 
@@ -86,8 +89,15 @@ public class SosServiceImpl implements ISosService {
             return response;
         }
 
+        enforceCooldown(userId);
+
         List<EmergencyContact> contacts = contactRepository.findByOwnerAndStatus(userId,
                 EEmergencyContactStatus.ACCEPTED);
+        List<String> smsTargets = smsPhones(contacts);
+        if (!smsTargets.isEmpty() && !rateLimitService.tryConsumeSmsQuota(userId)) {
+            log.info("[SOS] Daily SMS quota reached for user={}, skipping SMS delivery", userId);
+            smsTargets = List.of();
+        }
         LocalDateTime now = LocalDateTime.now();
         SosAlert sos = SosAlert.builder()
                 .user(user)
@@ -103,7 +113,7 @@ public class SosServiceImpl implements ISosService {
         savePoint(sos, now);
 
         SosAlertResponse response = toResponse(sos, false);
-        notifier.notifyStarted(response, user, admins(), appContacts(contacts), smsPhones(contacts));
+        notifier.notifyStarted(response, user, admins(), appContacts(contacts), smsTargets);
         return response;
     }
 
@@ -280,14 +290,29 @@ public class SosServiceImpl implements ISosService {
         sos.setResolutionNote(note);
     }
 
+    private void enforceCooldown(String userId) {
+        long remainingSeconds = rateLimitService.getRemainingCooldownSeconds(userId);
+        if (remainingSeconds <= 0) {
+            return;
+        }
+        if (remainingSeconds >= 60) {
+            long minutes = (remainingSeconds + 59) / 60;
+            throw new BadRequestException("sos.cooldown.minutes", minutes);
+        }
+        throw new BadRequestException("sos.cooldown.seconds", remainingSeconds);
+    }
+
     private SosAlertResponse notifyClosed(SosAlert sos, String outcome, boolean byAdmin) {
-        List<EmergencyContact> contacts = contactRepository.findByOwnerAndStatus(sos.getUser().getId(),
+        String senderId = sos.getUser().getId();
+        rateLimitService.recordCooldown(senderId, sos.getResolution());
+        List<EmergencyContact> contacts = contactRepository.findByOwnerAndStatus(senderId,
                 EEmergencyContactStatus.ACCEPTED);
         List<User> activeAdmins = admins();
         List<User> linkedContacts = appContacts(contacts);
+        List<String> smsTargets = rateLimitService.isWithinSmsQuota(senderId) ? smsPhones(contacts) : List.of();
         SosAlertResponse response = toResponse(sos, false);
         notifier.notifyResolved(response, sos.getUser(), outcome, byAdmin, activeAdmins, linkedContacts,
-                smsPhones(contacts), watcherIds(sos.getUser().getId(), activeAdmins, linkedContacts));
+                smsTargets, watcherIds(senderId, activeAdmins, linkedContacts));
         return response;
     }
 

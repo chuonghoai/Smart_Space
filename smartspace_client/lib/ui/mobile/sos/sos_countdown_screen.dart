@@ -154,6 +154,7 @@ class _Failure extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
     final theme = Theme.of(context);
+    final scheme = theme.colorScheme;
     final message = switch (state.failure) {
       SosCountdownFailure.permissionDenied => l10n.sosLocationPermissionDenied,
       SosCountdownFailure.locationUnavailable => l10n.sosLocationUnavailable,
@@ -164,7 +165,30 @@ class _Failure extends StatelessWidget {
       children: [
         Semantics(
           liveRegion: true,
-          child: Text(message, style: theme.textTheme.titleMedium),
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            decoration: BoxDecoration(
+              color: scheme.errorContainer,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: scheme.error.withValues(alpha: 0.4)),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(Icons.info_outline_rounded, color: scheme.onErrorContainer, size: 22),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    message,
+                    style: theme.textTheme.bodyLarge?.copyWith(
+                      color: scheme.onErrorContainer,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
         ),
         const SizedBox(height: 16),
         Row(

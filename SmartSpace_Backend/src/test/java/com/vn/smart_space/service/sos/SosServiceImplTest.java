@@ -57,6 +57,8 @@ class SosServiceImplTest {
     EmergencyContactRepository contactRepository;
     @Mock
     SosNotifier notifier;
+    @Mock
+    SosRateLimitService rateLimitService;
 
     @InjectMocks
     SosServiceImpl service;
@@ -72,6 +74,8 @@ class SosServiceImplTest {
 
         when(userRepository.findByIdForUpdate("owner")).thenReturn(Optional.of(owner));
         when(sosRepository.findByUserAndStatuses(eq("owner"), anyCollection())).thenReturn(List.of());
+        when(rateLimitService.getRemainingCooldownSeconds("owner")).thenReturn(0L);
+        when(rateLimitService.tryConsumeSmsQuota("owner")).thenReturn(true);
         when(contactRepository.findByOwnerAndStatus("owner", EEmergencyContactStatus.ACCEPTED))
                 .thenReturn(List.of(appContact, phoneContact));
         when(userRepository.findByRole(ERole.admin)).thenReturn(List.of(admin, lockedAdmin));
@@ -199,8 +203,52 @@ class SosServiceImplTest {
         assertEquals("Accidental trigger", response.getResolutionNote());
         verify(userRepository, times(1)).findByRole(ERole.admin);
         verify(contactRepository, times(1)).findByOwnerAndStatus("owner", EEmergencyContactStatus.ACCEPTED);
+        verify(rateLimitService).recordCooldown("owner", ESosResolution.FALSE_ALARM);
         verify(notifier).notifyResolved(any(), eq(owner), eq("false_alarm"), eq(true), anyList(), anyList(),
                 anyList(), anyCollection());
+    }
+
+    @Test
+    void startBlockedDuringCooldown() {
+        User owner = user("owner", ERole.client, EUserStatus.active);
+        when(userRepository.findByIdForUpdate("owner")).thenReturn(Optional.of(owner));
+        when(sosRepository.findByUserAndStatuses(eq("owner"), anyCollection())).thenReturn(List.of());
+        when(rateLimitService.getRemainingCooldownSeconds("owner")).thenReturn(125L);
+
+        BadRequestException ex = assertThrows(BadRequestException.class,
+                () -> service.start("owner", startRequest()));
+        assertEquals("sos.cooldown.minutes", ex.getMessage());
+        assertEquals(3L, ex.getArgs()[0]);
+        verify(sosRepository, never()).saveAndFlush(any());
+    }
+
+    @Test
+    void startSuppressesSmsWhenDailyQuotaExceededButStillNotifiesAppAndAdmins() {
+        User owner = user("owner", ERole.client, EUserStatus.active);
+        User linked = user("linked", ERole.client, EUserStatus.active);
+        User admin = user("admin", ERole.admin, EUserStatus.active);
+        EmergencyContact appContact = contact(owner, linked, EEmergencyContactConsent.APP, "84900000001");
+        EmergencyContact phoneContact = contact(owner, null, EEmergencyContactConsent.SELF_DECLARED, "84900000002");
+
+        when(userRepository.findByIdForUpdate("owner")).thenReturn(Optional.of(owner));
+        when(sosRepository.findByUserAndStatuses(eq("owner"), anyCollection())).thenReturn(List.of());
+        when(rateLimitService.getRemainingCooldownSeconds("owner")).thenReturn(0L);
+        when(rateLimitService.tryConsumeSmsQuota("owner")).thenReturn(false);
+        when(contactRepository.findByOwnerAndStatus("owner", EEmergencyContactStatus.ACCEPTED))
+                .thenReturn(List.of(appContact, phoneContact));
+        when(userRepository.findByRole(ERole.admin)).thenReturn(List.of(admin));
+        when(sosRepository.saveAndFlush(any(SosAlert.class))).thenAnswer(inv -> {
+            SosAlert saved = inv.getArgument(0);
+            saved.setId("sos-2");
+            return saved;
+        });
+
+        service.start("owner", startRequest());
+
+        @SuppressWarnings("unchecked")
+        ArgumentCaptor<List<String>> phones = ArgumentCaptor.forClass(List.class);
+        verify(notifier).notifyStarted(any(), eq(owner), eq(List.of(admin)), eq(List.of(linked)), phones.capture());
+        assertTrue(phones.getValue().isEmpty());
     }
 
     @Test

@@ -91,6 +91,12 @@ app:
       sandbox: ${ESMS_SANDBOX:true}
       unicode: ${ESMS_UNICODE:false}
       timeout-ms: ${ESMS_TIMEOUT_MS:10000}
+  # Chống spam SOS (Redis cooldown + hạn mức SMS Brandname theo ngày).
+  sos:
+    anti-spam:
+      safe-cooldown-seconds: ${SOS_SAFE_COOLDOWN_SECONDS:180}
+      false-alarm-cooldown-seconds: ${SOS_FALSE_ALARM_COOLDOWN_SECONDS:1800}
+      sms-daily-limit: ${SOS_SMS_DAILY_LIMIT:2}
 
 # WebRTC Audio Call & STUN/TURN Config
 webrtc:
