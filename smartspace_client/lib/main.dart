@@ -18,6 +18,7 @@ import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
 import 'firebase_options.dart';
 import 'features/app_services/app_services_initializer.dart';
 import 'package:smartspace_client/features/notifications/services/notification_ws_service.dart';
+import 'package:mobile_shared/features/sos/services/sos_ws_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -56,6 +57,7 @@ void main() async {
   WsServicesRegistry.register(NotificationWsService());
   WsServicesRegistry.register(chatWsService);
   WsServicesRegistry.register(callWsService);
+  WsServicesRegistry.register(sosWsService);
 
   runApp(const ProviderScope(child: SmartSpaceApp()));
 }

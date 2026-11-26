@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smartspace_client/features/sos/providers/sos_provider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smartspace_client/routes/router_path.dart';
 import 'package:smartspace_client/features/notifications/models/notification_action.dart';
@@ -59,6 +61,13 @@ class NotificationRouter {
         } else {
           GoRouter.of(ctx).push(RouterPath.conversations);
         }
+        break;
+      case 'SOS_ALERT':
+        final sosId = (action.payload['sosId'] ?? action.payload['id']) as String?;
+        if (sosId == null || sosId.isEmpty) break;
+        // SOS của chính mình mở màn đang hoạt động, của người khác mở màn theo dõi
+        final ownSosId = ProviderScope.containerOf(ctx).read(sosProvider).sos?.id;
+        GoRouter.of(ctx).push(ownSosId == sosId ? RouterPath.sosActive : RouterPath.sosWatchWithId(sosId));
         break;
       case 'EMERGENCY_CONTACT':
         final tab = action.payload['view'] == 'guardian' ? 'guardian' : 'mine';
