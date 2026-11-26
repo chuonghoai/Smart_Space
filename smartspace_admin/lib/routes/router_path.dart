@@ -27,6 +27,9 @@ class RouterPath {
           if (requestId != null && requestId.isNotEmpty) 'requestId': requestId,
         },
       ).toString();
+  static String get sosCenter => RouteName.sosCenter.path;
+  static String get sosDetail => RouteName.sosDetail.path;
+  static String sosDetailWithId(String id) => RouteName.sosDetail.path.replaceAll(':id', id);
   static String get reportDashboard => RouteName.reportDashboard.path;
   static String get reportList => RouteName.reportList.path;
   static String get spaceMap => RouteName.spaceMap.path;

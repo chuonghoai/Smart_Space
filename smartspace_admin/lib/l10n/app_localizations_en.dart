@@ -3387,4 +3387,112 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get cannotMessageAnonymousNotice =>
       'Anonymous user: only in-app chat and free calls are supported.';
+
+  @override
+  String get routeSosCenter => 'SOS alerts';
+
+  @override
+  String get sosTabOpen => 'Open';
+
+  @override
+  String get sosTabResolved => 'Closed';
+
+  @override
+  String get sosEmptyOpen => 'No SOS is open right now.';
+
+  @override
+  String get sosEmptyResolved => 'No SOS has ended yet.';
+
+  @override
+  String get sosStatusActive => 'Awaiting response';
+
+  @override
+  String get sosStatusAcknowledged => 'Being handled';
+
+  @override
+  String get sosResolutionSafe => 'Sender is safe';
+
+  @override
+  String get sosResolutionHandled => 'Handled';
+
+  @override
+  String get sosResolutionFalseAlarm => 'False alarm';
+
+  @override
+  String sosSentAt(Object time) {
+    return 'Sent at $time';
+  }
+
+  @override
+  String sosHandledBy(Object name) {
+    return '$name is handling it';
+  }
+
+  @override
+  String sosLocationUpdatedAt(Object time) {
+    return 'Location updated at $time';
+  }
+
+  @override
+  String sosSignalLost(Object time) {
+    return 'No new location since $time';
+  }
+
+  @override
+  String sosAccuracy(Object meters) {
+    return 'Accurate to about $meters m';
+  }
+
+  @override
+  String sosNotifiedContacts(Object count) {
+    return '$count emergency contacts alerted';
+  }
+
+  @override
+  String get sosOpenMap => 'Open map';
+
+  @override
+  String sosCallSender(Object name) {
+    return 'Call $name';
+  }
+
+  @override
+  String get sosAcknowledge => 'Take this SOS';
+
+  @override
+  String get sosResolve => 'End SOS';
+
+  @override
+  String sosResolveTitle(Object name) {
+    return 'End the SOS from $name?';
+  }
+
+  @override
+  String get sosResolveHandled => 'Help was given';
+
+  @override
+  String get sosResolveFalseAlarm => 'False alarm';
+
+  @override
+  String get sosResolveNote => 'Note (optional)';
+
+  @override
+  String get sosAcknowledgedToast => 'You took this SOS';
+
+  @override
+  String get sosResolvedToast => 'SOS ended';
+
+  @override
+  String get sosTrackTitle => 'Recent locations';
+
+  @override
+  String get sosLoadFailed => 'Could not load SOS alerts.';
+
+  @override
+  String sosEndedAt(Object time) {
+    return 'Ended at $time';
+  }
+
+  @override
+  String get sosCannotOpenMap => 'Could not open the map';
 }

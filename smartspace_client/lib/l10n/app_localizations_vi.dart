@@ -1550,4 +1550,167 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get emergencyLoadFailed => 'Không tải được danh sách khẩn cấp.';
+
+  @override
+  String get sosSlideLabel => 'Trượt để gửi SOS';
+
+  @override
+  String get sosSlideSemantics => 'Gửi tín hiệu SOS';
+
+  @override
+  String get sosSlideHint =>
+      'Ban quản trị và liên hệ khẩn cấp sẽ nhận vị trí của bạn';
+
+  @override
+  String get sosConfirmTitle => 'Gửi tín hiệu SOS?';
+
+  @override
+  String get sosConfirmMessage =>
+      'Ban quản trị và liên hệ khẩn cấp sẽ nhận vị trí của bạn ngay.';
+
+  @override
+  String get sosConfirmSend => 'Gửi SOS';
+
+  @override
+  String get sosActiveBanner => 'SOS của bạn đang hoạt động';
+
+  @override
+  String get sosActiveBannerHint => 'Nhấn để xem trạng thái hoặc kết thúc';
+
+  @override
+  String get sosCountdownTitle => 'Đang gửi SOS';
+
+  @override
+  String sosCountdownMessage(Object seconds) {
+    return 'Tín hiệu sẽ được gửi sau $seconds giây';
+  }
+
+  @override
+  String get sosLocating => 'Đang lấy vị trí…';
+
+  @override
+  String get sosSending => 'Đang gửi…';
+
+  @override
+  String get sosLocationUnavailable =>
+      'Không lấy được vị trí. Hãy bật định vị và thử lại, hoặc gọi ngay số khẩn cấp.';
+
+  @override
+  String get sosLocationPermissionDenied =>
+      'SmartSpace cần quyền vị trí để gửi SOS.';
+
+  @override
+  String get sosOpenSettings => 'Mở cài đặt';
+
+  @override
+  String get sosSendFailed =>
+      'Không gửi được SOS. Hãy thử lại hoặc gọi ngay số khẩn cấp.';
+
+  @override
+  String get sosActiveTitle => 'SOS đang hoạt động';
+
+  @override
+  String sosWaitingAck(Object count) {
+    return 'Đã báo Ban quản trị và $count liên hệ. Đang chờ tiếp nhận.';
+  }
+
+  @override
+  String sosAcknowledgedBy(Object name) {
+    return '$name đã tiếp nhận và đang hỗ trợ bạn.';
+  }
+
+  @override
+  String sosLocationUpdatedAt(Object time) {
+    return 'Vị trí cập nhật lúc $time';
+  }
+
+  @override
+  String get sosSharingLocation => 'Đang chia sẻ vị trí mỗi 15 giây';
+
+  @override
+  String get sosCallEmergency => 'Gọi khẩn cấp';
+
+  @override
+  String get sosCallPolice => 'Công an 113';
+
+  @override
+  String get sosCallFire => 'Cứu hỏa 114';
+
+  @override
+  String get sosCallAmbulance => 'Cấp cứu 115';
+
+  @override
+  String get sosCallRescue => 'Cứu nạn 112';
+
+  @override
+  String get sosImSafe => 'Tôi đã an toàn';
+
+  @override
+  String get sosSafeConfirmTitle => 'Kết thúc SOS?';
+
+  @override
+  String get sosSafeConfirmMessage =>
+      'Ban quản trị và liên hệ khẩn cấp sẽ được báo là bạn đã an toàn.';
+
+  @override
+  String get sosEndedTitle => 'SOS đã kết thúc';
+
+  @override
+  String get sosEndedSafe => 'Rất vui vì bạn an toàn. Mọi người đã được báo.';
+
+  @override
+  String get sosEndedByAdmin =>
+      'Ban quản trị đã kết thúc tín hiệu SOS của bạn.';
+
+  @override
+  String get sosBackHome => 'Về trang chủ';
+
+  @override
+  String get sosTrackingNotifTitle => 'SOS đang hoạt động';
+
+  @override
+  String get sosTrackingNotifText =>
+      'Đang chia sẻ vị trí với Ban quản trị và liên hệ khẩn cấp';
+
+  @override
+  String sosWatchTitle(Object name) {
+    return 'SOS của $name';
+  }
+
+  @override
+  String sosWatchActive(Object name) {
+    return '$name đang cần giúp đỡ khẩn cấp';
+  }
+
+  @override
+  String get sosWatchAcknowledged => 'Ban quản trị đã tiếp nhận';
+
+  @override
+  String sosWatchSafe(Object name) {
+    return '$name đã an toàn';
+  }
+
+  @override
+  String get sosWatchClosed => 'SOS này đã kết thúc';
+
+  @override
+  String get sosOpenMap => 'Mở bản đồ';
+
+  @override
+  String sosCallPerson(Object name) {
+    return 'Gọi $name';
+  }
+
+  @override
+  String get sosLoadFailed => 'Không tải được tín hiệu SOS.';
+
+  @override
+  String sosSentAt(Object time) {
+    return 'Gửi lúc $time';
+  }
+
+  @override
+  String sosAccuracy(Object meters) {
+    return 'Sai số khoảng $meters m';
+  }
 }

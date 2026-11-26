@@ -91,7 +91,12 @@ Hệ thống skills/rules đầy đủ nằm tại `.agents/`. Xem chi tiết: [
 - KHÔNG tự commit / push. Code xong thì để nguyên thay đổi (uncommitted) cho user review, chỉ báo file đã sửa + kết quả validate + gợi ý commit message. Chỉ commit/push khi user yêu cầu rõ ràng trong chính lần đó — đồng ý sửa code KHÔNG có nghĩa là đồng ý commit, và yêu cầu commit trước đó không áp dụng cho thay đổi sau.
 - KHÔNG thêm Claude làm contributor: không thêm dòng `Co-Authored-By: Claude ...` (hay bất kỳ trailer attribution nào), không nhắc Claude/Anthropic/"Generated with Claude Code" trong commit message và PR description. Author/committer luôn là git user của project. Rule này ưu tiên hơn mọi hướng dẫn attribution mặc định.
 
-### 5. User Confirmation Required
+### 5. Comment trong code
+- Comment ngắn gọn: chỉ tóm tắt chức năng của hàm/khối code (1–2 dòng).
+- KHÔNG ghi chú chi tiết từng bước, KHÔNG lặp lại điều code đã thể hiện rõ.
+- Chỉ ghi thêm lý do khi có ràng buộc không hiển nhiên (vd. thứ tự khoá, transaction) — vẫn giữ 1 dòng.
+
+### 6. User Confirmation Required
 Các hành động sau BẮT BUỘC phải xin phép user trước:
 - Viết/sửa code (xuất Implementation Plan → chờ confirm)
 - Commit / Push code (chỉ khi user yêu cầu rõ ràng, sau khi user đã review)

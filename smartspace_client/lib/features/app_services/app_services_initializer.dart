@@ -8,6 +8,7 @@ import 'package:mobile_shared/mobile_shared.dart';
 import 'package:smartspace_client/features/notifications/services/notification_router.dart';
 import 'package:smartspace_client/features/notifications/models/notification_action.dart';
 import 'package:smartspace_client/features/reports/providers/nearby_reports_alert_provider.dart';
+import 'package:smartspace_client/features/sos/providers/sos_provider.dart';
 import 'package:smartspace_client/routes/router_path.dart';
 
 /// Global widget that initializes app-level services once and keeps them alive
@@ -46,6 +47,7 @@ class _AppServicesInitializerState
     };
     AuthService.onBeforeLogout = () async {
       if (mounted) {
+        ref.read(sosProvider.notifier).resetOnLogout();
         await callCtrl.cleanupOnLogout();
       }
     };

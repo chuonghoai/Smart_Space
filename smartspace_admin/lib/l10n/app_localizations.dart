@@ -6212,6 +6212,186 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Anonymous user: only in-app chat and free calls are supported.'**
   String get cannotMessageAnonymousNotice;
+
+  /// No description provided for @routeSosCenter.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS alerts'**
+  String get routeSosCenter;
+
+  /// No description provided for @sosTabOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get sosTabOpen;
+
+  /// No description provided for @sosTabResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get sosTabResolved;
+
+  /// No description provided for @sosEmptyOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'No SOS is open right now.'**
+  String get sosEmptyOpen;
+
+  /// No description provided for @sosEmptyResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'No SOS has ended yet.'**
+  String get sosEmptyResolved;
+
+  /// No description provided for @sosStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting response'**
+  String get sosStatusActive;
+
+  /// No description provided for @sosStatusAcknowledged.
+  ///
+  /// In en, this message translates to:
+  /// **'Being handled'**
+  String get sosStatusAcknowledged;
+
+  /// No description provided for @sosResolutionSafe.
+  ///
+  /// In en, this message translates to:
+  /// **'Sender is safe'**
+  String get sosResolutionSafe;
+
+  /// No description provided for @sosResolutionHandled.
+  ///
+  /// In en, this message translates to:
+  /// **'Handled'**
+  String get sosResolutionHandled;
+
+  /// No description provided for @sosResolutionFalseAlarm.
+  ///
+  /// In en, this message translates to:
+  /// **'False alarm'**
+  String get sosResolutionFalseAlarm;
+
+  /// No description provided for @sosSentAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent at {time}'**
+  String sosSentAt(Object time);
+
+  /// No description provided for @sosHandledBy.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is handling it'**
+  String sosHandledBy(Object name);
+
+  /// No description provided for @sosLocationUpdatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Location updated at {time}'**
+  String sosLocationUpdatedAt(Object time);
+
+  /// No description provided for @sosSignalLost.
+  ///
+  /// In en, this message translates to:
+  /// **'No new location since {time}'**
+  String sosSignalLost(Object time);
+
+  /// No description provided for @sosAccuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'Accurate to about {meters} m'**
+  String sosAccuracy(Object meters);
+
+  /// No description provided for @sosNotifiedContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} emergency contacts alerted'**
+  String sosNotifiedContacts(Object count);
+
+  /// No description provided for @sosOpenMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Open map'**
+  String get sosOpenMap;
+
+  /// No description provided for @sosCallSender.
+  ///
+  /// In en, this message translates to:
+  /// **'Call {name}'**
+  String sosCallSender(Object name);
+
+  /// No description provided for @sosAcknowledge.
+  ///
+  /// In en, this message translates to:
+  /// **'Take this SOS'**
+  String get sosAcknowledge;
+
+  /// No description provided for @sosResolve.
+  ///
+  /// In en, this message translates to:
+  /// **'End SOS'**
+  String get sosResolve;
+
+  /// No description provided for @sosResolveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'End the SOS from {name}?'**
+  String sosResolveTitle(Object name);
+
+  /// No description provided for @sosResolveHandled.
+  ///
+  /// In en, this message translates to:
+  /// **'Help was given'**
+  String get sosResolveHandled;
+
+  /// No description provided for @sosResolveFalseAlarm.
+  ///
+  /// In en, this message translates to:
+  /// **'False alarm'**
+  String get sosResolveFalseAlarm;
+
+  /// No description provided for @sosResolveNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Note (optional)'**
+  String get sosResolveNote;
+
+  /// No description provided for @sosAcknowledgedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'You took this SOS'**
+  String get sosAcknowledgedToast;
+
+  /// No description provided for @sosResolvedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS ended'**
+  String get sosResolvedToast;
+
+  /// No description provided for @sosTrackTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent locations'**
+  String get sosTrackTitle;
+
+  /// No description provided for @sosLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load SOS alerts.'**
+  String get sosLoadFailed;
+
+  /// No description provided for @sosEndedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Ended at {time}'**
+  String sosEndedAt(Object time);
+
+  /// No description provided for @sosCannotOpenMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the map'**
+  String get sosCannotOpenMap;
 }
 
 class _AppLocalizationsDelegate

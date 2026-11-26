@@ -21,6 +21,8 @@ import 'package:smartspace_admin/ui/screen/position/position_management_screen.d
 import 'package:smartspace_admin/ui/screen/category/category_management_screen.dart';
 import 'package:smartspace_admin/ui/screen/auto_assign/auto_assign_center_screen.dart';
 import 'package:smartspace_admin/ui/screen/admin_board/admin_board_screen.dart';
+import 'package:smartspace_admin/ui/screen/sos/sos_center_screen.dart';
+import 'package:smartspace_admin/ui/screen/sos/sos_detail_screen.dart';
 import 'package:smartspace_admin/ui/shared/splash/splash_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:mobile_shared/mobile_shared.dart';
@@ -137,6 +139,14 @@ final appRouter = GoRouter(
         initialTab: state.uri.queryParameters['tab'],
         initialRequestId: state.uri.queryParameters['requestId'],
       ),
+    ),
+    GoRoute(
+      path: RouterPath.sosCenter,
+      builder: (context, state) => const SosCenterScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.sosDetail,
+      builder: (context, state) => SosDetailScreen(sosId: state.pathParameters['id'] ?? ''),
     ),
     GoRoute(
       path: RouterPath.reportDashboard,

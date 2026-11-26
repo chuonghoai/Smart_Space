@@ -1669,5 +1669,80 @@
   "rehandlingReportsSection": "Re-handling reports",
   "checkingEligibility": "Checking eligibility...",
   "attachRehandlingReports": "Attach re-handling reports",
-  "cannotMessageAnonymousNotice": "Anonymous user: only in-app chat and free calls are supported."
+  "cannotMessageAnonymousNotice": "Anonymous user: only in-app chat and free calls are supported.",
+  "routeSosCenter": "SOS alerts",
+  "sosTabOpen": "Open",
+  "sosTabResolved": "Closed",
+  "sosEmptyOpen": "No SOS is open right now.",
+  "sosEmptyResolved": "No SOS has ended yet.",
+  "sosStatusActive": "Awaiting response",
+  "sosStatusAcknowledged": "Being handled",
+  "sosResolutionSafe": "Sender is safe",
+  "sosResolutionHandled": "Handled",
+  "sosResolutionFalseAlarm": "False alarm",
+  "sosSentAt": "Sent at {time}",
+  "@sosSentAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosHandledBy": "{name} is handling it",
+  "@sosHandledBy": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosLocationUpdatedAt": "Location updated at {time}",
+  "@sosLocationUpdatedAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosSignalLost": "No new location since {time}",
+  "@sosSignalLost": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosAccuracy": "Accurate to about {meters} m",
+  "@sosAccuracy": {
+    "placeholders": {
+      "meters": {}
+    }
+  },
+  "sosNotifiedContacts": "{count} emergency contacts alerted",
+  "@sosNotifiedContacts": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "sosOpenMap": "Open map",
+  "sosCallSender": "Call {name}",
+  "@sosCallSender": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosAcknowledge": "Take this SOS",
+  "sosResolve": "End SOS",
+  "sosResolveTitle": "End the SOS from {name}?",
+  "@sosResolveTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosResolveHandled": "Help was given",
+  "sosResolveFalseAlarm": "False alarm",
+  "sosResolveNote": "Note (optional)",
+  "sosAcknowledgedToast": "You took this SOS",
+  "sosResolvedToast": "SOS ended",
+  "sosTrackTitle": "Recent locations",
+  "sosLoadFailed": "Could not load SOS alerts.",
+  "sosEndedAt": "Ended at {time}",
+  "@sosEndedAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosCannotOpenMap": "Could not open the map"
 }

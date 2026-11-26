@@ -11,6 +11,7 @@ import 'package:smartspace_client/ui/components/dangerous_reports_slider.dart';
 import 'package:go_router/go_router.dart';
 import 'package:smartspace_client/routes/router_path.dart';
 import 'package:smartspace_client/ui/mobile/news/widgets/news_card.dart';
+import 'package:smartspace_client/ui/mobile/sos/widgets/sos_home_card.dart';
 
 class MobileHomeScreen extends ConsumerWidget {
   const MobileHomeScreen({super.key});
@@ -41,6 +42,9 @@ class MobileHomeScreen extends ConsumerWidget {
                       welcomeText: l10n.welcomeBack,
                       displayName: state.user?.fullname ?? l10n.user,
                     ),
+                    const SizedBox(height: 20),
+
+                    const SosHomeCard(),
                     const SizedBox(height: 20),
 
                     // Dangerous Reports Slider

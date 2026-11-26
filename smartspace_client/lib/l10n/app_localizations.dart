@@ -2977,6 +2977,276 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Could not load your emergency contacts.'**
   String get emergencyLoadFailed;
+
+  /// No description provided for @sosSlideLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Slide to send SOS'**
+  String get sosSlideLabel;
+
+  /// No description provided for @sosSlideSemantics.
+  ///
+  /// In en, this message translates to:
+  /// **'Send SOS'**
+  String get sosSlideSemantics;
+
+  /// No description provided for @sosSlideHint.
+  ///
+  /// In en, this message translates to:
+  /// **'The management board and your emergency contacts get your location'**
+  String get sosSlideHint;
+
+  /// No description provided for @sosConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send an SOS?'**
+  String get sosConfirmTitle;
+
+  /// No description provided for @sosConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The management board and your emergency contacts will get your location right away.'**
+  String get sosConfirmMessage;
+
+  /// No description provided for @sosConfirmSend.
+  ///
+  /// In en, this message translates to:
+  /// **'Send SOS'**
+  String get sosConfirmSend;
+
+  /// No description provided for @sosActiveBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Your SOS is active'**
+  String get sosActiveBanner;
+
+  /// No description provided for @sosActiveBannerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to see status or end it'**
+  String get sosActiveBannerHint;
+
+  /// No description provided for @sosCountdownTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending SOS'**
+  String get sosCountdownTitle;
+
+  /// No description provided for @sosCountdownMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Your SOS goes out in {seconds} s'**
+  String sosCountdownMessage(Object seconds);
+
+  /// No description provided for @sosLocating.
+  ///
+  /// In en, this message translates to:
+  /// **'Getting your location…'**
+  String get sosLocating;
+
+  /// No description provided for @sosSending.
+  ///
+  /// In en, this message translates to:
+  /// **'Sending…'**
+  String get sosSending;
+
+  /// No description provided for @sosLocationUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not get your location. Turn on location and try again, or call an emergency number now.'**
+  String get sosLocationUnavailable;
+
+  /// No description provided for @sosLocationPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'SmartSpace needs location access to send an SOS.'**
+  String get sosLocationPermissionDenied;
+
+  /// No description provided for @sosOpenSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Open settings'**
+  String get sosOpenSettings;
+
+  /// No description provided for @sosSendFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send the SOS. Try again or call an emergency number now.'**
+  String get sosSendFailed;
+
+  /// No description provided for @sosActiveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS active'**
+  String get sosActiveTitle;
+
+  /// No description provided for @sosWaitingAck.
+  ///
+  /// In en, this message translates to:
+  /// **'The management board and {count} contacts were alerted. Waiting for a response.'**
+  String sosWaitingAck(Object count);
+
+  /// No description provided for @sosAcknowledgedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} received your SOS and is helping you.'**
+  String sosAcknowledgedBy(Object name);
+
+  /// No description provided for @sosLocationUpdatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Location updated at {time}'**
+  String sosLocationUpdatedAt(Object time);
+
+  /// No description provided for @sosSharingLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing your location every 15 seconds'**
+  String get sosSharingLocation;
+
+  /// No description provided for @sosCallEmergency.
+  ///
+  /// In en, this message translates to:
+  /// **'Emergency numbers'**
+  String get sosCallEmergency;
+
+  /// No description provided for @sosCallPolice.
+  ///
+  /// In en, this message translates to:
+  /// **'Police 113'**
+  String get sosCallPolice;
+
+  /// No description provided for @sosCallFire.
+  ///
+  /// In en, this message translates to:
+  /// **'Fire 114'**
+  String get sosCallFire;
+
+  /// No description provided for @sosCallAmbulance.
+  ///
+  /// In en, this message translates to:
+  /// **'Ambulance 115'**
+  String get sosCallAmbulance;
+
+  /// No description provided for @sosCallRescue.
+  ///
+  /// In en, this message translates to:
+  /// **'Rescue 112'**
+  String get sosCallRescue;
+
+  /// No description provided for @sosImSafe.
+  ///
+  /// In en, this message translates to:
+  /// **'I am safe'**
+  String get sosImSafe;
+
+  /// No description provided for @sosSafeConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'End your SOS?'**
+  String get sosSafeConfirmTitle;
+
+  /// No description provided for @sosSafeConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The management board and your emergency contacts will be told you are safe.'**
+  String get sosSafeConfirmMessage;
+
+  /// No description provided for @sosEndedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS ended'**
+  String get sosEndedTitle;
+
+  /// No description provided for @sosEndedSafe.
+  ///
+  /// In en, this message translates to:
+  /// **'Glad you are safe. Everyone has been told.'**
+  String get sosEndedSafe;
+
+  /// No description provided for @sosEndedByAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'The management board closed your SOS.'**
+  String get sosEndedByAdmin;
+
+  /// No description provided for @sosBackHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to home'**
+  String get sosBackHome;
+
+  /// No description provided for @sosTrackingNotifTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS active'**
+  String get sosTrackingNotifTitle;
+
+  /// No description provided for @sosTrackingNotifText.
+  ///
+  /// In en, this message translates to:
+  /// **'Sharing your location with the management board and your emergency contacts'**
+  String get sosTrackingNotifText;
+
+  /// No description provided for @sosWatchTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS from {name}'**
+  String sosWatchTitle(Object name);
+
+  /// No description provided for @sosWatchActive.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} needs urgent help'**
+  String sosWatchActive(Object name);
+
+  /// No description provided for @sosWatchAcknowledged.
+  ///
+  /// In en, this message translates to:
+  /// **'The management board is handling it'**
+  String get sosWatchAcknowledged;
+
+  /// No description provided for @sosWatchSafe.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is safe'**
+  String sosWatchSafe(Object name);
+
+  /// No description provided for @sosWatchClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'This SOS has ended'**
+  String get sosWatchClosed;
+
+  /// No description provided for @sosOpenMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Open map'**
+  String get sosOpenMap;
+
+  /// No description provided for @sosCallPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Call {name}'**
+  String sosCallPerson(Object name);
+
+  /// No description provided for @sosLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load this SOS.'**
+  String get sosLoadFailed;
+
+  /// No description provided for @sosSentAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent at {time}'**
+  String sosSentAt(Object time);
+
+  /// No description provided for @sosAccuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'Accurate to about {meters} m'**
+  String sosAccuracy(Object meters);
 }
 
 class _AppLocalizationsDelegate

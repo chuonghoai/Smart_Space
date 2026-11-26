@@ -61,6 +61,8 @@ class AppRouteInfo {
         return l10n.routeAllActivities;
       case 'routeAdminBoard':
         return l10n.routeAdminBoard;
+      case 'routeSosCenter':
+        return l10n.routeSosCenter;
       default:
         return nameKey;
     }
@@ -157,6 +159,18 @@ class RouteName {
     nameKey: 'routeAdminBoard',
     icon: Icons.admin_panel_settings_outlined,
     priority: 2,
+  );
+  static const sosCenter = AppRouteInfo(
+    path: '/sos',
+    nameKey: 'routeSosCenter',
+    icon: Icons.sos,
+    priority: 1,
+  );
+  static const sosDetail = AppRouteInfo(
+    path: '/sos/:id',
+    nameKey: 'routeSosCenter',
+    icon: Icons.sos,
+    isHiddenInSearch: true,
   );
   static const reportDashboard = AppRouteInfo(
     path: '/report-dashboard',
@@ -275,6 +289,8 @@ class RouteName {
     categoryManagement,
     autoAssignCenter,
     adminBoard,
+    sosCenter,
+    sosDetail,
     reportDashboard,
     reportList,
     unsatisfactoryReports,

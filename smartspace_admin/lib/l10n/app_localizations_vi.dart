@@ -3384,4 +3384,112 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get cannotMessageAnonymousNotice =>
       'Người dùng ẩn danh: chỉ hỗ trợ nhắn tin và gọi miễn phí trong ứng dụng.';
+
+  @override
+  String get routeSosCenter => 'Tín hiệu SOS';
+
+  @override
+  String get sosTabOpen => 'Đang mở';
+
+  @override
+  String get sosTabResolved => 'Đã kết thúc';
+
+  @override
+  String get sosEmptyOpen => 'Không có tín hiệu SOS nào đang mở.';
+
+  @override
+  String get sosEmptyResolved => 'Chưa có SOS nào kết thúc.';
+
+  @override
+  String get sosStatusActive => 'Chờ tiếp nhận';
+
+  @override
+  String get sosStatusAcknowledged => 'Đang hỗ trợ';
+
+  @override
+  String get sosResolutionSafe => 'Người gửi đã an toàn';
+
+  @override
+  String get sosResolutionHandled => 'Đã hỗ trợ xong';
+
+  @override
+  String get sosResolutionFalseAlarm => 'Báo động nhầm';
+
+  @override
+  String sosSentAt(Object time) {
+    return 'Gửi lúc $time';
+  }
+
+  @override
+  String sosHandledBy(Object name) {
+    return '$name đang hỗ trợ';
+  }
+
+  @override
+  String sosLocationUpdatedAt(Object time) {
+    return 'Vị trí cập nhật lúc $time';
+  }
+
+  @override
+  String sosSignalLost(Object time) {
+    return 'Không nhận được vị trí mới từ $time';
+  }
+
+  @override
+  String sosAccuracy(Object meters) {
+    return 'Sai số khoảng $meters m';
+  }
+
+  @override
+  String sosNotifiedContacts(Object count) {
+    return 'Đã báo $count liên hệ khẩn cấp';
+  }
+
+  @override
+  String get sosOpenMap => 'Mở bản đồ';
+
+  @override
+  String sosCallSender(Object name) {
+    return 'Gọi $name';
+  }
+
+  @override
+  String get sosAcknowledge => 'Tiếp nhận';
+
+  @override
+  String get sosResolve => 'Kết thúc SOS';
+
+  @override
+  String sosResolveTitle(Object name) {
+    return 'Kết thúc SOS của $name?';
+  }
+
+  @override
+  String get sosResolveHandled => 'Đã hỗ trợ xong';
+
+  @override
+  String get sosResolveFalseAlarm => 'Báo động nhầm';
+
+  @override
+  String get sosResolveNote => 'Ghi chú (không bắt buộc)';
+
+  @override
+  String get sosAcknowledgedToast => 'Đã tiếp nhận SOS';
+
+  @override
+  String get sosResolvedToast => 'Đã kết thúc SOS';
+
+  @override
+  String get sosTrackTitle => 'Vị trí gần đây';
+
+  @override
+  String get sosLoadFailed => 'Không tải được tín hiệu SOS.';
+
+  @override
+  String sosEndedAt(Object time) {
+    return 'Kết thúc lúc $time';
+  }
+
+  @override
+  String get sosCannotOpenMap => 'Không mở được bản đồ';
 }
