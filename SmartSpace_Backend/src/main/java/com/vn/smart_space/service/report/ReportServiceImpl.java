@@ -1,32 +1,118 @@
 package com.vn.smart_space.service.report;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.IsoFields;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.EnumMap;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.context.MessageSource;
+import org.springframework.context.i18n.LocaleContextHolder;
 import org.springframework.data.domain.Limit;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.vn.smart_space.consts.EAssignmentSource;
+import com.vn.smart_space.consts.EAutoAssignMode;
+import com.vn.smart_space.consts.EDensityTimeframe;
+import com.vn.smart_space.consts.EMapReportFilter;
 import com.vn.smart_space.consts.EReportSeverity;
+import com.vn.smart_space.consts.EReportStatus;
+import com.vn.smart_space.consts.ERole;
+import com.vn.smart_space.dto.request.admin.ReportAssignRequest;
+import com.vn.smart_space.dto.request.notification.NotificationRequest;
+import com.vn.smart_space.dto.request.report.ReportCompleteRequest;
+import com.vn.smart_space.dto.request.report.ReportCreateRequest;
+import com.vn.smart_space.dto.PageResponse;
+import com.vn.smart_space.dto.response.admin.AdminMapReportsResponse;
+import com.vn.smart_space.dto.response.admin.AdminSpatialAnalyticsResponse;
+import com.vn.smart_space.dto.response.admin.MapReportResponse;
+import com.vn.smart_space.dto.response.admin.RecentReportResponse;
+import com.vn.smart_space.dto.response.admin.ReportListResponse;
+import com.vn.smart_space.dto.response.admin.ReportStatisticsResponse;
+import com.vn.smart_space.dto.response.admin.ReportTrendResponse;
+import com.vn.smart_space.dto.response.autoassign.AutoAssignRecommendationResponse;
+import com.vn.smart_space.utils.AnalyticsStatHelper;
+import com.vn.smart_space.utils.TrendBucketHelper;
+import com.vn.smart_space.dto.response.notification.NotificationEvent;
+import com.vn.smart_space.dto.response.report.MapReportsResponse;
+import com.vn.smart_space.dto.response.report.MyReportsSummaryResponse;
+import com.vn.smart_space.dto.response.report.NearbyReportItemResponse;
+import com.vn.smart_space.dto.response.report.ReportDetailResponse;
+import com.vn.smart_space.dto.response.report.ReportNearbyAlertResponse;
 import com.vn.smart_space.dto.response.report.ReportResponse;
+import com.vn.smart_space.exception.BadRequestException;
+import com.vn.smart_space.exception.ResourceNotFoundException;
+import com.vn.smart_space.exception.UnauthorizedException;
+import com.vn.smart_space.model.ActivityHistory;
+import com.vn.smart_space.model.AssignmentDecisionLog;
+import com.vn.smart_space.model.AutoAssignConfig;
+import com.vn.smart_space.model.Conversation;
 import com.vn.smart_space.model.Report;
+import com.vn.smart_space.model.ReportCategory;
+import com.vn.smart_space.model.User;
+import com.vn.smart_space.repository.ActivityHistoryRepository;
+import com.vn.smart_space.repository.ReportCategoryRepository;
 import com.vn.smart_space.repository.ReportRepository;
+import com.vn.smart_space.repository.UserRepository;
+import com.vn.smart_space.service.autoassign.AutoAssignDispatchResult;
+import com.vn.smart_space.service.autoassign.IAutoAssignService;
+import com.vn.smart_space.service.autoassign.ReportCreatedEvent;
+import com.vn.smart_space.service.conversation.IConversationService;
+import com.vn.smart_space.service.notification.IFCMService;
+import com.vn.smart_space.service.notification.INotificationService;
+import com.vn.smart_space.service.delegation.IReportDelegationService;
+import com.vn.smart_space.utils.GeoUtils;
+import org.springframework.security.access.AccessDeniedException;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Service
+@Slf4j
 @RequiredArgsConstructor
 public class ReportServiceImpl implements IReportService {
 
     private final ReportRepository reportRepository;
+    private final ReportCategoryRepository reportCategoryRepository;
+    private final UserRepository userRepository;
+    private final SimpMessagingTemplate messagingTemplate;
+    private final IFCMService fcmService;
+    private final INotificationService notificationService;
+    private final ActivityHistoryRepository activityHistoryRepository;
+    private final MessageSource messageSource;
+    private final IReportDensityService reportDensityService;
+    private final IReportDelegationService delegationService;
+    private final IConversationService conversationService;
+    private final IAutoAssignService autoAssignService;
+    private final ApplicationEventPublisher eventPublisher;
+
+    private static final int MAP_DEFAULT_LIMIT = 300;
+    private static final int MAP_MAX_LIMIT = 500;
+    private static final int MAP_PROCESSED_VISIBLE_DAYS = 30;
+    private static final int MY_REPORTS_MAX_PAGE_SIZE = 50;
+    private static final int CLIENT_MAX_SEARCH_LENGTH = 100;
 
     @Override
     @Transactional(readOnly = true)
     public List<ReportResponse> getDangerousReports() {
         List<Report> reports = reportRepository.findTopBySeverityInOrderByCreatedAtDesc(
-                Arrays.asList(EReportSeverity.HIGH, EReportSeverity.CRITICAL),
+                Arrays.asList(EReportSeverity.high, EReportSeverity.critical),
                 Limit.of(5));
         return reports.stream().map(this::mapToResponse).collect(Collectors.toList());
     }
@@ -49,13 +135,172 @@ public class ReportServiceImpl implements IReportService {
             ReportResponse res = mapToResponse(r);
             if (calcDist) {
                 res.setDistanceInMeters(
-                        calculateHaversineDistance(userLat, userLong, r.getLatitude(), r.getLongitude()));
+                        GeoUtils.haversineMeters(userLat, userLong, r.getLatitude(), r.getLongitude()));
             }
             return res;
         }).collect(Collectors.toList());
     }
 
+    public static long deadlineDaysForSeverity(EReportSeverity severity) {
+        if (severity == null) {
+            return 3L;
+        }
+        return switch (severity) {
+            case low -> 3L;
+            case medium -> 5L;
+            case high -> 7L;
+            case critical -> 10L;
+        };
+    }
+
+    public static LocalDateTime resolveDeadline(Report report) {
+        if (report == null) {
+            return null;
+        }
+        if (report.getDeadline() != null) {
+            return report.getDeadline();
+        }
+        LocalDateTime base = report.getAssignedAt() != null
+                ? toLocalDateTime(report.getAssignedAt())
+                : report.getCreatedAt();
+        return base != null ? base.plusDays(deadlineDaysForSeverity(report.getSeverity())) : null;
+    }
+
+    public static boolean isReportOverdue(Report report, LocalDateTime now) {
+        if (report == null || report.getStatus() == EReportStatus.rejected) {
+            return false;
+        }
+        LocalDateTime deadline = resolveDeadline(report);
+        if (deadline == null) {
+            return false;
+        }
+        if (report.getStatus() == EReportStatus.processed) {
+            LocalDateTime resolvedTime = toLocalDateTime(report.getResolvedAt());
+            return resolvedTime != null && resolvedTime.isAfter(deadline);
+        }
+        if (report.getStatus() == EReportStatus.pending || report.getStatus() == EReportStatus.processing) {
+            LocalDateTime evalTime = now != null ? now : LocalDateTime.now();
+            return !deadline.isAfter(evalTime);
+        }
+        return false;
+    }
+
+    public static Long calculateRemainingDays(Report report, LocalDateTime now) {
+        if (report == null
+                || report.getStatus() == EReportStatus.rejected
+                || report.getStatus() == EReportStatus.processed) {
+            return null;
+        }
+        LocalDateTime deadline = resolveDeadline(report);
+        if (deadline == null) {
+            return null;
+        }
+        LocalDateTime evalTime = now != null ? now : LocalDateTime.now();
+        if (!deadline.isAfter(evalTime)) {
+            return null;
+        }
+        long seconds = Duration.between(evalTime, deadline).getSeconds();
+        return Math.max(1L, (long) Math.ceil(seconds / 86400.0));
+    }
+
+    private static LocalDateTime toLocalDateTime(java.util.Date date) {
+        return date == null
+                ? null
+                : date.toInstant().atZone(java.time.ZoneId.systemDefault()).toLocalDateTime();
+    }
+
+    private static String formatIsoDateTime(LocalDateTime dt) {
+        return dt != null ? dt.format(DateTimeFormatter.ISO_DATE_TIME) : null;
+    }
+
+    private static String formatIsoDateTime(java.util.Date date) {
+        return formatIsoDateTime(toLocalDateTime(date));
+    }
+
+    private static String resolvePrimaryImageUrl(Report r) {
+        if (r.getImageUrls() != null && !r.getImageUrls().trim().isEmpty()) {
+            String first = r.getImageUrls().trim()
+                    .replaceAll("^\\[|\\]$", "")
+                    .replaceAll("\"", "")
+                    .split(",")[0]
+                    .trim();
+            if (!first.isEmpty()) {
+                return first;
+            }
+        }
+        return r.getImageUrl();
+    }
+
+    private RecentReportResponse toRecentReportResponse(Report r, boolean maskAnonymous, boolean includeDetails) {
+        return toRecentReportResponse(r, maskAnonymous, includeDetails, null, null, null);
+    }
+
+    private RecentReportResponse toRecentReportResponse(
+            Report r,
+            boolean maskAnonymous,
+            boolean includeDetails,
+            Map<EReportSeverity, Long> p90BySeverity,
+            Map<EReportSeverity, Long> avgBySeverity,
+            Map<EReportSeverity, Integer> sampleCountsBySeverity) {
+        User staff = r.getAssignedStaff();
+        User user = r.getUser();
+        ReportCategory category = r.getCategory();
+        boolean anon = Boolean.TRUE.equals(r.getIsAnonymous());
+        boolean hideReporter = maskAnonymous && anon;
+        String resolvedAddress = (r.getAddress() != null && !r.getAddress().trim().isEmpty())
+                ? r.getAddress()
+                : r.getLocationDescription();
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime deadline = resolveDeadline(r);
+        Boolean atRisk = avgBySeverity != null
+                ? AnalyticsStatHelper.isSlaAtRisk(
+                        r.getStatus(), r.getCreatedAt(), deadline, r.getSeverity(),
+                        avgBySeverity, sampleCountsBySeverity, now)
+                : null;
+        Boolean bottleneck = p90BySeverity != null
+                ? AnalyticsStatHelper.isProcessingBottleneck(
+                        r.getStatus(), r.getSeverity(), r.getAssignedAt(), r.getCreatedAt(), p90BySeverity, now)
+                : null;
+        Long elapsedMinutes = r.getStatus() == EReportStatus.processing
+                ? AnalyticsStatHelper.computeProcessingElapsedMinutes(r.getAssignedAt(), r.getCreatedAt(), now)
+                : null;
+
+        return RecentReportResponse.builder()
+                .id(r.getId())
+                .title(r.getTitle())
+                .status(r.getStatus())
+                .severity(r.getSeverity())
+                .createdAt(r.getCreatedAt())
+                .imageUrl(resolvePrimaryImageUrl(r))
+                .address(resolvedAddress)
+                .assignedStaffName(staff != null ? staff.getFullName() : null)
+                .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
+                .latitude(includeDetails || maskAnonymous ? r.getLatitude() : null)
+                .longitude(includeDetails || maskAnonymous ? r.getLongitude() : null)
+                .isAnonymous(anon)
+                .userName(hideReporter ? null : (user != null ? user.getFullName() : null))
+                .userEmail(hideReporter ? null : (user != null ? user.getEmail() : null))
+                .userAvatarUrl(includeDetails && !hideReporter && user != null ? user.getAvatarUrl() : null)
+                .description(includeDetails ? r.getDescription() : null)
+                .isReviewResolved(r.getIsReviewResolved())
+                .deadline(deadline)
+                .resolvedAt(toLocalDateTime(r.getResolvedAt()))
+                .isOverdue(isReportOverdue(r, now))
+                .remainingDays(calculateRemainingDays(r, now))
+                .categoryId(category != null ? category.getId() : null)
+                .categoryCode(category != null ? category.getCode() : null)
+                .categoryNameVi(category != null ? category.getNameVi() : null)
+                .categoryNameEn(category != null ? category.getNameEn() : null)
+                .isAtRisk(atRisk)
+                .isBottleneck(bottleneck)
+                .elapsedMinutes(elapsedMinutes)
+                .build();
+    }
+
     private ReportResponse mapToResponse(Report report) {
+        LocalDateTime now = LocalDateTime.now();
+        ReportCategory category = report.getCategory();
         return ReportResponse.builder()
                 .id(report.getId())
                 .title(report.getTitle())
@@ -64,19 +309,2387 @@ public class ReportServiceImpl implements IReportService {
                 .latitude(report.getLatitude())
                 .longitude(report.getLongitude())
                 .status(report.getStatus().name())
-                .createdAt(report.getCreatedAt() != null ? report.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME)
-                        : null)
+                .severity(report.getSeverity() != null ? report.getSeverity().name() : null)
+                .createdAt(formatIsoDateTime(report.getCreatedAt()))
+                .assignedAt(formatIsoDateTime(report.getAssignedAt()))
+                .isReviewResolved(report.getIsReviewResolved())
+                .deadline(formatIsoDateTime(resolveDeadline(report)))
+                .resolvedAt(formatIsoDateTime(report.getResolvedAt()))
+                .isOverdue(isReportOverdue(report, now))
+                .remainingDays(calculateRemainingDays(report, now))
+                .userId(report.getUser() != null ? report.getUser().getId() : null)
+                .categoryId(category != null ? category.getId() : null)
+                .categoryCode(category != null ? category.getCode() : null)
+                .categoryNameVi(category != null ? category.getNameVi() : null)
+                .categoryNameEn(category != null ? category.getNameEn() : null)
                 .build();
     }
 
-    private double calculateHaversineDistance(double lat1, double lon1, double lat2, double lon2) {
-        final int R = 6371000; // Radius of the earth in meters
-        double latDistance = Math.toRadians(lat2 - lat1);
-        double lonDistance = Math.toRadians(lon2 - lon1);
-        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
-                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
-                        * Math.sin(lonDistance / 2) * Math.sin(lonDistance / 2);
-        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
+    private ReportCategory resolveActiveCategory(String categoryId) {
+        if (categoryId == null || categoryId.isBlank()) {
+            return null;
+        }
+        ReportCategory category = reportCategoryRepository.findById(categoryId.trim())
+                .orElseThrow(() -> new ResourceNotFoundException("category.not_found"));
+        if (!Boolean.TRUE.equals(category.getIsActive())) {
+            throw new BadRequestException("category.inactive");
+        }
+        return category;
+    }
+
+    @Override
+    @Transactional
+    public ReportDetailResponse createReport(ReportCreateRequest request, String userId) {
+
+        ReportCategory category = resolveActiveCategory(request.getCategoryId());
+        EReportSeverity initialSeverity = (category != null && category.getDefaultSeverity() != null)
+                ? category.getDefaultSeverity()
+                : EReportSeverity.low;
+
+        Report report = new Report();
+        report.setTitle(request.getTitle());
+        report.setDescription(request.getDescription());
+        report.setLatitude(request.getLatitude());
+        report.setLongitude(request.getLongitude());
+        report.setCategory(category);
+        report.setSeverity(initialSeverity);
+        report.setStatus(EReportStatus.pending);
+        report.setAddress(request.getAddress());
+        report.setLocationDescription(request.getLocationDescription());
+        report.setIsAnonymous(request.getIsAnonymous() != null ? request.getIsAnonymous() : false);
+
+        if (request.getImageUrls() != null && !request.getImageUrls().isEmpty()) {
+            report.setImageUrls(String.join(",", request.getImageUrls()));
+            report.setImageUrl(request.getImageUrls().get(0));
+        }
+
+        if (userId != null) {
+            User user = userRepository.findById(userId).orElse(null);
+            report.setUser(user);
+        }
+
+        report = reportRepository.saveAndFlush(report);
+        LocalDateTime createBase = report.getCreatedAt() != null ? report.getCreatedAt() : LocalDateTime.now();
+        report.setDeadline(createBase.plusDays(deadlineDaysForSeverity(report.getSeverity())));
+        report = reportRepository.save(report);
+
+        // Incremental update for map density
+        try {
+            reportDensityService.onReportCreated(report.getId(), report.getLatitude(), report.getLongitude(),
+                    report.getCreatedAt());
+        } catch (Exception e) {
+            log.warn("[ReportDensity] Failed to trigger density update on create report: {}", e.getMessage());
+        }
+
+        if (userId != null) {
+            User actor = report.getUser();
+            String actorName = (actor != null && actor.getFullName() != null && !actor.getFullName().trim().isEmpty())
+                    ? actor.getFullName().trim()
+                    : (actor != null && actor.getEmail() != null ? actor.getEmail().trim() : "Người dùng");
+            String i18nKey = "activity.report.created|" + actorName;
+
+            ActivityHistory activity = ActivityHistory.builder()
+                    .actor(actor)
+                    .i18nKey(i18nKey)
+                    .targetId(report.getId())
+                    .build();
+            activityHistoryRepository.save(activity);
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        ReportDetailResponse response = ReportDetailResponse.builder()
+                .id(report.getId())
+                .title(report.getTitle())
+                .description(report.getDescription())
+                .imageUrls(request.getImageUrls())
+                .latitude(report.getLatitude())
+                .longitude(report.getLongitude())
+                .status(report.getStatus().name())
+                .severity(report.getSeverity().name())
+                .isAnonymous(report.getIsAnonymous())
+                .address(report.getAddress())
+                .locationDescription(report.getLocationDescription())
+                .createdAt(report.getCreatedAt() != null ? report.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME)
+                        : null)
+                .assignedAt(formatIsoDateTime(report.getAssignedAt()))
+                .deadline(formatIsoDateTime(resolveDeadline(report)))
+                .isOverdue(isReportOverdue(report, now))
+                .remainingDays(calculateRemainingDays(report, now))
+                .userId(userId)
+                .categoryId(category != null ? category.getId() : null)
+                .categoryCode(category != null ? category.getCode() : null)
+                .categoryNameVi(category != null ? category.getNameVi() : null)
+                .categoryNameEn(category != null ? category.getNameEn() : null)
+                .build();
+
+        // Notify Users
+        if (userId != null) {
+            try {
+                User creator = report.getUser() != null ? report.getUser()
+                        : userRepository.findById(userId).orElse(null);
+                Locale userLocale = (creator != null && "en".equalsIgnoreCase(creator.getLanguage()))
+                        ? Locale.ENGLISH
+                        : Locale.forLanguageTag("vi");
+
+                String title = messageSource.getMessage("notification.report.created.user.title", null,
+                        "Tạo phản ánh thành công", userLocale);
+                String message = messageSource.getMessage("notification.report.created.user.message", null,
+                        "Phản ánh của bạn đã được ghi nhận và đang chờ xử lý.", userLocale);
+
+                // Standardized actionData: { "type": "...", "payload": { ... } }
+                String actionData = "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"" + report.getId()
+                        + "\"}}";
+
+                // Create DB Notification
+                notificationService.createNotification(userId, title, message, actionData, report.getImageUrl());
+
+                // Send WebSocket Event to the user
+                NotificationEvent event = new NotificationEvent(title, message, actionData, report.getImageUrl(),
+                        Map.of("shouldRefresh", true));
+                messagingTemplate.convertAndSendToUser(userId, "/queue/notifications", event);
+
+                // Send FCM
+                Map<String, String> fcmData = Map.of(
+                        "type", "REPORT_DETAIL",
+                        "payload", "{\"reportId\":\"" + report.getId() + "\"}");
+                NotificationRequest notif = new NotificationRequest(title, message, fcmData);
+                fcmService.sendToUser(userId, notif);
+            } catch (Exception e) {
+                log.warn("[Notify] Failed to send notification for report {}: {}", report.getId(), e.getMessage());
+            }
+        }
+
+        // Notify Admins
+        try {
+            List<User> admins = userRepository.findByRole(ERole.admin);
+            if (admins != null && !admins.isEmpty()) {
+                String createdAtStr = report.getCreatedAt() != null
+                        ? report.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME)
+                        : java.time.LocalDateTime.now().format(DateTimeFormatter.ISO_DATE_TIME);
+
+                String adminActionData = String.format(
+                        "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\", \"title\": \"%s\", \"status\": \"%s\", \"severity\": \"%s\", \"createdAt\": \"%s\", \"imageUrl\": \"%s\", \"address\": \"%s\"}}",
+                        report.getId(),
+                        report.getTitle() != null ? report.getTitle().replace("\"", "\\\"") : "",
+                        report.getStatus() != null ? report.getStatus().name() : "pending",
+                        report.getSeverity() != null ? report.getSeverity().name() : "low",
+                        createdAtStr,
+                        report.getImageUrl() != null ? report.getImageUrl() : "",
+                        report.getAddress() != null ? report.getAddress().replace("\"", "\\\"")
+                                : (report.getLocationDescription() != null
+                                        ? report.getLocationDescription().replace("\"", "\\\"")
+                                        : ""));
+
+                Map<String, String> adminFcmData = Map.of(
+                        "type", "REPORT_DETAIL",
+                        "payload", "{\"reportId\":\"" + report.getId() + "\"}");
+
+                for (User admin : admins) {
+                    try {
+                        Locale adminLocale = (admin != null && "en".equalsIgnoreCase(admin.getLanguage()))
+                                ? Locale.ENGLISH
+                                : Locale.forLanguageTag("vi");
+                        String adminTitle = messageSource.getMessage("notification.report.created.admin.title", null,
+                                "Có phản ánh mới", adminLocale);
+                        String fallbackMsg = messageSource.getMessage(
+                                "notification.report.created.admin.fallback_message", null,
+                                "Một phản ánh mới vừa được tạo và đang chờ xử lý.", adminLocale);
+                        String adminMessage = report.getTitle() != null && !report.getTitle().trim().isEmpty()
+                                ? report.getTitle().trim()
+                                : fallbackMsg;
+
+                        NotificationEvent adminEvent = new NotificationEvent(adminTitle, adminMessage, adminActionData,
+                                report.getImageUrl(), Map.of("shouldRefresh", true));
+                        NotificationRequest adminNotif = new NotificationRequest(adminTitle, adminMessage,
+                                adminFcmData);
+
+                        notificationService.createNotification(admin.getId(), adminTitle, adminMessage,
+                                adminActionData, report.getImageUrl());
+                        messagingTemplate.convertAndSendToUser(admin.getId(), "/queue/notifications", adminEvent);
+                        fcmService.sendToUser(admin.getId(), adminNotif);
+                    } catch (Exception ex) {
+                        log.warn("[Notify Admin] Failed to notify admin {}: {}", admin.getId(), ex.getMessage());
+                    }
+                }
+            }
+        } catch (Exception e) {
+            log.warn("[Notify Admin] Error while notifying admins for report {}: {}", report.getId(), e.getMessage());
+        }
+
+        // Phân công tự động (AUTO / ASSIST) chạy sau khi phản ánh commit, trong
+        // transaction riêng
+        // (ReportCreatedAutoAssignListener → autoAssignOnReportCreated)
+        eventPublisher.publishEvent(new ReportCreatedEvent(report.getId()));
+
+        return response;
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void autoAssignOnReportCreated(String reportId) {
+        // Khoá phân công phải là câu lệnh DB đầu tiên: các truy vấn đếm tải phía sau
+        // mới thấy
+        // những lượt phân công vừa commit (REPEATABLE READ chụp snapshot ở lần đọc đầu
+        // tiên)
+        AutoAssignConfig config = autoAssignService.lockDispatchConfig();
+        Report report = reportRepository.findById(reportId).orElse(null);
+        if (report == null || report.getStatus() != EReportStatus.pending || report.getAssignedStaff() != null) {
+            return;
+        }
+
+        AutoAssignDispatchResult result = autoAssignService.evaluateOnReportCreated(report, config);
+        if (result.isAssigned() && result.getSelectedStaff() != null) {
+            executeAssign(report, result.getSelectedStaff(), report.getSeverity(), EAssignmentSource.AUTO, null,
+                    result.getDecisionLog());
+            return;
+        }
+        if (result.getDecisionLog() != null) {
+            report.setDecisionLogId(result.getDecisionLog().getId());
+            reportRepository.save(report);
+        }
+        // Chỉ báo ở chế độ AUTO: Admin đang trông máy tự giao nên cần biết lượt nào máy
+        // bỏ lại.
+        // Ở ASSIST, Admin vốn tự phân công và đã nhận thông báo "có phản ánh mới".
+        if (result.getFallbackReason() != null && result.getMode() == EAutoAssignMode.AUTO) {
+            notifyAdminsAutoAssignFallback(report, result.getFallbackReason());
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReportDetailResponse getReportDetail(String reportId) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
+        return toDetail(report);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReportDetailResponse getReportDetail(String reportId, String viewerId, String viewerScope) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
+        if ("ROLE_admin".equals(viewerScope)) {
+            return toAdminDetail(report);
+        }
+        boolean privileged = "ROLE_staff".equals(viewerScope);
+        boolean owner = viewerId != null && report.getUser() != null && viewerId.equals(report.getUser().getId());
+        if (privileged || owner) {
+            return toDetail(report);
+        }
+        if (report.getStatus() == EReportStatus.rejected) {
+            throw new ResourceNotFoundException("report.not_found");
+        }
+        return toPublic(toDetail(report));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponse<ReportDetailResponse> getFeed(String status, String severity, String search, String from,
+            String to, String sort, int page, int size, Double userLat, Double userLong) {
+        int safePage = Math.max(1, page);
+        int safeSize = Math.max(1, Math.min(size, 20));
+        EReportStatus filter = null;
+        if (status != null && !status.isBlank() && !"all".equalsIgnoreCase(status)) {
+            try {
+                filter = EReportStatus.valueOf(status.trim().toLowerCase());
+            } catch (IllegalArgumentException ignored) {
+            }
+        }
+        if (filter == EReportStatus.rejected) {
+            filter = null;
+        }
+        EReportSeverity severityFilter = parseClientSeverity(severity);
+        String keyword = normalizeClientKeyword(search);
+        ClientDateRange dates = parseClientDateRange(from, to);
+        PageRequest pageable = PageRequest.of(safePage - 1, safeSize);
+
+        // "Gần tôi" chỉ khi có toạ độ hợp lệ; thiếu/sai toạ độ thì về "Mới nhất"
+        boolean nearby = "nearby".equalsIgnoreCase(sort != null ? sort.trim() : null)
+                && GeoUtils.isValidCoordinate(userLat, userLong);
+        Page<Report> reportPage;
+        if (nearby) {
+            double cosLat = Math.cos(Math.toRadians(userLat));
+            reportPage = reportRepository.findFeedNearby(EReportStatus.rejected, filter, severityFilter, keyword,
+                    dates.from(), dates.toExclusive(), userLat, userLong, cosLat * cosLat, pageable);
+        } else {
+            reportPage = reportRepository.findFeed(EReportStatus.rejected, filter, severityFilter, keyword,
+                    dates.from(), dates.toExclusive(), pageable);
+        }
+        List<ReportDetailResponse> content = reportPage.getContent().stream().map(r -> {
+            ReportDetailResponse res = toPublic(toDetail(r));
+            if (userLat != null && userLong != null && r.getLatitude() != null && r.getLongitude() != null) {
+                res.setDistanceInMeters(
+                        GeoUtils.haversineMeters(userLat, userLong, r.getLatitude(), r.getLongitude()));
+            }
+            return res;
+        }).collect(Collectors.toList());
+        return PageResponse.<ReportDetailResponse>builder()
+                .currentPage(safePage)
+                .pageSize(safeSize)
+                .totalPages(reportPage.getTotalPages())
+                .totalElements(reportPage.getTotalElements())
+                .content(content)
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MapReportsResponse getReportsInBounds(String viewerId, Double minLat, Double maxLat, Double minLng,
+            Double maxLng, String filter, int limit) {
+        return getReportsInBounds(viewerId, minLat, maxLat, minLng, maxLng, filter, "all", limit);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MapReportsResponse getReportsInBounds(String viewerId, Double minLat, Double maxLat, Double minLng,
+            Double maxLng, String filter, String timeframe, int limit) {
+        validateMapBounds(minLat, maxLat, minLng, maxLng);
+        EMapReportFilter mapFilter = EMapReportFilter.from(filter);
+        if (mapFilter == null) {
+            throw new BadRequestException("report.map.invalid_filter");
+        }
+        int safeLimit = safeMapLimit(limit, MAP_DEFAULT_LIMIT);
+
+        LocalDateTime createdAfter = EDensityTimeframe.fromCode(timeframe).getCutoff(LocalDateTime.now());
+
+        // Fetch one extra row to know whether the viewport holds more than safeLimit
+        // reports
+        List<Report> reports = reportRepository.findInBounds(minLat, maxLat, minLng, maxLng,
+                EReportStatus.rejected, EReportStatus.processed,
+                LocalDateTime.now().minusDays(MAP_PROCESSED_VISIBLE_DAYS),
+                createdAfter,
+                viewerId,
+                mapFilter.status(),
+                mapFilter == EMapReportFilter.mine ? viewerId : null,
+                Limit.of(safeLimit + 1));
+
+        boolean truncated = reports.size() > safeLimit;
+        List<ReportResponse> content = reports.stream()
+                .limit(safeLimit)
+                .map(this::mapToResponse)
+                .collect(Collectors.toList());
+
+        return MapReportsResponse.builder()
+                .reports(content)
+                .truncated(truncated)
+                .build();
+    }
+
+    /**
+     * Shared by client & admin map: every bound present, in range, and min <= max.
+     */
+    private void validateMapBounds(Double minLat, Double maxLat, Double minLng, Double maxLng) {
+        if (!GeoUtils.isValidLatitude(minLat) || !GeoUtils.isValidLatitude(maxLat)
+                || !GeoUtils.isValidLongitude(minLng) || !GeoUtils.isValidLongitude(maxLng)
+                || minLat > maxLat || minLng > maxLng) {
+            throw new BadRequestException("report.map.invalid_bounds");
+        }
+    }
+
+    private int safeMapLimit(int limit, int defaultLimit) {
+        return limit <= 0 ? defaultLimit : Math.min(limit, MAP_MAX_LIMIT);
+    }
+
+    /**
+     * Strips contact info for public viewers; also hides identity of anonymous
+     * reports.
+     */
+    private ReportDetailResponse toPublic(ReportDetailResponse res) {
+        res.setUserPhone(null);
+        res.setAssignedStaffPhone(null);
+        res.setAssignedStaffEmail(null);
+        if (Boolean.TRUE.equals(res.getIsAnonymous())) {
+            res.setUserName(null);
+            res.setUserAvatarUrl(null);
+        }
+        return res;
+    }
+
+    /**
+     * Chi tiết cho Admin: kèm phiếu giải trình phân công tự động. Phiếu chứa email,
+     * SĐT,
+     * tọa độ trạm và điểm của các ứng viên nên KHÔNG được gắn vào response cho
+     * người dân/nhân viên.
+     */
+    private ReportDetailResponse toAdminDetail(Report report) {
+        ReportDetailResponse res = toDetail(report);
+        res.setAutoAssignDecision(autoAssignService.getDecisionSummary(report, LocaleContextHolder.getLocale()));
+        return res;
+    }
+
+    private ReportDetailResponse toDetail(Report report) {
+        User user = report.getUser();
+        User staff = report.getAssignedStaff();
+        ReportCategory category = report.getCategory();
+
+        List<String> images = null;
+        if (report.getImageUrls() != null && !report.getImageUrls().trim().isEmpty()) {
+            images = Arrays.stream(report.getImageUrls().split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toList());
+        } else if (report.getImageUrl() != null && !report.getImageUrl().trim().isEmpty()) {
+            images = List.of(report.getImageUrl().trim());
+        }
+
+        List<String> resolvedImages = null;
+        if (report.getResolvedImageUrls() != null && !report.getResolvedImageUrls().trim().isEmpty()) {
+            resolvedImages = Arrays.stream(report.getResolvedImageUrls().split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toList());
+        }
+
+        List<String> reviewImages = null;
+        if (report.getReviewImageUrls() != null && !report.getReviewImageUrls().trim().isEmpty()) {
+            reviewImages = Arrays.stream(report.getReviewImageUrls().split(","))
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .collect(Collectors.toList());
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        return ReportDetailResponse.builder()
+                .id(report.getId())
+                .title(report.getTitle())
+                .description(report.getDescription())
+                .imageUrls(images)
+                .latitude(report.getLatitude())
+                .longitude(report.getLongitude())
+                .status(report.getStatus() != null ? report.getStatus().name() : null)
+                .severity(report.getSeverity() != null ? report.getSeverity().name() : null)
+                .isAnonymous(report.getIsAnonymous())
+                .address(report.getAddress())
+                .locationDescription(report.getLocationDescription())
+                .createdAt(formatIsoDateTime(report.getCreatedAt()))
+                .assignedAt(formatIsoDateTime(report.getAssignedAt()))
+                .userName(user != null ? user.getFullName() : null)
+                .userPhone(user != null ? user.getPhone() : null)
+                .userAvatarUrl(user != null ? user.getAvatarUrl() : null)
+                .assignedStaffId(staff != null ? staff.getId() : null)
+                .assignedStaffName(staff != null ? staff.getFullName() : null)
+                .assignedStaffPhone(staff != null ? staff.getPhone() : null)
+                .assignedStaffEmail(staff != null ? staff.getEmail() : null)
+                .assignedStaffAvatarUrl(staff != null ? staff.getAvatarUrl() : null)
+                .resolvedNote(report.getResolvedNote())
+                .resolvedImageUrls(resolvedImages)
+                .resolvedAt(formatIsoDateTime(report.getResolvedAt()))
+                .isReviewResolved(report.getIsReviewResolved())
+                .rating(report.getRating())
+                .reviewNote(report.getReviewNote())
+                .reviewImageUrls(reviewImages)
+                .reviewedAt(formatIsoDateTime(report.getReviewedAt()))
+                .deadline(formatIsoDateTime(resolveDeadline(report)))
+                .isOverdue(isReportOverdue(report, now))
+                .remainingDays(calculateRemainingDays(report, now))
+                .rejectedReason(report.getRejectedReason())
+                .rejectedAt(formatIsoDateTime(report.getRejectedAt()))
+                .userId(user != null ? user.getId() : null)
+                .categoryId(category != null ? category.getId() : null)
+                .categoryCode(category != null ? category.getCode() : null)
+                .categoryNameVi(category != null ? category.getNameVi() : null)
+                .categoryNameEn(category != null ? category.getNameEn() : null)
+                .assignmentSource(report.getAssignmentSource() != null ? report.getAssignmentSource().name() : null)
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RecentReportResponse> getAdminRecentReports(String tab, int limit) {
+        List<EReportStatus> statuses;
+        if ("all".equalsIgnoreCase(tab)) {
+            statuses = List.of(EReportStatus.pending, EReportStatus.processing);
+        } else if ("pending".equalsIgnoreCase(tab)) {
+            statuses = List.of(EReportStatus.pending);
+        } else if ("processing".equalsIgnoreCase(tab)) {
+            statuses = List.of(EReportStatus.processing);
+        } else if ("resolved".equalsIgnoreCase(tab)) {
+            statuses = List.of(EReportStatus.processed);
+        } else {
+            statuses = List.of(EReportStatus.pending, EReportStatus.processing);
+        }
+
+        List<Report> reports = reportRepository.findByStatusInOrderByCreatedAtDesc(statuses, PageRequest.of(0, limit));
+
+        return reports.stream()
+                .map(r -> toRecentReportResponse(r, false, false))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AutoAssignRecommendationResponse getReportRecommendations(String reportId, int limit, Locale locale) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
+        return autoAssignService.getRecommendations(report, limit, locale);
+    }
+
+    @Override
+    @Transactional
+    public ReportDetailResponse autoAssignReport(String reportId, String adminId) {
+        // Khoá phân công trước mọi lần đọc khác (xem autoAssignOnReportCreated)
+        AutoAssignConfig config = autoAssignService.lockDispatchConfig();
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
+        // Chỉ phản ánh đang chờ; đổi người phụ trách dùng luồng giao lại thủ công
+        if (report.getStatus() != EReportStatus.pending) {
+            throw new BadRequestException("auto_assign.invalid_report_status");
+        }
+        AutoAssignDispatchResult dispatchResult = autoAssignService.evaluateManualTrigger(report, config);
+        Report saved = executeAssign(
+                report,
+                dispatchResult.getSelectedStaff(),
+                report.getSeverity(),
+                EAssignmentSource.AUTO,
+                adminId,
+                dispatchResult.getDecisionLog());
+        return toAdminDetail(saved);
+    }
+
+    @Override
+    @Transactional
+    public ReportDetailResponse assignReport(
+            String reportId,
+            ReportAssignRequest request,
+            String adminId) {
+
+        // Khoá phân công trước khi đọc report để đồng bộ tải với luồng AUTO / autoAssignReport
+        autoAssignService.lockDispatchConfig();
+
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
+
+        User staff = userRepository.findById(request.getStaffId())
+                .orElseThrow(() -> new ResourceNotFoundException("staff.not_found"));
+
+        EReportSeverity targetSeverity = report.getSeverity();
+        if (request.getSeverity() != null && !request.getSeverity().trim().isEmpty()) {
+            try {
+                targetSeverity = EReportSeverity.valueOf(request.getSeverity().toLowerCase());
+            } catch (Exception ignored) {
+            }
+        }
+
+        EAssignmentSource source = EAssignmentSource.MANUAL;
+        if (request.getSource() != null
+                && EAssignmentSource.RECOMMEND_CLICK.name().equalsIgnoreCase(request.getSource().trim())) {
+            source = EAssignmentSource.RECOMMEND_CLICK;
+        }
+
+        // Đánh dấu quyết định trước đó (máy giao / máy đề xuất) là bị ghi đè nếu Admin
+        // chọn người khác,
+        // rồi mới ghi log mới cho lượt chọn từ danh sách đề xuất
+        autoAssignService.markOverriddenIfNeeded(report, staff, adminId);
+        AssignmentDecisionLog decisionLog = source == EAssignmentSource.RECOMMEND_CLICK
+                ? autoAssignService.recordRecommendClick(report, staff, adminId)
+                : null;
+
+        Report saved = executeAssign(report, staff, targetSeverity, source, adminId, decisionLog);
+        return toAdminDetail(saved);
+    }
+
+    /** Lõi phân công dùng chung cho Manual, 1-chạm đề xuất và Auto. Trả về report đã lưu. */
+    protected Report executeAssign(
+            Report report,
+            User staff,
+            EReportSeverity targetSeverity,
+            EAssignmentSource source,
+            String adminId,
+            AssignmentDecisionLog decisionLog) {
+
+        if (targetSeverity != null) {
+            report.setSeverity(targetSeverity);
+        }
+
+        boolean assigneeChanged = report.getAssignedStaff() == null
+                || !report.getAssignedStaff().getId().equals(staff.getId());
+
+        report.setAssignedStaff(staff);
+        report.setStatus(EReportStatus.processing);
+        java.util.Date assignedNow = new java.util.Date();
+        report.setAssignedAt(assignedNow);
+        LocalDateTime assignedLdt = toLocalDateTime(assignedNow);
+        report.setDeadline(assignedLdt != null
+                ? assignedLdt.plusDays(deadlineDaysForSeverity(report.getSeverity()))
+                : LocalDateTime.now().plusDays(deadlineDaysForSeverity(report.getSeverity())));
+        report.setAssignmentSource(source != null ? source : EAssignmentSource.MANUAL);
+        if (decisionLog != null && decisionLog.getId() != null) {
+            report.setDecisionLogId(decisionLog.getId());
+        }
+        report = reportRepository.save(report);
+
+        boolean isAutoSource = source == EAssignmentSource.AUTO;
+
+        // Auto-create chat conversation between staff & client and post initial system
+        // message
+        try {
+            Conversation conv = conversationService.getOrCreateReportConversation(report);
+            if (conv != null && report.getUser() != null) {
+                User clientUser = report.getUser();
+                Locale clientLocale = Locale.forLanguageTag(
+                        clientUser.getLanguage() != null ? clientUser.getLanguage() : "vi");
+                String staffN = staff.getFullName() != null && !staff.getFullName().trim().isEmpty()
+                        ? staff.getFullName().trim()
+                        : (staff.getEmail() != null ? staff.getEmail().trim() : "Nhân viên");
+                String chatKey = isAutoSource
+                        ? "chat.system.report_auto_assigned"
+                        : "chat.system.report_assigned";
+                String chatFallback = isAutoSource
+                        ? String.format("Hệ thống đã tự động phân công phản ánh \"%s\" cho %s", report.getTitle(),
+                                staffN)
+                        : String.format("%s đã tiếp nhận phản ánh '%s'", staffN, report.getTitle());
+                String sysMsg = messageSource.getMessage(chatKey,
+                        new Object[] { staffN, report.getTitle() },
+                        chatFallback,
+                        clientLocale);
+                conversationService.sendSystemMessage(conv, sysMsg, clientUser);
+            }
+        } catch (Exception e) {
+            log.error("Failed to create conversation or send system message on assign report: {}", e.getMessage());
+        }
+
+        // Phân công cho người khác → yêu cầu nhờ làm giùm cũ không còn ý nghĩa
+        if (assigneeChanged) {
+            delegationService.onReportUnassigned(report);
+        }
+
+        // Save Activity History
+        User admin = adminId != null ? userRepository.findById(adminId).orElse(null) : null;
+        String adminName = admin != null && admin.getFullName() != null && !admin.getFullName().trim().isEmpty()
+                ? admin.getFullName().trim()
+                : (admin != null && admin.getEmail() != null ? admin.getEmail().trim() : "Quản trị viên");
+        String staffName = staff.getFullName() != null && !staff.getFullName().trim().isEmpty()
+                ? staff.getFullName().trim()
+                : (staff.getEmail() != null ? staff.getEmail().trim() : "Nhân viên");
+        String reportTitle = report.getTitle() != null && !report.getTitle().trim().isEmpty()
+                ? report.getTitle().trim()
+                : "Phản ánh";
+        // Máy tự giao (không có Admin): tên "Hệ thống SmartSpace" nằm trong bản dịch của key,
+        // để hiển thị đúng ngôn ngữ của người xem thay vì ghi cứng tiếng Việt vào tham số
+        String i18nKey;
+        if (isAutoSource && admin == null) {
+            i18nKey = "activity.report.assigned.system|" + reportTitle + "|" + staffName;
+        } else {
+            String activityPrefix = isAutoSource ? "activity.report.assigned.auto" : "activity.report.assigned";
+            i18nKey = activityPrefix + "|" + adminName + "|" + reportTitle + "|" + staffName;
+        }
+
+        ActivityHistory activity = ActivityHistory.builder()
+                .actor(admin)
+                .i18nKey(i18nKey)
+                .targetId(report.getId())
+                .build();
+        activityHistoryRepository.save(activity);
+
+        // Notify Admins via WebSocket & FCM
+        try {
+            List<User> admins = userRepository.findByRole(ERole.admin);
+            String actionData = String.format(
+                    "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\", \"title\": \"%s\", \"status\": \"processing\", \"severity\": \"%s\"}}",
+                    report.getId(),
+                    report.getTitle() != null ? report.getTitle().replace("\"", "\\\"") : "",
+                    report.getSeverity() != null ? report.getSeverity().name() : "low");
+
+            String scoreLabel = (decisionLog != null && decisionLog.getFinalScore() != null)
+                    ? String.valueOf(decisionLog.getFinalScore())
+                    : "—";
+
+            for (User a : admins) {
+                try {
+                    Locale adminLocale = Locale.forLanguageTag(
+                            a.getLanguage() != null ? a.getLanguage() : "vi");
+                    String titleKey = isAutoSource
+                            ? "notification.report.auto_assigned.admin.title"
+                            : "notification.report.assigned.admin.title";
+                    String msgKey = isAutoSource
+                            ? "notification.report.auto_assigned.admin.message"
+                            : "notification.report.assigned.admin.message";
+                    String title = messageSource.getMessage(titleKey, null,
+                            isAutoSource ? "Đã tự động phân công phản ánh" : "Phân công phản ánh thành công",
+                            adminLocale);
+                    String staffN = staff.getFullName() != null && !staff.getFullName().trim().isEmpty()
+                            ? staff.getFullName().trim()
+                            : (staff.getEmail() != null ? staff.getEmail().trim() : "Nhân viên");
+                    Object[] msgArgs = isAutoSource
+                            ? new Object[] { report.getTitle(), staffN, scoreLabel }
+                            : new Object[] { report.getTitle(), staffN };
+                    String fallbackMsg = isAutoSource
+                            ? String.format("Hệ thống đã tự động giao phản ánh \"%s\" cho %s (điểm %s).",
+                                    report.getTitle(), staffN, scoreLabel)
+                            : String.format("Phản ánh '%s' đã được giao cho %s.", report.getTitle(), staffN);
+                    String message = messageSource.getMessage(msgKey, msgArgs, fallbackMsg, adminLocale);
+
+                    notificationService.createNotification(a.getId(), title, message, actionData, report.getImageUrl());
+                    NotificationEvent event = new NotificationEvent(title, message, actionData, report.getImageUrl(),
+                            Map.of("shouldRefresh", true));
+                    messagingTemplate.convertAndSendToUser(a.getId(), "/queue/notifications", event);
+                } catch (Exception ex) {
+                    log.warn("[Notify Admin] Failed to notify admin {} on assign report {}: {}", a.getId(),
+                            report.getId(), ex.getMessage());
+                }
+            }
+        } catch (Exception ex) {
+            log.warn("[Notify Admins] Failed to notify admins on assign report {}: {}", report.getId(),
+                    ex.getMessage());
+        }
+
+        // Notify Staff via WebSocket & FCM
+        if (staff != null) {
+            try {
+                Locale staffLocale = Locale.forLanguageTag(
+                        staff.getLanguage() != null ? staff.getLanguage() : "vi");
+                String staffTitleKey = isAutoSource
+                        ? "notification.report.auto_assigned.staff.title"
+                        : "notification.report.assigned.staff.title";
+                String staffMsgKey = isAutoSource
+                        ? "notification.report.auto_assigned.staff.message"
+                        : "notification.report.assigned.staff.message";
+                String staffTitle = messageSource.getMessage(staffTitleKey, null,
+                        isAutoSource ? "Công việc mới (phân công tự động)" : "Phân công mới", staffLocale);
+                String staffMessage = messageSource.getMessage(staffMsgKey,
+                        new Object[] { report.getTitle() },
+                        String.format("Bạn đã được phân công xử lý phản ánh '%s'.", report.getTitle()), staffLocale);
+
+                String staffActionData = String
+                        .format("{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}", report.getId());
+
+                notificationService.createNotification(staff.getId(), staffTitle, staffMessage,
+                        staffActionData, report.getImageUrl());
+                Map<String, Object> staffData = new java.util.HashMap<>();
+                staffData.put("shouldRefresh", true);
+                staffData.put("stats", getStaffReportStatistics(staff.getId()));
+                NotificationEvent staffEvent = new NotificationEvent(staffTitle, staffMessage, staffActionData,
+                        report.getImageUrl(), staffData);
+                messagingTemplate.convertAndSendToUser(staff.getId(), "/queue/notifications", staffEvent);
+
+                NotificationRequest staffNotif = new NotificationRequest(
+                        staffTitle, staffMessage,
+                        Map.of("type", "REPORT_DETAIL", "payload", "{\"reportId\":\"" + report.getId() + "\"}"));
+                fcmService.sendToUser(staff.getId(), staffNotif);
+            } catch (Exception ex) {
+                log.warn("[Notify Staff] Failed to notify staff {} on assign report {}: {}", staff.getId(),
+                        report.getId(), ex.getMessage());
+            }
+        }
+
+        // Notify Client
+        if (report.getUser() != null) {
+            try {
+                User client = report.getUser();
+                Locale clientLocale = Locale.forLanguageTag(
+                        client.getLanguage() != null ? client.getLanguage() : "vi");
+                String staffN = staff.getFullName() != null && !staff.getFullName().trim().isEmpty()
+                        ? staff.getFullName().trim()
+                        : (staff.getEmail() != null ? staff.getEmail().trim() : "Nhân viên");
+                String clientTitleKey = isAutoSource
+                        ? "notification.report.auto_assigned.client.title"
+                        : "notification.report.assigned.client.title";
+                String clientMsgKey = isAutoSource
+                        ? "notification.report.auto_assigned.client.message"
+                        : "notification.report.assigned.client.message";
+                String clientTitle = messageSource.getMessage(clientTitleKey, null,
+                        "Phản ánh đang được xử lý", clientLocale);
+                Object[] clientArgs = isAutoSource
+                        ? new Object[] { report.getTitle(), staffN }
+                        : new Object[] { report.getTitle() };
+                String clientMessage = messageSource.getMessage(clientMsgKey,
+                        clientArgs,
+                        String.format("Phản ánh '%s' của bạn đã được phân công xử lý.", report.getTitle()),
+                        clientLocale);
+
+                String clientActionData = String
+                        .format("{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}", report.getId());
+
+                notificationService.createNotification(client.getId(), clientTitle, clientMessage,
+                        clientActionData, report.getImageUrl());
+                NotificationEvent clientEvent = new NotificationEvent(clientTitle, clientMessage, clientActionData,
+                        report.getImageUrl(), Map.of("shouldRefresh", true));
+                messagingTemplate.convertAndSendToUser(client.getId(), "/queue/notifications", clientEvent);
+
+                NotificationRequest clientNotif = new NotificationRequest(
+                        clientTitle, clientMessage,
+                        Map.of("type", "REPORT_DETAIL", "payload", "{\"reportId\":\"" + report.getId() + "\"}"));
+                fcmService.sendToUser(report.getUser().getId(), clientNotif);
+            } catch (Exception ex) {
+                log.warn("[Notify Client] Failed to notify client {} on assign report {}: {}",
+                        report.getUser().getId(), report.getId(), ex.getMessage());
+            }
+        }
+
+        return report;
+    }
+
+    private void notifyAdminsAutoAssignFallback(Report report, String fallbackReasonKey) {
+        try {
+            List<User> admins = userRepository.findByRole(ERole.admin);
+            if (admins == null || admins.isEmpty()) {
+                return;
+            }
+            String actionData = String.format(
+                    "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}",
+                    report.getId());
+            Map<String, String> fcmData = Map.of(
+                    "type", "REPORT_DETAIL",
+                    "payload", "{\"reportId\":\"" + report.getId() + "\"}");
+            for (User admin : admins) {
+                try {
+                    Locale adminLocale = Locale.forLanguageTag(
+                            admin.getLanguage() != null ? admin.getLanguage() : "vi");
+                    String reasonText = messageSource.getMessage(
+                            fallbackReasonKey, null, fallbackReasonKey, adminLocale);
+                    String title = messageSource.getMessage(
+                            "notification.report.auto_assign_fallback.title",
+                            null,
+                            "Chưa thể tự động phân công phản ánh",
+                            adminLocale);
+                    String msg = messageSource.getMessage(
+                            "notification.report.auto_assign_fallback.message",
+                            new Object[] { report.getTitle(), reasonText },
+                            String.format("Phản ánh \"%s\" cần phân công thủ công: %s",
+                                    report.getTitle(), reasonText),
+                            adminLocale);
+                    notificationService.createNotification(admin.getId(), title, msg, actionData, report.getImageUrl());
+                    messagingTemplate.convertAndSendToUser(
+                            admin.getId(),
+                            "/queue/notifications",
+                            new NotificationEvent(title, msg, actionData, report.getImageUrl(),
+                                    Map.of("shouldRefresh", true)));
+                    fcmService.sendToUser(admin.getId(), new NotificationRequest(title, msg, fcmData));
+                } catch (Exception ignored) {
+                }
+            }
+        } catch (Exception e) {
+            log.warn("[AutoAssign] Failed notifying admins of fallback for {}: {}", report.getId(), e.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional
+    public ReportDetailResponse completeReport(
+            String reportId,
+            ReportCompleteRequest request,
+            String staffId) {
+
+        // Khoá report: tránh hoàn tất đúng lúc task đang được chuyển cho người làm giùm
+        Report report = reportRepository.findByIdForUpdate(reportId)
+                .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
+
+        // Chỉ staff đang được giao mới hoàn tất được (người nhờ không tự hoàn tất task
+        // đã giao cho người làm giùm)
+        if (staffId == null || report.getAssignedStaff() == null
+                || !staffId.equals(report.getAssignedStaff().getId())) {
+            throw new AccessDeniedException("report.complete.not_assignee");
+        }
+        if (report.getStatus() != EReportStatus.processing) {
+            throw new BadRequestException("report.invalid.status.transition");
+        }
+        User staff = report.getAssignedStaff();
+
+        report.setStatus(EReportStatus.processed);
+        if (report.getDeadline() == null) {
+            report.setDeadline(resolveDeadline(report));
+        }
+        // Luôn ghi đè kết quả của lần hoàn tất hiện tại (kể cả khi để trống) để
+        // người dân không thấy ghi chú/ảnh cũ của lần xử lý trước khi bị xử lý lại.
+        report.setResolvedNote(request.getNote() != null && !request.getNote().trim().isEmpty()
+                ? request.getNote().trim()
+                : null);
+        report.setResolvedImageUrls(request.getImageUrls() != null && !request.getImageUrls().isEmpty()
+                ? String.join(",", request.getImageUrls())
+                : null);
+        report.setResolvedAt(new java.util.Date());
+
+        // Reset previous citizen review when report is completed or re-handled so
+        // client can submit a new review
+        report.setIsReviewResolved(null);
+        report.setRating(null);
+        report.setReviewNote(null);
+        report.setReviewImageUrls(null);
+        report.setReviewedAt(null);
+
+        report = reportRepository.save(report);
+
+        // Notify any Admin <-> Client conversations for this client so lock/call status updates immediately
+        if (report.getUser() != null) {
+            conversationService.notifyAdminClientConversationsUpdated(report.getUser().getId());
+        }
+
+        // Send system message to report conversation that report is resolved
+        try {
+            com.vn.smart_space.model.Conversation conv = report.getConversation();
+            if (conv == null) {
+                conv = conversationService.getOrCreateReportConversation(report);
+            }
+            if (conv != null && report.getUser() != null) {
+                User clientUser = report.getUser();
+                java.util.Locale clientLocale = java.util.Locale.forLanguageTag(
+                        clientUser.getLanguage() != null ? clientUser.getLanguage() : "vi");
+                String staffN = staff.getFullName() != null && !staff.getFullName().trim().isEmpty()
+                        ? staff.getFullName().trim()
+                        : (staff.getEmail() != null ? staff.getEmail().trim() : "Nhân viên");
+                String sysMsg = messageSource.getMessage("chat.system.report_resolved",
+                        new Object[] { staffN, report.getTitle() },
+                        String.format("%s đã hoàn tất việc xử lý phản ánh '%s'", staffN, report.getTitle()),
+                        clientLocale);
+                conversationService.sendSystemMessage(conv, sysMsg, clientUser);
+            }
+        } catch (Exception e) {
+            log.error("Failed to send system message on resolve report: {}", e.getMessage());
+        }
+
+        // Nhờ làm giùm: cập nhật trạng thái hoàn tất / thu hồi yêu cầu còn chờ.
+        delegationService.onReportCompleted(report);
+
+        // Save Activity History
+        String staffName = staff != null && staff.getFullName() != null && !staff.getFullName().trim().isEmpty()
+                ? staff.getFullName().trim()
+                : (staff != null && staff.getEmail() != null ? staff.getEmail().trim() : "Nhân viên");
+        String reportTitle = report.getTitle() != null && !report.getTitle().trim().isEmpty()
+                ? report.getTitle().trim()
+                : "Phản ánh";
+        String i18nKey = "activity.report.completed|" + staffName + "|" + reportTitle;
+
+        ActivityHistory activity = ActivityHistory.builder()
+                .actor(staff)
+                .i18nKey(i18nKey)
+                .targetId(report.getId())
+                .build();
+        activityHistoryRepository.save(activity);
+
+        // Notify Admins via WebSocket only (per requirement: no notification record or
+        // FCM push, only realtime event for dashboard refresh)
+        try {
+            List<User> admins = userRepository.findByRole(ERole.admin);
+            String actionData = String.format(
+                    "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\", \"title\": \"%s\", \"status\": \"processed\", \"severity\": \"%s\"}}",
+                    report.getId(),
+                    report.getTitle() != null ? report.getTitle().replace("\"", "\\\"") : "",
+                    report.getSeverity() != null ? report.getSeverity().name() : "low");
+
+            for (User a : admins) {
+                try {
+                    Locale adminLocale = (a != null && "en".equalsIgnoreCase(a.getLanguage()))
+                            ? Locale.ENGLISH
+                            : Locale.forLanguageTag("vi");
+                    String adminTitle = messageSource.getMessage("notification.report.completed.admin.title", null,
+                            "Phản ánh hoàn tất", adminLocale);
+                    String adminMsg = messageSource.getMessage("notification.report.completed.admin.message",
+                            new Object[] { staffName, report.getTitle() },
+                            String.format("Nhân viên %s đã xử lý xong phản ánh '%s'.", staffName, report.getTitle()),
+                            adminLocale);
+
+                    NotificationEvent event = new NotificationEvent(
+                            adminTitle,
+                            adminMsg,
+                            actionData,
+                            report.getImageUrl(),
+                            Map.of("shouldRefresh", true, "status", "processed", "reportId", report.getId()));
+                    messagingTemplate.convertAndSendToUser(a.getId(), "/queue/notifications", event);
+                } catch (Exception ignored) {
+                }
+            }
+        } catch (Exception ignored) {
+        }
+
+        // Notify Client (the creator of the report) via In-App Notification, WebSocket
+        // & FCM
+        if (report.getUser() != null) {
+            try {
+                User client = report.getUser();
+                Locale clientLocale = new Locale(
+                        client.getLanguage() != null ? client.getLanguage() : "vi");
+                String clientTitle = messageSource.getMessage("notification.report.completed.client.title", null,
+                        "Phản ánh đã được xử lý", clientLocale);
+                String clientMessage = messageSource.getMessage("notification.report.completed.client.message",
+                        new Object[] { report.getTitle() },
+                        String.format("Phản ánh '%s' của bạn đã hoàn tất việc xử lý.", report.getTitle()),
+                        clientLocale);
+
+                String clientActionData = String
+                        .format("{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}", report.getId());
+
+                notificationService.createNotification(client.getId(), clientTitle, clientMessage,
+                        clientActionData, report.getImageUrl());
+                NotificationEvent clientEvent = new NotificationEvent(clientTitle, clientMessage, clientActionData,
+                        report.getImageUrl(), Map.of("shouldRefresh", true));
+                messagingTemplate.convertAndSendToUser(client.getId(), "/queue/notifications", clientEvent);
+
+                NotificationRequest clientNotif = new NotificationRequest(
+                        clientTitle, clientMessage,
+                        Map.of("type", "REPORT_DETAIL", "payload", "{\"reportId\":\"" + report.getId() + "\"}"));
+                final String clientUserId = report.getUser().getId();
+                java.util.concurrent.CompletableFuture.runAsync(() -> {
+                    try {
+                        fcmService.sendToUser(clientUserId, clientNotif);
+                    } catch (Exception ex) {
+                        log.warn("[FCM] Failed to send client FCM notification: {}", ex.getMessage());
+                    }
+                });
+            } catch (Exception ignored) {
+            }
+        }
+
+        // Notify Staff via In-App Notification, WebSocket & FCM
+        if (staff != null) {
+            try {
+                java.util.Locale staffLocale = new java.util.Locale(
+                        staff.getLanguage() != null ? staff.getLanguage() : "vi");
+                String staffTitle = messageSource.getMessage("notification.report.completed.staff.title", null,
+                        "Công việc hoàn tất", staffLocale);
+                String staffMessage = messageSource.getMessage("notification.report.completed.staff.message",
+                        new Object[] { report.getTitle() },
+                        String.format("Cảm ơn bạn đã hoàn tất việc xử lý '%s'.", report.getTitle()), staffLocale);
+
+                String staffActionData = String
+                        .format("{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}", report.getId());
+
+                notificationService.createNotification(staff.getId(), staffTitle, staffMessage,
+                        staffActionData, report.getImageUrl());
+
+                Map<String, Object> staffExtra = new java.util.HashMap<>();
+                staffExtra.put("shouldRefresh", true);
+                staffExtra.put("stats", getStaffReportStatistics(staff.getId()));
+                NotificationEvent staffEvent = new NotificationEvent(staffTitle, staffMessage, staffActionData,
+                        report.getImageUrl(), staffExtra);
+                messagingTemplate.convertAndSendToUser(staff.getId(), "/queue/notifications", staffEvent);
+
+                NotificationRequest staffNotif = new NotificationRequest(
+                        staffTitle, staffMessage,
+                        Map.of("type", "REPORT_DETAIL", "payload", "{\"reportId\":\"" + report.getId() + "\"}"));
+                final String staffUserId = staff.getId();
+                java.util.concurrent.CompletableFuture.runAsync(() -> {
+                    try {
+                        fcmService.sendToUser(staffUserId, staffNotif);
+                    } catch (Exception ex) {
+                        log.warn("[FCM] Failed to send staff FCM notification: {}", ex.getMessage());
+                    }
+                });
+            } catch (Exception ex) {
+                log.warn("[Notify Staff] Failed to notify staff {}: {}", staff.getId(), ex.getMessage());
+            }
+        }
+
+        return getReportDetail(report.getId());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public PageResponse<ReportResponse> getMyReports(String userId, String status, String severity, String search,
+            String from, String to, Boolean overdue, int page, int size) {
+        int safePage = Math.max(1, page);
+        int safeSize = Math.max(1, Math.min(size, MY_REPORTS_MAX_PAGE_SIZE));
+
+        // "rehandling" không phải EReportStatus: lọc theo is_review_resolved = false
+        // (mọi trạng thái)
+        String normalizedStatus = status != null ? status.trim().toLowerCase() : "";
+        boolean rehandling = "rehandling".equals(normalizedStatus);
+        EReportStatus reportStatus = null;
+        if (!rehandling && !normalizedStatus.isEmpty() && !"all".equals(normalizedStatus)) {
+            try {
+                reportStatus = EReportStatus.valueOf(normalizedStatus);
+            } catch (IllegalArgumentException e) {
+                log.warn("[MyReports] Invalid status filter: {}", status);
+            }
+        }
+
+        boolean overdueOnly = Boolean.TRUE.equals(overdue);
+        ClientDateRange dates = parseClientDateRange(from, to);
+        Page<Report> reportPage = reportRepository.findMyReports(userId, reportStatus, parseClientSeverity(severity),
+                rehandling, overdueOnly, LocalDateTime.now(), normalizeClientKeyword(search),
+                dates.from(), dates.toExclusive(), PageRequest.of(safePage - 1, safeSize));
+
+        return PageResponse.<ReportResponse>builder()
+                .currentPage(safePage)
+                .pageSize(safeSize)
+                .totalPages(reportPage.getTotalPages())
+                .totalElements(reportPage.getTotalElements())
+                .content(reportPage.getContent().stream().map(this::mapToResponse).collect(Collectors.toList()))
+                .build();
+    }
+
+    /** Mức độ lọc từ Client; rỗng / "all" / giá trị lạ = không lọc. */
+    private EReportSeverity parseClientSeverity(String severity) {
+        if (severity == null || severity.isBlank() || "all".equalsIgnoreCase(severity.trim())) {
+            return null;
+        }
+        try {
+            return EReportSeverity.valueOf(severity.trim().toLowerCase());
+        } catch (IllegalArgumentException e) {
+            log.warn("[ClientReports] Invalid severity filter: {}", severity);
+            return null;
+        }
+    }
+
+    /**
+     * Từ khoá tìm kiếm từ Client: trim, cắt độ dài tối đa; rỗng = null (không lọc).
+     */
+    /**
+     * Khoảng ngày tạo phản ánh: [from, toExclusive); mỗi đầu null = không giới hạn.
+     */
+    private record ClientDateRange(LocalDateTime from, LocalDateTime toExclusive) {
+    }
+
+    /**
+     * Ngày Client chọn (yyyy-MM-dd, theo giờ server) → [đầu ngày from, đầu ngày sau
+     * to).
+     * Sai định dạng thì bỏ đầu đó; from sau to thì đảo lại để không trả về rỗng vô
+     * lý.
+     */
+    private ClientDateRange parseClientDateRange(String from, String to) {
+        LocalDate fromDate = parseClientDate(from);
+        LocalDate toDate = parseClientDate(to);
+        if (fromDate != null && toDate != null && fromDate.isAfter(toDate)) {
+            LocalDate swap = fromDate;
+            fromDate = toDate;
+            toDate = swap;
+        }
+        return new ClientDateRange(
+                fromDate != null ? fromDate.atStartOfDay() : null,
+                toDate != null ? toDate.plusDays(1).atStartOfDay() : null);
+    }
+
+    private LocalDate parseClientDate(String value) {
+        if (value == null || value.isBlank()) {
+            return null;
+        }
+        try {
+            return LocalDate.parse(value.trim());
+        } catch (java.time.format.DateTimeParseException e) {
+            log.warn("[ClientReports] Invalid date filter: {}", value);
+            return null;
+        }
+    }
+
+    private String normalizeClientKeyword(String search) {
+        if (search == null) {
+            return null;
+        }
+        String keyword = search.trim();
+        if (keyword.length() > CLIENT_MAX_SEARCH_LENGTH) {
+            keyword = keyword.substring(0, CLIENT_MAX_SEARCH_LENGTH);
+        }
+        return keyword.isEmpty() ? null : keyword;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public MyReportsSummaryResponse getMyReportsSummary(String userId) {
+        Map<EReportStatus, Long> byStatus = new EnumMap<>(EReportStatus.class);
+        for (Object[] row : reportRepository.countMyReportsGroupByStatus(userId)) {
+            if (row[0] instanceof EReportStatus s && row[1] instanceof Number n) {
+                byStatus.put(s, n.longValue());
+            }
+        }
+        long total = byStatus.values().stream().mapToLong(Long::longValue).sum();
+
+        return MyReportsSummaryResponse.builder()
+                .total(total)
+                .pending(byStatus.getOrDefault(EReportStatus.pending, 0L))
+                .processing(byStatus.getOrDefault(EReportStatus.processing, 0L))
+                .processed(byStatus.getOrDefault(EReportStatus.processed, 0L))
+                .rejected(byStatus.getOrDefault(EReportStatus.rejected, 0L))
+                .rehandling(reportRepository.countByUserIdAndIsReviewResolvedFalse(userId))
+                .overdue(reportRepository.countMyOverdueReports(userId, LocalDateTime.now()))
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReportStatisticsResponse getReportStatistics() {
+        // Count by status
+        List<Object[]> statusRows = reportRepository.countGroupByStatus();
+        Map<String, Integer> byStatus = new LinkedHashMap<>();
+        // Initialize with 0 for all statuses
+        byStatus.put("pending", 0);
+        byStatus.put("processing", 0);
+        byStatus.put("resolved", 0);
+        byStatus.put("rejected", 0);
+        for (Object[] row : statusRows) {
+            String key = row[0] != null ? row[0].toString().toLowerCase() : "unknown";
+            // Map "processed" -> "resolved" to match frontend expectation
+            if ("processed".equals(key))
+                key = "resolved";
+            int count = row[1] != null ? ((Number) row[1]).intValue() : 0;
+            byStatus.put(key, count);
+        }
+        int total = byStatus.values().stream().mapToInt(Integer::intValue).sum();
+
+        // "Xử lý lại" là nhóm riêng: trừ khỏi processing / resolved để các nhóm không
+        // trùng nhau và cộng lại đúng bằng tổng (pending + processing + resolved +
+        // rejected + rehandling = total).
+        int rehandlingProcessed = 0;
+        int rehandlingProcessing = 0;
+        for (Object[] row : reportRepository.countRehandlingGroupByStatus()) {
+            int count = row[1] != null ? ((Number) row[1]).intValue() : 0;
+            if (row[0] == EReportStatus.processed) {
+                rehandlingProcessed = count;
+            } else if (row[0] == EReportStatus.processing) {
+                rehandlingProcessing = count;
+            }
+        }
+        byStatus.put("resolved", Math.max(0, byStatus.get("resolved") - rehandlingProcessed));
+        byStatus.put("processing", Math.max(0, byStatus.get("processing") - rehandlingProcessing));
+        byStatus.put("rehandling", rehandlingProcessed + rehandlingProcessing);
+        // "Quá hạn" là chỉ số chồng lên các nhóm trên (không cộng vào tổng)
+        LocalDateTime now = LocalDateTime.now();
+        byStatus.put("overdue", (int) reportRepository.countAdminOverdueReports(now));
+
+        // Count by severity
+        List<Object[]> severityRows = reportRepository.countGroupBySeverity();
+        Map<String, Integer> bySeverity = new LinkedHashMap<>();
+        for (Object[] row : severityRows) {
+            String key = row[0] != null ? row[0].toString().toLowerCase() : "unknown";
+            int count = row[1] != null ? ((Number) row[1]).intValue() : 0;
+            bySeverity.put(key, count);
+        }
+
+        // Smart Analytics: SLA At-Risk & P90 Processing Bottleneck
+        DurationAnalyticsBundle analytics = buildDurationAnalytics(now);
+        List<Report> activeReports = reportRepository.findActiveReportsWithStaff(
+                List.of(EReportStatus.pending, EReportStatus.processing));
+        int atRiskCount = 0;
+        int bottleneckCount = 0;
+        for (Report r : activeReports) {
+            LocalDateTime deadline = resolveDeadline(r);
+            if (AnalyticsStatHelper.isSlaAtRisk(
+                    r.getStatus(), r.getCreatedAt(), deadline, r.getSeverity(),
+                    analytics.avgBySeverity, analytics.sampleCountsBySeverity, now)) {
+                atRiskCount++;
+            }
+            if (AnalyticsStatHelper.isProcessingBottleneck(
+                    r.getStatus(), r.getSeverity(), r.getAssignedAt(), r.getCreatedAt(),
+                    analytics.p90BySeverity, now)) {
+                bottleneckCount++;
+            }
+        }
+
+        Map<String, Long> p90Out = new LinkedHashMap<>();
+        Map<String, Boolean> p90InsuffOut = new LinkedHashMap<>();
+        for (EReportSeverity sev : EReportSeverity.values()) {
+            p90Out.put(sev.name(), analytics.p90BySeverity.get(sev));
+            p90InsuffOut.put(sev.name(), analytics.insufficientSamples.getOrDefault(sev, true));
+        }
+
+        return ReportStatisticsResponse.builder()
+                .total(total)
+                .byStatus(byStatus)
+                .bySeverity(bySeverity)
+                .atRiskCount(atRiskCount)
+                .bottleneckCount(bottleneckCount)
+                .p90MinutesBySeverity(p90Out)
+                .p90InsufficientSamples(p90InsuffOut)
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReportTrendResponse getReportTrend(String period) {
+        String normalized = TrendBucketHelper.normalizePeriod(period);
+        LocalDate today = LocalDate.now();
+        List<LocalDate> bucketDates = TrendBucketHelper.buckets(normalized, today);
+
+        if ("daily".equals(normalized)) {
+            int lookbackDays = TrendBucketHelper.DAILY_BUCKETS + AnalyticsStatHelper.SPIKE_WINDOW_DAYS;
+            LocalDate firstWindowDay = today.minusDays(lookbackDays - 1L);
+            Map<LocalDate, Long> dailyCounts = new HashMap<>();
+            for (LocalDateTime dt : reportRepository.findCreatedAtSince(firstWindowDay.atStartOfDay())) {
+                if (dt != null) {
+                    dailyCounts.merge(dt.toLocalDate(), 1L, Long::sum);
+                }
+            }
+
+            List<LocalDate> fullWindow = AnalyticsStatHelper.buildConsecutiveDays(today, lookbackDays);
+            List<Long> fullCounts = fullWindow.stream()
+                    .map(d -> dailyCounts.getOrDefault(d, 0L))
+                    .collect(Collectors.toList());
+            List<Boolean> fullAnomalies = AnalyticsStatHelper.detectSeriesAnomalies(fullCounts);
+
+            DateTimeFormatter fmt = DateTimeFormatter.ofPattern("dd/MM");
+            int offset = lookbackDays - TrendBucketHelper.DAILY_BUCKETS;
+            List<ReportTrendResponse.TrendItem> items = new ArrayList<>(TrendBucketHelper.DAILY_BUCKETS);
+            int anomalyCount = 0;
+
+            for (int i = offset; i < fullWindow.size(); i++) {
+                LocalDate day = fullWindow.get(i);
+                int winStart = Math.max(0, i - AnalyticsStatHelper.SPIKE_WINDOW_DAYS);
+                List<Long> prev14 = fullCounts.subList(winStart, i);
+                double baseline = AnalyticsStatHelper.round2(AnalyticsStatHelper.computeMean(prev14));
+                boolean isAnom = Boolean.TRUE.equals(fullAnomalies.get(i));
+                if (isAnom) {
+                    anomalyCount++;
+                }
+                items.add(ReportTrendResponse.TrendItem.builder()
+                        .label(day.format(fmt))
+                        .count(fullCounts.get(i).intValue())
+                        .anomaly(isAnom)
+                        .baselineAvg(baseline)
+                        .build());
+            }
+
+            List<Long> latest14 = fullCounts.subList(
+                    Math.max(0, fullCounts.size() - 1 - AnalyticsStatHelper.SPIKE_WINDOW_DAYS),
+                    fullCounts.size() - 1);
+            AnalyticsStatHelper.VolumeSpikeEvaluation todayEval = AnalyticsStatHelper.evaluateVolumeSpike(
+                    dailyCounts.getOrDefault(today, 0L), latest14);
+
+            return ReportTrendResponse.builder()
+                    .items(items)
+                    .baselineAvg14d(todayEval.baselineAvg14d())
+                    .anomalyCount(anomalyCount)
+                    .insufficientData(todayEval.insufficientData())
+                    .build();
+        }
+
+        // Weekly & monthly zero-filled via TrendBucketHelper
+        LocalDateTime since = bucketDates.get(0).atStartOfDay();
+        Map<LocalDate, Long> bucketCounts = TrendBucketHelper.emptyCounts(bucketDates);
+        for (LocalDateTime dt : reportRepository.findCreatedAtSince(since)) {
+            if (dt != null) {
+                TrendBucketHelper.increment(bucketCounts, dt.toLocalDate(), normalized);
+            }
+        }
+        DateTimeFormatter monthFmt = DateTimeFormatter.ofPattern("MM/yyyy");
+        List<ReportTrendResponse.TrendItem> items = bucketDates.stream()
+                .map(b -> {
+                    String label = "weekly".equals(normalized)
+                            ? "Tuần " + b.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR)
+                            : b.format(monthFmt);
+                    return ReportTrendResponse.TrendItem.builder()
+                            .label(label)
+                            .count(bucketCounts.getOrDefault(b, 0L).intValue())
+                            .anomaly(false)
+                            .baselineAvg(null)
+                            .build();
+                })
+                .collect(Collectors.toList());
+
+        return ReportTrendResponse.builder()
+                .items(items)
+                .baselineAvg14d(null)
+                .anomalyCount(0)
+                .insufficientData(false)
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReportListResponse getAdminReportList(int page, int size, String status, String severity, String assigneeId,
+            String from, String to, String search, Boolean overdue, boolean excludeRehandling,
+            Boolean atRisk, Boolean bottleneck) {
+
+        // 1. Parse enums (null = no filter)
+        EReportStatus statusEnum = null;
+        Boolean isRehandling = null;
+        if (status != null && !status.trim().isEmpty() && !"all".equalsIgnoreCase(status)) {
+            if ("rehandling".equalsIgnoreCase(status.trim()) || "reprocess".equalsIgnoreCase(status.trim())) {
+                isRehandling = true;
+            } else {
+                try {
+                    statusEnum = EReportStatus.valueOf(status.toLowerCase());
+                } catch (Exception ignored) {
+                }
+            }
+        }
+        EReportSeverity severityEnum = null;
+        if (severity != null && !severity.trim().isEmpty() && !"all".equalsIgnoreCase(severity)) {
+            try {
+                severityEnum = EReportSeverity.valueOf(severity.toLowerCase());
+            } catch (Exception ignored) {
+            }
+        }
+
+        // 2. Parse dates
+        LocalDateTime fromDt = null;
+        LocalDateTime toDt = null;
+        try {
+            if (from != null && !from.trim().isEmpty())
+                fromDt = LocalDate.parse(from.trim()).atStartOfDay();
+            if (to != null && !to.trim().isEmpty())
+                toDt = LocalDate.parse(to.trim()).atTime(23, 59, 59);
+        } catch (Exception e) {
+            log.warn("[ReportList] Invalid date filter from={} to={}", from, to);
+        }
+
+        // 3. Normalize search + assigneeId
+        String searchParam = (search != null && !search.trim().isEmpty()) ? search.trim() : null;
+        String assigneeParam = (assigneeId != null && !assigneeId.trim().isEmpty()) ? assigneeId.trim() : null;
+        boolean overdueOnly = Boolean.TRUE.equals(overdue);
+        boolean atRiskOnly = Boolean.TRUE.equals(atRisk);
+        boolean bottleneckOnly = Boolean.TRUE.equals(bottleneck);
+
+        // Chỉ tách "xử lý lại" khỏi nhóm Đang xử lý / Đã xử lý; lọc "Tất cả" vẫn
+        // giữ nguyên để khớp với thẻ Tổng.
+        boolean applyExcludeRehandling = excludeRehandling
+                && (statusEnum == EReportStatus.processing || statusEnum == EReportStatus.processed);
+
+        LocalDateTime now = LocalDateTime.now();
+        DurationAnalyticsBundle analytics = buildDurationAnalytics(now);
+        int safePage = Math.max(1, page);
+        int safeSize = Math.max(1, Math.min(size, 100));
+
+        if (atRiskOnly || bottleneckOnly) {
+            List<Report> candidates = reportRepository.findAllFilteredList(
+                    statusEnum, isRehandling, applyExcludeRehandling, overdueOnly, now,
+                    severityEnum, assigneeParam, fromDt, toDt, searchParam);
+
+            List<Report> matched = candidates.stream()
+                    .filter(r -> {
+                        LocalDateTime deadline = resolveDeadline(r);
+                        boolean ok = true;
+                        if (atRiskOnly) {
+                            ok = ok && AnalyticsStatHelper.isSlaAtRisk(
+                                    r.getStatus(), r.getCreatedAt(), deadline, r.getSeverity(),
+                                    analytics.avgBySeverity, analytics.sampleCountsBySeverity, now);
+                        }
+                        if (bottleneckOnly) {
+                            ok = ok && AnalyticsStatHelper.isProcessingBottleneck(
+                                    r.getStatus(), r.getSeverity(), r.getAssignedAt(), r.getCreatedAt(),
+                                    analytics.p90BySeverity, now);
+                        }
+                        return ok;
+                    })
+                    .collect(Collectors.toList());
+
+            int totalElements = matched.size();
+            int totalPages = totalElements == 0 ? 0 : (int) Math.ceil((double) totalElements / safeSize);
+            int fromIdx = Math.min((safePage - 1) * safeSize, totalElements);
+            int toIdx = Math.min(fromIdx + safeSize, totalElements);
+
+            List<RecentReportResponse> content = matched.subList(fromIdx, toIdx).stream()
+                    .map(r -> toRecentReportResponse(r, false, false,
+                            analytics.p90BySeverity, analytics.avgBySeverity, analytics.sampleCountsBySeverity))
+                    .collect(Collectors.toList());
+
+            PageResponse<RecentReportResponse> pageResp = PageResponse.<RecentReportResponse>builder()
+                    .currentPage(safePage)
+                    .pageSize(safeSize)
+                    .totalPages(totalPages)
+                    .totalElements(totalElements)
+                    .content(content)
+                    .build();
+
+            return ReportListResponse.builder().reports(pageResp).build();
+        }
+
+        // 4. Query paginated directly
+        PageRequest pageable = PageRequest.of(safePage - 1, safeSize);
+        Page<Report> reportPage = reportRepository.findAllFiltered(
+                statusEnum, isRehandling, applyExcludeRehandling, overdueOnly, now,
+                severityEnum, assigneeParam, fromDt, toDt, searchParam, pageable);
+
+        // 5. Map Report -> RecentReportResponse (bổ sung userName, userEmail, deadline, SLA & Bottleneck)
+        List<RecentReportResponse> content = reportPage.getContent().stream()
+                .map(r -> toRecentReportResponse(r, false, false,
+                        analytics.p90BySeverity, analytics.avgBySeverity, analytics.sampleCountsBySeverity))
+                .collect(Collectors.toList());
+
+        // 6. Wrap in PageResponse
+        PageResponse<RecentReportResponse> pageResp = PageResponse.<RecentReportResponse>builder()
+                .currentPage(safePage)
+                .pageSize(safeSize)
+                .totalPages(reportPage.getTotalPages())
+                .totalElements(reportPage.getTotalElements())
+                .content(content)
+                .build();
+
+        return ReportListResponse.builder().reports(pageResp).build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AdminSpatialAnalyticsResponse getSpatialAnalytics(int limit) {
+        LocalDateTime now = LocalDateTime.now();
+        List<Object[]> rows = reportRepository.findSpatialAnalyticsTuples(EReportStatus.rejected);
+        List<AnalyticsStatHelper.SpatialReportPoint> points = new ArrayList<>(rows.size());
+        for (Object[] row : rows) {
+            String id = row[0] != null ? row[0].toString() : null;
+            Double lat = row[1] instanceof Number n ? n.doubleValue() : null;
+            Double lng = row[2] instanceof Number n ? n.doubleValue() : null;
+            EReportStatus st = row[3] instanceof EReportStatus s ? s : null;
+            EReportSeverity sev = row[4] instanceof EReportSeverity s ? s : null;
+            LocalDateTime explicitDeadline = row[5] instanceof LocalDateTime dt ? dt : null;
+            LocalDateTime createdAt = row[6] instanceof LocalDateTime dt ? dt : null;
+            String address = row[7] != null ? row[7].toString() : null;
+            java.util.Date assignedAt = row[8] instanceof java.util.Date d ? d : null;
+
+            LocalDateTime resolvedDeadline = explicitDeadline;
+            if (resolvedDeadline == null) {
+                LocalDateTime base = assignedAt != null ? toLocalDateTime(assignedAt) : createdAt;
+                if (base != null) {
+                    resolvedDeadline = base.plusDays(deadlineDaysForSeverity(sev));
+                }
+            }
+            points.add(new AnalyticsStatHelper.SpatialReportPoint(
+                    id, lat, lng, st, sev, resolvedDeadline, createdAt, address));
+        }
+
+        List<AdminSpatialAnalyticsResponse.HotspotItem> allHotspots =
+                AnalyticsStatHelper.computeH3Hotspots(points, now, 0);
+        long acceleratingCount = allHotspots.stream()
+                .filter(AdminSpatialAnalyticsResponse.HotspotItem::isAccelerating)
+                .count();
+        int safeLimit = Math.max(1, Math.min(limit, 50));
+        List<AdminSpatialAnalyticsResponse.HotspotItem> topHotspots =
+                allHotspots.subList(0, Math.min(safeLimit, allHotspots.size()));
+
+        return AdminSpatialAnalyticsResponse.builder()
+                .h3Resolution(AnalyticsStatHelper.HOTSPOT_H3_RESOLUTION)
+                .totalHotspots(allHotspots.size())
+                .acceleratingHotspots(acceleratingCount)
+                .hotspots(topHotspots)
+                .build();
+    }
+
+    private record DurationAnalyticsBundle(
+            Map<EReportSeverity, Long> p90BySeverity,
+            Map<EReportSeverity, Long> avgBySeverity,
+            Map<EReportSeverity, Integer> sampleCountsBySeverity,
+            Map<EReportSeverity, Boolean> insufficientSamples) {
+    }
+
+    private DurationAnalyticsBundle buildDurationAnalytics(LocalDateTime now) {
+        List<AnalyticsStatHelper.DurationSample> samples = new ArrayList<>();
+        for (Object[] row : reportRepository.findCompletedDurationsSince(EReportStatus.processed, now.minusDays(90))) {
+            EReportSeverity sev = row[0] instanceof EReportSeverity s ? s : null;
+            LocalDateTime assignedAt = toLocalDateTime(row[1] instanceof java.util.Date d ? d : null);
+            LocalDateTime resolvedAt = row[2] instanceof LocalDateTime ldt ? ldt : null;
+            if (sev != null && assignedAt != null && resolvedAt != null && !resolvedAt.isBefore(assignedAt)) {
+                samples.add(new AnalyticsStatHelper.DurationSample(
+                        sev, Duration.between(assignedAt, resolvedAt).toMinutes()));
+            }
+        }
+        Map<EReportSeverity, Long> fallbackDays = new EnumMap<>(EReportSeverity.class);
+        for (EReportSeverity s : EReportSeverity.values()) {
+            fallbackDays.put(s, deadlineDaysForSeverity(s));
+        }
+        Map<EReportSeverity, Long> avgBySeverity = new EnumMap<>(EReportSeverity.class);
+        Map<EReportSeverity, Integer> sampleCounts = new EnumMap<>(EReportSeverity.class);
+        Map<EReportSeverity, Boolean> insufficientSamples = new EnumMap<>(EReportSeverity.class);
+        Map<EReportSeverity, Long> p90 = AnalyticsStatHelper.computeP90Thresholds(
+                samples, fallbackDays, avgBySeverity, sampleCounts, insufficientSamples);
+        return new DurationAnalyticsBundle(p90, avgBySeverity, sampleCounts, insufficientSamples);
+    }
+
+    @Override
+    @Transactional
+    public ReportDetailResponse updateReportStatus(String reportId, String newStatus, String reason, String adminId) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
+        EReportStatus current = report.getStatus();
+        EReportStatus next = EReportStatus.valueOf(newStatus.toLowerCase());
+        // Validate flow: pending -> processing -> processed, rejected ONLY from
+        // pending/processing, and processed -> processing (re-open)
+        boolean valid = switch (current) {
+            case pending -> next == EReportStatus.processing || next == EReportStatus.rejected;
+            case processing -> next == EReportStatus.processed || next == EReportStatus.rejected;
+            case processed -> next == EReportStatus.processing;
+            default -> false;
+        };
+        if (!valid)
+            throw new BadRequestException("report.invalid.status.transition");
+
+        String trimmedReason = null;
+        if (next == EReportStatus.rejected) {
+            if (reason != null) {
+                trimmedReason = reason.trim();
+                if (trimmedReason.isEmpty()) {
+                    throw new BadRequestException("report.reject.reason_required");
+                }
+            }
+            report.setRejectedReason(trimmedReason);
+            report.setRejectedAt(new java.util.Date());
+        }
+
+        report.setStatus(next);
+        if (next == EReportStatus.processed) {
+            if (report.getDeadline() == null) {
+                report.setDeadline(resolveDeadline(report));
+            }
+            if (report.getResolvedAt() == null) {
+                report.setResolvedAt(new java.util.Date());
+            }
+            report.setIsReviewResolved(null);
+            report.setRating(null);
+            report.setReviewNote(null);
+            report.setReviewImageUrls(null);
+            report.setReviewedAt(null);
+        } else if (current == EReportStatus.processed && next == EReportStatus.processing) {
+            LocalDateTime rehandleApprovedAt = LocalDateTime.now();
+            report.setDeadline(rehandleApprovedAt.plusDays(deadlineDaysForSeverity(report.getSeverity())));
+        }
+        Report saved = reportRepository.save(report);
+
+        // Notify any Admin <-> Client conversations for this client so lock/call status updates immediately
+        if (saved.getUser() != null) {
+            conversationService.notifyAdminClientConversationsUpdated(saved.getUser().getId());
+        }
+
+        if (next == EReportStatus.rejected) {
+            try {
+                reportDensityService.onReportRejected(saved.getId(), saved.getLatitude(), saved.getLongitude(),
+                        saved.getCreatedAt());
+            } catch (Exception ex) {
+                log.warn("[ReportDensity] Error updating density for rejected report {}: {}", saved.getId(),
+                        ex.getMessage());
+            }
+
+            User admin = adminId != null ? userRepository.findById(adminId).orElse(null) : null;
+            String adminName = (admin != null && admin.getFullName() != null && !admin.getFullName().trim().isEmpty())
+                    ? admin.getFullName().trim()
+                    : (admin != null && admin.getEmail() != null ? admin.getEmail().trim() : "Quản trị viên");
+            String reportTitle = saved.getTitle() != null && !saved.getTitle().trim().isEmpty()
+                    ? saved.getTitle().trim()
+                    : "Phản ánh";
+            activityHistoryRepository.save(ActivityHistory.builder()
+                    .actor(admin)
+                    .i18nKey("activity.report.rejected|" + adminName + "|" + reportTitle)
+                    .targetId(saved.getId())
+                    .build());
+
+            notifyUserReportRejected(saved.getUser(), saved, trimmedReason, false);
+            if (current == EReportStatus.processing && saved.getAssignedStaff() != null) {
+                notifyUserReportRejected(saved.getAssignedStaff(), saved, trimmedReason, true);
+            }
+        }
+
+        if (next == EReportStatus.processed) {
+            delegationService.onReportCompleted(saved);
+        }
+
+        // Admin từ chối report → thu hồi yêu cầu nhờ làm giùm đang hoạt động
+        if (next == EReportStatus.rejected) {
+            delegationService.onReportUnassigned(saved);
+        }
+
+        // When admin re-opens from processed back to processing, notify assigned Staff
+        // and Admins with new deadline
+        if (current == EReportStatus.processed && next == EReportStatus.processing) {
+            LocalDateTime updatedDeadline = resolveDeadline(saved);
+            String formattedDeadline = updatedDeadline != null
+                    ? updatedDeadline.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+                    : "";
+            String actionData = String.format(
+                    "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}", saved.getId());
+
+            User staff = saved.getAssignedStaff();
+            if (staff != null) {
+                try {
+                    java.util.Locale staffLocale = new java.util.Locale(
+                            staff.getLanguage() != null ? staff.getLanguage() : "vi");
+                    String title = messageSource.getMessage(
+                            "notification.report.reopened.staff.title",
+                            null,
+                            "Yêu cầu xử lý lại phản ánh",
+                            staffLocale);
+                    String message = messageSource.getMessage(
+                            "notification.report.reopened.staff.message",
+                            new Object[] { saved.getTitle(), formattedDeadline },
+                            String.format(
+                                    "Phản ánh '%s' được đánh giá là chưa được xử lý thỏa đáng và cần được xử lý lại. Hạn xử lý mới: %s.",
+                                    saved.getTitle(), formattedDeadline),
+                            staffLocale);
+
+                    notificationService.createNotification(staff.getId(), title, message, actionData,
+                            saved.getImageUrl());
+
+                    Map<String, Object> staffExtra = new java.util.HashMap<>();
+                    staffExtra.put("shouldRefresh", true);
+                    staffExtra.put("stats", getStaffReportStatistics(staff.getId()));
+                    if (updatedDeadline != null) {
+                        staffExtra.put("deadline", formatIsoDateTime(updatedDeadline));
+                    }
+                    NotificationEvent staffEvent = new NotificationEvent(title, message, actionData,
+                            saved.getImageUrl(), staffExtra);
+                    messagingTemplate.convertAndSendToUser(staff.getId(), "/queue/notifications", staffEvent);
+
+                    NotificationRequest staffNotif = new NotificationRequest(
+                            title, message,
+                            Map.of("type", "REPORT_DETAIL", "payload", "{\"reportId\":\"" + saved.getId() + "\"}"));
+                    fcmService.sendToUser(staff.getId(), staffNotif);
+                } catch (Exception ex) {
+                    log.warn("[Notify Staff] Failed to notify staff {} on reopen: {}", staff.getId(), ex.getMessage());
+                }
+            }
+
+            try {
+                List<User> admins = userRepository.findByRole(ERole.admin);
+                for (User a : admins) {
+                    try {
+                        java.util.Locale adminLocale = new java.util.Locale(
+                                a.getLanguage() != null ? a.getLanguage() : "vi");
+                        String adminTitle = messageSource.getMessage(
+                                "notification.report.reopened.admin.title",
+                                null,
+                                "Đã duyệt xử lý lại phản ánh",
+                                adminLocale);
+                        String adminMsg = messageSource.getMessage(
+                                "notification.report.reopened.admin.message",
+                                new Object[] { saved.getTitle(), formattedDeadline },
+                                String.format("Phản ánh '%s' đã được cập nhật hạn xử lý mới (%s) để xử lý lại.",
+                                        saved.getTitle(), formattedDeadline),
+                                adminLocale);
+                        notificationService.createNotification(a.getId(), adminTitle, adminMsg, actionData,
+                                saved.getImageUrl());
+                        Map<String, Object> adminExtra = new java.util.HashMap<>();
+                        adminExtra.put("shouldRefresh", true);
+                        if (updatedDeadline != null) {
+                            adminExtra.put("deadline", formatIsoDateTime(updatedDeadline));
+                        }
+                        messagingTemplate.convertAndSendToUser(
+                                a.getId(),
+                                "/queue/notifications",
+                                new NotificationEvent(adminTitle, adminMsg, actionData, saved.getImageUrl(),
+                                        adminExtra));
+                    } catch (Exception ex) {
+                        log.warn("[Notify Admin] Failed to notify admin {} on reopen: {}", a.getId(), ex.getMessage());
+                    }
+                }
+            } catch (Exception ex) {
+                log.warn("[Notify Admins] Failed on reopen for report {}: {}", saved.getId(), ex.getMessage());
+            }
+        }
+
+        return toDetail(saved);
+    }
+
+    private void notifyUserReportRejected(User recipient, Report report, String reason, boolean isStaff) {
+        if (recipient == null) {
+            return;
+        }
+        try {
+            Locale locale = Locale.forLanguageTag(recipient.getLanguage() != null ? recipient.getLanguage() : "vi");
+            String titleKey = isStaff ? "notification.report.rejected.staff.title"
+                    : "notification.report.rejected.client.title";
+            String titleFallback = isStaff ? "Phản ánh đã bị từ chối" : "Phản ánh của bạn đã bị từ chối";
+            String title = messageSource.getMessage(titleKey, null, titleFallback, locale);
+
+            String message;
+            if (reason != null && !reason.isBlank()) {
+                String msgKey = isStaff ? "notification.report.rejected.staff.message_with_reason"
+                        : "notification.report.rejected.client.message_with_reason";
+                String fallback = isStaff
+                        ? String.format("Phản ánh '%s' bạn đang xử lý đã bị từ chối. Lý do: %s", report.getTitle(),
+                                reason)
+                        : String.format("Phản ánh '%s' của bạn đã bị từ chối. Lý do: %s", report.getTitle(), reason);
+                message = messageSource.getMessage(msgKey, new Object[] { report.getTitle(), reason }, fallback,
+                        locale);
+            } else {
+                String msgKey = isStaff ? "notification.report.rejected.staff.message"
+                        : "notification.report.rejected.client.message";
+                String fallback = isStaff
+                        ? String.format("Phản ánh '%s' bạn đang xử lý đã bị quản trị viên từ chối.", report.getTitle())
+                        : String.format("Phản ánh '%s' của bạn đã bị quản trị viên từ chối.", report.getTitle());
+                message = messageSource.getMessage(msgKey, new Object[] { report.getTitle() }, fallback, locale);
+            }
+
+            String actionData = String.format(
+                    "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\"}}", report.getId());
+            notificationService.createNotification(recipient.getId(), title, message, actionData, report.getImageUrl());
+
+            Map<String, Object> extra = new java.util.HashMap<>();
+            extra.put("shouldRefresh", true);
+            if (isStaff) {
+                extra.put("stats", getStaffReportStatistics(recipient.getId()));
+            }
+            messagingTemplate.convertAndSendToUser(
+                    recipient.getId(),
+                    "/queue/notifications",
+                    new NotificationEvent(title, message, actionData, report.getImageUrl(), extra));
+
+            fcmService.sendToUser(
+                    recipient.getId(),
+                    new NotificationRequest(
+                            title,
+                            message,
+                            Map.of("type", "REPORT_DETAIL", "payload", "{\"reportId\":\"" + report.getId() + "\"}")));
+        } catch (Exception ex) {
+            log.warn("[Notify] Failed to notify {} on report reject {}: {}", recipient.getId(), report.getId(),
+                    ex.getMessage());
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AdminMapReportsResponse getAdminMapReports(String status, String severity, String assigneeId,
+            String from, String to, Double minLat, Double maxLat, Double minLng, Double maxLng, int limit) {
+        return getAdminMapReports(status, severity, assigneeId, from, to, null, minLat, maxLat, minLng, maxLng, limit);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public AdminMapReportsResponse getAdminMapReports(String status, String severity, String assigneeId,
+            String from, String to, String timeframe, Double minLat, Double maxLat, Double minLng, Double maxLng,
+            int limit) {
+        // Bounds are optional, but all-or-nothing
+        boolean anyBound = minLat != null || maxLat != null || minLng != null || maxLng != null;
+        if (anyBound) {
+            validateMapBounds(minLat, maxLat, minLng, maxLng);
+        }
+
+        // Parse enums
+        EReportStatus statusEnum = null;
+        if (status != null && !status.trim().isEmpty() && !"all".equalsIgnoreCase(status)) {
+            try {
+                statusEnum = EReportStatus.valueOf(status.toLowerCase());
+            } catch (Exception ignored) {
+            }
+        }
+        EReportSeverity severityEnum = null;
+        if (severity != null && !severity.trim().isEmpty() && !"all".equalsIgnoreCase(severity)) {
+            try {
+                severityEnum = EReportSeverity.valueOf(severity.toLowerCase());
+            } catch (Exception ignored) {
+            }
+        }
+
+        // Parse dates
+        LocalDateTime fromDt = null;
+        LocalDateTime toDt = null;
+        try {
+            if (from != null && !from.trim().isEmpty())
+                fromDt = LocalDate.parse(from.trim()).atStartOfDay();
+            if (to != null && !to.trim().isEmpty())
+                toDt = LocalDate.parse(to.trim()).atTime(23, 59, 59);
+        } catch (Exception e) {
+            log.warn("[MapReports] Invalid date filter from={} to={}", from, to);
+        }
+
+        // If fromDt not set, but timeframe is provided, derive fromDt from timeframe
+        // cutoff
+        if (fromDt == null && timeframe != null && !timeframe.trim().isEmpty()) {
+            fromDt = EDensityTimeframe.fromCode(timeframe).getCutoff(LocalDateTime.now());
+        }
+
+        String assigneeParam = (assigneeId != null && !assigneeId.trim().isEmpty()) ? assigneeId.trim() : null;
+        int safeLimit = safeMapLimit(limit, MAP_MAX_LIMIT);
+
+        // Fetch one extra row to know whether more reports match than safeLimit
+        List<Report> reports = reportRepository.findAdminMapReports(
+                statusEnum, severityEnum, assigneeParam, fromDt, toDt,
+                minLat, maxLat, minLng, maxLng,
+                Limit.of(safeLimit + 1));
+
+        List<MapReportResponse> content = reports.stream()
+                .limit(safeLimit)
+                .map(r -> MapReportResponse.builder()
+                        .id(r.getId())
+                        .title(r.getTitle())
+                        .status(r.getStatus())
+                        .severity(r.getSeverity())
+                        .latitude(r.getLatitude())
+                        .longitude(r.getLongitude())
+                        .imageUrl(r.getImageUrl())
+                        .address(r.getAddress() != null && !r.getAddress().trim().isEmpty()
+                                ? r.getAddress()
+                                : r.getLocationDescription())
+                        .createdAt(r.getCreatedAt())
+                        .build())
+                .collect(Collectors.toList());
+
+        return AdminMapReportsResponse.builder()
+                .reports(content)
+                .truncated(reports.size() > safeLimit)
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RecentReportResponse> getStaffAssignedReports(String staffId, String status, Boolean overdue, int page,
+            int limit) {
+        int safeLimit = Math.max(1, Math.min(limit, 100));
+        int safePage = Math.max(0, page);
+        boolean rehandling = "rehandling".equalsIgnoreCase(status);
+        boolean overdueOnly = Boolean.TRUE.equals(overdue);
+
+        List<EReportStatus> statuses;
+        if ("resolved".equalsIgnoreCase(status) || "processed".equalsIgnoreCase(status)) {
+            statuses = List.of(EReportStatus.processed);
+        } else if ("processing".equalsIgnoreCase(status) || rehandling) {
+            statuses = List.of(EReportStatus.processing);
+        } else if ("rejected".equalsIgnoreCase(status)) {
+            statuses = List.of(EReportStatus.rejected);
+        } else {
+            statuses = List.of(EReportStatus.processing, EReportStatus.processed);
+        }
+
+        org.springframework.data.domain.Pageable pageable = org.springframework.data.domain.PageRequest.of(safePage,
+                safeLimit);
+        List<Report> reports = reportRepository.findStaffAssignedFiltered(
+                staffId, statuses, rehandling, overdueOnly, LocalDateTime.now(), pageable);
+
+        return reports.stream()
+                .map(r -> toRecentReportResponse(r, true, true))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ReportStatisticsResponse getStaffReportStatistics(String staffId) {
+        List<Object[]> statusRows = reportRepository.countStaffReportsGroupByStatus(staffId);
+        Map<String, Integer> byStatus = new LinkedHashMap<>();
+        byStatus.put("processing", 0);
+        byStatus.put("resolved", 0);
+        byStatus.put("rehandling", 0);
+        for (Object[] row : statusRows) {
+            String key = row[0] != null ? row[0].toString().toLowerCase() : "unknown";
+            if ("processed".equals(key))
+                key = "resolved";
+            int count = row[1] != null ? ((Number) row[1]).intValue() : 0;
+            if (!"pending".equals(key) && !"rejected".equals(key)) {
+                byStatus.put(key, count);
+            }
+        }
+        long rehandlingCount = reportRepository.countStaffReportsByStatusAndIsReviewResolved(staffId,
+                EReportStatus.processing, false);
+        byStatus.put("rehandling", (int) rehandlingCount);
+        byStatus.put("overdue", (int) reportRepository.countStaffOverdueReports(staffId, LocalDateTime.now()));
+
+        int total = byStatus.getOrDefault("processing", 0) + byStatus.getOrDefault("resolved", 0);
+
+        return ReportStatisticsResponse.builder()
+                .total(total)
+                .byStatus(byStatus)
+                .bySeverity(new LinkedHashMap<>())
+                .build();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<RecentReportResponse> getUnsatisfactoryReports(String tab) {
+        EReportStatus status = "processing".equalsIgnoreCase(tab)
+                ? EReportStatus.processing
+                : EReportStatus.processed;
+        List<Report> reports = reportRepository.findReportsByStatusAndIsReviewResolved(status, false);
+        return reports.stream()
+                .map(r -> toRecentReportResponse(r, true, true))
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public ReportDetailResponse reviewReport(String reportId,
+            com.vn.smart_space.dto.request.report.ReportReviewRequest request, String userId) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
+
+        if (userId != null && report.getUser() != null && !userId.equals(report.getUser().getId())) {
+            throw new UnauthorizedException("report.review.unauthorized");
+        }
+
+        if (report.getStatus() != EReportStatus.processed) {
+            throw new BadRequestException("report.review.not_processed");
+        }
+
+        if (report.getReviewedAt() != null || report.getIsReviewResolved() != null) {
+            throw new BadRequestException("report.review.already_reviewed");
+        }
+
+        if (request.getIsResolved() == null) {
+            throw new BadRequestException("report.review.is_resolved_required");
+        }
+
+        if (Boolean.TRUE.equals(request.getIsResolved())) {
+            Integer rating = request.getRating();
+            if (rating == null || rating < 1 || rating > 5) {
+                throw new BadRequestException("report.review.rating_invalid");
+            }
+            report.setIsReviewResolved(true);
+            report.setRating(rating);
+            report.setReviewNote(
+                    request.getReason() != null && !request.getReason().trim().isEmpty() ? request.getReason().trim()
+                            : null);
+            report.setReviewImageUrls(null);
+        } else {
+            if (request.getReason() == null || request.getReason().trim().isEmpty()) {
+                throw new BadRequestException("report.review.reason_required");
+            }
+            if (request.getImageUrls() == null || request.getImageUrls().isEmpty()) {
+                throw new BadRequestException("report.review.images_required");
+            }
+            report.setIsReviewResolved(false);
+            report.setRating(null);
+            report.setReviewNote(request.getReason().trim());
+            report.setReviewImageUrls(String.join(",", request.getImageUrls()));
+        }
+
+        report.setReviewedAt(new java.util.Date());
+        Report saved = reportRepository.save(report);
+
+        // Send system message to report conversation for staff
+        try {
+            com.vn.smart_space.model.Conversation conv = conversationService.getOrCreateReportConversation(saved);
+            User assignedStaff = saved.getAssignedStaff();
+            if (conv != null && assignedStaff != null) {
+                User clientUser = saved.getUser();
+                java.util.Locale staffLocale = java.util.Locale.forLanguageTag(
+                        assignedStaff.getLanguage() != null ? assignedStaff.getLanguage() : "vi");
+                String clientName;
+                if (Boolean.TRUE.equals(saved.getIsAnonymous())) {
+                    clientName = messageSource.getMessage("chat.anonymous_user", null, "Người dùng ẩn danh",
+                            staffLocale);
+                } else {
+                    clientName = (clientUser != null && clientUser.getFullName() != null)
+                            ? clientUser.getFullName()
+                            : "Cư dân";
+                }
+
+                String sysMsgKey = Boolean.TRUE.equals(saved.getIsReviewResolved())
+                        ? "chat.system.review_resolved"
+                        : "chat.system.review_unresolved";
+                String fallbackMsg = Boolean.TRUE.equals(saved.getIsReviewResolved())
+                        ? String.format("%s đã đánh giá phản ánh '%s' là đã xử lý thỏa đáng", clientName,
+                                saved.getTitle())
+                        : String.format("%s đã đánh giá phản ánh '%s' là chưa được xử lý thỏa đáng", clientName,
+                                saved.getTitle());
+                String sysMsg = messageSource.getMessage(sysMsgKey,
+                        new Object[] { clientName, saved.getTitle() },
+                        fallbackMsg,
+                        staffLocale);
+
+                conversationService.sendSystemMessage(conv, sysMsg, assignedStaff);
+            }
+        } catch (Exception e) {
+            log.error("Failed to send system message on review report: {}", e.getMessage());
+        }
+
+        // When client submits unresolved review, notify all Admins via WebSocket + DB
+        // notification + FCM
+        if (Boolean.FALSE.equals(saved.getIsReviewResolved())) {
+            try {
+                List<User> admins = userRepository.findByRole(ERole.admin);
+                if (admins != null && !admins.isEmpty()) {
+                    String adminActionData = String.format(
+                            "{\"type\": \"REPORT_DETAIL\", \"payload\": {\"reportId\": \"%s\", \"status\": \"processed\"}}",
+                            saved.getId());
+
+                    for (User admin : admins) {
+                        try {
+                            Locale adminLocale = new Locale(
+                                    admin.getLanguage() != null ? admin.getLanguage() : "vi");
+                            String adminTitle = messageSource.getMessage(
+                                    "notification.report.review.unresolved.admin.title",
+                                    null,
+                                    "Phản ánh chưa được xử lý thỏa đáng",
+                                    adminLocale);
+                            String adminMessage = messageSource.getMessage(
+                                    "notification.report.review.unresolved.admin.message",
+                                    new Object[] { saved.getTitle() },
+                                    String.format("Phản ánh '%s' được đánh giá là chưa được xử lý thỏa đáng.",
+                                            saved.getTitle()),
+                                    adminLocale);
+
+                            NotificationEvent adminEvent = new NotificationEvent(adminTitle, adminMessage,
+                                    adminActionData, saved.getImageUrl(), Map.of("shouldRefresh", true));
+                            NotificationRequest adminNotif = new NotificationRequest(adminTitle, adminMessage,
+                                    Map.of("type", "REPORT_DETAIL", "payload",
+                                            "{\"reportId\":\"" + saved.getId() + "\"}"));
+
+                            notificationService.createNotification(admin.getId(), adminTitle, adminMessage,
+                                    adminActionData, saved.getImageUrl());
+                            messagingTemplate.convertAndSendToUser(admin.getId(), "/queue/notifications", adminEvent);
+                            fcmService.sendToUser(admin.getId(), adminNotif);
+                        } catch (Exception ex) {
+                            log.warn("[Notify Admin] Failed to notify admin {} about unresolved review: {}",
+                                    admin.getId(), ex.getMessage());
+                        }
+                    }
+                }
+            } catch (Exception ex) {
+                log.warn("[Notify Admin] Failed to send unresolved review notification: {}", ex.getMessage());
+            }
+        }
+
+        return toDetail(saved);
+    }
+
+    private List<String> extractImageUrls(Report r) {
+        if (r.getImageUrls() != null && !r.getImageUrls().trim().isEmpty()) {
+            String cleaned = r.getImageUrls().trim().replaceAll("^\\[|\\]$", "");
+            if (!cleaned.isEmpty()) {
+                return Arrays.stream(cleaned.split(","))
+                        .map(s -> s.replace("\"", "").trim())
+                        .filter(s -> !s.isEmpty())
+                        .collect(Collectors.toList());
+            }
+        }
+        if (r.getImageUrl() != null && !r.getImageUrl().trim().isEmpty()) {
+            return List.of(r.getImageUrl().trim());
+        }
+        return List.of();
+    }
+
+    private static class UserNearbyAlertRecord {
+        private final Set<String> reportIds;
+        private final java.time.Instant lastAlertTime;
+
+        public UserNearbyAlertRecord(Set<String> reportIds, java.time.Instant lastAlertTime) {
+            this.reportIds = reportIds;
+            this.lastAlertTime = lastAlertTime;
+        }
+
+        public Set<String> getReportIds() {
+            return reportIds;
+        }
+
+        public java.time.Instant getLastAlertTime() {
+            return lastAlertTime;
+        }
+    }
+
+    private final Map<String, UserNearbyAlertRecord> userLastAlertCache = new java.util.concurrent.ConcurrentHashMap<>();
+
+    @Override
+    @Transactional
+    public ReportNearbyAlertResponse checkNearbyReportsAndAlert(Double lat, Double lng, Double radius, String userId) {
+        return checkNearbyReportsAndAlert(lat, lng, radius, userId, true);
+    }
+
+    @Override
+    @Transactional
+    public ReportNearbyAlertResponse checkNearbyReportsAndAlert(Double lat, Double lng, Double radius, String userId,
+            Boolean notify) {
+        if (lat == null || lng == null) {
+            throw new BadRequestException("report.nearby.coordinates_required");
+        }
+        double searchRadius = radius != null && radius > 0 ? radius : 200.0;
+
+        List<Report> reports = reportRepository.findNearbyActiveReportsWithinRadius(lat, lng, searchRadius,
+                Limit.of(20));
+
+        if (reports.isEmpty()) {
+            return ReportNearbyAlertResponse.builder()
+                    .count(0)
+                    .nearestDistance(null)
+                    .reports(List.of())
+                    .build();
+        }
+
+        List<NearbyReportItemResponse> items = reports.stream().map(r -> {
+            double dist = GeoUtils.haversineMeters(lat, lng, r.getLatitude(), r.getLongitude());
+            List<String> imgUrls = extractImageUrls(r);
+            String primaryImg = !imgUrls.isEmpty() ? imgUrls.get(0) : r.getImageUrl();
+            return NearbyReportItemResponse.builder()
+                    .id(r.getId())
+                    .title(r.getTitle())
+                    .description(r.getDescription())
+                    .imageUrls(imgUrls)
+                    .imageUrl(primaryImg)
+                    .latitude(r.getLatitude())
+                    .longitude(r.getLongitude())
+                    .status(r.getStatus() != null ? r.getStatus().name() : null)
+                    .severity(r.getSeverity() != null ? r.getSeverity().name() : null)
+                    .distanceInMeters(dist)
+                    .createdAt(
+                            r.getCreatedAt() != null ? r.getCreatedAt().format(DateTimeFormatter.ISO_DATE_TIME) : null)
+                    .build();
+        }).collect(Collectors.toList());
+
+        double nearestDistance = items.get(0).getDistanceInMeters() != null ? items.get(0).getDistanceInMeters() : 0.0;
+        int count = items.size();
+        String nearestReportId = !items.isEmpty() ? items.get(0).getId() : "";
+        Set<String> currentReportIds = items.stream().map(NearbyReportItemResponse::getId).collect(Collectors.toSet());
+
+        // Check deduplication cache (10-minute cooldown for identical report set)
+        boolean shouldNotify = (notify == null || notify) && userId != null && !userId.isBlank();
+        if (shouldNotify) {
+            UserNearbyAlertRecord lastAlert = userLastAlertCache.get(userId);
+            if (lastAlert != null && lastAlert.getReportIds().equals(currentReportIds)) {
+                long minutesSinceLastAlert = java.time.Duration
+                        .between(lastAlert.getLastAlertTime(), java.time.Instant.now()).toMinutes();
+                if (minutesSinceLastAlert < 10) {
+                    shouldNotify = false;
+                }
+            }
+        }
+
+        // If allowed, trigger notifications (WebSocket & FCM) and DB notification
+        if (shouldNotify) {
+            userLastAlertCache.put(userId, new UserNearbyAlertRecord(currentReportIds, java.time.Instant.now()));
+            try {
+                User user = userRepository.findById(userId).orElse(null);
+                java.util.Locale userLocale = (user != null && user.getLanguage() != null
+                        && !user.getLanguage().isBlank())
+                                ? new java.util.Locale(user.getLanguage())
+                                : (org.springframework.context.i18n.LocaleContextHolder.getLocale() != null
+                                        ? org.springframework.context.i18n.LocaleContextHolder.getLocale()
+                                        : new java.util.Locale("vi"));
+
+                String title = messageSource.getMessage(
+                        "notification.report.nearby.title",
+                        null,
+                        userLocale);
+
+                String message = messageSource.getMessage(
+                        "notification.report.nearby.message",
+                        new Object[] { count, Math.round(nearestDistance) },
+                        userLocale);
+
+                String actionData = String.format(
+                        "{\"type\": \"NEARBY_REPORTS_ALERT\", \"payload\": {\"count\": %d, \"nearestDistance\": %.1f, \"reportId\": \"%s\", \"nearestReportId\": \"%s\", \"lat\": %s, \"lng\": %s, \"radius\": %s}}",
+                        count, nearestDistance, nearestReportId, nearestReportId,
+                        lat != null ? lat.toString() : "null",
+                        lng != null ? lng.toString() : "null",
+                        radius != null ? radius.toString() : "200.0");
+
+                String firstImage = !items.isEmpty() ? items.get(0).getImageUrl() : null;
+
+                // Create DB Notification
+                notificationService.createNotification(userId, title, message, actionData, firstImage);
+
+                // Send WebSocket Event
+                NotificationEvent event = new NotificationEvent(title, message, actionData, firstImage,
+                        Map.of("type", "NEARBY_REPORTS_ALERT", "count", count, "nearestDistance", nearestDistance,
+                                "reportId", nearestReportId));
+                messagingTemplate.convertAndSendToUser(userId, "/queue/notifications", event);
+
+                // Send FCM
+                Map<String, String> fcmData = Map.of(
+                        "type", "NEARBY_REPORTS_ALERT",
+                        "payload", actionData);
+                NotificationRequest notif = new NotificationRequest(title, message, fcmData);
+                fcmService.sendToUser(userId, notif);
+            } catch (Exception e) {
+                log.warn("[NearbyAlert] Failed to send notification for user {}: {}", userId, e.getMessage());
+            }
+        }
+
+        return ReportNearbyAlertResponse.builder()
+                .count(count)
+                .nearestDistance(nearestDistance)
+                .reports(items)
+                .build();
+    }
+
+    @Override
+    @Transactional
+    public ReportDetailResponse updateReport(String reportId, ReportCreateRequest request, String userId) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
+
+        if (userId != null && report.getUser() != null && !userId.equals(report.getUser().getId())) {
+            throw new UnauthorizedException("report.unauthorized");
+        }
+
+        // Business rule: Only pending reports can be edited
+        if (report.getStatus() != EReportStatus.pending) {
+            throw new BadRequestException("report.edit.only_pending");
+        }
+
+        if (request.getTitle() != null && !request.getTitle().trim().isEmpty()) {
+            report.setTitle(request.getTitle().trim());
+        }
+        if (request.getDescription() != null && !request.getDescription().trim().isEmpty()) {
+            report.setDescription(request.getDescription().trim());
+        }
+        Double oldLat = report.getLatitude();
+        Double oldLng = report.getLongitude();
+
+        if (request.getLatitude() != null) {
+            report.setLatitude(request.getLatitude());
+        }
+        if (request.getLongitude() != null) {
+            report.setLongitude(request.getLongitude());
+        }
+        if (request.getAddress() != null) {
+            report.setAddress(request.getAddress().trim());
+        }
+        if (request.getLocationDescription() != null) {
+            report.setLocationDescription(request.getLocationDescription().trim());
+        }
+        if (request.getIsAnonymous() != null) {
+            report.setIsAnonymous(request.getIsAnonymous());
+        }
+        if (request.getCategoryId() != null && !request.getCategoryId().isBlank()) {
+            String requestedCategoryId = request.getCategoryId().trim();
+            ReportCategory currentCategory = report.getCategory();
+            // Giữ nguyên danh mục hiện tại (kể cả khi đã ngừng hoạt động) để người dân vẫn
+            // sửa được nội dung khác; chỉ validate khi thực sự đổi sang danh mục khác.
+            boolean categoryChanged = currentCategory == null
+                    || !requestedCategoryId.equals(currentCategory.getId());
+            if (categoryChanged) {
+                report.setCategory(resolveActiveCategory(requestedCategoryId));
+            }
+        }
+        if (request.getImageUrls() != null) {
+            if (!request.getImageUrls().isEmpty()) {
+                report.setImageUrls(String.join(",", request.getImageUrls()));
+                report.setImageUrl(request.getImageUrls().get(0));
+            } else {
+                report.setImageUrls(null);
+                report.setImageUrl(null);
+            }
+        }
+
+        report = reportRepository.save(report);
+
+        if (oldLat != null && oldLng != null && report.getLatitude() != null && report.getLongitude() != null
+                && (!oldLat.equals(report.getLatitude()) || !oldLng.equals(report.getLongitude()))) {
+            try {
+                reportDensityService.onReportMoved(report.getId(), oldLat, oldLng, report.getLatitude(),
+                        report.getLongitude(), report.getCreatedAt());
+            } catch (Exception e) {
+                log.warn("[ReportDensity] Failed to trigger density update on move report: {}", e.getMessage());
+            }
+        }
+
+        if (userId != null && report.getUser() != null) {
+            User actor = report.getUser();
+            String actorName = (actor.getFullName() != null && !actor.getFullName().trim().isEmpty())
+                    ? actor.getFullName().trim()
+                    : (actor.getEmail() != null ? actor.getEmail().trim() : "Người dùng");
+            String i18nKey = "activity.report.updated|" + actorName;
+
+            ActivityHistory activity = ActivityHistory.builder()
+                    .actor(actor)
+                    .i18nKey(i18nKey)
+                    .targetId(report.getId())
+                    .build();
+            activityHistoryRepository.save(activity);
+        }
+
+        return toDetail(report);
+    }
+
+    @Override
+    @Transactional
+    public ReportDetailResponse cancelReport(String reportId, String userId) {
+        Report report = reportRepository.findById(reportId)
+                .orElseThrow(() -> new ResourceNotFoundException("report.not_found"));
+
+        if (userId != null && report.getUser() != null && !userId.equals(report.getUser().getId())) {
+            throw new UnauthorizedException("report.unauthorized");
+        }
+
+        // Business rule: Only pending reports can be cancelled
+        if (report.getStatus() != EReportStatus.pending) {
+            throw new BadRequestException("report.cancel.only_pending");
+        }
+
+        report.setStatus(EReportStatus.rejected);
+        report = reportRepository.save(report);
+
+        try {
+            reportDensityService.onReportRejected(report.getId(), report.getLatitude(), report.getLongitude(),
+                    report.getCreatedAt());
+        } catch (Exception e) {
+            log.warn("[ReportDensity] Failed to trigger density update on cancel report: {}", e.getMessage());
+        }
+
+        if (userId != null && report.getUser() != null) {
+            User actor = report.getUser();
+            String actorName = (actor.getFullName() != null && !actor.getFullName().trim().isEmpty())
+                    ? actor.getFullName().trim()
+                    : (actor.getEmail() != null ? actor.getEmail().trim() : "Người dùng");
+            String i18nKey = "activity.report.cancelled|" + actorName;
+
+            ActivityHistory activity = ActivityHistory.builder()
+                    .actor(actor)
+                    .i18nKey(i18nKey)
+                    .targetId(report.getId())
+                    .build();
+            activityHistoryRepository.save(activity);
+        }
+
+        return toDetail(report);
     }
 }

@@ -1,0 +1,296 @@
+import 'dart:async';
+import 'package:flutter/foundation.dart';
+import 'package:mobile_shared/core/api/api_response.dart';
+import 'package:mobile_shared/core/auth/token_storage.dart';
+import 'package:mobile_shared/core/auth/user_storage_service.dart';
+import 'package:mobile_shared/core/connection/connection_manager.dart';
+import 'package:mobile_shared/core/constants/role_constant.dart';
+import 'package:mobile_shared/core/constants/use_mock.dart';
+import 'package:mobile_shared/core/localization/locale_provider.dart';
+import 'package:mobile_shared/core/notification/firebase_service.dart';
+import 'package:mobile_shared/features/auth/models/DeviceSessionModel.dart';
+import 'package:mobile_shared/features/auth/models/token_model.dart';
+import 'package:mobile_shared/features/auth/repositories/auth_repo.dart';
+import 'package:mobile_shared/features/auth/repositories/auth_repo_api.dart';
+import 'package:mobile_shared/features/auth/repositories/auth_repo_mock.dart';
+import 'package:mobile_shared/core/auth/models/user_model.dart';
+import 'package:mobile_shared/features/call/services/call_ringtone_service.dart';
+import 'package:mobile_shared/features/chat/services/chat_local_storage_service.dart';
+
+class AuthService {
+  static Future<void> Function()? onBeforeLogout;
+  final AuthRepo authRepo;
+
+  const AuthService({required this.authRepo});
+
+  /// Login — trả về cả response và trạng thái kết nối WebSocket
+  Future<({ApiResponse<TokenModel> response, bool wsConnected})> login(
+    String email,
+    String password,
+    bool rememberMe,
+    String deviceId,
+    String deviceName,
+    String platform,
+    ERole role,
+  ) async {
+    final response = await authRepo.login(
+      email,
+      password,
+      rememberMe,
+      deviceId,
+      deviceName,
+      platform,
+      role,
+    );
+    final data = response.data;
+
+    if (response.success &&
+        data != null &&
+        data.accessToken.isNotEmpty &&
+        data.refreshToken.isNotEmpty) {
+      await TokenStorage.saveAccessToken(data.accessToken);
+      await TokenStorage.saveRefreshToken(data.refreshToken);
+      await userStorageService.saveUser(data.userModel!);
+      startScheduledTokenRefresh();
+      await localeProvider.syncLanguageToBackend();
+
+      // Kết nối WebSocket và FCM sẽ được xử lý ngầm trong LoginController
+      return (response: response, wsConnected: true);
+    }
+
+    return (response: response, wsConnected: false);
+  }
+
+  Future<({ApiResponse<TokenModel> response, bool wsConnected})> loginGoogle(
+    String idToken,
+    String deviceId,
+    String deviceName,
+    String platform,
+    ERole role,
+  ) async {
+    final response = await authRepo.loginGoogle(
+      idToken,
+      deviceId,
+      deviceName,
+      platform,
+      role,
+    );
+    final data = response.data;
+
+    if (response.success &&
+        data != null &&
+        data.accessToken.isNotEmpty &&
+        data.refreshToken.isNotEmpty) {
+      await TokenStorage.saveAccessToken(data.accessToken);
+      await TokenStorage.saveRefreshToken(data.refreshToken);
+      await userStorageService.saveUser(data.userModel!);
+      startScheduledTokenRefresh();
+      await localeProvider.syncLanguageToBackend();
+
+      return (response: response, wsConnected: true);
+    }
+
+    return (response: response, wsConnected: false);
+  }
+
+  Future<ApiResponse<void>> logout() async {
+    try {
+      await onBeforeLogout?.call();
+      await callRingtoneService.stopRinging();
+      connectionManager.setKeepAliveForActiveCall(false);
+      // Xóa FCM token TRƯỚC khi gọi API logout: sau logout access token bị blacklist nên
+      // DELETE /devices/fcm-token sẽ bị 401. (Backend cũng tự xoá FCM token theo deviceId
+      // khi logout; bước này dọn cả token cũ đăng ký trước khi có cột device_id.)
+      await FirebaseService.clearTokenOnServer();
+      return await authRepo.logout();
+    } catch (e) {
+      return ApiResponse(
+        success: false,
+        message: 'Logout failed but cleared local data',
+        data: null,
+      );
+    } finally {
+      stopScheduledTokenRefresh();
+      // Xóa token
+      await TokenStorage.clearAuth();
+      userStorageService.clear();
+      await chatLocalStorageService.clearAll();
+      connectionManager.stopAllAndCleanUp();
+    }
+  }
+
+  static Timer? _scheduledRefreshTimer;
+
+  /// Bắt đầu cơ chế scheduled định kỳ làm mới access token mỗi 28 phút
+  void startScheduledTokenRefresh() {
+    _scheduledRefreshTimer?.cancel();
+    _scheduledRefreshTimer = Timer.periodic(const Duration(minutes: 28), (timer) async {
+      final rt = await TokenStorage.getRefreshToken();
+      if (rt != null && rt.isNotEmpty) {
+        debugPrint('⏰ [AuthService] Scheduled 28-minute token refresh triggered...');
+        final success = await refreshToken(rt);
+        if (success) {
+          debugPrint('🟢 [AuthService] Scheduled 28-minute token refresh succeeded');
+        } else {
+          debugPrint('🔴 [AuthService] Scheduled 28-minute token refresh failed');
+        }
+      } else {
+        timer.cancel();
+      }
+    });
+    debugPrint('⏰ [AuthService] Scheduled token refresh initialized (every 28 minutes)');
+  }
+
+  /// Dừng scheduled timer khi logout
+  void stopScheduledTokenRefresh() {
+    _scheduledRefreshTimer?.cancel();
+    _scheduledRefreshTimer = null;
+  }
+
+  /// Refresh access token with refresh token in secured storage
+  Future<bool> refreshToken(String refreshToken) async {
+    try {
+      final response = await authRepo.refreshToken(refreshToken);
+      if (response.success && response.data != null) {
+        await TokenStorage.saveAccessToken(response.data!.accessToken);
+        await TokenStorage.saveRefreshToken(response.data!.refreshToken);
+        return true;
+      }
+      return false;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  /// Get current user profile and update local storage
+  Future<UserModel?> getMe() async {
+    try {
+      final response = await authRepo.getMe();
+      if (response.success && response.data != null) {
+        await userStorageService.saveUser(response.data!);
+        return response.data;
+      }
+    } catch (e) {
+      // Ignore errors, return null
+    }
+    return null;
+  }
+
+  /// Register step 1: Send OTP with email
+  Future<ApiResponse<void>> sendOtpRegister(String email, ERole role) async {
+    return await authRepo.sendOtpRegister(email, role);
+  }
+
+  /// Register step 2: Verify OTP with email
+  Future<ApiResponse<void>> verifyOtpRegister(String email, String otp, ERole role) async {
+    return await authRepo.verifyOtpRegister(email, otp, role);
+  }
+
+  /// Register step 3: Create account successfully with registrationStatus = incomplete
+  Future<ApiResponse<TokenModel>> register(
+    String email,
+    String password,
+    String confirmPassword,
+    String deviceId,
+    String deviceName,
+    String platform,
+    ERole role,
+  ) async {
+    final response = await authRepo.register(
+      email,
+      password,
+      confirmPassword,
+      deviceId,
+      deviceName,
+      platform,
+      role,
+    );
+    final data = response.data;
+
+    if (response.success && data != null) {
+      await TokenStorage.saveAccessToken(data.accessToken);
+      await TokenStorage.saveRefreshToken(data.refreshToken);
+      await userStorageService.saveUser(data.userModel!);
+      await localeProvider.syncLanguageToBackend();
+    }
+
+    return response;
+  }
+
+  /// Register step 4: Fill SDT and fullname to complete create account
+  Future<ApiResponse<UserModel>> updateProfile(
+    String fullName,
+    String phone,
+    String? avatarUrl, [
+    String? dateOfBirth,
+    String? gender,
+  ]) async {
+    final response = await authRepo.updateProfile(
+      fullName,
+      phone,
+      avatarUrl,
+      dateOfBirth,
+      gender,
+    );
+    final data = response.data;
+
+    if (response.success && data != null) {
+      await userStorageService.saveUser(data);
+    }
+
+    return response;
+  }
+
+  /// Forgot password step 1: Send OTP to email
+  Future<ApiResponse<void>> sendOtpForgotPassword(String email) async {
+    return await authRepo.sendOtpForgotPassword(email);
+  }
+
+  /// Forgot password step 2: Reset password
+  Future<ApiResponse<void>> resetPassword(
+    String email,
+    String otp,
+    String newPassword,
+    String confirmPassword,
+    ERole role,
+  ) async {
+    return await authRepo.resetPassword(
+      email,
+      otp,
+      newPassword,
+      confirmPassword,
+      role,
+    );
+  }
+
+  /// Change password
+  Future<ApiResponse<void>> changePassword(
+    String currentPassword,
+    String newPassword,
+    String confirmPassword,
+  ) async {
+    return await authRepo.changePassword(
+      currentPassword,
+      newPassword,
+      confirmPassword,
+    );
+  }
+
+  Future<ApiResponse<List<DeviceSessionModel>>> getActiveSessions(
+    String currentDeviceId,
+  ) {
+    return authRepo.getActiveSessions(currentDeviceId);
+  }
+
+  Future<ApiResponse<void>> revokeSession(String sessionId) {
+    return authRepo.revokeSession(sessionId);
+  }
+
+  Future<ApiResponse<void>> revokeAllOtherSessions(String currentDeviceId) {
+    return authRepo.revokeAllOtherSessions(currentDeviceId);
+  }
+}
+
+final authService = AuthService(
+  authRepo: useMock ? AuthRepoMock() : AuthRepoApi(),
+);

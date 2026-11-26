@@ -1,6 +1,18 @@
-import 'package:smartspace_client/core/api/api_response.dart';
-import 'package:smartspace_client/core/constants/use_mock.dart';
+import 'package:smartspace_client/features/reports/models/report_density_model.dart';
+import 'package:mobile_shared/core/api/api_response.dart';
+import 'package:mobile_shared/core/constants/use_mock.dart';
+import 'package:mobile_shared/features/map/models/map_bounds.dart';
+import 'package:smartspace_client/features/reports/models/feed_sort.dart';
+import 'package:smartspace_client/features/reports/models/report_date_range.dart';
+import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
+import 'package:smartspace_client/features/reports/models/map_reports_result.dart';
+import 'package:smartspace_client/features/reports/models/my_reports_page_model.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
+import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
+import 'package:smartspace_client/features/reports/models/report_dto.dart';
+import 'package:smartspace_client/features/reports/models/nearby_reports_alert_model.dart';
+import 'package:smartspace_client/features/reports/models/report_feed_model.dart';
+import 'package:smartspace_client/features/reports/models/report_category_model.dart';
 import 'package:smartspace_client/features/reports/repositories/report_repo.dart';
 import 'package:smartspace_client/features/reports/repositories/report_repo_api.dart';
 import 'package:smartspace_client/features/reports/repositories/report_repo_mock.dart';
@@ -10,12 +22,136 @@ class ReportService {
 
   const ReportService({required this.reportRepo});
 
+  Future<ApiResponse<List<ReportCategoryModel>>> getCategories() async {
+    return await reportRepo.getCategories();
+  }
+
   Future<ApiResponse<List<ReportModel>>> getDangerousReports() async {
     return await reportRepo.getDangerousReports();
   }
 
   Future<ApiResponse<List<ReportModel>>> getRecentReports() async {
     return await reportRepo.getRecentReports();
+  }
+
+  Future<ApiResponse<MyReportsPage>> getMyReports({
+    String? status,
+    EReportSeverity? severity,
+    ReportDateRange? dateRange,
+    String? search,
+    bool overdueOnly = false,
+    int page = 1,
+    int size = 20,
+  }) async {
+    return await reportRepo.getMyReports(
+      status: status,
+      severity: severity,
+      dateRange: dateRange,
+      search: search,
+      overdueOnly: overdueOnly,
+      page: page,
+      size: size,
+    );
+  }
+
+  Future<ApiResponse<MyReportsSummary>> getMyReportsSummary() async {
+    return await reportRepo.getMyReportsSummary();
+  }
+
+  Future<ApiResponse<ReportModel>> createReport(ReportDto reportDto) async {
+    return await reportRepo.createReport(reportDto);
+  }
+
+  Future<ApiResponse<ReportDetailModel>> getReportDetail(String reportId) async {
+    return await reportRepo.getReportDetail(reportId);
+  }
+
+  Future<ApiResponse<ReportFeedPage>> getFeed({
+    String? status,
+    EReportSeverity? severity,
+    ReportDateRange? dateRange,
+    String? search,
+    FeedSort sort = FeedSort.latest,
+    int page = 1,
+    int size = 10,
+    double? lat,
+    double? lng,
+  }) {
+    return reportRepo.getFeed(
+      status: status,
+      severity: severity,
+      dateRange: dateRange,
+      search: search,
+      sort: sort,
+      page: page,
+      size: size,
+      lat: lat,
+      lng: lng,
+    );
+  }
+
+  Future<ApiResponse<MapReportsResult>> getReportsInBounds(
+    MapBounds bounds, {
+    MapReportFilter filter = MapReportFilter.all,
+    String? timeframe,
+    int limit = 300,
+  }) {
+    return reportRepo.getReportsInBounds(bounds, filter: filter, timeframe: timeframe, limit: limit);
+  }
+
+  Future<ApiResponse<ReportDetailModel>> submitReview(
+    String reportId, {
+    required bool isResolved,
+    int? rating,
+    String? reason,
+    List<String>? imageUrls,
+  }) {
+    return reportRepo.submitReview(
+      reportId,
+      isResolved: isResolved,
+      rating: rating,
+      reason: reason,
+      imageUrls: imageUrls,
+    );
+  }
+
+  Future<ApiResponse<NearbyReportsAlertResponse>> getNearbyAlerts({
+    required double lat,
+    required double lng,
+    double radius = 200.0,
+    bool notify = true,
+  }) {
+    return reportRepo.getNearbyAlerts(
+      lat: lat,
+      lng: lng,
+      radius: radius,
+      notify: notify,
+    );
+  }
+
+  Future<ApiResponse<ReportDetailModel>> updateReport(String reportId, ReportDto reportDto) async {
+    return await reportRepo.updateReport(reportId, reportDto);
+  }
+
+  Future<ApiResponse<ReportDetailModel>> cancelReport(String reportId) async {
+    return await reportRepo.cancelReport(reportId);
+  }
+  Future<ApiResponse<ReportDensityResult>> getReportDensity({
+    required double north,
+    required double south,
+    required double east,
+    required double west,
+    double zoom = 14.0,
+    String? timeframe,
+  }) {
+    return reportRepo.getReportDensity(
+      north: north,
+      south: south,
+      east: east,
+      west: west,
+      zoom: zoom,
+      timeframe: timeframe,
+    );
   }
 }
 

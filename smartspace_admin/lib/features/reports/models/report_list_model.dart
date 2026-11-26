@@ -1,0 +1,192 @@
+import 'package:mobile_shared/core/utils/report_deadline_helper.dart';
+
+class ReportListItem {
+  final String id;
+  final String title;
+  final String status;
+  final String? severity;
+  final DateTime? createdAt;
+  final String? imageUrl;
+  final String? address;
+  final String? assignedStaffName;
+  final String? assignedStaffAvatarUrl;
+  final String? userName;
+  final String? userEmail;
+  final bool isAnonymous;
+  final bool? isReviewResolved;
+  final DateTime? deadline;
+  final DateTime? resolvedAt;
+  final bool? serverIsOverdue;
+  final int? serverRemainingDays;
+  final bool isAtRisk;
+  final bool isBottleneck;
+  final int? elapsedMinutes;
+
+  const ReportListItem({
+    required this.id,
+    required this.title,
+    required this.status,
+    this.severity,
+    this.createdAt,
+    this.imageUrl,
+    this.address,
+    this.assignedStaffName,
+    this.assignedStaffAvatarUrl,
+    this.userName,
+    this.userEmail,
+    this.isAnonymous = false,
+    this.isReviewResolved,
+    this.deadline,
+    this.resolvedAt,
+    this.serverIsOverdue,
+    this.serverRemainingDays,
+    this.isAtRisk = false,
+    this.isBottleneck = false,
+    this.elapsedMinutes,
+  });
+
+  bool get isOverdue => ReportDeadlineHelper.isOverdue(
+        status: status,
+        deadline: deadline,
+        resolvedAt: resolvedAt,
+        serverIsOverdue: serverIsOverdue,
+      );
+
+  int? get remainingDays => ReportDeadlineHelper.remainingDays(
+        status: status,
+        deadline: deadline,
+        resolvedAt: resolvedAt,
+        serverIsOverdue: serverIsOverdue,
+        serverRemainingDays: serverRemainingDays,
+      );
+
+  bool get isOverdueActive => isOverdue;
+
+  factory ReportListItem.fromJson(Map<String, dynamic> json) {
+    DateTime? createdAt;
+    final raw = json['createdAt'] ?? json['created_at'];
+    if (raw != null) createdAt = DateTime.tryParse(raw.toString());
+
+    DateTime? deadline;
+    final rawDeadline = json['deadline'] ?? json['report_deadline'];
+    if (rawDeadline != null) deadline = DateTime.tryParse(rawDeadline.toString());
+
+    DateTime? resolvedAt;
+    final rawResolvedAt = json['resolvedAt'] ?? json['resolved_at'];
+    if (rawResolvedAt != null) {
+      resolvedAt = DateTime.tryParse(rawResolvedAt.toString());
+    }
+
+    String? imgUrl = json['imageUrl']?.toString() ?? json['image_url']?.toString();
+    if (imgUrl == null || imgUrl.isEmpty) {
+      final imgUrls = json['imageUrls'] ?? json['image_urls'] ?? json['images'];
+      if (imgUrls is List && imgUrls.isNotEmpty) {
+        imgUrl = imgUrls.first?.toString();
+      } else if (imgUrls is String && imgUrls.isNotEmpty) {
+        final cleaned = imgUrls.replaceAll(RegExp(r'[\[\]" ]'), '');
+        if (cleaned.isNotEmpty) {
+          imgUrl = cleaned.split(',').first.trim();
+        }
+      }
+    }
+
+    return ReportListItem(
+      id: json['id']?.toString() ?? '',
+      title: json['title']?.toString() ?? '',
+      status: (json['status']?.toString() ?? 'pending').toLowerCase(),
+      severity: json['severity']?.toString().toLowerCase(),
+      createdAt: createdAt,
+      imageUrl: imgUrl,
+      address: json['address']?.toString(),
+      assignedStaffName: (json['assignedStaffName'] ?? json['assigned_staff_name'])?.toString(),
+      assignedStaffAvatarUrl: (json['assignedStaffAvatarUrl'] ?? json['assigned_staff_avatar_url'])?.toString(),
+      userName: json['userName']?.toString() ?? json['user_name']?.toString(),
+      userEmail: json['userEmail']?.toString() ?? json['user_email']?.toString(),
+      isAnonymous: (json['is_anonymous'] ?? json['isAnonymous']) as bool? ?? false,
+      isReviewResolved: json['isReviewResolved'] as bool? ?? json['is_review_resolved'] as bool?,
+      deadline: deadline,
+      resolvedAt: resolvedAt,
+      serverIsOverdue: (json['is_overdue'] ?? json['isOverdue']) as bool?,
+      serverRemainingDays:
+          ((json['remaining_days'] ?? json['remainingDays']) as num?)?.toInt(),
+      isAtRisk: (json['isAtRisk'] as bool?) ?? (json['atRisk'] as bool?) ?? false,
+      isBottleneck: (json['isBottleneck'] as bool?) ?? (json['bottleneck'] as bool?) ?? false,
+      elapsedMinutes: (json['elapsedMinutes'] as num?)?.toInt(),
+    );
+  }
+
+  ReportListItem copyWith({
+    String? status,
+    bool? isAnonymous,
+    bool? isReviewResolved,
+    DateTime? deadline,
+    DateTime? resolvedAt,
+    bool? serverIsOverdue,
+    int? serverRemainingDays,
+    bool? isAtRisk,
+    bool? isBottleneck,
+    int? elapsedMinutes,
+  }) =>
+      ReportListItem(
+        id: id,
+        title: title,
+        status: status ?? this.status,
+        severity: severity,
+        createdAt: createdAt,
+        imageUrl: imageUrl,
+        address: address,
+        assignedStaffName: assignedStaffName,
+        assignedStaffAvatarUrl: assignedStaffAvatarUrl,
+        userName: userName,
+        userEmail: userEmail,
+        isAnonymous: isAnonymous ?? this.isAnonymous,
+        isReviewResolved: isReviewResolved ?? this.isReviewResolved,
+        deadline: deadline ?? this.deadline,
+        resolvedAt: resolvedAt ?? this.resolvedAt,
+        serverIsOverdue: serverIsOverdue ?? this.serverIsOverdue,
+        serverRemainingDays: serverRemainingDays ?? this.serverRemainingDays,
+        isAtRisk: isAtRisk ?? this.isAtRisk,
+        isBottleneck: isBottleneck ?? this.isBottleneck,
+        elapsedMinutes: elapsedMinutes ?? this.elapsedMinutes,
+      );
+}
+
+class ReportListData {
+  final List<ReportListItem> items;
+  final int currentPage;
+  final int totalPages;
+  final int totalElements;
+  final int pageSize;
+
+  const ReportListData({
+    required this.items,
+    required this.currentPage,
+    required this.totalPages,
+    required this.totalElements,
+    required this.pageSize,
+  });
+
+  bool get hasNextPage => currentPage < totalPages;
+
+  static const empty = ReportListData(
+    items: [],
+    currentPage: 1,
+    totalPages: 1,
+    totalElements: 0,
+    pageSize: 20,
+  );
+
+  factory ReportListData.fromJson(Map<String, dynamic> json) {
+    final reports = json['reports'] as Map<String, dynamic>? ?? {};
+    final content = (reports['content'] as List<dynamic>? ?? [])
+        .map((e) => ReportListItem.fromJson(e as Map<String, dynamic>))
+        .toList();
+    return ReportListData(
+      items: content,
+      currentPage: (reports['currentPage'] as num?)?.toInt() ?? 1,
+      totalPages: (reports['totalPages'] as num?)?.toInt() ?? 1,
+      totalElements: (reports['totalElements'] as num?)?.toInt() ?? 0,
+      pageSize: (reports['pageSize'] as num?)?.toInt() ?? 20,
+    );
+  }
+}

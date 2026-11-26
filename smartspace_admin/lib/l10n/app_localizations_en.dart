@@ -196,7 +196,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get pleaseEnterPassword => 'Please enter password';
 
   @override
-  String get pleaseEnterFullName => 'Please enter full name';
+  String get pleaseEnterFullName => 'Please enter your full name';
 
   @override
   String get pleaseEnterPhoneNumber => 'Please enter phone number';
@@ -224,6 +224,60 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get pleaseEnterConfirmPassword => 'Please enter confirm password';
+
+  @override
+  String get backToLogin => 'Back to Login';
+
+  @override
+  String get adminPortalBadge => 'Civic Management & Operations';
+
+  @override
+  String get adminPortalSubtitle =>
+      'Centralized administration for municipal infrastructure, public reports, and community operations.';
+
+  @override
+  String get adminFeatureRealtime => 'Real-time Monitoring';
+
+  @override
+  String get adminFeatureRealtimeDesc =>
+      'Live tracking of municipal incidents, sensor alerts, and citizen feedback.';
+
+  @override
+  String get adminFeatureCoordination => 'Rapid Incident Response';
+
+  @override
+  String get adminFeatureCoordinationDesc =>
+      'Seamless task assignment and progress auditing across operational staff.';
+
+  @override
+  String get adminFeatureSecurity => 'Enterprise Access Control';
+
+  @override
+  String get adminFeatureSecurityDesc =>
+      'Role-based authorization and encrypted administrative session management.';
+
+  @override
+  String get forgotPasswordHeroTitle => 'Account Security Recovery';
+
+  @override
+  String get forgotPasswordHeroSubtitle =>
+      'Secure two-step verification to restore your administrative credentials.';
+
+  @override
+  String get stepEmailVerification =>
+      '1. Request verification code via registered email';
+
+  @override
+  String get stepPasswordReset =>
+      '2. Verify OTP and establish a new secure password';
+
+  @override
+  String get forgotPasswordHelpNote =>
+      'If you no longer have access to this email, contact system administrator.';
+
+  @override
+  String get systemSecureNotice =>
+      'SmartSpace Protected Administrative Environment';
 
   @override
   String get search => 'Search';
@@ -310,6 +364,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sessionExpired => 'Session expired';
+
+  @override
+  String get sessionRevokedOnThisDevice =>
+      'You have been signed out of this device from another device.';
 
   @override
   String get settingsTitle => 'Settings';
@@ -405,4 +463,3036 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get passwordReqSpecial =>
       'Include at least one special character !@#\$^()_';
+
+  @override
+  String get users => 'Users';
+
+  @override
+  String get staff => 'Staff';
+
+  @override
+  String get admins => 'Admins';
+
+  @override
+  String get issues => 'Issues';
+
+  @override
+  String get needsYourAttention => 'Needs Your Attention';
+
+  @override
+  String get recentActivity => 'Recent Activity';
+
+  @override
+  String get all => 'All';
+
+  @override
+  String get pendingConfirmation => 'Pending Confirmation';
+
+  @override
+  String get inProgress => 'In Progress';
+
+  @override
+  String get resolved => 'Resolved';
+
+  @override
+  String get noRecentActivity => 'No recent activity';
+
+  @override
+  String get adminOverview => 'Admin Overview';
+
+  @override
+  String get noPendingReports => 'No pending reports';
+
+  @override
+  String pendingReportsAttention(int count) {
+    return 'You have $count pending report(s) that need confirmation.';
+  }
+
+  @override
+  String get newBadge => 'New';
+
+  @override
+  String get actionView => 'View';
+
+  @override
+  String get newReportToastTitle => 'New report submitted';
+
+  @override
+  String get pendingIssues => 'Pending';
+
+  @override
+  String get processingIssues => 'Processing';
+
+  @override
+  String get viewAllReports => 'View all';
+
+  @override
+  String get newReportsSectionTitle => 'Newly Submitted Reports';
+
+  @override
+  String get noAddress => 'No address provided';
+
+  @override
+  String get reportDetailTitle => 'Report Details';
+
+  @override
+  String get reportInfoSection => 'Report Information';
+
+  @override
+  String get reporterInfoSection => 'Reporter';
+
+  @override
+  String get anonymousUser => 'Anonymous User';
+
+  @override
+  String get anonymousDescription =>
+      'The user chose to remain anonymous when submitting this report';
+
+  @override
+  String get locationSection => 'Incident Location';
+
+  @override
+  String get openInGoogleMaps => 'Open in Google Maps';
+
+  @override
+  String get assignStaffSection => 'Assign Staff';
+
+  @override
+  String get selectStaffPrompt => 'Select staff to process';
+
+  @override
+  String get noStaffAvailable => 'No staff found in the system';
+
+  @override
+  String get severitySection => 'Severity Level';
+
+  @override
+  String get severityLow => 'Low';
+
+  @override
+  String get severityMedium => 'Medium';
+
+  @override
+  String get severityHigh => 'High';
+
+  @override
+  String get severityCritical => 'Critical';
+
+  @override
+  String get processReportButton => 'Process Report';
+
+  @override
+  String get assignSuccessMessage =>
+      'Staff assigned and processing started successfully!';
+
+  @override
+  String get assignFailedMessage =>
+      'Failed to process report, please try again.';
+
+  @override
+  String get assignedStaffInfo => 'Assigned Staff';
+
+  @override
+  String get createdAtLabel => 'Submitted At';
+
+  @override
+  String get statusLabel => 'Status';
+
+  @override
+  String get cannotOpenMaps => 'Cannot open map application';
+
+  @override
+  String get changeStaff => 'Change staff';
+
+  @override
+  String get noImageAvailable => 'No image available';
+
+  @override
+  String get anonymousAdminNotice =>
+      'Anonymous report (Visible only to administrators)';
+
+  @override
+  String get anonymousUserNote => 'The user posted this report anonymously';
+
+  @override
+  String get manageReports => 'Manage Reports';
+
+  @override
+  String get manageUsers => 'Manage Users';
+
+  @override
+  String get manageStaffs => 'Manage Staffs';
+
+  @override
+  String get spaceMap => 'Space Map';
+
+  @override
+  String get addStaff => 'Add Staff';
+
+  @override
+  String get activeStatus => 'Active';
+
+  @override
+  String get blockedStatus => 'Blocked';
+
+  @override
+  String get staffMember => 'Staff';
+
+  @override
+  String get processingStatus => 'Processing';
+
+  @override
+  String get viewDetails => 'View Details';
+
+  @override
+  String get staffNotFound => 'Staff not found';
+
+  @override
+  String get filterByStatus => 'Status';
+
+  @override
+  String get addNewStaff => 'Add new staff';
+
+  @override
+  String get create => 'Create';
+
+  @override
+  String get addStaffSuccess => 'Staff added successfully';
+
+  @override
+  String get totalStaff => 'Total Staff';
+
+  @override
+  String get phoneNumber => 'Phone';
+
+  @override
+  String get statusTitle => 'Status';
+
+  @override
+  String get noStaffInSystem => 'No staff in system';
+
+  @override
+  String get noStaffFound => 'No matching staff found';
+
+  @override
+  String get lockAccount => 'Lock Account';
+
+  @override
+  String get unlockAccount => 'Unlock Account';
+
+  @override
+  String get lockAccountConfirm =>
+      'Are you sure you want to lock this staff account?';
+
+  @override
+  String get unlockAccountConfirm =>
+      'Are you sure you want to unlock this staff account?';
+
+  @override
+  String get updateStatusSuccess => 'Status updated successfully';
+
+  @override
+  String get updateStatusFailed => 'Failed to update status';
+
+  @override
+  String processingReports(int count) {
+    return '$count reports processing';
+  }
+
+  @override
+  String get dateOfBirth => 'Date of Birth';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get genderMale => 'Male';
+
+  @override
+  String get genderFemale => 'Female';
+
+  @override
+  String get genderOther => 'Other';
+
+  @override
+  String get createStaff => 'Create Staff';
+
+  @override
+  String get uploadAvatar => 'Upload Avatar';
+
+  @override
+  String get changeAvatar => 'Change Photo';
+
+  @override
+  String get avatarSizeError => 'Image must be less than 5MB';
+
+  @override
+  String get selectDate => 'Select date';
+
+  @override
+  String get selectGender => 'Select gender';
+
+  @override
+  String get addStaffFailed => 'Failed to add staff';
+
+  @override
+  String get editStaff => 'Edit Staff';
+
+  @override
+  String get updateStaff => 'Update';
+
+  @override
+  String get updateStaffSuccess => 'Staff updated successfully';
+
+  @override
+  String get updateStaffFailed => 'Failed to update staff';
+
+  @override
+  String get staffEmailNotEditable => 'Login email cannot be changed';
+
+  @override
+  String get editInfo => 'Edit';
+
+  @override
+  String get staffStatusChart => 'Staff Status';
+
+  @override
+  String get workloadChart => 'Workload Distribution';
+
+  @override
+  String get activeStaff => 'Staff';
+
+  @override
+  String get blockedStaff => 'Blocked';
+
+  @override
+  String get reportsProcessing => 'reports processing';
+
+  @override
+  String get noWorkloadData => 'No staff currently processing reports';
+
+  @override
+  String get reportDashboard => 'Report Dashboard';
+
+  @override
+  String get totalReports => 'Total Reports';
+
+  @override
+  String get pendingReports => 'Pending';
+
+  @override
+  String get processingReportsLabel => 'Processing';
+
+  @override
+  String get resolvedReports => 'Resolved';
+
+  @override
+  String get rejectedReports => 'Rejected';
+
+  @override
+  String get reportTrend => 'Report Trend';
+
+  @override
+  String get daily => 'Daily';
+
+  @override
+  String get weekly => 'Weekly';
+
+  @override
+  String get monthly => 'Monthly';
+
+  @override
+  String get severityDistribution => 'Severity Distribution';
+
+  @override
+  String get noData => 'No data available';
+
+  @override
+  String get reportList => 'Report List';
+
+  @override
+  String get tableView => 'Table';
+
+  @override
+  String get kanbanView => 'Kanban';
+
+  @override
+  String get filterBySeverity => 'Severity';
+
+  @override
+  String get filterByAssignee => 'Assignee';
+
+  @override
+  String get selectDateRange => 'Select Date';
+
+  @override
+  String get clearFilters => 'Clear Filters';
+
+  @override
+  String get reporter => 'Reporter';
+
+  @override
+  String get reportIdShort => 'ID';
+
+  @override
+  String get noReportsFound => 'No reports found';
+
+  @override
+  String get loadMore => 'Load More';
+
+  @override
+  String get invalidTransition => 'Invalid status transition';
+
+  @override
+  String get reportTitle => 'Title';
+
+  @override
+  String get severityLabel => 'Severity';
+
+  @override
+  String get assignee => 'Assignee';
+
+  @override
+  String get createdDate => 'Created Date';
+
+  @override
+  String get pendingStatus => 'Pending';
+
+  @override
+  String get editProfile => 'Edit Profile';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get profileUpdateSuccess => 'Profile updated successfully';
+
+  @override
+  String get profileUpdateFailed => 'Failed to update profile';
+
+  @override
+  String get mapFilterTitle => 'Filter Reports';
+
+  @override
+  String get mapHeatmapMode => 'Heatmap';
+
+  @override
+  String get mapMarkerMode => 'Markers';
+
+  @override
+  String mapClusterCount(int count) {
+    return '$count reports';
+  }
+
+  @override
+  String get mapStaffTracking => 'Staff Tracking';
+
+  @override
+  String mapNewReportToast(String address) {
+    return 'New report at $address';
+  }
+
+  @override
+  String get mapAssignStaff => 'Assign Staff';
+
+  @override
+  String get mapNearestStaff => 'Nearest Staff';
+
+  @override
+  String get mapViewDetail => 'View Detail';
+
+  @override
+  String get mapNoReportsInArea => 'No reports in this area';
+
+  @override
+  String get mapFilterStatus => 'Status';
+
+  @override
+  String get mapFilterSeverity => 'Severity';
+
+  @override
+  String get mapFilterDateRange => 'Date Range';
+
+  @override
+  String get mapFilterAssignee => 'Assignee';
+
+  @override
+  String get mapFilterAll => 'All';
+
+  @override
+  String get mapFilterClear => 'Clear Filters';
+
+  @override
+  String get mapFilterApply => 'Apply';
+
+  @override
+  String get mapLegendTitle => 'Legend';
+
+  @override
+  String get mapRefresh => 'Refresh';
+
+  @override
+  String get mapMyLocation => 'My Location';
+
+  @override
+  String get minuteAgo => 'min ago';
+
+  @override
+  String get hourAgo => 'h ago';
+
+  @override
+  String get dayAgo => 'days ago';
+
+  @override
+  String get routeHome => 'Home';
+
+  @override
+  String get routeSettings => 'Settings';
+
+  @override
+  String get routeEditProfile => 'Edit Profile';
+
+  @override
+  String get routeChangePassword => 'Change Password';
+
+  @override
+  String get routeStaffManagement => 'Manage Staffs';
+
+  @override
+  String get routeReportDashboard => 'Report Dashboard';
+
+  @override
+  String get routeReportList => 'Report List';
+
+  @override
+  String get routeSpaceMap => 'Space Map';
+
+  @override
+  String get mapQuickAssignTitle => 'Quick Assign';
+
+  @override
+  String get mapSelectSeverity => 'Select severity';
+
+  @override
+  String get routeNotifications => 'Notifications';
+
+  @override
+  String get emptyNotification => 'No notifications';
+
+  @override
+  String get justNow => 'Just now';
+
+  @override
+  String get markAllAsRead => 'Mark all as read';
+
+  @override
+  String get unassignedStaff => 'Unassigned';
+
+  @override
+  String get assignedTo => 'Assigned to';
+
+  @override
+  String get routePositionManagement => 'Position Management';
+
+  @override
+  String get managePositions => 'Manage Positions';
+
+  @override
+  String get positionLabel => 'Position';
+
+  @override
+  String get positionName => 'Position name';
+
+  @override
+  String get positionCode => 'Position code';
+
+  @override
+  String get positionDescription => 'Description';
+
+  @override
+  String get addPosition => 'Add position';
+
+  @override
+  String get editPosition => 'Edit position';
+
+  @override
+  String get deletePosition => 'Delete position';
+
+  @override
+  String get deletePositionConfirm =>
+      'Are you sure you want to delete this position?';
+
+  @override
+  String get positionInactive => 'Inactive';
+
+  @override
+  String get positionActiveLabel => 'Active';
+
+  @override
+  String get noPosition => 'No position';
+
+  @override
+  String get selectPosition => 'Select position';
+
+  @override
+  String get filterByPosition => 'Filter by position';
+
+  @override
+  String get allPositions => 'All positions';
+
+  @override
+  String get emptyPositionList => 'No positions yet';
+
+  @override
+  String positionStaffCount(int count) {
+    return '$count staff';
+  }
+
+  @override
+  String get positionSaveSuccess => 'Position saved successfully';
+
+  @override
+  String get positionDeleteSuccess => 'Position deleted successfully';
+
+  @override
+  String get positionActionFailed =>
+      'Unable to complete the action. Please try again';
+
+  @override
+  String get positionNameRequired => 'Please enter a position name';
+
+  @override
+  String get positionCodeRequired => 'Please enter a position code';
+
+  @override
+  String get totalPositions => 'Total positions';
+
+  @override
+  String get positionAssignedStaff => 'Assigned staff';
+
+  @override
+  String get actionsColumn => 'Actions';
+
+  @override
+  String get positionCodeHint => 'e.g. ELECTRICIAN, PLUMBER';
+
+  @override
+  String get loggedInDevices => 'Logged in devices';
+
+  @override
+  String get thisDevice => 'This device';
+
+  @override
+  String get activeNow => 'Active now';
+
+  @override
+  String get logoutDevice => 'Logout';
+
+  @override
+  String get logoutDeviceConfirmTitle => 'Logout from device?';
+
+  @override
+  String logoutDeviceConfirmMessage(String deviceName) {
+    return 'The session on \"$deviceName\" will be ended.';
+  }
+
+  @override
+  String get logoutAllOtherDevices => 'Logout all other devices';
+
+  @override
+  String get logoutAllConfirmTitle => 'Logout all other devices?';
+
+  @override
+  String get logoutAllConfirmMessage =>
+      'All sessions except this device will be ended.';
+
+  @override
+  String get noOtherDevices => 'No other devices logged in.';
+
+  @override
+  String get deviceLogoutSuccess => 'Device logged out.';
+
+  @override
+  String get allDevicesLogoutSuccess => 'All other devices logged out.';
+
+  @override
+  String get routeManageDevices => 'Manage Devices';
+
+  @override
+  String get routeUserManagement => 'User Management';
+
+  @override
+  String get totalUsers => 'Total users';
+
+  @override
+  String get newUsers30Days => 'New users (30 days)';
+
+  @override
+  String get activeReporters30Days => 'Contributors (30 days)';
+
+  @override
+  String get reports30Days => 'Reports (30 days)';
+
+  @override
+  String percentOfUsers(String percent) {
+    return '$percent% of all users';
+  }
+
+  @override
+  String changeVsPrevious30Days(String change) {
+    return '$change vs previous 30 days';
+  }
+
+  @override
+  String get noPreviousPeriodData => 'No data for previous 30 days';
+
+  @override
+  String get registrationTrend => 'New registrations';
+
+  @override
+  String newUsersCount(int count) {
+    return '$count new users';
+  }
+
+  @override
+  String weekOf(String date) {
+    return 'Week of $date';
+  }
+
+  @override
+  String get topContributors => 'Top contributors';
+
+  @override
+  String get anonymousReportsExcluded => 'Anonymous reports are not counted';
+
+  @override
+  String reportCountLabel(int count) {
+    return '$count reports';
+  }
+
+  @override
+  String get reportsColumn => 'Reports';
+
+  @override
+  String get joinedDate => 'Joined';
+
+  @override
+  String joinedOn(String date) {
+    return 'Joined $date';
+  }
+
+  @override
+  String get sortBy => 'Sort by';
+
+  @override
+  String get sortNewest => 'Newest';
+
+  @override
+  String get sortOldest => 'Oldest';
+
+  @override
+  String get sortByName => 'Name (A–Z)';
+
+  @override
+  String get searchUsersHint => 'Search by name, email or phone';
+
+  @override
+  String get noUsersInSystem => 'No users yet';
+
+  @override
+  String get noUsersFound => 'No users match your search';
+
+  @override
+  String get userDetailTitle => 'User details';
+
+  @override
+  String get reportActivity => 'Report activity';
+
+  @override
+  String get noPublicReports => 'This user has no public reports yet';
+
+  @override
+  String get notProvided => 'Not provided';
+
+  @override
+  String get allUsersLoaded => 'All users loaded';
+
+  @override
+  String get loadMoreFailed => 'Couldn\'t load more users';
+
+  @override
+  String get statistics => 'Statistics';
+
+  @override
+  String get statisticsLoadFailed => 'Couldn\'t load statistics';
+
+  @override
+  String get closeAction => 'Close';
+
+  @override
+  String paginationSummary(int from, int to, int total) {
+    return '$from–$to of $total';
+  }
+
+  @override
+  String staffActiveBlocked(int active, int blocked) {
+    return '$active active · $blocked blocked';
+  }
+
+  @override
+  String get reportsInProgress => 'Reports in progress';
+
+  @override
+  String avgPerActiveStaff(String value) {
+    return 'Avg. $value per active staff';
+  }
+
+  @override
+  String get resolved30Days => 'Resolved (30 days)';
+
+  @override
+  String get avgResolutionTime30Days => 'Avg. resolution time (30 days)';
+
+  @override
+  String get notEnoughData => 'Not enough data yet';
+
+  @override
+  String durationMinutes(String value) {
+    return '$value min';
+  }
+
+  @override
+  String durationHours(String value) {
+    return '$value h';
+  }
+
+  @override
+  String durationDays(String value) {
+    return '$value days';
+  }
+
+  @override
+  String get processingFlow => 'Processing flow';
+
+  @override
+  String get assignedSeries => 'Assigned';
+
+  @override
+  String get resolvedSeries => 'Resolved';
+
+  @override
+  String assignedReportsCount(int count) {
+    return '$count assigned';
+  }
+
+  @override
+  String resolvedReportsCount(int count) {
+    return '$count resolved';
+  }
+
+  @override
+  String get workloadSubtitle => 'Reports in progress per staff';
+
+  @override
+  String resolvedLast30Days(int count) {
+    return '$count resolved in the last 30 days';
+  }
+
+  @override
+  String get resolutionInfo => 'Resolution Information';
+
+  @override
+  String get resolutionImages => 'Resolution Photos';
+
+  @override
+  String get noResolutionImages => 'No resolution photos provided';
+
+  @override
+  String get resolutionNote => 'Resolution Note';
+
+  @override
+  String staffNoAdditionalNote(String staffName) {
+    return '$staffName did not provide any additional notes';
+  }
+
+  @override
+  String get resolvedAtLabel => 'Resolved At';
+
+  @override
+  String get citizenReviewUnresolved => 'Citizen feedback: Not resolved';
+
+  @override
+  String get citizenRating => 'Citizen Rating';
+
+  @override
+  String get citizenReviewReason => 'Reason for unresolved status';
+
+  @override
+  String get citizenReviewPhotos => 'Photos provided by citizen';
+
+  @override
+  String get reopenReportButton => 'Request Re-handling';
+
+  @override
+  String get reopenReportConfirmTitle => 'Request re-handling for this report?';
+
+  @override
+  String get reopenReportConfirmMessage =>
+      'The status will be changed back to \'Processing\' and the assigned staff will be notified to re-handle the issue.';
+
+  @override
+  String get reopenReportSuccess =>
+      'Report reopened to Processing and staff notified!';
+
+  @override
+  String get unsatisfactoryBannerTitle => 'Unsatisfactory Reports';
+
+  @override
+  String unsatisfactoryProcessedCountFormat(int count) {
+    return '$count unsatisfactory';
+  }
+
+  @override
+  String rehandlingProcessingCountFormat(int count) {
+    return '$count in progress';
+  }
+
+  @override
+  String get unsatisfactoryPendingTab => 'Pending Review';
+
+  @override
+  String get unsatisfactoryProcessingTab => 'In Progress';
+
+  @override
+  String get rehandlingBadge => 'Re-handling';
+
+  @override
+  String get routeUnsatisfactoryReports => 'Unsatisfactory Reports';
+
+  @override
+  String get noUnsatisfactoryPending => 'No reports pending review';
+
+  @override
+  String get noUnsatisfactoryProcessing => 'No reports being re-handled';
+
+  @override
+  String get manageNews => 'News Management';
+
+  @override
+  String get quickAccess => 'Quick Access';
+
+  @override
+  String get emptyNewsTitle => 'No news yet';
+
+  @override
+  String get emptyNewsDescription =>
+      'There are no news articles published yet. Create a new article to notify the community.';
+
+  @override
+  String get createNewNews => 'Create News';
+
+  @override
+  String get editNews => 'Edit News';
+
+  @override
+  String get newsTitle => 'News Title';
+
+  @override
+  String get newsTitleHint => 'Enter news title...';
+
+  @override
+  String get newsTitleRequired => 'Please enter news title';
+
+  @override
+  String get newsContent => 'News Content';
+
+  @override
+  String get newsContentHint => 'Enter content (Markdown/Readme supported)...';
+
+  @override
+  String get newsContentRequired => 'Please enter news content';
+
+  @override
+  String get newsImages => 'Attached Images';
+
+  @override
+  String get addImages => 'Add Images';
+
+  @override
+  String get preview => 'Preview';
+
+  @override
+  String get editor => 'Editor';
+
+  @override
+  String get newsDetail => 'News Detail';
+
+  @override
+  String get deleteNews => 'Delete News';
+
+  @override
+  String get confirmDeleteNewsTitle => 'Confirm Delete News';
+
+  @override
+  String get confirmDeleteNews =>
+      'Are you sure you want to delete this news? This action cannot be undone.';
+
+  @override
+  String get deleteNewsSuccess => 'News deleted successfully';
+
+  @override
+  String get createNewsSuccess => 'News created successfully';
+
+  @override
+  String get updateNewsSuccess => 'News updated successfully';
+
+  @override
+  String get newsAuthor => 'Author';
+
+  @override
+  String get newsCreatedDate => 'Posted Date';
+
+  @override
+  String get newsCreatedTime => 'Time';
+
+  @override
+  String get routeNewsManagement => 'News Management';
+
+  @override
+  String get routeCreateNews => 'Create News';
+
+  @override
+  String get routeNewsDetail => 'News Detail';
+
+  @override
+  String get routeEditNews => 'Edit News';
+
+  @override
+  String get formatBold => 'Bold';
+
+  @override
+  String get formatItalic => 'Italic';
+
+  @override
+  String get formatHeading => 'Heading';
+
+  @override
+  String get formatBulletList => 'Bullet List';
+
+  @override
+  String get formatNumberedList => 'Numbered List';
+
+  @override
+  String get formatQuote => 'Quote';
+
+  @override
+  String get formatCode => 'Code';
+
+  @override
+  String get sendNotification => 'Send notification';
+
+  @override
+  String get sendNotificationSubtitle =>
+      'Send push notifications to users when this news is created';
+
+  @override
+  String get notificationTarget => 'Notification Target';
+
+  @override
+  String get targetAll => 'All';
+
+  @override
+  String get targetAdmin => 'Admin';
+
+  @override
+  String get targetStaff => 'Staff';
+
+  @override
+  String get targetClient => 'Client';
+
+  @override
+  String get livePreview => 'Live Preview';
+
+  @override
+  String get latestNews => 'Latest News';
+
+  @override
+  String get viewAllNews => 'View all';
+
+  @override
+  String get allActivities => 'All Recent Activities';
+
+  @override
+  String get filterActor => 'Actor';
+
+  @override
+  String get filterTopic => 'Topic';
+
+  @override
+  String get actorAll => 'All';
+
+  @override
+  String get actorAdmin => 'Admin';
+
+  @override
+  String get actorStaff => 'Staff';
+
+  @override
+  String get topicAll => 'All';
+
+  @override
+  String get topicNews => 'News';
+
+  @override
+  String get topicReportCreate => 'Create Report';
+
+  @override
+  String get topicReportAssign => 'Assign Report';
+
+  @override
+  String get topicReportProcess => 'Process Report';
+
+  @override
+  String get noActivitiesFound => 'No activities found';
+
+  @override
+  String get routeAllActivities => 'All Recent Activities';
+
+  @override
+  String mapClusterReportsTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reports in this area',
+      one: '1 report in this area',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get mapClusterSortHint => 'Pending first, then newest';
+
+  @override
+  String get mapZoomInForMore => 'Zoom in to see more reports';
+
+  @override
+  String get mapLoadReportsFailed => 'Couldn\'t load reports on the map';
+
+  @override
+  String get viewOnMap => 'View on map';
+
+  @override
+  String get mapFocusedReportHidden =>
+      'This report doesn\'t match the current map filters';
+
+  @override
+  String get locationDescriptionLabel => 'Location description';
+
+  @override
+  String get invalidNumber => 'Invalid value';
+
+  @override
+  String get copySuccess => 'Copied to clipboard';
+
+  @override
+  String get copy => 'Copy';
+
+  @override
+  String get note => 'Note';
+
+  @override
+  String get adminNote => 'Admin Note';
+
+  @override
+  String get processedAt => 'Processed At';
+
+  @override
+  String get createdAt => 'Created At';
+
+  @override
+  String get statusPending => 'Pending';
+
+  @override
+  String get statusApproved => 'Approved';
+
+  @override
+  String get statusRejected => 'Rejected';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String get searchStaffHint => 'Search staff by name, email, phone...';
+
+  @override
+  String get viewReportDetail => 'View Report Details';
+
+  @override
+  String get copied => 'Copied';
+
+  @override
+  String get statusCancelled => 'Cancelled';
+
+  @override
+  String get connectionStable => 'Stable connection';
+
+  @override
+  String get connectionConnecting => 'Connecting services...';
+
+  @override
+  String get connectionDisconnected => 'Connection lost. Click to reconnect.';
+
+  @override
+  String get scrollLeft => 'Scroll left';
+
+  @override
+  String get scrollRight => 'Scroll right';
+
+  @override
+  String get staffCreatedTitle => 'Staff account created';
+
+  @override
+  String get staffCreatedCredentialsSent =>
+      'The login password has been sent to:';
+
+  @override
+  String get staffCreatedCheckInboxHint =>
+      'Ask the staff member to check their inbox (including Spam) and change the password after signing in for the first time.';
+
+  @override
+  String get mapSettings => 'Map Settings';
+
+  @override
+  String get mapDensityToggle => 'Report Density';
+
+  @override
+  String get mapDensityDescription => 'Show H3 density grid by report level';
+
+  @override
+  String get densityLegendTitle => 'Report Density';
+
+  @override
+  String get densityLow => '1–2 reports (Low)';
+
+  @override
+  String get densityMedium => '3–5 reports (Medium)';
+
+  @override
+  String get densityHigh => 'Over 5 reports (High)';
+
+  @override
+  String get filterTimeframe => 'Timeframe';
+
+  @override
+  String get timeframeAll => 'All';
+
+  @override
+  String get timeframe1Month => '1 month';
+
+  @override
+  String get timeframe3Months => '3 months';
+
+  @override
+  String get timeframe6Months => '6 months';
+
+  @override
+  String get timeframe9Months => '9 months';
+
+  @override
+  String get timeframe12Months => '12 months';
+
+  @override
+  String get filterReports => 'Filter Reports';
+
+  @override
+  String get myLocation => 'My Location';
+
+  @override
+  String get locationPermissionDenied => 'Location permission denied';
+
+  @override
+  String get locationServiceDisabled => 'Location services disabled';
+
+  @override
+  String get routeConversations => 'Conversations';
+
+  @override
+  String get routeChatDetail => 'Chat Detail';
+
+  @override
+  String get conversations => 'Conversations';
+
+  @override
+  String get messages => 'Messages';
+
+  @override
+  String get noConversations => 'No conversations yet';
+
+  @override
+  String get noConversationsSub =>
+      'New conversations will appear here when chats begin.';
+
+  @override
+  String get searchConversationsPlaceholder => 'Search by name or content...';
+
+  @override
+  String get filterRoleAll => 'All';
+
+  @override
+  String get filterRoleClient => 'Resident';
+
+  @override
+  String get filterRoleStaff => 'Staff';
+
+  @override
+  String get filterRoleAdmin => 'Admin';
+
+  @override
+  String get filterPosition => 'Position';
+
+  @override
+  String get filterPositionAll => 'All positions';
+
+  @override
+  String get filterPositionSheetTitle => 'Filter by Staff Position';
+
+  @override
+  String get applyFilter => 'Apply';
+
+  @override
+  String get resetFilter => 'Reset';
+
+  @override
+  String get cannotMessageClientTitle => 'Cannot Message Resident Directly';
+
+  @override
+  String get cannotMessageClientMessage =>
+      'You can only message or make a free call to a resident when there is at least one re-handling report from them that is currently being processed.';
+
+  @override
+  String get phoneNotAvailable => 'Phone number is not available';
+
+  @override
+  String get cannotLaunchPhone => 'Cannot launch phone dialer';
+
+  @override
+  String get chatWithUser => 'Message';
+
+  @override
+  String get callUser => 'Call';
+
+  @override
+  String get conversationLockedNotice =>
+      'This conversation has ended because the report has been completed. The chat is in read-only mode.';
+
+  @override
+  String get messageInputPlaceholder => 'Type a message...';
+
+  @override
+  String get systemNotification => 'System notification';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get callStaff => 'Call staff';
+
+  @override
+  String get messageStaff => 'Message staff';
+
+  @override
+  String get callReporter => 'Call reporter';
+
+  @override
+  String get messageReporter => 'Message reporter';
+
+  @override
+  String get routeConversationInfo => 'Conversation Info';
+
+  @override
+  String get conversationInfoTitle => 'Conversation Info';
+
+  @override
+  String get activeReportsSection => 'Active Reports';
+
+  @override
+  String get allReportsProcessed => 'All reports have been processed';
+
+  @override
+  String get conversationClosedNotice =>
+      'Conversation closed as all reports have been processed';
+
+  @override
+  String get conversationActiveNotice => 'Conversation is currently active';
+
+  @override
+  String get callButtonLabel => 'Call';
+
+  @override
+  String get videoCallButtonLabel => 'Video call';
+
+  @override
+  String get videoCallComingSoon => 'Video call feature is under development';
+
+  @override
+  String get anonymousUserProtectionNote =>
+      'Contact info is protected for anonymous users';
+
+  @override
+  String get conversationRefreshed =>
+      'Conversation info and messages refreshed successfully';
+
+  @override
+  String get conversationRefreshFailed =>
+      'Could not refresh conversation, please try again later';
+
+  @override
+  String get anonymousPerson => 'Anonymous User';
+
+  @override
+  String get otherUsers => 'Other User';
+
+  @override
+  String get cannotMakePhoneCall => 'Cannot make phone call';
+
+  @override
+  String get noPhoneNumber => 'No phone number available';
+
+  @override
+  String get staffNoPosition => 'No position';
+
+  @override
+  String get cannotStartChat => 'Cannot start conversation';
+
+  @override
+  String get callOptionsTitle => 'Call options';
+
+  @override
+  String get cellularCall => 'Cellular call';
+
+  @override
+  String get cellularCallDesc => 'Open default phone app';
+
+  @override
+  String get freeCall => 'Free in-app voice call';
+
+  @override
+  String get featureUnderDevelopment => 'Feature under development';
+
+  @override
+  String get comingSoon => 'Coming soon';
+
+  @override
+  String get freeCallComingSoon =>
+      'Free in-app voice call feature is under development';
+
+  @override
+  String get adminBoard => 'Board of Administrators';
+
+  @override
+  String get routeAdminBoard => 'Board of Administrators';
+
+  @override
+  String get addAdmin => 'Add administrator';
+
+  @override
+  String get addNewAdmin => 'New administrator';
+
+  @override
+  String get createAdminAction => 'Create account';
+
+  @override
+  String get addAdminFailed => 'Could not create the administrator account';
+
+  @override
+  String get youBadge => 'You';
+
+  @override
+  String lockAdminConfirm(String name) {
+    return 'Lock the administrator account of $name? They will be signed out of every device immediately.';
+  }
+
+  @override
+  String unlockAdminConfirm(String name) {
+    return 'Unlock the administrator account of $name? They will be able to sign in again.';
+  }
+
+  @override
+  String get cannotLockSelf => 'You cannot lock your own account';
+
+  @override
+  String get cannotLockLastAdmin =>
+      'At least one active administrator is required';
+
+  @override
+  String get adminCreatedTitle => 'Administrator account created';
+
+  @override
+  String get adminCreatedCheckInboxHint =>
+      'Ask them to check their inbox (including Spam) and change the password after signing in for the first time.';
+
+  @override
+  String get noAdminFound => 'No administrators match your search';
+
+  @override
+  String get allAdminsLoaded => 'All administrators loaded';
+
+  @override
+  String get loadMoreAdminsFailed => 'Could not load more administrators';
+
+  @override
+  String get invalidPhoneFormat =>
+      'Invalid phone number (8–15 digits, may start with +)';
+
+  @override
+  String get fullnameTooLong => 'Full name must not exceed 100 characters';
+
+  @override
+  String get selectAdminHint =>
+      'Select an administrator to see their details and recent activity';
+
+  @override
+  String get activityLoadFailed => 'Couldn\'t load recent activity';
+
+  @override
+  String get activityHistory => 'Activity history';
+
+  @override
+  String get adminTotalBadge => 'Total';
+
+  @override
+  String get loadMoreActivitiesFailed => 'Couldn\'t load more activities';
+
+  @override
+  String get allActivitiesLoaded => 'All activities loaded';
+
+  @override
+  String get chooseFromGallery => 'Choose photo from gallery';
+
+  @override
+  String get chooseVideo => 'Choose video';
+
+  @override
+  String get takePhoto => 'Take photo';
+
+  @override
+  String get attachReport => 'Attach report';
+
+  @override
+  String get markAsRead => 'Mark as read';
+
+  @override
+  String get typingText => 'typing...';
+
+  @override
+  String get pressAndHoldToRecord => 'Press and hold to record';
+
+  @override
+  String get slideLeftToCancel => 'Slide left to cancel';
+
+  @override
+  String get releaseToCancel => 'Release to cancel';
+
+  @override
+  String get selectReportToAttach => 'Select report to attach';
+
+  @override
+  String get noPositionsAvailable => 'No positions available';
+
+  @override
+  String get voiceMessageSnippet => 'Voice message';
+
+  @override
+  String get imageSnippet => 'Photo';
+
+  @override
+  String get videoSnippet => 'Video';
+
+  @override
+  String get attachedReportSnippet => 'Attached report';
+
+  @override
+  String get reportDeadlineLabel => 'Resolution deadline';
+
+  @override
+  String get deadlineOverdueBadge => 'Overdue';
+
+  @override
+  String expectedCompletionDate(String date) {
+    return 'Est. completion: $date';
+  }
+
+  @override
+  String get staffDeadlinePerformanceTitle => 'Deadline Performance';
+
+  @override
+  String get staffDeadlinePerformanceSubtitle =>
+      'Tracks overdue tasks and late vs. on-time completions by staff';
+
+  @override
+  String get noStaffMissedDeadline => 'No staff members have missed a deadline';
+
+  @override
+  String staffMissedDeadlineSummary(int count, int lateCount) {
+    return '$count overdue active · $lateCount completed late';
+  }
+
+  @override
+  String onTimeRateLabel(String rate) {
+    return '$rate% on time';
+  }
+
+  @override
+  String get overdueActiveLabel => 'Overdue active';
+
+  @override
+  String get completedLateLabel => 'Completed late';
+
+  @override
+  String get completedOnTimeLabel => 'Completed on time';
+
+  @override
+  String get missedDeadlineBadge => 'Missed deadline';
+
+  @override
+  String get onTimeBadge => 'On time';
+
+  @override
+  String get noDeadlineRecordsYet => 'No assigned deadline data yet';
+
+  @override
+  String staffDeadlineStatsBreakdown(int overdue, int late, int onTime) {
+    return '$overdue overdue · $late late · $onTime on time';
+  }
+
+  @override
+  String get rejectReportButton => 'Reject report';
+
+  @override
+  String get rejectReportConfirmTitle => 'Reject this report?';
+
+  @override
+  String get rejectReportConfirmMessage =>
+      'This action will mark the report as rejected and notify the reporter.';
+
+  @override
+  String get rejectReportReasonLabel => 'Rejection reason';
+
+  @override
+  String get rejectReportReasonHint =>
+      'Explain why this report cannot be processed...';
+
+  @override
+  String get rejectReportReasonRequired => 'Please enter a rejection reason';
+
+  @override
+  String get confirmRejectAction => 'Confirm reject';
+
+  @override
+  String get rejectSuccessMessage => 'Report rejected successfully';
+
+  @override
+  String get rejectFailedMessage => 'Could not reject report, please try again';
+
+  @override
+  String get rejectedReasonTitle => 'Rejection Reason';
+
+  @override
+  String get noRejectionReasonProvided => 'Rejected by administrator.';
+
+  @override
+  String get lockRequestsTab => 'Lock proposals';
+
+  @override
+  String get lockRequestsTitle => 'Account lock proposals';
+
+  @override
+  String get lockFilterPending => 'Pending';
+
+  @override
+  String get lockFilterResolved => 'Resolved';
+
+  @override
+  String get noPendingLockRequests => 'No proposals are awaiting votes';
+
+  @override
+  String get noResolvedLockRequests => 'No resolved proposals yet';
+
+  @override
+  String get loadMoreLockRequestsFailed => 'Couldn\'t load more proposals';
+
+  @override
+  String get allLockRequestsLoaded => 'All proposals loaded';
+
+  @override
+  String get selectLockRequestHint =>
+      'Select a proposal to see its details and vote';
+
+  @override
+  String get lockStatusPending => 'Awaiting votes';
+
+  @override
+  String get lockStatusApproved => 'Approved';
+
+  @override
+  String get lockStatusRejected => 'Rejected';
+
+  @override
+  String get lockStatusCancelled => 'Cancelled';
+
+  @override
+  String get lockStatusExpired => 'Expired';
+
+  @override
+  String lockProposedBy(String name) {
+    return 'Proposed by $name';
+  }
+
+  @override
+  String lockDeadline(String time) {
+    return 'Voting closes: $time';
+  }
+
+  @override
+  String lockResolvedAt(String time) {
+    return 'Ended: $time';
+  }
+
+  @override
+  String lockApprovalsProgress(int count, int required) {
+    return 'Endorsed $count/$required';
+  }
+
+  @override
+  String lockRejectionsProgress(int count, int required) {
+    return 'Rejected $count/$required';
+  }
+
+  @override
+  String get lockAwaitingYourVote => 'Needs your vote';
+
+  @override
+  String get lockReasonLabel => 'Reason';
+
+  @override
+  String get lockEvidenceLabel => 'Evidence';
+
+  @override
+  String get lockVotesLabel => 'Votes';
+
+  @override
+  String get noVotesYet => 'No votes yet';
+
+  @override
+  String get lockVoteApprove => 'Endorse';
+
+  @override
+  String get lockVoteReject => 'Reject';
+
+  @override
+  String get lockVoteApproveConfirmTitle => 'Endorse this lock proposal?';
+
+  @override
+  String get lockVoteRejectConfirmTitle => 'Reject this lock proposal?';
+
+  @override
+  String lockVoteApproveConfirmMessage(int required, String name) {
+    return 'Once $required administrators endorse it, the account of $name will be locked immediately. Votes cannot be changed.';
+  }
+
+  @override
+  String lockVoteRejectConfirmMessage(int required) {
+    return 'Once $required administrators reject it, the proposal is dismissed. Votes cannot be changed.';
+  }
+
+  @override
+  String get lockVoteCommentHint => 'Comment (optional)';
+
+  @override
+  String get lockVoteSubmitted => 'Your vote has been recorded';
+
+  @override
+  String get lockVoteBlockedProposer =>
+      'You proposed this lock, so you cannot vote on it';
+
+  @override
+  String get lockVoteBlockedAlreadyVoted =>
+      'You have already voted on this proposal';
+
+  @override
+  String get lockVoteBlockedClosed => 'Voting on this proposal has ended';
+
+  @override
+  String get lockCancelAction => 'Cancel proposal';
+
+  @override
+  String lockCancelConfirm(String name) {
+    return 'Cancel the lock proposal for $name?';
+  }
+
+  @override
+  String get lockCancelled => 'Proposal cancelled';
+
+  @override
+  String get lockActionFailed =>
+      'Couldn\'t complete the action. Please try again.';
+
+  @override
+  String get viewUserProfile => 'View user';
+
+  @override
+  String get proposeLockAction => 'Propose account lock';
+
+  @override
+  String proposeLockSubtitle(int required, int hours) {
+    return 'The account is locked only after $required other administrators endorse it within $hours hours.';
+  }
+
+  @override
+  String get lockReasonHint =>
+      'Describe the violation clearly: what happened, when, and how serious it is';
+
+  @override
+  String get lockReasonTooShort => 'The reason must be at least 20 characters';
+
+  @override
+  String lockEvidenceImages(int max) {
+    return 'Evidence images (up to $max)';
+  }
+
+  @override
+  String get lockAddImage => 'Add image';
+
+  @override
+  String get lockRemoveImage => 'Remove image';
+
+  @override
+  String get lockImageTooLarge => 'Each image must be 5MB or smaller';
+
+  @override
+  String get lockEvidenceReports => 'Related reports';
+
+  @override
+  String get lockNoPublicReports => 'This user has no public reports';
+
+  @override
+  String get lockEvidenceRequired =>
+      'Add at least one piece of evidence: an image or a report';
+
+  @override
+  String get lockSubmitProposal => 'Submit proposal';
+
+  @override
+  String get lockProposalSent => 'Proposal sent to the Board of Administrators';
+
+  @override
+  String get lockPendingBanner =>
+      'This account has a lock proposal awaiting votes';
+
+  @override
+  String get viewLockProposal => 'View proposal';
+
+  @override
+  String get unlockReasonHint => 'Reason for unlocking (required)';
+
+  @override
+  String get unlockReasonTooShort =>
+      'The reason must be at least 10 characters';
+
+  @override
+  String get userUnlocked => 'User account unlocked';
+
+  @override
+  String get lockFilterAwaitingMine => 'Needs your vote';
+
+  @override
+  String get noAwaitingLockRequests => 'Nothing needs your vote right now';
+
+  @override
+  String lockFindingAwaiting(int count, String timeLeft) {
+    return '$count proposals need your vote · the nearest: $timeLeft';
+  }
+
+  @override
+  String lockFindingOthers(int count) {
+    return 'Nothing needs your vote · $count awaiting other administrators';
+  }
+
+  @override
+  String lockUpdatedAt(String time) {
+    return 'Updated $time';
+  }
+
+  @override
+  String get lockRefresh => 'Refresh';
+
+  @override
+  String lockTimeLeftHours(int hours) {
+    return '$hours h left';
+  }
+
+  @override
+  String lockTimeLeftMinutes(int minutes) {
+    return '$minutes min left';
+  }
+
+  @override
+  String get lockTimeOverdue => 'Voting time is up';
+
+  @override
+  String get lockBallotTitle => 'Ballot';
+
+  @override
+  String get lockSeatEmpty => 'Empty seat';
+
+  @override
+  String lockOutcomeApproved(String time) {
+    return 'Account locked at $time';
+  }
+
+  @override
+  String lockOutcomeRejected(String time) {
+    return 'Rejected at $time';
+  }
+
+  @override
+  String lockOutcomeCancelled(String time) {
+    return 'Cancelled at $time';
+  }
+
+  @override
+  String lockOutcomeExpired(String time) {
+    return 'Expired at $time without enough votes';
+  }
+
+  @override
+  String lockEvidenceSummary(int images, int reports) {
+    return 'Evidence · $images images · $reports reports';
+  }
+
+  @override
+  String get lockVotesCast => 'Votes cast';
+
+  @override
+  String get lockProposedByYou => 'Proposed by you';
+
+  @override
+  String get lockMoreActions => 'More actions';
+
+  @override
+  String get lockReasonHelper =>
+      'At least 20 characters. The user will receive this reason.';
+
+  @override
+  String get lockEvidenceHelper => 'At least one image or one report';
+
+  @override
+  String get lockWhatHappensTitle => 'What happens next';
+
+  @override
+  String lockWhatHappensBody(int required, int hours) {
+    return '$required other administrators must endorse within $hours hours before the account is locked. The user receives the reason only, never the evidence.';
+  }
+
+  @override
+  String get lockProposalSentTitle => 'Lock proposal sent';
+
+  @override
+  String lockProposalSentBody(int required, int hours) {
+    return 'The Board of Administrators has been notified. The account is locked once $required other administrators endorse it within $hours hours.';
+  }
+
+  @override
+  String lockBlockedNotEnoughAdmins(int min) {
+    return 'At least $min active administrators are needed to vote on a lock. Add an administrator in the Board of Administrators.';
+  }
+
+  @override
+  String get lockBlockedNotActive =>
+      'Only active accounts can be proposed for locking';
+
+  @override
+  String daysRemainingLabel(int days) {
+    return '${days}d remaining';
+  }
+
+  @override
+  String get overdueOnlyFilter => 'Overdue';
+
+  @override
+  String get excellentBadge => 'Excellent';
+
+  @override
+  String staffEfficiencyLabel(String rate) {
+    return 'Work efficiency: $rate%';
+  }
+
+  @override
+  String get staffEfficiencyNoData => 'Work efficiency: —';
+
+  @override
+  String get statsMonthLabel => 'Statistics month';
+
+  @override
+  String get resolvedInMonth => 'Resolved this month';
+
+  @override
+  String get avgResolutionTimeInMonth => 'Avg resolution time';
+
+  @override
+  String resolvedMonthCount(int count) {
+    return '$count resolved in month';
+  }
+
+  @override
+  String staffMonthlyWorkloadTitle(String month) {
+    return 'Workload in $month';
+  }
+
+  @override
+  String staffMonthlyWorkloadBreakdown(
+    int processing,
+    int resolved,
+    int overdue,
+    int rehandling,
+  ) {
+    return '$processing in progress, $resolved resolved, $overdue overdue, $rehandling rehandling';
+  }
+
+  @override
+  String get viewAssignedReportsAction => 'View assigned reports';
+
+  @override
+  String get routeCategoryManagement => 'Category Management';
+
+  @override
+  String get manageCategories => 'Categories';
+
+  @override
+  String get addCategory => 'Add Category';
+
+  @override
+  String get editCategory => 'Edit Category';
+
+  @override
+  String get deleteCategory => 'Delete Category';
+
+  @override
+  String get deleteCategoryConfirm =>
+      'Are you sure you want to delete this category?';
+
+  @override
+  String get emptyCategoryList => 'No report categories yet';
+
+  @override
+  String get categoryCode => 'Category Code';
+
+  @override
+  String get categoryCodeRequired => 'Please enter category code';
+
+  @override
+  String get categoryNameVi => 'Vietnamese Name';
+
+  @override
+  String get categoryNameViRequired => 'Please enter Vietnamese name';
+
+  @override
+  String get categoryNameEn => 'English Name';
+
+  @override
+  String get categoryNameEnRequired => 'Please enter English name';
+
+  @override
+  String get categoryDescription => 'Description';
+
+  @override
+  String get categoryIconLabel => 'Icon';
+
+  @override
+  String get categoryDefaultSeverity => 'Default Severity';
+
+  @override
+  String get categoryDisplayOrder => 'Order';
+
+  @override
+  String get categoryActiveLabel => 'Active';
+
+  @override
+  String get categoryInactive => 'Inactive';
+
+  @override
+  String get categoryPositionsLabel => 'Assigned Positions';
+
+  @override
+  String get categoryPositionsHint =>
+      'Staff with these positions are eligible for auto-assignment in this category';
+
+  @override
+  String get categoryNoPositionsMapped => 'No position mapped';
+
+  @override
+  String get categoryNoActivePositions =>
+      'No active positions available. Please create positions first.';
+
+  @override
+  String get categorySaveSuccess => 'Category saved successfully';
+
+  @override
+  String get categoryDeleteSuccess => 'Category deleted successfully';
+
+  @override
+  String get totalCategories => 'Total Categories';
+
+  @override
+  String get categoriesMappedPositions => 'Mapped to Positions';
+
+  @override
+  String get categoryReportCountLabel => 'Reports';
+
+  @override
+  String get categoryIconEco => 'Environment';
+
+  @override
+  String get categoryIconConstruction => 'Infrastructure';
+
+  @override
+  String get categoryIconBolt => 'Electricity / Lighting';
+
+  @override
+  String get categoryIconWater => 'Water / Drainage';
+
+  @override
+  String get categoryIconShield => 'Public Order';
+
+  @override
+  String get categoryIconPark => 'Trees / Parks';
+
+  @override
+  String get categoryIconTraffic => 'Traffic';
+
+  @override
+  String get categoryIconGeneral => 'General';
+
+  @override
+  String get staffBaseLocationSection => 'Representative Area / Coordinates';
+
+  @override
+  String get staffBaseAddressLabel => 'Representative Address / Area';
+
+  @override
+  String get staffBaseLatitudeLabel => 'Latitude';
+
+  @override
+  String get staffBaseLongitudeLabel => 'Longitude';
+
+  @override
+  String get staffPickLocationOnMap => 'Pick on Map';
+
+  @override
+  String get staffUseCurrentGps => 'Current GPS';
+
+  @override
+  String get staffClearLocation => 'Clear Location';
+
+  @override
+  String get staffLocationNotSet => 'Representative location not set';
+
+  @override
+  String get staffLocationPairRequired =>
+      'Both latitude and longitude are required';
+
+  @override
+  String get staffLocationInvalidLat => 'Latitude must be between -90 and 90';
+
+  @override
+  String get staffLocationInvalidLng =>
+      'Longitude must be between -180 and 180';
+
+  @override
+  String get staffLocationPickerTitle => 'Pick Representative Location';
+
+  @override
+  String get staffLocationPickerHint =>
+      'Tap or drag the pin on the map to set the staff member\'s representative location.';
+
+  @override
+  String get staffLocationConfirm => 'Confirm Location';
+
+  @override
+  String get staffLocationWebNoToken =>
+      'MAPBOX_ACCESS_TOKEN is not configured. Please enter latitude and longitude manually.';
+
+  @override
+  String get staffLocationGpsFailed =>
+      'Could not obtain current GPS coordinates';
+
+  @override
+  String get reportCategoryLabel => 'Category';
+
+  @override
+  String get autoAssignSectionTitle => 'Smart Assignment';
+
+  @override
+  String get autoAssignTriggerButton => 'Auto-Assign';
+
+  @override
+  String autoAssignTopCandidates(int count) {
+    return 'Top $count Recommended Staff';
+  }
+
+  @override
+  String get autoAssignAssignNow => 'Assign Now';
+
+  @override
+  String get autoAssignSelectCandidate => 'Select';
+
+  @override
+  String get autoAssignSelectedCandidate => 'Selected';
+
+  @override
+  String autoAssignEligibleCount(int count) {
+    return '$count eligible candidates';
+  }
+
+  @override
+  String get autoAssignModeAuto => 'Mode: Auto';
+
+  @override
+  String get autoAssignModeAssist => 'Mode: Assist';
+
+  @override
+  String get autoAssignModeManual => 'Mode: Manual';
+
+  @override
+  String get autoAssignScoreLabel => 'Score';
+
+  @override
+  String get autoAssignDistanceLabel => 'Distance';
+
+  @override
+  String get autoAssignMonthlyLoadLabel => 'Monthly load';
+
+  @override
+  String get autoAssignActiveLoadLabel => 'Active load';
+
+  @override
+  String get autoAssignOnTimeLabel => '30d on-time';
+
+  @override
+  String autoAssignTasksCount(int count) {
+    return '$count tasks';
+  }
+
+  @override
+  String autoAssignScoreValue(String score) {
+    return '$score/100';
+  }
+
+  @override
+  String autoAssignWeightPercent(int percent) {
+    return '$percent%';
+  }
+
+  @override
+  String autoAssignDistanceKm(String distance) {
+    return '$distance km';
+  }
+
+  @override
+  String get autoAssignLoadFailed =>
+      'Could not load staff recommendations. Please try again.';
+
+  @override
+  String get autoAssignDecisionTitle => 'Auto-Assign Decision Breakdown';
+
+  @override
+  String get autoAssignSourceAuto => 'System Auto-Assigned';
+
+  @override
+  String get autoAssignSourceRecommendClick => '1-Tap Suggested Assign';
+
+  @override
+  String get autoAssignSourceOverridden => 'Overridden by Admin';
+
+  @override
+  String get autoAssignSourceRecommended => 'Pending Admin Confirmation';
+
+  @override
+  String get autoAssignSourceFallback => 'Fallback to Manual';
+
+  @override
+  String get autoAssignSourceManual => 'Manual Assignment';
+
+  @override
+  String autoAssignOverriddenNotice(String staffName) {
+    return 'Admin reassigned this report to $staffName.';
+  }
+
+  @override
+  String get autoAssignSnapshotTitle => 'Candidate Ranking Snapshot';
+
+  @override
+  String get autoAssignSuccessMessage =>
+      'Report auto-assigned to best matching staff';
+
+  @override
+  String get autoAssignFailedFallback => 'Unable to auto-assign report';
+
+  @override
+  String get reassignStaffButton => 'Reassign Staff';
+
+  @override
+  String get autoAssignNoCandidatesDefault =>
+      'No staff matched the eligibility filters (position, base coordinates, radius, concurrent load limit).';
+
+  @override
+  String get routeAutoAssignCenter => 'Auto-Assign Center';
+
+  @override
+  String get autoAssignCenterTitle => 'Auto-Assign Dispatch Center';
+
+  @override
+  String get autoAssignCenterSubtitle =>
+      'Configure dispatch mode, multi-criteria weights, live dry-run simulation, and monthly workload fairness';
+
+  @override
+  String get autoAssignRefreshAction => 'Refresh data';
+
+  @override
+  String get autoAssignKpiTotalDecisions => 'Total Decisions';
+
+  @override
+  String autoAssignKpiBreakdown(
+    int autoCount,
+    int recommendCount,
+    int fallbackCount,
+  ) {
+    return '$autoCount auto · $recommendCount 1-tap · $fallbackCount fallback';
+  }
+
+  @override
+  String get autoAssignKpiSuccessRate => 'Auto-Assign Success Rate';
+
+  @override
+  String get autoAssignKpiSuccessSub => 'Passed 2-stage eligibility filter';
+
+  @override
+  String get autoAssignKpiAcceptanceRate => 'Admin Acceptance Rate';
+
+  @override
+  String autoAssignKpiOverriddenSub(int count) {
+    return '$count overridden by Admin';
+  }
+
+  @override
+  String get autoAssignKpiFairnessIndex => 'Monthly Fairness Index';
+
+  @override
+  String autoAssignKpiFairnessSub(String avg, String std) {
+    return 'Avg $avg tasks/staff · std ±$std';
+  }
+
+  @override
+  String get autoAssignConfigCardTitle => 'Dispatch Mode & Scoring Weights';
+
+  @override
+  String get autoAssignConfigCardDesc =>
+      'All 4 weights automatically lock to 100%. Adjusting sliders immediately updates the Dry-Run Simulator.';
+
+  @override
+  String get autoAssignModeOptionAuto => 'Auto (AUTO)';
+
+  @override
+  String get autoAssignModeOptionAssist => 'Assist (ASSIST)';
+
+  @override
+  String get autoAssignModeOptionManual => 'Manual (MANUAL)';
+
+  @override
+  String get autoAssignModeDescAuto =>
+      'New reports are automatically scored and immediately assigned to the #1 eligible staff member.';
+
+  @override
+  String get autoAssignModeDescAssist =>
+      'System pre-calculates and recommends the Top 3 candidates for 1-tap Admin approval.';
+
+  @override
+  String get autoAssignModeDescManual =>
+      'Disables automatic dispatch on report creation; Admin assigns manually or triggers recommendations on demand.';
+
+  @override
+  String get autoAssignWeightsHeader =>
+      'Multi-Criteria Scoring Weights (Total = 100%)';
+
+  @override
+  String get autoAssignResetWeightsButton => 'Default (35/30/20/15)';
+
+  @override
+  String get autoAssignThresholdsHeader => 'Eligibility Thresholds & Quotas';
+
+  @override
+  String get autoAssignMaxRadiusLabel => 'Max dispatch radius (km)';
+
+  @override
+  String get autoAssignMaxConcurrentLabel => 'Max concurrent tasks';
+
+  @override
+  String get autoAssignTargetMonthlyLabel => 'Target monthly tasks';
+
+  @override
+  String get autoAssignSaveConfigButton => 'Save Configuration';
+
+  @override
+  String get autoAssignConfigSavedSuccess =>
+      'Auto-assign configuration updated successfully';
+
+  @override
+  String get autoAssignConfigSaveFailed =>
+      'Failed to save auto-assign configuration';
+
+  @override
+  String get autoAssignSimulatorTitle => 'Live Dry-Run Simulator';
+
+  @override
+  String get autoAssignSimulatorDesc =>
+      'Select a category and hypothetical incident coordinates to test candidate ranking with current weights (no DB writes).';
+
+  @override
+  String get autoAssignSimCategoryLabel => 'Hypothetical Incident Category';
+
+  @override
+  String get autoAssignSimPickOnMap => 'Pick on Map';
+
+  @override
+  String get autoAssignSimRunButton => 'Run Simulation';
+
+  @override
+  String get autoAssignSimPresetDistrict1 => 'District 1 Preset';
+
+  @override
+  String get autoAssignSimPresetThuDuc => 'Thu Duc Preset';
+
+  @override
+  String get autoAssignSimPresetBinhThanh => 'Binh Thanh Preset';
+
+  @override
+  String get autoAssignSimNoWriterBadge => 'Dry-Run Only · No DB Writes';
+
+  @override
+  String get autoAssignFairnessSectionTitle =>
+      'Monthly Workload Distribution & Team Fairness';
+
+  @override
+  String get autoAssignFairnessSectionDesc =>
+      'Compare current month workload, active processing tasks, and 30-day on-time rate across active staff.';
+
+  @override
+  String autoAssignFairnessRangeLabel(int min, int max) {
+    return 'Min: $min tasks · Max: $max tasks';
+  }
+
+  @override
+  String autoAssignStaffMonthlyQuotaText(int current, int target) {
+    return '$current/$target monthly';
+  }
+
+  @override
+  String autoAssignStaffActiveQuotaText(int active, int maxActive) {
+    return '$active/$maxActive active';
+  }
+
+  @override
+  String autoAssignStaffOnTimeText(String rate) {
+    return '$rate% on-time';
+  }
+
+  @override
+  String get autoAssignLogsSectionTitle => 'Assignment Decision Logs';
+
+  @override
+  String get autoAssignLogsSectionDesc =>
+      'Detailed audit log of auto-assignments, 1-tap recommendations, fallbacks, and Admin overrides.';
+
+  @override
+  String get autoAssignLogsFilterAll => 'All outcomes';
+
+  @override
+  String get autoAssignLogsFilterAssigned => 'Assigned';
+
+  @override
+  String get autoAssignLogsFilterRecommended => 'Recommended';
+
+  @override
+  String get autoAssignLogsFilterOverridden => 'Overridden';
+
+  @override
+  String get autoAssignLogsFilterFallback => 'Fallback';
+
+  @override
+  String get autoAssignLogsEmpty =>
+      'No assignment decision logs match the current filter';
+
+  @override
+  String get autoAssignLogViewReport => 'Open report';
+
+  @override
+  String autoAssignLogPageInfo(int current, int total, int count) {
+    return 'Page $current/$total ($count records)';
+  }
+
+  @override
+  String get mapStaffStationsToggle => 'Staff Stations';
+
+  @override
+  String get mapStaffStationsLegend => 'Staff Base Station';
+
+  @override
+  String get mapStaffStationSheetTitle => 'Staff Base Station';
+
+  @override
+  String mapStaffActiveTasksCount(int count) {
+    return 'Active processing: $count reports';
+  }
+
+  @override
+  String get mapFilterByThisStaff => 'Filter reports assigned to this staff';
+
+  @override
+  String get autoAssignModeShortAuto => 'Auto';
+
+  @override
+  String get autoAssignModeShortAssist => 'Assist';
+
+  @override
+  String get autoAssignModeShortManual => 'Manual';
+
+  @override
+  String get autoAssignToggleWeightsExpand => 'Customize weights & thresholds';
+
+  @override
+  String get autoAssignToggleWeightsCollapse => 'Collapse weights & thresholds';
+
+  @override
+  String get autoAssignSectionExpand => 'Expand';
+
+  @override
+  String get autoAssignSectionCollapse => 'Collapse';
+
+  @override
+  String get autoAssignTabFairness => 'Workload Fairness';
+
+  @override
+  String get autoAssignTabLogs => 'Decision Logs';
+
+  @override
+  String get smartAlertsTitle => 'Operational Alerts & 7-Day Pulse';
+
+  @override
+  String get smartAlertsAllHealthy =>
+      'Operations steady — no anomalies detected';
+
+  @override
+  String get volumeSpikeTitle => 'Unusual report surge today';
+
+  @override
+  String volumeSpikeSubtitle(int todayCount, String avg) {
+    return '$todayCount reports today vs 14d avg ($avg)';
+  }
+
+  @override
+  String volumeSpikeZScoreBadge(String zScore) {
+    return 'Z = $zScore';
+  }
+
+  @override
+  String get slaAtRiskTitle => 'Early SLA breach warning';
+
+  @override
+  String slaAtRiskSubtitle(int pending, int processing) {
+    return '$pending pending, $processing processing nearing deadline';
+  }
+
+  @override
+  String get slaAtRiskShort => 'At SLA risk';
+
+  @override
+  String get overloadedStaffTitle => 'Staff workload overload';
+
+  @override
+  String overloadedStaffSubtitle(int count) {
+    return '$count staff exceeding severity-weighted capacity';
+  }
+
+  @override
+  String get pendingOver24hTitle => 'Unassigned backlog > 24h';
+
+  @override
+  String pendingOver24hSubtitle(int count) {
+    return '$count reports waiting assignment over 24h';
+  }
+
+  @override
+  String get pulse7dTitle => 'Last 7 days pulse';
+
+  @override
+  String get pulseInflowLabel => 'Incoming';
+
+  @override
+  String get pulseOutflowLabel => 'Resolved';
+
+  @override
+  String get trendBaselineLabel => '14d avg';
+
+  @override
+  String get trendAnomalyBadge => 'Spike';
+
+  @override
+  String trendAnomalyCountBadge(int count) {
+    return '$count spike days';
+  }
+
+  @override
+  String get trendInsufficientBaseline =>
+      'Insufficient baseline (needs >= 7 active days)';
+
+  @override
+  String get bottleneckShort => 'Slow > P90';
+
+  @override
+  String get bottleneckStatLabel => 'Bottleneck (>P90)';
+
+  @override
+  String get filterAtRiskLabel => 'At SLA risk';
+
+  @override
+  String get filterBottleneckLabel => 'Slow > P90';
+
+  @override
+  String get weightedLoadLabel => 'Weighted load';
+
+  @override
+  String weightedLoadValue(int points, int tasks) {
+    return '$points pts ($tasks tasks)';
+  }
+
+  @override
+  String teamAvgWeightedLoadLabel(String avg) {
+    return 'Team avg load: $avg pts';
+  }
+
+  @override
+  String get staffOverloadedBadge => 'Overloaded';
+
+  @override
+  String get staffRecommendedBadge => 'Recommended';
+
+  @override
+  String staffBottleneckCountBadge(int count) {
+    return '$count slow >P90';
+  }
+
+  @override
+  String get spatialHotspotsTitle => 'Area Hotspots (H3)';
+
+  @override
+  String get spatialHotspotsToggle => 'Hotspots';
+
+  @override
+  String spatialHotspotsAcceleratingCount(int count) {
+    return '$count accelerating zones';
+  }
+
+  @override
+  String get spatialHotspotAcceleratingBadge => 'Accelerating';
+
+  @override
+  String spatialHotspotRiskScore(int score) {
+    return 'Risk $score';
+  }
+
+  @override
+  String spatialHotspotStats(int recent, String prev, int pending) {
+    return '$recent in 30d • Prev avg $prev • $pending pending';
+  }
+
+  @override
+  String get spatialHotspotsEmpty => 'No prominent spatial risk hotspots';
+
+  @override
+  String spatialHotspotFallbackName(String shortId) {
+    return 'H3 Cell #$shortId';
+  }
+
+  @override
+  String get overloadedStaffModalTitle => 'Overloaded Staff Members';
+
+  @override
+  String overloadedStaffThresholdInfo(String threshold, String teamAvg) {
+    return 'Overload threshold: > $threshold load pts (1.5x team avg $teamAvg) or >= 2 overdue';
+  }
+
+  @override
+  String get overloadedStaffEmpty =>
+      'No staff members are currently overloaded';
+
+  @override
+  String overloadedStaffMetricsRow(
+    int weighted,
+    int processing,
+    int overdue,
+    int bottleneck,
+  ) {
+    return '$weighted pts • $processing active • $overdue overdue • $bottleneck >P90';
+  }
+
+  @override
+  String overloadedSeverityBreakdownLine(
+    int critical,
+    int high,
+    int medium,
+    int low,
+  ) {
+    return 'Crit: $critical • High: $high • Med: $medium • Low: $low';
+  }
+
+  @override
+  String get staffDetailOverloadSectionTitle => 'Workload Status';
+
+  @override
+  String get staffLoadNormalBadge => 'Balanced';
+
+  @override
+  String staffLoadComparison(int weighted, String teamAvg) {
+    return '$weighted weighted pts (Team avg: $teamAvg pts)';
+  }
+
+  @override
+  String get analyticsGuideTooltip => 'Metrics & Report Guide';
+
+  @override
+  String get guideWhatLabel => 'What it is';
+
+  @override
+  String get guidePurposeLabel => 'Why it matters';
+
+  @override
+  String get guideTellsLabel => 'What it tells you';
+
+  @override
+  String get reportGuideTitle => 'Report Statistics Guide';
+
+  @override
+  String get reportGuideSlaAtRiskTitle => 'Early SLA Risk (At-Risk)';
+
+  @override
+  String get reportGuideSlaAtRiskWhat =>
+      'Pending reports past >= 50% of their time to deadline, or processing reports with <= 24h left (or below the severity\'s historical average).';
+
+  @override
+  String get reportGuideSlaAtRiskPurpose =>
+      'Warns before reports actually breach their SLA deadline.';
+
+  @override
+  String get reportGuideSlaAtRiskTells =>
+      'Which reports should be assigned or escalated today to avoid overdue breaches.';
+
+  @override
+  String get reportGuideP90Title => 'P90 Threshold & Bottlenecks (> P90)';
+
+  @override
+  String get reportGuideP90What =>
+      'The duration below which 90% of resolved reports in the last 90 days finished per severity (falls back to 80% of SLA window if < 10 samples).';
+
+  @override
+  String get reportGuideP90Purpose =>
+      'Spots stalled tasks early even before their hard deadline expires.';
+
+  @override
+  String get reportGuideP90Tells =>
+      'Tasks taking longer than 90% of similar historical cases — worth checking for blockers.';
+
+  @override
+  String get reportGuideTrendAnomalyTitle =>
+      'Daily Trend, 14d Baseline & Spikes (Z-score)';
+
+  @override
+  String get reportGuideTrendAnomalyWhat =>
+      'Dashed line shows the rolling 14-day mean; red dots mark days with >= 5 reports and Z-score >= 2.0 (or >= 1.5x the 14-day average).';
+
+  @override
+  String get reportGuideTrendAnomalyPurpose =>
+      'Separates normal noise from sudden incident surges.';
+
+  @override
+  String get reportGuideTrendAnomalyTells =>
+      'When unusual spikes occur or when baseline data is still insufficient (< 7 active days).';
+
+  @override
+  String get reportGuideFiltersTitle => 'Stat Cards & List Filter Chips';
+
+  @override
+  String get reportGuideFiltersWhat =>
+      'Click any overview card or filter chip (Overdue, At SLA risk, Slow > P90, Rehandling) to narrow down the report list.';
+
+  @override
+  String get reportGuideFiltersPurpose =>
+      'Connects high-level metrics directly to actionable records.';
+
+  @override
+  String get reportGuideFiltersTells =>
+      'The exact list of reports currently requiring admin attention.';
+
+  @override
+  String get staffGuideTitle => 'Staff Metrics Guide';
+
+  @override
+  String get staffGuideWeightedLoadTitle => 'Severity-Weighted Load Points';
+
+  @override
+  String get staffGuideWeightedLoadWhat =>
+      'Sum of active task weights by severity: Low = 1 pt, Medium = 2 pts, High = 3 pts, Critical = 5 pts.';
+
+  @override
+  String get staffGuideWeightedLoadPurpose =>
+      'Measures true effort instead of treating simple and critical issues equally.';
+
+  @override
+  String get staffGuideWeightedLoadTells =>
+      'Staff holding fewer tasks that are mostly High/Critical still carry heavy workload.';
+
+  @override
+  String get staffGuideOverloadTitle => 'Team Average Load & Overload';
+
+  @override
+  String get staffGuideOverloadWhat =>
+      'A staff member is marked Overloaded when weighted load > max(5, 1.5 x team avg) or overdue tasks >= 2.';
+
+  @override
+  String get staffGuideOverloadPurpose =>
+      'Prevents assigning new reports to already saturated staff.';
+
+  @override
+  String get staffGuideOverloadTells =>
+      'Who needs relief vs who has capacity (Recommended badge) for new assignments.';
+
+  @override
+  String get staffGuideEfficiencyTitle => 'On-Time Efficiency & Monthly Stats';
+
+  @override
+  String get staffGuideEfficiencyWhat =>
+      'Percentage of evaluated tasks resolved before or on their deadline within the selected month.';
+
+  @override
+  String get staffGuideEfficiencyPurpose =>
+      'Tracks SLA discipline per staff member over time.';
+
+  @override
+  String get staffGuideEfficiencyTells =>
+      'Consistency in meeting deadlines and accumulated late/rehandling volume.';
+
+  @override
+  String get staffGuideBottleneckTitle => 'Slow Tasks (> P90)';
+
+  @override
+  String get staffGuideBottleneckWhat =>
+      'Count of active tasks held longer than the historical P90 resolution duration for that severity.';
+
+  @override
+  String get staffGuideBottleneckPurpose =>
+      'Flags long-running assignments that may be blocked on-site.';
+
+  @override
+  String get staffGuideBottleneckTells =>
+      'Which staff may need support or reassignment on stalled reports.';
+
+  @override
+  String get spatialGuideTitle => 'Spatial Hotspots (H3) Guide';
+
+  @override
+  String get spatialGuideH3Title => 'H3 Hexagon Cells (Resolution 11)';
+
+  @override
+  String get spatialGuideH3What =>
+      'Groups nearby reports into uniform Uber H3 Resolution-11 hexagonal zones across campus.';
+
+  @override
+  String get spatialGuideH3Purpose =>
+      'Detects real spatial clusters independent of rigid text labels.';
+
+  @override
+  String get spatialGuideH3Tells =>
+      'Clicking a zone centers the map camera straight onto that cluster.';
+
+  @override
+  String get spatialGuideRiskScoreTitle => 'Risk Score & Red Highlight';
+
+  @override
+  String get spatialGuideRiskScoreWhat =>
+      'Computed as (Pending x 2) + (High/Critical x 3) + (Overdue x 4). Red highlights accelerating or high-priority cells.';
+
+  @override
+  String get spatialGuideRiskScorePurpose =>
+      'Ranks zones by operational urgency rather than raw count alone.';
+
+  @override
+  String get spatialGuideRiskScoreTells =>
+      'Higher Risk means more severe, overdue, or unaddressed issues clustered there.';
+
+  @override
+  String get spatialGuideAcceleratingTitle => '\"Accelerating\" Badge';
+
+  @override
+  String get spatialGuideAcceleratingWhat =>
+      'Triggered when a zone logs >= 3 reports in the last 30 days and >= 2x the 30-day average of the preceding 90 days.';
+
+  @override
+  String get spatialGuideAcceleratingPurpose =>
+      'Early warning for newly emerging or worsening problem areas.';
+
+  @override
+  String get spatialGuideAcceleratingTells =>
+      'Zones deteriorating faster than historical baseline that need field inspection.';
+
+  @override
+  String get spatialGuideStatsTitle => 'Zone Stats (30d • Prev avg • Pending)';
+
+  @override
+  String get spatialGuideStatsWhat =>
+      'Shows last-30d report count, prior 90-day 30d baseline average, and currently pending reports in the cell.';
+
+  @override
+  String get spatialGuideStatsPurpose =>
+      'Provides clear before/after context for each zone.';
+
+  @override
+  String get spatialGuideStatsTells =>
+      'Whether inflow in this area is outpacing local resolution.';
+
+  @override
+  String get callFreeVoiceDesc => 'Free internet voice call';
+
+  @override
+  String get callPermissionDenied =>
+      'Voice call unavailable for this conversation';
+
+  @override
+  String get rehandlingReportsSection => 'Re-handling reports';
+
+  @override
+  String get checkingEligibility => 'Checking eligibility...';
+
+  @override
+  String get attachRehandlingReports => 'Attach re-handling reports';
+
+  @override
+  String get cannotMessageAnonymousNotice =>
+      'Anonymous user: only in-app chat and free calls are supported.';
+
+  @override
+  String get routeSosCenter => 'SOS alerts';
+
+  @override
+  String get sosTabOpen => 'Open';
+
+  @override
+  String get sosTabResolved => 'Closed';
+
+  @override
+  String get sosEmptyOpen => 'No SOS is open right now.';
+
+  @override
+  String get sosEmptyResolved => 'No SOS has ended yet.';
+
+  @override
+  String get sosStatusActive => 'Awaiting response';
+
+  @override
+  String get sosStatusAcknowledged => 'Being handled';
+
+  @override
+  String get sosResolutionSafe => 'Sender is safe';
+
+  @override
+  String get sosResolutionHandled => 'Handled';
+
+  @override
+  String get sosResolutionFalseAlarm => 'False alarm';
+
+  @override
+  String sosSentAt(Object time) {
+    return 'Sent at $time';
+  }
+
+  @override
+  String sosHandledBy(Object name) {
+    return '$name is handling it';
+  }
+
+  @override
+  String sosLocationUpdatedAt(Object time) {
+    return 'Location updated at $time';
+  }
+
+  @override
+  String sosSignalLost(Object time) {
+    return 'No new location since $time';
+  }
+
+  @override
+  String sosAccuracy(Object meters) {
+    return 'Accurate to about $meters m';
+  }
+
+  @override
+  String sosNotifiedContacts(Object count) {
+    return '$count emergency contacts alerted';
+  }
+
+  @override
+  String get sosOpenMap => 'Open map';
+
+  @override
+  String sosCallSender(Object name) {
+    return 'Call $name';
+  }
+
+  @override
+  String get sosAcknowledge => 'Take this SOS';
+
+  @override
+  String get sosResolve => 'End SOS';
+
+  @override
+  String sosResolveTitle(Object name) {
+    return 'End the SOS from $name?';
+  }
+
+  @override
+  String get sosResolveHandled => 'Help was given';
+
+  @override
+  String get sosResolveFalseAlarm => 'False alarm';
+
+  @override
+  String get sosResolveNote => 'Note (optional)';
+
+  @override
+  String get sosAcknowledgedToast => 'You took this SOS';
+
+  @override
+  String get sosResolvedToast => 'SOS ended';
+
+  @override
+  String get sosTrackTitle => 'Recent locations';
+
+  @override
+  String get sosLoadFailed => 'Could not load SOS alerts.';
+
+  @override
+  String sosEndedAt(Object time) {
+    return 'Ended at $time';
+  }
+
+  @override
+  String get sosCannotOpenMap => 'Could not open the map';
 }

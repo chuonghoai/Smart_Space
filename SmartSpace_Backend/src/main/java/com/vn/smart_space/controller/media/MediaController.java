@@ -32,7 +32,7 @@ public class MediaController {
     public ResponseEntity<ApiResponse> getSignature() {
         Map<String, Object> data = cloudinaryService.getUploadSignature();
         return ResponseEntity.ok(ApiResponse.success(
-                "Lấy thông tin upload Cloudinary thành công", data));
+                "media.signature.success", data));
     }
 
     // Xác nhận upload
@@ -42,7 +42,7 @@ public class MediaController {
             @Valid @RequestBody MediaConfirmRequest request) {
         UploadResponse data = cloudinaryService.confirmMedia(request);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("Xác nhận media thành công", data));
+                .body(ApiResponse.success("media.confirm.success", data));
     }
 
     // Dọn file rác
@@ -51,7 +51,7 @@ public class MediaController {
     public ResponseEntity<ApiResponse> cleanupTmp() {
         Map<String, Object> result = cloudinaryService.cleanupTemporaryMedia();
         return ResponseEntity.ok(ApiResponse.success(
-                "Dọn dẹp file tạm thành công", result));
+                "media.cleanup.success", result));
     }
 
 }

@@ -1,6 +1,11 @@
-import 'package:smartspace_client/core/api/api_response.dart';
+import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:smartspace_client/features/notifications/models/notification_count_model.dart';
+import 'package:smartspace_client/features/notifications/models/notification_model.dart';
 
 abstract class NotificationRepo {
   Future<ApiResponse<NotificationCountModel>> getUnreadCount();
+  /// [page] tính từ 0. [unreadOnly] = chỉ thông báo chưa đọc (bộ lọc "Chưa đọc").
+  Future<ApiResponse<List<NotificationModel>>> getMyNotifications({int page = 0, int size = 20, bool unreadOnly = false});
+  Future<ApiResponse<void>> markAllAsRead();
+  Future<ApiResponse<void>> markAsRead(String id);
 }

@@ -62,7 +62,6 @@
   "pleaseEnterEmail": "Vui lòng nhập email",
   "pleaseEnterOTP": "Vui lòng nhập mã OTP",
   "pleaseEnterPassword": "Vui lòng nhập mật khẩu",
-  "passwordsDoNotMatch": "Mật khẩu không khớp",
   "pleaseEnterFullName": "Vui lòng nhập họ tên",
   "pleaseEnterPhoneNumber": "Vui lòng nhập số điện thoại",
   "send": "Gửi",
@@ -73,6 +72,21 @@
   "forgotPasswordTitle": "Quên mật khẩu",
   "forgotPasswordSubtitle": "Nhập email của bạn để nhận mã OTP",
   "pleaseEnterConfirmPassword": "Vui lòng xác nhận mật khẩu",
+  "backToLogin": "Quay lại đăng nhập",
+  "adminPortalBadge": "Cổng Quản Trị & Điều Hành Đô Thị",
+  "adminPortalSubtitle": "Hệ thống quản trị tập trung hạ tầng đô thị, giám sát phản ánh và điều phối hoạt động cộng đồng.",
+  "adminFeatureRealtime": "Giám sát thời gian thực",
+  "adminFeatureRealtimeDesc": "Theo dõi trực tiếp sự cố đô thị, cảnh báo và phản hồi từ người dân.",
+  "adminFeatureCoordination": "Điều phối xử lý sự cố",
+  "adminFeatureCoordinationDesc": "Phân công nhiệm vụ và giám sát tiến độ xử lý của nhân viên vận hành.",
+  "adminFeatureSecurity": "Bảo mật & Phân quyền",
+  "adminFeatureSecurityDesc": "Kiểm soát phân quyền theo vai trò và bảo vệ phiên làm việc an toàn.",
+  "forgotPasswordHeroTitle": "Khôi Phục Bảo Mật Tài Khoản",
+  "forgotPasswordHeroSubtitle": "Quy trình xác thực hai bước bảo mật để khôi phục quyền truy cập quản trị.",
+  "stepEmailVerification": "1. Yêu cầu mã xác thực gửi về email đã đăng ký",
+  "stepPasswordReset": "2. Xác thực mã OTP và thiết lập mật khẩu mới an toàn",
+  "forgotPasswordHelpNote": "Nếu không còn quyền truy cập email này, vui lòng liên hệ quản trị viên cấp cao.",
+  "systemSecureNotice": "Môi trường quản trị bảo mật SmartSpace",
   "search": "Tìm kiếm",
   "createReport": "Tạo phản ánh",
   "subTitleCreateReport": "Báo cáo vấn đề an ninh, môi trường",
@@ -111,6 +125,7 @@
   "reportStatusRejected": "Từ chối",
   "reportStatusUnknown": "Khác",
   "sessionExpired": "Phiên đăng nhập hết hạn",
+  "sessionRevokedOnThisDevice": "Bạn đã bị đăng xuất khỏi thiết bị này từ một thiết bị khác.",
   "settingsTitle": "Cài đặt",
   "accountSection": "Tài khoản",
   "shareHistory": "Lịch sử chia sẻ",
@@ -129,7 +144,6 @@
   "logoutConfirmTitle": "Đăng xuất",
   "logoutConfirmMessage": "Bạn có chắc chắn muốn đăng xuất?",
   "cancel": "Hủy",
-
   "changePasswordTitle": "Đổi mật khẩu",
   "currentPassword": "Mật khẩu hiện tại",
   "confirmNewPassword": "Nhập lại mật khẩu mới",
@@ -142,5 +156,1428 @@
   "changePasswordFailed": "Đổi mật khẩu thất bại",
   "passwordReqLength": "Mật khẩu phải từ 8 đến 20 ký tự",
   "passwordReqMixed": "Bao gồm số, chữ viết hoa, chữ viết thường",
-  "passwordReqSpecial": "Bao gồm ít nhất một ký tự đặc biệt !@#$^()_"
+  "passwordReqSpecial": "Bao gồm ít nhất một ký tự đặc biệt !@#$^()_",
+  "users": "Người dùng",
+  "staff": "Nhân viên",
+  "admins": "Quản trị viên",
+  "issues": "Vấn đề",
+  "needsYourAttention": "Cần bạn chú ý",
+  "recentActivity": "Hoạt động gần đây",
+  "all": "Tất cả",
+  "pendingConfirmation": "Chờ xác nhận",
+  "inProgress": "Đang xử lý",
+  "resolved": "Đã xử lý",
+  "noRecentActivity": "Không có hoạt động gần đây",
+  "adminOverview": "Tổng quan",
+  "noPendingReports": "Không có báo cáo nào đang chờ",
+  "pendingReportsAttention": "Bạn có {count} báo cáo đang chờ cần xác nhận.",
+  "@pendingReportsAttention": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "newBadge": "Mới",
+  "actionView": "Xem",
+  "newReportToastTitle": "Có phản ánh mới",
+  "pendingIssues": "Chờ xử lý",
+  "processingIssues": "Đang xử lý",
+  "viewAllReports": "Xem tất cả",
+  "newReportsSectionTitle": "Phản ánh mới tiếp nhận",
+  "noAddress": "Chưa cập nhật địa chỉ",
+  "reportDetailTitle": "Chi tiết phản ánh",
+  "reportInfoSection": "Thông tin phản ánh",
+  "reporterInfoSection": "Người gửi",
+  "anonymousUser": "Ẩn danh",
+  "anonymousDescription": "Người dùng đã ẩn danh tính khi gửi phản ánh này",
+  "locationSection": "Vị trí sự cố",
+  "openInGoogleMaps": "Mở Google Maps",
+  "assignStaffSection": "Phân công nhân viên",
+  "selectStaffPrompt": "Chọn nhân viên xử lý",
+  "noStaffAvailable": "Không tìm thấy nhân viên nào trong hệ thống",
+  "severitySection": "Mức độ nghiêm trọng",
+  "severityLow": "Thấp",
+  "severityMedium": "Trung bình",
+  "severityHigh": "Cao",
+  "severityCritical": "Nghiêm trọng",
+  "processReportButton": "Xử lý phản ánh",
+  "assignSuccessMessage": "Phân công nhân viên và bắt đầu xử lý thành công!",
+  "assignFailedMessage": "Không thể xử lý phản ánh, vui lòng thử lại.",
+  "assignedStaffInfo": "Nhân viên đang phụ trách",
+  "createdAtLabel": "Thời gian gửi",
+  "statusLabel": "Trạng thái",
+  "cannotOpenMaps": "Không thể mở ứng dụng bản đồ",
+  "changeStaff": "Thay đổi nhân viên",
+  "noImageAvailable": "Không có hình ảnh",
+  "anonymousAdminNotice": "Phản ánh ẩn danh (Chỉ quản trị viên mới có thể xem thông tin này)",
+  "anonymousUserNote": "Người dùng đăng bài viết ẩn danh",
+  "manageReports": "Quản lý phản ánh",
+  "manageUsers": "Quản lý người dùng",
+  "manageStaffs": "Quản lý nhân viên",
+  "spaceMap": "Bản đồ không gian",
+  "addStaff": "Thêm nhân viên",
+  "activeStatus": "Hoạt động",
+  "blockedStatus": "Đã khoá",
+  "staffMember": "Nhân viên",
+  "processingStatus": "Đang xử lý",
+  "viewDetails": "Xem chi tiết",
+  "staffNotFound": "Không tìm thấy nhân viên",
+  "filterByStatus": "Trạng thái",
+  "addNewStaff": "Thêm nhân viên mới",
+  "create": "Tạo",
+  "addStaffSuccess": "Đã thêm nhân viên thành công",
+  "totalStaff": "Tổng nhân viên",
+  "phoneNumber": "SĐT",
+  "statusTitle": "Trạng thái",
+  "noStaffInSystem": "Chưa có nhân viên nào trong hệ thống",
+  "noStaffFound": "Không tìm thấy nhân viên nào phù hợp",
+  "lockAccount": "Khoá tài khoản",
+  "unlockAccount": "Mở khoá tài khoản",
+  "lockAccountConfirm": "Bạn có chắc muốn khoá tài khoản nhân viên này?",
+  "unlockAccountConfirm": "Bạn có chắc muốn mở khoá tài khoản nhân viên này?",
+  "updateStatusSuccess": "Cập nhật trạng thái thành công",
+  "updateStatusFailed": "Cập nhật trạng thái thất bại",
+  "processingReports": "{count} phản ánh đang xử lý",
+  "@processingReports": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dateOfBirth": "Ngày sinh",
+  "gender": "Giới tính",
+  "genderMale": "Nam",
+  "genderFemale": "Nữ",
+  "genderOther": "Khác",
+  "createStaff": "Tạo nhân viên",
+  "uploadAvatar": "Tải ảnh đại diện",
+  "changeAvatar": "Đổi ảnh",
+  "avatarSizeError": "Ảnh phải nhỏ hơn 5MB",
+  "selectDate": "Chọn ngày",
+  "selectGender": "Chọn giới tính",
+  "addStaffFailed": "Thêm nhân viên thất bại",
+  "editStaff": "Chỉnh sửa nhân viên",
+  "updateStaff": "Cập nhật",
+  "updateStaffSuccess": "Cập nhật thành công",
+  "updateStaffFailed": "Cập nhật thất bại",
+  "staffEmailNotEditable": "Email đăng nhập không thể thay đổi",
+  "editInfo": "Chỉnh sửa",
+  "staffStatusChart": "Trạng thái nhân viên",
+  "workloadChart": "Khối lượng công việc",
+  "activeStaff": "Đang hoạt động",
+  "blockedStaff": "Đã khoá",
+  "reportsProcessing": "báo cáo đang xử lý",
+  "noWorkloadData": "Chưa có nhân viên nào đang xử lý báo cáo",
+  "reportDashboard": "Thống kê phản ánh",
+  "totalReports": "Tổng phản ánh",
+  "pendingReports": "Chờ xử lý",
+  "processingReportsLabel": "Đang xử lý",
+  "resolvedReports": "Đã xử lý",
+  "rejectedReports": "Từ chối",
+  "reportTrend": "Xu hướng phản ánh",
+  "daily": "Ngày",
+  "weekly": "Tuần",
+  "monthly": "Tháng",
+  "severityDistribution": "Phân bổ theo mức độ",
+  "noData": "Chưa có dữ liệu",
+  "reportList": "Danh sách phản ánh",
+  "tableView": "Bảng",
+  "kanbanView": "Kanban",
+  "filterBySeverity": "Mức độ",
+  "filterByAssignee": "Nhân viên phụ trách",
+  "selectDateRange": "Chọn ngày",
+  "clearFilters": "Xóa bộ lọc",
+  "reporter": "Người gửi",
+  "reportIdShort": "Mã",
+  "noReportsFound": "Không tìm thấy phản ánh nào",
+  "loadMore": "Xem thêm",
+  "invalidTransition": "Không thể chuyển trạng thái này",
+  "reportTitle": "Tiêu đề",
+  "severityLabel": "Mức độ",
+  "assignee": "Nhân viên",
+  "createdDate": "Ngày tạo",
+  "pendingStatus": "Chờ xử lý",
+  "editProfile": "Chỉnh sửa hồ sơ",
+  "saveChanges": "Lưu thay đổi",
+  "profileUpdateSuccess": "Cập nhật hồ sơ thành công",
+  "profileUpdateFailed": "Cập nhật hồ sơ thất bại",
+  "mapFilterTitle": "Lọc phản ánh",
+  "mapHeatmapMode": "Bản đồ nhiệt",
+  "mapMarkerMode": "Điểm đánh dấu",
+  "mapClusterCount": "{count} phản ánh",
+  "@mapClusterCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapStaffTracking": "Theo dõi nhân viên",
+  "mapNewReportToast": "Phản ánh mới tại {address}",
+  "@mapNewReportToast": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "mapAssignStaff": "Giao nhân viên",
+  "mapNearestStaff": "Nhân viên gần nhất",
+  "mapViewDetail": "Xem chi tiết",
+  "mapNoReportsInArea": "Không có phản ánh trong khu vực này",
+  "mapFilterStatus": "Trạng thái",
+  "mapFilterSeverity": "Mức độ",
+  "mapFilterDateRange": "Khoảng thời gian",
+  "mapFilterAssignee": "Người được giao",
+  "mapFilterAll": "Tất cả",
+  "mapFilterClear": "Xóa bộ lọc",
+  "mapFilterApply": "Áp dụng",
+  "mapLegendTitle": "Chú thích",
+  "mapRefresh": "Làm mới",
+  "mapMyLocation": "Vị trí của tôi",
+  "minuteAgo": "phút trước",
+  "hourAgo": "giờ trước",
+  "dayAgo": "ngày trước",
+  "routeHome": "Trang chủ",
+  "routeSettings": "Cài đặt",
+  "routeEditProfile": "Chỉnh sửa hồ sơ",
+  "routeChangePassword": "Đổi mật khẩu",
+  "routeStaffManagement": "Quản lý nhân viên",
+  "routeReportDashboard": "Thống kê phản ánh",
+  "routeReportList": "Danh sách phản ánh",
+  "routeSpaceMap": "Bản đồ không gian",
+  "mapQuickAssignTitle": "Phân công nhanh",
+  "mapSelectSeverity": "Chọn mức độ",
+  "routeNotifications": "Thông báo",
+  "emptyNotification": "Không có thông báo nào",
+  "justNow": "Vừa xong",
+  "markAllAsRead": "Đánh dấu đã đọc tất cả",
+  "unassignedStaff": "Chưa phân công",
+  "assignedTo": "Phụ trách",
+  "routePositionManagement": "Quản lý chức vụ",
+  "managePositions": "Quản lý chức vụ",
+  "positionLabel": "Chức vụ",
+  "positionName": "Tên chức vụ",
+  "positionCode": "Mã chức vụ",
+  "positionDescription": "Mô tả",
+  "addPosition": "Thêm chức vụ",
+  "editPosition": "Sửa chức vụ",
+  "deletePosition": "Xóa chức vụ",
+  "deletePositionConfirm": "Bạn có chắc chắn muốn xóa chức vụ này?",
+  "positionInactive": "Ngừng hoạt động",
+  "positionActiveLabel": "Đang hoạt động",
+  "noPosition": "Chưa có chức vụ",
+  "selectPosition": "Chọn chức vụ",
+  "filterByPosition": "Lọc theo chức vụ",
+  "allPositions": "Tất cả chức vụ",
+  "emptyPositionList": "Chưa có chức vụ nào",
+  "positionStaffCount": "{count} nhân viên",
+  "@positionStaffCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "positionSaveSuccess": "Lưu chức vụ thành công",
+  "positionDeleteSuccess": "Xóa chức vụ thành công",
+  "positionActionFailed": "Không thể thực hiện. Vui lòng thử lại",
+  "positionNameRequired": "Vui lòng nhập tên chức vụ",
+  "positionCodeRequired": "Vui lòng nhập mã chức vụ",
+  "totalPositions": "Tổng chức vụ",
+  "positionAssignedStaff": "Nhân viên đã gán",
+  "actionsColumn": "Thao tác",
+  "positionCodeHint": "VD: ELECTRICIAN, PLUMBER",
+  "loggedInDevices": "Thiết bị đã đăng nhập",
+  "thisDevice": "Thiết bị này",
+  "activeNow": "Đang hoạt động",
+  "logoutDevice": "Đăng xuất",
+  "logoutDeviceConfirmTitle": "Đăng xuất khỏi thiết bị?",
+  "logoutDeviceConfirmMessage": "Phiên đăng nhập trên \"{deviceName}\" sẽ bị kết thúc.",
+  "@logoutDeviceConfirmMessage": {
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "logoutAllOtherDevices": "Đăng xuất tất cả thiết bị khác",
+  "logoutAllConfirmTitle": "Đăng xuất tất cả thiết bị khác?",
+  "logoutAllConfirmMessage": "Tất cả phiên ngoại trừ thiết bị này sẽ bị kết thúc.",
+  "noOtherDevices": "Không có thiết bị khác đang đăng nhập.",
+  "deviceLogoutSuccess": "Đã đăng xuất thiết bị.",
+  "allDevicesLogoutSuccess": "Đã đăng xuất tất cả thiết bị khác.",
+  "routeManageDevices": "Quản lý thiết bị",
+  "routeUserManagement": "Quản lý người dùng",
+  "totalUsers": "Tổng người dùng",
+  "newUsers30Days": "Người dùng mới (30 ngày)",
+  "activeReporters30Days": "Người đóng góp (30 ngày)",
+  "reports30Days": "Phản ánh (30 ngày)",
+  "percentOfUsers": "{percent}% tổng người dùng",
+  "@percentOfUsers": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "changeVsPrevious30Days": "{change} so với 30 ngày trước",
+  "@changeVsPrevious30Days": {
+    "placeholders": {
+      "change": {
+        "type": "String"
+      }
+    }
+  },
+  "noPreviousPeriodData": "Chưa có dữ liệu 30 ngày trước",
+  "registrationTrend": "Đăng ký mới",
+  "newUsersCount": "{count} người dùng mới",
+  "@newUsersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weekOf": "Tuần từ {date}",
+  "@weekOf": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "topContributors": "Đóng góp nhiều nhất",
+  "anonymousReportsExcluded": "Không tính phản ánh ẩn danh",
+  "reportCountLabel": "{count} phản ánh",
+  "@reportCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportsColumn": "Phản ánh",
+  "joinedDate": "Ngày tham gia",
+  "joinedOn": "Tham gia {date}",
+  "@joinedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "sortBy": "Sắp xếp",
+  "sortNewest": "Mới nhất",
+  "sortOldest": "Cũ nhất",
+  "sortByName": "Tên (A–Z)",
+  "searchUsersHint": "Tìm theo tên, email hoặc số điện thoại",
+  "noUsersInSystem": "Chưa có người dùng nào",
+  "noUsersFound": "Không tìm thấy người dùng phù hợp",
+  "userDetailTitle": "Chi tiết người dùng",
+  "reportActivity": "Hoạt động phản ánh",
+  "noPublicReports": "Người dùng chưa có phản ánh công khai",
+  "notProvided": "Chưa cập nhật",
+  "allUsersLoaded": "Đã hiển thị tất cả người dùng",
+  "loadMoreFailed": "Không tải thêm được người dùng",
+  "statistics": "Thống kê",
+  "statisticsLoadFailed": "Không tải được thống kê",
+  "closeAction": "Đóng",
+  "paginationSummary": "{from}–{to} / {total}",
+  "@paginationSummary": {
+    "placeholders": {
+      "from": {
+        "type": "int"
+      },
+      "to": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "staffActiveBlocked": "{active} hoạt động · {blocked} đã khoá",
+  "@staffActiveBlocked": {
+    "placeholders": {
+      "active": {
+        "type": "int"
+      },
+      "blocked": {
+        "type": "int"
+      }
+    }
+  },
+  "reportsInProgress": "Phản ánh đang xử lý",
+  "avgPerActiveStaff": "TB {value} / nhân viên hoạt động",
+  "@avgPerActiveStaff": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "resolved30Days": "Đã xử lý (30 ngày)",
+  "avgResolutionTime30Days": "Thời gian xử lý TB (30 ngày)",
+  "notEnoughData": "Chưa đủ dữ liệu",
+  "durationMinutes": "{value} phút",
+  "@durationMinutes": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "durationHours": "{value} giờ",
+  "@durationHours": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "durationDays": "{value} ngày",
+  "@durationDays": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "processingFlow": "Luồng xử lý",
+  "assignedSeries": "Được phân công",
+  "resolvedSeries": "Đã xử lý",
+  "assignedReportsCount": "{count} được phân công",
+  "@assignedReportsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "resolvedReportsCount": "{count} đã xử lý",
+  "@resolvedReportsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "workloadSubtitle": "Số phản ánh đang xử lý theo nhân viên",
+  "resolvedLast30Days": "{count} đã xử lý trong 30 ngày",
+  "@resolvedLast30Days": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "resolutionInfo": "Kết quả xử lý",
+  "resolutionImages": "Ảnh kết quả xử lý",
+  "noResolutionImages": "Nhân viên không đính kèm hình ảnh",
+  "resolutionNote": "Ghi chú xử lý",
+  "staffNoAdditionalNote": "{staffName} không có ghi chú gì thêm",
+  "@staffNoAdditionalNote": {
+    "placeholders": {
+      "staffName": {
+        "type": "String"
+      }
+    }
+  },
+  "resolvedAtLabel": "Thời gian hoàn thành",
+  "citizenReviewUnresolved": "Người dân phản hồi: Chưa được xử lý",
+  "citizenRating": "Đánh giá",
+  "citizenReviewReason": "Lý do chưa xử lý thỏa đáng",
+  "citizenReviewPhotos": "Hình ảnh người dân cung cấp",
+  "reopenReportButton": "Yêu cầu xử lý lại",
+  "reopenReportConfirmTitle": "Yêu cầu xử lý lại phản ánh?",
+  "reopenReportConfirmMessage": "Trạng thái phản ánh sẽ được chuyển về 'Đang xử lý' và gửi thông báo yêu cầu nhân viên phụ trách thực hiện xử lý lại.",
+  "reopenReportSuccess": "Đã chuyển trạng thái về Đang xử lý và thông báo cho nhân viên!",
+  "unsatisfactoryBannerTitle": "Phản ánh chưa thỏa đáng",
+  "unsatisfactoryProcessedCountFormat": "{count} chưa thỏa đáng",
+  "@unsatisfactoryProcessedCountFormat": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rehandlingProcessingCountFormat": "{count} đang xử lý",
+  "@rehandlingProcessingCountFormat": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unsatisfactoryPendingTab": "Chờ xử lý",
+  "unsatisfactoryProcessingTab": "Đang xử lý",
+  "rehandlingBadge": "Xử lý lại",
+  "routeUnsatisfactoryReports": "Phản ánh chưa thỏa đáng",
+  "noUnsatisfactoryPending": "Không có phản ánh nào chờ xử lý",
+  "noUnsatisfactoryProcessing": "Không có phản ánh nào đang xử lý lại",
+  "manageNews": "Quản lý tin tức",
+  "quickAccess": "Truy cập nhanh",
+  "emptyNewsTitle": "Chưa có tin tức nào",
+  "emptyNewsDescription": "Hiện tại chưa có tin tức nào được đăng tải. Hãy tạo tin tức mới để thông báo tới cộng đồng.",
+  "createNewNews": "Tạo tin tức mới",
+  "editNews": "Chỉnh sửa tin tức",
+  "newsTitle": "Tiêu đề tin tức",
+  "newsTitleHint": "Nhập tiêu đề tin tức...",
+  "newsTitleRequired": "Vui lòng nhập tiêu đề tin tức",
+  "newsContent": "Nội dung tin tức",
+  "newsContentHint": "Nhập nội dung bài viết...",
+  "newsContentRequired": "Vui lòng nhập nội dung tin tức",
+  "newsImages": "Hình ảnh đính kèm",
+  "addImages": "Thêm hình ảnh",
+  "preview": "Xem trước",
+  "editor": "Soạn thảo",
+  "newsDetail": "Chi tiết tin tức",
+  "deleteNews": "Xóa tin tức",
+  "confirmDeleteNewsTitle": "Xác nhận xóa tin tức",
+  "confirmDeleteNews": "Bạn có chắc chắn muốn xóa tin tức này không? Thao tác này không thể hoàn tác.",
+  "deleteNewsSuccess": "Xóa tin tức thành công",
+  "createNewsSuccess": "Đăng tin tức thành công",
+  "updateNewsSuccess": "Cập nhật tin tức thành công",
+  "newsAuthor": "Người đăng",
+  "newsCreatedDate": "Ngày đăng",
+  "newsCreatedTime": "Thời gian",
+  "routeNewsManagement": "Quản lý tin tức",
+  "routeCreateNews": "Tạo tin tức",
+  "routeNewsDetail": "Chi tiết tin tức",
+  "routeEditNews": "Chỉnh sửa tin tức",
+  "formatBold": "In đậm",
+  "formatItalic": "In nghiêng",
+  "formatHeading": "Tiêu đề",
+  "formatBulletList": "Danh sách",
+  "formatNumberedList": "Đánh số",
+  "formatQuote": "Trích dẫn",
+  "formatCode": "Mã nguồn",
+  "sendNotification": "Gửi thông báo",
+  "sendNotificationSubtitle": "Phát thông báo đẩy tới người dùng khi tin tức được tạo",
+  "notificationTarget": "Đối tượng nhận thông báo",
+  "targetAll": "Tất cả",
+  "targetAdmin": "Quản trị viên",
+  "targetStaff": "Nhân viên",
+  "targetClient": "Khách hàng",
+  "livePreview": "Bản xem trước trực tiếp",
+  "latestNews": "Tin tức mới nhất",
+  "viewAllNews": "Xem tất cả",
+  "allActivities": "Tất cả hoạt động gần đây",
+  "filterActor": "Người thực hiện",
+  "filterTopic": "Chủ đề",
+  "actorAll": "Tất cả",
+  "actorAdmin": "Admin",
+  "actorStaff": "Nhân viên",
+  "topicAll": "Tất cả",
+  "topicNews": "Tin tức",
+  "topicReportCreate": "Tạo phản ánh",
+  "topicReportAssign": "Phân công phản ánh",
+  "topicReportProcess": "Xử lý phản ánh",
+  "noActivitiesFound": "Không tìm thấy hoạt động nào",
+  "routeAllActivities": "Tất cả hoạt động gần đây",
+  "mapClusterReportsTitle": "Khu vực này có {count} phản ánh",
+  "@mapClusterReportsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapClusterSortHint": "Chờ xử lý trước, mới nhất trước",
+  "mapZoomInForMore": "Phóng to để xem thêm phản ánh",
+  "mapLoadReportsFailed": "Không tải được phản ánh trên bản đồ",
+  "viewOnMap": "Xem trên bản đồ",
+  "mapFocusedReportHidden": "Phản ánh này không khớp bộ lọc hiện tại của bản đồ",
+  "locationDescriptionLabel": "Mô tả vị trí",
+  "invalidNumber": "Giá trị không hợp lệ",
+  "copySuccess": "Đã sao chép vào bộ nhớ tạm",
+  "copy": "Sao chép",
+  "note": "Ghi chú",
+  "adminNote": "Ghi chú xử lý",
+  "processedAt": "Thời gian xử lý",
+  "createdAt": "Thời gian tạo",
+  "statusPending": "Chờ duyệt",
+  "statusApproved": "Đã duyệt",
+  "statusRejected": "Từ chối",
+  "filterAll": "Tất cả",
+  "searchStaffHint": "Tìm theo tên, email, SĐT...",
+  "viewReportDetail": "Xem chi tiết phản ánh",
+  "copied": "Đã sao chép",
+  "statusCancelled": "Đã hủy",
+  "connectionStable": "Kết nối ổn định",
+  "connectionConnecting": "Đang thiết lập kết nối...",
+  "connectionDisconnected": "Mất kết nối. Bấm để thử lại.",
+  "scrollLeft": "Cuộn sang trái",
+  "scrollRight": "Cuộn sang phải",
+  "staffCreatedTitle": "Đã tạo tài khoản nhân viên",
+  "staffCreatedCredentialsSent": "Mật khẩu đăng nhập đã được gửi tới:",
+  "staffCreatedCheckInboxHint": "Nhắc nhân viên kiểm tra hộp thư (kể cả mục Thư rác) và đổi mật khẩu sau khi đăng nhập lần đầu.",
+  "mapSettings": "Cài đặt bản đồ",
+  "mapDensityToggle": "Mật độ phản ánh",
+  "mapDensityDescription": "Hiển thị lưới mật độ H3 theo cấp độ báo cáo",
+  "densityLegendTitle": "Mật độ phản ánh",
+  "densityLow": "1–2 phản ánh (Thấp)",
+  "densityMedium": "3–5 phản ánh (Trung bình)",
+  "densityHigh": "Trên 5 phản ánh (Cao)",
+  "filterTimeframe": "Khoảng thời gian",
+  "timeframeAll": "Tất cả",
+  "timeframe1Month": "1 tháng",
+  "timeframe3Months": "3 tháng",
+  "timeframe6Months": "6 tháng",
+  "timeframe9Months": "9 tháng",
+  "timeframe12Months": "12 tháng",
+  "filterReports": "Lọc phản ánh",
+  "myLocation": "Vị trí của tôi",
+  "locationPermissionDenied": "Quyền truy cập vị trí bị từ chối",
+  "locationServiceDisabled": "Dịch vụ định vị đang tắt",
+  "routeConversations": "Tin nhắn",
+  "routeChatDetail": "Chi tiết tin nhắn",
+  "conversations": "Hội thoại",
+  "messages": "Tin nhắn",
+  "noConversations": "Chưa có hội thoại nào",
+  "noConversationsSub": "Hội thoại mới sẽ xuất hiện tại đây khi bắt đầu trao đổi.",
+  "searchConversationsPlaceholder": "Tìm kiếm theo tên hoặc nội dung...",
+  "filterRoleAll": "Tất cả",
+  "filterRoleClient": "Cư dân",
+  "filterRoleStaff": "Nhân viên",
+  "filterRoleAdmin": "Quản trị viên",
+  "filterPosition": "Vị trí",
+  "filterPositionAll": "Tất cả vị trí",
+  "filterPositionSheetTitle": "Lọc theo chức vụ nhân viên",
+  "applyFilter": "Áp dụng",
+  "resetFilter": "Đặt lại",
+  "cannotMessageClientTitle": "Không thể nhắn tin trực tiếp",
+  "cannotMessageClientMessage": "Chỉ được nhắn tin hoặc gọi miễn phí cho cư dân khi cư dân có ít nhất một phản ánh đang xử lý lại.",
+  "phoneNotAvailable": "Số điện thoại không khả dụng",
+  "cannotLaunchPhone": "Không thể khởi chạy ứng dụng gọi điện thoại",
+  "chatWithUser": "Nhắn tin",
+  "callUser": "Gọi điện",
+  "conversationLockedNotice": "Hội thoại này đã kết thúc do phản ánh đã hoàn thành xử lý. Khung chat đang ở chế độ chỉ đọc.",
+  "messageInputPlaceholder": "Nhập tin nhắn...",
+  "anonymousUser": "Ẩn danh",
+  "systemNotification": "Thông báo hệ thống",
+  "yesterday": "Hôm qua",
+  "activeStaff": "Nhân viên",
+  "reporter": "Người phản ánh",
+  "callStaff": "Gọi cho nhân viên",
+  "messageStaff": "Nhắn tin cho nhân viên",
+  "callReporter": "Gọi cho người phản ánh",
+  "messageReporter": "Nhắn tin cho người phản ánh",
+  "routeConversationInfo": "Thông tin hội thoại",
+  "conversationInfoTitle": "Thông tin hội thoại",
+  "activeReportsSection": "Phản ánh đang xử lý",
+  "allReportsProcessed": "Tất cả phản ánh đã được xử lý xong",
+  "conversationClosedNotice": "Cuộc hội thoại đã đóng do toàn bộ phản ánh đã hoàn tất",
+  "conversationActiveNotice": "Cuộc hội thoại đang hoạt động",
+  "callButtonLabel": "Gọi điện",
+  "videoCallButtonLabel": "Video call",
+  "videoCallComingSoon": "Tính năng gọi video call đang phát triển",
+  "anonymousUserProtectionNote": "Thông tin người dùng ẩn danh được bảo vệ",
+  "conversationRefreshed": "Đã làm mới thông tin và tin nhắn hội thoại",
+  "conversationRefreshFailed": "Không thể làm mới hội thoại, vui lòng thử lại sau",
+  "anonymousPerson": "Người dùng ẩn danh",
+  "otherUsers": "Người dùng khác",
+  "cannotMakePhoneCall": "Không thể thực hiện cuộc gọi",
+  "noPhoneNumber": "Chưa cập nhật số điện thoại",
+  "staffNoPosition": "Chưa có chức vụ",
+  "cannotStartChat": "Không thể bắt đầu cuộc trò chuyện",
+  "callOptionsTitle": "Tùy chọn cuộc gọi",
+  "cellularCall": "Gọi điện qua di động",
+  "cellularCallDesc": "Mở ứng dụng gọi điện mặc định",
+  "freeCall": "Gọi miễn phí qua ứng dụng",
+  "featureUnderDevelopment": "Tính năng đang được phát triển",
+  "comingSoon": "Sắp ra mắt",
+  "phoneNotAvailable": "Số điện thoại không khả dụng",
+  "freeCallComingSoon": "Tính năng gọi miễn phí qua internet đang được phát triển",
+  "adminBoard": "Hội đồng quản trị",
+  "routeAdminBoard": "Hội đồng quản trị",
+  "addAdmin": "Thêm quản trị viên",
+  "addNewAdmin": "Thêm quản trị viên mới",
+  "createAdminAction": "Tạo tài khoản",
+  "addAdminFailed": "Không tạo được tài khoản quản trị viên",
+  "youBadge": "Bạn",
+  "lockAdminConfirm": "Khoá tài khoản quản trị viên của {name}? Người này sẽ bị đăng xuất khỏi mọi thiết bị ngay lập tức.",
+  "unlockAdminConfirm": "Mở khoá tài khoản quản trị viên của {name}? Người này sẽ có thể đăng nhập lại.",
+  "cannotLockSelf": "Bạn không thể khoá tài khoản của chính mình",
+  "cannotLockLastAdmin": "Hệ thống cần ít nhất một quản trị viên đang hoạt động",
+  "adminCreatedTitle": "Đã tạo tài khoản quản trị viên",
+  "adminCreatedCheckInboxHint": "Nhắc quản trị viên mới kiểm tra hộp thư (kể cả mục Thư rác) và đổi mật khẩu sau lần đăng nhập đầu tiên.",
+  "noAdminFound": "Không tìm thấy quản trị viên phù hợp",
+  "allAdminsLoaded": "Đã hiển thị tất cả quản trị viên",
+  "loadMoreAdminsFailed": "Không tải thêm được quản trị viên",
+  "invalidPhoneFormat": "Số điện thoại không hợp lệ (8–15 chữ số, có thể bắt đầu bằng +)",
+  "fullnameTooLong": "Họ tên không được vượt quá 100 ký tự",
+  "selectAdminHint": "Chọn một quản trị viên để xem thông tin và hoạt động gần đây",
+  "activityLoadFailed": "Không tải được hoạt động gần đây",
+  "activityHistory": "Lịch sử hoạt động",
+  "adminTotalBadge": "Tổng",
+  "loadMoreActivitiesFailed": "Không tải thêm được hoạt động",
+  "allActivitiesLoaded": "Đã hiển thị tất cả hoạt động",
+  "chooseFromGallery": "Chọn ảnh từ thư viện",
+  "chooseVideo": "Chọn video",
+  "takePhoto": "Chụp ảnh",
+  "attachReport": "Đính kèm phản ánh",
+  "markAsRead": "Đánh dấu đã đọc",
+  "typingText": "đang nhập...",
+  "pressAndHoldToRecord": "Nhấn giữ để ghi âm",
+  "slideLeftToCancel": "Trượt sang để hủy",
+  "releaseToCancel": "Thả để hủy",
+  "selectReportToAttach": "Chọn phản ánh để gửi",
+  "noPositionsAvailable": "Không có chức vụ nào",
+  "voiceMessageSnippet": "Tin nhắn thoại",
+  "imageSnippet": "Hình ảnh",
+  "videoSnippet": "Video",
+  "attachedReportSnippet": "Phản ánh đính kèm",
+  "reportDeadlineLabel": "Hạn xử lý",
+  "deadlineOverdueBadge": "Quá hạn",
+  "expectedCompletionDate": "Dự kiến hoàn thành: {date}",
+  "@expectedCompletionDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "staffDeadlinePerformanceTitle": "Hiệu suất theo hạn xử lý",
+  "staffDeadlinePerformanceSubtitle": "Theo dõi phản ánh đang trễ hạn và lịch sử hoàn thành đúng hạn của nhân viên",
+  "noStaffMissedDeadline": "Chưa ghi nhận nhân viên nào trễ deadline",
+  "staffMissedDeadlineSummary": "{count} đang quá hạn · {lateCount} hoàn thành trễ",
+  "@staffMissedDeadlineSummary": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "lateCount": { "type": "int" }
+    }
+  },
+  "onTimeRateLabel": "{rate}% đúng hạn",
+  "@onTimeRateLabel": {
+    "placeholders": {
+      "rate": { "type": "String" }
+    }
+  },
+  "overdueActiveLabel": "Đang trễ hạn",
+  "completedLateLabel": "Hoàn thành trễ",
+  "completedOnTimeLabel": "Hoàn thành đúng hạn",
+  "missedDeadlineBadge": "Trễ hạn",
+  "onTimeBadge": "Đúng hạn",
+  "noDeadlineRecordsYet": "Chưa có dữ liệu hạn xử lý được phân công",
+  "staffDeadlineStatsBreakdown": "{overdue} quá hạn · {late} trễ · {onTime} đúng hạn",
+  "@staffDeadlineStatsBreakdown": {
+    "placeholders": {
+      "overdue": { "type": "int" },
+      "late": { "type": "int" },
+      "onTime": { "type": "int" }
+    }
+  },
+  "rejectReportButton": "Từ chối phản ánh",
+  "rejectReportConfirmTitle": "Từ chối phản ánh này?",
+  "rejectReportConfirmMessage": "Hành động này sẽ chuyển trạng thái phản ánh thành từ chối và thông báo cho người gửi.",
+  "rejectReportReasonLabel": "Lý do từ chối",
+  "rejectReportReasonHint": "Nhập lý do không thể tiếp nhận hoặc từ chối phản ánh...",
+  "rejectReportReasonRequired": "Vui lòng nhập lý do từ chối",
+  "confirmRejectAction": "Xác nhận từ chối",
+  "rejectSuccessMessage": "Đã từ chối phản ánh",
+  "rejectFailedMessage": "Không thể từ chối phản ánh, vui lòng thử lại",
+  "rejectedReasonTitle": "Lý do từ chối",
+  "noRejectionReasonProvided": "Phản ánh đã bị quản trị viên từ chối.",
+  "lockRequestsTab": "Đề xuất khoá",
+  "lockRequestsTitle": "Đề xuất khoá tài khoản",
+  "lockFilterPending": "Đang chờ",
+  "lockFilterResolved": "Đã kết thúc",
+  "noPendingLockRequests": "Không có đề xuất nào đang chờ biểu quyết",
+  "noResolvedLockRequests": "Chưa có đề xuất nào kết thúc",
+  "loadMoreLockRequestsFailed": "Không tải thêm được đề xuất",
+  "allLockRequestsLoaded": "Đã hiển thị tất cả đề xuất",
+  "selectLockRequestHint": "Chọn một đề xuất để xem chi tiết và biểu quyết",
+  "lockStatusPending": "Đang chờ biểu quyết",
+  "lockStatusApproved": "Đã thông qua",
+  "lockStatusRejected": "Bị bác bỏ",
+  "lockStatusCancelled": "Đã huỷ",
+  "lockStatusExpired": "Hết hạn",
+  "lockProposedBy": "Đề xuất bởi {name}",
+  "lockDeadline": "Hạn biểu quyết: {time}",
+  "lockResolvedAt": "Kết thúc lúc: {time}",
+  "lockApprovalsProgress": "Bảo lãnh {count}/{required}",
+  "lockRejectionsProgress": "Từ chối {count}/{required}",
+  "lockAwaitingYourVote": "Cần bạn biểu quyết",
+  "lockReasonLabel": "Lý do",
+  "lockEvidenceLabel": "Bằng chứng",
+  "lockVotesLabel": "Phiếu biểu quyết",
+  "noVotesYet": "Chưa có phiếu nào",
+  "lockVoteApprove": "Bảo lãnh",
+  "lockVoteReject": "Từ chối",
+  "lockVoteApproveConfirmTitle": "Bảo lãnh đề xuất khoá?",
+  "lockVoteRejectConfirmTitle": "Từ chối đề xuất khoá?",
+  "lockVoteApproveConfirmMessage": "Khi đủ {required} quản trị viên bảo lãnh, tài khoản của {name} sẽ bị khoá ngay. Phiếu đã bỏ không thể thay đổi.",
+  "lockVoteRejectConfirmMessage": "Khi đủ {required} quản trị viên từ chối, đề xuất sẽ bị bác bỏ. Phiếu đã bỏ không thể thay đổi.",
+  "lockVoteCommentHint": "Nhận xét (không bắt buộc)",
+  "lockVoteSubmitted": "Đã ghi nhận phiếu của bạn",
+  "lockVoteBlockedProposer": "Bạn là người đề xuất nên không thể bỏ phiếu",
+  "lockVoteBlockedAlreadyVoted": "Bạn đã bỏ phiếu cho đề xuất này",
+  "lockVoteBlockedClosed": "Đề xuất đã kết thúc biểu quyết",
+  "lockCancelAction": "Huỷ đề xuất",
+  "lockCancelConfirm": "Huỷ đề xuất khoá tài khoản của {name}?",
+  "lockCancelled": "Đã huỷ đề xuất",
+  "lockActionFailed": "Không thực hiện được thao tác. Vui lòng thử lại.",
+  "viewUserProfile": "Xem người dùng",
+  "proposeLockAction": "Đề xuất khoá tài khoản",
+  "proposeLockSubtitle": "Tài khoản chỉ bị khoá khi có {required} quản trị viên khác bảo lãnh trong vòng {hours} giờ.",
+  "lockReasonHint": "Mô tả rõ hành vi vi phạm: chuyện gì xảy ra, khi nào, mức độ ra sao",
+  "lockReasonTooShort": "Lý do cần ít nhất 20 ký tự",
+  "lockEvidenceImages": "Ảnh bằng chứng (tối đa {max})",
+  "lockAddImage": "Thêm ảnh",
+  "lockRemoveImage": "Xoá ảnh",
+  "lockImageTooLarge": "Mỗi ảnh không được vượt quá 5MB",
+  "lockEvidenceReports": "Phản ánh liên quan",
+  "lockNoPublicReports": "Người dùng chưa có phản ánh công khai nào",
+  "lockEvidenceRequired": "Cần ít nhất một bằng chứng: ảnh hoặc phản ánh",
+  "lockSubmitProposal": "Gửi đề xuất",
+  "lockProposalSent": "Đã gửi đề xuất tới Hội đồng quản trị",
+  "lockPendingBanner": "Tài khoản này đang có đề xuất khoá chờ biểu quyết",
+  "viewLockProposal": "Xem đề xuất",
+  "unlockReasonHint": "Lý do mở khoá (bắt buộc)",
+  "unlockReasonTooShort": "Lý do cần ít nhất 10 ký tự",
+  "userUnlocked": "Đã mở khoá tài khoản người dùng",
+  "lockFilterAwaitingMine": "Cần bạn",
+  "noAwaitingLockRequests": "Hiện không có đề xuất nào cần bạn biểu quyết",
+  "lockFindingAwaiting": "{count} đề xuất cần bạn biểu quyết · gần nhất: {timeLeft}",
+  "lockFindingOthers": "Không có đề xuất nào cần bạn biểu quyết · {count} đề xuất đang chờ các quản trị viên khác",
+  "lockUpdatedAt": "Cập nhật {time}",
+  "lockRefresh": "Làm mới",
+  "lockTimeLeftHours": "còn {hours} giờ",
+  "lockTimeLeftMinutes": "còn {minutes} phút",
+  "lockTimeOverdue": "Đã hết giờ biểu quyết",
+  "lockBallotTitle": "Phiếu bầu",
+  "lockSeatEmpty": "Ghế trống",
+  "lockOutcomeApproved": "Tài khoản đã bị khoá lúc {time}",
+  "lockOutcomeRejected": "Bị bác bỏ lúc {time}",
+  "lockOutcomeCancelled": "Đã huỷ lúc {time}",
+  "lockOutcomeExpired": "Hết hạn lúc {time}, không đủ phiếu",
+  "lockEvidenceSummary": "Bằng chứng · {images} ảnh · {reports} phản ánh",
+  "lockVotesCast": "Phiếu đã bỏ",
+  "lockProposedByYou": "Đề xuất bởi bạn",
+  "lockMoreActions": "Thao tác khác",
+  "lockReasonHelper": "Tối thiểu 20 ký tự. Người dùng sẽ nhận được lý do này.",
+  "lockEvidenceHelper": "Ít nhất 1 ảnh hoặc 1 phản ánh",
+  "lockWhatHappensTitle": "Điều gì xảy ra tiếp theo",
+  "lockWhatHappensBody": "Cần {required} quản trị viên khác bảo lãnh trong {hours} giờ thì tài khoản mới bị khoá. Người dùng chỉ nhận được lý do, không nhận bằng chứng.",
+  "lockProposalSentTitle": "Đã gửi đề xuất khoá",
+  "lockProposalSentBody": "Hội đồng quản trị đã được thông báo. Tài khoản sẽ bị khoá khi có {required} quản trị viên khác bảo lãnh trong {hours} giờ.",
+  "lockBlockedNotEnoughAdmins": "Cần ít nhất {min} quản trị viên đang hoạt động để biểu quyết khoá. Hãy thêm quản trị viên trong Hội đồng quản trị.",
+  "lockBlockedNotActive": "Chỉ có thể đề xuất khoá tài khoản đang hoạt động",
+  "daysRemainingLabel": "Còn {days} ngày",
+  "@daysRemainingLabel": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "overdueOnlyFilter": "Quá hạn",
+  "excellentBadge": "Xuất sắc",
+  "staffEfficiencyLabel": "Hiệu suất công việc: {rate}%",
+  "@staffEfficiencyLabel": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "staffEfficiencyNoData": "Hiệu suất công việc: —",
+  "statsMonthLabel": "Tháng thống kê",
+  "resolvedInMonth": "Đã xử lý trong tháng",
+  "avgResolutionTimeInMonth": "TB thời gian xử lý",
+  "resolvedMonthCount": "{count} đã xử lý trong tháng",
+  "@resolvedMonthCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "staffMonthlyWorkloadTitle": "Khối lượng công việc trong tháng {month}",
+  "@staffMonthlyWorkloadTitle": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "staffMonthlyWorkloadBreakdown": "{processing} đang xử lý, {resolved} đã xử lý, {overdue} trễ hạn, {rehandling} xử lý lại",
+  "@staffMonthlyWorkloadBreakdown": {
+    "placeholders": {
+      "processing": {
+        "type": "int"
+      },
+      "resolved": {
+        "type": "int"
+      },
+      "overdue": {
+        "type": "int"
+      },
+      "rehandling": {
+        "type": "int"
+      }
+    }
+  },
+  "viewAssignedReportsAction": "Xem phản ánh được giao",
+  "routeCategoryManagement": "Quản lý Danh mục",
+  "manageCategories": "Danh mục phản ánh",
+  "addCategory": "Thêm danh mục",
+  "editCategory": "Sửa danh mục",
+  "deleteCategory": "Xóa danh mục",
+  "deleteCategoryConfirm": "Bạn có chắc muốn xóa danh mục này?",
+  "emptyCategoryList": "Chưa có danh mục phản ánh nào",
+  "categoryCode": "Mã danh mục",
+  "categoryCodeRequired": "Vui lòng nhập mã danh mục",
+  "categoryNameVi": "Tên tiếng Việt",
+  "categoryNameViRequired": "Vui lòng nhập tên tiếng Việt",
+  "categoryNameEn": "Tên tiếng Anh",
+  "categoryNameEnRequired": "Vui lòng nhập tên tiếng Anh",
+  "categoryDescription": "Mô tả",
+  "categoryIconLabel": "Biểu tượng",
+  "categoryDefaultSeverity": "Mức độ mặc định",
+  "categoryDisplayOrder": "Thứ tự",
+  "categoryActiveLabel": "Đang hoạt động",
+  "categoryInactive": "Ngừng hoạt động",
+  "categoryPositionsLabel": "Chức vụ phụ trách",
+  "categoryPositionsHint": "Nhân viên thuộc các chức vụ này sẽ đủ điều kiện nhận phân công tự động cho danh mục",
+  "categoryNoPositionsMapped": "Chưa gán chức vụ",
+  "categoryNoActivePositions": "Chưa có chức vụ nào đang hoạt động. Vui lòng tạo chức vụ trước.",
+  "categorySaveSuccess": "Đã lưu danh mục phản ánh",
+  "categoryDeleteSuccess": "Đã xóa danh mục phản ánh",
+  "totalCategories": "Tổng danh mục",
+  "categoriesMappedPositions": "Đã gắn chức vụ",
+  "categoryReportCountLabel": "Phản ánh",
+  "categoryIconEco": "Môi trường",
+  "categoryIconConstruction": "Hạ tầng",
+  "categoryIconBolt": "Điện / Chiếu sáng",
+  "categoryIconWater": "Cấp thoát nước",
+  "categoryIconShield": "Trật tự công cộng",
+  "categoryIconPark": "Cây xanh / Công viên",
+  "categoryIconTraffic": "Giao thông",
+  "categoryIconGeneral": "Chung",
+  "staffBaseLocationSection": "Khu vực / Tọa độ đại diện",
+  "staffBaseAddressLabel": "Địa chỉ / Khu vực phụ trách",
+  "staffBaseLatitudeLabel": "Vĩ độ (Lat)",
+  "staffBaseLongitudeLabel": "Kinh độ (Lng)",
+  "staffPickLocationOnMap": "Chọn trên bản đồ",
+  "staffUseCurrentGps": "GPS hiện tại",
+  "staffClearLocation": "Xóa tọa độ",
+  "staffLocationNotSet": "Chưa gắn tọa độ đại diện",
+  "staffLocationPairRequired": "Cần nhập đủ cả vĩ độ và kinh độ",
+  "staffLocationInvalidLat": "Vĩ độ phải nằm trong khoảng -90 đến 90",
+  "staffLocationInvalidLng": "Kinh độ phải nằm trong khoảng -180 đến 180",
+  "staffLocationPickerTitle": "Chọn tọa độ đại diện",
+  "staffLocationPickerHint": "Chạm hoặc kéo ghim trên bản đồ để đặt vị trí đại diện cho nhân viên.",
+  "staffLocationConfirm": "Xác nhận vị trí",
+  "staffLocationWebNoToken": "Chưa cấu hình MAPBOX_ACCESS_TOKEN. Vui lòng nhập vĩ độ và kinh độ thủ công.",
+  "staffLocationGpsFailed": "Không lấy được tọa độ GPS hiện tại",
+  "reportCategoryLabel": "Danh mục",
+  "autoAssignSectionTitle": "Phân công thông minh",
+  "autoAssignTriggerButton": "Phân công tự động",
+  "autoAssignTopCandidates": "Top {count} nhân viên đề xuất",
+  "@autoAssignTopCandidates": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignAssignNow": "Giao ngay",
+  "autoAssignSelectCandidate": "Chọn",
+  "autoAssignSelectedCandidate": "Đã chọn",
+  "autoAssignEligibleCount": "{count} ứng viên đạt chuẩn",
+  "@autoAssignEligibleCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignModeAuto": "Chế độ: Tự động",
+  "autoAssignModeAssist": "Chế độ: Gợi ý hỗ trợ",
+  "autoAssignModeManual": "Chế độ: Thủ công",
+  "autoAssignScoreLabel": "Điểm tổng",
+  "autoAssignDistanceLabel": "Khoảng cách",
+  "autoAssignMonthlyLoadLabel": "Tải tháng này",
+  "autoAssignActiveLoadLabel": "Đang xử lý",
+  "autoAssignOnTimeLabel": "Đúng hạn 30 ngày",
+  "autoAssignTasksCount": "{count} việc",
+  "@autoAssignTasksCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignScoreValue": "{score}/100",
+  "@autoAssignScoreValue": {
+    "placeholders": {
+      "score": { "type": "String" }
+    }
+  },
+  "autoAssignWeightPercent": "{percent}%",
+  "@autoAssignWeightPercent": {
+    "placeholders": {
+      "percent": { "type": "int" }
+    }
+  },
+  "autoAssignDistanceKm": "{distance} km",
+  "@autoAssignDistanceKm": {
+    "placeholders": {
+      "distance": { "type": "String" }
+    }
+  },
+  "autoAssignLoadFailed": "Không tải được danh sách đề xuất. Vui lòng thử lại.",
+  "autoAssignDecisionTitle": "Giải trình phân công tự động",
+  "autoAssignSourceAuto": "Hệ thống tự động giao",
+  "autoAssignSourceRecommendClick": "Giao từ gợi ý 1 chạm",
+  "autoAssignSourceOverridden": "Admin đã điều chỉnh",
+  "autoAssignSourceRecommended": "Chờ Admin duyệt gợi ý",
+  "autoAssignSourceFallback": "Chuyển phân công thủ công",
+  "autoAssignSourceManual": "Phân công thủ công",
+  "autoAssignOverriddenNotice": "Admin đã chuyển người phụ trách sang {staffName}.",
+  "@autoAssignOverriddenNotice": {
+    "placeholders": {
+      "staffName": { "type": "String" }
+    }
+  },
+  "autoAssignSnapshotTitle": "Xếp hạng ứng viên lúc phân công",
+  "autoAssignSuccessMessage": "Đã tự động phân công nhân viên phù hợp nhất",
+  "autoAssignFailedFallback": "Không thể tự động phân công",
+  "reassignStaffButton": "Đổi người phụ trách",
+  "autoAssignNoCandidatesDefault": "Chưa có nhân viên nào đạt chuẩn bộ lọc (chức vụ, tọa độ, bán kính, ngưỡng tải).",
+  "routeAutoAssignCenter": "Điều phối tự động",
+  "autoAssignCenterTitle": "Trung tâm Điều phối Tự động",
+  "autoAssignCenterSubtitle": "Cấu hình chế độ, trọng số đa tiêu chí, mô phỏng xếp hạng trực tiếp và giám sát công bằng tải tháng",
+  "autoAssignRefreshAction": "Làm mới dữ liệu",
+  "autoAssignKpiTotalDecisions": "Tổng lượt điều phối",
+  "autoAssignKpiBreakdown": "{autoCount} tự động · {recommendCount} gợi ý · {fallbackCount} thủ công",
+  "@autoAssignKpiBreakdown": {
+    "placeholders": {
+      "autoCount": { "type": "int" },
+      "recommendCount": { "type": "int" },
+      "fallbackCount": { "type": "int" }
+    }
+  },
+  "autoAssignKpiSuccessRate": "Tỷ lệ tự động thành công",
+  "autoAssignKpiSuccessSub": "Đạt chuẩn bộ lọc 2 giai đoạn",
+  "autoAssignKpiAcceptanceRate": "Tỷ lệ Admin chấp nhận",
+  "autoAssignKpiOverriddenSub": "{count} lượt Admin điều chỉnh",
+  "@autoAssignKpiOverriddenSub": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignKpiFairnessIndex": "Chỉ số cân bằng tải tháng",
+  "autoAssignKpiFairnessSub": "TB {avg} việc/người · độ lệch ±{std}",
+  "@autoAssignKpiFairnessSub": {
+    "placeholders": {
+      "avg": { "type": "String" },
+      "std": { "type": "String" }
+    }
+  },
+  "autoAssignConfigCardTitle": "Chế độ Vận hành & Bộ Trọng số",
+  "autoAssignConfigCardDesc": "Tổng 4 trọng số luôn tự động khóa ở mức 100%. Thay đổi thanh kéo sẽ cập nhật ngay kết quả ở khung Mô phỏng bên cạnh.",
+  "autoAssignModeOptionAuto": "Tự động (AUTO)",
+  "autoAssignModeOptionAssist": "Gợi ý (ASSIST)",
+  "autoAssignModeOptionManual": "Thủ công (MANUAL)",
+  "autoAssignModeDescAuto": "Khi có phản ánh mới, hệ thống tự động chấm điểm và giao ngay cho nhân viên hạng 1 đạt chuẩn.",
+  "autoAssignModeDescAssist": "Hệ thống tính sẵn ứng viên tốt nhất và đề xuất Top 3 để Admin duyệt giao chỉ với 1 chạm.",
+  "autoAssignModeDescManual": "Tắt tự động điều phối khi tạo phản ánh; Admin phân công thủ công hoặc bấm gợi ý khi cần.",
+  "autoAssignWeightsHeader": "Trọng số chấm điểm đa tiêu chí (Tổng = 100%)",
+  "autoAssignResetWeightsButton": "Mặc định (35/30/20/15)",
+  "autoAssignThresholdsHeader": "Ngưỡng lọc & Định mức vận hành",
+  "autoAssignMaxRadiusLabel": "Bán kính tối đa (km)",
+  "autoAssignMaxConcurrentLabel": "Giới hạn việc đang xử lý",
+  "autoAssignTargetMonthlyLabel": "Định mức việc trong tháng",
+  "autoAssignSaveConfigButton": "Lưu cấu hình điều phối",
+  "autoAssignConfigSavedSuccess": "Đã cập nhật cấu hình điều phối tự động",
+  "autoAssignConfigSaveFailed": "Không thể lưu cấu hình điều phối",
+  "autoAssignSimulatorTitle": "Mô phỏng Xếp hạng (Dry-Run Simulator)",
+  "autoAssignSimulatorDesc": "Chọn danh mục và tọa độ sự cố giả định để kiểm thử thứ hạng ứng viên theo bộ trọng số hiện tại (không ghi vào cơ sở dữ liệu).",
+  "autoAssignSimCategoryLabel": "Danh mục sự cố giả định",
+  "autoAssignSimPickOnMap": "Chấm điểm trên bản đồ",
+  "autoAssignSimRunButton": "Chạy mô phỏng",
+  "autoAssignSimPresetDistrict1": "Mẫu Q.1 (Trung tâm)",
+  "autoAssignSimPresetThuDuc": "Mẫu TP. Thủ Đức",
+  "autoAssignSimPresetBinhThanh": "Mẫu Q. Bình Thạnh",
+  "autoAssignSimNoWriterBadge": "Chỉ mô phỏng · Không lưu DB",
+  "autoAssignFairnessSectionTitle": "Phân bổ Tải tháng & Công bằng Đội ngũ",
+  "autoAssignFairnessSectionDesc": "So sánh khối lượng việc trong tháng hiện tại, số việc đang xử lý và tỷ lệ đúng hạn 30 ngày giữa các nhân viên đang hoạt động.",
+  "autoAssignFairnessRangeLabel": "Thấp nhất: {min} việc · Cao nhất: {max} việc",
+  "@autoAssignFairnessRangeLabel": {
+    "placeholders": {
+      "min": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+  "autoAssignStaffMonthlyQuotaText": "{current}/{target} việc tháng",
+  "@autoAssignStaffMonthlyQuotaText": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "target": { "type": "int" }
+    }
+  },
+  "autoAssignStaffActiveQuotaText": "{active}/{maxActive} đang xử lý",
+  "@autoAssignStaffActiveQuotaText": {
+    "placeholders": {
+      "active": { "type": "int" },
+      "maxActive": { "type": "int" }
+    }
+  },
+  "autoAssignStaffOnTimeText": "{rate}% đúng hạn",
+  "@autoAssignStaffOnTimeText": {
+    "placeholders": {
+      "rate": { "type": "String" }
+    }
+  },
+  "autoAssignLogsSectionTitle": "Nhật ký Quyết định Phân công",
+  "autoAssignLogsSectionDesc": "Lịch sử chi tiết các lượt hệ thống tự động giao, gợi ý 1 chạm, chuyển thủ công hoặc Admin ghi đè.",
+  "autoAssignLogsFilterAll": "Tất cả kết quả",
+  "autoAssignLogsFilterAssigned": "Đã phân công",
+  "autoAssignLogsFilterRecommended": "Đề xuất (Assist)",
+  "autoAssignLogsFilterOverridden": "Admin ghi đè",
+  "autoAssignLogsFilterFallback": "Fallback thủ công",
+  "autoAssignLogsEmpty": "Chưa có nhật ký quyết định phân công nào khớp bộ lọc",
+  "autoAssignLogViewReport": "Mở phản ánh",
+  "autoAssignLogPageInfo": "Trang {current}/{total} ({count} bản ghi)",
+  "@autoAssignLogPageInfo": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" },
+      "count": { "type": "int" }
+    }
+  },
+  "mapStaffStationsToggle": "Trạm trực nhân sự",
+  "mapStaffStationsLegend": "Vị trí trực nhân sự",
+  "mapStaffStationSheetTitle": "Trạm trực nhân viên",
+  "mapStaffActiveTasksCount": "Đang xử lý: {count} phản ánh",
+  "@mapStaffActiveTasksCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "mapFilterByThisStaff": "Lọc phản ánh của nhân viên này",
+  "autoAssignModeShortAuto": "Tự động",
+  "autoAssignModeShortAssist": "Gợi ý",
+  "autoAssignModeShortManual": "Thủ công",
+  "autoAssignToggleWeightsExpand": "Tùy chỉnh trọng số & ngưỡng lọc",
+  "autoAssignToggleWeightsCollapse": "Thu gọn bộ trọng số",
+  "autoAssignSectionExpand": "Mở rộng",
+  "autoAssignSectionCollapse": "Thu gọn",
+  "autoAssignTabFairness": "Công bằng tải tháng",
+  "autoAssignTabLogs": "Nhật ký quyết định",
+  "smartAlertsTitle": "Cảnh báo vận hành & Nhịp độ 7 ngày",
+  "smartAlertsAllHealthy": "Hệ thống ổn định — chưa phát hiện bất thường",
+  "volumeSpikeTitle": "Phản ánh tăng đột biến hôm nay",
+  "volumeSpikeSubtitle": "{todayCount} phản ánh hôm nay vs TB 14 ngày ({avg})",
+  "@volumeSpikeSubtitle": {
+    "placeholders": {
+      "todayCount": {
+        "type": "int"
+      },
+      "avg": {
+        "type": "String"
+      }
+    }
+  },
+  "volumeSpikeZScoreBadge": "Z = {zScore}",
+  "@volumeSpikeZScoreBadge": {
+    "placeholders": {
+      "zScore": {
+        "type": "String"
+      }
+    }
+  },
+  "slaAtRiskTitle": "Cảnh báo sắp chạm hạn SLA",
+  "slaAtRiskSubtitle": "{pending} chờ nhận, {processing} đang xử lý sắp hết hạn",
+  "@slaAtRiskSubtitle": {
+    "placeholders": {
+      "pending": {
+        "type": "int"
+      },
+      "processing": {
+        "type": "int"
+      }
+    }
+  },
+  "slaAtRiskShort": "Sắp chạm hạn",
+  "overloadedStaffTitle": "Nhân sự quá tải công việc",
+  "overloadedStaffSubtitle": "{count} nhân viên vượt ngưỡng tải trọng theo mức độ",
+  "@overloadedStaffSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pendingOver24hTitle": "Tồn đọng chưa phân công > 24h",
+  "pendingOver24hSubtitle": "{count} phản ánh đang chờ tiếp nhận quá 24 giờ",
+  "@pendingOver24hSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pulse7dTitle": "Nhịp độ 7 ngày gần đây",
+  "pulseInflowLabel": "Tiếp nhận",
+  "pulseOutflowLabel": "Hoàn tất",
+  "trendBaselineLabel": "TB 14 ngày",
+  "trendAnomalyBadge": "Đột biến",
+  "trendAnomalyCountBadge": "{count} ngày bất thường",
+  "@trendAnomalyCountBadge": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trendInsufficientBaseline": "Chưa đủ dữ liệu nền (cần >= 7 ngày có phát sinh)",
+  "bottleneckShort": "Kéo dài > P90",
+  "bottleneckStatLabel": "Xử lý kéo dài (>P90)",
+  "filterAtRiskLabel": "Sắp chạm hạn SLA",
+  "filterBottleneckLabel": "Kéo dài > P90",
+  "weightedLoadLabel": "Tải quy đổi",
+  "weightedLoadValue": "{points}đ tải ({tasks} việc)",
+  "@weightedLoadValue": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      },
+      "tasks": {
+        "type": "int"
+      }
+    }
+  },
+  "teamAvgWeightedLoadLabel": "TB tải trọng đội ngũ: {avg}đ",
+  "@teamAvgWeightedLoadLabel": {
+    "placeholders": {
+      "avg": {
+        "type": "String"
+      }
+    }
+  },
+  "staffOverloadedBadge": "Quá tải",
+  "staffRecommendedBadge": "Khuyên giao",
+  "staffBottleneckCountBadge": "{count} kéo dài >P90",
+  "@staffBottleneckCountBadge": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotsTitle": "Điểm nóng khu vực (H3)",
+  "spatialHotspotsToggle": "Điểm nóng",
+  "spatialHotspotsAcceleratingCount": "{count} khu vực tăng tốc",
+  "@spatialHotspotsAcceleratingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotAcceleratingBadge": "Tăng tốc",
+  "spatialHotspotRiskScore": "Rủi ro {score}",
+  "@spatialHotspotRiskScore": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotStats": "{recent} ca / 30 ngày • TB trước {prev} • {pending} chờ",
+  "@spatialHotspotStats": {
+    "placeholders": {
+      "recent": {
+        "type": "int"
+      },
+      "prev": {
+        "type": "String"
+      },
+      "pending": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotsEmpty": "Chưa có điểm nóng rủi ro nổi bật",
+  "spatialHotspotFallbackName": "Ô khu vực H3 #{shortId}",
+  "@spatialHotspotFallbackName": {
+    "placeholders": {
+      "shortId": {
+        "type": "String"
+      }
+    }
+  },
+  "overloadedStaffModalTitle": "Nhân sự đang quá tải công việc",
+  "overloadedStaffThresholdInfo": "Ngưỡng quá tải: > {threshold}đ tải (1.5x TB đội ngũ {teamAvg}đ) hoặc >= 2 ca trễ hạn",
+  "@overloadedStaffThresholdInfo": {
+    "placeholders": {
+      "threshold": { "type": "String" },
+      "teamAvg": { "type": "String" }
+    }
+  },
+  "overloadedStaffEmpty": "Hiện chưa ghi nhận nhân viên nào bị quá tải",
+  "overloadedStaffMetricsRow": "{weighted}đ tải • {processing} đang xử lý • {overdue} trễ hạn • {bottleneck} >P90",
+  "@overloadedStaffMetricsRow": {
+    "placeholders": {
+      "weighted": { "type": "int" },
+      "processing": { "type": "int" },
+      "overdue": { "type": "int" },
+      "bottleneck": { "type": "int" }
+    }
+  },
+  "overloadedSeverityBreakdownLine": "Khẩn: {critical} • Cao: {high} • TB: {medium} • Thấp: {low}",
+  "@overloadedSeverityBreakdownLine": {
+    "placeholders": {
+      "critical": { "type": "int" },
+      "high": { "type": "int" },
+      "medium": { "type": "int" },
+      "low": { "type": "int" }
+    }
+  },
+  "staffDetailOverloadSectionTitle": "Tình trạng tải trọng công việc",
+  "staffLoadNormalBadge": "Ổn định",
+  "staffLoadComparison": "{weighted}đ tải quy đổi (TB đội ngũ: {teamAvg}đ)",
+  "@staffLoadComparison": {
+    "placeholders": {
+      "weighted": { "type": "int" },
+      "teamAvg": { "type": "String" }
+    }
+  },
+  "analyticsGuideTooltip": "Giải thích chỉ số & cách đọc báo cáo",
+  "guideWhatLabel": "Là gì",
+  "guidePurposeLabel": "Tác dụng",
+  "guideTellsLabel": "Cho biết",
+  "reportGuideTitle": "Hướng dẫn đọc Thống kê phản ánh",
+  "reportGuideSlaAtRiskTitle": "Sắp chạm hạn SLA (At-Risk)",
+  "reportGuideSlaAtRiskWhat": "Phản ánh đang chờ tiếp nhận đã tiêu tốn >= 50% quỹ thời gian đến hạn, hoặc đang xử lý nhưng chỉ còn <= 24 giờ (hoặc ít hơn thời gian xử lý TB lịch sử).",
+  "reportGuideSlaAtRiskPurpose": "Cảnh báo sớm trước khi phản ánh chuyển thành quá hạn.",
+  "reportGuideSlaAtRiskTells": "Những phản ánh cần ưu tiên phân công hoặc đôn đốc xử lý ngay trong ngày.",
+  "reportGuideP90Title": "Ngưỡng P90 & Xử lý kéo dài (> P90)",
+  "reportGuideP90What": "P90 là mốc thời gian mà 90% phản ánh hoàn tất trong 90 ngày gần nhất xong sớm hơn mốc đó theo từng mức độ (dự phòng 80% hạn SLA nếu dưới 10 mẫu).",
+  "reportGuideP90Purpose": "Phát hiện tác vụ đang bị kẹt bất thường dù có thể chưa quá deadline.",
+  "reportGuideP90Tells": "Báo cáo đang xử lý lâu hơn 90% các ca tương tự trước đây — cần kiểm tra vướng mắc thực địa.",
+  "reportGuideTrendAnomalyTitle": "Xu hướng ngày, TB 14 ngày & Đột biến (Z-score)",
+  "reportGuideTrendAnomalyWhat": "Đường nét đứt là trung bình trượt 14 ngày trước đó; chấm đỏ là ngày có lượng phản ánh >= 5 và Z-score >= 2.0 (hoặc >= 1.5x trung bình 14 ngày).",
+  "reportGuideTrendAnomalyPurpose": "Tách biến động ngẫu nhiên khỏi sự cố phát sinh đột ngột.",
+  "reportGuideTrendAnomalyTells": "Thời điểm xảy ra sự cố diện rộng bất thường hoặc thiếu dữ liệu nền (< 7 ngày có phát sinh).",
+  "reportGuideFiltersTitle": "Các thẻ thống kê & Bộ lọc danh sách",
+  "reportGuideFiltersWhat": "Bấm vào thẻ tổng quan hoặc chip lọc (Quá hạn, Sắp chạm hạn SLA, Kéo dài > P90, Xử lý lại) để thu gọn bảng danh sách theo nhóm tương ứng.",
+  "reportGuideFiltersPurpose": "Giúp điều hướng từ số liệu tổng hợp xuống từng hồ sơ cụ thể.",
+  "reportGuideFiltersTells": "Danh sách chi tiết những phản ánh cần admin can thiệp ngay.",
+  "staffGuideTitle": "Hướng dẫn đọc chỉ số Nhân viên",
+  "staffGuideWeightedLoadTitle": "Điểm tải quy đổi theo mức độ",
+  "staffGuideWeightedLoadWhat": "Tổng điểm của các việc đang xử lý, quy đổi theo độ phức tạp: Thấp = 1đ, Trung bình = 2đ, Cao = 3đ, Khẩn cấp = 5đ.",
+  "staffGuideWeightedLoadPurpose": "Đo khối lượng công việc thực chất thay vì chỉ đếm số lượng đầu việc.",
+  "staffGuideWeightedLoadTells": "Nhân viên ít việc nhưng gánh nhiều ca Khẩn/Cao vẫn có điểm tải rất lớn.",
+  "staffGuideOverloadTitle": "TB tải trọng đội ngũ & Quá tải",
+  "staffGuideOverloadWhat": "Nhân viên bị gắn nhãn Quá tải khi điểm tải > max(5đ, 1.5 x TB đội ngũ) hoặc đang có >= 2 phản ánh trễ hạn.",
+  "staffGuideOverloadPurpose": "Tránh giao dồn việc làm giảm chất lượng và chậm SLA.",
+  "staffGuideOverloadTells": "Ai đang quá tải cần san sẻ việc, ai còn dư sức (nhãn Khuyên giao) để ưu tiên nhận ca mới.",
+  "staffGuideEfficiencyTitle": "Hiệu suất đúng hạn & Thống kê tháng",
+  "staffGuideEfficiencyWhat": "Tỷ lệ phần trăm các phản ánh đã hoàn tất hoặc đang đánh giá hoàn thành đúng trước deadline trong tháng đã chọn.",
+  "staffGuideEfficiencyPurpose": "Theo dõi kỷ luật SLA của từng nhân viên theo từng tháng.",
+  "staffGuideEfficiencyTells": "Mức độ ổn định tiến độ và tình trạng trễ hạn tích lũy của nhân sự.",
+  "staffGuideBottleneckTitle": "Xử lý kéo dài (> P90)",
+  "staffGuideBottleneckWhat": "Số lượng phản ánh nhân viên đang giữ quá mốc thời gian P90 lịch sử của mức độ tương ứng.",
+  "staffGuideBottleneckPurpose": "Nhận diện sớm các ca có nguy cơ bị tắc hoặc cần hỗ trợ kỹ thuật.",
+  "staffGuideBottleneckTells": "Nhân viên nào đang kẹt ca khó để admin hỗ trợ hoặc điều phối lại.",
+  "spatialGuideTitle": "Hướng dẫn đọc Điểm nóng không gian (H3)",
+  "spatialGuideH3Title": "Ô lưới lục giác H3 (Resolution 11)",
+  "spatialGuideH3What": "Hệ thống chia bản đồ khuôn viên thành các ô lục giác nhỏ đồng đều (Uber H3 cấp 11) để gom các phản ánh gần nhau.",
+  "spatialGuideH3Purpose": "Phát hiện cụm sự cố thực tế không phụ thuộc địa giới hành chính cứng.",
+  "spatialGuideH3Tells": "Tọa độ trung tâm cụm sự cố để bấm là camera bản đồ tự di chuyển tới.",
+  "spatialGuideRiskScoreTitle": "Chỉ số Rủi ro [số] & Nhãn màu đỏ",
+  "spatialGuideRiskScoreWhat": "Tính bằng công thức: (Đang chờ x 2) + (Cao/Khẩn cấp x 3) + (Quá hạn x 4). Màu đỏ nhấn mạnh ô đang tăng tốc hoặc rủi ro cao.",
+  "spatialGuideRiskScorePurpose": "Xếp hạng mức độ khẩn cấp của từng cụm khu vực để ưu tiên xử lý.",
+  "spatialGuideRiskScoreTells": "Khu vực có điểm Rủi ro càng cao càng tồn nhiều việc nặng, quá hạn chưa giải quyết.",
+  "spatialGuideAcceleratingTitle": "Nhãn \"Tăng tốc\" (Accelerating)",
+  "spatialGuideAcceleratingWhat": "Gắn cờ khi ô có >= 3 phản ánh trong 30 ngày gần nhất và gấp >= 2 lần mức trung bình 30 ngày của 90 ngày liền trước.",
+  "spatialGuideAcceleratingPurpose": "Phát hiện sớm khu vực mới bùng phát sự cố bất thường.",
+  "spatialGuideAcceleratingTells": "Khu vực đang xấu đi nhanh chóng, cần kiểm tra thực địa nguyên nhân gốc.",
+  "spatialGuideStatsTitle": "Chuỗi thông số (30 ngày • TB trước • Chờ)",
+  "spatialGuideStatsWhat": "Hiển thị tổng số phản ánh 30 ngày qua, trung bình mỗi 30 ngày trong 3 tháng trước đó và số ca đang chờ xử lý tại ô.",
+  "spatialGuideStatsPurpose": "Đối chiếu xu hướng tăng/giảm tại chính khu vực đó.",
+  "spatialGuideStatsTells": "Lượng việc mới phát sinh có đang vượt khả năng tiếp nhận ở khu vực này hay không.",
+  "callFreeVoiceDesc": "Gọi thoại miễn phí qua internet",
+  "callPermissionDenied": "Không khả dụng cuộc gọi thoại cho hội thoại này",
+  "rehandlingReportsSection": "Phản ánh xử lý lại",
+  "checkingEligibility": "Đang kiểm tra điều kiện...",
+  "attachRehandlingReports": "Đính kèm phản ánh xử lý lại",
+  "cannotMessageAnonymousNotice": "Người dùng ẩn danh: chỉ hỗ trợ nhắn tin và gọi miễn phí trong ứng dụng.",
+  "routeSosCenter": "Tín hiệu SOS",
+  "sosTabOpen": "Đang mở",
+  "sosTabResolved": "Đã kết thúc",
+  "sosEmptyOpen": "Không có tín hiệu SOS nào đang mở.",
+  "sosEmptyResolved": "Chưa có SOS nào kết thúc.",
+  "sosStatusActive": "Chờ tiếp nhận",
+  "sosStatusAcknowledged": "Đang hỗ trợ",
+  "sosResolutionSafe": "Người gửi đã an toàn",
+  "sosResolutionHandled": "Đã hỗ trợ xong",
+  "sosResolutionFalseAlarm": "Báo động nhầm",
+  "sosSentAt": "Gửi lúc {time}",
+  "@sosSentAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosHandledBy": "{name} đang hỗ trợ",
+  "@sosHandledBy": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosLocationUpdatedAt": "Vị trí cập nhật lúc {time}",
+  "@sosLocationUpdatedAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosSignalLost": "Không nhận được vị trí mới từ {time}",
+  "@sosSignalLost": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosAccuracy": "Sai số khoảng {meters} m",
+  "@sosAccuracy": {
+    "placeholders": {
+      "meters": {}
+    }
+  },
+  "sosNotifiedContacts": "Đã báo {count} liên hệ khẩn cấp",
+  "@sosNotifiedContacts": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "sosOpenMap": "Mở bản đồ",
+  "sosCallSender": "Gọi {name}",
+  "@sosCallSender": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosAcknowledge": "Tiếp nhận",
+  "sosResolve": "Kết thúc SOS",
+  "sosResolveTitle": "Kết thúc SOS của {name}?",
+  "@sosResolveTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosResolveHandled": "Đã hỗ trợ xong",
+  "sosResolveFalseAlarm": "Báo động nhầm",
+  "sosResolveNote": "Ghi chú (không bắt buộc)",
+  "sosAcknowledgedToast": "Đã tiếp nhận SOS",
+  "sosResolvedToast": "Đã kết thúc SOS",
+  "sosTrackTitle": "Vị trí gần đây",
+  "sosLoadFailed": "Không tải được tín hiệu SOS.",
+  "sosEndedAt": "Kết thúc lúc {time}",
+  "@sosEndedAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosCannotOpenMap": "Không mở được bản đồ"
 }

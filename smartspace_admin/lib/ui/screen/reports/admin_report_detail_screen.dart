@@ -1,0 +1,3179 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/material.dart';
+import 'package:smartspace_admin/ui/layout/app_layout.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:intl/intl.dart';
+import 'package:mobile_shared/mobile_shared.dart';
+import 'package:smartspace_admin/features/home/application/home_providers.dart';
+import 'package:smartspace_admin/features/reports/application/report_dashboard_providers.dart';
+import 'package:smartspace_admin/features/reports/application/report_list_providers.dart';
+import 'package:smartspace_admin/features/reports/application/report_providers.dart';
+import 'package:smartspace_admin/features/reports/data/report_repository.dart';
+import 'package:smartspace_admin/features/reports/models/report_detail_model.dart';
+import 'package:smartspace_admin/features/reports/models/staff_model.dart';
+import 'package:smartspace_admin/l10n/app_localizations.dart';
+import 'package:smartspace_admin/ui/shared/image/app_network_image.dart';
+import 'package:smartspace_admin/features/reports/models/auto_assign_models.dart';
+import 'package:smartspace_admin/ui/screen/reports/widgets/auto_assign_widgets.dart';
+import 'package:smartspace_admin/ui/shared/position/position_widgets.dart';
+import 'package:smartspace_admin/ui/screen/staff/widgets/staff_workload_badge.dart';
+import 'package:go_router/go_router.dart';
+import 'package:mobile_shared/features/map/models/map_focus_target.dart';
+import 'package:smartspace_admin/routes/router_path.dart';
+import 'package:smartspace_admin/ui/shared/report_status/report_status_style.dart';
+
+class AdminReportDetailScreen extends ConsumerStatefulWidget {
+  final String reportId;
+
+  const AdminReportDetailScreen({
+    super.key,
+    required this.reportId,
+  });
+
+  @override
+  ConsumerState<AdminReportDetailScreen> createState() =>
+      _AdminReportDetailScreenState();
+}
+
+class _AdminReportDetailScreenState
+    extends ConsumerState<AdminReportDetailScreen> {
+  int _currentImageIndex = 0;
+  int _currentResolvedImageIndex = 0;
+  int _currentReviewImageIndex = 0;
+  bool _isReopening = false;
+  bool _isOpeningChat = false;
+  StaffModel? _selectedStaff;
+  String _selectedSeverity = 'low';
+  String? _lastSyncedReportId;
+
+  Future<void> _handleMessageStaff(String? staffId, {String? staffName, String? staffAvatar}) async {
+    if (staffId == null || staffId.isEmpty || _isOpeningChat) return;
+    _isOpeningChat = true;
+    final l10n = AppLocalizations.of(context);
+    try {
+      final res = await chatRepository.createOrGetConversation(
+        participantIds: [staffId],
+      );
+      if (!mounted) return;
+      if (res.success && res.data != null) {
+        context.push(
+          RouterPath.chatDetailWithId(res.data!.id),
+          extra: ParticipantModel(
+            userId: staffId,
+            name: staffName ?? l10n?.filterRoleStaff ?? 'Nhân viên',
+            avatarUrl: staffAvatar,
+            role: 'staff',
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              res.message.isNotEmpty
+                  ? res.message
+                  : (l10n?.connectionUnstable ?? ''),
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n?.connectionUnstable ?? e.toString())),
+        );
+      }
+    } finally {
+      _isOpeningChat = false;
+    }
+  }
+
+  Future<void> _handleMessageReporter(ReportDetailModel report) async {
+    if (_isOpeningChat) return;
+    _isOpeningChat = true;
+    final l10n = AppLocalizations.of(context)!;
+    final userId = report.userId;
+    try {
+      if (userId != null && userId.isNotEmpty) {
+        try {
+          final eligRes = await chatRepository.checkCommunicationEligibility(
+            targetUserId: userId,
+            isAnonymous: report.isAnonymous,
+          );
+          if (!mounted) return;
+          if (eligRes.success && eligRes.data?.canMessage == true) {
+            final convRes = await chatRepository.createOrGetConversation(
+              participantIds: [userId],
+              isAnonymous: report.isAnonymous,
+            );
+            if (!mounted) return;
+            if (convRes.success && convRes.data != null) {
+              context.push(
+                RouterPath.chatDetailWithId(convRes.data!.id),
+                extra: ParticipantModel(
+                  userId: userId,
+                  name: report.isAnonymous
+                      ? l10n.anonymousUser
+                      : (report.userName ?? l10n.user),
+                  avatarUrl: report.isAnonymous ? null : report.userAvatarUrl,
+                  role: 'client',
+                ),
+              );
+              return;
+            }
+          }
+        } catch (_) {}
+      }
+
+      if (!mounted) return;
+      showDialog(
+        context: context,
+        builder: (ctx) => AlertDialog(
+          icon: Icon(Icons.info_outline_rounded, color: Theme.of(ctx).colorScheme.primary, size: 28),
+          title: Text(l10n.cannotMessageClientTitle),
+          content: Text(l10n.cannotMessageClientMessage),
+          actions: [
+            FilledButton(
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text(l10n.closeAction),
+            ),
+          ],
+        ),
+      );
+    } finally {
+      _isOpeningChat = false;
+    }
+  }
+
+  Future<void> _openReporterCallSheet(ReportDetailModel report) async {
+    final l10n = AppLocalizations.of(context)!;
+    final userId = report.userId;
+    if (userId == null || userId.isEmpty) return;
+
+    CommunicationEligibilityModel? eligibility;
+    try {
+      final res = await chatRepository.checkCommunicationEligibility(
+        targetUserId: userId,
+        isAnonymous: report.isAnonymous,
+      );
+      if (res.success) {
+        eligibility = res.data;
+      }
+    } catch (_) {}
+
+    if (!mounted) return;
+    final phone = report.userPhone?.trim();
+    final hasPhone =
+        !report.isAnonymous && phone != null && phone.isNotEmpty;
+    final canFreeCall = eligibility?.canVoiceCall ?? false;
+    final reporterName = report.isAnonymous
+        ? l10n.anonymousUser
+        : (report.userName?.isNotEmpty == true ? report.userName! : l10n.user);
+
+    await ChatCallBottomSheet.show(
+      context,
+      partnerName: reporterName,
+      partnerPhone: hasPhone ? phone : null,
+      canCellularCall: hasPhone,
+      canFreeCall: canFreeCall,
+      freeCallDisabledReason:
+          eligibility?.reasonMessage ?? l10n.cannotMessageClientMessage,
+      titleText: l10n.callOptionsTitle,
+      cellularCallTitle: l10n.cellularCall,
+      cellularCallDesc: l10n.cellularCallDesc,
+      freeCallTitle: l10n.freeCall,
+      freeCallDesc: l10n.callFreeVoiceDesc,
+      phoneNotAvailableText: l10n.phoneNotAvailable,
+      onFreeCallTap: () {
+        ref.read(callControllerProvider.notifier).startCall(
+              targetUserId: userId,
+              isAnonymous: report.isAnonymous,
+              peerName: reporterName,
+              peerAvatar: report.isAnonymous ? null : report.userAvatarUrl,
+              peerRole: 'client',
+            );
+      },
+    );
+  }
+
+  Future<void> _openStaffCallSheet(ReportDetailModel report) async {
+    final l10n = AppLocalizations.of(context)!;
+    final staffId = report.assignedStaffId;
+    final phone = report.assignedStaffPhone?.trim();
+    final hasPhone = phone != null && phone.isNotEmpty;
+    final canFreeCall = staffId != null && staffId.isNotEmpty;
+    final staffName = report.assignedStaffName?.trim().isNotEmpty == true
+        ? report.assignedStaffName!
+        : l10n.staff;
+
+    await ChatCallBottomSheet.show(
+      context,
+      partnerName: staffName,
+      partnerPhone: hasPhone ? phone : null,
+      canCellularCall: hasPhone,
+      canFreeCall: canFreeCall,
+      freeCallDisabledReason: l10n.callPermissionDenied,
+      titleText: l10n.callOptionsTitle,
+      cellularCallTitle: l10n.cellularCall,
+      cellularCallDesc: l10n.cellularCallDesc,
+      freeCallTitle: l10n.freeCall,
+      freeCallDesc: l10n.callFreeVoiceDesc,
+      phoneNotAvailableText: l10n.phoneNotAvailable,
+      onFreeCallTap: canFreeCall
+          ? () {
+              ref.read(callControllerProvider.notifier).startCall(
+                    targetUserId: staffId,
+                    isAnonymous: false,
+                    peerName: staffName,
+                    peerAvatar: report.assignedStaffAvatarUrl,
+                    peerRole: 'staff',
+                  );
+            }
+          : null,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final reportAsync = ref.watch(reportDetailProvider(widget.reportId));
+    final assignState = ref.watch(reportAssignProvider);
+
+    final isDesktop = kIsWeb && MediaQuery.of(context).size.width >= 850;
+
+    final bodyWidget = reportAsync.when(
+      loading: () => const Center(
+        child: CircularProgressIndicator(),
+      ),
+      error: (error, stack) => Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                Icons.error_outline_rounded,
+                size: 56,
+                color: theme.colorScheme.error,
+              ),
+              const SizedBox(height: 16),
+              Text(
+                error.toString(),
+                textAlign: TextAlign.center,
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+              const SizedBox(height: 16),
+              FilledButton.icon(
+                onPressed: () {
+                  ref
+                      .read(reportDetailProvider(widget.reportId).notifier)
+                      .refresh();
+                },
+                icon: const Icon(Icons.refresh),
+                label: Text(l10n.retry),
+              ),
+            ],
+          ),
+        ),
+      ),
+      data: (report) => RefreshIndicator(
+        onRefresh: () async {
+          await ref.read(reportDetailProvider(widget.reportId).notifier).refresh();
+        },
+        child: _buildContent(context, report, l10n, theme, assignState, isDesktop),
+      ),
+    );
+
+    if (!isDesktop) {
+      // Mobile View: GIỮ NGUYÊN TRẠNG 100%
+      return Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        appBar: AppBar(
+          title: Text(
+            l10n.reportDetailTitle,
+            style: theme.textTheme.titleMedium?.copyWith(
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+          elevation: 0,
+          centerTitle: true,
+        ),
+        body: bodyWidget,
+        bottomNavigationBar: _buildBottomActionButton(
+            context, l10n, theme, assignState, reportAsync.valueOrNull, false),
+      );
+    }
+
+    // Web Desktop View: Có Sidebar cố định bên trái qua AppLayout, AppBar có nút Back
+    return AppLayout(
+      customAppBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
+        title: Text(
+          l10n.reportDetailTitle,
+          style: theme.textTheme.titleMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        elevation: 0,
+        centerTitle: true,
+      ),
+      bottomNavigationBar: _buildBottomActionButton(
+          context, l10n, theme, assignState, reportAsync.valueOrNull, true),
+      child: bodyWidget,
+    );
+  }
+
+  Widget _buildContent(
+    BuildContext context,
+    ReportDetailModel report,
+    AppLocalizations l10n,
+    ThemeData theme,
+    ReportAssignState assignState,
+    bool isDesktop,
+  ) {
+    if (_lastSyncedReportId != report.id) {
+      _lastSyncedReportId = report.id;
+      final normalizedSev = report.severity?.toLowerCase();
+      if (normalizedSev == 'low' ||
+          normalizedSev == 'medium' ||
+          normalizedSev == 'high' ||
+          normalizedSev == 'critical') {
+        _selectedSeverity = normalizedSev!;
+      }
+    }
+
+    final isPending = report.status.toUpperCase() == 'PENDING';
+    final isDone = report.status.toUpperCase() == 'PROCESSED' ||
+        report.status.toUpperCase() == 'RESOLVED' ||
+        report.status.toUpperCase() == 'DONE';
+
+    final contentColumn = Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        // 1. Image Slider / Single Image Header (from image_urls list)
+        _buildImageSection(context, report.images, l10n, isDesktop),
+        const SizedBox(height: 16),
+
+        // 2. Status & Severity Dual Cards Header
+        _buildStatusAndSeveritySection(context, report, l10n, theme),
+        const SizedBox(height: 16),
+
+        // 3. Report Info Card (Title, Description, CreatedAt, Deadline)
+        _buildReportInfoCard(context, report, l10n, theme),
+        const SizedBox(height: 16),
+
+        if (report.status.toUpperCase() == 'REJECTED') ...[
+          _buildRejectedReasonCard(context, report, l10n, theme),
+          const SizedBox(height: 16),
+        ],
+
+        // 4. Reporter Card
+        _buildReporterCard(context, report, l10n, theme),
+        const SizedBox(height: 16),
+
+        // 5. Location Card
+        _buildLocationCard(context, report, l10n, theme),
+        const SizedBox(height: 16),
+
+        // 6. Smart Recommendations + Assign Staff & Severity / Decision Card
+        if (isPending) ...[
+          SmartRecommendationPanel(
+            report: report,
+            selectedStaffId: _selectedStaff?.id,
+            isSubmitting: assignState.isLoading,
+            onSelectCandidate: (candidate) {
+              setState(() => _selectedStaff = candidate.toStaffModel());
+            },
+            onAssignNow: (candidate) =>
+                _submitAssignCandidate(context, l10n, candidate),
+            onAutoAssign: () => _submitAutoAssign(context, l10n),
+          ),
+          const SizedBox(height: 16),
+          _buildAssignStaffTwoColumnSection(context, report, l10n, theme),
+        ] else ...[
+          _buildAssignedStaffTwoColumnCard(context, report, l10n, theme),
+          if (report.status.toUpperCase() == 'PROCESSING') ...[
+            const SizedBox(height: 10),
+            Align(
+              alignment: Alignment.centerRight,
+              child: OutlinedButton.icon(
+                onPressed: assignState.isLoading
+                    ? null
+                    : () => _openReassignStaffSheet(context, report, l10n),
+                icon: const Icon(Icons.swap_horiz_rounded, size: 18),
+                label: Text(l10n.reassignStaffButton),
+              ),
+            ),
+          ],
+          if (report.autoAssignDecision != null) ...[
+            const SizedBox(height: 12),
+            AutoAssignDecisionExplanationCard(
+              decision: report.autoAssignDecision!,
+            ),
+          ],
+        ],
+
+        // 7. Staff Resolution Section (when status is Done/Processed)
+        if (isDone) ...[
+          const SizedBox(height: 16),
+          _buildResolutionSection(context, report, l10n, theme, isDesktop),
+        ],
+
+        // 8. Citizen Review Section (when report has citizen review)
+        if (report.isReviewResolved != null) ...[
+          const SizedBox(height: 16),
+          _buildCitizenReviewSection(context, report, l10n, theme, isDone, isDesktop),
+        ],
+      ],
+    );
+
+    return SingleChildScrollView(
+      physics: const AlwaysScrollableScrollPhysics(
+        parent: ClampingScrollPhysics(),
+      ),
+      padding: const EdgeInsets.only(left: 16, right: 16, top: 8, bottom: 100),
+      child: isDesktop
+          ? Align(
+              alignment: Alignment.topCenter,
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(maxWidth: 880),
+                child: contentColumn,
+              ),
+            )
+          : contentColumn,
+    );
+  }
+
+  Widget _buildImageSection(
+    BuildContext context,
+    List<String> images,
+    AppLocalizations l10n,
+    bool isDesktop,
+  ) {
+    final theme = Theme.of(context);
+
+    if (images.isEmpty) {
+      return Container(
+        height: 180,
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+          ),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              Icons.image_not_supported_outlined,
+              size: 44,
+              color: theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              l10n.noImageAvailable,
+              style: TextStyle(
+                color: theme.colorScheme.onSurfaceVariant,
+                fontSize: 13,
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          ],
+        ),
+      );
+    }
+
+    if (images.length == 1) {
+      final imgWidget = GestureDetector(
+        onTap: () => _openFullscreenImage(images, 0),
+        child: AppNetworkImage(
+          url: images.first,
+          fit: BoxFit.cover,
+        ),
+      );
+
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(16),
+        child: isDesktop
+            ? SizedBox(
+                height: 380,
+                width: double.infinity,
+                child: imgWidget,
+              )
+            : AspectRatio(
+                aspectRatio: 16 / 9,
+                child: imgWidget,
+              ),
+      );
+    }
+
+    // Multiple images slider
+    final sliderContent = Stack(
+      children: [
+        PageView.builder(
+          itemCount: images.length,
+          onPageChanged: (index) {
+            setState(() {
+              _currentImageIndex = index;
+            });
+          },
+          itemBuilder: (context, index) {
+            return GestureDetector(
+              onTap: () => _openFullscreenImage(images, index),
+              child: AppNetworkImage(
+                url: images[index],
+                fit: BoxFit.cover,
+              ),
+            );
+          },
+        ),
+        // Page Indicator badge
+        Positioned(
+          bottom: 12,
+          right: 12,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.65),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: Text(
+              '${_currentImageIndex + 1}/${images.length}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(16),
+      child: isDesktop
+          ? SizedBox(
+              height: 380,
+              width: double.infinity,
+              child: sliderContent,
+            )
+          : AspectRatio(
+              aspectRatio: 16 / 9,
+              child: sliderContent,
+            ),
+    );
+  }
+
+  void _openFullscreenImage(List<String> images, int initialIndex) {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (_) => FullscreenImageViewer(
+          imageUrls: images,
+          initialIndex: initialIndex,
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStatusAndSeveritySection(
+    BuildContext context,
+    ReportDetailModel report,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    final statusColor = _getStatusColor(report.status, theme);
+    final statusText = _getStatusText(report.status, l10n);
+    final hasSeverity = report.severity != null && report.severity!.isNotEmpty;
+    final severityColor = hasSeverity ? _getSeverityColor(report.severity!, theme) : theme.colorScheme.outline;
+    final severityText = hasSeverity ? _getSeverityText(report.severity!, l10n) : '---';
+
+    return Row(
+      children: [
+        // 1. Status Card
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.6),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.info_outline_rounded,
+                      size: 15,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        l10n.statusLabel,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Wrap(
+                  spacing: 6,
+                  runSpacing: 4,
+                  children: [
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                      decoration: BoxDecoration(
+                        color: statusColor.withValues(alpha: 0.12),
+                        borderRadius: BorderRadius.circular(20),
+                        border: Border.all(color: statusColor.withValues(alpha: 0.35)),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Container(
+                            width: 7,
+                            height: 7,
+                            decoration: BoxDecoration(
+                              color: statusColor,
+                              shape: BoxShape.circle,
+                            ),
+                          ),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              statusText,
+                              style: TextStyle(
+                                color: statusColor,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    if (report.isReviewResolved == false)
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        decoration: BoxDecoration(
+                          color: Colors.orange.withValues(alpha: 0.15),
+                          borderRadius: BorderRadius.circular(20),
+                          border: Border.all(color: Colors.orange.withValues(alpha: 0.4)),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            const Icon(Icons.refresh_rounded, size: 13, color: Colors.orange),
+                            const SizedBox(width: 4),
+                            Text(
+                              l10n.rehandlingBadge,
+                              style: const TextStyle(
+                                color: Colors.orange,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                  ],
+                ),
+              ],
+            ),
+          ),
+        ),
+        const SizedBox(width: 12),
+
+        // 2. Severity Card
+        Expanded(
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surface,
+              borderRadius: BorderRadius.circular(14),
+              border: Border.all(
+                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.6),
+              ),
+            ),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    Icon(
+                      Icons.warning_amber_rounded,
+                      size: 15,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 6),
+                    Expanded(
+                      child: Text(
+                        l10n.severitySection,
+                        style: theme.textTheme.labelSmall?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 1,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  decoration: BoxDecoration(
+                    color: severityColor.withValues(alpha: 0.12),
+                    borderRadius: BorderRadius.circular(20),
+                    border: Border.all(color: severityColor.withValues(alpha: 0.35)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Container(
+                        width: 7,
+                        height: 7,
+                        decoration: BoxDecoration(
+                          color: severityColor,
+                          shape: BoxShape.circle,
+                        ),
+                      ),
+                      const SizedBox(width: 6),
+                      Flexible(
+                        child: Text(
+                          severityText,
+                          style: TextStyle(
+                            color: severityColor,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildReportInfoCard(
+    BuildContext context,
+    ReportDetailModel report,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    final formattedDate =
+        DateFormat('dd/MM/yyyy HH:mm').format(report.createdAt.toLocal());
+
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+        ),
+      ),
+      color: theme.colorScheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.article_outlined,
+                  size: 20,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  l10n.reportInfoSection,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+            const Divider(height: 20),
+            if (report.localizedCategoryName(Localizations.localeOf(context))
+                case final categoryName?) ...[
+              ReportCategoryBadge(label: categoryName),
+              const SizedBox(height: 10),
+            ],
+            Text(
+              report.title,
+              style: theme.textTheme.titleMedium?.copyWith(
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              report.description,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+                height: 1.4,
+              ),
+            ),
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                Icon(
+                  Icons.access_time_rounded,
+                  size: 14,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Text(
+                    '${l10n.createdAtLabel}: $formattedDate',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            if (report.deadline != null && report.status.toUpperCase() != 'REJECTED') ...[
+              const SizedBox(height: 6),
+              Builder(
+                builder: (context) {
+                  final deadlineColor = report.isOverdue
+                      ? theme.colorScheme.error
+                      : theme.colorScheme.onSurfaceVariant;
+                  final formattedDeadline = DateFormat('dd/MM/yyyy HH:mm')
+                      .format(report.deadline!.toLocal());
+                  return Wrap(
+                    spacing: 8,
+                    runSpacing: 4,
+                    crossAxisAlignment: WrapCrossAlignment.center,
+                    children: [
+                      Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.event_available_outlined,
+                            size: 14,
+                            color: deadlineColor,
+                          ),
+                          const SizedBox(width: 4),
+                          Text(
+                            '${l10n.reportDeadlineLabel}: $formattedDeadline',
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: deadlineColor,
+                              fontWeight: report.isOverdue
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
+                              fontFeatures: const [FontFeature.tabularFigures()],
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (report.isOverdue)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.errorContainer,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            l10n.deadlineOverdueBadge,
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.onErrorContainer,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        )
+                      else if (report.remainingDays != null)
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: theme.colorScheme.surfaceContainerHighest,
+                            borderRadius: BorderRadius.circular(6),
+                          ),
+                          child: Text(
+                            l10n.daysRemainingLabel(report.remainingDays!),
+                            style: theme.textTheme.labelSmall?.copyWith(
+                              color: theme.colorScheme.onSurfaceVariant,
+                              fontWeight: FontWeight.w600,
+                              fontFeatures: const [FontFeature.tabularFigures()],
+                            ),
+                          ),
+                        ),
+                    ],
+                  );
+                },
+              ),
+            ],
+            if (report.resolvedAt != null) ...[
+              const SizedBox(height: 6),
+              Row(
+                children: [
+                  Icon(
+                    Icons.check_circle_outline,
+                    size: 14,
+                    color: AppSemanticColors.of(context).success,
+                  ),
+                  const SizedBox(width: 4),
+                  Flexible(
+                    child: Text(
+                      '${l10n.resolvedAtLabel}: ${DateFormat('dd/MM/yyyy HH:mm').format(report.resolvedAt!.toLocal())}',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                        fontFeatures: const [FontFeature.tabularFigures()],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildRejectedReasonCard(
+    BuildContext context,
+    ReportDetailModel report,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    return Container(
+      width: double.infinity,
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: theme.colorScheme.errorContainer.withValues(alpha: 0.22),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: theme.colorScheme.error.withValues(alpha: 0.35),
+        ),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(
+                Icons.cancel_outlined,
+                size: 20,
+                color: theme.colorScheme.error,
+              ),
+              const SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  l10n.rejectedReasonTitle,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.error,
+                  ),
+                ),
+              ),
+              if (report.rejectedAt != null)
+                Text(
+                  DateFormat('dd/MM/yyyy HH:mm').format(report.rejectedAt!.toLocal()),
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontFeatures: const [FontFeature.tabularFigures()],
+                  ),
+                ),
+            ],
+          ),
+          const Divider(height: 20),
+          Text(
+            (report.rejectedReason != null && report.rejectedReason!.trim().isNotEmpty)
+                ? report.rejectedReason!
+                : l10n.noRejectionReasonProvided,
+            style: theme.textTheme.bodyMedium?.copyWith(
+              color: theme.colorScheme.onSurface,
+              height: 1.45,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildReporterCard(
+    BuildContext context,
+    ReportDetailModel report,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+        ),
+      ),
+      color: theme.colorScheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.person_outline_rounded,
+                  size: 20,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  l10n.reporterInfoSection,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+                if (report.isAnonymous) ...[
+                  const Spacer(),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.errorContainer.withValues(alpha: 0.5),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.visibility_off_outlined,
+                          size: 13,
+                          color: theme.colorScheme.onErrorContainer,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          l10n.anonymousUser,
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            color: theme.colorScheme.onErrorContainer,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            const Divider(height: 20),
+            Row(
+              children: [
+                AppNetworkImage(
+                  url: report.userAvatarUrl,
+                  width: 44,
+                  height: 44,
+                  isCircle: true,
+                  errorWidget: CircleAvatar(
+                    radius: 22,
+                    backgroundColor: theme.colorScheme.primaryContainer,
+                    child: Text(
+                      (report.userName?.isNotEmpty == true)
+                          ? report.userName![0].toUpperCase()
+                          : 'U',
+                      style: TextStyle(
+                        color: theme.colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        report.userName?.isNotEmpty == true
+                            ? report.userName!
+                            : l10n.user,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      if (report.userPhone != null &&
+                          report.userPhone!.isNotEmpty)
+                        Text(
+                          report.userPhone!,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                if (report.userId != null && report.userId!.isNotEmpty) ...[
+                  IconButton.outlined(
+                    icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
+                    tooltip: l10n.messageReporter,
+                    onPressed: () => _handleMessageReporter(report),
+                    constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                    padding: EdgeInsets.zero,
+                  ),
+                  const SizedBox(width: 8),
+                  IconButton.filledTonal(
+                    icon: const Icon(Icons.phone_outlined, size: 18),
+                    tooltip: l10n.callReporter,
+                    onPressed: () => _openReporterCallSheet(report),
+                    constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                    padding: EdgeInsets.zero,
+                  ),
+                ],
+              ],
+            ),
+            if (report.isAnonymous) ...[
+              const SizedBox(height: 12),
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.errorContainer.withValues(alpha: 0.2),
+                  borderRadius: BorderRadius.circular(10),
+                  border: Border.all(
+                    color: theme.colorScheme.error.withValues(alpha: 0.35),
+                  ),
+                ),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(top: 2),
+                      child: Icon(
+                        Icons.visibility_off_outlined,
+                        size: 18,
+                        color: theme.colorScheme.error,
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            l10n.anonymousUserNote,
+                            style: theme.textTheme.bodyMedium?.copyWith(
+                              fontWeight: FontWeight.bold,
+                              color: theme.colorScheme.error,
+                            ),
+                          ),
+                          const SizedBox(height: 3),
+                          Text(
+                            l10n.anonymousAdminNotice,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              fontSize: 11.5,
+                              color: theme.colorScheme.onSurfaceVariant,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildLocationCard(
+    BuildContext context,
+    ReportDetailModel report,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    final hasCoords = report.latitude != null && report.longitude != null;
+
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+        ),
+      ),
+      color: theme.colorScheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.location_on_outlined,
+                  size: 20,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  l10n.locationSection,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+            const Divider(height: 20),
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Icon(
+                  Icons.place_rounded,
+                  size: 18,
+                  color: theme.colorScheme.error,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        report.address?.isNotEmpty == true
+                            ? report.address!
+                            : l10n.noAddress,
+                        style: theme.textTheme.bodyMedium,
+                      ),
+                      if (report.locationDescription?.isNotEmpty == true) ...[
+                        const SizedBox(height: 4),
+                        Text(
+                          '${l10n.locationDescriptionLabel}: ${report.locationDescription!}',
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                      ],
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (hasCoords) ...[
+              const SizedBox(height: 8),
+              Padding(
+                padding: const EdgeInsets.only(left: 26.0),
+                child: Text(
+                  '${report.latitude!.toStringAsFixed(6)}, ${report.longitude!.toStringAsFixed(6)}',
+                  style: theme.textTheme.bodySmall?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                  ),
+                ),
+              ),
+              const SizedBox(height: 12),
+              SizedBox(
+                width: double.infinity,
+                child: OutlinedButton.icon(
+                  onPressed: () => _openOnMap(report.id, report.latitude!, report.longitude!),
+                  icon: const Icon(Icons.map_outlined, size: 18),
+                  label: Text(l10n.viewOnMap),
+                  style: OutlinedButton.styleFrom(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Mở bản đồ Mapbox trong app, focus vào report này.
+  void _openOnMap(String reportId, double lat, double lng) {
+    context.push(RouterPath.spaceMapWithFocus(
+      MapFocusTarget(reportId: reportId, latitude: lat, longitude: lng),
+    ));
+  }
+
+  /// 2-Column Section for Assigning Staff (Left Column) & Severity Selection (Right Column)
+  Widget _buildAssignStaffTwoColumnSection(
+    BuildContext context,
+    ReportDetailModel report,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    final staffsAsync = ref.watch(staffsProvider);
+
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: theme.colorScheme.primary.withValues(alpha: 0.3),
+        ),
+      ),
+      color: theme.colorScheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.assignment_ind_outlined,
+                  size: 20,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  l10n.assignStaffSection,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+            const Divider(height: 20),
+
+            // 2-Column layout with IntrinsicHeight
+            IntrinsicHeight(
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  // Cột trái: Nhân viên (flex 6)
+                  Expanded(
+                    flex: 6,
+                    child: _buildStaffSelectionCard(context, staffsAsync, l10n, theme),
+                  ),
+                  const SizedBox(width: 12),
+                  // Cột phải: Mức độ nghiêm trọng (flex 5)
+                  Expanded(
+                    flex: 5,
+                    child: _buildSeverityVerticalColumn(context, l10n, theme),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildStaffSelectionCard(
+    BuildContext context,
+    AsyncValue<List<StaffModel>> staffsAsync,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    return staffsAsync.when(
+      loading: () => Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Center(child: CircularProgressIndicator()),
+      ),
+      error: (e, _) => Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: theme.colorScheme.errorContainer.withValues(alpha: 0.3),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Center(
+          child: Text(
+            e.toString(),
+            style: TextStyle(color: theme.colorScheme.error, fontSize: 11),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ),
+      data: (staffs) {
+        if (_selectedStaff == null) {
+          // Placeholder khi chưa chọn nhân viên: Chiều cao tối thiểu 200px
+          return InkWell(
+            onTap: () => _showStaffPickerBottomSheet(context, staffs, l10n, theme),
+            borderRadius: BorderRadius.circular(12),
+            child: Container(
+              constraints: const BoxConstraints(minHeight: 200),
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 16),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: theme.colorScheme.outlineVariant,
+                  style: BorderStyle.solid,
+                ),
+              ),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircleAvatar(
+                    radius: 26,
+                    backgroundColor: theme.colorScheme.primaryContainer.withValues(alpha: 0.6),
+                    child: Icon(
+                      Icons.person_add_alt_1_outlined,
+                      color: theme.colorScheme.primary,
+                      size: 28,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    l10n.selectStaffPrompt,
+                    style: TextStyle(
+                      color: theme.colorScheme.primary,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 13,
+                    ),
+                    textAlign: TextAlign.center,
+                    maxLines: 2,
+                    overflow: TextOverflow.ellipsis,
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        // Đã chọn nhân viên: Chiều cao tối thiểu 200px đồng bộ với cột phải
+        return InkWell(
+          onTap: () => _showStaffPickerBottomSheet(context, staffs, l10n, theme),
+          borderRadius: BorderRadius.circular(12),
+          child: Container(
+            constraints: const BoxConstraints(minHeight: 200),
+            padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 12),
+            decoration: BoxDecoration(
+              color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.4),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: theme.colorScheme.primary,
+                width: 1.5,
+              ),
+            ),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                // Avatar
+                AppNetworkImage(
+                  url: _selectedStaff!.avatarUrl,
+                  width: 46,
+                  height: 46,
+                  isCircle: true,
+                  errorWidget: CircleAvatar(
+                    radius: 23,
+                    backgroundColor: theme.colorScheme.primaryContainer,
+                    child: Text(
+                      _selectedStaff!.fullName.isNotEmpty
+                          ? _selectedStaff!.fullName[0].toUpperCase()
+                          : 'S',
+                      style: TextStyle(
+                        color: theme.colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 6),
+
+                // Name
+                Text(
+                  _selectedStaff!.fullName,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 13,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                const SizedBox(height: 2),
+
+                // Email (hiển thị dài nhất có thể, xuống tối đa 2 dòng hoặc ellipsis)
+                Text(
+                  _selectedStaff!.email,
+                  style: TextStyle(
+                    fontSize: 11,
+                    color: theme.colorScheme.onSurfaceVariant,
+                    height: 1.2,
+                  ),
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+
+                // Position
+                if (_selectedStaff!.positionName != null) ...[
+                  const SizedBox(height: 4),
+                  PositionChip(name: _selectedStaff!.positionName!),
+                ],
+
+                // Phone
+                if (_selectedStaff!.phoneNumber != null &&
+                    _selectedStaff!.phoneNumber!.isNotEmpty) ...[
+                  const SizedBox(height: 2),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.phone_outlined,
+                        size: 11,
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                      const SizedBox(width: 3),
+                      Flexible(
+                        child: Text(
+                          _selectedStaff!.phoneNumber!,
+                          style: TextStyle(
+                            fontSize: 11,
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
+                  ),
+                ],
+
+                const SizedBox(height: 6),
+
+                // Change staff chip
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(
+                        Icons.sync_alt_rounded,
+                        size: 12,
+                        color: theme.colorScheme.primary,
+                      ),
+                      const SizedBox(width: 4),
+                      Text(
+                        l10n.changeStaff,
+                        style: TextStyle(
+                          color: theme.colorScheme.primary,
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildSeverityVerticalColumn(
+    BuildContext context,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _buildSeverityFullWidthButton('low', l10n.severityLow, Colors.green, theme),
+        const SizedBox(height: 8),
+        _buildSeverityFullWidthButton('medium', l10n.severityMedium, Colors.blue, theme),
+        const SizedBox(height: 8),
+        _buildSeverityFullWidthButton('high', l10n.severityHigh, Colors.orange, theme),
+        const SizedBox(height: 8),
+        _buildSeverityFullWidthButton('critical', l10n.severityCritical, Colors.red, theme),
+      ],
+    );
+  }
+
+  Widget _buildSeverityFullWidthButton(
+    String key,
+    String label,
+    Color color,
+    ThemeData theme,
+  ) {
+    final isSelected = _selectedSeverity == key;
+
+    return Expanded(
+      child: Container(
+        constraints: const BoxConstraints(minHeight: 44),
+        width: double.infinity,
+        child: Material(
+          color: isSelected
+              ? color.withValues(alpha: 0.18)
+              : theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.3),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(10),
+            side: BorderSide(
+              color: isSelected ? color : theme.colorScheme.outlineVariant.withValues(alpha: 0.7),
+              width: isSelected ? 1.5 : 1,
+            ),
+          ),
+          child: InkWell(
+            onTap: () {
+              setState(() {
+                _selectedSeverity = key;
+              });
+            },
+            borderRadius: BorderRadius.circular(10),
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 11),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 9,
+                    height: 9,
+                    decoration: BoxDecoration(
+                      color: color,
+                      shape: BoxShape.circle,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Flexible(
+                    child: Text(
+                      label,
+                      style: TextStyle(
+                        color: isSelected ? color : theme.colorScheme.onSurface,
+                        fontWeight: isSelected ? FontWeight.bold : FontWeight.w600,
+                        fontSize: 13,
+                      ),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  void _showStaffPickerBottomSheet(
+    BuildContext context,
+    List<StaffModel> staffs,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (bottomSheetContext) {
+        return _StaffPickerBottomSheet(
+          staffs: staffs,
+          selectedStaff: _selectedStaff,
+          onSelect: (staff) {
+            setState(() {
+              _selectedStaff = staff;
+            });
+            Navigator.of(bottomSheetContext).pop();
+          },
+        );
+      },
+    );
+  }
+
+  Widget _buildAssignedStaffTwoColumnCard(
+    BuildContext context,
+    ReportDetailModel report,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+        ),
+      ),
+      color: theme.colorScheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.engineering_outlined,
+                  size: 20,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: 8),
+                Text(
+                  l10n.assignedStaffInfo,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: theme.colorScheme.primary,
+                  ),
+                ),
+              ],
+            ),
+            const Divider(height: 20),
+            Row(
+              children: [
+                AppNetworkImage(
+                  url: report.assignedStaffAvatarUrl,
+                  width: 44,
+                  height: 44,
+                  isCircle: true,
+                  errorWidget: CircleAvatar(
+                    radius: 22,
+                    backgroundColor: theme.colorScheme.primaryContainer,
+                    child: Text(
+                      report.assignedStaffName?.isNotEmpty == true
+                          ? report.assignedStaffName![0].toUpperCase()
+                          : 'S',
+                      style: TextStyle(
+                        color: theme.colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        report.assignedStaffName?.isNotEmpty == true
+                            ? report.assignedStaffName!
+                            : l10n.staff,
+                        style: theme.textTheme.bodyLarge?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      if (report.assignedStaffEmail != null &&
+                          report.assignedStaffEmail!.isNotEmpty)
+                        Text(
+                          report.assignedStaffEmail!,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      if (report.assignedStaffPhone != null &&
+                          report.assignedStaffPhone!.isNotEmpty)
+                        Text(
+                          report.assignedStaffPhone!,
+                          style: theme.textTheme.bodySmall?.copyWith(
+                            color: theme.colorScheme.onSurfaceVariant,
+                          ),
+                        ),
+                    ],
+                  ),
+                ),
+                IconButton.outlined(
+                  icon: const Icon(Icons.chat_bubble_outline_rounded, size: 18),
+                  tooltip: l10n.messageStaff,
+                  onPressed: () => _handleMessageStaff(
+                    report.assignedStaffId,
+                    staffName: report.assignedStaffName,
+                    staffAvatar: report.assignedStaffAvatarUrl,
+                  ),
+                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                  padding: EdgeInsets.zero,
+                ),
+                const SizedBox(width: 8),
+                IconButton.filledTonal(
+                  icon: const Icon(Icons.phone_outlined, size: 18),
+                  tooltip: l10n.callStaff,
+                  onPressed: () => _openStaffCallSheet(report),
+                  constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
+                  padding: EdgeInsets.zero,
+                ),
+              ],
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  /// Resolution proof section showing staff photos and notes
+  Widget _buildResolutionSection(
+    BuildContext context,
+    ReportDetailModel report,
+    AppLocalizations l10n,
+    ThemeData theme,
+    bool isDesktop,
+  ) {
+    final staffName = report.assignedStaffName?.trim().isNotEmpty == true
+        ? report.assignedStaffName!
+        : l10n.staff;
+    final hasNote =
+        report.resolvedNote != null && report.resolvedNote!.trim().isNotEmpty;
+
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+        ),
+      ),
+      color: theme.colorScheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header: Icon + Title + (Optional Resolved Date)
+            Row(
+              children: [
+                const Icon(
+                  Icons.verified_outlined,
+                  size: 20,
+                  color: Colors.green,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.resolutionInfo,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: Colors.green,
+                    ),
+                  ),
+                ),
+                if (report.resolvedAt != null)
+                  Text(
+                    '${l10n.resolvedAtLabel}: ${DateFormat('dd/MM/yyyy HH:mm').format(report.resolvedAt!.toLocal())}',
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontSize: 12,
+                      fontFeatures: const [FontFeature.tabularFigures()],
+                    ),
+                  ),
+              ],
+            ),
+            const Divider(height: 20),
+
+            // Resolution Photos Subheader
+            Row(
+              children: [
+                Icon(
+                  Icons.photo_library_outlined,
+                  size: 16,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  l10n.resolutionImages,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                if (report.resolvedImages.isNotEmpty) ...[
+                  const SizedBox(width: 6),
+                  Container(
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primaryContainer
+                          .withValues(alpha: 0.6),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Text(
+                      '${report.resolvedImages.length}',
+                      style: TextStyle(
+                        fontSize: 11,
+                        fontWeight: FontWeight.bold,
+                        color: theme.colorScheme.onPrimaryContainer,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+            const SizedBox(height: 10),
+
+            // Slider of Resolution Images
+            _buildResolvedImageSlider(
+                context, report.resolvedImages, l10n, theme, isDesktop),
+            const SizedBox(height: 16),
+
+            // Resolution Note Subheader
+            Row(
+              children: [
+                Icon(
+                  Icons.speaker_notes_outlined,
+                  size: 16,
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+                const SizedBox(width: 6),
+                Text(
+                  l10n.resolutionNote,
+                  style: theme.textTheme.labelLarge?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8),
+
+            // Note Box
+            Container(
+              width: double.infinity,
+              padding: const EdgeInsets.all(12),
+              decoration: BoxDecoration(
+                color: theme.colorScheme.surfaceContainerHighest
+                    .withValues(alpha: 0.35),
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color:
+                      theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+                ),
+              ),
+              child: Text(
+                hasNote
+                    ? report.resolvedNote!.trim()
+                    : l10n.staffNoAdditionalNote(staffName),
+                style: theme.textTheme.bodyMedium?.copyWith(
+                  color: hasNote
+                      ? theme.colorScheme.onSurface
+                      : theme.colorScheme.onSurfaceVariant,
+                  fontStyle: hasNote ? FontStyle.normal : FontStyle.italic,
+                  height: 1.4,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildResolvedImageSlider(
+    BuildContext context,
+    List<String> images,
+    AppLocalizations l10n,
+    ThemeData theme,
+    bool isDesktop,
+  ) {
+    if (images.isEmpty) {
+      return Container(
+        height: 120,
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surfaceContainerHighest
+              .withValues(alpha: 0.35),
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(
+            color: theme.colorScheme.outlineVariant.withValues(alpha: 0.4),
+          ),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Icon(
+                Icons.image_not_supported_outlined,
+                size: 32,
+                color:
+                    theme.colorScheme.onSurfaceVariant.withValues(alpha: 0.5),
+              ),
+              const SizedBox(height: 6),
+              Text(
+                l10n.noResolutionImages,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: theme.colorScheme.onSurfaceVariant,
+                ),
+              ),
+            ],
+          ),
+        ),
+      );
+    }
+
+    if (images.length == 1) {
+      final imgWidget = GestureDetector(
+        onTap: () => _openFullscreenImage(images, 0),
+        child: AppNetworkImage(
+          url: images.first,
+          fit: BoxFit.cover,
+        ),
+      );
+
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: isDesktop
+            ? SizedBox(
+                height: 340,
+                width: double.infinity,
+                child: imgWidget,
+              )
+            : AspectRatio(
+                aspectRatio: 16 / 9,
+                child: imgWidget,
+              ),
+      );
+    }
+
+    final sliderWidget = Stack(
+      children: [
+        PageView.builder(
+          itemCount: images.length,
+          onPageChanged: (index) {
+            setState(() {
+              _currentResolvedImageIndex = index;
+            });
+          },
+          itemBuilder: (context, index) {
+            return GestureDetector(
+              onTap: () => _openFullscreenImage(images, index),
+              child: AppNetworkImage(
+                url: images[index],
+                fit: BoxFit.cover,
+              ),
+            );
+          },
+        ),
+        Positioned(
+          bottom: 10,
+          right: 10,
+          child: Container(
+            padding:
+                const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.65),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              '${_currentResolvedImageIndex + 1}/${images.length}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: isDesktop
+          ? SizedBox(
+              height: 340,
+              width: double.infinity,
+              child: sliderWidget,
+            )
+          : AspectRatio(
+              aspectRatio: 16 / 9,
+              child: sliderWidget,
+            ),
+    );
+  }
+
+  /// Bottom action button (Xử lý phản ánh):
+  /// - Only shown when report is PENDING and _selectedStaff != null (per user requirement to avoid clutter).
+  Widget? _buildBottomActionButton(
+    BuildContext context,
+    AppLocalizations l10n,
+    ThemeData theme,
+    ReportAssignState assignState,
+    ReportDetailModel? report,
+    bool isDesktop,
+  ) {
+    if (report == null) return null;
+    final upperStatus = report.status.toUpperCase();
+    final canReject = upperStatus == 'PENDING' || upperStatus == 'PROCESSING';
+    final canAssign = upperStatus == 'PENDING' && _selectedStaff != null;
+
+    if (!canReject && !canAssign) return null;
+
+    final rejectButton = OutlinedButton.icon(
+      onPressed: assignState.isLoading ? null : () => _showRejectDialog(context, l10n, theme),
+      style: OutlinedButton.styleFrom(
+        foregroundColor: theme.colorScheme.error,
+        side: BorderSide(color: theme.colorScheme.error.withValues(alpha: 0.7)),
+        padding: const EdgeInsets.symmetric(vertical: 14, horizontal: 16),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(14),
+        ),
+      ),
+      icon: const Icon(Icons.block_rounded, size: 18),
+      label: Text(
+        l10n.rejectReportButton,
+        style: const TextStyle(fontWeight: FontWeight.w600),
+      ),
+    );
+
+    final Widget actionBarContent;
+    if (canAssign) {
+      final assignButton = FilledButton(
+        onPressed: assignState.isLoading
+            ? null
+            : () => _submitAssign(context, l10n),
+        style: FilledButton.styleFrom(
+          padding: const EdgeInsets.symmetric(vertical: 14),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+        ),
+        child: assignState.isLoading
+            ? SizedBox(
+                width: 20,
+                height: 20,
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  color: theme.colorScheme.onPrimary,
+                ),
+              )
+            : Text(
+                l10n.processReportButton,
+                style: const TextStyle(
+                  fontSize: 16,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+      );
+      actionBarContent = Row(
+        children: [
+          rejectButton,
+          const SizedBox(width: 12),
+          Expanded(child: assignButton),
+        ],
+      );
+    } else {
+      actionBarContent = SizedBox(
+        width: double.infinity,
+        child: rejectButton,
+      );
+    }
+
+    if (!isDesktop) {
+      // Mobile View
+      return SafeArea(
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          decoration: BoxDecoration(
+            color: theme.colorScheme.surface,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withValues(alpha: 0.05),
+                offset: const Offset(0, -2),
+                blurRadius: 10,
+              ),
+            ],
+          ),
+          child: actionBarContent,
+        ),
+      );
+    }
+
+    // Web Desktop View: Căn giữa với maxWidth: 880
+    return SafeArea(
+      child: Container(
+        decoration: BoxDecoration(
+          color: theme.colorScheme.surface,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withValues(alpha: 0.05),
+              offset: const Offset(0, -2),
+              blurRadius: 10,
+            ),
+          ],
+        ),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 880),
+            child: Container(
+              width: double.infinity,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+              child: actionBarContent,
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _showRejectDialog(
+    BuildContext context,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) async {
+    final reason = await showDialog<String>(
+      context: context,
+      builder: (_) => const RejectReportDialog(),
+    );
+
+    if (reason == null || reason.isEmpty || !mounted) return;
+
+    final success = await ref.read(reportAssignProvider.notifier).rejectReport(
+          reportId: widget.reportId,
+          reason: reason,
+        );
+
+    if (!mounted) return;
+    if (success) {
+      Toast.show(ToastType.success, l10n.rejectSuccessMessage);
+    } else {
+      Toast.show(ToastType.error, l10n.rejectFailedMessage);
+    }
+  }
+
+  Future<void> _submitAssign(BuildContext context, AppLocalizations l10n) async {
+    if (_selectedStaff == null) return;
+
+    final success = await ref.read(reportAssignProvider.notifier).assignReport(
+          reportId: widget.reportId,
+          staffId: _selectedStaff!.id,
+          severity: _selectedSeverity,
+          source: 'MANUAL',
+        );
+
+    if (mounted) {
+      if (success) {
+        Toast.show(ToastType.success, l10n.assignSuccessMessage);
+      } else {
+        Toast.show(ToastType.error, l10n.assignFailedMessage);
+      }
+    }
+  }
+
+  Future<void> _submitAssignCandidate(
+    BuildContext context,
+    AppLocalizations l10n,
+    StaffCandidateScoreModel candidate,
+  ) async {
+    setState(() => _selectedStaff = candidate.toStaffModel());
+
+    final success = await ref.read(reportAssignProvider.notifier).assignReport(
+          reportId: widget.reportId,
+          staffId: candidate.staffId,
+          severity: _selectedSeverity,
+          source: 'RECOMMEND_CLICK',
+        );
+
+    if (mounted) {
+      if (success) {
+        Toast.show(ToastType.success, l10n.assignSuccessMessage);
+      } else {
+        final err = ref.read(reportAssignProvider).error;
+        Toast.show(
+          ToastType.error,
+          (err != null && err.isNotEmpty) ? err : l10n.assignFailedMessage,
+        );
+      }
+    }
+  }
+
+  Future<void> _submitAutoAssign(
+    BuildContext context,
+    AppLocalizations l10n,
+  ) async {
+    final success =
+        await ref.read(reportAssignProvider.notifier).autoAssignReport(
+              reportId: widget.reportId,
+            );
+
+    if (mounted) {
+      if (success) {
+        Toast.show(ToastType.success, l10n.autoAssignSuccessMessage);
+      } else {
+        final err = ref.read(reportAssignProvider).error;
+        Toast.show(
+          ToastType.error,
+          (err != null && err.isNotEmpty) ? err : l10n.autoAssignFailedFallback,
+        );
+      }
+    }
+  }
+
+  Future<void> _openReassignStaffSheet(
+    BuildContext context,
+    ReportDetailModel report,
+    AppLocalizations l10n,
+  ) async {
+    final StaffModel? picked = await showModalBottomSheet<StaffModel>(
+      context: context,
+      isScrollControlled: true,
+      useSafeArea: true,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
+      ),
+      builder: (sheetContext) {
+        return Consumer(
+          builder: (ctx, sheetRef, _) {
+            final theme = Theme.of(ctx);
+            final cs = theme.colorScheme;
+            final staffsAsync = sheetRef.watch(staffsProvider);
+
+            return staffsAsync.when(
+              loading: () => const SizedBox(
+                height: 280,
+                child: Center(
+                  child: CircularProgressIndicator(strokeWidth: 2),
+                ),
+              ),
+              error: (_, _) => SizedBox(
+                height: 240,
+                child: Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(24),
+                    child: Text(
+                      l10n.assignFailedMessage,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: cs.error,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+              data: (staffs) => _StaffPickerBottomSheet(
+                staffs: staffs,
+                selectedStaff: null,
+                title: l10n.reassignStaffButton,
+                currentStaffId: report.assignedStaffId,
+                onSelect: (staff) => Navigator.of(sheetContext).pop(staff),
+              ),
+            );
+          },
+        );
+      },
+    );
+
+    if (picked == null || !mounted) return;
+
+    final rawSev = report.severity?.toLowerCase();
+    final severity = (rawSev == 'low' ||
+            rawSev == 'medium' ||
+            rawSev == 'high' ||
+            rawSev == 'critical')
+        ? rawSev!
+        : 'medium';
+
+    final success = await ref.read(reportAssignProvider.notifier).assignReport(
+          reportId: report.id,
+          staffId: picked.id,
+          severity: severity,
+          source: 'MANUAL',
+        );
+
+    if (mounted) {
+      if (success) {
+        Toast.show(ToastType.success, l10n.assignSuccessMessage);
+      } else {
+        final err = ref.read(reportAssignProvider).error;
+        Toast.show(
+          ToastType.error,
+          (err != null && err.isNotEmpty) ? err : l10n.assignFailedMessage,
+        );
+      }
+    }
+  }
+
+  Color _getStatusColor(String status, ThemeData theme) {
+    return reportStatusColor(context, status);
+  }
+
+  String _getStatusText(String status, AppLocalizations l10n) {
+    switch (status.toUpperCase()) {
+      case 'PENDING':
+        return l10n.reportStatusPending;
+      case 'PROCESSING':
+        return l10n.reportStatusProcessing;
+      case 'PROCESSED':
+      case 'RESOLVED':
+      case 'DONE':
+        return l10n.reportStatusProcessed;
+      case 'REJECTED':
+        return l10n.reportStatusRejected;
+      default:
+        return l10n.reportStatusUnknown;
+    }
+  }
+
+  Color _getSeverityColor(String severity, ThemeData theme) {
+    switch (severity.toLowerCase()) {
+      case 'low':
+        return Colors.green;
+      case 'medium':
+        return Colors.blue;
+      case 'high':
+        return Colors.orange;
+      case 'critical':
+        return Colors.red;
+      default:
+        return theme.colorScheme.primary;
+    }
+  }
+
+  String _getSeverityText(String severity, AppLocalizations l10n) {
+    switch (severity.toLowerCase()) {
+      case 'low':
+        return l10n.severityLow;
+      case 'medium':
+        return l10n.severityMedium;
+      case 'high':
+        return l10n.severityHigh;
+      case 'critical':
+        return l10n.severityCritical;
+      default:
+        return severity;
+    }
+  }
+
+  Future<void> _handleReopenReport(
+    ReportDetailModel report,
+    AppLocalizations l10n,
+  ) async {
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: Text(l10n.reopenReportConfirmTitle),
+        content: Text(l10n.reopenReportConfirmMessage),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx, false),
+            child: Text(l10n.cancel),
+          ),
+          FilledButton(
+            style: FilledButton.styleFrom(
+              backgroundColor: Theme.of(context).colorScheme.error,
+              foregroundColor: Theme.of(context).colorScheme.onError,
+            ),
+            onPressed: () => Navigator.pop(ctx, true),
+            child: Text(l10n.reopenReportButton),
+          ),
+        ],
+      ),
+    );
+
+    if (confirmed != true) return;
+
+    setState(() => _isReopening = true);
+    try {
+      final res =
+          await reportRepository.updateReportStatus(report.id, 'processing');
+      if (mounted) {
+        if (res.success) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(l10n.reopenReportSuccess),
+              backgroundColor: Colors.green,
+            ),
+          );
+          ref.read(reportDetailProvider(widget.reportId).notifier).refresh();
+          ref.read(adminOverviewProvider.notifier).refresh();
+          ref.invalidate(recentReportProvider);
+          ref.invalidate(reportListProvider);
+          ref.invalidate(reportStatisticsProvider);
+          ref.invalidate(unsatisfactoryReportsProvider);
+          ref.invalidate(kanbanColumnProvider);
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text(res.message),
+              backgroundColor: Theme.of(context).colorScheme.error,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(e.toString()),
+            backgroundColor: Theme.of(context).colorScheme.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isReopening = false);
+      }
+    }
+  }
+
+  Widget _buildCitizenReviewSection(
+    BuildContext context,
+    ReportDetailModel report,
+    AppLocalizations l10n,
+    ThemeData theme,
+    bool isDone,
+    bool isDesktop,
+  ) {
+    final isUnresolved = report.isReviewResolved == false;
+
+    return Card(
+      elevation: 0,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(16),
+        side: BorderSide(
+          color: isUnresolved
+              ? theme.colorScheme.error.withValues(alpha: 0.5)
+              : Colors.amber.withValues(alpha: 0.5),
+        ),
+      ),
+      color: theme.colorScheme.surface,
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Header
+            Row(
+              children: [
+                Icon(
+                  isUnresolved
+                      ? Icons.report_problem_outlined
+                      : Icons.star_rounded,
+                  size: 20,
+                  color: isUnresolved ? theme.colorScheme.error : Colors.amber,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    isUnresolved
+                        ? l10n.citizenReviewUnresolved
+                        : l10n.citizenRating,
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: isUnresolved
+                          ? theme.colorScheme.error
+                          : Colors.amber.shade800,
+                    ),
+                  ),
+                ),
+                if (report.reviewedAt != null)
+                  Text(
+                    DateFormat('dd/MM/yyyy HH:mm')
+                        .format(report.reviewedAt!.toLocal()),
+                    style: theme.textTheme.bodySmall?.copyWith(
+                      color: theme.colorScheme.onSurfaceVariant,
+                      fontSize: 12,
+                    ),
+                  ),
+              ],
+            ),
+            const Divider(height: 20),
+
+            if (isUnresolved) ...[
+              // Citizen feedback reason
+              if (report.reviewNote != null &&
+                  report.reviewNote!.trim().isNotEmpty) ...[
+                Row(
+                  children: [
+                    Icon(
+                      Icons.comment_outlined,
+                      size: 16,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      l10n.citizenReviewReason,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 8),
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: theme.colorScheme.errorContainer
+                        .withValues(alpha: 0.25),
+                    borderRadius: BorderRadius.circular(12),
+                    border: Border.all(
+                      color: theme.colorScheme.error.withValues(alpha: 0.3),
+                    ),
+                  ),
+                  child: Text(
+                    report.reviewNote!.trim(),
+                    style: theme.textTheme.bodyMedium?.copyWith(
+                      color: theme.colorScheme.onSurface,
+                      height: 1.4,
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 16),
+              ],
+
+              // Citizen photos
+              if (report.reviewImages.isNotEmpty) ...[
+                Row(
+                  children: [
+                    Icon(
+                      Icons.photo_library_outlined,
+                      size: 16,
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      l10n.citizenReviewPhotos,
+                      style: theme.textTheme.labelLarge?.copyWith(
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    const SizedBox(width: 6),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 6, vertical: 2),
+                      decoration: BoxDecoration(
+                        color: theme.colorScheme.errorContainer
+                            .withValues(alpha: 0.6),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Text(
+                        '${report.reviewImages.length}',
+                        style: TextStyle(
+                          fontSize: 11,
+                          fontWeight: FontWeight.bold,
+                          color: theme.colorScheme.onErrorContainer,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 10),
+                _buildReviewImageSlider(
+                    context, report.reviewImages, l10n, theme, isDesktop),
+                const SizedBox(height: 16),
+              ],
+
+              // Reopen action button (when report is Done)
+              if (isDone) ...[
+                SizedBox(
+                  width: double.infinity,
+                  child: FilledButton.icon(
+                    style: FilledButton.styleFrom(
+                      backgroundColor: theme.colorScheme.error,
+                      foregroundColor: theme.colorScheme.onError,
+                      padding: const EdgeInsets.symmetric(vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    onPressed: _isReopening
+                        ? null
+                        : () => _handleReopenReport(report, l10n),
+                    icon: _isReopening
+                        ? SizedBox(
+                            width: 16,
+                            height: 16,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: theme.colorScheme.onError,
+                            ),
+                          )
+                        : const Icon(Icons.replay_rounded, size: 18),
+                    label: Text(
+                      l10n.reopenReportButton,
+                      style: const TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ),
+              ],
+            ] else ...[
+              // Resolved star rating display
+              Row(
+                children: [
+                  ...List.generate(
+                    5,
+                    (i) => Icon(
+                      i < (report.rating ?? 0)
+                          ? Icons.star_rounded
+                          : Icons.star_outline_rounded,
+                      size: 24,
+                      color: Colors.amber,
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Text(
+                    '${report.rating ?? 0}/5',
+                    style: theme.textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                      color: theme.colorScheme.onSurface,
+                    ),
+                  ),
+                ],
+              ),
+              if (report.reviewNote != null &&
+                  report.reviewNote!.trim().isNotEmpty) ...[
+                const SizedBox(height: 10),
+                Text(
+                  report.reviewNote!.trim(),
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: theme.colorScheme.onSurfaceVariant,
+                    fontStyle: FontStyle.italic,
+                  ),
+                ),
+              ],
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildReviewImageSlider(
+    BuildContext context,
+    List<String> images,
+    AppLocalizations l10n,
+    ThemeData theme,
+    bool isDesktop,
+  ) {
+    if (images.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    if (images.length == 1) {
+      final imgWidget = GestureDetector(
+        onTap: () => _openFullscreenImage(images, 0),
+        child: AppNetworkImage(
+          url: images.first,
+          fit: BoxFit.cover,
+        ),
+      );
+
+      return ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: isDesktop
+            ? SizedBox(
+                height: 320,
+                width: double.infinity,
+                child: imgWidget,
+              )
+            : AspectRatio(
+                aspectRatio: 16 / 9,
+                child: imgWidget,
+              ),
+      );
+    }
+
+    final sliderWidget = Stack(
+      children: [
+        PageView.builder(
+          itemCount: images.length,
+          onPageChanged: (index) {
+            setState(() {
+              _currentReviewImageIndex = index;
+            });
+          },
+          itemBuilder: (context, index) {
+            return GestureDetector(
+              onTap: () => _openFullscreenImage(images, index),
+              child: AppNetworkImage(
+                url: images[index],
+                fit: BoxFit.cover,
+              ),
+            );
+          },
+        ),
+        Positioned(
+          bottom: 8,
+          right: 8,
+          child: Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 3),
+            decoration: BoxDecoration(
+              color: Colors.black.withValues(alpha: 0.65),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              '${_currentReviewImageIndex + 1}/${images.length}',
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 11,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+          ),
+        ),
+      ],
+    );
+
+    return ClipRRect(
+      borderRadius: BorderRadius.circular(12),
+      child: isDesktop
+          ? SizedBox(
+              height: 320,
+              width: double.infinity,
+              child: sliderWidget,
+            )
+          : AspectRatio(
+              aspectRatio: 16 / 9,
+              child: sliderWidget,
+            ),
+    );
+  }
+}
+
+class RejectReportDialog extends StatefulWidget {
+  const RejectReportDialog({super.key});
+
+  @override
+  State<RejectReportDialog> createState() => _RejectReportDialogState();
+}
+
+class _RejectReportDialogState extends State<RejectReportDialog> {
+  final _formKey = GlobalKey<FormState>();
+  final _reasonCtrl = TextEditingController();
+
+  @override
+  void dispose() {
+    _reasonCtrl.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    return AlertDialog(
+      title: Text(l10n.rejectReportConfirmTitle),
+      content: Form(
+        key: _formKey,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              l10n.rejectReportConfirmMessage,
+              style: theme.textTheme.bodyMedium?.copyWith(
+                color: theme.colorScheme.onSurfaceVariant,
+              ),
+            ),
+            const SizedBox(height: 14),
+            TextFormField(
+              controller: _reasonCtrl,
+              autofocus: true,
+              maxLines: 3,
+              maxLength: 500,
+              decoration: InputDecoration(
+                labelText: l10n.rejectReportReasonLabel,
+                hintText: l10n.rejectReportReasonHint,
+                border: const OutlineInputBorder(),
+              ),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return l10n.rejectReportReasonRequired;
+                }
+                return null;
+              },
+            ),
+          ],
+        ),
+      ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: Text(l10n.cancel),
+        ),
+        FilledButton(
+          style: FilledButton.styleFrom(
+            backgroundColor: theme.colorScheme.error,
+            foregroundColor: theme.colorScheme.onError,
+          ),
+          onPressed: () {
+            if (_formKey.currentState?.validate() ?? false) {
+              Navigator.of(context).pop(_reasonCtrl.text.trim());
+            }
+          },
+          child: Text(l10n.confirmRejectAction),
+        ),
+      ],
+    );
+  }
+}
+
+class _StaffPickerBottomSheet extends StatefulWidget {
+  final List<StaffModel> staffs;
+  final StaffModel? selectedStaff;
+  final String? title;
+  final String? currentStaffId;
+  final ValueChanged<StaffModel> onSelect;
+
+  const _StaffPickerBottomSheet({
+    required this.staffs,
+    required this.selectedStaff,
+    this.title,
+    this.currentStaffId,
+    required this.onSelect,
+  });
+
+  @override
+  State<_StaffPickerBottomSheet> createState() =>
+      _StaffPickerBottomSheetState();
+}
+
+class _StaffPickerBottomSheetState extends State<_StaffPickerBottomSheet> {
+  String? _positionFilter;
+  String _searchQuery = '';
+  final _searchController = TextEditingController();
+
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    var filtered = _positionFilter == null
+        ? widget.staffs
+        : widget.staffs
+            .where((s) => s.positionId == _positionFilter)
+            .toList();
+    if (_searchQuery.trim().isNotEmpty) {
+      filtered = filtered
+          .where((s) => _ViSearchHelper.matches(s, _searchQuery))
+          .toList();
+    }
+
+    return ConstrainedBox(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.75,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 16),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+              child: Text(
+                widget.title ?? l10n.selectStaffPrompt,
+                style: theme.textTheme.titleMedium?.copyWith(
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+            PositionFilterChips(
+              selectedId: _positionFilter,
+              onChanged: (id) => setState(() => _positionFilter = id),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  isDense: true,
+                  hintText: l10n.searchStaffHint,
+                  prefixIcon: const Icon(Icons.search, size: 20),
+                  suffixIcon: _searchQuery.isNotEmpty
+                      ? IconButton(
+                          icon: const Icon(Icons.clear, size: 18),
+                          onPressed: () {
+                            _searchController.clear();
+                            setState(() => _searchQuery = '');
+                          },
+                        )
+                      : null,
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  contentPadding:
+                      const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                ),
+                onChanged: (v) => setState(() => _searchQuery = v),
+              ),
+            ),
+            const Divider(),
+            if (filtered.isEmpty)
+              Padding(
+                padding: const EdgeInsets.all(24),
+                child: Center(
+                  child: Text(
+                    l10n.noStaffAvailable,
+                    style: TextStyle(
+                      color: theme.colorScheme.onSurfaceVariant,
+                    ),
+                  ),
+                ),
+              )
+            else
+              Flexible(
+                child: ListView.separated(
+                  shrinkWrap: true,
+                  itemCount: filtered.length,
+                  separatorBuilder: (context, index) =>
+                      const Divider(height: 1),
+                  itemBuilder: (context, index) {
+                    final staff = filtered[index];
+                    final isCurrent = widget.currentStaffId != null &&
+                        widget.currentStaffId == staff.id;
+                    final isSelected = widget.selectedStaff?.id == staff.id;
+
+                    return ListTile(
+                      enabled: !isCurrent,
+                      leading: AppNetworkImage(
+                        url: staff.avatarUrl,
+                        width: 40,
+                        height: 40,
+                        isCircle: true,
+                        errorWidget: CircleAvatar(
+                          radius: 20,
+                          backgroundColor: theme.colorScheme.primaryContainer,
+                          child: Text(
+                            staff.fullName.isNotEmpty
+                                ? staff.fullName[0].toUpperCase()
+                                : 'S',
+                            style: TextStyle(
+                              color: theme.colorScheme.onPrimaryContainer,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                      title: Text(
+                        staff.fullName,
+                        style: TextStyle(
+                          fontWeight: (isSelected || isCurrent)
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                        ),
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            '${staff.email}${staff.phoneNumber != null ? ' • ${staff.phoneNumber}' : ''}',
+                            style: TextStyle(
+                              color: theme.colorScheme.onSurfaceVariant,
+                              fontSize: 12,
+                            ),
+                          ),
+                          const SizedBox(height: 4),
+                          Wrap(
+                            spacing: 6,
+                            runSpacing: 4,
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: [
+                              PositionChip(
+                                name: staff.positionName ?? l10n.noPosition,
+                              ),
+                              StaffWorkloadBadge(
+                                weightedLoad: staff.weightedLoad,
+                                processingCount: staff.processingCount,
+                                isOverloaded: staff.isOverloaded,
+                                assignmentHint: staff.assignmentHint,
+                                severityBreakdown: staff.severityBreakdown,
+                                showAssignmentHint: true,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      trailing: isCurrent
+                          ? Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: theme.colorScheme.primaryContainer,
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                l10n.assignedTo,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: theme.colorScheme.onPrimaryContainer,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            )
+                          : isSelected
+                              ? Icon(
+                                  Icons.check_circle,
+                                  color: theme.colorScheme.primary,
+                                )
+                              : null,
+                      onTap: isCurrent ? null : () => widget.onSelect(staff),
+                    );
+                  },
+                ),
+              ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class _ViSearchHelper {
+  static const _d =
+      'àáạảãâầấậẩẫăằắặẳẵèéẹẻẽêềếệểễìíịỉĩòóọỏõôồốộổỗơờớợởỡùúụủũưừứựửữỳýỵỷỹđĐÀÁẠẢÃÂẦẤẬẨẪĂẰẮẶẲẴÈÉẸẺẼÊỀẾỆỂỄÌÍỊỈĨÒÓỌỎÕÔỒỐỘỔỖƠỜỚỢỞỠÙÚỤỦŨƯỪỨỰỬỮỲÝỴỶỸ';
+  static const _nd =
+      'aaaaaaaaaaaaaaaaaeeeeeeeeeeeiiiiiooooooooooooooooouuuuuuuuuuuyyyyydDAAAAAAAAAAAAAAAAAEEEEEEEEEEEIIIIIOOOOOOOOOOOOOOOOOUUUUUUUUUUUYYYYY';
+
+  static String strip(String s) {
+    var r = s;
+    for (int i = 0; i < _d.length; i++) {
+      r = r.replaceAll(_d[i], _nd[i]);
+    }
+    return r;
+  }
+
+  static bool matches(StaffModel staff, String q) {
+    if (q.trim().isEmpty) return true;
+    final qLow = q.trim().toLowerCase();
+    final qStrip = strip(qLow);
+    final name = staff.fullName.toLowerCase();
+    final nameStrip = strip(name);
+    final email = staff.email.toLowerCase();
+    final phone = (staff.phoneNumber ?? '').toLowerCase();
+    return name.contains(qLow) ||
+        nameStrip.contains(qStrip) ||
+        email.contains(qLow) ||
+        phone.contains(qLow);
+  }
+}

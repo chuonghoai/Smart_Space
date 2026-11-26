@@ -620,6 +620,24 @@ abstract class AppLocalizations {
   /// **'News'**
   String get news;
 
+  /// No description provided for @newsDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'News Detail'**
+  String get newsDetail;
+
+  /// No description provided for @newsNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'News not found'**
+  String get newsNotFound;
+
+  /// No description provided for @targetAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get targetAdmin;
+
   /// No description provided for @instructions.
   ///
   /// In en, this message translates to:
@@ -697,6 +715,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Session expired'**
   String get sessionExpired;
+
+  /// No description provided for @sessionRevokedOnThisDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'You have been signed out of this device from another device.'**
+  String get sessionRevokedOnThisDevice;
 
   /// No description provided for @settingsTitle.
   ///
@@ -883,6 +907,1614 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Include at least one special character !@#\$^()_'**
   String get passwordReqSpecial;
+
+  /// No description provided for @actionView.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get actionView;
+
+  /// No description provided for @routeSplash.
+  ///
+  /// In en, this message translates to:
+  /// **'Splash Screen'**
+  String get routeSplash;
+
+  /// No description provided for @routeLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get routeLogin;
+
+  /// No description provided for @routeHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get routeHome;
+
+  /// No description provided for @routeSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get routeSettings;
+
+  /// No description provided for @routeReportDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Detail'**
+  String get routeReportDetail;
+
+  /// No description provided for @staffSplashAppName.
+  ///
+  /// In en, this message translates to:
+  /// **'SmartSpace Staff'**
+  String get staffSplashAppName;
+
+  /// No description provided for @staffSplashTagline.
+  ///
+  /// In en, this message translates to:
+  /// **'Incident management and processing tool.'**
+  String get staffSplashTagline;
+
+  /// No description provided for @totalAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Total assigned'**
+  String get totalAssigned;
+
+  /// No description provided for @needsYourAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs your attention'**
+  String get needsYourAttention;
+
+  /// No description provided for @myWorkDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'My Work'**
+  String get myWorkDashboard;
+
+  /// No description provided for @gpsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot locate GPS, please check your device'**
+  String get gpsError;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @distanceAway.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} away'**
+  String distanceAway(String distance);
+
+  /// No description provided for @routeNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get routeNotifications;
+
+  /// No description provided for @markAllAsRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all as read'**
+  String get markAllAsRead;
+
+  /// No description provided for @emptyNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no notifications.'**
+  String get emptyNotification;
+
+  /// No description provided for @dayAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'days ago'**
+  String get dayAgo;
+
+  /// No description provided for @hourAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'hours ago'**
+  String get hourAgo;
+
+  /// No description provided for @minuteAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'minutes ago'**
+  String get minuteAgo;
+
+  /// No description provided for @justNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get justNow;
+
+  /// No description provided for @calculatingDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Calculating distance...'**
+  String get calculatingDistance;
+
+  /// No description provided for @reportDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Details'**
+  String get reportDetails;
+
+  /// No description provided for @turnOnLocationToViewDistance.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on location to view the distance from the incident to your location'**
+  String get turnOnLocationToViewDistance;
+
+  /// No description provided for @openInGoogleMaps.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in Google Maps'**
+  String get openInGoogleMaps;
+
+  /// No description provided for @createdAtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Created at'**
+  String get createdAtLabel;
+
+  /// No description provided for @statusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get statusLabel;
+
+  /// No description provided for @severityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity'**
+  String get severityLabel;
+
+  /// No description provided for @severityLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get severityLow;
+
+  /// No description provided for @severityMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get severityMedium;
+
+  /// No description provided for @severityHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get severityHigh;
+
+  /// No description provided for @severityCritical.
+  ///
+  /// In en, this message translates to:
+  /// **'Critical'**
+  String get severityCritical;
+
+  /// No description provided for @anonymousUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous'**
+  String get anonymousUser;
+
+  /// No description provided for @reporter.
+  ///
+  /// In en, this message translates to:
+  /// **'Reporter'**
+  String get reporter;
+
+  /// No description provided for @locationServiceDisabledError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enable location services on your device'**
+  String get locationServiceDisabledError;
+
+  /// No description provided for @locationPermissionDeniedForeverError.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permissions are permanently denied, please go to settings to enable'**
+  String get locationPermissionDeniedForeverError;
+
+  /// No description provided for @cannotOpenGoogleMapsError.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot open Google Maps'**
+  String get cannotOpenGoogleMapsError;
+
+  /// No description provided for @errorOccurred.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred:\n{error}'**
+  String errorOccurred(Object error);
+
+  /// No description provided for @retryButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retryButton;
+
+  /// No description provided for @assignedStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Staff'**
+  String get assignedStaff;
+
+  /// No description provided for @newLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get newLabel;
+
+  /// No description provided for @staffPortalName.
+  ///
+  /// In en, this message translates to:
+  /// **'SmartSpace Staff Portal'**
+  String get staffPortalName;
+
+  /// No description provided for @staffLoginSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Internal system for task processing'**
+  String get staffLoginSubtitle;
+
+  /// No description provided for @staffWelcome.
+  ///
+  /// In en, this message translates to:
+  /// **'Employee Sign In'**
+  String get staffWelcome;
+
+  /// No description provided for @quickAccessMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get quickAccessMap;
+
+  /// No description provided for @quickAccessNews.
+  ///
+  /// In en, this message translates to:
+  /// **'News'**
+  String get quickAccessNews;
+
+  /// No description provided for @quickAccessSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get quickAccessSettings;
+
+  /// No description provided for @quickAccessGuide.
+  ///
+  /// In en, this message translates to:
+  /// **'Guide'**
+  String get quickAccessGuide;
+
+  /// No description provided for @routeMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Map'**
+  String get routeMap;
+
+  /// No description provided for @myLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'My Location'**
+  String get myLocation;
+
+  /// No description provided for @refresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get refresh;
+
+  /// No description provided for @handleReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Handle Report'**
+  String get handleReport;
+
+  /// No description provided for @processReportAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Process'**
+  String get processReportAction;
+
+  /// No description provided for @routeHandleReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Handle Report'**
+  String get routeHandleReport;
+
+  /// No description provided for @evidencePhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence Photos'**
+  String get evidencePhotos;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take photo'**
+  String get takePhoto;
+
+  /// No description provided for @chooseFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose photo from gallery'**
+  String get chooseFromGallery;
+
+  /// No description provided for @resolutionNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution Note'**
+  String get resolutionNote;
+
+  /// No description provided for @resolutionNoteHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe handling results or notes...'**
+  String get resolutionNoteHint;
+
+  /// No description provided for @slideToComplete.
+  ///
+  /// In en, this message translates to:
+  /// **'Slide to complete'**
+  String get slideToComplete;
+
+  /// No description provided for @submittingReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting...'**
+  String get submittingReport;
+
+  /// No description provided for @reportProcessedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Report resolved successfully!'**
+  String get reportProcessedSuccess;
+
+  /// No description provided for @provideEvidenceOrNoteWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Please attach at least 1 evidence photo or enter a note'**
+  String get provideEvidenceOrNoteWarning;
+
+  /// No description provided for @uploadingEvidence.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading evidence photos...'**
+  String get uploadingEvidence;
+
+  /// No description provided for @submittingReportBackground.
+  ///
+  /// In en, this message translates to:
+  /// **'Your report handling info is being submitted, please do not close the app'**
+  String get submittingReportBackground;
+
+  /// No description provided for @submittingReportBackgroundTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitting Handling Information'**
+  String get submittingReportBackgroundTitle;
+
+  /// No description provided for @uploadingEvidenceProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Uploading evidence photos ({current}/{total})...'**
+  String uploadingEvidenceProgress(Object current, Object total);
+
+  /// No description provided for @almostDoneFinalizing.
+  ///
+  /// In en, this message translates to:
+  /// **'Finalizing report resolution ({current}/{total})...'**
+  String almostDoneFinalizing(Object current, Object total);
+
+  /// No description provided for @handlingCompletedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Handling information submitted successfully!'**
+  String get handlingCompletedSuccess;
+
+  /// No description provided for @gotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get gotIt;
+
+  /// No description provided for @handlingProgressTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Handling Submission Progress'**
+  String get handlingProgressTitle;
+
+  /// No description provided for @errorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred'**
+  String get errorTitle;
+
+  /// No description provided for @provideEvidencePhotoWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Please attach at least 1 evidence photo before completing'**
+  String get provideEvidencePhotoWarning;
+
+  /// No description provided for @evidencePhotosRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution evidence photos *'**
+  String get evidencePhotosRequired;
+
+  /// No description provided for @rehandling.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-handling'**
+  String get rehandling;
+
+  /// No description provided for @rehandlingBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-handling'**
+  String get rehandlingBadge;
+
+  /// No description provided for @rehandlingNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'This report was rated unsatisfactory and is being re-handled'**
+  String get rehandlingNotice;
+
+  /// No description provided for @routeChangePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get routeChangePassword;
+
+  /// No description provided for @routeEditProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get routeEditProfile;
+
+  /// No description provided for @routeManageDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Devices'**
+  String get routeManageDevices;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editProfile;
+
+  /// No description provided for @changeAvatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Photo'**
+  String get changeAvatar;
+
+  /// No description provided for @pickImageFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not pick the image. Please try again.'**
+  String get pickImageFailed;
+
+  /// No description provided for @dateOfBirth.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of Birth'**
+  String get dateOfBirth;
+
+  /// No description provided for @gender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get gender;
+
+  /// No description provided for @genderMale.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get genderMale;
+
+  /// No description provided for @genderFemale.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get genderFemale;
+
+  /// No description provided for @genderOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get genderOther;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChanges;
+
+  /// No description provided for @profileUpdateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully'**
+  String get profileUpdateSuccess;
+
+  /// No description provided for @profileUpdateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update profile'**
+  String get profileUpdateFailed;
+
+  /// No description provided for @loggedInDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged in devices'**
+  String get loggedInDevices;
+
+  /// No description provided for @thisDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'This device'**
+  String get thisDevice;
+
+  /// No description provided for @activeNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Active now'**
+  String get activeNow;
+
+  /// No description provided for @logoutDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logoutDevice;
+
+  /// No description provided for @logoutDeviceConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout from device?'**
+  String get logoutDeviceConfirmTitle;
+
+  /// No description provided for @logoutDeviceConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The session on \"{deviceName}\" will be ended.'**
+  String logoutDeviceConfirmMessage(String deviceName);
+
+  /// No description provided for @logoutAllOtherDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout all other devices'**
+  String get logoutAllOtherDevices;
+
+  /// No description provided for @logoutAllConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout all other devices?'**
+  String get logoutAllConfirmTitle;
+
+  /// No description provided for @logoutAllConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'All sessions except this device will be ended.'**
+  String get logoutAllConfirmMessage;
+
+  /// No description provided for @noOtherDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'No other devices logged in.'**
+  String get noOtherDevices;
+
+  /// No description provided for @deviceLogoutSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Device logged out.'**
+  String get deviceLogoutSuccess;
+
+  /// No description provided for @allDevicesLogoutSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'All other devices logged out.'**
+  String get allDevicesLogoutSuccess;
+
+  /// No description provided for @latestNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest News'**
+  String get latestNews;
+
+  /// No description provided for @routeNewsList.
+  ///
+  /// In en, this message translates to:
+  /// **'News'**
+  String get routeNewsList;
+
+  /// No description provided for @emptyNewsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No news yet'**
+  String get emptyNewsTitle;
+
+  /// No description provided for @emptyNewsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'There are currently no news or announcements.'**
+  String get emptyNewsDescription;
+
+  /// No description provided for @viewDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'View details'**
+  String get viewDetail;
+
+  /// No description provided for @mapNormalReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal'**
+  String get mapNormalReports;
+
+  /// No description provided for @mapShowAllTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Show all my tasks'**
+  String get mapShowAllTasks;
+
+  /// No description provided for @mapNoActiveTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'You have no tasks in progress'**
+  String get mapNoActiveTasks;
+
+  /// No description provided for @mapClusterReportsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 report in this area} other{{count} reports in this area}}'**
+  String mapClusterReportsTitle(int count);
+
+  /// No description provided for @mapClusterSortNearest.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearest to you first'**
+  String get mapClusterSortNearest;
+
+  /// No description provided for @mapClusterSortHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Most dangerous first, then newest'**
+  String get mapClusterSortHint;
+
+  /// No description provided for @mapShowingFirstTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{Showing the first task} other{Showing the first {count} tasks}}'**
+  String mapShowingFirstTasks(int count);
+
+  /// No description provided for @mapLoadReportsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load tasks on the map'**
+  String get mapLoadReportsFailed;
+
+  /// No description provided for @viewOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'View on map'**
+  String get viewOnMap;
+
+  /// No description provided for @mapFocusedReportHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'This report isn\'t one of your tasks in progress, so it isn\'t shown on the map'**
+  String get mapFocusedReportHidden;
+
+  /// No description provided for @mapGetDirections.
+  ///
+  /// In en, this message translates to:
+  /// **'Directions'**
+  String get mapGetDirections;
+
+  /// No description provided for @mapNoTasksForFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'No tasks match the current filters'**
+  String get mapNoTasksForFilter;
+
+  /// No description provided for @locationSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Incident Location'**
+  String get locationSection;
+
+  /// No description provided for @noAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'No address provided'**
+  String get noAddress;
+
+  /// No description provided for @locationDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Location description'**
+  String get locationDescriptionLabel;
+
+  /// No description provided for @userPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number'**
+  String get userPhone;
+
+  /// No description provided for @resolutionInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution Details'**
+  String get resolutionInfo;
+
+  /// No description provided for @resolutionImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution Photos'**
+  String get resolutionImages;
+
+  /// No description provided for @resolvedAtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Completion Time'**
+  String get resolvedAtLabel;
+
+  /// No description provided for @citizenReviewUnresolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Citizen Feedback: Unresolved'**
+  String get citizenReviewUnresolved;
+
+  /// No description provided for @citizenRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Citizen Rating'**
+  String get citizenRating;
+
+  /// No description provided for @citizenReviewReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for Unsatisfactory'**
+  String get citizenReviewReason;
+
+  /// No description provided for @citizenReviewPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Citizen Photos'**
+  String get citizenReviewPhotos;
+
+  /// No description provided for @statusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get statusPending;
+
+  /// No description provided for @saveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved successfully'**
+  String get saveSuccess;
+
+  /// No description provided for @deleteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Deleted successfully'**
+  String get deleteSuccess;
+
+  /// No description provided for @confirmDelete.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Delete'**
+  String get confirmDelete;
+
+  /// No description provided for @createdDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Created Date'**
+  String get createdDate;
+
+  /// No description provided for @save.
+  ///
+  /// In en, this message translates to:
+  /// **'Save'**
+  String get save;
+
+  /// No description provided for @genericError.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred, please try again!'**
+  String get genericError;
+
+  /// No description provided for @confirmCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel request'**
+  String get confirmCancel;
+
+  /// No description provided for @statusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get statusCancelled;
+
+  /// No description provided for @routeDelegations.
+  ///
+  /// In en, this message translates to:
+  /// **'Delegated tasks'**
+  String get routeDelegations;
+
+  /// No description provided for @delegationScreenTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Delegated tasks'**
+  String get delegationScreenTitle;
+
+  /// No description provided for @delegationTabReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'Received'**
+  String get delegationTabReceived;
+
+  /// No description provided for @delegationTabSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent'**
+  String get delegationTabSent;
+
+  /// No description provided for @delegationEmptyReceived.
+  ///
+  /// In en, this message translates to:
+  /// **'No one has asked you to handle a task yet'**
+  String get delegationEmptyReceived;
+
+  /// No description provided for @delegationEmptySent.
+  ///
+  /// In en, this message translates to:
+  /// **'You haven\'t asked anyone to handle a task yet'**
+  String get delegationEmptySent;
+
+  /// No description provided for @delegationLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load delegation requests'**
+  String get delegationLoadFailed;
+
+  /// No description provided for @delegationRequestAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask a colleague'**
+  String get delegationRequestAction;
+
+  /// No description provided for @delegationSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask a colleague to handle this task'**
+  String get delegationSheetTitle;
+
+  /// No description provided for @delegationSearchHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search colleagues by name'**
+  String get delegationSearchHint;
+
+  /// No description provided for @delegationNoColleagues.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching colleagues'**
+  String get delegationNoColleagues;
+
+  /// No description provided for @delegationChooseColleague.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a colleague'**
+  String get delegationChooseColleague;
+
+  /// No description provided for @delegationNoteLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Message (optional)'**
+  String get delegationNoteLabel;
+
+  /// No description provided for @delegationSendAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Send request'**
+  String get delegationSendAction;
+
+  /// No description provided for @delegationSentSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Delegation request sent'**
+  String get delegationSentSuccess;
+
+  /// No description provided for @delegationPendingRequesterBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for {name} to accept'**
+  String delegationPendingRequesterBanner(String name);
+
+  /// No description provided for @delegationAcceptedRequesterBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is handling this task for you'**
+  String delegationAcceptedRequesterBanner(String name);
+
+  /// No description provided for @delegationPendingHelperBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} asked you to handle this task'**
+  String delegationPendingHelperBanner(String name);
+
+  /// No description provided for @delegationAcceptedHelperBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'You are handling this task for {name}'**
+  String delegationAcceptedHelperBanner(String name);
+
+  /// No description provided for @delegationExpiresAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires at {time}'**
+  String delegationExpiresAt(String time);
+
+  /// No description provided for @delegationAcceptAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept'**
+  String get delegationAcceptAction;
+
+  /// No description provided for @delegationDeclineAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline'**
+  String get delegationDeclineAction;
+
+  /// No description provided for @delegationCancelAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel request'**
+  String get delegationCancelAction;
+
+  /// No description provided for @delegationAcceptConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Accept this task?'**
+  String get delegationAcceptConfirmTitle;
+
+  /// No description provided for @delegationAcceptConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The report will be assigned to you and you\'ll be responsible for resolving it.'**
+  String get delegationAcceptConfirmMessage;
+
+  /// No description provided for @delegationDeclineConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Decline this request?'**
+  String get delegationDeclineConfirmTitle;
+
+  /// No description provided for @delegationDeclineConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} will be notified that you declined.'**
+  String delegationDeclineConfirmMessage(String name);
+
+  /// No description provided for @delegationCancelConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel this request?'**
+  String get delegationCancelConfirmTitle;
+
+  /// No description provided for @delegationCancelConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This delegation request will be cancelled.'**
+  String get delegationCancelConfirmMessage;
+
+  /// No description provided for @delegationAcceptedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'You accepted the task'**
+  String get delegationAcceptedSuccess;
+
+  /// No description provided for @delegationDeclinedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Request declined'**
+  String get delegationDeclinedSuccess;
+
+  /// No description provided for @delegationCancelledSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Delegation request cancelled'**
+  String get delegationCancelledSuccess;
+
+  /// No description provided for @delegationFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'From {name}'**
+  String delegationFrom(String name);
+
+  /// No description provided for @delegationTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Asked {name}'**
+  String delegationTo(String name);
+
+  /// No description provided for @delegationStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting reply'**
+  String get delegationStatusPending;
+
+  /// No description provided for @delegationStatusAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'In progress'**
+  String get delegationStatusAccepted;
+
+  /// No description provided for @delegationStatusDeclined.
+  ///
+  /// In en, this message translates to:
+  /// **'Declined'**
+  String get delegationStatusDeclined;
+
+  /// No description provided for @delegationStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get delegationStatusCancelled;
+
+  /// No description provided for @delegationStatusExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get delegationStatusExpired;
+
+  /// No description provided for @delegationStatusCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get delegationStatusCompleted;
+
+  /// No description provided for @delegationStatusRevoked.
+  ///
+  /// In en, this message translates to:
+  /// **'Revoked'**
+  String get delegationStatusRevoked;
+
+  /// No description provided for @routeConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get routeConversations;
+
+  /// No description provided for @routeChatDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation'**
+  String get routeChatDetail;
+
+  /// No description provided for @conversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get conversations;
+
+  /// No description provided for @quickAccessChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get quickAccessChat;
+
+  /// No description provided for @roleClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Resident'**
+  String get roleClient;
+
+  /// No description provided for @roleStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get roleStaff;
+
+  /// No description provided for @roleAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get roleAdmin;
+
+  /// No description provided for @staffNoPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff with no assigned position'**
+  String get staffNoPosition;
+
+  /// No description provided for @chatInputHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a message...'**
+  String get chatInputHint;
+
+  /// No description provided for @chatDisabledNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'You cannot message {name} at this time'**
+  String chatDisabledNotice(String name);
+
+  /// No description provided for @messageReporter.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get messageReporter;
+
+  /// No description provided for @emptyConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations yet'**
+  String get emptyConversations;
+
+  /// No description provided for @emptyConversationsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversations with residents and colleagues will appear here.'**
+  String get emptyConversationsDesc;
+
+  /// No description provided for @emptyMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'No messages yet. Start chatting!'**
+  String get emptyMessages;
+
+  /// No description provided for @errorLoadConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load conversations'**
+  String get errorLoadConversations;
+
+  /// No description provided for @errorLoadMessages.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load messages'**
+  String get errorLoadMessages;
+
+  /// No description provided for @sendMessageFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to send message, tap to retry'**
+  String get sendMessageFailed;
+
+  /// No description provided for @anonymousPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous User'**
+  String get anonymousPerson;
+
+  /// No description provided for @filterClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Resident'**
+  String get filterClient;
+
+  /// No description provided for @filterStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get filterStaff;
+
+  /// No description provided for @filterAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get filterAdmin;
+
+  /// No description provided for @sendAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Send'**
+  String get sendAction;
+
+  /// No description provided for @callClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get callClient;
+
+  /// No description provided for @noPhoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'No phone number available'**
+  String get noPhoneNumber;
+
+  /// No description provided for @searchConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name, phone, email...'**
+  String get searchConversations;
+
+  /// No description provided for @otherUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Other users'**
+  String get otherUsers;
+
+  /// No description provided for @startConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Start conversation'**
+  String get startConversation;
+
+  /// No description provided for @noUsersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No users found'**
+  String get noUsersFound;
+
+  /// No description provided for @filterPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Positions'**
+  String get filterPosition;
+
+  /// No description provided for @filterByPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by position'**
+  String get filterByPosition;
+
+  /// No description provided for @apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get apply;
+
+  /// No description provided for @clearFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear filter'**
+  String get clearFilter;
+
+  /// No description provided for @noPositionsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No positions available'**
+  String get noPositionsAvailable;
+
+  /// No description provided for @positionSelectedCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} positions'**
+  String positionSelectedCount(int count);
+
+  /// No description provided for @routeConversationInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation Info'**
+  String get routeConversationInfo;
+
+  /// No description provided for @conversationInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation Info'**
+  String get conversationInfoTitle;
+
+  /// No description provided for @activeReportsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Reports'**
+  String get activeReportsSection;
+
+  /// No description provided for @activeReportsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} active reports'**
+  String activeReportsCount(int count);
+
+  /// No description provided for @allReportsProcessed.
+  ///
+  /// In en, this message translates to:
+  /// **'All reports have been processed'**
+  String get allReportsProcessed;
+
+  /// No description provided for @conversationClosedNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation closed as all reports have been processed'**
+  String get conversationClosedNotice;
+
+  /// No description provided for @conversationActiveNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation is currently active'**
+  String get conversationActiveNotice;
+
+  /// No description provided for @callButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get callButtonLabel;
+
+  /// No description provided for @videoCallButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Video call'**
+  String get videoCallButtonLabel;
+
+  /// No description provided for @videoCallComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Video call feature is under development'**
+  String get videoCallComingSoon;
+
+  /// No description provided for @cannotMakePhoneCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot initiate phone call'**
+  String get cannotMakePhoneCall;
+
+  /// No description provided for @viewReportDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'View Details'**
+  String get viewReportDetail;
+
+  /// No description provided for @anonymousUserProtectionNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact info is protected for anonymous reports'**
+  String get anonymousUserProtectionNote;
+
+  /// No description provided for @conversationRefreshed.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation info and messages refreshed successfully'**
+  String get conversationRefreshed;
+
+  /// No description provided for @conversationRefreshFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not refresh conversation, please try again later'**
+  String get conversationRefreshFailed;
+
+  /// No description provided for @noActiveReportsInConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'No active reports in this conversation'**
+  String get noActiveReportsInConversation;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
+  /// No description provided for @conversationLockedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Locked'**
+  String get conversationLockedBadge;
+
+  /// No description provided for @callOptionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Call options'**
+  String get callOptionsTitle;
+
+  /// No description provided for @cellularCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Cellular call'**
+  String get cellularCall;
+
+  /// No description provided for @cellularCallDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Open default phone app'**
+  String get cellularCallDesc;
+
+  /// No description provided for @freeCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Free in-app voice call'**
+  String get freeCall;
+
+  /// No description provided for @featureUnderDevelopment.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature under development'**
+  String get featureUnderDevelopment;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get comingSoon;
+
+  /// No description provided for @phoneNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number is not available'**
+  String get phoneNotAvailable;
+
+  /// No description provided for @freeCallComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Free in-app voice call feature is under development'**
+  String get freeCallComingSoon;
+
+  /// No description provided for @chooseVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose video'**
+  String get chooseVideo;
+
+  /// No description provided for @attachReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach report'**
+  String get attachReport;
+
+  /// No description provided for @markAsRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as read'**
+  String get markAsRead;
+
+  /// No description provided for @typingText.
+  ///
+  /// In en, this message translates to:
+  /// **'typing...'**
+  String get typingText;
+
+  /// No description provided for @pressAndHoldToRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Press and hold to record'**
+  String get pressAndHoldToRecord;
+
+  /// No description provided for @slideLeftToCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Slide left to cancel'**
+  String get slideLeftToCancel;
+
+  /// No description provided for @releaseToCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Release to cancel'**
+  String get releaseToCancel;
+
+  /// No description provided for @selectReportToAttach.
+  ///
+  /// In en, this message translates to:
+  /// **'Select report to attach'**
+  String get selectReportToAttach;
+
+  /// No description provided for @voiceMessageSnippet.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice message'**
+  String get voiceMessageSnippet;
+
+  /// No description provided for @imageSnippet.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get imageSnippet;
+
+  /// No description provided for @videoSnippet.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get videoSnippet;
+
+  /// No description provided for @attachedReportSnippet.
+  ///
+  /// In en, this message translates to:
+  /// **'Attached report'**
+  String get attachedReportSnippet;
+
+  /// No description provided for @reportDeadlineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution deadline'**
+  String get reportDeadlineLabel;
+
+  /// No description provided for @deadlineOverdueBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get deadlineOverdueBadge;
+
+  /// No description provided for @daysRemainingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days left'**
+  String daysRemainingLabel(int days);
+
+  /// No description provided for @overdueOnlyFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get overdueOnlyFilter;
+
+  /// No description provided for @rejectedReasonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejection Reason'**
+  String get rejectedReasonTitle;
+
+  /// No description provided for @noRejectionReasonProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected by administrator.'**
+  String get noRejectionReasonProvided;
+
+  /// No description provided for @assignedBaseLocationSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Station & Position'**
+  String get assignedBaseLocationSection;
+
+  /// No description provided for @staffPositionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Position'**
+  String get staffPositionLabel;
+
+  /// No description provided for @staffPositionNotAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'No position assigned'**
+  String get staffPositionNotAssigned;
+
+  /// No description provided for @baseStationAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Representative Station / Area'**
+  String get baseStationAddressLabel;
+
+  /// No description provided for @baseStationCoordinatesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Representative Coordinates'**
+  String get baseStationCoordinatesLabel;
+
+  /// No description provided for @baseStationNotConfigured.
+  ///
+  /// In en, this message translates to:
+  /// **'Representative station not configured by administrator'**
+  String get baseStationNotConfigured;
+
+  /// No description provided for @baseStationReadOnlyHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Position and representative station are managed by the system administrator.'**
+  String get baseStationReadOnlyHint;
+
+  /// No description provided for @callFreeVoiceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Free internet voice call'**
+  String get callFreeVoiceDesc;
+
+  /// No description provided for @callPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice call unavailable for this conversation'**
+  String get callPermissionDenied;
 }
 
 class _AppLocalizationsDelegate

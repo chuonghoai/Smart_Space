@@ -1,9 +1,10 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:smartspace_client/core/auth/user_storage_service.dart';
+import 'package:mobile_shared/core/auth/user_storage_service.dart';
 import 'package:smartspace_client/features/notifications/providers/notification_provider.dart';
-import 'package:smartspace_client/features/profile/models/user_model.dart';
+import 'package:mobile_shared/core/auth/models/user_model.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/providers/report_providers.dart';
+import 'package:smartspace_client/features/sos/providers/sos_provider.dart';
 
 class HomeState {
   final bool isLoading;
@@ -78,6 +79,7 @@ class HomeController extends StateNotifier<HomeState> {
     await Future.wait([
       ref.read(reportsProvider.notifier).refreshAll(),
       ref.read(notificationProvider.notifier).fetchCount(forceRefresh: true),
+      ref.read(sosProvider.notifier).loadActive(),
     ]);
     state = state.copyWith(isLoading: false);
   }

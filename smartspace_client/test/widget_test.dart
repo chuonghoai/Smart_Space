@@ -1,29 +1,51 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mobile_shared/mobile_shared.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smartspace_client/features/reports/providers/nearby_reports_alert_provider.dart';
 import 'package:smartspace_client/main.dart';
 
+import 'helpers/firebase_test_mock.dart';
+
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const SmartSpaceApp());
+  setUpAll(() async {
+    await setupFirebaseTestMocks();
+    SharedPreferences.setMockInitialValues({});
+    FlutterSecureStorage.setMockInitialValues({});
+    await TokenStorage.init(AppScope.client);
+    dotenv.loadFromString(
+      envString: 'PORT=8989\nGOOGLE_CLIENT_ID=\nMAPBOX_ACCESS_TOKEN=\n',
+      isOptional: true,
+    );
+  });
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+  tearDownAll(() {
+    tearDownFirebaseTestMocks();
+  });
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+  // Test Case ID: SMP-061
+  // Description: Smoke test khởi chạy SmartSpaceApp() với test-only Firebase mock, kiểm tra render MaterialApp không phát sinh FirebaseException.
+  testWidgets('SmartSpaceApp khởi chạy với Firebase test mock không phát sinh lỗi', (WidgetTester tester) async {
+    await tester.pumpWidget(
+      ProviderScope(
+        overrides: [
+          nearbyAlertTimerProvider.overrideWith((ref) => const Stream<DateTime>.empty()),
+        ],
+        child: const SmartSpaceApp(),
+      ),
+    );
+
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 300));
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+    expect(find.byType(MaterialApp), findsOneWidget);
+
+    await tester.pumpWidget(const SizedBox.shrink());
+    await tester.pump();
   });
 }

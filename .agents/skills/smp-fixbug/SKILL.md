@@ -1,0 +1,46 @@
+---
+name: smp-fixbug
+description: >-
+  Phân tích bug và tạo Implementation Plan để sửa bug.
+  Truy vết root cause và đưa ra phương án sửa lỗi an toàn.
+---
+
+# smp-fixbug
+
+Mục đích: Phân tích bug và tạo Implementation Plan để sửa bug.
+
+## Dependencies
+- [Shared Workflow](../../rules/shared-workflow.md)
+- [Shared Architecture Rules](../../rules/shared-architecture-rules.md)
+- [Shared UI & Localization Rules](../../rules/shared-ui-l10n-rules.md)
+
+## Quy trình thực hiện (Workflow)
+
+### Step 1 — Understand bug
+Đọc kỹ bug description. Xác định:
+- Expected behavior vs Actual behavior
+- Reproduction condition
+- Affected platform & module
+- Severity
+
+### Step 2 — Trace
+Tìm tất cả code liên quan. KHÔNG chỉ tìm file có tên giống bug.
+Phải trace flow: `UI -> state -> business logic -> repository/service -> API -> backend -> database` (khi phù hợp).
+
+### Step 3 — Inspect Git history
+Kiểm tra commit gần nhất, commit thay đổi behavior, commit liên quan feature, commit fix bug tương tự (dùng blame nếu cần).
+
+### Step 4 — Determine Root Cause
+Xác định nguyên nhân cốt lõi. Phân biệt rõ ràng giữa "Symptom" (triệu chứng) và "Root Cause" (nguyên nhân gốc rễ).
+
+### Step 5 — Create Implementation Plan
+Plan phải bao gồm:
+- Root cause
+- Affected files & Affected flow
+- Proposed fix
+- Nếu fix có thay đổi UI/Text: MUST đảm bảo tuân thủ Dark/Light mode và KHÔNG hardcode user-facing strings theo `shared-ui-l10n-rules.md`. Áp dụng các nguyên tắc liên quan từ [design-taste-frontend](../design-taste-frontend/SKILL.md) trong phạm vi cục bộ của bug; **TUYỆT ĐỐI KHÔNG** tự ý redesign toàn bộ màn hình hoặc mở rộng phạm vi ngoài yêu cầu sửa lỗi.
+- Nếu fix có liên quan đến Backend & Thông báo (Notification): Khi triển khai hay sửa code trong backend, phải gọi đến cột `language` trong bảng `users` của database (`User.getLanguage()`) để biết người dùng đang chọn ngôn ngữ nào, sau đó trong các code gửi thông báo WebSocket hay Firebase (FCM) đều phải tuân thủ đúng quy tắc key ngôn ngữ L10n (`MessageSource` với `messages_vi.properties` / `messages_en.properties` để hỗ trợ đúng đa ngôn ngữ). Tuyệt đối không được hardcode chuỗi văn bản Tiếng Việt hay Tiếng Anh nào trong code gửi thông báo của backend.
+- Side effects & Regression risks
+- Test cases cần kiểm tra
+
+**STOP CONDITION:** KHÔNG được sửa code ngay nếu user chỉ yêu cầu tạo plan.

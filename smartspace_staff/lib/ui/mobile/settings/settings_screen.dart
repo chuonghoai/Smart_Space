@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:mobile_shared/core/localization/locale_provider.dart';
+import 'package:mobile_shared/core/theme/theme_provider.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
 import 'package:smartspace_staff/ui/mobile/settings/settings_controller.dart';
@@ -48,20 +50,11 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
             children: [
               // Profile Card
               _buildProfileCard(theme, l10n),
+              _buildBaseLocationSection(theme, l10n),
               const Divider(height: 1),
 
               // Nhóm 1: Tài khoản
               _buildSectionHeader(theme, l10n.accountSection),
-              _buildItem(
-                theme: theme,
-                icon: Icons.share_outlined,
-                label: l10n.shareHistory,
-              ),
-              _buildItem(
-                theme: theme,
-                icon: Icons.lock_outlined,
-                label: l10n.loginSettings,
-              ),
               _buildItem(
                 theme: theme,
                 icon: Icons.password,
@@ -72,6 +65,7 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                 theme: theme,
                 icon: Icons.phone_android_outlined,
                 label: l10n.manageDevices,
+                onTap: () => context.push(RouterPath.manageDevices),
               ),
               _buildItem(
                 theme: theme,
@@ -82,6 +76,48 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
 
               // Nhóm 2: Ứng dụng
               _buildSectionHeader(theme, l10n.appSection),
+              ListenableBuilder(
+                listenable: localeProvider,
+                builder: (context, _) {
+                  final currentLang = localeProvider.locale.languageCode == 'vi'
+                      ? l10n.vietnamese
+                      : l10n.english;
+                  return _buildItem(
+                    theme: theme,
+                    icon: Icons.language_outlined,
+                    label: l10n.language,
+                    trailing: Text(
+                      currentLang,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    onTap: () => _showLanguagePicker(context, l10n, theme),
+                  );
+                },
+              ),
+              ListenableBuilder(
+                listenable: themeProvider,
+                builder: (context, _) {
+                  final label = switch (themeProvider.themeMode) {
+                    ThemeMode.light => l10n.themeLight,
+                    ThemeMode.dark => l10n.themeDark,
+                    ThemeMode.system => l10n.themeSystem,
+                  };
+                  return _buildItem(
+                    theme: theme,
+                    icon: Icons.palette_outlined,
+                    label: l10n.theme,
+                    trailing: Text(
+                      label,
+                      style: theme.textTheme.bodyMedium?.copyWith(
+                        color: theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                    onTap: () => _showThemePicker(context, l10n, theme),
+                  );
+                },
+              ),
               _buildItem(
                 theme: theme,
                 icon: Icons.description_outlined,
@@ -195,6 +231,29 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
                   ),
                   overflow: TextOverflow.ellipsis,
                 ),
+                if (user?.positionName != null &&
+                    user!.positionName!.trim().isNotEmpty) ...[
+                  const SizedBox(height: 6),
+                  Container(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 8,
+                      vertical: 3,
+                    ),
+                    decoration: BoxDecoration(
+                      color: theme.colorScheme.primaryContainer.withValues(
+                        alpha: 0.65,
+                      ),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: Text(
+                      user.positionName!,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: theme.colorScheme.onPrimaryContainer,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
               ],
             ),
           ),
@@ -203,11 +262,107 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
               Icons.edit_outlined,
               color: theme.colorScheme.onSurfaceVariant,
             ),
-            onPressed: () {
-              // TODO: Navigate to Edit Profile
+            onPressed: () async {
+              await context.push(RouterPath.editProfile);
+              // Reload so the card reflects the updated name/avatar.
+              await _controller.loadUser();
             },
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildBaseLocationSection(ThemeData theme, AppLocalizations l10n) {
+    final user = _controller.user;
+    final cs = theme.colorScheme;
+    final hasBase = user?.hasBaseLocation ?? false;
+    final address = (user?.baseAddress != null &&
+            user!.baseAddress!.trim().isNotEmpty)
+        ? user.baseAddress!.trim()
+        : null;
+    final coords = user?.formattedBaseCoordinates;
+
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+      child: Container(
+        padding: const EdgeInsets.all(14),
+        decoration: BoxDecoration(
+          color: cs.surfaceContainerLowest,
+          borderRadius: BorderRadius.circular(10),
+          border: Border.all(
+            color: cs.outlineVariant.withValues(alpha: 0.65),
+          ),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  Icons.my_location_outlined,
+                  size: 16,
+                  color: cs.primary,
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: Text(
+                    l10n.assignedBaseLocationSection,
+                    style: theme.textTheme.labelLarge?.copyWith(
+                      fontWeight: FontWeight.w700,
+                      color: cs.onSurface,
+                    ),
+                  ),
+                ),
+                Icon(
+                  Icons.lock_outline,
+                  size: 14,
+                  color: cs.onSurfaceVariant,
+                ),
+              ],
+            ),
+            const SizedBox(height: 10),
+            if (hasBase) ...[
+              if (address != null) ...[
+                Text(
+                  address,
+                  style: theme.textTheme.bodyMedium?.copyWith(
+                    color: cs.onSurface,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 4),
+              ],
+              if (coords != null)
+                Row(
+                  children: [
+                    Text(
+                      '${l10n.baseStationCoordinatesLabel}: ',
+                      style: theme.textTheme.bodySmall?.copyWith(
+                        color: cs.onSurfaceVariant,
+                      ),
+                    ),
+                    Flexible(
+                      child: Text(
+                        coords,
+                        style: theme.textTheme.bodySmall?.copyWith(
+                          color: cs.onSurface,
+                          fontWeight: FontWeight.w600,
+                          fontFeatures: const [FontFeature.tabularFigures()],
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+            ] else
+              Text(
+                l10n.baseStationNotConfigured,
+                style: theme.textTheme.bodySmall?.copyWith(
+                  color: cs.onSurfaceVariant,
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -243,6 +398,112 @@ class _MobileSettingsScreenState extends State<MobileSettingsScreen> {
           Icon(Icons.chevron_right, color: theme.colorScheme.onSurfaceVariant),
       onTap: onTap ?? () {},
       contentPadding: const EdgeInsets.symmetric(horizontal: 16),
+    );
+  }
+
+  void _showLanguagePicker(
+    BuildContext context,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Text(
+                  l10n.language,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              RadioListTile<String>(
+                title: Text(l10n.vietnamese),
+                value: 'vi',
+                groupValue: localeProvider.locale.languageCode,
+                onChanged: (v) {
+                  if (v != null) localeProvider.setLocale(Locale(v));
+                  Navigator.pop(ctx);
+                },
+              ),
+              RadioListTile<String>(
+                title: Text(l10n.english),
+                value: 'en',
+                groupValue: localeProvider.locale.languageCode,
+                onChanged: (v) {
+                  if (v != null) localeProvider.setLocale(Locale(v));
+                  Navigator.pop(ctx);
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  void _showThemePicker(
+    BuildContext context,
+    AppLocalizations l10n,
+    ThemeData theme,
+  ) {
+    showModalBottomSheet(
+      context: context,
+      builder: (ctx) {
+        return SafeArea(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: Text(
+                  l10n.theme,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              RadioListTile<ThemeMode>(
+                title: Text(l10n.themeLight),
+                secondary: const Icon(Icons.light_mode_outlined),
+                value: ThemeMode.light,
+                groupValue: themeProvider.themeMode,
+                onChanged: (v) {
+                  if (v != null) themeProvider.setThemeMode(v);
+                  Navigator.pop(ctx);
+                },
+              ),
+              RadioListTile<ThemeMode>(
+                title: Text(l10n.themeDark),
+                secondary: const Icon(Icons.dark_mode_outlined),
+                value: ThemeMode.dark,
+                groupValue: themeProvider.themeMode,
+                onChanged: (v) {
+                  if (v != null) themeProvider.setThemeMode(v);
+                  Navigator.pop(ctx);
+                },
+              ),
+              RadioListTile<ThemeMode>(
+                title: Text(l10n.themeSystem),
+                secondary: const Icon(Icons.brightness_auto_outlined),
+                value: ThemeMode.system,
+                groupValue: themeProvider.themeMode,
+                onChanged: (v) {
+                  if (v != null) themeProvider.setThemeMode(v);
+                  Navigator.pop(ctx);
+                },
+              ),
+              const SizedBox(height: 8),
+            ],
+          ),
+        );
+      },
     );
   }
 

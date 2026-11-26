@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:smartspace_staff/core/auth/user_storage_service.dart';
-import 'package:smartspace_staff/features/auth/services/auth_service.dart';
-import 'package:smartspace_staff/features/profile/models/user_model.dart';
+import 'package:mobile_shared/core/auth/user_storage_service.dart';
+import 'package:mobile_shared/features/auth/services/auth_service.dart';
+import 'package:mobile_shared/mobile_shared.dart';
+import 'package:smartspace_staff/features/app_services/root_scope.dart';
 import 'package:smartspace_staff/routes/app_router.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
 
@@ -18,6 +19,11 @@ class SettingsController extends ChangeNotifier {
   Future<void> loadUser() async {
     _user = await userStorageService.getUser();
     notifyListeners();
+    final fresh = await authService.getMe();
+    if (fresh != null) {
+      _user = fresh;
+      notifyListeners();
+    }
   }
 
   Future<void> logout() async {
@@ -25,6 +31,7 @@ class SettingsController extends ChangeNotifier {
     notifyListeners();
     try {
       await authService.logout();
+      resetRootProviderScope();
       appRouter.go(RouterPath.login);
     } finally {
       _isLoading = false;

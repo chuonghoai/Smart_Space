@@ -1,12 +1,18 @@
 package com.vn.smart_space.dto.response.conversation;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.vn.smart_space.consts.EConversationType;
-
-import lombok.*;
-
 import java.time.LocalDateTime;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.vn.smart_space.consts.EConversationType;
+import com.vn.smart_space.consts.EMessageType;
+import com.vn.smart_space.consts.ERole;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Getter
 @Setter
@@ -21,10 +27,52 @@ public class ConversationDetailResponse {
     private String conversationAvatar;
     private List<ParticipantResponse> participantInfo;
 
-    // Thông tin tin nhắn cuối cùng
+    // Partner info for 1-1 conversations
+    private String partnerId;
+    private String partnerName;
+    private String partnerAvatarUrl;
+    private ERole partnerRole;
+    private String partnerPosition;
+    private String partnerPhone;
+    private Boolean isAnonymous;
+
+    // Context-based messaging for Client
+    private String identifiedConversationId;
+    private String anonymousConversationId;
+    private Boolean hasIdentifiedContext;
+    private Boolean hasAnonymousContext;
+    private String lastMessageContext; // "IDENTIFIED" or "ANONYMOUS"
+    private Integer identifiedUnreadCount;
+    private Integer anonymousUnreadCount;
+
+    // Report context (if attached)
+    private String reportId;
+    private String reportTitle;
+    private String reportStatus;
+
+    // Messaging permission
+    @Builder.Default
+    private Boolean canSendMessage = true;
+
+    @Builder.Default
+    private Boolean canVoiceCall = true;
+
+    // Unread count for current user
+    @Builder.Default
+    private Integer unreadCount = 0;
+
+    // Total unread count across all conversations for current user
+    private Integer totalUnreadCount;
+
+    // Last message info
     private String lastMessageId;
     private String lastMessageContent;
+    private EMessageType lastMessageType;
     private LocalDateTime lastMessageTime;
+    private String lastMessageSenderId;
+
+    // Partner read receipt timestamp for 1-1 conversations
+    private LocalDateTime partnerLastReadAt;
 
     private LocalDateTime createdAt;
 }

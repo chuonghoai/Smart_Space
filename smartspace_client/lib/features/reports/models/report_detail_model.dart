@@ -1,0 +1,293 @@
+import 'dart:ui' show Locale;
+
+import 'package:mobile_shared/core/utils/report_category_helper.dart';
+
+import 'package:smartspace_client/features/reports/models/report_model.dart';
+
+export 'package:smartspace_client/features/reports/models/report_model.dart'
+    show EReportSeverity;
+
+class ReportDetailModel extends ReportModel {
+  /// Chi tiết luôn có severity (mặc định `low`), nên thu hẹp về non-null.
+  @override
+  EReportSeverity get severity => super.severity!;
+
+  final List<String> imageUrls;
+  final bool isAnonymous; // Ẩn danh
+  final String? address; // Địa chỉ
+  final String? locationDescription; // Mô tả chi tiết địa điểm
+  final String? assignedStaffId;
+  final String? assignedStaffName;
+  final String? assignedStaffAvatarUrl;
+  final String? assignedStaffPhone;
+  final String? resolvedNote;
+  final List<String> resolvedImageUrls;
+  final int? rating;
+  final String? reviewNote;
+  final List<String> reviewImageUrls;
+  final DateTime? reviewedAt;
+  final String? rejectedReason;
+  final DateTime? rejectedAt;
+  final String? categoryId;
+  final String? categoryCode;
+  final String? categoryNameVi;
+  final String? categoryNameEn;
+
+  bool get hasReviewed => reviewedAt != null || isReviewResolved != null;
+
+  String? localizedCategoryName(Locale locale) =>
+      ReportCategoryHelper.localizedName(
+        locale: locale,
+        nameVi: categoryNameVi,
+        nameEn: categoryNameEn,
+      );
+
+  ReportDetailModel({
+    required super.id,
+    required super.title,
+    required super.description,
+    required super.latitude,
+    required super.longitude,
+    required super.status,
+    required super.createdAt,
+    super.distanceInMeters,
+    super.isReviewResolved,
+    super.userId,
+    super.deadline,
+    super.resolvedAt,
+    super.serverIsOverdue,
+    super.serverRemainingDays,
+
+    required EReportSeverity super.severity,
+    required this.imageUrls,
+    required this.isAnonymous,
+    this.address,
+    this.locationDescription,
+    this.assignedStaffId,
+    this.assignedStaffName,
+    this.assignedStaffAvatarUrl,
+    this.assignedStaffPhone,
+    this.resolvedNote,
+    this.resolvedImageUrls = const [],
+    this.rating,
+    this.reviewNote,
+    this.reviewImageUrls = const [],
+    this.reviewedAt,
+    this.rejectedReason,
+    this.rejectedAt,
+    this.categoryId,
+    this.categoryCode,
+    this.categoryNameVi,
+    this.categoryNameEn,
+  }) : super(imageUrl: imageUrls.isNotEmpty ? imageUrls.first : '');
+
+  factory ReportDetailModel.fromJson(Map<String, dynamic> json) {
+    List<String> parsedImageUrls = [];
+    if (json['image_urls'] != null) {
+      if (json['image_urls'] is List) {
+        parsedImageUrls = List<String>.from(json['image_urls']);
+      } else if (json['image_urls'] is String) {
+        parsedImageUrls = (json['image_urls'] as String)
+            .split(',')
+            .where((e) => e.isNotEmpty)
+            .toList();
+      }
+    }
+
+    List<String> parsedResolvedImageUrls = [];
+    if (json['resolved_image_urls'] != null) {
+      if (json['resolved_image_urls'] is List) {
+        parsedResolvedImageUrls = List<String>.from(json['resolved_image_urls']);
+      } else if (json['resolved_image_urls'] is String) {
+        parsedResolvedImageUrls = (json['resolved_image_urls'] as String)
+            .split(',')
+            .where((e) => e.isNotEmpty)
+            .toList();
+      }
+    }
+
+    List<String> parsedReviewImageUrls = [];
+    if (json['review_image_urls'] != null) {
+      if (json['review_image_urls'] is List) {
+        parsedReviewImageUrls = List<String>.from(json['review_image_urls']);
+      } else if (json['review_image_urls'] is String) {
+        parsedReviewImageUrls = (json['review_image_urls'] as String)
+            .split(',')
+            .where((e) => e.isNotEmpty)
+            .toList();
+      }
+    }
+
+    return ReportDetailModel(
+      id: json['id']?.toString() ?? '',
+      title: json['title'] as String? ?? '',
+      description: json['description'] as String? ?? '',
+      latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
+      longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
+      status: ReportModel.mapStatus(json['status'] as String?),
+      createdAt: json['created_at'] != null
+          ? DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now()
+          : DateTime.now(),
+      severity: _mapSeverity(json['severity'] as String?),
+      imageUrls: parsedImageUrls,
+      isAnonymous: json['is_anonymous'] as bool? ?? false,
+      address: json['address'] as String?,
+      locationDescription: json['location_description'] as String?,
+      distanceInMeters: (json['distance_in_meters'] as num?)?.toDouble(),
+      assignedStaffId: json['assigned_staff_id'] as String?,
+      assignedStaffName: json['assigned_staff_name'] as String?,
+      assignedStaffAvatarUrl: json['assigned_staff_avatar_url'] as String?,
+      assignedStaffPhone: (json['assigned_staff_phone'] ?? json['assignedStaffPhone']) as String?,
+      resolvedNote: json['resolved_note'] as String?,
+      resolvedImageUrls: parsedResolvedImageUrls,
+      resolvedAt: json['resolved_at'] != null
+          ? DateTime.tryParse(json['resolved_at'].toString())
+          : null,
+      isReviewResolved: json['is_review_resolved'] as bool?,
+      rating: json['rating'] as int?,
+      reviewNote: json['review_note'] as String?,
+      reviewImageUrls: parsedReviewImageUrls,
+      reviewedAt: json['reviewed_at'] != null
+          ? DateTime.tryParse(json['reviewed_at'].toString())
+          : null,
+      deadline: (json['deadline'] ?? json['report_deadline']) != null
+          ? DateTime.tryParse((json['deadline'] ?? json['report_deadline']).toString())
+          : null,
+      serverIsOverdue: (json['is_overdue'] ?? json['isOverdue']) as bool?,
+      serverRemainingDays: ((json['remaining_days'] ?? json['remainingDays']) as num?)?.toInt(),
+      rejectedReason: (json['rejected_reason'] ?? json['rejectedReason']) as String?,
+      rejectedAt: (json['rejected_at'] ?? json['rejectedAt']) != null
+          ? DateTime.tryParse((json['rejected_at'] ?? json['rejectedAt']).toString())
+          : null,
+      userId: json['user_id'] as String?,
+      categoryId: (json['category_id'] ?? json['categoryId'])?.toString(),
+      categoryCode: (json['category_code'] ?? json['categoryCode'])?.toString(),
+      categoryNameVi: (json['category_name_vi'] ?? json['categoryNameVi']) as String?,
+      categoryNameEn: (json['category_name_en'] ?? json['categoryNameEn']) as String?,
+    );
+  }
+
+  @override
+  Map<String, dynamic> toJson() {
+    final map = super.toJson();
+    map['image_urls'] = imageUrls;
+    map['severity'] = _severityToString(severity);
+    map['is_anonymous'] = isAnonymous;
+    map['address'] = address;
+    map['location_description'] = locationDescription;
+    map['assigned_staff_id'] = assignedStaffId;
+    map['assigned_staff_name'] = assignedStaffName;
+    map['assigned_staff_avatar_url'] = assignedStaffAvatarUrl;
+    map['assigned_staff_phone'] = assignedStaffPhone;
+    map['resolved_note'] = resolvedNote;
+    map['resolved_image_urls'] = resolvedImageUrls;
+    map['resolved_at'] = resolvedAt?.toIso8601String();
+    map['is_review_resolved'] = isReviewResolved;
+    map['rating'] = rating;
+    map['review_note'] = reviewNote;
+    map['review_image_urls'] = reviewImageUrls;
+    map['reviewed_at'] = reviewedAt?.toIso8601String();
+    map['deadline'] = deadline?.toIso8601String();
+    map['rejected_reason'] = rejectedReason;
+    map['rejected_at'] = rejectedAt?.toIso8601String();
+    map['category_id'] = categoryId;
+    map['category_code'] = categoryCode;
+    map['category_name_vi'] = categoryNameVi;
+    map['category_name_en'] = categoryNameEn;
+    return map;
+  }
+
+  static EReportSeverity _mapSeverity(String? severity) {
+    switch (severity?.toLowerCase()) {
+      case 'critical':
+        return EReportSeverity.critical;
+      case 'high':
+        return EReportSeverity.high;
+      case 'medium':
+        return EReportSeverity.medium;
+      case 'low':
+      default:
+        return EReportSeverity.low;
+    }
+  }
+
+  static String _severityToString(EReportSeverity severity) {
+    return severity.name.toUpperCase();
+  }
+
+  @override
+  ReportDetailModel copyWith({
+    String? id,
+    String? title,
+    String? description,
+    String? imageUrl,
+    double? latitude,
+    double? longitude,
+    ReportStatus? status,
+    DateTime? createdAt,
+    double? distanceInMeters,
+    EReportSeverity? severity,
+    List<String>? imageUrls,
+    bool? isAnonymous,
+    String? address,
+    String? locationDescription,
+    String? assignedStaffId,
+    String? assignedStaffName,
+    String? assignedStaffAvatarUrl,
+    String? resolvedNote,
+    List<String>? resolvedImageUrls,
+    DateTime? resolvedAt,
+    bool? isReviewResolved,
+    int? rating,
+    String? reviewNote,
+    List<String>? reviewImageUrls,
+    DateTime? reviewedAt,
+    DateTime? deadline,
+    bool? serverIsOverdue,
+    int? serverRemainingDays,
+    String? rejectedReason,
+    DateTime? rejectedAt,
+    String? userId,
+    String? categoryId,
+    String? categoryCode,
+    String? categoryNameVi,
+    String? categoryNameEn,
+  }) {
+    return ReportDetailModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      latitude: latitude ?? this.latitude,
+      longitude: longitude ?? this.longitude,
+      status: status ?? this.status,
+      createdAt: createdAt ?? this.createdAt,
+      distanceInMeters: distanceInMeters ?? this.distanceInMeters,
+      userId: userId ?? this.userId,
+      deadline: deadline ?? this.deadline,
+      serverIsOverdue: serverIsOverdue ?? this.serverIsOverdue,
+      serverRemainingDays: serverRemainingDays ?? this.serverRemainingDays,
+      severity: severity ?? this.severity,
+      imageUrls: imageUrls ?? this.imageUrls,
+      isAnonymous: isAnonymous ?? this.isAnonymous,
+      address: address ?? this.address,
+      locationDescription: locationDescription ?? this.locationDescription,
+      assignedStaffId: assignedStaffId ?? this.assignedStaffId,
+      assignedStaffName: assignedStaffName ?? this.assignedStaffName,
+      assignedStaffAvatarUrl: assignedStaffAvatarUrl ?? this.assignedStaffAvatarUrl,
+      resolvedNote: resolvedNote ?? this.resolvedNote,
+      resolvedImageUrls: resolvedImageUrls ?? this.resolvedImageUrls,
+      resolvedAt: resolvedAt ?? this.resolvedAt,
+      isReviewResolved: isReviewResolved ?? this.isReviewResolved,
+      rating: rating ?? this.rating,
+      reviewNote: reviewNote ?? this.reviewNote,
+      reviewImageUrls: reviewImageUrls ?? this.reviewImageUrls,
+      reviewedAt: reviewedAt ?? this.reviewedAt,
+      rejectedReason: rejectedReason ?? this.rejectedReason,
+      rejectedAt: rejectedAt ?? this.rejectedAt,
+      categoryId: categoryId ?? this.categoryId,
+      categoryCode: categoryCode ?? this.categoryCode,
+      categoryNameVi: categoryNameVi ?? this.categoryNameVi,
+      categoryNameEn: categoryNameEn ?? this.categoryNameEn,
+    );
+  }
+}

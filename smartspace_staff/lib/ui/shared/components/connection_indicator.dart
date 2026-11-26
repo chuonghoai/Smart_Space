@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:smartspace_staff/core/connection/connection_state_provider.dart';
+import 'package:mobile_shared/core/connection/connection_state_provider.dart';
 
 class ConnectionIndicator extends StatelessWidget {
   const ConnectionIndicator({super.key});

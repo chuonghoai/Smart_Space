@@ -1,13 +1,28 @@
-import 'package:smartspace_staff/core/api/api_client.dart';
-import 'package:smartspace_staff/core/api/api_response.dart';
+import 'package:dio/dio.dart';
+import 'package:mobile_shared/core/api/api_client.dart';
+import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:smartspace_staff/features/reports/models/report_model.dart';
+import 'package:smartspace_staff/features/reports/models/report_statistics_model.dart';
+import 'package:smartspace_staff/features/reports/models/report_detail_model.dart';
 import 'package:smartspace_staff/features/reports/repositories/report_repo.dart';
 
 class ReportRepoApi implements ReportRepo {
+
   @override
-  Future<ApiResponse<List<ReportModel>>> getDangerousReports() async {
+  Future<ApiResponse<List<ReportModel>>> getStaffAssignedReports({
+    String status = 'all',
+    bool overdueOnly = false,
+    int page = 0,
+    int limit = 10,
+  }) async {
     return await apiClient.get<List<ReportModel>>(
-      '/reports/dangerous',
+      '/reports/staff/assigned',
+      queryParameters: {
+        'status': status,
+        'page': page,
+        'limit': limit,
+        if (overdueOnly) 'overdue': true,
+      },
       decoder: (json) {
         if (json is List) {
           return json
@@ -20,16 +35,52 @@ class ReportRepoApi implements ReportRepo {
   }
 
   @override
-  Future<ApiResponse<List<ReportModel>>> getRecentReports() async {
-    return await apiClient.get<List<ReportModel>>(
-      '/reports/recent',
+  Future<ApiResponse<ReportStatisticsModel>> getStaffStatistics() async {
+    return await apiClient.get<ReportStatisticsModel>(
+      '/reports/staff/statistics',
       decoder: (json) {
-        if (json is List) {
-          return json
-              .map((e) => ReportModel.fromJson(e as Map<String, dynamic>))
-              .toList();
+        if (json is Map<String, dynamic>) {
+          return ReportStatisticsModel.fromJson(json);
         }
-        return [];
+        return ReportStatisticsModel(total: 0, byStatus: {});
+      },
+    );
+  }
+
+  @override
+  Future<ApiResponse<ReportDetailModel>> getReportDetail(String reportId) async {
+    return await apiClient.get<ReportDetailModel>(
+      '/reports/$reportId',
+      decoder: (json) {
+        if (json is Map<String, dynamic>) {
+          return ReportDetailModel.fromJson(json);
+        }
+        throw Exception('Invalid response format');
+      },
+    );
+  }
+
+  @override
+  Future<ApiResponse<ReportDetailModel>> completeReport(
+    String reportId, {
+    required String note,
+    required List<String> imageUrls,
+  }) async {
+    return await apiClient.post<ReportDetailModel>(
+      '/reports/$reportId/complete',
+      data: {
+        'note': note,
+        'image_urls': imageUrls,
+      },
+      options: Options(
+        sendTimeout: const Duration(seconds: 30),
+        receiveTimeout: const Duration(seconds: 30),
+      ),
+      decoder: (json) {
+        if (json is Map<String, dynamic>) {
+          return ReportDetailModel.fromJson(json);
+        }
+        throw Exception('Invalid response format');
       },
     );
   }

@@ -1,9 +1,10 @@
+import 'package:mobile_shared/mobile_shared.dart';
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:smartspace_staff/features/reports/models/report_model.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 import 'package:smartspace_staff/features/reports/utils/report_status_ext.dart';
-import 'package:smartspace_staff/util/distance_formatter.dart';
+import 'package:mobile_shared/util/distance_formatter.dart';
 
 class DangerousReportsSlider extends StatefulWidget {
   final List<ReportModel> reports;
@@ -255,7 +256,7 @@ class _DangerousReportSlide extends StatelessWidget {
                   const Icon(Icons.location_on, size: 14, color: Colors.white70),
                   const SizedBox(width: 4),
                   Text(
-                    DistanceFormatter.format(report.distanceInMeters!, l10n),
+                    DistanceFormatter.format(report.distanceInMeters!, SharedLocalizations.of(context)!),
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: Colors.white70,
                     ),

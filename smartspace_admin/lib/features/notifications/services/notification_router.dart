@@ -1,0 +1,69 @@
+import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:smartspace_admin/routes/router_path.dart';
+import 'package:smartspace_admin/features/notifications/models/notification_action.dart';
+import 'package:mobile_shared/core/toast/toast_service.dart';
+
+class NotificationRouter {
+  static void handleAction(NotificationAction action) {
+    final ctx = sharedNavigatorKey.currentContext;
+    if (ctx == null || !ctx.mounted) {
+      debugPrint('[NotificationRouter] Context is null, cannot navigate');
+      return;
+    }
+
+    switch (action.type) {
+      case 'REPORT':
+      case 'REPORT_DETAIL':
+        final reportId = (action.payload['reportId'] ?? action.payload['id']) as String?;
+        if (reportId != null && reportId.isNotEmpty) {
+          final path = RouterPath.reportDetailWithId(reportId);
+          debugPrint('[NotificationRouter] Navigating to $path');
+          GoRouter.of(ctx).push(path);
+        } else {
+          debugPrint('[NotificationRouter] Missing reportId in payload');
+        }
+        break;
+      case 'NEWS':
+      case 'NEWS_DETAIL':
+        final newsId = (action.payload['newsId'] ?? action.payload['id']) as String?;
+        if (newsId != null && newsId.isNotEmpty) {
+          final path = RouterPath.newsDetailWithId(newsId);
+          debugPrint('[NotificationRouter] Navigating to $path');
+          GoRouter.of(ctx).push(path);
+        } else {
+          debugPrint('[NotificationRouter] Missing newsId in payload');
+        }
+        break;
+      case 'CHAT':
+      case 'CHAT_DETAIL':
+        final conversationId = (action.payload['conversationId'] ?? action.payload['id']) as String?;
+        if (conversationId != null && conversationId.isNotEmpty) {
+          final path = RouterPath.chatDetailWithId(conversationId);
+          debugPrint('[NotificationRouter] Navigating to chat detail: $path');
+          GoRouter.of(ctx).push(path);
+        } else {
+          final path = RouterPath.conversations;
+          debugPrint('[NotificationRouter] Navigating to conversations list: $path');
+          GoRouter.of(ctx).push(path);
+        }
+        break;
+      case 'ACCOUNT_LOCK_REQUEST':
+        final requestId = (action.payload['requestId'] ?? action.payload['id']) as String?;
+        final path = RouterPath.adminBoardLockRequests(requestId);
+        debugPrint('[NotificationRouter] Navigating to $path');
+        GoRouter.of(ctx).push(path);
+        break;
+      case 'SOS_ALERT':
+        final sosId = (action.payload['sosId'] ?? action.payload['id']) as String?;
+        GoRouter.of(ctx).push(
+          sosId != null && sosId.isNotEmpty ? RouterPath.sosDetailWithId(sosId) : RouterPath.sosCenter,
+        );
+        break;
+      // Add other feature cases here, e.g. INVOICE_DETAIL, CHAT_MESSAGE
+      default:
+        debugPrint('[NotificationRouter] Unhandled action type: ${action.type}');
+    }
+  }
+}
+

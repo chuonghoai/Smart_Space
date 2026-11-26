@@ -1,0 +1,193 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:smartspace_admin/features/notifications/providers/notification_provider.dart';
+import 'package:smartspace_admin/l10n/app_localizations.dart';
+import 'package:smartspace_admin/features/notifications/models/notification_model.dart';
+import 'package:smartspace_admin/features/notifications/services/notification_router.dart';
+import 'package:smartspace_admin/ui/layout/app_layout.dart';
+
+class AdminNotificationScreen extends ConsumerStatefulWidget {
+  const AdminNotificationScreen({super.key});
+
+  @override
+  ConsumerState<AdminNotificationScreen> createState() => _AdminNotificationScreenState();
+}
+
+class _AdminNotificationScreenState extends ConsumerState<AdminNotificationScreen> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ref.read(notificationProvider.notifier).fetchNotifications();
+    });
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_scrollController.position.pixels >=
+        _scrollController.position.maxScrollExtent - 200) {
+      ref.read(notificationProvider.notifier).fetchNotifications(loadMore: true);
+    }
+  }
+
+  void _handleNotificationTap(NotificationModel notification) {
+    if (!notification.isRead) {
+      ref.read(notificationProvider.notifier).markAsRead(notification.id);
+    }
+
+    if (notification.actionData != null) {
+      NotificationRouter.handleAction(notification.actionData!);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final state = ref.watch(notificationProvider);
+    final l10n = AppLocalizations.of(context)!;
+    final theme = Theme.of(context);
+    final isDesktop = kIsWeb && MediaQuery.of(context).size.width >= 850;
+
+    final bodyContent = RefreshIndicator(
+      onRefresh: () async {
+        await ref.read(notificationProvider.notifier).fetchNotifications();
+      },
+      child: state.isLoadingNotifications && state.notifications.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : state.notificationsError != null && state.notifications.isEmpty
+              ? Center(child: Text(state.notificationsError!))
+              : state.notifications.isEmpty
+                  ? Center(child: Text(l10n.emptyNotification))
+                  : ListView.separated(
+                      controller: _scrollController,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      itemCount: state.notifications.length + (state.hasMore ? 1 : 0),
+                      separatorBuilder: (context, index) => const Divider(height: 1),
+                      itemBuilder: (context, index) {
+                        if (index == state.notifications.length) {
+                          return const Padding(
+                            padding: EdgeInsets.all(16.0),
+                            child: Center(child: CircularProgressIndicator()),
+                          );
+                        }
+                        final item = state.notifications[index];
+                        return ListTile(
+                          tileColor: item.isRead ? Colors.transparent : theme.colorScheme.primary.withValues(alpha: 0.08),
+                          onTap: () => _handleNotificationTap(item),
+                          leading: CircleAvatar(
+                            backgroundColor: theme.colorScheme.surfaceContainerHighest,
+                            backgroundImage: item.imageUrl != null && item.imageUrl!.isNotEmpty
+                                ? NetworkImage(item.imageUrl!) 
+                                : null,
+                            child: (item.imageUrl == null || item.imageUrl!.isEmpty)
+                                ? Icon(Icons.notifications, color: theme.colorScheme.onSurfaceVariant)
+                                : null,
+                          ),
+                          title: Text(
+                            item.title,
+                            style: theme.textTheme.titleMedium?.copyWith(
+                              fontWeight: item.isRead ? FontWeight.normal : FontWeight.bold,
+                              color: item.isRead ? theme.colorScheme.onSurface.withValues(alpha: 0.7) : theme.colorScheme.onSurface,
+                            ),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 4),
+                              Text(
+                                item.message,
+                                style: theme.textTheme.bodyMedium?.copyWith(
+                                  fontWeight: item.isRead ? FontWeight.normal : FontWeight.bold,
+                                ),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 4),
+                              Text(
+                                _formatTime(item.createdAt, l10n),
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: theme.colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ],
+                          ),
+                          trailing: !item.isRead ? Container(
+                            width: 8,
+                            height: 8,
+                            decoration: BoxDecoration(
+                              color: theme.colorScheme.primary,
+                              shape: BoxShape.circle,
+                            ),
+                          ) : null,
+                        );
+                      },
+                    ),
+    );
+
+    if (!isDesktop) {
+      // Mobile View: GIỮ NGUYÊN TRẠNG 100%
+      final appBar = AppBar(
+        title: Text(l10n.routeNotifications),
+        actions: [
+          TextButton(
+            onPressed: () {
+              ref.read(notificationProvider.notifier).markAllAsRead();
+            },
+            child: Text(
+              l10n.markAllAsRead,
+              style: TextStyle(color: theme.colorScheme.primary),
+            ),
+          )
+        ],
+      );
+
+      return Scaffold(
+        backgroundColor: theme.scaffoldBackgroundColor,
+        appBar: appBar,
+        body: bodyContent,
+      );
+    }
+
+    // Web Desktop View: AppLayout giữ Sidebar bên trái nguyên vẹn, AppBar chứa nút Back và nút đánh dấu tất cả đã đọc
+    return AppLayout(
+      customAppBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () => context.pop(),
+        ),
+        title: Text(l10n.routeNotifications),
+        actions: [
+          TextButton(
+            onPressed: () {
+              ref.read(notificationProvider.notifier).markAllAsRead();
+            },
+            child: Text(
+              l10n.markAllAsRead,
+              style: TextStyle(color: theme.colorScheme.primary),
+            ),
+          ),
+          const SizedBox(width: 8),
+        ],
+        elevation: 0,
+      ),
+      child: bodyContent,
+    );
+  }
+
+  String _formatTime(DateTime time, AppLocalizations l10n) {
+    final diff = DateTime.now().difference(time);
+    if (diff.inDays > 0) return '${diff.inDays} ${l10n.dayAgo}';
+    if (diff.inHours > 0) return '${diff.inHours} ${l10n.hourAgo}';
+    if (diff.inMinutes > 0) return '${diff.inMinutes} ${l10n.minuteAgo}';
+    return l10n.justNow;
+  }
+}

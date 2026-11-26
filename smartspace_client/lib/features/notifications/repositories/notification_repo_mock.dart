@@ -1,5 +1,6 @@
-import 'package:smartspace_client/core/api/api_response.dart';
+import 'package:mobile_shared/core/api/api_response.dart';
 import 'package:smartspace_client/features/notifications/models/notification_count_model.dart';
+import 'package:smartspace_client/features/notifications/models/notification_model.dart';
 import 'package:smartspace_client/features/notifications/repositories/notification_repo.dart';
 
 class NotificationRepoMock implements NotificationRepo {
@@ -11,6 +12,52 @@ class NotificationRepoMock implements NotificationRepo {
       success: true,
       message: 'Success',
       data: NotificationCountModel(notifNumber: 3), // Mock 3 unread
+    );
+  }
+
+  @override
+  Future<ApiResponse<List<NotificationModel>>> getMyNotifications({int page = 0, int size = 20, bool unreadOnly = false}) async {
+    await Future.delayed(const Duration(seconds: 1));
+    final items = [
+      NotificationModel(
+        id: '1',
+        title: 'Test Notification',
+        message: 'This is a mock notification',
+        isRead: false,
+        createdAt: DateTime.now(),
+      ),
+      NotificationModel(
+        id: '2',
+        title: 'Read Notification',
+        message: 'This mock notification has been read',
+        isRead: true,
+        createdAt: DateTime.now().subtract(const Duration(hours: 3)),
+      ),
+    ];
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: (unreadOnly ? items.where((n) => !n.isRead) : items).skip(page * size).take(size).toList(),
+    );
+  }
+
+  @override
+  Future<ApiResponse<void>> markAllAsRead() async {
+    await Future.delayed(const Duration(seconds: 1));
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: null,
+    );
+  }
+
+  @override
+  Future<ApiResponse<void>> markAsRead(String id) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: null,
     );
   }
 }

@@ -271,6 +271,15 @@ class AppLocalizationsEn extends AppLocalizations {
   String get news => 'News';
 
   @override
+  String get newsDetail => 'News Detail';
+
+  @override
+  String get newsNotFound => 'News not found';
+
+  @override
+  String get targetAdmin => 'Admin';
+
+  @override
   String get instructions => 'Instructions';
 
   @override
@@ -310,6 +319,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sessionExpired => 'Session expired';
+
+  @override
+  String get sessionRevokedOnThisDevice =>
+      'You have been signed out of this device from another device.';
 
   @override
   String get settingsTitle => 'Settings';
@@ -405,4 +418,884 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get passwordReqSpecial =>
       'Include at least one special character !@#\$^()_';
+
+  @override
+  String get actionView => 'View';
+
+  @override
+  String get routeSplash => 'Splash Screen';
+
+  @override
+  String get routeLogin => 'Login';
+
+  @override
+  String get routeHome => 'Home';
+
+  @override
+  String get routeSettings => 'Settings';
+
+  @override
+  String get routeReportDetail => 'Report Detail';
+
+  @override
+  String get staffSplashAppName => 'SmartSpace Staff';
+
+  @override
+  String get staffSplashTagline => 'Incident management and processing tool.';
+
+  @override
+  String get totalAssigned => 'Total assigned';
+
+  @override
+  String get needsYourAttention => 'Needs your attention';
+
+  @override
+  String get myWorkDashboard => 'My Work';
+
+  @override
+  String get gpsError => 'Cannot locate GPS, please check your device';
+
+  @override
+  String get filterAll => 'All';
+
+  @override
+  String distanceAway(String distance) {
+    return '$distance away';
+  }
+
+  @override
+  String get routeNotifications => 'Notifications';
+
+  @override
+  String get markAllAsRead => 'Mark all as read';
+
+  @override
+  String get emptyNotification => 'You have no notifications.';
+
+  @override
+  String get dayAgo => 'days ago';
+
+  @override
+  String get hourAgo => 'hours ago';
+
+  @override
+  String get minuteAgo => 'minutes ago';
+
+  @override
+  String get justNow => 'Just now';
+
+  @override
+  String get calculatingDistance => 'Calculating distance...';
+
+  @override
+  String get reportDetails => 'Report Details';
+
+  @override
+  String get turnOnLocationToViewDistance =>
+      'Turn on location to view the distance from the incident to your location';
+
+  @override
+  String get openInGoogleMaps => 'Open in Google Maps';
+
+  @override
+  String get createdAtLabel => 'Created at';
+
+  @override
+  String get statusLabel => 'Status';
+
+  @override
+  String get severityLabel => 'Severity';
+
+  @override
+  String get severityLow => 'Low';
+
+  @override
+  String get severityMedium => 'Medium';
+
+  @override
+  String get severityHigh => 'High';
+
+  @override
+  String get severityCritical => 'Critical';
+
+  @override
+  String get anonymousUser => 'Anonymous';
+
+  @override
+  String get reporter => 'Reporter';
+
+  @override
+  String get locationServiceDisabledError =>
+      'Please enable location services on your device';
+
+  @override
+  String get locationPermissionDeniedForeverError =>
+      'Location permissions are permanently denied, please go to settings to enable';
+
+  @override
+  String get cannotOpenGoogleMapsError => 'Cannot open Google Maps';
+
+  @override
+  String errorOccurred(Object error) {
+    return 'An error occurred:\n$error';
+  }
+
+  @override
+  String get retryButton => 'Retry';
+
+  @override
+  String get assignedStaff => 'Assigned Staff';
+
+  @override
+  String get newLabel => 'New';
+
+  @override
+  String get staffPortalName => 'SmartSpace Staff Portal';
+
+  @override
+  String get staffLoginSubtitle => 'Internal system for task processing';
+
+  @override
+  String get staffWelcome => 'Employee Sign In';
+
+  @override
+  String get quickAccessMap => 'Map';
+
+  @override
+  String get quickAccessNews => 'News';
+
+  @override
+  String get quickAccessSettings => 'Settings';
+
+  @override
+  String get quickAccessGuide => 'Guide';
+
+  @override
+  String get routeMap => 'Map';
+
+  @override
+  String get myLocation => 'My Location';
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
+  String get handleReport => 'Handle Report';
+
+  @override
+  String get processReportAction => 'Process';
+
+  @override
+  String get routeHandleReport => 'Handle Report';
+
+  @override
+  String get evidencePhotos => 'Evidence Photos';
+
+  @override
+  String get takePhoto => 'Take photo';
+
+  @override
+  String get chooseFromGallery => 'Choose photo from gallery';
+
+  @override
+  String get resolutionNote => 'Resolution Note';
+
+  @override
+  String get resolutionNoteHint => 'Describe handling results or notes...';
+
+  @override
+  String get slideToComplete => 'Slide to complete';
+
+  @override
+  String get submittingReport => 'Submitting...';
+
+  @override
+  String get reportProcessedSuccess => 'Report resolved successfully!';
+
+  @override
+  String get provideEvidenceOrNoteWarning =>
+      'Please attach at least 1 evidence photo or enter a note';
+
+  @override
+  String get uploadingEvidence => 'Uploading evidence photos...';
+
+  @override
+  String get submittingReportBackground =>
+      'Your report handling info is being submitted, please do not close the app';
+
+  @override
+  String get submittingReportBackgroundTitle =>
+      'Submitting Handling Information';
+
+  @override
+  String uploadingEvidenceProgress(Object current, Object total) {
+    return 'Uploading evidence photos ($current/$total)...';
+  }
+
+  @override
+  String almostDoneFinalizing(Object current, Object total) {
+    return 'Finalizing report resolution ($current/$total)...';
+  }
+
+  @override
+  String get handlingCompletedSuccess =>
+      'Handling information submitted successfully!';
+
+  @override
+  String get gotIt => 'Got it';
+
+  @override
+  String get handlingProgressTitle => 'Handling Submission Progress';
+
+  @override
+  String get errorTitle => 'An error occurred';
+
+  @override
+  String get provideEvidencePhotoWarning =>
+      'Please attach at least 1 evidence photo before completing';
+
+  @override
+  String get evidencePhotosRequired => 'Resolution evidence photos *';
+
+  @override
+  String get rehandling => 'Re-handling';
+
+  @override
+  String get rehandlingBadge => 'Re-handling';
+
+  @override
+  String get rehandlingNotice =>
+      'This report was rated unsatisfactory and is being re-handled';
+
+  @override
+  String get routeChangePassword => 'Change Password';
+
+  @override
+  String get routeEditProfile => 'Edit Profile';
+
+  @override
+  String get routeManageDevices => 'Manage Devices';
+
+  @override
+  String get editProfile => 'Edit Profile';
+
+  @override
+  String get changeAvatar => 'Change Photo';
+
+  @override
+  String get pickImageFailed => 'Could not pick the image. Please try again.';
+
+  @override
+  String get dateOfBirth => 'Date of Birth';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get genderMale => 'Male';
+
+  @override
+  String get genderFemale => 'Female';
+
+  @override
+  String get genderOther => 'Other';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get profileUpdateSuccess => 'Profile updated successfully';
+
+  @override
+  String get profileUpdateFailed => 'Failed to update profile';
+
+  @override
+  String get loggedInDevices => 'Logged in devices';
+
+  @override
+  String get thisDevice => 'This device';
+
+  @override
+  String get activeNow => 'Active now';
+
+  @override
+  String get logoutDevice => 'Logout';
+
+  @override
+  String get logoutDeviceConfirmTitle => 'Logout from device?';
+
+  @override
+  String logoutDeviceConfirmMessage(String deviceName) {
+    return 'The session on \"$deviceName\" will be ended.';
+  }
+
+  @override
+  String get logoutAllOtherDevices => 'Logout all other devices';
+
+  @override
+  String get logoutAllConfirmTitle => 'Logout all other devices?';
+
+  @override
+  String get logoutAllConfirmMessage =>
+      'All sessions except this device will be ended.';
+
+  @override
+  String get noOtherDevices => 'No other devices logged in.';
+
+  @override
+  String get deviceLogoutSuccess => 'Device logged out.';
+
+  @override
+  String get allDevicesLogoutSuccess => 'All other devices logged out.';
+
+  @override
+  String get latestNews => 'Latest News';
+
+  @override
+  String get routeNewsList => 'News';
+
+  @override
+  String get emptyNewsTitle => 'No news yet';
+
+  @override
+  String get emptyNewsDescription =>
+      'There are currently no news or announcements.';
+
+  @override
+  String get viewDetail => 'View details';
+
+  @override
+  String get mapNormalReports => 'Normal';
+
+  @override
+  String get mapShowAllTasks => 'Show all my tasks';
+
+  @override
+  String get mapNoActiveTasks => 'You have no tasks in progress';
+
+  @override
+  String mapClusterReportsTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reports in this area',
+      one: '1 report in this area',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get mapClusterSortNearest => 'Nearest to you first';
+
+  @override
+  String get mapClusterSortHint => 'Most dangerous first, then newest';
+
+  @override
+  String mapShowingFirstTasks(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'Showing the first $count tasks',
+      one: 'Showing the first task',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get mapLoadReportsFailed => 'Couldn\'t load tasks on the map';
+
+  @override
+  String get viewOnMap => 'View on map';
+
+  @override
+  String get mapFocusedReportHidden =>
+      'This report isn\'t one of your tasks in progress, so it isn\'t shown on the map';
+
+  @override
+  String get mapGetDirections => 'Directions';
+
+  @override
+  String get mapNoTasksForFilter => 'No tasks match the current filters';
+
+  @override
+  String get locationSection => 'Incident Location';
+
+  @override
+  String get noAddress => 'No address provided';
+
+  @override
+  String get locationDescriptionLabel => 'Location description';
+
+  @override
+  String get userPhone => 'Phone number';
+
+  @override
+  String get resolutionInfo => 'Resolution Details';
+
+  @override
+  String get resolutionImages => 'Resolution Photos';
+
+  @override
+  String get resolvedAtLabel => 'Completion Time';
+
+  @override
+  String get citizenReviewUnresolved => 'Citizen Feedback: Unresolved';
+
+  @override
+  String get citizenRating => 'Citizen Rating';
+
+  @override
+  String get citizenReviewReason => 'Reason for Unsatisfactory';
+
+  @override
+  String get citizenReviewPhotos => 'Citizen Photos';
+
+  @override
+  String get statusPending => 'Pending';
+
+  @override
+  String get saveSuccess => 'Saved successfully';
+
+  @override
+  String get deleteSuccess => 'Deleted successfully';
+
+  @override
+  String get confirmDelete => 'Confirm Delete';
+
+  @override
+  String get createdDate => 'Created Date';
+
+  @override
+  String get save => 'Save';
+
+  @override
+  String get genericError => 'An error occurred, please try again!';
+
+  @override
+  String get confirmCancel => 'Cancel request';
+
+  @override
+  String get statusCancelled => 'Cancelled';
+
+  @override
+  String get routeDelegations => 'Delegated tasks';
+
+  @override
+  String get delegationScreenTitle => 'Delegated tasks';
+
+  @override
+  String get delegationTabReceived => 'Received';
+
+  @override
+  String get delegationTabSent => 'Sent';
+
+  @override
+  String get delegationEmptyReceived =>
+      'No one has asked you to handle a task yet';
+
+  @override
+  String get delegationEmptySent =>
+      'You haven\'t asked anyone to handle a task yet';
+
+  @override
+  String get delegationLoadFailed => 'Couldn\'t load delegation requests';
+
+  @override
+  String get delegationRequestAction => 'Ask a colleague';
+
+  @override
+  String get delegationSheetTitle => 'Ask a colleague to handle this task';
+
+  @override
+  String get delegationSearchHint => 'Search colleagues by name';
+
+  @override
+  String get delegationNoColleagues => 'No matching colleagues';
+
+  @override
+  String get delegationChooseColleague => 'Choose a colleague';
+
+  @override
+  String get delegationNoteLabel => 'Message (optional)';
+
+  @override
+  String get delegationSendAction => 'Send request';
+
+  @override
+  String get delegationSentSuccess => 'Delegation request sent';
+
+  @override
+  String delegationPendingRequesterBanner(String name) {
+    return 'Waiting for $name to accept';
+  }
+
+  @override
+  String delegationAcceptedRequesterBanner(String name) {
+    return '$name is handling this task for you';
+  }
+
+  @override
+  String delegationPendingHelperBanner(String name) {
+    return '$name asked you to handle this task';
+  }
+
+  @override
+  String delegationAcceptedHelperBanner(String name) {
+    return 'You are handling this task for $name';
+  }
+
+  @override
+  String delegationExpiresAt(String time) {
+    return 'Expires at $time';
+  }
+
+  @override
+  String get delegationAcceptAction => 'Accept';
+
+  @override
+  String get delegationDeclineAction => 'Decline';
+
+  @override
+  String get delegationCancelAction => 'Cancel request';
+
+  @override
+  String get delegationAcceptConfirmTitle => 'Accept this task?';
+
+  @override
+  String get delegationAcceptConfirmMessage =>
+      'The report will be assigned to you and you\'ll be responsible for resolving it.';
+
+  @override
+  String get delegationDeclineConfirmTitle => 'Decline this request?';
+
+  @override
+  String delegationDeclineConfirmMessage(String name) {
+    return '$name will be notified that you declined.';
+  }
+
+  @override
+  String get delegationCancelConfirmTitle => 'Cancel this request?';
+
+  @override
+  String get delegationCancelConfirmMessage =>
+      'This delegation request will be cancelled.';
+
+  @override
+  String get delegationAcceptedSuccess => 'You accepted the task';
+
+  @override
+  String get delegationDeclinedSuccess => 'Request declined';
+
+  @override
+  String get delegationCancelledSuccess => 'Delegation request cancelled';
+
+  @override
+  String delegationFrom(String name) {
+    return 'From $name';
+  }
+
+  @override
+  String delegationTo(String name) {
+    return 'Asked $name';
+  }
+
+  @override
+  String get delegationStatusPending => 'Awaiting reply';
+
+  @override
+  String get delegationStatusAccepted => 'In progress';
+
+  @override
+  String get delegationStatusDeclined => 'Declined';
+
+  @override
+  String get delegationStatusCancelled => 'Cancelled';
+
+  @override
+  String get delegationStatusExpired => 'Expired';
+
+  @override
+  String get delegationStatusCompleted => 'Completed';
+
+  @override
+  String get delegationStatusRevoked => 'Revoked';
+
+  @override
+  String get routeConversations => 'Messages';
+
+  @override
+  String get routeChatDetail => 'Conversation';
+
+  @override
+  String get conversations => 'Messages';
+
+  @override
+  String get quickAccessChat => 'Messages';
+
+  @override
+  String get roleClient => 'Resident';
+
+  @override
+  String get roleStaff => 'Staff';
+
+  @override
+  String get roleAdmin => 'Admin';
+
+  @override
+  String get staffNoPosition => 'Staff with no assigned position';
+
+  @override
+  String get chatInputHint => 'Type a message...';
+
+  @override
+  String chatDisabledNotice(String name) {
+    return 'You cannot message $name at this time';
+  }
+
+  @override
+  String get messageReporter => 'Message';
+
+  @override
+  String get emptyConversations => 'No conversations yet';
+
+  @override
+  String get emptyConversationsDesc =>
+      'Conversations with residents and colleagues will appear here.';
+
+  @override
+  String get emptyMessages => 'No messages yet. Start chatting!';
+
+  @override
+  String get errorLoadConversations => 'Could not load conversations';
+
+  @override
+  String get errorLoadMessages => 'Could not load messages';
+
+  @override
+  String get sendMessageFailed => 'Failed to send message, tap to retry';
+
+  @override
+  String get anonymousPerson => 'Anonymous User';
+
+  @override
+  String get filterClient => 'Resident';
+
+  @override
+  String get filterStaff => 'Staff';
+
+  @override
+  String get filterAdmin => 'Admin';
+
+  @override
+  String get sendAction => 'Send';
+
+  @override
+  String get callClient => 'Call';
+
+  @override
+  String get noPhoneNumber => 'No phone number available';
+
+  @override
+  String get searchConversations => 'Search by name, phone, email...';
+
+  @override
+  String get otherUsers => 'Other users';
+
+  @override
+  String get startConversation => 'Start conversation';
+
+  @override
+  String get noUsersFound => 'No users found';
+
+  @override
+  String get filterPosition => 'Positions';
+
+  @override
+  String get filterByPosition => 'Filter by position';
+
+  @override
+  String get apply => 'Apply';
+
+  @override
+  String get clearFilter => 'Clear filter';
+
+  @override
+  String get noPositionsAvailable => 'No positions available';
+
+  @override
+  String positionSelectedCount(int count) {
+    return '$count positions';
+  }
+
+  @override
+  String get routeConversationInfo => 'Conversation Info';
+
+  @override
+  String get conversationInfoTitle => 'Conversation Info';
+
+  @override
+  String get activeReportsSection => 'Active Reports';
+
+  @override
+  String activeReportsCount(int count) {
+    return '$count active reports';
+  }
+
+  @override
+  String get allReportsProcessed => 'All reports have been processed';
+
+  @override
+  String get conversationClosedNotice =>
+      'Conversation closed as all reports have been processed';
+
+  @override
+  String get conversationActiveNotice => 'Conversation is currently active';
+
+  @override
+  String get callButtonLabel => 'Call';
+
+  @override
+  String get videoCallButtonLabel => 'Video call';
+
+  @override
+  String get videoCallComingSoon => 'Video call feature is under development';
+
+  @override
+  String get cannotMakePhoneCall => 'Cannot initiate phone call';
+
+  @override
+  String get viewReportDetail => 'View Details';
+
+  @override
+  String get anonymousUserProtectionNote =>
+      'Contact info is protected for anonymous reports';
+
+  @override
+  String get conversationRefreshed =>
+      'Conversation info and messages refreshed successfully';
+
+  @override
+  String get conversationRefreshFailed =>
+      'Could not refresh conversation, please try again later';
+
+  @override
+  String get noActiveReportsInConversation =>
+      'No active reports in this conversation';
+
+  @override
+  String get yesterday => 'Yesterday';
+
+  @override
+  String get conversationLockedBadge => 'Locked';
+
+  @override
+  String get callOptionsTitle => 'Call options';
+
+  @override
+  String get cellularCall => 'Cellular call';
+
+  @override
+  String get cellularCallDesc => 'Open default phone app';
+
+  @override
+  String get freeCall => 'Free in-app voice call';
+
+  @override
+  String get featureUnderDevelopment => 'Feature under development';
+
+  @override
+  String get comingSoon => 'Coming soon';
+
+  @override
+  String get phoneNotAvailable => 'Phone number is not available';
+
+  @override
+  String get freeCallComingSoon =>
+      'Free in-app voice call feature is under development';
+
+  @override
+  String get chooseVideo => 'Choose video';
+
+  @override
+  String get attachReport => 'Attach report';
+
+  @override
+  String get markAsRead => 'Mark as read';
+
+  @override
+  String get typingText => 'typing...';
+
+  @override
+  String get pressAndHoldToRecord => 'Press and hold to record';
+
+  @override
+  String get slideLeftToCancel => 'Slide left to cancel';
+
+  @override
+  String get releaseToCancel => 'Release to cancel';
+
+  @override
+  String get selectReportToAttach => 'Select report to attach';
+
+  @override
+  String get voiceMessageSnippet => 'Voice message';
+
+  @override
+  String get imageSnippet => 'Photo';
+
+  @override
+  String get videoSnippet => 'Video';
+
+  @override
+  String get attachedReportSnippet => 'Attached report';
+
+  @override
+  String get reportDeadlineLabel => 'Resolution deadline';
+
+  @override
+  String get deadlineOverdueBadge => 'Overdue';
+
+  @override
+  String daysRemainingLabel(int days) {
+    return '$days days left';
+  }
+
+  @override
+  String get overdueOnlyFilter => 'Overdue';
+
+  @override
+  String get rejectedReasonTitle => 'Rejection Reason';
+
+  @override
+  String get noRejectionReasonProvided => 'Rejected by administrator.';
+
+  @override
+  String get assignedBaseLocationSection => 'Assigned Station & Position';
+
+  @override
+  String get staffPositionLabel => 'Assigned Position';
+
+  @override
+  String get staffPositionNotAssigned => 'No position assigned';
+
+  @override
+  String get baseStationAddressLabel => 'Representative Station / Area';
+
+  @override
+  String get baseStationCoordinatesLabel => 'Representative Coordinates';
+
+  @override
+  String get baseStationNotConfigured =>
+      'Representative station not configured by administrator';
+
+  @override
+  String get baseStationReadOnlyHint =>
+      'Position and representative station are managed by the system administrator.';
+
+  @override
+  String get callFreeVoiceDesc => 'Free internet voice call';
+
+  @override
+  String get callPermissionDenied =>
+      'Voice call unavailable for this conversation';
 }

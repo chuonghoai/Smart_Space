@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.vn.smart_space.consts.EConversationType;
+import com.vn.smart_space.consts.EMessageType;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -46,13 +47,28 @@ public class Conversation {
     @Column(name = "participant_hash", unique = true)
     private String participantHash;
 
+    @Column(name = "is_anonymous")
+    @Builder.Default
+    private Boolean isAnonymous = false;
+
     private LocalDateTime createdAt;
 
     private String lastMessageId;
 
     private String lastMessageContent;
 
+    @Enumerated(EnumType.STRING)
+    private EMessageType lastMessageType;
+
     private LocalDateTime lastMessageTime;
+
+    @jakarta.persistence.ManyToOne(fetch = FetchType.LAZY)
+    @jakarta.persistence.JoinColumn(name = "report_id")
+    private Report report;
+
+    @OneToMany(mappedBy = "conversation", fetch = FetchType.LAZY)
+    @Builder.Default
+    private List<Report> reports = new ArrayList<>();
 
     // Relationship
     @OneToMany(mappedBy = "conversation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)

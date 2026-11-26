@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../../../core/localization/locale_provider.dart';
+import 'package:mobile_shared/core/localization/locale_provider.dart';
 
 class LanguageSwitch extends StatelessWidget {
   const LanguageSwitch({super.key});

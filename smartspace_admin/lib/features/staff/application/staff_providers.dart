@@ -1,0 +1,201 @@
+import 'dart:async';
+
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
+import '../data/staff_repository.dart';
+import '../models/staff_list_response.dart';
+import '../models/staff_statistics_model.dart';
+import '../models/staff_trend_model.dart';
+
+class StaffListNotifier extends AutoDisposeAsyncNotifier<StaffListResponse> {
+  int _currentPage = 1;
+  final int _pageSize = 10;
+  String? _search;
+  String? _statusFilter;
+  String? _positionFilter;
+  Timer? _debounce;
+
+  @override
+  Future<StaffListResponse> build() async {
+    ref.onDispose(() => _debounce?.cancel());
+    return _fetch();
+  }
+
+  Future<StaffListResponse> _fetch() async {
+    final response = await staffRepository.getStaffs(
+      page: _currentPage,
+      size: _pageSize,
+      search: _search,
+      status: _statusFilter,
+      positionId: _positionFilter,
+    );
+    if (response.success && response.data != null) {
+      return response.data!;
+    }
+    throw Exception(response.message);
+  }
+
+  // Update Status
+  Future<bool> toggleStaffStatus(String staffId, bool isCurrentlyActive) async {
+    final newStatus = isCurrentlyActive ? 'blocked' : 'active';
+    final response = await staffRepository.updateStaffStatus(
+      staffId,
+      newStatus,
+    );
+    if (response.success) {
+      ref.invalidateSelf();
+      _invalidateStatistics();
+      return true;
+    }
+    return false;
+  }
+
+  /// Tạo staff — backend tự sinh mật khẩu và gửi qua email.
+  /// Trả về `null` khi thành công, ngược lại là message lỗi từ backend (có thể rỗng).
+  Future<String?> createStaff({
+    required String fullName,
+    required String email,
+    String? phone,
+    String? dateOfBirth,
+    String? gender,
+    String? avatarUrl,
+    String? positionId,
+    double? baseLatitude,
+    double? baseLongitude,
+    String? baseAddress,
+  }) async {
+    final response = await staffRepository.createStaff(
+      fullName: fullName,
+      email: email,
+      phone: phone,
+      dateOfBirth: dateOfBirth,
+      gender: gender,
+      avatarUrl: avatarUrl,
+      positionId: positionId,
+      baseLatitude: baseLatitude,
+      baseLongitude: baseLongitude,
+      baseAddress: baseAddress,
+    );
+    if (response.success) {
+      ref.invalidateSelf();
+      _invalidateStatistics();
+      return null;
+    }
+    return response.message;
+  }
+
+  // Update Staff
+  Future<bool> updateStaff({
+    required String staffId,
+    required String fullName,
+    String? phone,
+    String? dateOfBirth,
+    String? gender,
+    String? avatarUrl,
+    String? positionId,
+    double? baseLatitude,
+    double? baseLongitude,
+    String? baseAddress,
+    bool clearBaseLocation = false,
+  }) async {
+    final response = await staffRepository.updateStaff(
+      staffId: staffId,
+      fullName: fullName,
+      phone: phone,
+      dateOfBirth: dateOfBirth,
+      gender: gender,
+      avatarUrl: avatarUrl,
+      positionId: positionId,
+      baseLatitude: baseLatitude,
+      baseLongitude: baseLongitude,
+      baseAddress: baseAddress,
+      clearBaseLocation: clearBaseLocation,
+    );
+    if (response.success) {
+      ref.invalidateSelf();
+      _invalidateStatistics();
+      return true;
+    }
+    return false;
+  }
+
+  Future<void> refresh() async {
+    _currentPage = 1;
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() => _fetch());
+  }
+
+  void setSearch(String query) {
+    _debounce?.cancel();
+    _debounce = Timer(const Duration(milliseconds: 300), () {
+      _search = query.isEmpty ? null : query;
+      _currentPage = 1;
+      ref.invalidateSelf();
+    });
+  }
+
+  void setStatusFilter(String? status) {
+    _statusFilter = (status == null || status == 'all') ? null : status;
+    _currentPage = 1;
+    ref.invalidateSelf();
+  }
+
+  void setPositionFilter(String? positionId) {
+    _positionFilter =
+        (positionId == null || positionId == 'all') ? null : positionId;
+    _currentPage = 1;
+    ref.invalidateSelf();
+  }
+
+  void goToPage(int page) {
+    _currentPage = page;
+    ref.invalidateSelf();
+  }
+
+  void nextPage() {
+    final data = state.valueOrNull;
+    if (data != null && _currentPage < data.totalPages) {
+      goToPage(_currentPage + 1);
+    }
+  }
+
+  void previousPage() {
+    if (_currentPage > 1) {
+      goToPage(_currentPage - 1);
+    }
+  }
+
+  /// Tạo/sửa/khoá nhân viên làm thay đổi KPI và bảng khối lượng công việc.
+  void _invalidateStatistics() {
+    ref.invalidate(staffStatisticsProvider);
+    ref.invalidate(staffTrendProvider);
+  }
+}
+
+final staffListProvider =
+    AutoDisposeAsyncNotifierProvider<StaffListNotifier, StaffListResponse>(
+      () => StaffListNotifier(),
+    );
+
+final selectedStaffStatsMonthProvider =
+    StateProvider<({int year, int month})?>((ref) => null);
+
+final staffStatisticsProvider =
+    FutureProvider.autoDispose<StaffStatisticsModel>((ref) {
+      final selectedMonth = ref.watch(selectedStaffStatsMonthProvider);
+      return staffRepository.getStatistics(
+        year: selectedMonth?.year,
+        month: selectedMonth?.month,
+      );
+    });
+
+/// period: 'daily' | 'weekly' | 'monthly'
+final staffTrendProvider = FutureProvider.autoDispose
+    .family<List<StaffTrendItem>, String>((ref, period) {
+      final selectedMonth = ref.watch(selectedStaffStatsMonthProvider);
+      return staffRepository.getTrend(
+        period,
+        year: selectedMonth?.year,
+        month: selectedMonth?.month,
+      );
+    });

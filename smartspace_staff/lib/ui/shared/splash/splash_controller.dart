@@ -1,16 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-import 'package:smartspace_staff/core/constants/registration_status.dart';
-import 'package:smartspace_staff/core/auth/access_token_service.dart';
-import 'package:smartspace_staff/core/auth/refresh_token_service.dart';
-import 'package:smartspace_staff/core/auth/user_storage_service.dart';
-import 'package:smartspace_staff/core/interceptors/error_interceptor.dart';
-import 'package:smartspace_staff/core/localization/locale_provider.dart';
-import 'package:smartspace_staff/core/theme/theme_provider.dart';
-import 'package:smartspace_staff/features/auth/services/auth_service.dart';
+import 'package:mobile_shared/core/auth/token_storage.dart';
+import 'package:mobile_shared/core/auth/user_storage_service.dart';
+import 'package:mobile_shared/core/interceptors/error_interceptor.dart';
+import 'package:mobile_shared/core/localization/locale_provider.dart';
+import 'package:mobile_shared/core/theme/theme_provider.dart';
+import 'package:mobile_shared/features/auth/services/auth_service.dart';
 import 'package:smartspace_staff/routes/router_path.dart';
-import 'package:smartspace_staff/util/location_service.dart';
-import 'package:smartspace_staff/core/connection/connection_manager.dart';
+import 'package:mobile_shared/util/location_service.dart';
+import 'package:mobile_shared/core/connection/connection_manager.dart';
 
 class SplashController extends ChangeNotifier {
   bool _isLoading = true;
@@ -30,10 +28,9 @@ class SplashController extends ChangeNotifier {
         themeProvider.initialize(),
         localeProvider.initialize(),
       ]);
-
       // Check authentication
-      final accessToken = await accessTokenService.getAccessToken();
-      final refreshToken = await refreshTokenService.getRefreshToken();
+      final accessToken = await TokenStorage.getAccessToken();
+      final refreshToken = await TokenStorage.getRefreshToken();
       final user = await userStorageService.getUser();
 
       if (!context.mounted) return;
@@ -46,11 +43,11 @@ class SplashController extends ChangeNotifier {
         await locationService.getCurrentPosition();
         if (!context.mounted) return;
 
-        if (currentUser?.registrationStatus == ERegistrationStatus.completed) {
+        if (currentUser != null) {
           connectionManager.startConnections();
           context.go(RouterPath.home);
         } else {
-          context.go(RouterPath.completeProfile);
+          context.go(RouterPath.login);
         }
         return;
       }
@@ -71,12 +68,11 @@ class SplashController extends ChangeNotifier {
           await locationService.getCurrentPosition();
           if (!context.mounted) return;
 
-          if (currentUser?.registrationStatus ==
-              ERegistrationStatus.completed) {
+          if (currentUser != null) {
             connectionManager.startConnections();
             context.go(RouterPath.home);
           } else {
-            context.go(RouterPath.completeProfile);
+            context.go(RouterPath.login);
           }
           return;
         }

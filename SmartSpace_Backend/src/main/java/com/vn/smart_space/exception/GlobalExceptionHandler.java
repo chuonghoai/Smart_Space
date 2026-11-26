@@ -2,6 +2,8 @@ package com.vn.smart_space.exception;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
@@ -11,12 +13,18 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 
 import com.vn.smart_space.dto.ApiResponse;
 
+import com.vn.smart_space.service.i18n.MessageService;
+
 import jakarta.validation.ConstraintViolationException;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @RestControllerAdvice
 @Slf4j
+@RequiredArgsConstructor
 public class GlobalExceptionHandler {
+
+    private final MessageService messageService;
     @ExceptionHandler({ MethodArgumentNotValidException.class,
             ConstraintViolationException.class })
     @ResponseStatus(HttpStatus.BAD_REQUEST)
@@ -38,6 +46,16 @@ public class GlobalExceptionHandler {
         }
         return errorResponse;
 
+    }
+
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public ApiResponse handleHttpMessageNotReadableException(HttpMessageNotReadableException e, WebRequest request) {
+        log.warn("Malformed JSON or unreadable HTTP message: {}", e.getMessage());
+        return ApiResponse.builder()
+                .success(false)
+                .message(messageService.get("validation.request_body_invalid", "Dữ liệu yêu cầu không hợp lệ!"))
+                .build();
     }
 
     @ExceptionHandler({ MethodArgumentTypeMismatchException.class })
@@ -67,7 +85,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(ApiResponse.builder()
                         .success(false)
-                        .message(e.getMessage())
+                        .message(messageService.get(e.getMessage()))
                         .build());
     }
 
@@ -77,7 +95,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(ApiResponse.builder()
                         .success(false)
-                        .message(e.getMessage())
+                        .message(messageService.get(e.getMessage()))
                         .build());
     }
 
@@ -87,7 +105,17 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                 .body(ApiResponse.builder()
                         .success(false)
-                        .message(e.getMessage())
+                        .message(messageService.get(e.getMessage()))
+                        .build());
+    }
+
+    // Lỗi 403: Không có quyền truy cập
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiResponse> handleAccessDenied(AccessDeniedException e) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(ApiResponse.builder()
+                        .success(false)
+                        .message(messageService.get("auth.forbidden", "Bạn không có quyền thực hiện thao tác này!"))
                         .build());
     }
 
@@ -98,7 +126,7 @@ public class GlobalExceptionHandler {
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(ApiResponse.builder()
                         .success(false)
-                        .message("Hệ thống đang bận, vui lòng thử lại sau!")
+                        .message(messageService.get("system.internal_error", "Hệ thống đang bận, vui lòng thử lại sau!"))
                         .build());
     }
 }

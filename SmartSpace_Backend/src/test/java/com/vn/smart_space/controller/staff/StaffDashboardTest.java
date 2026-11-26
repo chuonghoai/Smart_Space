@@ -1,0 +1,162 @@
+package com.vn.smart_space.controller.staff;
+
+import com.nimbusds.jose.JWSAlgorithm;
+import com.nimbusds.jose.JWSHeader;
+import com.nimbusds.jose.crypto.MACSigner;
+import com.nimbusds.jwt.JWTClaimsSet;
+import com.nimbusds.jwt.SignedJWT;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
+
+import java.net.InetSocketAddress;
+import java.net.Socket;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.Date;
+import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assumptions.assumeTrue;
+
+/**
+ * Dashboard Quản lý nhân viên (/admin/staffs/statistics, /admin/staffs/trend). Dựa trên seed_data.sql:
+ * u1 = admin, u2 = client.
+ */
+public class StaffDashboardTest {
+
+    // Ghi đè bằng -Dsmartspace.baseUrl=http://localhost:<port> khi backend chạy cổng khác
+    private static final String BASE_URL = System.getProperty("smartspace.baseUrl", "http://localhost:8989");
+    private static final String SIGNER_KEY = "ZpWmdK3rFAkBja/qcNOKJrmWFfhRJPLs5FbFr1xMgJVqk7BbHDYPz5blC3CueakgaikoP4vGkHQqXNqkDd63Yw==";
+
+    private static final HttpClient HTTP = HttpClient.newHttpClient();
+
+    @BeforeAll
+    static void checkBackendRunning() {
+        URI base = URI.create(BASE_URL);
+        try (Socket socket = new Socket()) {
+            socket.connect(new InetSocketAddress(base.getHost(), base.getPort()), 1500);
+        } catch (Exception e) {
+            fail("[LOI] Backend chua chay tai " + BASE_URL + "! Bat backend truoc khi chay test.");
+        }
+    }
+
+    // Test Case ID: SMP-224
+    // Description: Kiểm tra GET /admin/staffs/statistics trả về HTTP 200 kèm đầy đủ các trường KPI, workload và không lộ trường password.
+    @Test
+    @DisplayName("Thong ke tra ve du KPI va workload")
+    void testStatistics() throws Exception {
+        HttpResponse<String> res = send("GET", "/admin/staffs/statistics", adminToken(), null);
+
+        assertEquals(200, res.statusCode());
+        String body = res.body();
+        for (String field : new String[] { "totalStaff", "activeStaff", "blockedStaff", "processingReports",
+                "resolved", "resolvedPrevious", "avgResolutionMinutes", "avgResolutionMinutesPrevious",
+                "workload" }) {
+            assertTrue(body.contains("\"" + field + "\""), "Thieu truong " + field);
+        }
+        assertFalse(body.contains("\"password\""), "Khong duoc tra ve password");
+    }
+
+    // Test Case ID: SMP-225
+    // Description: Kiểm tra GET /admin/staffs/trend trả về đúng số lượng bucket (từ đầu tháng đến hôm nay cho daily/fallback, 12 cho weekly/monthly) kèm series assigned và resolved.
+    @Test
+    @DisplayName("Trend zero-fill du so bucket va co 2 series assigned/resolved")
+    void testTrend_BucketCount() throws Exception {
+        int expectedDailyBuckets = java.time.LocalDate.now().getDayOfMonth();
+        String daily = send("GET", "/admin/staffs/trend?period=daily", adminToken(), null).body();
+        assertEquals(expectedDailyBuckets, countMatches(daily, "\"date\""));
+        assertEquals(expectedDailyBuckets, countMatches(daily, "\"assigned\""));
+        assertEquals(expectedDailyBuckets, countMatches(daily, "\"resolved\""));
+
+        assertEquals(12, countMatches(
+                send("GET", "/admin/staffs/trend?period=weekly", adminToken(), null).body(), "\"date\""));
+        assertEquals(12, countMatches(
+                send("GET", "/admin/staffs/trend?period=monthly", adminToken(), null).body(), "\"date\""));
+        // Period la → fallback daily
+        assertEquals(expectedDailyBuckets, countMatches(
+                send("GET", "/admin/staffs/trend?period=abc", adminToken(), null).body(), "\"date\""));
+    }
+
+    // Test Case ID: SMP-226
+    // Description: Kiểm tra tài khoản role client nhận HTTP 403 khi gọi GET /admin/staffs/statistics và GET /admin/staffs/trend.
+    @Test
+    @DisplayName("Client khong duoc truy cap thong ke nhan vien")
+    void testForbiddenForClient() throws Exception {
+        String clientToken = token("user@gmail.com", "u2", "ROLE_client");
+        assertEquals(403, send("GET", "/admin/staffs/statistics", clientToken, null).statusCode());
+        assertEquals(403, send("GET", "/admin/staffs/trend", clientToken, null).statusCode());
+    }
+
+    /**
+     * Hệ thống đã tách cột resolvedAt riêng và cho phép mở lại processed -> processing,
+     * nhưng vẫn phải chặn chuyển từ processed về pending hoặc rejected qua PATCH /status.
+     */
+    // Test Case ID: SMP-227
+    // Description: Kiểm tra báo cáo trạng thái processed không thể chuyển về pending hoặc rejected qua PATCH /admin/reports/{id}/status.
+    @Test
+    @DisplayName("Bao cao processed khong duoc chuyen ve pending hoac rejected qua PATCH status")
+    void testProcessedIsTerminal() throws Exception {
+        // Lấy 1 báo cáo đang processed thật trong DB (không giả định theo seed)
+        String list = send("GET", "/admin/reports?status=processed&size=1", adminToken(), null).body();
+        Matcher idMatcher = Pattern.compile("\"content\":\\[\\{\"id\":\"([^\"]+)\"").matcher(list);
+        assumeTrue(idMatcher.find(), "Khong co bao cao processed nao de kiem tra");
+        String reportId = idMatcher.group(1);
+
+        for (String next : new String[] { "pending", "rejected" }) {
+            HttpResponse<String> res = send("PATCH", "/admin/reports/" + reportId + "/status", adminToken(),
+                    "{\"status\":\"" + next + "\"}");
+            assertNotEquals(200, res.statusCode(),
+                    "processed -> " + next + " khong duoc phep qua PATCH /status");
+        }
+    }
+
+    private static HttpResponse<String> send(String method, String path, String token, String json)
+            throws Exception {
+        HttpRequest.Builder builder = HttpRequest.newBuilder(URI.create(BASE_URL + path))
+                .header("Authorization", "Bearer " + token);
+        if (json == null) {
+            builder.method(method, HttpRequest.BodyPublishers.noBody());
+        } else {
+            builder.header("Content-Type", "application/json")
+                    .method(method, HttpRequest.BodyPublishers.ofString(json));
+        }
+        HttpResponse<String> res = HTTP.send(builder.build(), HttpResponse.BodyHandlers.ofString());
+        System.out.println(">> " + method + " " + path + " → " + res.statusCode());
+        return res;
+    }
+
+    private static int countMatches(String text, String needle) {
+        Matcher m = Pattern.compile(Pattern.quote(needle)).matcher(text);
+        int count = 0;
+        while (m.find()) {
+            count++;
+        }
+        return count;
+    }
+
+    private static String adminToken() throws Exception {
+        return token("admin@gmail.com", "u1", "ROLE_admin");
+    }
+
+    private static String token(String email, String userId, String scope) throws Exception {
+        JWTClaimsSet claims = new JWTClaimsSet.Builder()
+                .subject(email)
+                .issuer("smartspace.vn")
+                .issueTime(new Date())
+                .expirationTime(new Date(System.currentTimeMillis() + 3600_000))
+                .jwtID(UUID.randomUUID().toString())
+                .claim("scope", scope)
+                .claim("userId", userId)
+                .claim("deviceId", "test-device-uuid")
+                .claim("tokenType", "access")
+                .build();
+        SignedJWT jwt = new SignedJWT(new JWSHeader(JWSAlgorithm.HS512), claims);
+        jwt.sign(new MACSigner(SIGNER_KEY.getBytes()));
+        return jwt.serialize();
+    }
+}

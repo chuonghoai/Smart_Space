@@ -1,12 +1,47 @@
+import 'package:mobile_shared/features/map/models/map_focus_target.dart';
+import 'package:smartspace_client/routes/route_name.dart';
+
 class RouterPath {
-  static const String splash = '/splash';
-  static const String login = '/login';
-  static const String registerEmail = '/register-email';
-  static const String registerOtp = '/register-otp';
-  static const String registerPassword = '/register-password';
-  static const String home = '/home';
-  static const String completeProfile = '/complete-profile';
-  static const String forgotPassword = '/forgot-password';
-  static const String settings = '/settings';
-  static const String changePassword = '/change-password';
+  static String get splash => RouteName.splash.path;
+  static String get login => RouteName.login.path;
+  static String get registerEmail => RouteName.registerEmail.path;
+  static String get registerOtp => RouteName.registerOtp.path;
+  static String get registerPassword => RouteName.registerPassword.path;
+  static String get home => RouteName.home.path;
+  static String get completeProfile => RouteName.completeProfile.path;
+  static String get forgotPassword => RouteName.forgotPassword.path;
+  static String get settings => RouteName.settings.path;
+  static String get changePassword => RouteName.changePassword.path;
+  static String get manageDevices => RouteName.manageDevices.path;
+  static String get emergencyContacts => RouteName.emergencyContacts.path;
+  static String get sosCountdown => RouteName.sosCountdown.path;
+  static String get sosActive => RouteName.sosActive.path;
+  static String get sosWatch => RouteName.sosWatch.path;
+  static String sosWatchWithId(String id) => RouteName.sosWatch.path.replaceAll(':id', id);
+  static String emergencyContactsWithTab(String tab) =>
+      Uri(path: RouteName.emergencyContacts.path, queryParameters: {'tab': tab}).toString();
+  static String get editProfile => RouteName.editProfile.path;
+  static String get createReport => RouteName.createReport.path;
+  static String get map => RouteName.map.path;
+  static String mapWithFocus(MapFocusTarget focus) => focus.toLocation(map);
+  static String get reportDetail => RouteName.reportDetail.path;
+  static String reportDetailWithId(String id) =>
+      RouteName.reportDetail.path.replaceAll(':id', id);
+  static String get myReports => RouteName.myReports.path;
+  static String get communityFeed => RouteName.communityFeed.path;
+  static String get search => RouteName.search.path;
+  static String get notifications => RouteName.notifications.path;
+  static String get conversations => RouteName.conversations.path;
+  static String get chatDetail => RouteName.chatDetail.path;
+  static String chatDetailWithId(String id) =>
+      RouteName.chatDetail.path.replaceAll(':id', id);
+  static String get conversationInfo => RouteName.conversationInfo.path;
+  static String conversationInfoWithId(String id) =>
+      RouteName.conversationInfo.path.replaceAll(':id', id);
+  static String get voiceCall => RouteName.voiceCall.path;
+  static String voiceCallWithId(String callId) =>
+      RouteName.voiceCall.path.replaceAll(':callId', callId);
+  static String get news => RouteName.news.path;
+  static String newsDetailWithId(String id) =>
+      RouteName.newsDetail.path.replaceAll(':id', id);
 }

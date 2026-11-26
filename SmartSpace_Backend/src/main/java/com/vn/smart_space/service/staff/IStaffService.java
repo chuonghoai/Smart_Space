@@ -1,0 +1,35 @@
+package com.vn.smart_space.service.staff;
+
+import com.vn.smart_space.dto.request.admin.CreateStaffRequest;
+import com.vn.smart_space.dto.request.admin.UpdateStaffRequest;
+import com.vn.smart_space.dto.request.admin.UpdateStaffStatusRequest;
+import com.vn.smart_space.dto.response.admin.StaffListResponse;
+import com.vn.smart_space.dto.response.admin.StaffResponse;
+import com.vn.smart_space.dto.response.admin.StaffStatisticsResponse;
+import com.vn.smart_space.dto.response.admin.StaffTrendResponse;
+import java.util.List;
+
+public interface IStaffService {
+    List<StaffResponse> getStaffs();
+
+    StaffListResponse getStaffsPaged(int page, int size, String search, String status, String positionId);
+
+    void updateStaffStatus(String id, UpdateStaffStatusRequest request, String adminId);
+
+    StaffResponse createStaff(CreateStaffRequest request, String adminId);
+
+    StaffResponse updateStaff(String staffId, UpdateStaffRequest request, String adminId);
+
+    default StaffStatisticsResponse getStatistics() {
+        return getStatistics(null, null);
+    }
+
+    StaffStatisticsResponse getStatistics(Integer year, Integer month);
+
+    default StaffTrendResponse getTrend(String period) {
+        return getTrend(period, null, null);
+    }
+
+    StaffTrendResponse getTrend(String period, Integer year, Integer month);
+
+}

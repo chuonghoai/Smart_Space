@@ -62,8 +62,7 @@
   "pleaseEnterEmail": "Please enter email",
   "pleaseEnterOTP": "Please enter OTP",
   "pleaseEnterPassword": "Please enter password",
-  "passwordsDoNotMatch": "Passwords do not match",
-  "pleaseEnterFullName": "Please enter full name",
+  "pleaseEnterFullName": "Please enter your full name",
   "pleaseEnterPhoneNumber": "Please enter phone number",
   "send": "Send",
   "resetPassword": "Reset Password",
@@ -73,6 +72,21 @@
   "forgotPasswordTitle": "Forgot Password",
   "forgotPasswordSubtitle": "Enter your email to receive an OTP",
   "pleaseEnterConfirmPassword": "Please enter confirm password",
+  "backToLogin": "Back to Login",
+  "adminPortalBadge": "Civic Management & Operations",
+  "adminPortalSubtitle": "Centralized administration for municipal infrastructure, public reports, and community operations.",
+  "adminFeatureRealtime": "Real-time Monitoring",
+  "adminFeatureRealtimeDesc": "Live tracking of municipal incidents, sensor alerts, and citizen feedback.",
+  "adminFeatureCoordination": "Rapid Incident Response",
+  "adminFeatureCoordinationDesc": "Seamless task assignment and progress auditing across operational staff.",
+  "adminFeatureSecurity": "Enterprise Access Control",
+  "adminFeatureSecurityDesc": "Role-based authorization and encrypted administrative session management.",
+  "forgotPasswordHeroTitle": "Account Security Recovery",
+  "forgotPasswordHeroSubtitle": "Secure two-step verification to restore your administrative credentials.",
+  "stepEmailVerification": "1. Request verification code via registered email",
+  "stepPasswordReset": "2. Verify OTP and establish a new secure password",
+  "forgotPasswordHelpNote": "If you no longer have access to this email, contact system administrator.",
+  "systemSecureNotice": "SmartSpace Protected Administrative Environment",
   "search": "Search",
   "createReport": "Create report",
   "subTitleCreateReport": "Report security and environmental issues",
@@ -111,6 +125,7 @@
   "reportStatusRejected": "Rejected",
   "reportStatusUnknown": "Unknown",
   "sessionExpired": "Session expired",
+  "sessionRevokedOnThisDevice": "You have been signed out of this device from another device.",
   "settingsTitle": "Settings",
   "accountSection": "Account",
   "shareHistory": "Share History",
@@ -129,7 +144,6 @@
   "logoutConfirmTitle": "Log out",
   "logoutConfirmMessage": "Are you sure you want to log out?",
   "cancel": "Cancel",
-
   "changePasswordTitle": "Change Password",
   "currentPassword": "Current Password",
   "confirmNewPassword": "Confirm New Password",
@@ -142,5 +156,1593 @@
   "changePasswordFailed": "Failed to change password",
   "passwordReqLength": "Password must be 8-20 characters",
   "passwordReqMixed": "Include numbers, uppercase, lowercase",
-  "passwordReqSpecial": "Include at least one special character !@#$^()_"
+  "passwordReqSpecial": "Include at least one special character !@#$^()_",
+  "users": "Users",
+  "staff": "Staff",
+  "admins": "Admins",
+  "issues": "Issues",
+  "needsYourAttention": "Needs Your Attention",
+  "recentActivity": "Recent Activity",
+  "all": "All",
+  "pendingConfirmation": "Pending Confirmation",
+  "inProgress": "In Progress",
+  "resolved": "Resolved",
+  "noRecentActivity": "No recent activity",
+  "adminOverview": "Admin Overview",
+  "noPendingReports": "No pending reports",
+  "pendingReportsAttention": "You have {count} pending report(s) that need confirmation.",
+  "@pendingReportsAttention": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "newBadge": "New",
+  "actionView": "View",
+  "newReportToastTitle": "New report submitted",
+  "pendingIssues": "Pending",
+  "processingIssues": "Processing",
+  "viewAllReports": "View all",
+  "newReportsSectionTitle": "Newly Submitted Reports",
+  "noAddress": "No address provided",
+  "reportDetailTitle": "Report Details",
+  "reportInfoSection": "Report Information",
+  "reporterInfoSection": "Reporter",
+  "anonymousUser": "Anonymous",
+  "anonymousDescription": "The user chose to remain anonymous when submitting this report",
+  "locationSection": "Incident Location",
+  "openInGoogleMaps": "Open in Google Maps",
+  "assignStaffSection": "Assign Staff",
+  "selectStaffPrompt": "Select staff to process",
+  "noStaffAvailable": "No staff found in the system",
+  "severitySection": "Severity Level",
+  "severityLow": "Low",
+  "severityMedium": "Medium",
+  "severityHigh": "High",
+  "severityCritical": "Critical",
+  "processReportButton": "Process Report",
+  "assignSuccessMessage": "Staff assigned and processing started successfully!",
+  "assignFailedMessage": "Failed to process report, please try again.",
+  "assignedStaffInfo": "Assigned Staff",
+  "createdAtLabel": "Submitted At",
+  "statusLabel": "Status",
+  "cannotOpenMaps": "Cannot open map application",
+  "changeStaff": "Change staff",
+  "noImageAvailable": "No image available",
+  "anonymousAdminNotice": "Anonymous report (Visible only to administrators)",
+  "anonymousUserNote": "The user posted this report anonymously",
+  "manageReports": "Manage Reports",
+  "manageUsers": "Manage Users",
+  "manageStaffs": "Manage Staffs",
+  "spaceMap": "Space Map",
+  "addStaff": "Add Staff",
+  "activeStatus": "Active",
+  "blockedStatus": "Blocked",
+  "staffMember": "Staff",
+  "processingStatus": "Processing",
+  "viewDetails": "View Details",
+  "staffNotFound": "Staff not found",
+  "filterByStatus": "Status",
+  "addNewStaff": "Add new staff",
+  "create": "Create",
+  "addStaffSuccess": "Staff added successfully",
+  "totalStaff": "Total Staff",
+  "phoneNumber": "Phone",
+  "statusTitle": "Status",
+  "noStaffInSystem": "No staff in system",
+  "noStaffFound": "No matching staff found",
+  "lockAccount": "Lock Account",
+  "unlockAccount": "Unlock Account",
+  "lockAccountConfirm": "Are you sure you want to lock this staff account?",
+  "unlockAccountConfirm": "Are you sure you want to unlock this staff account?",
+  "updateStatusSuccess": "Status updated successfully",
+  "updateStatusFailed": "Failed to update status",
+  "processingReports": "{count} reports processing",
+  "@processingReports": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "dateOfBirth": "Date of Birth",
+  "gender": "Gender",
+  "genderMale": "Male",
+  "genderFemale": "Female",
+  "genderOther": "Other",
+  "createStaff": "Create Staff",
+  "uploadAvatar": "Upload Avatar",
+  "changeAvatar": "Change Photo",
+  "avatarSizeError": "Image must be less than 5MB",
+  "selectDate": "Select date",
+  "selectGender": "Select gender",
+  "addStaffFailed": "Failed to add staff",
+  "editStaff": "Edit Staff",
+  "updateStaff": "Update",
+  "updateStaffSuccess": "Staff updated successfully",
+  "updateStaffFailed": "Failed to update staff",
+  "staffEmailNotEditable": "Login email cannot be changed",
+  "editInfo": "Edit",
+  "staffStatusChart": "Staff Status",
+  "workloadChart": "Workload Distribution",
+  "activeStaff": "Active",
+  "blockedStaff": "Blocked",
+  "reportsProcessing": "reports processing",
+  "noWorkloadData": "No staff currently processing reports",
+  "reportDashboard": "Report Dashboard",
+  "totalReports": "Total Reports",
+  "pendingReports": "Pending",
+  "processingReportsLabel": "Processing",
+  "resolvedReports": "Resolved",
+  "rejectedReports": "Rejected",
+  "reportTrend": "Report Trend",
+  "daily": "Daily",
+  "weekly": "Weekly",
+  "monthly": "Monthly",
+  "severityDistribution": "Severity Distribution",
+  "noData": "No data available",
+  "reportList": "Report List",
+  "tableView": "Table",
+  "kanbanView": "Kanban",
+  "filterBySeverity": "Severity",
+  "filterByAssignee": "Assignee",
+  "selectDateRange": "Select Date",
+  "clearFilters": "Clear Filters",
+  "reporter": "Reporter",
+  "reportIdShort": "ID",
+  "noReportsFound": "No reports found",
+  "loadMore": "Load More",
+  "invalidTransition": "Invalid status transition",
+  "reportTitle": "Title",
+  "severityLabel": "Severity",
+  "assignee": "Assignee",
+  "createdDate": "Created Date",
+  "pendingStatus": "Pending",
+  "editProfile": "Edit Profile",
+  "saveChanges": "Save Changes",
+  "profileUpdateSuccess": "Profile updated successfully",
+  "profileUpdateFailed": "Failed to update profile",
+  "mapFilterTitle": "Filter Reports",
+  "mapHeatmapMode": "Heatmap",
+  "mapMarkerMode": "Markers",
+  "mapClusterCount": "{count} reports",
+  "@mapClusterCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapStaffTracking": "Staff Tracking",
+  "mapNewReportToast": "New report at {address}",
+  "@mapNewReportToast": {
+    "placeholders": {
+      "address": {
+        "type": "String"
+      }
+    }
+  },
+  "mapAssignStaff": "Assign Staff",
+  "mapNearestStaff": "Nearest Staff",
+  "mapViewDetail": "View Detail",
+  "mapNoReportsInArea": "No reports in this area",
+  "mapFilterStatus": "Status",
+  "mapFilterSeverity": "Severity",
+  "mapFilterDateRange": "Date Range",
+  "mapFilterAssignee": "Assignee",
+  "mapFilterAll": "All",
+  "mapFilterClear": "Clear Filters",
+  "mapFilterApply": "Apply",
+  "mapLegendTitle": "Legend",
+  "mapRefresh": "Refresh",
+  "mapMyLocation": "My Location",
+  "minuteAgo": "min ago",
+  "hourAgo": "h ago",
+  "dayAgo": "days ago",
+  "routeHome": "Home",
+  "routeSettings": "Settings",
+  "routeEditProfile": "Edit Profile",
+  "routeChangePassword": "Change Password",
+  "routeStaffManagement": "Manage Staffs",
+  "routeReportDashboard": "Report Dashboard",
+  "routeReportList": "Report List",
+  "routeSpaceMap": "Space Map",
+  "mapQuickAssignTitle": "Quick Assign",
+  "mapSelectSeverity": "Select severity",
+  "routeNotifications": "Notifications",
+  "emptyNotification": "No notifications",
+  "justNow": "Just now",
+  "markAllAsRead": "Mark all as read",
+  "unassignedStaff": "Unassigned",
+  "assignedTo": "Assigned to",
+  "routePositionManagement": "Position Management",
+  "managePositions": "Manage Positions",
+  "positionLabel": "Position",
+  "positionName": "Position name",
+  "positionCode": "Position code",
+  "positionDescription": "Description",
+  "addPosition": "Add position",
+  "editPosition": "Edit position",
+  "deletePosition": "Delete position",
+  "deletePositionConfirm": "Are you sure you want to delete this position?",
+  "positionInactive": "Inactive",
+  "positionActiveLabel": "Active",
+  "noPosition": "No position",
+  "selectPosition": "Select position",
+  "filterByPosition": "Filter by position",
+  "allPositions": "All positions",
+  "emptyPositionList": "No positions yet",
+  "positionStaffCount": "{count} staff",
+  "@positionStaffCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "positionSaveSuccess": "Position saved successfully",
+  "positionDeleteSuccess": "Position deleted successfully",
+  "positionActionFailed": "Unable to complete the action. Please try again",
+  "positionNameRequired": "Please enter a position name",
+  "positionCodeRequired": "Please enter a position code",
+  "totalPositions": "Total positions",
+  "positionAssignedStaff": "Assigned staff",
+  "actionsColumn": "Actions",
+  "positionCodeHint": "e.g. ELECTRICIAN, PLUMBER",
+  "loggedInDevices": "Logged in devices",
+  "thisDevice": "This device",
+  "activeNow": "Active now",
+  "logoutDevice": "Logout",
+  "logoutDeviceConfirmTitle": "Logout from device?",
+  "logoutDeviceConfirmMessage": "The session on \"{deviceName}\" will be ended.",
+  "@logoutDeviceConfirmMessage": {
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "logoutAllOtherDevices": "Logout all other devices",
+  "logoutAllConfirmTitle": "Logout all other devices?",
+  "logoutAllConfirmMessage": "All sessions except this device will be ended.",
+  "noOtherDevices": "No other devices logged in.",
+  "deviceLogoutSuccess": "Device logged out.",
+  "allDevicesLogoutSuccess": "All other devices logged out.",
+  "routeManageDevices": "Manage Devices",
+  "routeUserManagement": "User Management",
+  "totalUsers": "Total users",
+  "newUsers30Days": "New users (30 days)",
+  "activeReporters30Days": "Contributors (30 days)",
+  "reports30Days": "Reports (30 days)",
+  "percentOfUsers": "{percent}% of all users",
+  "@percentOfUsers": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "changeVsPrevious30Days": "{change} vs previous 30 days",
+  "@changeVsPrevious30Days": {
+    "placeholders": {
+      "change": {
+        "type": "String"
+      }
+    }
+  },
+  "noPreviousPeriodData": "No data for previous 30 days",
+  "registrationTrend": "New registrations",
+  "newUsersCount": "{count} new users",
+  "@newUsersCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "weekOf": "Week of {date}",
+  "@weekOf": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "topContributors": "Top contributors",
+  "anonymousReportsExcluded": "Anonymous reports are not counted",
+  "reportCountLabel": "{count} reports",
+  "@reportCountLabel": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reportsColumn": "Reports",
+  "joinedDate": "Joined",
+  "joinedOn": "Joined {date}",
+  "@joinedOn": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "sortBy": "Sort by",
+  "sortNewest": "Newest",
+  "sortOldest": "Oldest",
+  "sortByName": "Name (A–Z)",
+  "searchUsersHint": "Search by name, email or phone",
+  "noUsersInSystem": "No users yet",
+  "noUsersFound": "No users match your search",
+  "userDetailTitle": "User details",
+  "reportActivity": "Report activity",
+  "noPublicReports": "This user has no public reports yet",
+  "notProvided": "Not provided",
+  "allUsersLoaded": "All users loaded",
+  "loadMoreFailed": "Couldn't load more users",
+  "statistics": "Statistics",
+  "statisticsLoadFailed": "Couldn't load statistics",
+  "closeAction": "Close",
+  "paginationSummary": "{from}–{to} of {total}",
+  "@paginationSummary": {
+    "placeholders": {
+      "from": {
+        "type": "int"
+      },
+      "to": {
+        "type": "int"
+      },
+      "total": {
+        "type": "int"
+      }
+    }
+  },
+  "staffActiveBlocked": "{active} active · {blocked} blocked",
+  "@staffActiveBlocked": {
+    "placeholders": {
+      "active": {
+        "type": "int"
+      },
+      "blocked": {
+        "type": "int"
+      }
+    }
+  },
+  "reportsInProgress": "Reports in progress",
+  "avgPerActiveStaff": "Avg. {value} per active staff",
+  "@avgPerActiveStaff": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "resolved30Days": "Resolved (30 days)",
+  "avgResolutionTime30Days": "Avg. resolution time (30 days)",
+  "notEnoughData": "Not enough data yet",
+  "durationMinutes": "{value} min",
+  "@durationMinutes": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "durationHours": "{value} h",
+  "@durationHours": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "durationDays": "{value} days",
+  "@durationDays": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "processingFlow": "Processing flow",
+  "assignedSeries": "Assigned",
+  "resolvedSeries": "Resolved",
+  "assignedReportsCount": "{count} assigned",
+  "@assignedReportsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "resolvedReportsCount": "{count} resolved",
+  "@resolvedReportsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "workloadSubtitle": "Reports in progress per staff",
+  "resolvedLast30Days": "{count} resolved in the last 30 days",
+  "@resolvedLast30Days": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "resolutionInfo": "Resolution Information",
+  "resolutionImages": "Resolution Photos",
+  "noResolutionImages": "No resolution photos provided",
+  "resolutionNote": "Resolution Note",
+  "staffNoAdditionalNote": "{staffName} did not provide any additional notes",
+  "@staffNoAdditionalNote": {
+    "placeholders": {
+      "staffName": {
+        "type": "String"
+      }
+    }
+  },
+  "resolvedAtLabel": "Resolved At",
+  "citizenReviewUnresolved": "Citizen feedback: Not resolved",
+  "citizenRating": "Citizen Rating",
+  "citizenReviewReason": "Reason for unresolved status",
+  "citizenReviewPhotos": "Photos provided by citizen",
+  "reopenReportButton": "Request Re-handling",
+  "reopenReportConfirmTitle": "Request re-handling for this report?",
+  "reopenReportConfirmMessage": "The status will be changed back to 'Processing' and the assigned staff will be notified to re-handle the issue.",
+  "reopenReportSuccess": "Report reopened to Processing and staff notified!",
+  "unsatisfactoryBannerTitle": "Unsatisfactory Reports",
+  "unsatisfactoryProcessedCountFormat": "{count} unsatisfactory",
+  "@unsatisfactoryProcessedCountFormat": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "rehandlingProcessingCountFormat": "{count} in progress",
+  "@rehandlingProcessingCountFormat": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "unsatisfactoryPendingTab": "Pending Review",
+  "unsatisfactoryProcessingTab": "In Progress",
+  "rehandlingBadge": "Re-handling",
+  "routeUnsatisfactoryReports": "Unsatisfactory Reports",
+  "noUnsatisfactoryPending": "No reports pending review",
+  "noUnsatisfactoryProcessing": "No reports being re-handled",
+  "manageNews": "News Management",
+  "quickAccess": "Quick Access",
+  "emptyNewsTitle": "No news yet",
+  "emptyNewsDescription": "There are no news articles published yet. Create a new article to notify the community.",
+  "createNewNews": "Create News",
+  "editNews": "Edit News",
+  "newsTitle": "News Title",
+  "newsTitleHint": "Enter news title...",
+  "newsTitleRequired": "Please enter news title",
+  "newsContent": "News Content",
+  "newsContentHint": "Enter content (Markdown/Readme supported)...",
+  "newsContentRequired": "Please enter news content",
+  "newsImages": "Attached Images",
+  "addImages": "Add Images",
+  "preview": "Preview",
+  "editor": "Editor",
+  "newsDetail": "News Detail",
+  "deleteNews": "Delete News",
+  "confirmDeleteNewsTitle": "Confirm Delete News",
+  "confirmDeleteNews": "Are you sure you want to delete this news? This action cannot be undone.",
+  "deleteNewsSuccess": "News deleted successfully",
+  "createNewsSuccess": "News created successfully",
+  "updateNewsSuccess": "News updated successfully",
+  "newsAuthor": "Author",
+  "newsCreatedDate": "Posted Date",
+  "newsCreatedTime": "Time",
+  "routeNewsManagement": "News Management",
+  "routeCreateNews": "Create News",
+  "routeNewsDetail": "News Detail",
+  "routeEditNews": "Edit News",
+  "formatBold": "Bold",
+  "formatItalic": "Italic",
+  "formatHeading": "Heading",
+  "formatBulletList": "Bullet List",
+  "formatNumberedList": "Numbered List",
+  "formatQuote": "Quote",
+  "formatCode": "Code",
+  "sendNotification": "Send notification",
+  "sendNotificationSubtitle": "Send push notifications to users when this news is created",
+  "notificationTarget": "Notification Target",
+  "targetAll": "All",
+  "targetAdmin": "Admin",
+  "targetStaff": "Staff",
+  "targetClient": "Client",
+  "livePreview": "Live Preview",
+  "latestNews": "Latest News",
+  "viewAllNews": "View all",
+  "allActivities": "All Recent Activities",
+  "filterActor": "Actor",
+  "filterTopic": "Topic",
+  "actorAll": "All",
+  "actorAdmin": "Admin",
+  "actorStaff": "Staff",
+  "topicAll": "All",
+  "topicNews": "News",
+  "topicReportCreate": "Create Report",
+  "topicReportAssign": "Assign Report",
+  "topicReportProcess": "Process Report",
+  "noActivitiesFound": "No activities found",
+  "routeAllActivities": "All Recent Activities",
+  "mapClusterReportsTitle": "{count, plural, =1{1 report in this area} other{{count} reports in this area}}",
+  "@mapClusterReportsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapClusterSortHint": "Pending first, then newest",
+  "mapZoomInForMore": "Zoom in to see more reports",
+  "mapLoadReportsFailed": "Couldn't load reports on the map",
+  "viewOnMap": "View on map",
+  "mapFocusedReportHidden": "This report doesn't match the current map filters",
+  "locationDescriptionLabel": "Location description",
+  "invalidNumber": "Invalid value",
+  "copySuccess": "Copied to clipboard",
+  "copy": "Copy",
+  "note": "Note",
+  "adminNote": "Admin Note",
+  "processedAt": "Processed At",
+  "createdAt": "Created At",
+  "statusPending": "Pending",
+  "statusApproved": "Approved",
+  "statusRejected": "Rejected",
+  "filterAll": "All",
+  "searchStaffHint": "Search staff by name, email, phone...",
+  "viewReportDetail": "View Report Details",
+  "copied": "Copied",
+  "statusCancelled": "Cancelled",
+  "connectionStable": "Stable connection",
+  "connectionConnecting": "Connecting services...",
+  "connectionDisconnected": "Connection lost. Click to reconnect.",
+  "scrollLeft": "Scroll left",
+  "scrollRight": "Scroll right",
+  "staffCreatedTitle": "Staff account created",
+  "staffCreatedCredentialsSent": "The login password has been sent to:",
+  "staffCreatedCheckInboxHint": "Ask the staff member to check their inbox (including Spam) and change the password after signing in for the first time.",
+  "mapSettings": "Map Settings",
+  "mapDensityToggle": "Report Density",
+  "mapDensityDescription": "Show H3 density grid by report level",
+  "densityLegendTitle": "Report Density",
+  "densityLow": "1–2 reports (Low)",
+  "densityMedium": "3–5 reports (Medium)",
+  "densityHigh": "Over 5 reports (High)",
+  "filterTimeframe": "Timeframe",
+  "timeframeAll": "All",
+  "timeframe1Month": "1 month",
+  "timeframe3Months": "3 months",
+  "timeframe6Months": "6 months",
+  "timeframe9Months": "9 months",
+  "timeframe12Months": "12 months",
+  "filterReports": "Filter Reports",
+  "myLocation": "My Location",
+  "locationPermissionDenied": "Location permission denied",
+  "locationServiceDisabled": "Location services disabled",
+  "routeConversations": "Conversations",
+  "routeChatDetail": "Chat Detail",
+  "conversations": "Conversations",
+  "messages": "Messages",
+  "noConversations": "No conversations yet",
+  "noConversationsSub": "New conversations will appear here when chats begin.",
+  "searchConversationsPlaceholder": "Search by name or content...",
+  "filterRoleAll": "All",
+  "filterRoleClient": "Resident",
+  "filterRoleStaff": "Staff",
+  "filterRoleAdmin": "Admin",
+  "filterPosition": "Position",
+  "filterPositionAll": "All positions",
+  "filterPositionSheetTitle": "Filter by Staff Position",
+  "applyFilter": "Apply",
+  "resetFilter": "Reset",
+  "cannotMessageClientTitle": "Cannot Message Resident Directly",
+  "cannotMessageClientMessage": "You can only message or make a free call to a resident when there is at least one re-handling report from them that is currently being processed.",
+  "phoneNotAvailable": "Phone number is not available",
+  "cannotLaunchPhone": "Cannot launch phone dialer",
+  "chatWithUser": "Message",
+  "callUser": "Call",
+  "conversationLockedNotice": "This conversation has ended because the report has been completed. The chat is in read-only mode.",
+  "messageInputPlaceholder": "Type a message...",
+  "anonymousUser": "Anonymous User",
+  "systemNotification": "System notification",
+  "yesterday": "Yesterday",
+  "activeStaff": "Staff",
+  "reporter": "Reporter",
+  "callStaff": "Call staff",
+  "messageStaff": "Message staff",
+  "callReporter": "Call reporter",
+  "messageReporter": "Message reporter",
+  "routeConversationInfo": "Conversation Info",
+  "conversationInfoTitle": "Conversation Info",
+  "activeReportsSection": "Active Reports",
+  "allReportsProcessed": "All reports have been processed",
+  "conversationClosedNotice": "Conversation closed as all reports have been processed",
+  "conversationActiveNotice": "Conversation is currently active",
+  "callButtonLabel": "Call",
+  "videoCallButtonLabel": "Video call",
+  "videoCallComingSoon": "Video call feature is under development",
+  "anonymousUserProtectionNote": "Contact info is protected for anonymous users",
+  "conversationRefreshed": "Conversation info and messages refreshed successfully",
+  "conversationRefreshFailed": "Could not refresh conversation, please try again later",
+  "anonymousPerson": "Anonymous User",
+  "otherUsers": "Other User",
+  "cannotMakePhoneCall": "Cannot make phone call",
+  "noPhoneNumber": "No phone number available",
+  "staffNoPosition": "No position",
+  "cannotStartChat": "Cannot start conversation",
+  "callOptionsTitle": "Call options",
+  "cellularCall": "Cellular call",
+  "cellularCallDesc": "Open default phone app",
+  "freeCall": "Free in-app voice call",
+  "featureUnderDevelopment": "Feature under development",
+  "comingSoon": "Coming soon",
+  "phoneNotAvailable": "Phone number is not available",
+  "freeCallComingSoon": "Free in-app voice call feature is under development",
+  "adminBoard": "Board of Administrators",
+  "routeAdminBoard": "Board of Administrators",
+  "addAdmin": "Add administrator",
+  "addNewAdmin": "New administrator",
+  "createAdminAction": "Create account",
+  "addAdminFailed": "Could not create the administrator account",
+  "youBadge": "You",
+  "lockAdminConfirm": "Lock the administrator account of {name}? They will be signed out of every device immediately.",
+  "@lockAdminConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "unlockAdminConfirm": "Unlock the administrator account of {name}? They will be able to sign in again.",
+  "@unlockAdminConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "cannotLockSelf": "You cannot lock your own account",
+  "cannotLockLastAdmin": "At least one active administrator is required",
+  "adminCreatedTitle": "Administrator account created",
+  "adminCreatedCheckInboxHint": "Ask them to check their inbox (including Spam) and change the password after signing in for the first time.",
+  "noAdminFound": "No administrators match your search",
+  "allAdminsLoaded": "All administrators loaded",
+  "loadMoreAdminsFailed": "Could not load more administrators",
+  "invalidPhoneFormat": "Invalid phone number (8–15 digits, may start with +)",
+  "fullnameTooLong": "Full name must not exceed 100 characters",
+  "selectAdminHint": "Select an administrator to see their details and recent activity",
+  "activityLoadFailed": "Couldn't load recent activity",
+  "activityHistory": "Activity history",
+  "adminTotalBadge": "Total",
+  "loadMoreActivitiesFailed": "Couldn't load more activities",
+  "allActivitiesLoaded": "All activities loaded",
+  "chooseFromGallery": "Choose photo from gallery",
+  "chooseVideo": "Choose video",
+  "takePhoto": "Take photo",
+  "attachReport": "Attach report",
+  "markAsRead": "Mark as read",
+  "typingText": "typing...",
+  "pressAndHoldToRecord": "Press and hold to record",
+  "slideLeftToCancel": "Slide left to cancel",
+  "releaseToCancel": "Release to cancel",
+  "selectReportToAttach": "Select report to attach",
+  "noPositionsAvailable": "No positions available",
+  "voiceMessageSnippet": "Voice message",
+  "imageSnippet": "Photo",
+  "videoSnippet": "Video",
+  "attachedReportSnippet": "Attached report",
+  "reportDeadlineLabel": "Resolution deadline",
+  "deadlineOverdueBadge": "Overdue",
+  "expectedCompletionDate": "Est. completion: {date}",
+  "@expectedCompletionDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "staffDeadlinePerformanceTitle": "Deadline Performance",
+  "staffDeadlinePerformanceSubtitle": "Tracks overdue tasks and late vs. on-time completions by staff",
+  "noStaffMissedDeadline": "No staff members have missed a deadline",
+  "staffMissedDeadlineSummary": "{count} overdue active · {lateCount} completed late",
+  "@staffMissedDeadlineSummary": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "lateCount": { "type": "int" }
+    }
+  },
+  "onTimeRateLabel": "{rate}% on time",
+  "@onTimeRateLabel": {
+    "placeholders": {
+      "rate": { "type": "String" }
+    }
+  },
+  "overdueActiveLabel": "Overdue active",
+  "completedLateLabel": "Completed late",
+  "completedOnTimeLabel": "Completed on time",
+  "missedDeadlineBadge": "Missed deadline",
+  "onTimeBadge": "On time",
+  "noDeadlineRecordsYet": "No assigned deadline data yet",
+  "staffDeadlineStatsBreakdown": "{overdue} overdue · {late} late · {onTime} on time",
+  "@staffDeadlineStatsBreakdown": {
+    "placeholders": {
+      "overdue": { "type": "int" },
+      "late": { "type": "int" },
+      "onTime": { "type": "int" }
+    }
+  },
+  "rejectReportButton": "Reject report",
+  "rejectReportConfirmTitle": "Reject this report?",
+  "rejectReportConfirmMessage": "This action will mark the report as rejected and notify the reporter.",
+  "rejectReportReasonLabel": "Rejection reason",
+  "rejectReportReasonHint": "Explain why this report cannot be processed...",
+  "rejectReportReasonRequired": "Please enter a rejection reason",
+  "confirmRejectAction": "Confirm reject",
+  "rejectSuccessMessage": "Report rejected successfully",
+  "rejectFailedMessage": "Could not reject report, please try again",
+  "rejectedReasonTitle": "Rejection Reason",
+  "noRejectionReasonProvided": "Rejected by administrator.",
+  "lockRequestsTab": "Lock proposals",
+  "lockRequestsTitle": "Account lock proposals",
+  "lockFilterPending": "Pending",
+  "lockFilterResolved": "Resolved",
+  "noPendingLockRequests": "No proposals are awaiting votes",
+  "noResolvedLockRequests": "No resolved proposals yet",
+  "loadMoreLockRequestsFailed": "Couldn't load more proposals",
+  "allLockRequestsLoaded": "All proposals loaded",
+  "selectLockRequestHint": "Select a proposal to see its details and vote",
+  "lockStatusPending": "Awaiting votes",
+  "lockStatusApproved": "Approved",
+  "lockStatusRejected": "Rejected",
+  "lockStatusCancelled": "Cancelled",
+  "lockStatusExpired": "Expired",
+  "lockProposedBy": "Proposed by {name}",
+  "@lockProposedBy": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lockDeadline": "Voting closes: {time}",
+  "@lockDeadline": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "lockResolvedAt": "Ended: {time}",
+  "@lockResolvedAt": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "lockApprovalsProgress": "Endorsed {count}/{required}",
+  "@lockApprovalsProgress": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "lockRejectionsProgress": "Rejected {count}/{required}",
+  "@lockRejectionsProgress": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      },
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "lockAwaitingYourVote": "Needs your vote",
+  "lockReasonLabel": "Reason",
+  "lockEvidenceLabel": "Evidence",
+  "lockVotesLabel": "Votes",
+  "noVotesYet": "No votes yet",
+  "lockVoteApprove": "Endorse",
+  "lockVoteReject": "Reject",
+  "lockVoteApproveConfirmTitle": "Endorse this lock proposal?",
+  "lockVoteRejectConfirmTitle": "Reject this lock proposal?",
+  "lockVoteApproveConfirmMessage": "Once {required} administrators endorse it, the account of {name} will be locked immediately. Votes cannot be changed.",
+  "@lockVoteApproveConfirmMessage": {
+    "placeholders": {
+      "required": {
+        "type": "int"
+      },
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lockVoteRejectConfirmMessage": "Once {required} administrators reject it, the proposal is dismissed. Votes cannot be changed.",
+  "@lockVoteRejectConfirmMessage": {
+    "placeholders": {
+      "required": {
+        "type": "int"
+      }
+    }
+  },
+  "lockVoteCommentHint": "Comment (optional)",
+  "lockVoteSubmitted": "Your vote has been recorded",
+  "lockVoteBlockedProposer": "You proposed this lock, so you cannot vote on it",
+  "lockVoteBlockedAlreadyVoted": "You have already voted on this proposal",
+  "lockVoteBlockedClosed": "Voting on this proposal has ended",
+  "lockCancelAction": "Cancel proposal",
+  "lockCancelConfirm": "Cancel the lock proposal for {name}?",
+  "@lockCancelConfirm": {
+    "placeholders": {
+      "name": {
+        "type": "String"
+      }
+    }
+  },
+  "lockCancelled": "Proposal cancelled",
+  "lockActionFailed": "Couldn't complete the action. Please try again.",
+  "viewUserProfile": "View user",
+  "proposeLockAction": "Propose account lock",
+  "proposeLockSubtitle": "The account is locked only after {required} other administrators endorse it within {hours} hours.",
+  "@proposeLockSubtitle": {
+    "placeholders": {
+      "required": {
+        "type": "int"
+      },
+      "hours": {
+        "type": "int"
+      }
+    }
+  },
+  "lockReasonHint": "Describe the violation clearly: what happened, when, and how serious it is",
+  "lockReasonTooShort": "The reason must be at least 20 characters",
+  "lockEvidenceImages": "Evidence images (up to {max})",
+  "@lockEvidenceImages": {
+    "placeholders": {
+      "max": {
+        "type": "int"
+      }
+    }
+  },
+  "lockAddImage": "Add image",
+  "lockRemoveImage": "Remove image",
+  "lockImageTooLarge": "Each image must be 5MB or smaller",
+  "lockEvidenceReports": "Related reports",
+  "lockNoPublicReports": "This user has no public reports",
+  "lockEvidenceRequired": "Add at least one piece of evidence: an image or a report",
+  "lockSubmitProposal": "Submit proposal",
+  "lockProposalSent": "Proposal sent to the Board of Administrators",
+  "lockPendingBanner": "This account has a lock proposal awaiting votes",
+  "viewLockProposal": "View proposal",
+  "unlockReasonHint": "Reason for unlocking (required)",
+  "unlockReasonTooShort": "The reason must be at least 10 characters",
+  "userUnlocked": "User account unlocked",
+  "lockFilterAwaitingMine": "Needs your vote",
+  "noAwaitingLockRequests": "Nothing needs your vote right now",
+  "lockFindingAwaiting": "{count} proposals need your vote · the nearest: {timeLeft}",
+  "@lockFindingAwaiting": {
+    "placeholders": {
+      "count": { "type": "int" },
+      "timeLeft": { "type": "String" }
+    }
+  },
+  "lockFindingOthers": "Nothing needs your vote · {count} awaiting other administrators",
+  "@lockFindingOthers": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "lockUpdatedAt": "Updated {time}",
+  "@lockUpdatedAt": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "lockRefresh": "Refresh",
+  "lockTimeLeftHours": "{hours} h left",
+  "@lockTimeLeftHours": {
+    "placeholders": {
+      "hours": { "type": "int" }
+    }
+  },
+  "lockTimeLeftMinutes": "{minutes} min left",
+  "@lockTimeLeftMinutes": {
+    "placeholders": {
+      "minutes": { "type": "int" }
+    }
+  },
+  "lockTimeOverdue": "Voting time is up",
+  "lockBallotTitle": "Ballot",
+  "lockSeatEmpty": "Empty seat",
+  "lockOutcomeApproved": "Account locked at {time}",
+  "@lockOutcomeApproved": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "lockOutcomeRejected": "Rejected at {time}",
+  "@lockOutcomeRejected": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "lockOutcomeCancelled": "Cancelled at {time}",
+  "@lockOutcomeCancelled": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "lockOutcomeExpired": "Expired at {time} without enough votes",
+  "@lockOutcomeExpired": {
+    "placeholders": {
+      "time": { "type": "String" }
+    }
+  },
+  "lockEvidenceSummary": "Evidence · {images} images · {reports} reports",
+  "@lockEvidenceSummary": {
+    "placeholders": {
+      "images": { "type": "int" },
+      "reports": { "type": "int" }
+    }
+  },
+  "lockVotesCast": "Votes cast",
+  "lockProposedByYou": "Proposed by you",
+  "lockMoreActions": "More actions",
+  "lockReasonHelper": "At least 20 characters. The user will receive this reason.",
+  "lockEvidenceHelper": "At least one image or one report",
+  "lockWhatHappensTitle": "What happens next",
+  "lockWhatHappensBody": "{required} other administrators must endorse within {hours} hours before the account is locked. The user receives the reason only, never the evidence.",
+  "@lockWhatHappensBody": {
+    "placeholders": {
+      "required": { "type": "int" },
+      "hours": { "type": "int" }
+    }
+  },
+  "lockProposalSentTitle": "Lock proposal sent",
+  "lockProposalSentBody": "The Board of Administrators has been notified. The account is locked once {required} other administrators endorse it within {hours} hours.",
+  "@lockProposalSentBody": {
+    "placeholders": {
+      "required": { "type": "int" },
+      "hours": { "type": "int" }
+    }
+  },
+  "lockBlockedNotEnoughAdmins": "At least {min} active administrators are needed to vote on a lock. Add an administrator in the Board of Administrators.",
+  "@lockBlockedNotEnoughAdmins": {
+    "placeholders": {
+      "min": { "type": "int" }
+    }
+  },
+  "lockBlockedNotActive": "Only active accounts can be proposed for locking",
+  "daysRemainingLabel": "{days}d remaining",
+  "@daysRemainingLabel": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "overdueOnlyFilter": "Overdue",
+  "excellentBadge": "Excellent",
+  "staffEfficiencyLabel": "Work efficiency: {rate}%",
+  "@staffEfficiencyLabel": {
+    "placeholders": {
+      "rate": {
+        "type": "String"
+      }
+    }
+  },
+  "staffEfficiencyNoData": "Work efficiency: —",
+  "statsMonthLabel": "Statistics month",
+  "resolvedInMonth": "Resolved this month",
+  "avgResolutionTimeInMonth": "Avg resolution time",
+  "resolvedMonthCount": "{count} resolved in month",
+  "@resolvedMonthCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "staffMonthlyWorkloadTitle": "Workload in {month}",
+  "@staffMonthlyWorkloadTitle": {
+    "placeholders": {
+      "month": {
+        "type": "String"
+      }
+    }
+  },
+  "staffMonthlyWorkloadBreakdown": "{processing} in progress, {resolved} resolved, {overdue} overdue, {rehandling} rehandling",
+  "@staffMonthlyWorkloadBreakdown": {
+    "placeholders": {
+      "processing": {
+        "type": "int"
+      },
+      "resolved": {
+        "type": "int"
+      },
+      "overdue": {
+        "type": "int"
+      },
+      "rehandling": {
+        "type": "int"
+      }
+    }
+  },
+  "viewAssignedReportsAction": "View assigned reports",
+  "routeCategoryManagement": "Category Management",
+  "manageCategories": "Categories",
+  "addCategory": "Add Category",
+  "editCategory": "Edit Category",
+  "deleteCategory": "Delete Category",
+  "deleteCategoryConfirm": "Are you sure you want to delete this category?",
+  "emptyCategoryList": "No report categories yet",
+  "categoryCode": "Category Code",
+  "categoryCodeRequired": "Please enter category code",
+  "categoryNameVi": "Vietnamese Name",
+  "categoryNameViRequired": "Please enter Vietnamese name",
+  "categoryNameEn": "English Name",
+  "categoryNameEnRequired": "Please enter English name",
+  "categoryDescription": "Description",
+  "categoryIconLabel": "Icon",
+  "categoryDefaultSeverity": "Default Severity",
+  "categoryDisplayOrder": "Order",
+  "categoryActiveLabel": "Active",
+  "categoryInactive": "Inactive",
+  "categoryPositionsLabel": "Assigned Positions",
+  "categoryPositionsHint": "Staff with these positions are eligible for auto-assignment in this category",
+  "categoryNoPositionsMapped": "No position mapped",
+  "categoryNoActivePositions": "No active positions available. Please create positions first.",
+  "categorySaveSuccess": "Category saved successfully",
+  "categoryDeleteSuccess": "Category deleted successfully",
+  "totalCategories": "Total Categories",
+  "categoriesMappedPositions": "Mapped to Positions",
+  "categoryReportCountLabel": "Reports",
+  "categoryIconEco": "Environment",
+  "categoryIconConstruction": "Infrastructure",
+  "categoryIconBolt": "Electricity / Lighting",
+  "categoryIconWater": "Water / Drainage",
+  "categoryIconShield": "Public Order",
+  "categoryIconPark": "Trees / Parks",
+  "categoryIconTraffic": "Traffic",
+  "categoryIconGeneral": "General",
+  "staffBaseLocationSection": "Representative Area / Coordinates",
+  "staffBaseAddressLabel": "Representative Address / Area",
+  "staffBaseLatitudeLabel": "Latitude",
+  "staffBaseLongitudeLabel": "Longitude",
+  "staffPickLocationOnMap": "Pick on Map",
+  "staffUseCurrentGps": "Current GPS",
+  "staffClearLocation": "Clear Location",
+  "staffLocationNotSet": "Representative location not set",
+  "staffLocationPairRequired": "Both latitude and longitude are required",
+  "staffLocationInvalidLat": "Latitude must be between -90 and 90",
+  "staffLocationInvalidLng": "Longitude must be between -180 and 180",
+  "staffLocationPickerTitle": "Pick Representative Location",
+  "staffLocationPickerHint": "Tap or drag the pin on the map to set the staff member's representative location.",
+  "staffLocationConfirm": "Confirm Location",
+  "staffLocationWebNoToken": "MAPBOX_ACCESS_TOKEN is not configured. Please enter latitude and longitude manually.",
+  "staffLocationGpsFailed": "Could not obtain current GPS coordinates",
+  "reportCategoryLabel": "Category",
+  "autoAssignSectionTitle": "Smart Assignment",
+  "autoAssignTriggerButton": "Auto-Assign",
+  "autoAssignTopCandidates": "Top {count} Recommended Staff",
+  "@autoAssignTopCandidates": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignAssignNow": "Assign Now",
+  "autoAssignSelectCandidate": "Select",
+  "autoAssignSelectedCandidate": "Selected",
+  "autoAssignEligibleCount": "{count} eligible candidates",
+  "@autoAssignEligibleCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignModeAuto": "Mode: Auto",
+  "autoAssignModeAssist": "Mode: Assist",
+  "autoAssignModeManual": "Mode: Manual",
+  "autoAssignScoreLabel": "Score",
+  "autoAssignDistanceLabel": "Distance",
+  "autoAssignMonthlyLoadLabel": "Monthly load",
+  "autoAssignActiveLoadLabel": "Active load",
+  "autoAssignOnTimeLabel": "30d on-time",
+  "autoAssignTasksCount": "{count} tasks",
+  "@autoAssignTasksCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignScoreValue": "{score}/100",
+  "@autoAssignScoreValue": {
+    "placeholders": {
+      "score": { "type": "String" }
+    }
+  },
+  "autoAssignWeightPercent": "{percent}%",
+  "@autoAssignWeightPercent": {
+    "placeholders": {
+      "percent": { "type": "int" }
+    }
+  },
+  "autoAssignDistanceKm": "{distance} km",
+  "@autoAssignDistanceKm": {
+    "placeholders": {
+      "distance": { "type": "String" }
+    }
+  },
+  "autoAssignLoadFailed": "Could not load staff recommendations. Please try again.",
+  "autoAssignDecisionTitle": "Auto-Assign Decision Breakdown",
+  "autoAssignSourceAuto": "System Auto-Assigned",
+  "autoAssignSourceRecommendClick": "1-Tap Suggested Assign",
+  "autoAssignSourceOverridden": "Overridden by Admin",
+  "autoAssignSourceRecommended": "Pending Admin Confirmation",
+  "autoAssignSourceFallback": "Fallback to Manual",
+  "autoAssignSourceManual": "Manual Assignment",
+  "autoAssignOverriddenNotice": "Admin reassigned this report to {staffName}.",
+  "@autoAssignOverriddenNotice": {
+    "placeholders": {
+      "staffName": { "type": "String" }
+    }
+  },
+  "autoAssignSnapshotTitle": "Candidate Ranking Snapshot",
+  "autoAssignSuccessMessage": "Report auto-assigned to best matching staff",
+  "autoAssignFailedFallback": "Unable to auto-assign report",
+  "reassignStaffButton": "Reassign Staff",
+  "autoAssignNoCandidatesDefault": "No staff matched the eligibility filters (position, base coordinates, radius, concurrent load limit).",
+  "routeAutoAssignCenter": "Auto-Assign Center",
+  "autoAssignCenterTitle": "Auto-Assign Dispatch Center",
+  "autoAssignCenterSubtitle": "Configure dispatch mode, multi-criteria weights, live dry-run simulation, and monthly workload fairness",
+  "autoAssignRefreshAction": "Refresh data",
+  "autoAssignKpiTotalDecisions": "Total Decisions",
+  "autoAssignKpiBreakdown": "{autoCount} auto · {recommendCount} 1-tap · {fallbackCount} fallback",
+  "@autoAssignKpiBreakdown": {
+    "placeholders": {
+      "autoCount": { "type": "int" },
+      "recommendCount": { "type": "int" },
+      "fallbackCount": { "type": "int" }
+    }
+  },
+  "autoAssignKpiSuccessRate": "Auto-Assign Success Rate",
+  "autoAssignKpiSuccessSub": "Passed 2-stage eligibility filter",
+  "autoAssignKpiAcceptanceRate": "Admin Acceptance Rate",
+  "autoAssignKpiOverriddenSub": "{count} overridden by Admin",
+  "@autoAssignKpiOverriddenSub": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "autoAssignKpiFairnessIndex": "Monthly Fairness Index",
+  "autoAssignKpiFairnessSub": "Avg {avg} tasks/staff · std ±{std}",
+  "@autoAssignKpiFairnessSub": {
+    "placeholders": {
+      "avg": { "type": "String" },
+      "std": { "type": "String" }
+    }
+  },
+  "autoAssignConfigCardTitle": "Dispatch Mode & Scoring Weights",
+  "autoAssignConfigCardDesc": "All 4 weights automatically lock to 100%. Adjusting sliders immediately updates the Dry-Run Simulator.",
+  "autoAssignModeOptionAuto": "Auto (AUTO)",
+  "autoAssignModeOptionAssist": "Assist (ASSIST)",
+  "autoAssignModeOptionManual": "Manual (MANUAL)",
+  "autoAssignModeDescAuto": "New reports are automatically scored and immediately assigned to the #1 eligible staff member.",
+  "autoAssignModeDescAssist": "System pre-calculates and recommends the Top 3 candidates for 1-tap Admin approval.",
+  "autoAssignModeDescManual": "Disables automatic dispatch on report creation; Admin assigns manually or triggers recommendations on demand.",
+  "autoAssignWeightsHeader": "Multi-Criteria Scoring Weights (Total = 100%)",
+  "autoAssignResetWeightsButton": "Default (35/30/20/15)",
+  "autoAssignThresholdsHeader": "Eligibility Thresholds & Quotas",
+  "autoAssignMaxRadiusLabel": "Max dispatch radius (km)",
+  "autoAssignMaxConcurrentLabel": "Max concurrent tasks",
+  "autoAssignTargetMonthlyLabel": "Target monthly tasks",
+  "autoAssignSaveConfigButton": "Save Configuration",
+  "autoAssignConfigSavedSuccess": "Auto-assign configuration updated successfully",
+  "autoAssignConfigSaveFailed": "Failed to save auto-assign configuration",
+  "autoAssignSimulatorTitle": "Live Dry-Run Simulator",
+  "autoAssignSimulatorDesc": "Select a category and hypothetical incident coordinates to test candidate ranking with current weights (no DB writes).",
+  "autoAssignSimCategoryLabel": "Hypothetical Incident Category",
+  "autoAssignSimPickOnMap": "Pick on Map",
+  "autoAssignSimRunButton": "Run Simulation",
+  "autoAssignSimPresetDistrict1": "District 1 Preset",
+  "autoAssignSimPresetThuDuc": "Thu Duc Preset",
+  "autoAssignSimPresetBinhThanh": "Binh Thanh Preset",
+  "autoAssignSimNoWriterBadge": "Dry-Run Only · No DB Writes",
+  "autoAssignFairnessSectionTitle": "Monthly Workload Distribution & Team Fairness",
+  "autoAssignFairnessSectionDesc": "Compare current month workload, active processing tasks, and 30-day on-time rate across active staff.",
+  "autoAssignFairnessRangeLabel": "Min: {min} tasks · Max: {max} tasks",
+  "@autoAssignFairnessRangeLabel": {
+    "placeholders": {
+      "min": { "type": "int" },
+      "max": { "type": "int" }
+    }
+  },
+  "autoAssignStaffMonthlyQuotaText": "{current}/{target} monthly",
+  "@autoAssignStaffMonthlyQuotaText": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "target": { "type": "int" }
+    }
+  },
+  "autoAssignStaffActiveQuotaText": "{active}/{maxActive} active",
+  "@autoAssignStaffActiveQuotaText": {
+    "placeholders": {
+      "active": { "type": "int" },
+      "maxActive": { "type": "int" }
+    }
+  },
+  "autoAssignStaffOnTimeText": "{rate}% on-time",
+  "@autoAssignStaffOnTimeText": {
+    "placeholders": {
+      "rate": { "type": "String" }
+    }
+  },
+  "autoAssignLogsSectionTitle": "Assignment Decision Logs",
+  "autoAssignLogsSectionDesc": "Detailed audit log of auto-assignments, 1-tap recommendations, fallbacks, and Admin overrides.",
+  "autoAssignLogsFilterAll": "All outcomes",
+  "autoAssignLogsFilterAssigned": "Assigned",
+  "autoAssignLogsFilterRecommended": "Recommended",
+  "autoAssignLogsFilterOverridden": "Overridden",
+  "autoAssignLogsFilterFallback": "Fallback",
+  "autoAssignLogsEmpty": "No assignment decision logs match the current filter",
+  "autoAssignLogViewReport": "Open report",
+  "autoAssignLogPageInfo": "Page {current}/{total} ({count} records)",
+  "@autoAssignLogPageInfo": {
+    "placeholders": {
+      "current": { "type": "int" },
+      "total": { "type": "int" },
+      "count": { "type": "int" }
+    }
+  },
+  "mapStaffStationsToggle": "Staff Stations",
+  "mapStaffStationsLegend": "Staff Base Station",
+  "mapStaffStationSheetTitle": "Staff Base Station",
+  "mapStaffActiveTasksCount": "Active processing: {count} reports",
+  "@mapStaffActiveTasksCount": {
+    "placeholders": {
+      "count": { "type": "int" }
+    }
+  },
+  "mapFilterByThisStaff": "Filter reports assigned to this staff",
+  "autoAssignModeShortAuto": "Auto",
+  "autoAssignModeShortAssist": "Assist",
+  "autoAssignModeShortManual": "Manual",
+  "autoAssignToggleWeightsExpand": "Customize weights & thresholds",
+  "autoAssignToggleWeightsCollapse": "Collapse weights & thresholds",
+  "autoAssignSectionExpand": "Expand",
+  "autoAssignSectionCollapse": "Collapse",
+  "autoAssignTabFairness": "Workload Fairness",
+  "autoAssignTabLogs": "Decision Logs",
+  "smartAlertsTitle": "Operational Alerts & 7-Day Pulse",
+  "smartAlertsAllHealthy": "Operations steady — no anomalies detected",
+  "volumeSpikeTitle": "Unusual report surge today",
+  "volumeSpikeSubtitle": "{todayCount} reports today vs 14d avg ({avg})",
+  "@volumeSpikeSubtitle": {
+    "placeholders": {
+      "todayCount": {
+        "type": "int"
+      },
+      "avg": {
+        "type": "String"
+      }
+    }
+  },
+  "volumeSpikeZScoreBadge": "Z = {zScore}",
+  "@volumeSpikeZScoreBadge": {
+    "placeholders": {
+      "zScore": {
+        "type": "String"
+      }
+    }
+  },
+  "slaAtRiskTitle": "Early SLA breach warning",
+  "slaAtRiskSubtitle": "{pending} pending, {processing} processing nearing deadline",
+  "@slaAtRiskSubtitle": {
+    "placeholders": {
+      "pending": {
+        "type": "int"
+      },
+      "processing": {
+        "type": "int"
+      }
+    }
+  },
+  "slaAtRiskShort": "At SLA risk",
+  "overloadedStaffTitle": "Staff workload overload",
+  "overloadedStaffSubtitle": "{count} staff exceeding severity-weighted capacity",
+  "@overloadedStaffSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pendingOver24hTitle": "Unassigned backlog > 24h",
+  "pendingOver24hSubtitle": "{count} reports waiting assignment over 24h",
+  "@pendingOver24hSubtitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "pulse7dTitle": "Last 7 days pulse",
+  "pulseInflowLabel": "Incoming",
+  "pulseOutflowLabel": "Resolved",
+  "trendBaselineLabel": "14d avg",
+  "trendAnomalyBadge": "Spike",
+  "trendAnomalyCountBadge": "{count} spike days",
+  "@trendAnomalyCountBadge": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "trendInsufficientBaseline": "Insufficient baseline (needs >= 7 active days)",
+  "bottleneckShort": "Slow > P90",
+  "bottleneckStatLabel": "Bottleneck (>P90)",
+  "filterAtRiskLabel": "At SLA risk",
+  "filterBottleneckLabel": "Slow > P90",
+  "weightedLoadLabel": "Weighted load",
+  "weightedLoadValue": "{points} pts ({tasks} tasks)",
+  "@weightedLoadValue": {
+    "placeholders": {
+      "points": {
+        "type": "int"
+      },
+      "tasks": {
+        "type": "int"
+      }
+    }
+  },
+  "teamAvgWeightedLoadLabel": "Team avg load: {avg} pts",
+  "@teamAvgWeightedLoadLabel": {
+    "placeholders": {
+      "avg": {
+        "type": "String"
+      }
+    }
+  },
+  "staffOverloadedBadge": "Overloaded",
+  "staffRecommendedBadge": "Recommended",
+  "staffBottleneckCountBadge": "{count} slow >P90",
+  "@staffBottleneckCountBadge": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotsTitle": "Area Hotspots (H3)",
+  "spatialHotspotsToggle": "Hotspots",
+  "spatialHotspotsAcceleratingCount": "{count} accelerating zones",
+  "@spatialHotspotsAcceleratingCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotAcceleratingBadge": "Accelerating",
+  "spatialHotspotRiskScore": "Risk {score}",
+  "@spatialHotspotRiskScore": {
+    "placeholders": {
+      "score": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotStats": "{recent} in 30d • Prev avg {prev} • {pending} pending",
+  "@spatialHotspotStats": {
+    "placeholders": {
+      "recent": {
+        "type": "int"
+      },
+      "prev": {
+        "type": "String"
+      },
+      "pending": {
+        "type": "int"
+      }
+    }
+  },
+  "spatialHotspotsEmpty": "No prominent spatial risk hotspots",
+  "spatialHotspotFallbackName": "H3 Cell #{shortId}",
+  "@spatialHotspotFallbackName": {
+    "placeholders": {
+      "shortId": {
+        "type": "String"
+      }
+    }
+  },
+  "overloadedStaffModalTitle": "Overloaded Staff Members",
+  "overloadedStaffThresholdInfo": "Overload threshold: > {threshold} load pts (1.5x team avg {teamAvg}) or >= 2 overdue",
+  "@overloadedStaffThresholdInfo": {
+    "placeholders": {
+      "threshold": { "type": "String" },
+      "teamAvg": { "type": "String" }
+    }
+  },
+  "overloadedStaffEmpty": "No staff members are currently overloaded",
+  "overloadedStaffMetricsRow": "{weighted} pts • {processing} active • {overdue} overdue • {bottleneck} >P90",
+  "@overloadedStaffMetricsRow": {
+    "placeholders": {
+      "weighted": { "type": "int" },
+      "processing": { "type": "int" },
+      "overdue": { "type": "int" },
+      "bottleneck": { "type": "int" }
+    }
+  },
+  "overloadedSeverityBreakdownLine": "Crit: {critical} • High: {high} • Med: {medium} • Low: {low}",
+  "@overloadedSeverityBreakdownLine": {
+    "placeholders": {
+      "critical": { "type": "int" },
+      "high": { "type": "int" },
+      "medium": { "type": "int" },
+      "low": { "type": "int" }
+    }
+  },
+  "staffDetailOverloadSectionTitle": "Workload Status",
+  "staffLoadNormalBadge": "Balanced",
+  "staffLoadComparison": "{weighted} weighted pts (Team avg: {teamAvg} pts)",
+  "@staffLoadComparison": {
+    "placeholders": {
+      "weighted": { "type": "int" },
+      "teamAvg": { "type": "String" }
+    }
+  },
+  "analyticsGuideTooltip": "Metrics & Report Guide",
+  "guideWhatLabel": "What it is",
+  "guidePurposeLabel": "Why it matters",
+  "guideTellsLabel": "What it tells you",
+  "reportGuideTitle": "Report Statistics Guide",
+  "reportGuideSlaAtRiskTitle": "Early SLA Risk (At-Risk)",
+  "reportGuideSlaAtRiskWhat": "Pending reports past >= 50% of their time to deadline, or processing reports with <= 24h left (or below the severity's historical average).",
+  "reportGuideSlaAtRiskPurpose": "Warns before reports actually breach their SLA deadline.",
+  "reportGuideSlaAtRiskTells": "Which reports should be assigned or escalated today to avoid overdue breaches.",
+  "reportGuideP90Title": "P90 Threshold & Bottlenecks (> P90)",
+  "reportGuideP90What": "The duration below which 90% of resolved reports in the last 90 days finished per severity (falls back to 80% of SLA window if < 10 samples).",
+  "reportGuideP90Purpose": "Spots stalled tasks early even before their hard deadline expires.",
+  "reportGuideP90Tells": "Tasks taking longer than 90% of similar historical cases — worth checking for blockers.",
+  "reportGuideTrendAnomalyTitle": "Daily Trend, 14d Baseline & Spikes (Z-score)",
+  "reportGuideTrendAnomalyWhat": "Dashed line shows the rolling 14-day mean; red dots mark days with >= 5 reports and Z-score >= 2.0 (or >= 1.5x the 14-day average).",
+  "reportGuideTrendAnomalyPurpose": "Separates normal noise from sudden incident surges.",
+  "reportGuideTrendAnomalyTells": "When unusual spikes occur or when baseline data is still insufficient (< 7 active days).",
+  "reportGuideFiltersTitle": "Stat Cards & List Filter Chips",
+  "reportGuideFiltersWhat": "Click any overview card or filter chip (Overdue, At SLA risk, Slow > P90, Rehandling) to narrow down the report list.",
+  "reportGuideFiltersPurpose": "Connects high-level metrics directly to actionable records.",
+  "reportGuideFiltersTells": "The exact list of reports currently requiring admin attention.",
+  "staffGuideTitle": "Staff Metrics Guide",
+  "staffGuideWeightedLoadTitle": "Severity-Weighted Load Points",
+  "staffGuideWeightedLoadWhat": "Sum of active task weights by severity: Low = 1 pt, Medium = 2 pts, High = 3 pts, Critical = 5 pts.",
+  "staffGuideWeightedLoadPurpose": "Measures true effort instead of treating simple and critical issues equally.",
+  "staffGuideWeightedLoadTells": "Staff holding fewer tasks that are mostly High/Critical still carry heavy workload.",
+  "staffGuideOverloadTitle": "Team Average Load & Overload",
+  "staffGuideOverloadWhat": "A staff member is marked Overloaded when weighted load > max(5, 1.5 x team avg) or overdue tasks >= 2.",
+  "staffGuideOverloadPurpose": "Prevents assigning new reports to already saturated staff.",
+  "staffGuideOverloadTells": "Who needs relief vs who has capacity (Recommended badge) for new assignments.",
+  "staffGuideEfficiencyTitle": "On-Time Efficiency & Monthly Stats",
+  "staffGuideEfficiencyWhat": "Percentage of evaluated tasks resolved before or on their deadline within the selected month.",
+  "staffGuideEfficiencyPurpose": "Tracks SLA discipline per staff member over time.",
+  "staffGuideEfficiencyTells": "Consistency in meeting deadlines and accumulated late/rehandling volume.",
+  "staffGuideBottleneckTitle": "Slow Tasks (> P90)",
+  "staffGuideBottleneckWhat": "Count of active tasks held longer than the historical P90 resolution duration for that severity.",
+  "staffGuideBottleneckPurpose": "Flags long-running assignments that may be blocked on-site.",
+  "staffGuideBottleneckTells": "Which staff may need support or reassignment on stalled reports.",
+  "spatialGuideTitle": "Spatial Hotspots (H3) Guide",
+  "spatialGuideH3Title": "H3 Hexagon Cells (Resolution 11)",
+  "spatialGuideH3What": "Groups nearby reports into uniform Uber H3 Resolution-11 hexagonal zones across campus.",
+  "spatialGuideH3Purpose": "Detects real spatial clusters independent of rigid text labels.",
+  "spatialGuideH3Tells": "Clicking a zone centers the map camera straight onto that cluster.",
+  "spatialGuideRiskScoreTitle": "Risk Score & Red Highlight",
+  "spatialGuideRiskScoreWhat": "Computed as (Pending x 2) + (High/Critical x 3) + (Overdue x 4). Red highlights accelerating or high-priority cells.",
+  "spatialGuideRiskScorePurpose": "Ranks zones by operational urgency rather than raw count alone.",
+  "spatialGuideRiskScoreTells": "Higher Risk means more severe, overdue, or unaddressed issues clustered there.",
+  "spatialGuideAcceleratingTitle": "\"Accelerating\" Badge",
+  "spatialGuideAcceleratingWhat": "Triggered when a zone logs >= 3 reports in the last 30 days and >= 2x the 30-day average of the preceding 90 days.",
+  "spatialGuideAcceleratingPurpose": "Early warning for newly emerging or worsening problem areas.",
+  "spatialGuideAcceleratingTells": "Zones deteriorating faster than historical baseline that need field inspection.",
+  "spatialGuideStatsTitle": "Zone Stats (30d • Prev avg • Pending)",
+  "spatialGuideStatsWhat": "Shows last-30d report count, prior 90-day 30d baseline average, and currently pending reports in the cell.",
+  "spatialGuideStatsPurpose": "Provides clear before/after context for each zone.",
+  "spatialGuideStatsTells": "Whether inflow in this area is outpacing local resolution.",
+  "callFreeVoiceDesc": "Free internet voice call",
+  "callPermissionDenied": "Voice call unavailable for this conversation",
+  "rehandlingReportsSection": "Re-handling reports",
+  "checkingEligibility": "Checking eligibility...",
+  "attachRehandlingReports": "Attach re-handling reports",
+  "cannotMessageAnonymousNotice": "Anonymous user: only in-app chat and free calls are supported.",
+  "routeSosCenter": "SOS alerts",
+  "sosTabOpen": "Open",
+  "sosTabResolved": "Closed",
+  "sosEmptyOpen": "No SOS is open right now.",
+  "sosEmptyResolved": "No SOS has ended yet.",
+  "sosStatusActive": "Awaiting response",
+  "sosStatusAcknowledged": "Being handled",
+  "sosResolutionSafe": "Sender is safe",
+  "sosResolutionHandled": "Handled",
+  "sosResolutionFalseAlarm": "False alarm",
+  "sosSentAt": "Sent at {time}",
+  "@sosSentAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosHandledBy": "{name} is handling it",
+  "@sosHandledBy": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosLocationUpdatedAt": "Location updated at {time}",
+  "@sosLocationUpdatedAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosSignalLost": "No new location since {time}",
+  "@sosSignalLost": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosAccuracy": "Accurate to about {meters} m",
+  "@sosAccuracy": {
+    "placeholders": {
+      "meters": {}
+    }
+  },
+  "sosNotifiedContacts": "{count} emergency contacts alerted",
+  "@sosNotifiedContacts": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "sosOpenMap": "Open map",
+  "sosCallSender": "Call {name}",
+  "@sosCallSender": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosAcknowledge": "Take this SOS",
+  "sosResolve": "End SOS",
+  "sosResolveTitle": "End the SOS from {name}?",
+  "@sosResolveTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosResolveHandled": "Help was given",
+  "sosResolveFalseAlarm": "False alarm",
+  "sosResolveNote": "Note (optional)",
+  "sosAcknowledgedToast": "You took this SOS",
+  "sosResolvedToast": "SOS ended",
+  "sosTrackTitle": "Recent locations",
+  "sosLoadFailed": "Could not load SOS alerts.",
+  "sosEndedAt": "Ended at {time}",
+  "@sosEndedAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosCannotOpenMap": "Could not open the map"
 }

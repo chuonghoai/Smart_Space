@@ -28,14 +28,14 @@ public class DeviceController {
             @AuthenticationPrincipal Jwt jwt,
             @RequestBody @Valid RegisterFcmTokenRequest request) {
         String userId = jwt.getClaim("userId").toString();
-        deviceService.registerFcmToken(userId, request);
-        return ResponseEntity.ok(ApiResponse.success("FCM token registered", null));
+        deviceService.registerFcmToken(userId, jwt.getClaimAsString("deviceId"), request);
+        return ResponseEntity.ok(ApiResponse.success("device.fcm.register.success", null));
     }
 
     @DeleteMapping("/fcm-token")
     public ResponseEntity<ApiResponse> clearFcmToken(
             @RequestParam String fcmToken) {
         deviceService.clearFcmToken(fcmToken);
-        return ResponseEntity.ok(ApiResponse.success("FCM token cleared", null));
+        return ResponseEntity.ok(ApiResponse.success("device.fcm.clear.success", null));
     }
 }

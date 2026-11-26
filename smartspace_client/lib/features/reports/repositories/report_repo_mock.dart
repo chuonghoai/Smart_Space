@@ -1,8 +1,75 @@
-import 'package:smartspace_client/core/api/api_response.dart';
+import 'package:smartspace_client/features/reports/models/report_density_model.dart';
+import 'package:mobile_shared/core/api/api_response.dart';
+import 'package:mobile_shared/features/map/models/map_bounds.dart';
+import 'package:smartspace_client/features/reports/models/feed_sort.dart';
+import 'package:smartspace_client/features/reports/models/report_date_range.dart';
+import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
+import 'package:smartspace_client/features/reports/models/map_reports_result.dart';
+import 'package:smartspace_client/features/reports/models/my_reports_page_model.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
+import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
+import 'package:smartspace_client/features/reports/models/report_dto.dart';
+import 'package:smartspace_client/features/reports/models/nearby_reports_alert_model.dart';
+import 'package:smartspace_client/features/reports/models/report_feed_model.dart';
+import 'package:smartspace_client/features/reports/models/report_category_model.dart';
 import 'package:smartspace_client/features/reports/repositories/report_repo.dart';
 
 class ReportRepoMock implements ReportRepo {
+  @override
+  Future<ApiResponse<List<ReportCategoryModel>>> getCategories() async {
+    await Future.delayed(const Duration(milliseconds: 200));
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: const [
+        ReportCategoryModel(
+          id: 'cat-env',
+          code: 'ENVIRONMENT',
+          nameVi: 'Môi trường & Rác thải',
+          nameEn: 'Environment & Waste',
+          iconKey: 'eco',
+          defaultSeverity: 'medium',
+          displayOrder: 1,
+        ),
+        ReportCategoryModel(
+          id: 'cat-infra',
+          code: 'INFRASTRUCTURE',
+          nameVi: 'Hạ tầng & Đường bộ',
+          nameEn: 'Infrastructure & Roads',
+          iconKey: 'construction',
+          defaultSeverity: 'high',
+          displayOrder: 2,
+        ),
+        ReportCategoryModel(
+          id: 'cat-light',
+          code: 'LIGHTING_ELECTRIC',
+          nameVi: 'Chiếu sáng & Điện',
+          nameEn: 'Lighting & Electricity',
+          iconKey: 'bolt',
+          defaultSeverity: 'high',
+          displayOrder: 3,
+        ),
+        ReportCategoryModel(
+          id: 'cat-water',
+          code: 'WATER_DRAINAGE',
+          nameVi: 'Cấp thoát nước & Ngập úng',
+          nameEn: 'Water & Drainage',
+          iconKey: 'water_drop',
+          defaultSeverity: 'high',
+          displayOrder: 4,
+        ),
+        ReportCategoryModel(
+          id: 'cat-order',
+          code: 'PUBLIC_ORDER',
+          nameVi: 'Trật tự & An toàn công cộng',
+          nameEn: 'Public Order & Safety',
+          iconKey: 'shield',
+          defaultSeverity: 'medium',
+          displayOrder: 5,
+        ),
+      ],
+    );
+  }
   @override
   Future<ApiResponse<List<ReportModel>>> getDangerousReports() async {
     await Future.delayed(const Duration(seconds: 1));
@@ -72,6 +139,337 @@ class ReportRepoMock implements ReportRepo {
           createdAt: DateTime.now().subtract(const Duration(minutes: 30)),
         ),
       ],
+    );
+  }
+
+  @override
+  Future<ApiResponse<MapReportsResult>> getReportsInBounds(
+    MapBounds bounds, {
+    MapReportFilter filter = MapReportFilter.all,
+    String? timeframe,
+    int limit = 300,
+  }) async {
+    await Future.delayed(const Duration(milliseconds: 500));
+    final now = DateTime.now();
+    // Nhóm 4 report cùng toạ độ để kiểm tra luồng "không tách được → mở danh sách"
+    final mockData = [
+      for (var i = 0; i < 4; i++)
+        ReportModel(
+          id: 'map-same-$i',
+          title: 'Ngập nước giao lộ #${i + 1}',
+          description: 'Nước ngập sau mưa lớn',
+          imageUrl: 'https://ui-avatars.com/api/?name=Flood&background=random',
+          latitude: 10.8504,
+          longitude: 106.7571,
+          status: ReportStatus.pending,
+          severity: i == 0 ? EReportSeverity.high : EReportSeverity.medium,
+          createdAt: now.subtract(Duration(minutes: 15 * (i + 1))),
+        ),
+      for (var i = 0; i < 12; i++)
+        ReportModel(
+          id: 'map-spread-$i',
+          title: 'Phản ánh khu vực trung tâm #${i + 1}',
+          description: 'Dữ liệu mock cho bản đồ',
+          imageUrl: 'https://ui-avatars.com/api/?name=R$i&background=random',
+          latitude: 10.7700 + (i % 4) * 0.004,
+          longitude: 106.6900 + (i ~/ 4) * 0.004,
+          status: i.isEven ? ReportStatus.processing : ReportStatus.processed,
+          severity: i % 5 == 0 ? EReportSeverity.critical : EReportSeverity.low,
+          createdAt: now.subtract(Duration(hours: i + 1)),
+        ),
+    ];
+
+    final inBounds = mockData
+        .where((r) =>
+            r.latitude >= bounds.minLat &&
+            r.latitude <= bounds.maxLat &&
+            r.longitude >= bounds.minLng &&
+            r.longitude <= bounds.maxLng)
+        // Mock không có người dùng hiện tại → chỉ mô phỏng phần lọc theo trạng thái
+        .where((r) => switch (filter) {
+              MapReportFilter.pending => r.status == ReportStatus.pending,
+              MapReportFilter.processing => r.status == ReportStatus.processing,
+              MapReportFilter.processed => r.status == ReportStatus.processed,
+              MapReportFilter.all || MapReportFilter.mine => true,
+            })
+        .toList();
+
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: MapReportsResult(
+        reports: inBounds.take(limit).toList(),
+        truncated: inBounds.length > limit,
+      ),
+    );
+  }
+
+  @override
+  Future<ApiResponse<MyReportsPage>> getMyReports({
+    String? status,
+    EReportSeverity? severity,
+    ReportDateRange? dateRange,
+    String? search,
+    bool overdueOnly = false,
+    int page = 1,
+    int size = 20,
+  }) async {
+    await Future.delayed(const Duration(seconds: 1));
+    var mockData = _myReportsMockData();
+
+    if (status == 'rehandling') {
+      mockData = mockData.where((r) => r.isReviewResolved == false).toList();
+    } else if (status != null) {
+      mockData = mockData.where((r) => r.status.name == status).toList();
+    }
+    if (severity != null) {
+      mockData = mockData.where((r) => r.severity == severity).toList();
+    }
+    if (overdueOnly) {
+      mockData = mockData.where((r) => r.isOverdue).toList();
+    }
+    if (dateRange != null) {
+      final endExclusive = dateRange.end.add(const Duration(days: 1));
+      mockData = mockData
+          .where((r) => !r.createdAt.isBefore(dateRange.start) && r.createdAt.isBefore(endExclusive))
+          .toList();
+    }
+    final keyword = search?.trim().toLowerCase() ?? '';
+    if (keyword.isNotEmpty) {
+      mockData = mockData
+          .where((r) => r.title.toLowerCase().contains(keyword) || r.description.toLowerCase().contains(keyword))
+          .toList();
+    }
+
+    final totalPages = (mockData.length / size).ceil();
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: MyReportsPage(
+        items: mockData.skip((page - 1) * size).take(size).toList(),
+        totalPages: totalPages,
+        totalElements: mockData.length,
+      ),
+    );
+  }
+
+  @override
+  Future<ApiResponse<MyReportsSummary>> getMyReportsSummary() async {
+    await Future.delayed(const Duration(milliseconds: 300));
+    final data = _myReportsMockData();
+    int count(ReportStatus s) => data.where((r) => r.status == s).length;
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: MyReportsSummary(
+        total: data.length,
+        pending: count(ReportStatus.pending),
+        processing: count(ReportStatus.processing),
+        processed: count(ReportStatus.processed),
+        rejected: count(ReportStatus.rejected),
+        rehandling: data.where((r) => r.isReviewResolved == false).length,
+      ),
+    );
+  }
+
+  List<ReportModel> _myReportsMockData() {
+    return [
+      ReportModel(
+        id: 'm1',
+        title: 'Đèn đường hỏng',
+        description: 'Đèn không sáng',
+        imageUrl: 'https://ui-avatars.com/api/?name=Light&background=random',
+        latitude: 10.8231,
+        longitude: 106.6297,
+        status: ReportStatus.processing,
+        createdAt: DateTime.now().subtract(const Duration(hours: 2)),
+      ),
+      ReportModel(
+        id: 'm2',
+        title: 'Hố ga mất nắp',
+        description: 'Nguy hiểm',
+        imageUrl: 'https://ui-avatars.com/api/?name=Hole&background=random',
+        latitude: 10.8231,
+        longitude: 106.6297,
+        status: ReportStatus.processed,
+        createdAt: DateTime.now().subtract(const Duration(days: 2)),
+      ),
+      ReportModel(
+        id: 'm3',
+        title: 'Rác thải sai quy định',
+        description: 'Rác đổ bừa bãi',
+        imageUrl: 'https://ui-avatars.com/api/?name=Trash&background=random',
+        latitude: 10.8231,
+        longitude: 106.6297,
+        status: ReportStatus.rejected,
+        createdAt: DateTime.now().subtract(const Duration(days: 10)),
+      ),
+    ];
+  }
+
+  @override
+  Future<ApiResponse<ReportModel>> createReport(ReportDto reportDto) async {
+    await Future.delayed(const Duration(seconds: 2));
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: ReportModel(
+        id: 'new_1',
+        title: reportDto.title,
+        description: reportDto.description,
+        imageUrl: reportDto.imageUrls.isNotEmpty ? reportDto.imageUrls.first : '',
+        latitude: reportDto.latitude,
+        longitude: reportDto.longitude,
+        status: ReportStatus.pending,
+        createdAt: DateTime.now(),
+      ),
+    );
+  }
+
+  @override
+  Future<ApiResponse<ReportDetailModel>> getReportDetail(String reportId) async {
+    await Future.delayed(const Duration(seconds: 1));
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: ReportDetailModel(
+        id: reportId,
+        title: 'Mock Report Title',
+        description: 'Mock Report Description',
+        imageUrls: ['https://ui-avatars.com/api/?name=Mock&background=random'],
+        latitude: 10.8231,
+        longitude: 106.6297,
+        status: ReportStatus.pending,
+        severity: EReportSeverity.high,
+        isAnonymous: false,
+        address: 'Mock Address',
+        locationDescription: 'Mock Location',
+        createdAt: DateTime.now(),
+      ),
+    );
+  }
+
+  @override
+  Future<ApiResponse<ReportFeedPage>> getFeed({
+    String? status,
+    EReportSeverity? severity,
+    ReportDateRange? dateRange,
+    String? search,
+    FeedSort sort = FeedSort.latest,
+    int page = 1,
+    int size = 10,
+    double? lat,
+    double? lng,
+  }) async {
+    final detail = (await getReportDetail('f$page')).data!;
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: ReportFeedPage(
+        items: [ReportFeedItem(report: detail, reporterName: 'Mock User')],
+        totalPages: 1,
+        totalElements: 1,
+      ),
+    );
+  }
+
+  @override
+  Future<ApiResponse<ReportDetailModel>> submitReview(
+    String reportId, {
+    required bool isResolved,
+    int? rating,
+    String? reason,
+    List<String>? imageUrls,
+  }) async {
+    final detail = (await getReportDetail(reportId)).data!;
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: detail.copyWith(
+        isReviewResolved: isResolved,
+        rating: rating,
+        reviewNote: reason,
+        reviewImageUrls: imageUrls,
+        reviewedAt: DateTime.now(),
+      ),
+    );
+  }
+
+  @override
+  Future<ApiResponse<NearbyReportsAlertResponse>> getNearbyAlerts({
+    required double lat,
+    required double lng,
+    double radius = 200.0,
+    bool notify = true,
+  }) async {
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: NearbyReportsAlertResponse(count: 0, reports: []),
+    );
+  }
+
+  @override
+  Future<ApiResponse<ReportDetailModel>> updateReport(String reportId, ReportDto reportDto) async {
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: ReportDetailModel(
+        id: reportId,
+        title: reportDto.title,
+        description: reportDto.description,
+        latitude: reportDto.latitude,
+        longitude: reportDto.longitude,
+        status: ReportStatus.pending,
+        createdAt: DateTime.now(),
+        severity: EReportSeverity.low,
+        imageUrls: reportDto.imageUrls,
+        isAnonymous: reportDto.isAnonymous,
+        address: reportDto.address,
+        locationDescription: reportDto.locationDescription,
+      ),
+    );
+  }
+
+  @override
+  Future<ApiResponse<ReportDetailModel>> cancelReport(String reportId) async {
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: ReportDetailModel(
+        id: reportId,
+        title: 'Báo cáo',
+        description: 'Mô tả',
+        latitude: 0,
+        longitude: 0,
+        status: ReportStatus.rejected,
+        createdAt: DateTime.now(),
+        severity: EReportSeverity.low,
+        imageUrls: [],
+        isAnonymous: false,
+      ),
+    );
+  }
+  @override
+  Future<ApiResponse<ReportDensityResult>> getReportDensity({
+    required double north,
+    required double south,
+    required double east,
+    required double west,
+    double zoom = 14.0,
+    String? timeframe,
+  }) async {
+    return ApiResponse(
+      success: true,
+      message: 'Success',
+      data: ReportDensityResult(
+        resolution: 11,
+        zoom: 14.0,
+        totalCells: 0,
+        truncated: false,
+        cells: [],
+        geojson: {'type': 'FeatureCollection', 'features': []},
+      )
     );
   }
 }

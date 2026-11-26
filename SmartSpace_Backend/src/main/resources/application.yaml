@@ -22,11 +22,14 @@ spring:
         type:
           json_format_mapper: com.vn.smart_space.configuration.CustomHibernateJsonFormatter
 
+  jackson:
+    mapper:
+      accept-case-insensitive-enums: true
+
   # Redis Config
   data:
     redis:
-      host: localhost
-      port: 6379
+      url: ${REDIS_URL:redis://localhost:6379}
 
   # Mail Config (Gmail SMTP)
   mail:
@@ -40,6 +43,11 @@ spring:
           auth: true
           starttls:
             enable: true
+          # Timeout (ms) — mặc định JavaMail chờ vô hạn, làm request treo khi SMTP chậm.
+          # Tổng tối đa ~25s phải < receiveTimeout của request tạo staff ở app admin (30s).
+          connectiontimeout: 5000
+          timeout: 10000
+          writetimeout: 10000
 
 # JWT Config
 jwt:
@@ -60,3 +68,46 @@ cloudinary:
 
 firebase:
   service-account-path: classpath:smart-space-36687-firebase-adminsdk-fbsvc-5c08d9199a.json
+
+# App Mail Config (template email: templates/mail/*)
+# Tất cả đều tuỳ chọn: để trống -> logo dạng chữ, ẩn nút tải app, ẩn dòng hỗ trợ.
+app:
+  mail:
+    from-name: ${MAIL_FROM_NAME:SmartSpace}
+    logo-url: ${MAIL_LOGO_URL:}
+    staff-app-url: ${MAIL_STAFF_APP_URL:}
+    admin-portal-url: ${MAIL_ADMIN_PORTAL_URL:}
+    support-email: ${MAIL_SUPPORT_EMAIL:}
+  # SMS Brandname (eSMS). Tắt -> chỉ ghi log nội dung tin (dùng cho local/dev).
+  # Nội dung tin phải khớp mẫu (template) đã đăng ký với eSMS.
+  sms:
+    enabled: ${SMS_ENABLED:false}
+    esms:
+      base-url: ${ESMS_BASE_URL:https://rest.esms.vn/MainService.svc/json}
+      api-key: ${ESMS_API_KEY:}
+      secret-key: ${ESMS_SECRET_KEY:}
+      brandname: ${ESMS_BRANDNAME:}
+      sms-type: ${ESMS_SMS_TYPE:2}
+      sandbox: ${ESMS_SANDBOX:true}
+      unicode: ${ESMS_UNICODE:false}
+      timeout-ms: ${ESMS_TIMEOUT_MS:10000}
+
+# WebRTC Audio Call & STUN/TURN Config
+webrtc:
+  stun-urls: ${WEBRTC_STUN_URLS:stun:stun.l.google.com:19302,stun:stun1.l.google.com:19302}
+  turn:
+    mode: ${WEBRTC_TURN_MODE:stun_only} # stun_only | coturn_hmac | cloudflare | static_env
+    urls: ${WEBRTC_TURN_URLS:}
+    shared-secret: ${WEBRTC_TURN_SHARED_SECRET:}
+    ttl-seconds: ${WEBRTC_TURN_TTL_SECONDS:43200}
+    username: ${WEBRTC_TURN_USERNAME:}
+    credential: ${WEBRTC_TURN_CREDENTIAL:}
+    cloudflare-token-id: ${WEBRTC_CF_TURN_TOKEN_ID:}
+    cloudflare-api-token: ${WEBRTC_CF_TURN_API_TOKEN:}
+  ws:
+    heartbeat-timeout-seconds: ${WEBRTC_WS_HEARTBEAT_TIMEOUT_SECONDS:35}
+  call:
+    connecting-timeout-seconds: ${CALL_CONNECTING_TIMEOUT_SECONDS:10}
+    ring-timeout-seconds: ${CALL_RING_TIMEOUT_SECONDS:45}
+    signaling-timeout-seconds: ${CALL_SIGNALING_TIMEOUT_SECONDS:25}
+    max-duration-seconds: ${CALL_MAX_DURATION_SECONDS:3600}

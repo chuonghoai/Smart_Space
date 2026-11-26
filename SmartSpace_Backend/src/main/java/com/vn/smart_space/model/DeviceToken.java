@@ -40,6 +40,11 @@ public class DeviceToken extends AbstractEntity {
     @Column(name = "device_name")
     String deviceName; // tuỳ chọn, ví dụ: "Samsung S24", "Chrome"
 
+    // deviceId của phiên đăng nhập (claim "deviceId" trong JWT) — để xoá đúng FCM token
+    // khi thiết bị bị đăng xuất từ xa. Null với token đăng ký trước khi có cột này.
+    @Column(name = "device_id", length = 100)
+    String deviceId;
+
     @Column(name = "last_used_at")
     LocalDateTime lastUsedAt;
 }

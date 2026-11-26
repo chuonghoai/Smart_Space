@@ -1,5 +1,7 @@
 package com.vn.smart_space.service.auth;
 
+import com.vn.smart_space.consts.ERole;
+
 import com.vn.smart_space.consts.ERegistrationStatus;
 import com.vn.smart_space.dto.TokenPayload;
 import com.vn.smart_space.dto.request.auth.GoogleLoginRequest;
@@ -8,7 +10,9 @@ import com.vn.smart_space.dto.request.auth.LoginRequest;
 import com.vn.smart_space.dto.request.auth.RefreshTokenRequest;
 import com.vn.smart_space.dto.response.IntrospectResponse;
 import com.vn.smart_space.dto.response.auth.LoginResponse;
+import com.vn.smart_space.dto.response.auth.SessionResponse;
 import com.vn.smart_space.model.User;
+import java.util.List;
 
 public interface IAuthenticationService {
 
@@ -27,17 +31,32 @@ public interface IAuthenticationService {
     // Logout
     void logout(String token);
 
-    // OTP for Registration
-    void sendOtpRegister(String email);
+    // Session Management
+    List<SessionResponse> getActiveSessions(String userId, String currentDeviceId);
+    void revokeSession(String userId, String deviceId);
+    void revokeAllOtherSessions(String userId, String currentDeviceId);
 
-    void verifyOtpRegister(String email, String otp);
+    // Account status enforcement
+    /** Thu hồi toàn bộ quyền truy cập ngay lập tức (gọi khi tài khoản bị khóa). */
+    void revokeUserAccess(String userId);
+
+    /** Gỡ cờ chặn truy cập (gọi khi tài khoản được mở khóa). */
+    void restoreUserAccess(String userId);
+
+    /** Chỉ role được phép tự đăng ký (client) mới đi qua luồng public; ngược lại ném auth.role.invalid. */
+    void assertSelfRegistrableRole(ERole role);
+
+    // OTP for Registration
+    void sendOtpRegister(String email, ERole role);
+
+    void verifyOtpRegister(String email, String otp, ERole role);
 
     // OTP for Forgot Password
     void sendOtpForgotPassword(String email);
 
     void verifyOtpForgotPassword(String otpKey, String otp);
 
-    void saveRefreshTokenToRedis(String userId, TokenPayload refreshToken);
+    void saveRefreshTokenToRedis(String userId, TokenPayload refreshToken, String deviceId, String deviceName, String platform, String ipAddress);
 
     ERegistrationStatus determineRegistrationStatus(User user);
 

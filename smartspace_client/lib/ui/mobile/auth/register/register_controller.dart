@@ -1,11 +1,14 @@
-import 'dart:io';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:smartspace_client/features/auth/services/auth_service.dart';
+import 'package:mobile_shared/core/connection/connection_manager.dart';
+import 'package:mobile_shared/features/auth/services/auth_service.dart';
+import 'package:mobile_shared/util/device_info_util.dart';
+import 'package:mobile_shared/core/constants/role_constant.dart';
 import 'package:smartspace_client/l10n/app_localizations.dart';
 import 'package:smartspace_client/routes/router_path.dart';
-import 'package:smartspace_client/util/media_upload.dart';
+import 'package:mobile_shared/util/media_upload.dart';
 
 class RegisterController extends ChangeNotifier {
   final AuthService _authService;
@@ -29,9 +32,29 @@ class RegisterController extends ChangeNotifier {
   String _otp = '';
   String get otp => _otp;
 
-  // Image file
-  File? _selectedAvatarFile;
-  File? get selectedAvatarFile => _selectedAvatarFile;
+  // Avatar bytes
+  Uint8List? _selectedAvatarBytes;
+  Uint8List? get selectedAvatarBytes => _selectedAvatarBytes;
+
+  String? _selectedAvatarName;
+
+  // Gender state
+  String? _selectedGender = 'other';
+  String? get selectedGender => _selectedGender;
+
+  // Date of birth state
+  String? _dateOfBirth;
+  String? get dateOfBirth => _dateOfBirth;
+
+  void setGender(String gender) {
+    _selectedGender = gender;
+    notifyListeners();
+  }
+
+  void setDateOfBirth(String? dob) {
+    _dateOfBirth = dob;
+    notifyListeners();
+  }
 
   void _setLoading(bool value) {
     _isLoading = value;
@@ -68,7 +91,7 @@ class RegisterController extends ChangeNotifier {
     _email = emailInput.trim();
 
     try {
-      final response = await _authService.sendOtpRegister(_email);
+      final response = await _authService.sendOtpRegister(_email, ERole.client);
 
       if (response.success) {
         if (context.mounted) {
@@ -106,7 +129,7 @@ class RegisterController extends ChangeNotifier {
     _otp = otpInput.trim();
 
     try {
-      final response = await _authService.verifyOtpRegister(_email, _otp);
+      final response = await _authService.verifyOtpRegister(_email, _otp, ERole.client);
 
       if (response.success) {
         if (context.mounted) {
@@ -147,10 +170,18 @@ class RegisterController extends ChangeNotifier {
     _setError(null);
 
     try {
+      final deviceId = await DeviceInfoUtil.getDeviceId();
+      final deviceName = await DeviceInfoUtil.getDeviceName();
+      final platform = DeviceInfoUtil.getPlatform();
+
       final response = await _authService.register(
         _email,
         password,
         confirmPassword,
+        deviceId,
+        deviceName,
+        platform,
+        ERole.client,
       );
 
       if (response.success && response.data != null) {
@@ -176,6 +207,8 @@ class RegisterController extends ChangeNotifier {
     required BuildContext context,
     required String fullname,
     required String phone,
+    String? dateOfBirth,
+    String? gender,
   }) async {
     final l10n = AppLocalizations.of(context)!;
     if (_isLoading) return;
@@ -200,12 +233,15 @@ class RegisterController extends ChangeNotifier {
       debugPrint('▶ [completeProfile] fullname: ${fullname.trim()}');
       debugPrint('▶ [completeProfile] phone: ${phone.trim()}');
       debugPrint(
-        '▶ [completeProfile] hasAvatar: ${_selectedAvatarFile != null}',
+        '▶ [completeProfile] hasAvatar: ${_selectedAvatarBytes != null}',
       );
 
-      if (_selectedAvatarFile != null) {
+      if (_selectedAvatarBytes != null) {
         debugPrint('▶ [completeProfile] Uploading avatar...');
-        avatarUrl = await _mediaUploadUtil.uploadMedia(_selectedAvatarFile!);
+        avatarUrl = await _mediaUploadUtil.uploadMedia(
+          _selectedAvatarBytes!,
+          _selectedAvatarName ?? 'avatar.jpg',
+        );
         debugPrint('▶ [completeProfile] avatarUrl: $avatarUrl');
       }
 
@@ -214,6 +250,8 @@ class RegisterController extends ChangeNotifier {
         fullname.trim(),
         phone.trim(),
         avatarUrl,
+        dateOfBirth?.isNotEmpty == true ? dateOfBirth : null,
+        gender,
       );
       debugPrint('▶ [completeProfile] API response received');
       debugPrint('▶ [completeProfile] success: ${response.success}');
@@ -223,6 +261,7 @@ class RegisterController extends ChangeNotifier {
       if (response.success && response.data != null) {
         if (context.mounted) {
           reset();
+          connectionManager.startConnections();
           context.go(RouterPath.home);
         }
       } else {
@@ -247,7 +286,10 @@ class RegisterController extends ChangeNotifier {
   void reset() {
     _email = '';
     _otp = '';
-    _selectedAvatarFile = null;
+    _selectedAvatarBytes = null;
+    _selectedAvatarName = null;
+    _selectedGender = null;
+    _dateOfBirth = null;
     _error = null;
     _isLoading = false;
     notifyListeners();
@@ -259,7 +301,8 @@ class RegisterController extends ChangeNotifier {
       final picker = ImagePicker();
       final pickedFile = await picker.pickImage(source: source);
       if (pickedFile != null) {
-        _selectedAvatarFile = File(pickedFile.path);
+        _selectedAvatarBytes = await pickedFile.readAsBytes();
+        _selectedAvatarName = pickedFile.name;
         notifyListeners();
       }
     } catch (e) {

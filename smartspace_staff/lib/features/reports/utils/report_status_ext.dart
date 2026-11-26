@@ -9,10 +9,15 @@ extension ReportStatusExt on ReportStatus {
         ? const Color(0xFFF9A825)
         : const Color(0xFFFFCA28);
 
+    final processingColor = theme.brightness == Brightness.light
+        ? const Color(0xFF8E24AA)
+        : const Color(0xFFCE93D8);
+
     switch (this) {
       case ReportStatus.processed:
         return theme.colorScheme.secondary;
       case ReportStatus.processing:
+        return processingColor;
       case ReportStatus.pending:
         return warningColor;
       case ReportStatus.rejected:

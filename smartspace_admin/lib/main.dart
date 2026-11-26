@@ -1,23 +1,66 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/app_localizations.dart';
 import 'routes/app_router.dart';
-import 'core/localization/locale_provider.dart';
-import 'core/theme/app_theme.dart';
-import 'core/theme/theme_provider.dart';
+import 'routes/router_path.dart';
+import 'package:mobile_shared/core/localization/locale_provider.dart';
+import 'package:mobile_shared/core/theme/theme_provider.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_web_plugins/url_strategy.dart';
-import 'package:smartspace_admin/core/notification/firebase_service.dart';
-import 'package:smartspace_admin/core/toast/toast_service.dart';
+import 'package:mapbox_maps_flutter/mapbox_maps_flutter.dart' as mapbox;
 
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:smartspace_admin/core/connection/connection_manager.dart';
+import 'package:mobile_shared/mobile_shared.dart';
+import 'package:mobile_shared/features/auth/services/session_ws_service.dart';
+import 'firebase_options.dart';
+import 'package:smartspace_admin/features/app_services/ws_services_registry.dart';
+import 'package:smartspace_admin/features/app_services/app_services_initializer.dart';
+import 'package:smartspace_admin/features/test_realtime/services/test_ws_service.dart';
+import 'package:smartspace_admin/features/notifications/services/notification_ws_service.dart';
+import 'package:mobile_shared/features/sos/services/sos_ws_service.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await TokenStorage.init(AppScope.admin);
+  await EnvConfig.init();
   usePathUrlStrategy();
   await dotenv.load(fileName: ".env");
-  await FirebaseService.initialize();
+
+  // Initialize Mapbox (Mobile only — Web uses Mapbox GL JS)
+  if (!kIsWeb) {
+    final mapboxToken = dotenv.env['MAPBOX_ACCESS_TOKEN'] ?? '';
+    mapbox.MapboxOptions.setAccessToken(mapboxToken);
+  }
+
+  await FirebaseService.initialize(DefaultFirebaseOptions.currentPlatform);
+  
+  ErrorInterceptor.unauthenticatedStream.stream.listen((String reason) {
+    appRouter.go(RouterPath.login);
+    final context = navigatorKey.currentContext;
+    if (context != null) {
+      final l10n = AppLocalizations.of(context);
+      final message = switch (reason) {
+        'session_expired' => l10n?.sessionExpired,
+        SessionWsService.revokedReason => l10n?.sessionRevokedOnThisDevice,
+        _ => null,
+      };
+      if (message != null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+      }
+    }
+  });
+
+  WsServicesRegistry.register(SessionWsService());
+  WsServicesRegistry.register(TestWsService());
+  WsServicesRegistry.register(NotificationWsService());
+  WsServicesRegistry.register(chatWsService);
+  WsServicesRegistry.register(callWsService);
+  WsServicesRegistry.register(sosWsService);
+
   runApp(const ProviderScope(child: SmartSpaceAdminApp()));
 }
 
@@ -44,8 +87,10 @@ class _SmartSpaceAppState extends State<SmartSpaceAdminApp> with WidgetsBindingO
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    if (state == AppLifecycleState.paused || state == AppLifecycleState.detached || state == AppLifecycleState.hidden) {
+    if (state == AppLifecycleState.detached) {
       connectionManager.pauseConnections();
+    } else if (state == AppLifecycleState.paused || state == AppLifecycleState.hidden) {
+      connectionManager.onAppBackgrounded();
     } else if (state == AppLifecycleState.resumed) {
       connectionManager.resumeConnections();
     }
@@ -56,22 +101,25 @@ class _SmartSpaceAppState extends State<SmartSpaceAdminApp> with WidgetsBindingO
     return ListenableBuilder(
       listenable: Listenable.merge([localeProvider, themeProvider]),
       builder: (context, child) {
-        return MaterialApp.router(
-          scaffoldMessengerKey: scaffoldMessengerKey,
-          title: 'SmartSpace Admin',
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
-          themeMode: themeProvider.themeMode,
-          locale: localeProvider.locale,
-          localizationsDelegates: const [
-            AppLocalizations.delegate,
-            GlobalMaterialLocalizations.delegate,
-            GlobalWidgetsLocalizations.delegate,
-            GlobalCupertinoLocalizations.delegate,
-          ],
-          supportedLocales: const [Locale('vi'), Locale('en')],
-          routerConfig: appRouter,
-          debugShowCheckedModeBanner: false,
+        return AppServicesInitializer(
+          child: MaterialApp.router(
+            scaffoldMessengerKey: scaffoldMessengerKey,
+            title: 'SmartSpace Admin',
+            theme: AppTheme.lightTheme,
+            darkTheme: AppTheme.darkTheme,
+            themeMode: themeProvider.themeMode,
+            locale: localeProvider.locale,
+            localizationsDelegates: const [
+              AppLocalizations.delegate,
+              SharedLocalizations.delegate,
+              GlobalMaterialLocalizations.delegate,
+              GlobalWidgetsLocalizations.delegate,
+              GlobalCupertinoLocalizations.delegate,
+            ],
+            supportedLocales: const [Locale('vi'), Locale('en')],
+            routerConfig: appRouter,
+            debugShowCheckedModeBanner: false,
+          ),
         );
       },
     );

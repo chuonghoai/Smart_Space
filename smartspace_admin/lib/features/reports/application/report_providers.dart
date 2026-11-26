@@ -1,0 +1,214 @@
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smartspace_admin/features/home/models/recent_report_model.dart';
+import '../../home/application/home_providers.dart';
+import '../data/report_repository.dart';
+import '../models/auto_assign_models.dart';
+import '../models/report_detail_model.dart';
+import '../models/staff_model.dart';
+import 'report_dashboard_providers.dart';
+import 'report_list_providers.dart';
+
+final reportDetailProvider = AsyncNotifierProviderFamily<ReportDetailNotifier, ReportDetailModel, String>(() => ReportDetailNotifier());
+
+class ReportDetailNotifier extends FamilyAsyncNotifier<ReportDetailModel, String> {
+  @override
+  Future<ReportDetailModel> build(String arg) async {
+    return _fetchReportDetail(arg);
+  }
+
+  Future<ReportDetailModel> _fetchReportDetail(String id) async {
+    final response = await reportRepository.getReportDetail(id);
+    if (response.success && response.data != null) {
+      return response.data!;
+    }
+    throw Exception(response.message);
+  }
+
+  Future<void> refresh() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() => _fetchReportDetail(arg));
+  }
+}
+
+final reportRecommendationsProvider = FutureProvider.autoDispose
+    .family<AutoAssignRecommendationModel, String>((ref, reportId) async {
+  final response = await reportRepository.getReportRecommendations(reportId);
+  if (response.success && response.data != null) {
+    return response.data!;
+  }
+  throw Exception(response.message);
+});
+
+final staffsProvider = AsyncNotifierProvider<StaffsNotifier, List<StaffModel>>(() => StaffsNotifier());
+
+class StaffsNotifier extends AsyncNotifier<List<StaffModel>> {
+  @override
+  Future<List<StaffModel>> build() async {
+    return _fetchStaffs();
+  }
+
+  Future<List<StaffModel>> _fetchStaffs() async {
+    final response = await reportRepository.getStaffs();
+    if (response.success && response.data != null) {
+      return response.data!;
+    }
+    throw Exception(response.message);
+  }
+
+  Future<void> refresh() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() => _fetchStaffs());
+  }
+}
+
+class ReportAssignState {
+  final bool isLoading;
+  final String? error;
+  final bool isSuccess;
+
+  const ReportAssignState({
+    this.isLoading = false,
+    this.error,
+    this.isSuccess = false,
+  });
+}
+
+class ReportAssignNotifier extends StateNotifier<ReportAssignState> {
+  final Ref ref;
+
+  ReportAssignNotifier(this.ref) : super(const ReportAssignState());
+
+  Future<bool> assignReport({
+    required String reportId,
+    required String staffId,
+    required String severity,
+    String source = 'MANUAL',
+  }) async {
+    state = const ReportAssignState(isLoading: true);
+    try {
+      final response = await reportRepository.assignReport(
+        reportId,
+        staffId: staffId,
+        severity: severity,
+        source: source,
+      );
+
+      if (response.success && response.data != null) {
+        state = const ReportAssignState(isSuccess: true);
+
+        // Refresh detail & recommendations
+        ref.invalidate(reportDetailProvider(reportId));
+        ref.invalidate(reportRecommendationsProvider(reportId));
+        ref.invalidate(staffsProvider);
+
+        // Refresh home APIs
+        ref.read(adminOverviewProvider.notifier).refresh();
+        ref.read(recentActivityProvider.notifier).refresh();
+        ref.invalidate(recentReportProvider);
+        ref.invalidate(reportListProvider);
+        ref.invalidate(reportStatisticsProvider);
+        ref.invalidate(kanbanColumnProvider);
+
+        return true;
+      } else {
+        state = ReportAssignState(error: response.message);
+        return false;
+      }
+    } catch (e) {
+      state = ReportAssignState(error: e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> autoAssignReport({
+    required String reportId,
+  }) async {
+    state = const ReportAssignState(isLoading: true);
+    try {
+      final response = await reportRepository.autoAssignReport(reportId);
+
+      if (response.success && response.data != null) {
+        state = const ReportAssignState(isSuccess: true);
+
+        ref.invalidate(reportDetailProvider(reportId));
+        ref.invalidate(reportRecommendationsProvider(reportId));
+        ref.invalidate(staffsProvider);
+        ref.read(adminOverviewProvider.notifier).refresh();
+        ref.read(recentActivityProvider.notifier).refresh();
+        ref.invalidate(recentReportProvider);
+        ref.invalidate(reportListProvider);
+        ref.invalidate(reportStatisticsProvider);
+        ref.invalidate(kanbanColumnProvider);
+
+        return true;
+      } else {
+        state = ReportAssignState(error: response.message);
+        return false;
+      }
+    } catch (e) {
+      state = ReportAssignState(error: e.toString());
+      return false;
+    }
+  }
+
+  Future<bool> rejectReport({
+    required String reportId,
+    required String reason,
+  }) async {
+    state = const ReportAssignState(isLoading: true);
+    try {
+      final response = await reportRepository.updateReportStatus(
+        reportId,
+        'rejected',
+        reason: reason,
+      );
+
+      if (response.success) {
+        state = const ReportAssignState(isSuccess: true);
+        ref.invalidate(reportDetailProvider(reportId));
+        ref.read(adminOverviewProvider.notifier).refresh();
+        ref.read(recentActivityProvider.notifier).refresh();
+        ref.invalidate(recentReportProvider);
+        ref.invalidate(reportListProvider);
+        ref.invalidate(reportStatisticsProvider);
+        ref.invalidate(kanbanColumnProvider);
+        return true;
+      } else {
+        state = ReportAssignState(error: response.message);
+        return false;
+      }
+    } catch (e) {
+      state = ReportAssignState(error: e.toString());
+      return false;
+    }
+  }
+}
+
+final unsatisfactoryReportsProvider = AsyncNotifierProviderFamily<UnsatisfactoryReportsNotifier, List<RecentReportModel>, String>(
+  () => UnsatisfactoryReportsNotifier(),
+);
+
+class UnsatisfactoryReportsNotifier extends FamilyAsyncNotifier<List<RecentReportModel>, String> {
+  @override
+  Future<List<RecentReportModel>> build(String arg) async {
+    return _fetch(arg);
+  }
+
+  Future<List<RecentReportModel>> _fetch(String tab) async {
+    final response = await reportRepository.getUnsatisfactoryReports(tab);
+    if (response.success && response.data != null) {
+      return response.data!;
+    }
+    throw Exception(response.message);
+  }
+
+  Future<void> refresh() async {
+    state = const AsyncLoading();
+    state = await AsyncValue.guard(() => _fetch(arg));
+  }
+}
+
+
+final reportAssignProvider = StateNotifierProvider<ReportAssignNotifier, ReportAssignState>((ref) {
+      return ReportAssignNotifier(ref);
+    });

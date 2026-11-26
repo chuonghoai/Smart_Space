@@ -1,4 +1,8 @@
+import 'package:mobile_shared/core/utils/report_deadline_helper.dart';
+
 enum ReportStatus { processed, processing, pending, rejected, unknown }
+
+enum EReportSeverity { low, medium, high, critical }
 
 class ReportModel {
   final String id;
@@ -10,6 +14,31 @@ class ReportModel {
   final ReportStatus status;
   final DateTime createdAt;
   final double? distanceInMeters;
+  final bool? isReviewResolved;
+  final EReportSeverity? severity;
+  final String? userId;
+  final DateTime? deadline;
+  final DateTime? resolvedAt;
+  final bool? serverIsOverdue;
+  final int? serverRemainingDays;
+
+  bool get isDangerous =>
+      severity == EReportSeverity.high || severity == EReportSeverity.critical;
+
+  bool get isOverdue => ReportDeadlineHelper.isOverdue(
+        status: status.name,
+        deadline: deadline,
+        resolvedAt: resolvedAt,
+        serverIsOverdue: serverIsOverdue,
+      );
+
+  int? get remainingDays => ReportDeadlineHelper.remainingDays(
+        status: status.name,
+        deadline: deadline,
+        resolvedAt: resolvedAt,
+        serverIsOverdue: serverIsOverdue,
+        serverRemainingDays: serverRemainingDays,
+      );
 
   ReportModel({
     required this.id,
@@ -21,6 +50,13 @@ class ReportModel {
     required this.status,
     required this.createdAt,
     this.distanceInMeters,
+    this.isReviewResolved,
+    this.severity,
+    this.userId,
+    this.deadline,
+    this.resolvedAt,
+    this.serverIsOverdue,
+    this.serverRemainingDays,
   });
 
   factory ReportModel.fromJson(Map<String, dynamic> json) {
@@ -31,10 +67,22 @@ class ReportModel {
       imageUrl: json['image_url'] as String? ?? '',
       latitude: (json['latitude'] as num?)?.toDouble() ?? 0.0,
       longitude: (json['longitude'] as num?)?.toDouble() ?? 0.0,
-      status: _mapStatus(json['status'] as String?),
+      status: mapStatus(json['status'] as String?),
       createdAt: json['created_at'] != null
           ? DateTime.tryParse(json['created_at'].toString()) ?? DateTime.now()
           : DateTime.now(),
+      distanceInMeters: (json['distance_in_meters'] as num?)?.toDouble(),
+      isReviewResolved: json['is_review_resolved'] as bool? ?? json['isReviewResolved'] as bool?,
+      severity: mapSeverity(json['severity'] as String?),
+      userId: json['user_id'] as String?,
+      deadline: (json['deadline'] ?? json['report_deadline']) != null
+          ? DateTime.tryParse((json['deadline'] ?? json['report_deadline']).toString())
+          : null,
+      resolvedAt: (json['resolved_at'] ?? json['resolvedAt']) != null
+          ? DateTime.tryParse((json['resolved_at'] ?? json['resolvedAt']).toString())
+          : null,
+      serverIsOverdue: (json['is_overdue'] ?? json['isOverdue']) as bool?,
+      serverRemainingDays: ((json['remaining_days'] ?? json['remainingDays']) as num?)?.toInt(),
     );
   }
 
@@ -48,6 +96,13 @@ class ReportModel {
       'longitude': longitude,
       'status': _statusToString(status),
       'created_at': createdAt.toIso8601String(),
+      'is_review_resolved': isReviewResolved,
+      'severity': severity?.name,
+      'user_id': userId,
+      'deadline': deadline?.toIso8601String(),
+      'resolved_at': resolvedAt?.toIso8601String(),
+      'is_overdue': serverIsOverdue,
+      'remaining_days': serverRemainingDays,
     };
   }
 
@@ -61,6 +116,13 @@ class ReportModel {
     ReportStatus? status,
     DateTime? createdAt,
     double? distanceInMeters,
+    bool? isReviewResolved,
+    EReportSeverity? severity,
+    String? userId,
+    DateTime? deadline,
+    DateTime? resolvedAt,
+    bool? serverIsOverdue,
+    int? serverRemainingDays,
   }) {
     return ReportModel(
       id: id ?? this.id,
@@ -72,10 +134,33 @@ class ReportModel {
       status: status ?? this.status,
       createdAt: createdAt ?? this.createdAt,
       distanceInMeters: distanceInMeters ?? this.distanceInMeters,
+      isReviewResolved: isReviewResolved ?? this.isReviewResolved,
+      severity: severity ?? this.severity,
+      userId: userId ?? this.userId,
+      deadline: deadline ?? this.deadline,
+      resolvedAt: resolvedAt ?? this.resolvedAt,
+      serverIsOverdue: serverIsOverdue ?? this.serverIsOverdue,
+      serverRemainingDays: serverRemainingDays ?? this.serverRemainingDays,
     );
   }
 
-  static ReportStatus _mapStatus(String? status) {
+  /// Severity từ backend (`low|medium|high|critical`); null nếu chưa được đánh giá.
+  static EReportSeverity? mapSeverity(String? severity) {
+    switch (severity?.toLowerCase()) {
+      case 'critical':
+        return EReportSeverity.critical;
+      case 'high':
+        return EReportSeverity.high;
+      case 'medium':
+        return EReportSeverity.medium;
+      case 'low':
+        return EReportSeverity.low;
+      default:
+        return null;
+    }
+  }
+
+  static ReportStatus mapStatus(String? status) {
     switch (status) {
       case 'processed':
       case 'Đã xử lý':

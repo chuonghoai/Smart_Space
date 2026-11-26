@@ -1,9 +1,10 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:smartspace_client/features/reports/models/report_category_model.dart';
 import 'package:smartspace_client/features/reports/models/report_model.dart';
 import 'package:smartspace_client/features/reports/services/report_service.dart';
-import 'package:smartspace_client/util/distance_updater_provider.dart';
-import 'package:smartspace_client/util/location_service.dart';
+import 'package:mobile_shared/util/distance_updater_provider.dart';
+import 'package:mobile_shared/util/location_service.dart';
 
 class ReportsState {
   final List<ReportModel> dangerousReports;
@@ -143,6 +144,35 @@ class ReportsNotifier extends StateNotifier<ReportsState> {
     }
   }
 
+  Future<void> addNewReport(ReportModel report) async {
+    final position = await locationService.getCurrentPosition();
+    double? distance;
+    if (position != null) {
+      distance = locationService.calculateDistance(
+        position.latitude,
+        position.longitude,
+        report.latitude,
+        report.longitude,
+      );
+    }
+    
+    final reportWithDistance = report.copyWith(distanceInMeters: distance);
+    
+    final List<ReportModel> currentList = List.from(state.recentReports);
+    currentList.add(reportWithDistance);
+    currentList.sort((a, b) {
+      final distA = a.distanceInMeters ?? double.infinity;
+      final distB = b.distanceInMeters ?? double.infinity;
+      return distA.compareTo(distB);
+    });
+    
+    if (currentList.length > 5) {
+      currentList.removeLast();
+    }
+    
+    state = state.copyWith(recentReports: currentList);
+  }
+
   Future<void> refreshAll() async {
     await Future.wait([
       fetchDangerousReports(forceRefresh: true),
@@ -155,4 +185,13 @@ final reportsProvider = StateNotifierProvider<ReportsNotifier, ReportsState>((
   ref,
 ) {
   return ReportsNotifier(reportService, ref);
+});
+
+final reportCategoriesProvider =
+    FutureProvider.autoDispose<List<ReportCategoryModel>>((ref) async {
+  final response = await reportService.getCategories();
+  if (response.success && response.data != null) {
+    return response.data!;
+  }
+  throw Exception(response.message);
 });

@@ -9,12 +9,25 @@ public record ChatMessageRequest(
 
         String tempId, // Temporary ID từ client để map với message đã gửi (optimistic UI)
 
-        @NotBlank(message = "Conversation id is required") String conversationId, // ID của conversation
+        @NotBlank(message = "{chat.conversationId.required}") String conversationId, // ID của conversation
 
         String content, // Nội dung tin nhắn (bắt buộc với TEXT, optional với MEDIA)
 
-        @NotNull(message = "Message type is required") EMessageType messageType, // TEXT hoặc MEDIA
+        @NotNull(message = "{chat.messageType.required}") EMessageType messageType, // TEXT hoặc MEDIA
 
-        List<MessageMediaRequest> messageMedia // Danh sách media files (optional)
+        List<MessageMediaRequest> messageMedia, // Danh sách media files (optional)
+
+        String reportId, // ID của report đính kèm (legacy single report, backward-compatible)
+
+        List<String> reportIds // Danh sách ID report đính kèm (hỗ trợ đính kèm nhiều phản ánh)
 ) {
+    public ChatMessageRequest(
+            String tempId,
+            String conversationId,
+            String content,
+            EMessageType messageType,
+            List<MessageMediaRequest> messageMedia,
+            String reportId) {
+        this(tempId, conversationId, content, messageType, messageMedia, reportId, null);
+    }
 }

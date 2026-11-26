@@ -1,5 +1,7 @@
 package com.vn.smart_space.dto.request.auth;
 
+import com.vn.smart_space.consts.ERole;
+
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.vn.smart_space.validation.StrongPassword;
 
@@ -14,18 +16,29 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class RegisterRequest {
-    @NotBlank(message = "Email không được để trống")
-    @Email(message = "Email không hợp lệ")
+    @NotBlank(message = "{auth.email.required}")
+    @Email(message = "{auth.email.invalid}")
     String email;
 
-    @NotBlank(message = "Mật khẩu không được để trống")
+    ERole role;
+
+    @NotBlank(message = "{auth.password.required}")
     @StrongPassword
     String password;
 
-    @NotBlank(message = "Xác nhận mật khẩu không được để trống")
+    @NotBlank(message = "{auth.confirmPassword.required}")
     @JsonProperty("confirm_password")
     String confirmPassword;
 
     Boolean rememberMe;
+
+    String language;
+
+    @NotBlank(message = "{auth.deviceId.required}")
+    String deviceId;
+    
+    String deviceName;
+    String platform;
+    String ipAddress;
 
 }

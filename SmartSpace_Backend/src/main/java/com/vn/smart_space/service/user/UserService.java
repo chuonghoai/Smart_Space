@@ -1,5 +1,7 @@
 package com.vn.smart_space.service.user;
 
+import com.vn.smart_space.repository.ActivityHistoryRepository;
+
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -18,6 +20,7 @@ import com.vn.smart_space.dto.response.auth.LoginResponse;
 import com.vn.smart_space.dto.response.user.UserResponse;
 import com.vn.smart_space.exception.BadRequestException;
 import com.vn.smart_space.mapper.UserMapper;
+import com.vn.smart_space.model.ActivityHistory;
 import com.vn.smart_space.model.User;
 import com.vn.smart_space.repository.UserRepository;
 import com.vn.smart_space.service.auth.IAuthenticationService;
@@ -33,6 +36,7 @@ public class UserService implements IUserService {
     private final IJwtService jwtService;
 
     private final UserRepository userRepository;
+    private final ActivityHistoryRepository activityHistoryRepository;
     private final PasswordEncoder passwordEncoder;
 
     private final StringRedisTemplate stringRedisTemplate;
@@ -44,19 +48,22 @@ public class UserService implements IUserService {
     @Transactional
     public LoginResponse createUser(RegisterRequest request) {
 
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new BadRequestException("Email already exists");
+        // Luồng đăng ký public chỉ dành cho client; admin/staff do quản trị viên cấp
+        authenticationService.assertSelfRegistrableRole(request.getRole());
+
+        if (userRepository.existsByEmailAndRole(request.getEmail(), request.getRole())) {
+            throw new BadRequestException("auth.email.exists");
         }
 
         if (!request.getPassword().equals(request.getConfirmPassword())) {
-            throw new BadRequestException("Mật khẩu xác nhận không khớp");
+            throw new BadRequestException("user.password.not_match");
         }
 
         // Check OTP is verified
-        String verifiedKey = "otp_verified:register:" + request.getEmail();
+        String verifiedKey = "otp_verified:register:" + request.getEmail() + ":" + request.getRole().name();
         String verified = stringRedisTemplate.opsForValue().get(verifiedKey);
         if (!"true".equals(verified)) {
-            throw new BadRequestException("Email chưa được xác thực OTP");
+            throw new BadRequestException("auth.email.unverified");
         }
         stringRedisTemplate.delete(verifiedKey);
 
@@ -72,21 +79,39 @@ public class UserService implements IUserService {
         User user = User.builder()
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(ERole.client)
+                .role(request.getRole())
                 .status(EUserStatus.active)
                 .fullName(emailPrefix)
                 .avatarUrl(defaultAvatar)
+                .language(request.getLanguage() != null ? request.getLanguage() : "vi")
                 .build();
 
-        userRepository.save(user);
+        user = userRepository.save(user);
+        
+        String actorName = (user.getFullName() != null && !user.getFullName().trim().isEmpty())
+                ? user.getFullName().trim()
+                : (user.getEmail() != null && !user.getEmail().trim().isEmpty() ? user.getEmail().trim() : "Người dùng");
+        String i18nKey = "activity.user.registered|" + actorName;
+
+        ActivityHistory activity = ActivityHistory.builder()
+            .actor(user)
+            .i18nKey(i18nKey)
+            .targetId(user.getId())
+            .build();
+        activityHistoryRepository.save(activity);
 
         // Login
-        TokenPayload accessToken = jwtService.generateAccessToken(user);
+        TokenPayload accessToken = jwtService.generateAccessToken(user, request.getDeviceId());
 
         boolean rememberMe = Boolean.TRUE.equals(request.getRememberMe());
         TokenPayload refreshToken = jwtService.generateRefreshToken(user, rememberMe);
 
-        authenticationService.saveRefreshTokenToRedis(user.getId(), refreshToken);
+        authenticationService.saveRefreshTokenToRedis(
+                user.getId(), refreshToken,
+                request.getDeviceId(),
+                request.getDeviceName(),
+                request.getPlatform(),
+                request.getIpAddress());
 
         return LoginResponse.builder()
                 .accessToken(accessToken.getToken())
@@ -99,18 +124,18 @@ public class UserService implements IUserService {
 
     @Override
     public User findUserById(String id) {
-        return userRepository.findById(id).orElseThrow(() -> new BadRequestException("User not found"));
+        return userRepository.findById(id).orElseThrow(() -> new BadRequestException("user.not_found"));
     }
 
     @Override
-    public User findUserByEmail(String email) {
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new BadRequestException("User not found with email: " + email));
+    public User findUserByEmailAndRole(String email, ERole role) {
+        return userRepository.findByEmailAndRole(email, role)
+                .orElseThrow(() -> new BadRequestException("user.not_found"));
     }
 
     @Override
-    public UserResponse getMe(String email) {
-        User user = findUserByEmail(email);
+    public UserResponse getMe(String userId) {
+        User user = findUserById(userId);
         return userMapper.toUserResponse(user);
     }
 
@@ -119,10 +144,10 @@ public class UserService implements IUserService {
     public void resetPassword(ResetPasswordRequest request) {
 
         if (!request.getNewPassword().equals(request.getConfirmPassword())) {
-            throw new BadRequestException("Mật khẩu xác nhận không khớp");
+            throw new BadRequestException("user.password.not_match");
         }
 
-        User user = findUserByEmail(request.getEmail());
+        User user = findUserByEmailAndRole(request.getEmail(), request.getRole());
 
         String otpKey = "otp:forgot_password:" + request.getEmail();
         authenticationService.verifyOtpForgotPassword(otpKey, request.getOtp());
@@ -135,13 +160,19 @@ public class UserService implements IUserService {
     // Update Profile
     @Override
     @Transactional
-    public UserResponse updateProfile(String email, UpdateProfileRequest request) {
-        User user = findUserByEmail(email);
+    public UserResponse updateProfile(String userId, UpdateProfileRequest request) {
+        User user = findUserById(userId);
 
         user.setFullName(request.getFullName());
         user.setPhone(request.getPhone());
         if (request.getAvatarUrl() != null) {
             user.setAvatarUrl(request.getAvatarUrl());
+        }
+        if (request.getDateOfBirth() != null) {
+            user.setDateOfBirth(request.getDateOfBirth());
+        }
+        if (request.getGender() != null) {
+            user.setGender(request.getGender());
         }
 
         userRepository.save(user);
@@ -152,8 +183,15 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public void devCreateAccount(DevCreateAccountRequest request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new BadRequestException("Email already exists");
+        ERole role;
+        try {
+            role = ERole.valueOf(request.getRole().toLowerCase());
+        } catch (IllegalArgumentException e) {
+            throw new BadRequestException("auth.role.invalid");
+        }
+
+        if (userRepository.existsByEmailAndRole(request.getEmail(), role)) {
+            throw new BadRequestException("auth.email.exists");
         }
 
         String emailPrefix = request.getEmail().split("@")[0];
@@ -163,13 +201,6 @@ public class UserService implements IUserService {
                 : emailPrefix.toUpperCase();
         String defaultAvatar = "https://ui-avatars.com/api/?name=" + nameAvatar
                 + "&background=6366f1&color=fff&size=200&bold=true&font-size=0.4";
-
-        ERole role;
-        try {
-            role = ERole.valueOf(request.getRole().toLowerCase());
-        } catch (IllegalArgumentException e) {
-            throw new BadRequestException("Invalid role");
-        }
 
         User user = User.builder()
                 .email(request.getEmail())
@@ -184,20 +215,33 @@ public class UserService implements IUserService {
     }
 
     @Override
-    public void changePassword(String email, ChangePasswordRequest request) {
+    public void changePassword(String userId, ChangePasswordRequest request) {
 
-        User user = findUserByEmail(email);
+        User user = findUserById(userId);
         if (!passwordEncoder.matches(request.currentPassword(), user.getPassword())) {
-            throw new BadRequestException("Mật khẩu hiện tại không chính xác");
+            throw new BadRequestException("user.password.invalid");
         }
 
         if (!request.newPassword().equals(request.confirmPassword())) {
-            throw new BadRequestException("Mật khẩu xác nhận không khớp");
+            throw new BadRequestException("user.password.not_match");
         }
 
         user.setPassword(passwordEncoder.encode(request.newPassword()));
         userRepository.save(user);
 
+    }
+
+    @Override
+    @Transactional
+    public void updateLanguage(String userId, String language) {
+        User user = findUserById(userId);
+        if (language != null && !language.isBlank()) {
+            user.setLanguage(language);
+            userRepository.save(user);
+            // Cập nhật lại cache trong Redis
+            String redisKey = "user_language:" + userId;
+            stringRedisTemplate.opsForValue().set(redisKey, language);
+        }
     }
 
 }

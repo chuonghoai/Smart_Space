@@ -1,19 +1,169 @@
 package com.vn.smart_space.repository;
 
+import java.time.LocalDateTime;
+import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
+import com.vn.smart_space.consts.ERole;
+import com.vn.smart_space.consts.EUserStatus;
 import com.vn.smart_space.model.User;
+
+import jakarta.persistence.LockModeType;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, String> {
 
-    Optional<User> findByEmail(String email);
-
     Optional<User> findById(String id);
 
-    boolean existsByEmail(String email);
+    boolean existsByEmailAndRole(String email, ERole role);
+
+    Optional<User> findByEmailAndRole(String email, ERole role);
+
+    long countByRole(ERole role);
+
+    List<User> findByRole(ERole role);
+
+    List<User> findByRoleIn(Collection<ERole> roles);
+
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.position " +
+            "WHERE u.role = :role AND u.id <> :excludeUserId AND u.status = 'active' " +
+            "AND (LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "     OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "     OR u.phone LIKE CONCAT('%', :keyword, '%'))")
+    List<User> searchActiveUsersByRole(@Param("role") ERole role, @Param("excludeUserId") String excludeUserId, @Param("keyword") String keyword, Pageable pageable);
+
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.position " +
+            "WHERE u.role = :role AND u.id <> :excludeUserId AND u.status = 'active' " +
+            "AND (:hasPositions = false OR u.position.id IN :positionIds) " +
+            "AND (LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "     OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "     OR u.phone LIKE CONCAT('%', :keyword, '%'))")
+    List<User> searchActiveUsersByRoleAndPositions(
+            @Param("role") ERole role,
+            @Param("excludeUserId") String excludeUserId,
+            @Param("hasPositions") boolean hasPositions,
+            @Param("positionIds") java.util.List<String> positionIds,
+            @Param("keyword") String keyword,
+            Pageable pageable);
+
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.position " +
+            "WHERE u.role IN ('staff', 'admin') AND u.id <> :excludeUserId AND u.status = 'active' " +
+            "AND (LOWER(u.fullName) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "     OR LOWER(u.email) LIKE LOWER(CONCAT('%', :keyword, '%')) " +
+            "     OR u.phone LIKE CONCAT('%', :keyword, '%'))")
+    List<User> searchActiveStaffAndAdmins(@Param("excludeUserId") String excludeUserId, @Param("keyword") String keyword, Pageable pageable);
+
+    // Search and Filter Staff
+    @Query(value = "SELECT u FROM User u LEFT JOIN FETCH u.position WHERE u.role = :role " +
+            "AND (:status IS NULL OR u.status = :status) " +
+            "AND (:positionId IS NULL OR u.position.id = :positionId) " +
+            "AND (:search IS NULL OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "OR u.phone LIKE CONCAT('%', :search, '%'))",
+            countQuery = "SELECT COUNT(u) FROM User u WHERE u.role = :role " +
+                    "AND (:status IS NULL OR u.status = :status) " +
+                    "AND (:positionId IS NULL OR u.position.id = :positionId) " +
+                    "AND (:search IS NULL OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%')) " +
+                    "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) " +
+                    "OR u.phone LIKE CONCAT('%', :search, '%'))")
+    Page<User> findStaffs(
+            @Param("role") ERole role,
+            @Param("status") EUserStatus status,
+            @Param("positionId") String positionId,
+            @Param("search") String search,
+            Pageable pageable);
+
+    // Đếm theo role + status
+    long countByRoleAndStatus(ERole role, EUserStatus status);
+
+    /**
+     * Khóa ghi (SELECT ... FOR UPDATE) các tài khoản theo role + status trong transaction hiện tại.
+     * Dùng để tuần tự hóa các thao tác khóa admin đồng thời, tránh trường hợp hai admin
+     * khóa nhau cùng lúc khiến hệ thống không còn admin nào hoạt động.
+     */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT u FROM User u WHERE u.role = :role AND u.status = :status")
+    List<User> lockByRoleAndStatus(@Param("role") ERole role, @Param("status") EUserStatus status);
+
+    /** Khóa ghi một tài khoản — tuần tự hóa việc tạo đề xuất khóa cho cùng người dùng. */
+    @Lock(LockModeType.PESSIMISTIC_WRITE)
+    @Query("SELECT u FROM User u WHERE u.id = :id")
+    Optional<User> findByIdForUpdate(@Param("id") String id);
+
+    // Đếm số nhân viên đang giữ một chức vụ
+    long countByPositionId(String positionId);
+
+    // Đếm nhân viên theo từng chức vụ: [positionId, count]
+    @Query("SELECT u.position.id, COUNT(u) FROM User u " +
+            "WHERE u.role = :role AND u.position IS NOT NULL GROUP BY u.position.id")
+    List<Object[]> countStaffGroupByPosition(@Param("role") ERole role);
+
+    // Admin - User management: tìm kiếm theo role, sắp xếp lấy từ Pageable
+    @Query(value = "SELECT u FROM User u WHERE u.role = :role " +
+            "AND (:search IS NULL OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) " +
+            "OR u.phone LIKE CONCAT('%', :search, '%'))",
+            countQuery = "SELECT COUNT(u) FROM User u WHERE u.role = :role " +
+                    "AND (:search IS NULL OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%')) " +
+                    "OR LOWER(u.email) LIKE LOWER(CONCAT('%', :search, '%')) " +
+                    "OR u.phone LIKE CONCAT('%', :search, '%'))")
+    Page<User> searchByRole(
+            @Param("role") ERole role,
+            @Param("search") String search,
+            Pageable pageable);
+
+    Optional<User> findByIdAndRole(String id, ERole role);
+
+    // Đếm user đăng ký trong khoảng [from, to)
+    long countByRoleAndCreatedAtGreaterThanEqualAndCreatedAtLessThan(
+            ERole role, LocalDateTime from, LocalDateTime to);
+
+    // Lấy thời điểm đăng ký từ :from để gom nhóm trend
+    @Query("SELECT u.createdAt FROM User u WHERE u.role = :role AND u.createdAt >= :from")
+    List<LocalDateTime> findCreatedAtByRoleSince(
+            @Param("role") ERole role,
+            @Param("from") LocalDateTime from);
+
+    // Lấy user kèm chức vụ (tránh N+1 khi map sang StaffResponse)
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.position WHERE u.id IN :ids")
+    List<User> findWithPositionByIdIn(@Param("ids") List<String> ids);
+
+    // Staff chọn đồng nghiệp để nhờ làm giùm: staff đang hoạt động, trừ chính mình, tìm theo tên
+    @Query(value = "SELECT u FROM User u LEFT JOIN FETCH u.position WHERE u.role = :role AND u.status = :status " +
+            "AND u.id <> :excludeId " +
+            "AND (:search IS NULL OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%')))",
+            countQuery = "SELECT COUNT(u) FROM User u WHERE u.role = :role AND u.status = :status " +
+                    "AND u.id <> :excludeId " +
+                    "AND (:search IS NULL OR LOWER(u.fullName) LIKE LOWER(CONCAT('%', :search, '%')))")
+    Page<User> searchColleagues(
+            @Param("role") ERole role,
+            @Param("status") EUserStatus status,
+            @Param("excludeId") String excludeId,
+            @Param("search") String search,
+            Pageable pageable);
+
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.position " +
+            "WHERE u.role = :role AND u.status = :status " +
+            "AND u.position.id IN :positionIds")
+    List<User> findActiveStaffByPositionIds(
+            @Param("role") ERole role,
+            @Param("status") EUserStatus status,
+            @Param("positionIds") Collection<String> positionIds);
+
+    @Query("SELECT u FROM User u LEFT JOIN FETCH u.position " +
+            "WHERE u.role = :role AND u.status = :status " +
+            "ORDER BY u.fullName ASC")
+    List<User> findAllActiveStaffWithPosition(
+            @Param("role") ERole role,
+            @Param("status") EUserStatus status);
 
 }

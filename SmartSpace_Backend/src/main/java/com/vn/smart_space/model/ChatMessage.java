@@ -3,6 +3,8 @@ package com.vn.smart_space.model;
 import com.vn.smart_space.consts.EMessageType;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.BatchSize;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -25,13 +27,18 @@ public class ChatMessage {
     private Conversation conversation;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "sender_id", nullable = false)
+    @JoinColumn(name = "sender_id", nullable = true)
     private User sender;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "report_id", nullable = true)
+    private Report report;
 
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "message_type", length = 32, columnDefinition = "VARCHAR(32)")
     @Builder.Default
     private EMessageType messageType = EMessageType.text;
 
@@ -41,5 +48,24 @@ public class ChatMessage {
 
     @OneToMany(mappedBy = "message", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @Builder.Default
+    @BatchSize(size = 20)
     private List<MessageMedia> mediaFiles = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "chat_message_reports",
+            joinColumns = @JoinColumn(name = "message_id"),
+            inverseJoinColumns = @JoinColumn(name = "report_id")
+    )
+    @Builder.Default
+    @BatchSize(size = 20)
+    private List<Report> attachedReports = new ArrayList<>();
+
+    public void addMedia(MessageMedia media) {
+        if (this.mediaFiles == null) {
+            this.mediaFiles = new ArrayList<>();
+        }
+        this.mediaFiles.add(media);
+        media.setMessage(this);
+    }
 }

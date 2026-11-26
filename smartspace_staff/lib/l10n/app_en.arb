@@ -62,7 +62,6 @@
   "pleaseEnterEmail": "Please enter email",
   "pleaseEnterOTP": "Please enter OTP",
   "pleaseEnterPassword": "Please enter password",
-  "passwordsDoNotMatch": "Passwords do not match",
   "pleaseEnterFullName": "Please enter full name",
   "pleaseEnterPhoneNumber": "Please enter phone number",
   "send": "Send",
@@ -88,6 +87,9 @@
   "dangerousReports": "Dangerous warnings",
   "map": "Map",
   "news": "News",
+  "newsDetail": "News Detail",
+  "newsNotFound": "News not found",
+  "targetAdmin": "Admin",
   "instructions": "Instructions",
   "viewAll": "View all",
   "dangerous": "DANGEROUS",
@@ -111,6 +113,7 @@
   "reportStatusRejected": "Rejected",
   "reportStatusUnknown": "Unknown",
   "sessionExpired": "Session expired",
+  "sessionRevokedOnThisDevice": "You have been signed out of this device from another device.",
   "settingsTitle": "Settings",
   "accountSection": "Account",
   "shareHistory": "Share History",
@@ -129,7 +132,6 @@
   "logoutConfirmTitle": "Log out",
   "logoutConfirmMessage": "Are you sure you want to log out?",
   "cancel": "Cancel",
-
   "changePasswordTitle": "Change Password",
   "currentPassword": "Current Password",
   "confirmNewPassword": "Confirm New Password",
@@ -142,5 +144,369 @@
   "changePasswordFailed": "Failed to change password",
   "passwordReqLength": "Password must be 8-20 characters",
   "passwordReqMixed": "Include numbers, uppercase, lowercase",
-  "passwordReqSpecial": "Include at least one special character !@#$^()_"
+  "passwordReqSpecial": "Include at least one special character !@#$^()_",
+  "actionView": "View",
+  "routeSplash": "Splash Screen",
+  "routeLogin": "Login",
+  "routeHome": "Home",
+  "routeSettings": "Settings",
+  "routeReportDetail": "Report Detail",
+  "staffSplashAppName": "SmartSpace Staff",
+  "staffSplashTagline": "Incident management and processing tool.",
+  "totalAssigned": "Total assigned",
+  "needsYourAttention": "Needs your attention",
+  "myWorkDashboard": "My Work",
+  "gpsError": "Cannot locate GPS, please check your device",
+  "filterAll": "All",
+  "distanceAway": "{distance} away",
+  "@distanceAway": {
+    "placeholders": {
+      "distance": {
+        "type": "String"
+      }
+    }
+  },
+  "routeNotifications": "Notifications",
+  "markAllAsRead": "Mark all as read",
+  "emptyNotification": "You have no notifications.",
+  "dayAgo": "days ago",
+  "hourAgo": "hours ago",
+  "minuteAgo": "minutes ago",
+  "justNow": "Just now",
+  "calculatingDistance": "Calculating distance...",
+  "reportDetails": "Report Details",
+  "turnOnLocationToViewDistance": "Turn on location to view the distance from the incident to your location",
+  "openInGoogleMaps": "Open in Google Maps",
+  "createdAtLabel": "Created at",
+  "statusLabel": "Status",
+  "severityLabel": "Severity",
+  "severityLow": "Low",
+  "severityMedium": "Medium",
+  "severityHigh": "High",
+  "severityCritical": "Critical",
+  "anonymousUser": "Anonymous",
+  "reporter": "Reporter",
+  "locationServiceDisabledError": "Please enable location services on your device",
+  "locationPermissionDeniedForeverError": "Location permissions are permanently denied, please go to settings to enable",
+  "cannotOpenGoogleMapsError": "Cannot open Google Maps",
+  "errorOccurred": "An error occurred:\n{error}",
+  "@errorOccurred": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "retryButton": "Retry",
+  "assignedStaff": "Assigned Staff",
+  "newLabel": "New",
+  "staffPortalName": "SmartSpace Staff Portal",
+  "staffLoginSubtitle": "Internal system for task processing",
+  "staffWelcome": "Employee Sign In",
+  "quickAccessMap": "Map",
+  "quickAccessNews": "News",
+  "quickAccessSettings": "Settings",
+  "quickAccessGuide": "Guide",
+  "routeMap": "Map",
+  "myLocation": "My Location",
+  "refresh": "Refresh",
+  "handleReport": "Handle Report",
+  "processReportAction": "Process",
+  "routeHandleReport": "Handle Report",
+  "evidencePhotos": "Evidence Photos",
+  "takePhoto": "Take Photo",
+  "chooseFromGallery": "Gallery",
+  "resolutionNote": "Resolution Note",
+  "resolutionNoteHint": "Describe handling results or notes...",
+  "slideToComplete": "Slide to complete",
+  "submittingReport": "Submitting...",
+  "reportProcessedSuccess": "Report resolved successfully!",
+  "provideEvidenceOrNoteWarning": "Please attach at least 1 evidence photo or enter a note",
+  "uploadingEvidence": "Uploading evidence photos...",
+  "submittingReportBackground": "Your report handling info is being submitted, please do not close the app",
+  "submittingReportBackgroundTitle": "Submitting Handling Information",
+  "uploadingEvidenceProgress": "Uploading evidence photos ({current}/{total})...",
+  "@uploadingEvidenceProgress": {
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "almostDoneFinalizing": "Finalizing report resolution ({current}/{total})...",
+  "@almostDoneFinalizing": {
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "handlingCompletedSuccess": "Handling information submitted successfully!",
+  "gotIt": "Got it",
+  "handlingProgressTitle": "Handling Submission Progress",
+  "errorTitle": "An error occurred",
+  "provideEvidencePhotoWarning": "Please attach at least 1 evidence photo before completing",
+  "evidencePhotosRequired": "Resolution evidence photos *",
+  "rehandling": "Re-handling",
+  "rehandlingBadge": "Re-handling",
+  "rehandlingNotice": "This report was rated unsatisfactory and is being re-handled",
+  "routeChangePassword": "Change Password",
+  "routeEditProfile": "Edit Profile",
+  "routeManageDevices": "Manage Devices",
+  "editProfile": "Edit Profile",
+  "changeAvatar": "Change Photo",
+  "pickImageFailed": "Could not pick the image. Please try again.",
+  "dateOfBirth": "Date of Birth",
+  "gender": "Gender",
+  "genderMale": "Male",
+  "genderFemale": "Female",
+  "genderOther": "Other",
+  "saveChanges": "Save Changes",
+  "profileUpdateSuccess": "Profile updated successfully",
+  "profileUpdateFailed": "Failed to update profile",
+  "loggedInDevices": "Logged in devices",
+  "thisDevice": "This device",
+  "activeNow": "Active now",
+  "logoutDevice": "Logout",
+  "logoutDeviceConfirmTitle": "Logout from device?",
+  "logoutDeviceConfirmMessage": "The session on \"{deviceName}\" will be ended.",
+  "@logoutDeviceConfirmMessage": {
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "logoutAllOtherDevices": "Logout all other devices",
+  "logoutAllConfirmTitle": "Logout all other devices?",
+  "logoutAllConfirmMessage": "All sessions except this device will be ended.",
+  "noOtherDevices": "No other devices logged in.",
+  "deviceLogoutSuccess": "Device logged out.",
+  "allDevicesLogoutSuccess": "All other devices logged out.",
+  "latestNews": "Latest News",
+  "routeNewsList": "News",
+  "emptyNewsTitle": "No news yet",
+  "emptyNewsDescription": "There are currently no news or announcements.",
+  "viewDetail": "View details",
+  "mapNormalReports": "Normal",
+  "mapShowAllTasks": "Show all my tasks",
+  "mapNoActiveTasks": "You have no tasks in progress",
+  "mapClusterReportsTitle": "{count, plural, =1{1 report in this area} other{{count} reports in this area}}",
+  "@mapClusterReportsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapClusterSortNearest": "Nearest to you first",
+  "mapClusterSortHint": "Most dangerous first, then newest",
+  "mapShowingFirstTasks": "{count, plural, =1{Showing the first task} other{Showing the first {count} tasks}}",
+  "@mapShowingFirstTasks": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapLoadReportsFailed": "Couldn't load tasks on the map",
+  "viewOnMap": "View on map",
+  "mapFocusedReportHidden": "This report isn't one of your tasks in progress, so it isn't shown on the map",
+  "mapGetDirections": "Directions",
+  "mapNoTasksForFilter": "No tasks match the current filters",
+  "locationSection": "Incident Location",
+  "noAddress": "No address provided",
+  "locationDescriptionLabel": "Location description",
+  "userPhone": "Phone number",
+  "resolutionInfo": "Resolution Details",
+  "resolutionImages": "Resolution Photos",
+  "resolvedAtLabel": "Completion Time",
+  "citizenReviewUnresolved": "Citizen Feedback: Unresolved",
+  "citizenRating": "Citizen Rating",
+  "citizenReviewReason": "Reason for Unsatisfactory",
+  "citizenReviewPhotos": "Citizen Photos",
+  "statusPending": "Pending",
+  "saveSuccess": "Saved successfully",
+  "deleteSuccess": "Deleted successfully",
+  "confirmDelete": "Confirm Delete",
+  "createdDate": "Created Date",
+  "save": "Save",
+  "genericError": "An error occurred, please try again!",
+  "confirmCancel": "Cancel request",
+  "statusCancelled": "Cancelled",
+  "routeDelegations": "Delegated tasks",
+  "delegationScreenTitle": "Delegated tasks",
+  "delegationTabReceived": "Received",
+  "delegationTabSent": "Sent",
+  "delegationEmptyReceived": "No one has asked you to handle a task yet",
+  "delegationEmptySent": "You haven't asked anyone to handle a task yet",
+  "delegationLoadFailed": "Couldn't load delegation requests",
+  "delegationRequestAction": "Ask a colleague",
+  "delegationSheetTitle": "Ask a colleague to handle this task",
+  "delegationSearchHint": "Search colleagues by name",
+  "delegationNoColleagues": "No matching colleagues",
+  "delegationChooseColleague": "Choose a colleague",
+  "delegationNoteLabel": "Message (optional)",
+  "delegationSendAction": "Send request",
+  "delegationSentSuccess": "Delegation request sent",
+  "delegationPendingRequesterBanner": "Waiting for {name} to accept",
+  "@delegationPendingRequesterBanner": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "delegationAcceptedRequesterBanner": "{name} is handling this task for you",
+  "@delegationAcceptedRequesterBanner": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "delegationPendingHelperBanner": "{name} asked you to handle this task",
+  "@delegationPendingHelperBanner": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "delegationAcceptedHelperBanner": "You are handling this task for {name}",
+  "@delegationAcceptedHelperBanner": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "delegationExpiresAt": "Expires at {time}",
+  "@delegationExpiresAt": {
+    "placeholders": { "time": { "type": "String" } }
+  },
+  "delegationAcceptAction": "Accept",
+  "delegationDeclineAction": "Decline",
+  "delegationCancelAction": "Cancel request",
+  "delegationAcceptConfirmTitle": "Accept this task?",
+  "delegationAcceptConfirmMessage": "The report will be assigned to you and you'll be responsible for resolving it.",
+  "delegationDeclineConfirmTitle": "Decline this request?",
+  "delegationDeclineConfirmMessage": "{name} will be notified that you declined.",
+  "@delegationDeclineConfirmMessage": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "delegationCancelConfirmTitle": "Cancel this request?",
+  "delegationCancelConfirmMessage": "This delegation request will be cancelled.",
+  "delegationAcceptedSuccess": "You accepted the task",
+  "delegationDeclinedSuccess": "Request declined",
+  "delegationCancelledSuccess": "Delegation request cancelled",
+  "delegationFrom": "From {name}",
+  "@delegationFrom": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "delegationTo": "Asked {name}",
+  "@delegationTo": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "delegationStatusPending": "Awaiting reply",
+  "delegationStatusAccepted": "In progress",
+  "delegationStatusDeclined": "Declined",
+  "delegationStatusCancelled": "Cancelled",
+  "delegationStatusExpired": "Expired",
+  "delegationStatusCompleted": "Completed",
+  "delegationStatusRevoked": "Revoked",
+  "routeConversations": "Messages",
+  "routeChatDetail": "Conversation",
+  "conversations": "Messages",
+  "quickAccessChat": "Messages",
+  "roleClient": "Resident",
+  "roleStaff": "Staff",
+  "roleAdmin": "Admin",
+  "staffNoPosition": "Staff with no assigned position",
+  "chatInputHint": "Type a message...",
+  "chatDisabledNotice": "You cannot message {name} at this time",
+  "@chatDisabledNotice": {
+    "placeholders": { "name": { "type": "String" } }
+  },
+  "messageReporter": "Message",
+  "emptyConversations": "No conversations yet",
+  "emptyConversationsDesc": "Conversations with residents and colleagues will appear here.",
+  "emptyMessages": "No messages yet. Start chatting!",
+  "errorLoadConversations": "Could not load conversations",
+  "errorLoadMessages": "Could not load messages",
+  "sendMessageFailed": "Failed to send message, tap to retry",
+  "anonymousPerson": "Anonymous User",
+  "filterClient": "Resident",
+  "filterStaff": "Staff",
+  "filterAdmin": "Admin",
+  "sendAction": "Send",
+  "callClient": "Call",
+  "noPhoneNumber": "No phone number available",
+  "searchConversations": "Search by name, phone, email...",
+  "otherUsers": "Other users",
+  "startConversation": "Start conversation",
+  "noUsersFound": "No users found",
+  "filterPosition": "Positions",
+  "filterByPosition": "Filter by position",
+  "apply": "Apply",
+  "cancel": "Cancel",
+  "clearFilter": "Clear filter",
+  "noPositionsAvailable": "No positions available",
+  "positionSelectedCount": "{count} positions",
+  "@positionSelectedCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "routeConversationInfo": "Conversation Info",
+  "conversationInfoTitle": "Conversation Info",
+  "activeReportsSection": "Active Reports",
+  "activeReportsCount": "{count} active reports",
+  "@activeReportsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "allReportsProcessed": "All reports have been processed",
+  "conversationClosedNotice": "Conversation closed as all reports have been processed",
+  "conversationActiveNotice": "Conversation is currently active",
+  "callButtonLabel": "Call",
+  "videoCallButtonLabel": "Video call",
+  "videoCallComingSoon": "Video call feature is under development",
+  "cannotMakePhoneCall": "Cannot initiate phone call",
+  "viewReportDetail": "View Details",
+  "anonymousUserProtectionNote": "Contact info is protected for anonymous reports",
+  "conversationRefreshed": "Conversation info and messages refreshed successfully",
+  "conversationRefreshFailed": "Could not refresh conversation, please try again later",
+  "noActiveReportsInConversation": "No active reports in this conversation",
+  "yesterday": "Yesterday",
+  "conversationLockedBadge": "Locked",
+  "callOptionsTitle": "Call options",
+  "cellularCall": "Cellular call",
+  "cellularCallDesc": "Open default phone app",
+  "freeCall": "Free in-app voice call",
+  "featureUnderDevelopment": "Feature under development",
+  "comingSoon": "Coming soon",
+  "phoneNotAvailable": "Phone number is not available",
+  "freeCallComingSoon": "Free in-app voice call feature is under development",
+  "chooseFromGallery": "Choose photo from gallery",
+  "chooseVideo": "Choose video",
+  "takePhoto": "Take photo",
+  "attachReport": "Attach report",
+  "markAsRead": "Mark as read",
+  "typingText": "typing...",
+  "pressAndHoldToRecord": "Press and hold to record",
+  "slideLeftToCancel": "Slide left to cancel",
+  "releaseToCancel": "Release to cancel",
+  "selectReportToAttach": "Select report to attach",
+  "voiceMessageSnippet": "Voice message",
+  "imageSnippet": "Photo",
+  "videoSnippet": "Video",
+  "attachedReportSnippet": "Attached report",
+  "reportDeadlineLabel": "Resolution deadline",
+  "deadlineOverdueBadge": "Overdue",
+  "daysRemainingLabel": "{days} days left",
+  "@daysRemainingLabel": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "overdueOnlyFilter": "Overdue",
+  "rejectedReasonTitle": "Rejection Reason",
+  "noRejectionReasonProvided": "Rejected by administrator.",
+  "assignedBaseLocationSection": "Assigned Station & Position",
+  "staffPositionLabel": "Assigned Position",
+  "staffPositionNotAssigned": "No position assigned",
+  "baseStationAddressLabel": "Representative Station / Area",
+  "baseStationCoordinatesLabel": "Representative Coordinates",
+  "baseStationNotConfigured": "Representative station not configured by administrator",
+  "baseStationReadOnlyHint": "Position and representative station are managed by the system administrator.",
+  "callFreeVoiceDesc": "Free internet voice call",
+  "callPermissionDenied": "Voice call unavailable for this conversation"
 }

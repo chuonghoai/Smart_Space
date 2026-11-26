@@ -1,12 +1,58 @@
+import 'package:mobile_shared/features/map/models/map_focus_target.dart';
+import 'package:smartspace_admin/routes/route_name.dart';
+
 class RouterPath {
-  static const String splash = '/splash';
-  static const String login = '/login';
-  static const String registerEmail = '/register-email';
-  static const String registerOtp = '/register-otp';
-  static const String registerPassword = '/register-password';
-  static const String home = '/home';
-  static const String completeProfile = '/complete-profile';
-  static const String forgotPassword = '/forgot-password';
-  static const String settings = '/settings';
-  static const String changePassword = '/change-password';
+  static String get splash => RouteName.splash.path;
+  static String get login => RouteName.login.path;
+  static String get home => RouteName.home.path;
+  static String get reportDetail => RouteName.reportDetail.path;
+  static String reportDetailWithId(String id) =>
+      RouteName.reportDetail.path.replaceAll(':id', id);
+  static String get completeProfile => RouteName.completeProfile.path;
+  static String get forgotPassword => RouteName.forgotPassword.path;
+  static String get settings => RouteName.settings.path;
+  static String get editProfile => RouteName.editProfile.path;
+  static String get changePassword => RouteName.changePassword.path;
+  static String get staffManagement => RouteName.staffManagement.path;
+  static String get userManagement => RouteName.userManagement.path;
+  static String get positionManagement => RouteName.positionManagement.path;
+  static String get categoryManagement => RouteName.categoryManagement.path;
+  static String get autoAssignCenter => RouteName.autoAssignCenter.path;
+  static String get adminBoard => RouteName.adminBoard.path;
+  /// Mở tab "Đề xuất khoá" và (nếu có) một đề xuất cụ thể.
+  static String adminBoardLockRequests([String? requestId]) => Uri(
+        path: RouteName.adminBoard.path,
+        queryParameters: {
+          'tab': 'lock-requests',
+          if (requestId != null && requestId.isNotEmpty) 'requestId': requestId,
+        },
+      ).toString();
+  static String get sosCenter => RouteName.sosCenter.path;
+  static String get sosDetail => RouteName.sosDetail.path;
+  static String sosDetailWithId(String id) => RouteName.sosDetail.path.replaceAll(':id', id);
+  static String get reportDashboard => RouteName.reportDashboard.path;
+  static String get reportList => RouteName.reportList.path;
+  static String get spaceMap => RouteName.spaceMap.path;
+  static String spaceMapWithFocus(MapFocusTarget focus) => focus.toLocation(spaceMap);
+  static String get search => RouteName.search.path;
+  static String get notifications => RouteName.notifications.path;
+  static String get manageDevices => RouteName.manageDevices.path;
+  static String get unsatisfactoryReports => RouteName.unsatisfactoryReports.path;
+  static String get newsManagement => RouteName.newsManagement.path;
+  static String get createNews => RouteName.createNews.path;
+  static String newsDetailWithId(String id) =>
+      RouteName.newsDetail.path.replaceAll(':id', id);
+  static String editNewsWithId(String id) =>
+      RouteName.editNews.path.replaceAll(':id', id);
+  static String get allActivities => RouteName.allActivities.path;
+  static String get conversations => RouteName.conversations.path;
+  static String get chatDetail => RouteName.chatDetail.path;
+  static String chatDetailWithId(String id) =>
+      RouteName.chatDetail.path.replaceAll(':id', id);
+  static String get conversationInfo => RouteName.conversationInfo.path;
+  static String conversationInfoWithId(String id) =>
+      RouteName.conversationInfo.path.replaceAll(':id', id);
+  static String get voiceCall => RouteName.voiceCall.path;
+  static String voiceCallWithId(String callId) =>
+      RouteName.voiceCall.path.replaceAll(':callId', callId);
 }

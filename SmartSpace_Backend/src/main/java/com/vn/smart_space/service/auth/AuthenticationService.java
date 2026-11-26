@@ -1,5 +1,7 @@
 package com.vn.smart_space.service.auth;
 
+import com.vn.smart_space.consts.ERole;
+
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.text.ParseException;
@@ -12,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.api.client.googleapis.auth.oauth2.GoogleIdToken;
@@ -20,9 +23,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.nimbusds.jwt.SignedJWT;
 import com.vn.smart_space.consts.ERegistrationStatus;
-import com.vn.smart_space.consts.ERole;
 import com.vn.smart_space.consts.EUserStatus;
-import com.vn.smart_space.dto.JwtInfo;
 import com.vn.smart_space.dto.TokenPayload;
 import com.vn.smart_space.dto.request.auth.GoogleLoginRequest;
 import com.vn.smart_space.dto.request.auth.IntrospectRequest;
@@ -30,18 +31,24 @@ import com.vn.smart_space.dto.request.auth.LoginRequest;
 import com.vn.smart_space.dto.request.auth.RefreshTokenRequest;
 import com.vn.smart_space.dto.response.IntrospectResponse;
 import com.vn.smart_space.dto.response.auth.LoginResponse;
+import com.vn.smart_space.dto.response.auth.SessionResponse;
 import com.vn.smart_space.exception.BadRequestException;
 import com.vn.smart_space.exception.UnauthorizedException;
 import com.vn.smart_space.mapper.UserMapper;
 import com.vn.smart_space.model.InvalidatedToken;
+import com.vn.smart_space.model.RefreshTokenSession;
 import com.vn.smart_space.model.User;
+import com.vn.smart_space.repository.DeviceTokenRepository;
 import com.vn.smart_space.repository.InvalidatedTokenRepository;
+import com.vn.smart_space.repository.RefreshTokenSessionRepository;
 import com.vn.smart_space.repository.UserRepository;
 import com.vn.smart_space.service.jwt.IJwtService;
+import com.vn.smart_space.service.jwt.JwtService;
 import com.vn.smart_space.service.mail.IMailService;
 import com.vn.smart_space.utils.OtpGenerator;
 
 import lombok.RequiredArgsConstructor;
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -49,6 +56,9 @@ public class AuthenticationService implements IAuthenticationService {
 
     private final UserRepository userRepository;
     private final InvalidatedTokenRepository invalidatedTokenRepository;
+    private final RefreshTokenSessionRepository sessionRepository;
+    private final DeviceTokenRepository deviceTokenRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     private final IJwtService jwtService;
     private final IMailService mailService;
@@ -62,7 +72,8 @@ public class AuthenticationService implements IAuthenticationService {
     @Value("${google.client-id}")
     private String googleClientId;
 
-    private static final String REFRESH_TOKEN_PREFIX = "refresh_token:";
+    private static final String BLOCKED_USER_KEY_PREFIX = "blocked_user:";
+    private static final Duration BLOCKED_USER_MARKER_TTL = Duration.ofMinutes(JwtService.ACCESS_TOKEN_TTL_MINUTES + 1);
 
     // Introspect Token
     @Override
@@ -77,6 +88,23 @@ public class AuthenticationService implements IAuthenticationService {
             if (invalidatedTokenRepository.existsById(jwtId)) {
                 isValid = false;
             }
+
+            // Check tài khoản vừa bị khóa )
+            Object userId = signedJWT.getJWTClaimsSet().getClaim("userId");
+            if (isValid && userId != null && isUserAccessRevoked(userId.toString())) {
+                isValid = false;
+            }
+
+            // Phiên của thiết bị đã bị thu hồi (đăng xuất / đăng xuất từ xa) → access token
+            // của thiết bị đó hết hiệu lực ngay, không đợi tới khi hết hạn 30 phút.
+            // Refresh token luôn sống lâu hơn access token (≥ 1 ngày) nên phiên hợp lệ
+            // luôn còn trong Redis suốt vòng đời access token.
+            Object deviceId = signedJWT.getJWTClaimsSet().getClaim("deviceId");
+            Object tokenType = signedJWT.getJWTClaimsSet().getClaim("tokenType");
+            if (isValid && "access".equals(tokenType) && userId != null && deviceId != null
+                    && !sessionRepository.existsById(sessionKey(userId.toString(), deviceId.toString()))) {
+                isValid = false;
+            }
         } catch (Exception e) {
             isValid = false;
         }
@@ -89,22 +117,34 @@ public class AuthenticationService implements IAuthenticationService {
     // Login Basic
     @Override
     public LoginResponse loginBasic(LoginRequest request) {
-        User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new BadRequestException("Email hoặc mật khẩu không chính xác"));
+        User user = userRepository.findByEmailAndRole(request.getEmail(), request.getRole())
+                .orElseThrow(() -> new BadRequestException("auth.invalid_credentials"));
 
         boolean isPasswordMatch = passwordEncoder.matches(request.getPassword(), user.getPassword());
         if (!isPasswordMatch) {
-            throw new BadRequestException("Email hoặc mật khẩu không chính xác");
+            throw new BadRequestException("auth.invalid_credentials");
+        }
+
+        assertNotBlocked(user);
+
+        if (request.getLanguage() != null && !request.getLanguage().isBlank()) {
+            user.setLanguage(request.getLanguage());
+            userRepository.save(user);
         }
 
         // Generate Access Token
-        TokenPayload accessToken = jwtService.generateAccessToken(user);
+        TokenPayload accessToken = jwtService.generateAccessToken(user, request.getDeviceId());
 
         // Generate Refresh Token
         boolean rememberMe = Boolean.TRUE.equals(request.getRememberMe());
         TokenPayload refreshToken = jwtService.generateRefreshToken(user, rememberMe);
 
-        saveRefreshTokenToRedis(user.getId(), refreshToken);
+        saveRefreshTokenToRedis(
+                user.getId(), refreshToken,
+                request.getDeviceId(),
+                request.getDeviceName(),
+                request.getPlatform(),
+                request.getIpAddress());
 
         return LoginResponse.builder()
                 .accessToken(accessToken.getToken())
@@ -118,44 +158,46 @@ public class AuthenticationService implements IAuthenticationService {
     @Override
     @Transactional
     public LoginResponse loginGoogle(GoogleLoginRequest request) {
-        // Verify Google ID Token
-        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(),
-                GsonFactory.getDefaultInstance())
-                .setAudience(Collections.singletonList(googleClientId))
-                .build();
-
-        GoogleIdToken idToken;
-        try {
-            idToken = verifier.verify(request.getIdToken());
-        } catch (GeneralSecurityException | IOException e) {
-            throw new BadRequestException("Google token không hợp lệ");
-        }
-
-        if (idToken == null) {
-            throw new BadRequestException("Google token không hợp lệ hoặc đã hết hạn");
-        }
-
-        // Extract info user
-        GoogleIdToken.Payload payload = idToken.getPayload();
+        // Verify Google ID Token & extract info user
+        GoogleIdToken.Payload payload = verifyGoogleIdToken(request.getIdToken());
         String email = payload.getEmail();
         String fullName = (String) payload.get("name");
 
         // Find or create User
-        User user = userRepository.findByEmail(email)
+        User user = userRepository.findByEmailAndRole(email, request.getRole())
+                .map(existingUser -> {
+                    assertNotBlocked(existingUser);
+                    if (request.getLanguage() != null && !request.getLanguage().isBlank()) {
+                        existingUser.setLanguage(request.getLanguage());
+                        return userRepository.save(existingUser);
+                    }
+                    return existingUser;
+                })
                 .orElseGet(() -> {
+                    // Chỉ client được tự tạo tài khoản; admin/staff phải do quản trị viên cấp
+                    if (!request.getRole().isSelfRegistrable()) {
+                        throw new BadRequestException("auth.account.not_provisioned");
+                    }
                     User newUser = User.builder()
                             .email(email)
                             .fullName(fullName != null ? fullName : email.split("@")[0])
-                            .role(ERole.client)
+                            .role(request.getRole())
                             .status(EUserStatus.active)
+                            .language(request.getLanguage() != null ? request.getLanguage() : "vi")
                             .build();
                     return userRepository.save(newUser);
                 });
 
         // Generate JWT tokens
-        TokenPayload accessToken = jwtService.generateAccessToken(user);
+        TokenPayload accessToken = jwtService.generateAccessToken(user, request.getDeviceId());
         TokenPayload refreshToken = jwtService.generateRefreshToken(user, true);
-        saveRefreshTokenToRedis(user.getId(), refreshToken);
+
+        saveRefreshTokenToRedis(
+                user.getId(), refreshToken,
+                request.getDeviceId(),
+                request.getDeviceName(),
+                request.getPlatform(),
+                request.getIpAddress());
 
         return LoginResponse.builder()
                 .accessToken(accessToken.getToken())
@@ -169,28 +211,33 @@ public class AuthenticationService implements IAuthenticationService {
     @Override
     @Transactional
     public void logout(String token) {
-        JwtInfo jwtInfo = jwtService.parseToken(token);
-
-        Date expiryTime = jwtInfo.getExpiryTime();
-        if (expiryTime.before(new Date())) {
-            return;
-        }
-
-        // Set TTL
-        long ttlSeconds = (expiryTime.getTime() - System.currentTimeMillis()) / 1000;
-
-        invalidatedTokenRepository.save(InvalidatedToken.builder()
-                .id(jwtInfo.getJwtId())
-                .ttl(ttlSeconds)
-                .build());
-
+        // Chấp nhận access token đã hết hạn (chỉ cần đúng chữ ký): người dùng bấm đăng
+        // xuất sau 30 phút không hoạt động vẫn phải xoá được phiên của thiết bị, nếu không
+        // thiết bị sẽ còn mãi trong "Quản lý thiết bị".
+        SignedJWT signedJWT = jwtService.verifySignature(token);
         try {
-            SignedJWT signedJWT = SignedJWT.parse(token);
-            String email = signedJWT.getJWTClaimsSet().getSubject();
-            userRepository.findByEmail(email).ifPresent(user -> stringRedisTemplate.delete(
-                    REFRESH_TOKEN_PREFIX + user.getId()));
+            var claims = signedJWT.getJWTClaimsSet();
+            if (!"access".equals(claims.getClaim("tokenType"))) {
+                throw new UnauthorizedException("auth.token.invalid");
+            }
+
+            Date expiryTime = claims.getExpirationTime();
+            if (expiryTime != null && expiryTime.after(new Date()) && claims.getJWTID() != null) {
+                long ttlSeconds = (expiryTime.getTime() - System.currentTimeMillis()) / 1000;
+                invalidatedTokenRepository.save(InvalidatedToken.builder()
+                        .id(claims.getJWTID())
+                        .ttl(ttlSeconds)
+                        .build());
+            }
+
+            String userId = (String) claims.getClaim("userId");
+            String deviceId = (String) claims.getClaim("deviceId");
+            if (userId != null && deviceId != null) {
+                // Tự đăng xuất: không cần báo WS cho chính thiết bị này
+                removeDeviceSessions(userId, List.of(deviceId));
+            }
         } catch (ParseException e) {
-            // Access token đã blacklist
+            throw new UnauthorizedException("auth.token.invalid");
         }
     }
 
@@ -207,30 +254,42 @@ public class AuthenticationService implements IAuthenticationService {
                     .getClaim("tokenType");
 
             if (!"refresh".equals(tokenType)) {
-                throw new UnauthorizedException("Token không hợp lệ");
+                throw new UnauthorizedException("auth.token.invalid");
             }
 
-            String email = signedJWT.getJWTClaimsSet().getSubject();
-            User user = userRepository.findByEmail(email)
+            String userId = (String) signedJWT.getJWTClaimsSet().getClaim("userId");
+            User user = userRepository.findById(userId)
                     .orElseThrow(() -> new UnauthorizedException(
-                            "User không tồn tại"));
+                            "user.not_found"));
 
-            String redisKey = REFRESH_TOKEN_PREFIX + user.getId();
-            String storedToken = stringRedisTemplate.opsForValue()
-                    .get(redisKey);
-            if (storedToken == null || !storedToken.equals(refreshToken)) {
-                throw new UnauthorizedException(
-                        "Refresh token đã bị thu hồi");
+            List<RefreshTokenSession> sessions = sessionRepository.findByUserId(user.getId());
+
+            // Tài khoản bị khóa
+            if (user.getStatus() == EUserStatus.blocked) {
+                sessionRepository.deleteAll(sessions);
+                throw new UnauthorizedException("auth.account.blocked");
             }
+
+            RefreshTokenSession currentSession = sessions.stream()
+                    .filter(s -> s.getRefreshToken().equals(refreshToken))
+                    .findFirst()
+                    .orElseThrow(() -> new UnauthorizedException("auth.token.invalid"));
+
             TokenPayload newAccessToken = jwtService
-                    .generateAccessToken(user);
+                    .generateAccessToken(user, currentSession.getDeviceId());
 
             Boolean rememberMe = (Boolean) signedJWT.getJWTClaimsSet().getClaim("rememberMe");
             boolean isRememberMe = Boolean.TRUE.equals(rememberMe);
             TokenPayload newRefreshToken = jwtService
                     .generateRefreshToken(user, isRememberMe);
 
-            saveRefreshTokenToRedis(user.getId(), newRefreshToken);
+            saveRefreshTokenToRedis(
+                    user.getId(), newRefreshToken,
+                    currentSession.getDeviceId(),
+                    currentSession.getDeviceName(),
+                    currentSession.getPlatform(),
+                    currentSession.getIpAddress());
+
             return LoginResponse.builder()
                     .accessToken(newAccessToken.getToken())
                     .refreshToken(newRefreshToken.getToken())
@@ -238,37 +297,137 @@ public class AuthenticationService implements IAuthenticationService {
                     .user(userMapper.toUserResponse(user))
                     .build();
         } catch (ParseException e) {
-            throw new UnauthorizedException("Token không hợp lệ");
+            throw new UnauthorizedException("auth.token.invalid");
         }
+    }
+
+    @Override
+    public List<SessionResponse> getActiveSessions(String userId, String currentDeviceId) {
+        List<RefreshTokenSession> sessions = sessionRepository.findByUserId(userId);
+        return sessions.stream().map(s -> SessionResponse.builder()
+                .sessionId(s.getDeviceId())
+                .deviceName(s.getDeviceName())
+                .platform(s.getPlatform())
+                .ipAddress(s.getIpAddress())
+                .currentDevice(s.getDeviceId().equals(currentDeviceId))
+                .lastActiveAt(s.getLastActiveAt())
+                .build()).toList();
+    }
+
+    @Override
+    @Transactional
+    public void revokeSession(String userId, String deviceId) {
+        if (deviceId == null || deviceId.isBlank()) {
+            return;
+        }
+        removeDeviceSessions(userId, List.of(deviceId));
+        eventPublisher.publishEvent(new SessionRevokedEvent(userId, List.of(deviceId)));
+    }
+
+    /** Xoá phiên (refresh token) + FCM token của các thiết bị → access token hết hiệu lực ngay. */
+    private void removeDeviceSessions(String userId, List<String> deviceIds) {
+        if (deviceIds.isEmpty()) {
+            return;
+        }
+        sessionRepository.deleteAllById(deviceIds.stream().map(id -> sessionKey(userId, id)).toList());
+        deviceTokenRepository.deleteByUserIdAndDeviceIdIn(userId, deviceIds);
+    }
+
+    private static String sessionKey(String userId, String deviceId) {
+        return userId + ":" + deviceId;
+    }
+
+    @Override
+    public void revokeUserAccess(String userId) {
+        sessionRepository.deleteAll(sessionRepository.findByUserId(userId));
+        stringRedisTemplate.opsForValue().set(BLOCKED_USER_KEY_PREFIX + userId, "1", BLOCKED_USER_MARKER_TTL);
+    }
+
+    @Override
+    public void restoreUserAccess(String userId) {
+        stringRedisTemplate.delete(BLOCKED_USER_KEY_PREFIX + userId);
+    }
+
+    @Override
+    public void assertSelfRegistrableRole(ERole role) {
+        if (role == null || !role.isSelfRegistrable()) {
+            throw new BadRequestException("auth.role.invalid");
+        }
+    }
+
+    /** Xác thực Google ID token. */
+    GoogleIdToken.Payload verifyGoogleIdToken(String rawIdToken) {
+        GoogleIdTokenVerifier verifier = new GoogleIdTokenVerifier.Builder(new NetHttpTransport(),
+                GsonFactory.getDefaultInstance())
+                .setAudience(Collections.singletonList(googleClientId))
+                .build();
+
+        GoogleIdToken idToken;
+        try {
+            idToken = verifier.verify(rawIdToken);
+        } catch (GeneralSecurityException | IOException e) {
+            throw new BadRequestException("auth.google_token.invalid");
+        }
+
+        if (idToken == null) {
+            throw new BadRequestException("auth.google_token.expired");
+        }
+        return idToken.getPayload();
+    }
+
+    private boolean isUserAccessRevoked(String userId) {
+        return Boolean.TRUE.equals(stringRedisTemplate.hasKey(BLOCKED_USER_KEY_PREFIX + userId));
+    }
+
+    private void assertNotBlocked(User user) {
+        if (user.getStatus() == EUserStatus.blocked) {
+            throw new BadRequestException("auth.account.blocked");
+        }
+    }
+
+    @Override
+    @Transactional
+    public void revokeAllOtherSessions(String userId, String currentDeviceId) {
+        List<String> otherDeviceIds = sessionRepository.findByUserId(userId).stream()
+                .map(RefreshTokenSession::getDeviceId)
+                .filter(id -> id != null && !id.equals(currentDeviceId))
+                .toList();
+        if (otherDeviceIds.isEmpty()) {
+            return;
+        }
+        removeDeviceSessions(userId, otherDeviceIds);
+        eventPublisher.publishEvent(new SessionRevokedEvent(userId, otherDeviceIds));
     }
 
     // SEND OTP FOR REGISTRATION
     @Override
     @Transactional
-    public void sendOtpRegister(String email) {
-        if (userRepository.findByEmail(email).isPresent()) {
-            throw new BadRequestException("Email đã tồn tại trong hệ thống");
+    public void sendOtpRegister(String email, ERole role) {
+        // Chặn trước khi gửi mail để không tốn quota OTP cho role không được tự đăng ký
+        assertSelfRegistrableRole(role);
+        if (userRepository.existsByEmailAndRole(email, role)) {
+            throw new BadRequestException("auth.email.exists");
         }
-        sendOtp(email, "otp:register:", "cooldown:otp:");
+        sendOtp(email + ":" + role.name(), "otp:register:", "cooldown:otp:");
     }
 
     // Send OTP Forgot password
     @Override
     public void sendOtpForgotPassword(String email) {
-        if (userRepository.findByEmail(email).isEmpty()) {
-            throw new BadRequestException("Email không tồn tại trong hệ thống");
-        }
+        // Here we just send OTP for the email, ignoring role since we will ask for it
+        // in reset password
         sendOtp(email, "otp:forgot_password:", "cooldown:otp_forgot:");
     }
 
     @Override
     @Transactional
-    public void verifyOtpRegister(String email, String otp) {
+    public void verifyOtpRegister(String email, String otp, ERole role) {
+        assertSelfRegistrableRole(role);
 
-        String otpKey = "otp:register:" + email;
+        String otpKey = "otp:register:" + email + ":" + role.name();
         verifyOtp(otpKey, otp);
 
-        String verifiedKey = "otp_verified:register:" + email;
+        String verifiedKey = "otp_verified:register:" + email + ":" + role.name();
         stringRedisTemplate.opsForValue().set(verifiedKey, "true", Duration.ofMinutes(10));
 
     }
@@ -280,19 +439,32 @@ public class AuthenticationService implements IAuthenticationService {
 
     @Override
     public void saveRefreshTokenToRedis(
-            String userId, TokenPayload refreshToken) {
+            String userId, TokenPayload refreshToken,
+            String deviceId, String deviceName,
+            String platform, String ipAddress) {
+
         long ttlSeconds = (refreshToken.getExpiryTime().getTime()
                 - System.currentTimeMillis()) / 1000;
-        stringRedisTemplate.opsForValue().set(
-                REFRESH_TOKEN_PREFIX + userId,
-                refreshToken.getToken(),
-                Duration.ofSeconds(ttlSeconds));
+
+        String key = userId + ":" + deviceId;
+
+        sessionRepository.save(RefreshTokenSession.builder()
+                .id(key)
+                .userId(userId)
+                .deviceId(deviceId)
+                .refreshToken(refreshToken.getToken())
+                .deviceName(deviceName)
+                .platform(platform)
+                .ipAddress(ipAddress)
+                .lastActiveAt(System.currentTimeMillis())
+                .ttl(ttlSeconds)
+                .build());
     }
 
     @Override
     public ERegistrationStatus determineRegistrationStatus(User user) {
         if (user.getPhone() != null && !user.getPhone().isBlank()
-            && user.getFullName() != null && !user.getFullName().isBlank()) {
+                && user.getFullName() != null && !user.getFullName().isBlank()) {
             return ERegistrationStatus.complete;
         }
         return ERegistrationStatus.incomplete;
@@ -301,7 +473,7 @@ public class AuthenticationService implements IAuthenticationService {
     private void sendOtp(String email, String otpKeyPrefix, String cooldownKeyPrefix) {
         String cooldownKey = cooldownKeyPrefix + email;
         if (Boolean.TRUE.equals(stringRedisTemplate.hasKey(cooldownKey))) {
-            throw new BadRequestException("Vui lòng đợi 60 giây trước khi gửi lại OTP");
+            throw new BadRequestException("auth.otp.wait");
         }
 
         String otp = OtpGenerator.generateOtp();
@@ -323,8 +495,7 @@ public class AuthenticationService implements IAuthenticationService {
         Boolean exists = stringRedisTemplate.hasKey(otpKey);
 
         if (!Boolean.TRUE.equals(exists)) {
-            throw new BadRequestException(
-                    "OTP không tồn tại hoặc đã hết hạn");
+            throw new BadRequestException("auth.otp.invalid");
         }
 
         // Get Data OTP Redis
@@ -336,17 +507,14 @@ public class AuthenticationService implements IAuthenticationService {
         if (savedOtp == null || savedAttempts == null) {
             stringRedisTemplate.delete(otpKey);
 
-            throw new BadRequestException(
-                    "Dữ liệu OTP không hợp lệ");
+            throw new BadRequestException("auth.otp.invalid_data");
         }
 
         int attempts = Integer.parseInt(savedAttempts);
         if (attempts >= 5) {
             stringRedisTemplate.delete(otpKey);
 
-            throw new BadRequestException(
-                    "Bạn đã nhập sai OTP quá 5 lần. "
-                            + "Vui lòng lấy OTP mới");
+            throw new BadRequestException("auth.otp.limit_exceeded");
         }
 
         // OTP Not Match
@@ -366,17 +534,10 @@ public class AuthenticationService implements IAuthenticationService {
             if (attemptsAfter >= 5) {
                 stringRedisTemplate.delete(otpKey);
 
-                throw new BadRequestException(
-                        "Bạn đã nhập sai OTP quá 5 lần. "
-                                + "Vui lòng lấy OTP mới");
+                throw new BadRequestException("auth.otp.limit_exceeded");
             }
 
-            int remaining = 5 - attemptsAfter;
-
-            throw new BadRequestException(
-                    "OTP không chính xác. Còn "
-                            + remaining
-                            + " lần thử");
+            throw new BadRequestException("auth.otp.incorrect");
         }
 
         // OTP Match

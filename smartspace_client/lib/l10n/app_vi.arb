@@ -1,6 +1,7 @@
 {
   "@@locale": "vi",
-  "appTitle": "Smart Space",
+  "appTitle": "SmartSpace",
+  "actionView": "Xem",
   "login": "Đăng nhập",
   "email": "Email",
   "password": "Mật khẩu",
@@ -62,7 +63,6 @@
   "pleaseEnterEmail": "Vui lòng nhập email",
   "pleaseEnterOTP": "Vui lòng nhập mã OTP",
   "pleaseEnterPassword": "Vui lòng nhập mật khẩu",
-  "passwordsDoNotMatch": "Mật khẩu không khớp",
   "pleaseEnterFullName": "Vui lòng nhập họ tên",
   "pleaseEnterPhoneNumber": "Vui lòng nhập số điện thoại",
   "send": "Gửi",
@@ -77,29 +77,31 @@
   "createReport": "Tạo phản ánh",
   "subTitleCreateReport": "Báo cáo vấn đề an ninh, môi trường",
   "myReports": "Phản ánh của tôi",
+  "totalReports": "Tổng phản ánh",
+  "today": "Hôm nay",
+  "thisWeek": "Tuần này",
+  "older": "Cũ hơn",
   "notifications": "Thông báo",
   "help": "Trợ giúp",
   "aboutApp": "Về ứng dụng",
   "home": "Trang chủ",
-  "recentReports": "Phản ánh gần đây",
+  "recentReports": "Gần đây",
   "noReportsYet": "Chưa có phản ánh nào",
   "user": "Người dùng",
   "logout": "Đăng xuất",
-  "dangerousReports": "Cảnh báo nguy hiểm",
+  "dangerousReports": "Nguy hiểm",
   "map": "Bản đồ",
   "news": "Tin tức",
+  "newsDetail": "Chi tiết tin tức",
+  "newsNotFound": "Không tìm thấy tin tức",
+  "targetAdmin": "Admin",
   "instructions": "Hướng dẫn",
   "viewAll": "Tất cả",
   "dangerous": "NGUY HIỂM",
-  "distanceFromYou": "Cách bạn {value} {unit}",
+  "distanceFromYou": "Cách bạn: {distance} km",
   "@distanceFromYou": {
     "placeholders": {
-      "value": {
-        "type": "String"
-      },
-      "unit": {
-        "type": "String"
-      }
+      "distance": {}
     }
   },
   "unitMeter": "m",
@@ -111,6 +113,7 @@
   "reportStatusRejected": "Từ chối",
   "reportStatusUnknown": "Khác",
   "sessionExpired": "Phiên đăng nhập hết hạn",
+  "sessionRevokedOnThisDevice": "Bạn đã bị đăng xuất khỏi thiết bị này từ một thiết bị khác.",
   "settingsTitle": "Cài đặt",
   "accountSection": "Tài khoản",
   "shareHistory": "Lịch sử chia sẻ",
@@ -129,7 +132,6 @@
   "logoutConfirmTitle": "Đăng xuất",
   "logoutConfirmMessage": "Bạn có chắc chắn muốn đăng xuất?",
   "cancel": "Hủy",
-
   "changePasswordTitle": "Đổi mật khẩu",
   "currentPassword": "Mật khẩu hiện tại",
   "confirmNewPassword": "Nhập lại mật khẩu mới",
@@ -142,5 +144,589 @@
   "changePasswordFailed": "Đổi mật khẩu thất bại",
   "passwordReqLength": "Mật khẩu phải từ 8 đến 20 ký tự",
   "passwordReqMixed": "Bao gồm số, chữ viết hoa, chữ viết thường",
-  "passwordReqSpecial": "Bao gồm ít nhất một ký tự đặc biệt !@#$^()_"
+  "passwordReqSpecial": "Bao gồm ít nhất một ký tự đặc biệt !@#$^()_",
+  "loggedInDevices": "Thiết bị đã đăng nhập",
+  "thisDevice": "Thiết bị này",
+  "activeNow": "Đang hoạt động",
+  "logoutDevice": "Đăng xuất",
+  "logoutDeviceConfirmTitle": "Đăng xuất khỏi thiết bị?",
+  "logoutDeviceConfirmMessage": "Phiên đăng nhập trên \"{deviceName}\" sẽ bị kết thúc.",
+  "@logoutDeviceConfirmMessage": {
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "logoutAllOtherDevices": "Đăng xuất tất cả thiết bị khác",
+  "logoutAllConfirmTitle": "Đăng xuất tất cả thiết bị khác?",
+  "logoutAllConfirmMessage": "Tất cả phiên ngoại trừ thiết bị này sẽ bị kết thúc.",
+  "noOtherDevices": "Không có thiết bị khác đang đăng nhập.",
+  "deviceLogoutSuccess": "Đã đăng xuất thiết bị.",
+  "allDevicesLogoutSuccess": "Đã đăng xuất tất cả thiết bị khác.",
+  "editProfile": "Chỉnh sửa hồ sơ",
+  "dateOfBirth": "Ngày sinh",
+  "gender": "Giới tính",
+  "genderMale": "Nam",
+  "genderFemale": "Nữ",
+  "genderOther": "Khác",
+  "saveChanges": "Lưu thay đổi",
+  "profileUpdateSuccess": "Cập nhật hồ sơ thành công",
+  "profileUpdateFailed": "Cập nhật hồ sơ thất bại",
+  "changeAvatar": "Đổi ảnh đại diện",
+  "optionalLabel": "Không bắt buộc",
+  "requiredLabel": "Bắt buộc",
+  "genderOtherConfirmMessage": "Bạn có chắc chắn muốn chọn giới tính \"Khác\"?",
+  "dateOfBirthEmptyTitle": "Bạn chưa nhập ngày sinh",
+  "dateOfBirthEmptyMessage": "Bạn có muốn tiếp tục? Có thể thêm ngày sinh trong cài đặt sau.",
+  "createReportTitle": "Tạo phản ánh",
+  "reportTitleLabel": "Tiêu đề *",
+  "reportDescLabel": "Mô tả *",
+  "reportAddressLabel": "Địa chỉ",
+  "reportLocationDescLabel": "Mô tả vị trí",
+  "reportAnonymous": "Gửi ẩn danh",
+  "submitReport": "Gửi phản ánh",
+  "pickImage": "Thư viện",
+  "takePhoto": "Chụp ảnh",
+  "reloadLocation": "Tải lại vị trí",
+  "maxImagesError": "Chỉ được chọn tối đa 10 ảnh",
+  "requiredFieldError": "Trường này là bắt buộc",
+  "uploadingReport": "Đang tải phản ánh lên, vui lòng không đóng ứng dụng...",
+  "locationServicesDisabled": "Dịch vụ vị trí bị vô hiệu hóa.",
+  "locationPermissionsDenied": "Quyền truy cập vị trí bị từ chối.",
+  "locationPermissionsPermanentlyDenied": "Quyền truy cập vị trí bị từ chối vĩnh viễn.",
+  "uploadingImageProgress": "Đang tải ảnh lên... ({current}/{total})",
+  "@uploadingImageProgress": {
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "uploadingImage": "Đang tải ảnh lên",
+  "imageProgress": "Ảnh {current}/{total}",
+  "@imageProgress": {
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "creatingReportSystem": "Đang tạo phản ánh...",
+  "almostDone": "Sắp hoàn tất",
+  "creatingReportOnSystem": "Đang tạo phản ánh trên hệ thống...",
+  "createReportSuccess": "Tạo phản ánh thành công!",
+  "success": "Thành công",
+  "reportRecorded": "Phản ánh của bạn đã được ghi nhận.",
+  "errorString": "Lỗi: {error}",
+  "@errorString": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorPrefix": "Lỗi",
+  "cannotCreateReportError": "Không thể tạo phản ánh: {error}",
+  "@cannotCreateReportError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorOccurredSendingReport": "Có lỗi xảy ra khi gửi phản ánh: {error}",
+  "@errorOccurredSendingReport": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "sendingReportProgress": "Đang gửi phản ánh... ({current}/{total})",
+  "@sendingReportProgress": {
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "navigateToReport": "Chỉ đường",
+  "viewDetail": "Xem chi tiết",
+  "myLocation": "Vị trí của tôi",
+  "filterReports": "Bộ lọc báo cáo",
+  "refresh": "Tải lại",
+  "filter": "Bộ lọc",
+  "calculatingDistance": "Đang tính khoảng cách...",
+  "reportDetails": "Chi tiết phản ánh",
+  "turnOnLocationToViewDistance": "Bật vị trí để xem khoảng cách từ nơi xảy ra đến vị trí của bạn",
+  "openInGoogleMaps": "Mở trên Google Maps",
+  "createdAtLabel": "Thời gian tạo",
+  "statusLabel": "Trạng thái",
+  "severityLabel": "Mức độ",
+  "severityLow": "Thấp",
+  "severityMedium": "Trung bình",
+  "severityHigh": "Cao",
+  "severityCritical": "Khẩn cấp",
+  "locationServiceDisabledError": "Vui lòng bật dịch vụ vị trí trên thiết bị",
+  "locationPermissionDeniedForeverError": "Quyền vị trí bị từ chối vĩnh viễn, vui lòng vào cài đặt để bật",
+  "cannotOpenGoogleMapsError": "Không thể mở Google Maps",
+  "errorOccurred": "Đã xảy ra lỗi:\n{error}",
+  "@errorOccurred": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "retryButton": "Thử lại",
+  "minuteAgo": "p trước",
+  "hourAgo": "h trước",
+  "dayAgo": "ngày trước",
+  "justNow": "Vừa xong",
+  "routeHome": "Trang chủ",
+  "routeSettings": "Cài đặt",
+  "routeMap": "Bản đồ",
+  "routeCreateReport": "Tạo phản ánh",
+  "routeMyReports": "Phản ánh của tôi",
+  "routeEditProfile": "Chỉnh sửa hồ sơ",
+  "routeChangePassword": "Đổi mật khẩu",
+  "routeManageDevices": "Quản lý thiết bị",
+  "routeNotifications": "Thông báo",
+  "markAllAsRead": "Đánh dấu tất cả đã đọc",
+  "emptyNotification": "Bạn chưa có thông báo nào.",
+  "unread": "Chưa đọc",
+  "assignedStaff": "Nhân viên xử lý",
+  "routeCommunityFeed": "Tất cả phản ánh",
+  "feedTabLatest": "Mới nhất",
+  "feedTabNearby": "Gần tôi",
+  "feedEmpty": "Chưa có phản ánh nào trong cộng đồng",
+  "feedAnonymous": "Người dùng ẩn danh",
+  "feedSeeMore": "Xem thêm",
+  "feedTimelineSubmitted": "Đã gửi",
+  "feedTimelineProcessing": "Đang xử lý",
+  "feedTimelineDone": "Hoàn thành",
+  "feedShare": "Chia sẻ",
+  "feedViewOnMap": "Xem vị trí",
+  "feedCopiedLink": "Đã sao chép thông tin phản ánh",
+  "feedPhotosCount": "{count} ảnh",
+  "@feedPhotosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewReport": "Đánh giá",
+  "reviewQuestion": "Phản ánh của bạn đã được xử lý hay chưa?",
+  "reviewResolvedOption": "Đã xử lý",
+  "reviewUnresolvedOption": "Chưa được xử lý",
+  "rateStaffTitle": "Đánh giá nhân viên xử lý",
+  "rateStaffSubtitle": "Vui lòng chọn số sao để đánh giá nhân viên (1 - 5 sao)",
+  "unresolvedReasonLabel": "Lý do chưa được xử lý",
+  "unresolvedReasonHint": "Vui lòng mô tả chi tiết lý do phản ánh chưa được xử lý...",
+  "attachEvidencePhotos": "Ảnh chụp thực tế (bắt buộc ít nhất 1 ảnh)",
+  "attachEvidencePhotoHint": "Cần ít nhất 1 ảnh chụp và ghi rõ lý do để gửi",
+  "submitReview": "Gửi đánh giá",
+  "submittingReview": "Đang gửi đánh giá...",
+  "reviewSuccess": "Gửi đánh giá thành công!",
+  "unresolvedReviewTitle": "Phản hồi chưa được xử lý thỏa đáng",
+  "resolutionInfo": "Kết quả xử lý",
+  "resolutionNote": "Ghi chú xử lý",
+  "resolutionImages": "Ảnh kết quả xử lý",
+  "resolvedAtLabel": "Thời gian hoàn thành",
+  "reviewRatingLabel": "Đánh giá người dân",
+  "cameraOption": "Máy ảnh",
+  "galleryOption": "Bộ sưu tập",
+  "closeButton": "Đóng",
+  "rehandling": "Xử lý lại",
+  "unsatisfactoryBadge": "Xử lý chưa thỏa đáng",
+  "latestNews": "Tin tức mới nhất",
+  "routeNewsList": "Tin tức",
+  "emptyNewsTitle": "Chưa có tin tức nào",
+  "emptyNewsDescription": "Hiện tại chưa có tin tức hoặc thông báo mới nào.",
+  "mapNormalReports": "Thông thường",
+  "mapClusterReportsTitle": "Khu vực này có {count} phản ánh",
+  "@mapClusterReportsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapClusterSortHint": "Nguy hiểm trước, mới nhất trước",
+  "mapZoomInForMore": "Phóng to để xem thêm phản ánh",
+  "mapLoadReportsFailed": "Không tải được phản ánh trên bản đồ",
+  "mapFilterAll": "Tất cả",
+  "viewOnMap": "Xem trên bản đồ",
+  "mapFocusedReportHidden": "Phản ánh này hiện không hiển thị trên bản đồ",
+  "locationSection": "Vị trí sự cố",
+  "noAddress": "Chưa cập nhật địa chỉ",
+  "locationDescriptionLabel": "Mô tả vị trí",
+  "nearbyReportsAlertTitle": "Gần bạn có {count} phản ánh",
+  "@nearbyReportsAlertTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nearbyDistanceInMeters": "Cách bạn {distance}m",
+  "@nearbyDistanceInMeters": {
+    "placeholders": {
+      "distance": {
+        "type": "int"
+      }
+    }
+  },
+  "actionUnderstood": "Đã hiểu",
+  "actionViewDetail": "Xem chi tiết",
+  "noImages": "Không có hình ảnh",
+  "actionPrevious": "Trước",
+  "actionNext": "Tiếp theo",
+  "editReport": "Chỉnh sửa",
+  "cancelReport": "Hủy yêu cầu",
+  "cancelReportConfirmTitle": "Hủy yêu cầu phản ánh",
+  "cancelReportConfirmMessage": "Bạn có chắc chắn muốn hủy yêu cầu phản ánh này không? Phản ánh sẽ được chuyển vào danh sách từ chối.",
+  "cancelReportSuccess": "Đã hủy yêu cầu phản ánh thành công",
+  "updateReportSuccess": "Cập nhật phản ánh thành công",
+  "youCreatedThisReport": "Bạn là người tạo phản ánh này",
+  "myReportBadge": "Của bạn",
+  "saveChanges": "Lưu thay đổi",
+  "editReportTitle": "Chỉnh sửa phản ánh",
+  "editReportOnlyPending": "Chỉ có thể chỉnh sửa phản ánh đang ở trạng thái chờ xử lý",
+  "cancelReportOnlyPending": "Chỉ có thể hủy yêu cầu phản ánh đang ở trạng thái chờ xử lý",
+    "genericError": "Đã có lỗi xảy ra, vui lòng thử lại sau",
+  "mapSettings": "Cài đặt bản đồ",
+  "mapDensityToggle": "Hiển thị mật độ phản ánh",
+  "mapDensityDescription": "Hiển thị các khu vực có nhiều phản ánh theo màu sắc (50m)",
+  "densityLegendTitle": "Mật độ phản ánh",
+  "densityLow": "1–2 phản ánh (Thấp)",
+  "densityMedium": "3–5 phản ánh (Trung bình)",
+  "densityHigh": "Trên 5 phản ánh (Cao)",
+  "mapBack": "Quay lại",
+  "filterTimeframe": "Khoảng thời gian",
+  "timeframeAll": "Tất cả",
+  "timeframe1Month": "1 tháng",
+  "timeframe3Months": "3 tháng",
+  "timeframe6Months": "6 tháng",
+  "timeframe9Months": "9 tháng",
+  "timeframe12Months": "12 tháng",
+  "routeConversations": "Hội thoại",
+  "routeChatDetail": "Chi tiết tin nhắn",
+  "conversations": "Tin nhắn",
+  "noConversations": "Chưa có cuộc trò chuyện nào",
+  "noConversationsSub": "Bạn có thể gửi tin nhắn hỗ trợ từ chi tiết các phản ánh đang xử lý.",
+  "searchConversationsPlaceholder": "Tìm kiếm theo tên hoặc nội dung...",
+  "roleStaff": "Nhân viên",
+  "roleAdmin": "Quản trị viên",
+  "chatInputHint": "Nhập tin nhắn...",
+  "emptyMessages": "Chưa có tin nhắn nào. Bắt đầu trò chuyện ngay!",
+  "errorLoadMessages": "Không thể tải tin nhắn",
+  "anonymousPerson": "Người dùng ẩn danh",
+  "supportStaff": "Nhân viên hỗ trợ",
+  "managementBoard": "Ban quản lý",
+  "chatDisabledNotice": "Phản ánh đã hoàn tất xử lý. Khung chat hiện ở chế độ xem lại lịch sử.",
+  "chatWithStaff": "Nhắn tin cho nhân viên",
+  "viewStaffChat": "Xem tin nhắn hỗ trợ",
+  "cannotStartChat": "Không thể kết nối trò chuyện, vui lòng thử lại sau",
+  "routeConversationInfo": "Thông tin hội thoại",
+  "conversationInfoTitle": "Thông tin hội thoại",
+  "activeReportsSection": "Phản ánh đang xử lý",
+  "allReportsProcessed": "Tất cả phản ánh đã được xử lý xong",
+  "conversationClosedNotice": "Cuộc hội thoại đã đóng do toàn bộ phản ánh đã hoàn tất",
+  "conversationActiveNotice": "Cuộc hội thoại đang hoạt động",
+  "callButtonLabel": "Gọi điện",
+  "videoCallButtonLabel": "Video call",
+  "videoCallComingSoon": "Tính năng gọi video call đang phát triển",
+  "conversationRefreshed": "Đã làm mới thông tin và tin nhắn hội thoại",
+  "conversationRefreshFailed": "Không thể làm mới hội thoại, vui lòng thử lại sau",
+  "cannotMakePhoneCall": "Không thể thực hiện cuộc gọi",
+  "noPhoneNumber": "Chưa cập nhật số điện thoại",
+  "staffNoPosition": "Chưa có chức vụ",
+  "rehandlingBadge": "Xử lý lại",
+  "roleClient": "Cư dân",
+  "refresh": "Làm mới",
+  "contextIdentified": "Không ẩn danh",
+  "contextAnonymous": "Ẩn danh",
+  "contextIdentifiedTag": "Không ẩn danh",
+  "contextAnonymousTag": "Ẩn danh",
+  "noIdentifiedReports": "Không có phản ánh không ẩn danh nào đang xử lý",
+  "noAnonymousReports": "Không có phản ánh ẩn danh nào đang xử lý",
+  "anonymousProtectionBanner": "Đang trao đổi ẩn danh. Danh tính của bạn được bảo vệ tuyệt đối.",
+  "contextIdentifiedTooltip": "Hội thoại phản ánh công khai",
+  "contextAnonymousTooltip": "Hội thoại phản ánh ẩn danh",
+  "youCreatedThisReportAnonymously": "Bạn đã tạo phản ánh này dưới hình thức ẩn danh",
+  "callOptionsTitle": "Tùy chọn cuộc gọi",
+  "cellularCall": "Gọi điện qua di động",
+  "cellularCallDesc": "Mở ứng dụng gọi điện mặc định",
+  "freeCall": "Gọi miễn phí qua ứng dụng",
+  "featureUnderDevelopment": "Tính năng đang được phát triển",
+  "comingSoon": "Sắp ra mắt",
+  "phoneNotAvailable": "Số điện thoại không khả dụng",
+  "freeCallComingSoon": "Tính năng gọi miễn phí qua internet đang được phát triển",
+  "searchReportsPlaceholder": "Tìm theo tiêu đề, mô tả hoặc địa chỉ...",
+  "noMatchingReports": "Không tìm thấy phản ánh phù hợp",
+  "sortLabel": "Sắp xếp",
+  "clearFilters": "Xoá lọc",
+  "resultsCount": "{count, plural, other{{count} kết quả}}",
+  "@resultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nearbyLocationUnavailable": "Không lấy được vị trí của bạn. Đang hiển thị phản ánh mới nhất.",
+  "filterSelectedTooltip": "{label}: {value}",
+  "@filterSelectedTooltip": {
+    "placeholders": {
+      "label": {},
+      "value": {}
+    }
+  },
+  "pickSingleDate": "Một ngày cụ thể…",
+  "pickDateRange": "Khoảng ngày…",
+  "notificationFilterUnread": "Chưa đọc",
+  "notificationFilterUnreadCount": "Chưa đọc ({count})",
+  "@notificationFilterUnreadCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "allNotificationsRead": "Bạn đã đọc hết thông báo",
+  "viewAllNotifications": "Xem tất cả thông báo",
+  "contextIdentifiedExplanation": "Không ẩn danh: Nhân viên biết bạn là người tạo phản ánh này.",
+  "contextAnonymousExplanation": "Ẩn danh: Nhân viên tuyệt đối không biết bạn là người tạo phản ánh.",
+  "contextExplanationTitle": "Thông tin ngữ cảnh hội thoại",
+  "contextExplanationGotIt": "Đã hiểu",
+  "chooseFromGallery": "Chọn ảnh từ thư viện",
+  "chooseVideo": "Chọn video",
+  "takePhoto": "Chụp ảnh",
+  "attachReport": "Đính kèm phản ánh",
+  "markAsRead": "Đánh dấu đã đọc",
+  "typingText": "đang nhập...",
+  "pressAndHoldToRecord": "Nhấn giữ để ghi âm",
+  "slideLeftToCancel": "Trượt sang để hủy",
+  "releaseToCancel": "Thả để hủy",
+  "selectReportToAttach": "Chọn phản ánh để gửi",
+  "voiceMessageSnippet": "Tin nhắn thoại",
+  "imageSnippet": "Hình ảnh",
+  "videoSnippet": "Video",
+  "attachedReportSnippet": "Phản ánh đính kèm",
+  "reportDeadlineLabel": "Hạn xử lý",
+  "deadlineOverdueBadge": "Quá hạn",
+  "daysRemainingLabel": "Còn {days} ngày",
+  "@daysRemainingLabel": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "overdueOnlyFilter": "Quá hạn",
+  "rejectedReasonTitle": "Lý do từ chối",
+  "noRejectionReasonProvided": "Phản ánh đã bị quản trị viên từ chối.",
+  "reportCategoryLabel": "Danh mục phản ánh",
+  "reportCategoryHint": "Chọn danh mục",
+  "reportCategoryRequired": "Vui lòng chọn danh mục phản ánh",
+  "reportCategoryLoadError": "Không thể tải danh sách danh mục",
+  "reportCategoryEmpty": "Chưa có danh mục phản ánh nào",
+  "callFreeVoiceDesc": "Gọi thoại miễn phí qua internet",
+  "callPermissionDenied": "Không khả dụng cuộc gọi thoại cho hội thoại này",
+  "callActionLabel": "Gọi điện",
+  "emergencyContacts": "Liên hệ khẩn cấp",
+  "emergencyTabMine": "Của tôi",
+  "emergencyTabGuardian": "Tôi bảo hộ",
+  "emergencyAddContact": "Thêm liên hệ",
+  "emergencyCapacity": "{count}/{max} · Nhận SOS của bạn",
+  "@emergencyCapacity": {
+    "placeholders": {
+      "count": {},
+      "max": {}
+    }
+  },
+  "emergencyLimitShort": "Đã đủ 5 liên hệ",
+  "emergencyEmptyMineTitle": "Chưa có liên hệ khẩn cấp",
+  "emergencyReorder": "Sắp xếp",
+  "emergencyReorderDone": "Xong",
+  "emergencyInviteFrom": "{name} muốn thêm bạn",
+  "@emergencyInviteFrom": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyEmptyMine": "Chưa có ai trong danh sách khẩn cấp. Thêm người thân để họ được báo khi bạn gặp sự cố.",
+  "emergencyStatusAwaitingInvite": "Chờ chấp nhận",
+  "emergencyStatusRejected": "Đã từ chối",
+  "emergencyStatusRevoked": "Đã rời",
+  "emergencyChannelApp": "Nhận cảnh báo qua ứng dụng",
+  "emergencyChannelSms": "Nhận cảnh báo qua SMS",
+  "emergencyRelationParent": "Cha / Mẹ",
+  "emergencyRelationSpouse": "Vợ / Chồng",
+  "emergencyRelationChild": "Con",
+  "emergencyRelationSibling": "Anh / Chị / Em",
+  "emergencyRelationRelative": "Họ hàng",
+  "emergencyRelationFriend": "Bạn bè",
+  "emergencyRelationNeighbor": "Hàng xóm",
+  "emergencyRelationOther": "Khác",
+  "emergencyEdit": "Sửa",
+  "emergencyDelete": "Xoá",
+  "emergencyMoreActions": "Thao tác khác",
+  "emergencyDragHandle": "Kéo để đổi thứ tự ưu tiên",
+  "emergencyDeleteTitle": "Xoá {name} khỏi danh sách khẩn cấp?",
+  "@emergencyDeleteTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyDeleteMessage": "{name} sẽ không nhận cảnh báo SOS của bạn nữa.",
+  "@emergencyDeleteMessage": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyDeleted": "Đã xoá liên hệ",
+  "emergencyFormAddTitle": "Thêm liên hệ khẩn cấp",
+  "emergencyFormEditTitle": "Sửa liên hệ khẩn cấp",
+  "emergencyFormName": "Tên người liên hệ",
+  "emergencyFormNameRequired": "Vui lòng nhập tên",
+  "emergencyFormPhoneRequired": "Vui lòng nhập số điện thoại",
+  "emergencyFormPhoneInvalid": "Số di động Việt Nam không hợp lệ",
+  "emergencyFormRelationship": "Mối quan hệ",
+  "emergencyFormRelationshipRequired": "Vui lòng chọn mối quan hệ",
+  "emergencyFormAccountEmail": "Email tài khoản SmartSpace (không bắt buộc)",
+  "emergencyFormAccountEmailHelp": "Nếu người này dùng SmartSpace, họ nhận lời mời và cảnh báo trong ứng dụng. Để trống thì hệ thống liên hệ qua SMS.",
+  "emergencyFormEmailInvalid": "Email không hợp lệ",
+  "emergencyFormConsent": "Tôi xác nhận người này đã đồng ý nhận cảnh báo khẩn cấp của tôi qua SMS",
+  "emergencyFormConsentRequired": "Vui lòng xác nhận người này đã đồng ý",
+  "emergencyFormReconfirmNote": "Đổi số điện thoại hoặc tài khoản liên kết sẽ cần người này đồng ý lại.",
+  "emergencyFormSave": "Lưu",
+  "emergencyInviteSent": "Đã gửi lời mời tới {name} trong ứng dụng",
+  "@emergencyInviteSent": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyContactSaved": "Đã lưu liên hệ",
+  "emergencyGuardianIntro": "Những người đã thêm bạn vào danh sách khẩn cấp. Bạn sẽ nhận cảnh báo khi họ gửi SOS.",
+  "emergencyInvitationsHeader": "Lời mời",
+  "emergencyGuardingHeader": "Đang bảo hộ",
+  "emergencyListedAs": "Bạn là: {relationship}",
+  "@emergencyListedAs": {
+    "placeholders": {
+      "relationship": {}
+    }
+  },
+  "emergencyAccept": "Chấp nhận",
+  "emergencyDecline": "Từ chối",
+  "emergencyLeave": "Rời danh sách",
+  "emergencyLeaveTitle": "Rời danh sách khẩn cấp của {name}?",
+  "@emergencyLeaveTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyLeaveMessage": "Bạn sẽ không nhận cảnh báo SOS của {name} nữa. Họ sẽ được thông báo.",
+  "@emergencyLeaveMessage": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyAccepted": "Bạn đã là liên hệ khẩn cấp của {name}",
+  "@emergencyAccepted": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyDeclined": "Đã từ chối lời mời",
+  "emergencyLeft": "Đã rời danh sách khẩn cấp",
+  "emergencyEmptyGuardian": "Chưa có ai thêm bạn vào danh sách khẩn cấp.",
+  "emergencyLoadFailed": "Không tải được danh sách khẩn cấp.",
+  "sosSlideLabel": "Trượt để gửi SOS",
+  "sosSlideSemantics": "Gửi tín hiệu SOS",
+  "sosSlideHint": "Ban quản trị và liên hệ khẩn cấp sẽ nhận vị trí của bạn",
+  "sosConfirmTitle": "Gửi tín hiệu SOS?",
+  "sosConfirmMessage": "Ban quản trị và liên hệ khẩn cấp sẽ nhận vị trí của bạn ngay.",
+  "sosConfirmSend": "Gửi SOS",
+  "sosActiveBanner": "SOS của bạn đang hoạt động",
+  "sosActiveBannerHint": "Nhấn để xem trạng thái hoặc kết thúc",
+  "sosCountdownTitle": "Đang gửi SOS",
+  "sosCountdownMessage": "Tín hiệu sẽ được gửi sau {seconds} giây",
+  "@sosCountdownMessage": {
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "sosLocating": "Đang lấy vị trí…",
+  "sosSending": "Đang gửi…",
+  "sosLocationUnavailable": "Không lấy được vị trí. Hãy bật định vị và thử lại, hoặc gọi ngay số khẩn cấp.",
+  "sosLocationPermissionDenied": "SmartSpace cần quyền vị trí để gửi SOS.",
+  "sosOpenSettings": "Mở cài đặt",
+  "sosSendFailed": "Không gửi được SOS. Hãy thử lại hoặc gọi ngay số khẩn cấp.",
+  "sosActiveTitle": "SOS đang hoạt động",
+  "sosWaitingAck": "Đã báo Ban quản trị và {count} liên hệ. Đang chờ tiếp nhận.",
+  "@sosWaitingAck": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "sosAcknowledgedBy": "{name} đã tiếp nhận và đang hỗ trợ bạn.",
+  "@sosAcknowledgedBy": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosLocationUpdatedAt": "Vị trí cập nhật lúc {time}",
+  "@sosLocationUpdatedAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosSharingLocation": "Đang chia sẻ vị trí mỗi 15 giây",
+  "sosCallEmergency": "Gọi khẩn cấp",
+  "sosCallPolice": "Công an 113",
+  "sosCallFire": "Cứu hỏa 114",
+  "sosCallAmbulance": "Cấp cứu 115",
+  "sosCallRescue": "Cứu nạn 112",
+  "sosImSafe": "Tôi đã an toàn",
+  "sosSafeConfirmTitle": "Kết thúc SOS?",
+  "sosSafeConfirmMessage": "Ban quản trị và liên hệ khẩn cấp sẽ được báo là bạn đã an toàn.",
+  "sosEndedTitle": "SOS đã kết thúc",
+  "sosEndedSafe": "Rất vui vì bạn an toàn. Mọi người đã được báo.",
+  "sosEndedByAdmin": "Ban quản trị đã kết thúc tín hiệu SOS của bạn.",
+  "sosBackHome": "Về trang chủ",
+  "sosTrackingNotifTitle": "SOS đang hoạt động",
+  "sosTrackingNotifText": "Đang chia sẻ vị trí với Ban quản trị và liên hệ khẩn cấp",
+  "sosWatchTitle": "SOS của {name}",
+  "@sosWatchTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosWatchActive": "{name} đang cần giúp đỡ khẩn cấp",
+  "@sosWatchActive": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosWatchAcknowledged": "Ban quản trị đã tiếp nhận",
+  "sosWatchSafe": "{name} đã an toàn",
+  "@sosWatchSafe": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosWatchClosed": "SOS này đã kết thúc",
+  "sosOpenMap": "Mở bản đồ",
+  "sosCallPerson": "Gọi {name}",
+  "@sosCallPerson": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosLoadFailed": "Không tải được tín hiệu SOS.",
+  "sosSentAt": "Gửi lúc {time}",
+  "@sosSentAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosAccuracy": "Sai số khoảng {meters} m",
+  "@sosAccuracy": {
+    "placeholders": {
+      "meters": {}
+    }
+  }
 }

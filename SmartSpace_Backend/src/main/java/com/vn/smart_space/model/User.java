@@ -11,6 +11,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Index;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -27,7 +31,11 @@ import lombok.experimental.FieldDefaults;
 @Entity
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "users")
+@Table(name = "users", uniqueConstraints = {
+        @jakarta.persistence.UniqueConstraint(columnNames = {"email", "role"})
+}, indexes = {
+        @Index(name = "idx_users_role_created_at", columnList = "role, created_at")
+})
 public class User extends AbstractEntity {
 
     @Column(name = "full_name")
@@ -39,7 +47,7 @@ public class User extends AbstractEntity {
     @Column(name = "phone")
     String phone;
 
-    @Column(name = "email", unique = true)
+    @Column(name = "email")
     String email;
 
     @JsonIgnore
@@ -60,5 +68,22 @@ public class User extends AbstractEntity {
 
     @Column(name = "avatar_url")
     String avatarUrl;
+
+    @Column(name = "language")
+    @Builder.Default
+    String language = "vi";
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "position_id")
+    Position position;
+
+    @Column(name = "base_latitude")
+    Double baseLatitude;
+
+    @Column(name = "base_longitude")
+    Double baseLongitude;
+
+    @Column(name = "base_address", length = 255)
+    String baseAddress;
 
 }

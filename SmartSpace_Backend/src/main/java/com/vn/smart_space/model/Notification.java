@@ -28,4 +28,9 @@ public class Notification extends AbstractEntity {
     @Builder.Default
     Boolean isRead = false; // Only used for personal notifications
 
+    @Column(name = "action_data", columnDefinition = "TEXT")
+    String actionData;
+
+    @Column(name = "image_url")
+    String imageUrl;
 }

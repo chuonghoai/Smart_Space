@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
-import 'package:smartspace_staff/routes/router_path.dart';
 import 'package:smartspace_staff/ui/mobile/auth/login/login_controller.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
 import '../../../shared/login_setting/login_setting.dart';
@@ -79,22 +77,37 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                     const SizedBox(height: 36),
 
                     // Logo Placeholder
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                    Column(
                       children: [
                         Icon(
-                          Icons.location_on,
-                          size: 64,
+                          Icons.assignment_ind,
+                          size: 72,
                           color: colorScheme.primary,
                         ),
                         const SizedBox(height: 16),
                         Text(
                           l10n.smartSpaceAppName,
-                          style: textTheme.headlineLarge?.copyWith(
+                          style: textTheme.headlineMedium?.copyWith(
                             fontWeight: FontWeight.bold,
                             color: colorScheme.primary,
                           ),
                           textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: colorScheme.primaryContainer,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                          child: Text(
+                            l10n.staffPortalName.toUpperCase(),
+                            style: textTheme.labelMedium?.copyWith(
+                              color: colorScheme.onPrimaryContainer,
+                              fontWeight: FontWeight.bold,
+                              letterSpacing: 1.2,
+                            ),
+                          ),
                         ),
                       ],
                     ),
@@ -102,14 +115,14 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                     // Subtitle
                     const SizedBox(height: 48),
                     Text(
-                      l10n.welcomeBack,
+                      l10n.staffWelcome,
                       style: textTheme.titleLarge?.copyWith(
                         fontWeight: FontWeight.bold,
                       ),
                     ),
                     const SizedBox(height: 8),
                     Text(
-                      l10n.signInToContinue,
+                      l10n.staffLoginSubtitle,
                       style: textTheme.bodyMedium?.copyWith(
                         color: colorScheme.onSurfaceVariant,
                       ),
@@ -213,20 +226,6 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                             Text(l10n.rememberMe),
                           ],
                         ),
-
-                        // Forgot password
-                        TextButton(
-                          onPressed: () {
-                            context.push(RouterPath.forgotPassword);
-                          },
-                          child: Text(
-                            l10n.forgotPassword,
-                            style: TextStyle(
-                              color: colorScheme.primary,
-                              fontWeight: FontWeight.w600,
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                     const SizedBox(height: 24),
@@ -259,65 +258,6 @@ class _MobileLoginScreenState extends State<MobileLoginScreen> {
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
-                    ),
-                    const SizedBox(height: 32),
-
-                    // Or continue with
-                    Row(
-                      children: [
-                        const Expanded(child: Divider()),
-                        Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: 16),
-                          child: Text(
-                            l10n.orContinueWith,
-                            style: textTheme.bodySmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
-                            ),
-                          ),
-                        ),
-                        const Expanded(child: Divider()),
-                      ],
-                    ),
-                    const SizedBox(height: 32),
-
-                    // Sign in with Google
-                    OutlinedButton.icon(
-                      onPressed: _controller.isLoading
-                          ? null
-                          : () {
-                              _controller.loginWithGoogle(context);
-                            },
-                      icon: const Icon(Icons.g_mobiledata, size: 28),
-                      label: Text(l10n.googleLogin),
-                      style: OutlinedButton.styleFrom(
-                        padding: const EdgeInsets.symmetric(vertical: 16),
-                        foregroundColor: colorScheme.onSurface,
-                        side: BorderSide(color: theme.dividerColor),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Sign up
-                    Row(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Text(l10n.areYouNewUser, style: textTheme.bodyMedium),
-                        TextButton(
-                          onPressed: () {
-                            context.push(RouterPath.registerEmail);
-                          },
-                          child: Text(
-                            l10n.signUp,
-                            style: TextStyle(
-                              color: colorScheme.primary,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
-                        ),
-                      ],
                     ),
                     const SizedBox(height: 16),
                   ],

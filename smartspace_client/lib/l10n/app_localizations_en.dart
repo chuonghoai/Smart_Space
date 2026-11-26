@@ -12,6 +12,9 @@ class AppLocalizationsEn extends AppLocalizations {
   String get appTitle => 'Smart Space';
 
   @override
+  String get actionView => 'View';
+
+  @override
   String get login => 'Log in';
 
   @override
@@ -238,6 +241,18 @@ class AppLocalizationsEn extends AppLocalizations {
   String get myReports => 'My reports';
 
   @override
+  String get totalReports => 'Total Reports';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get thisWeek => 'This week';
+
+  @override
+  String get older => 'Older';
+
+  @override
   String get notifications => 'Notifications';
 
   @override
@@ -250,7 +265,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get home => 'Home';
 
   @override
-  String get recentReports => 'Recent reports';
+  String get recentReports => 'Recent';
 
   @override
   String get noReportsYet => 'No reports yet';
@@ -262,13 +277,22 @@ class AppLocalizationsEn extends AppLocalizations {
   String get logout => 'Log out';
 
   @override
-  String get dangerousReports => 'Dangerous warnings';
+  String get dangerousReports => 'Dangerous';
 
   @override
   String get map => 'Map';
 
   @override
   String get news => 'News';
+
+  @override
+  String get newsDetail => 'News Detail';
+
+  @override
+  String get newsNotFound => 'News not found';
+
+  @override
+  String get targetAdmin => 'Admin';
 
   @override
   String get instructions => 'Instructions';
@@ -280,8 +304,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get dangerous => 'DANGEROUS';
 
   @override
-  String distanceFromYou(String value, String unit) {
-    return '$value $unit away';
+  String distanceFromYou(Object distance) {
+    return '$distance km away';
   }
 
   @override
@@ -310,6 +334,10 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get sessionExpired => 'Session expired';
+
+  @override
+  String get sessionRevokedOnThisDevice =>
+      'You have been signed out of this device from another device.';
 
   @override
   String get settingsTitle => 'Settings';
@@ -405,4 +433,1292 @@ class AppLocalizationsEn extends AppLocalizations {
   @override
   String get passwordReqSpecial =>
       'Include at least one special character !@#\$^()_';
+
+  @override
+  String get loggedInDevices => 'Logged in devices';
+
+  @override
+  String get thisDevice => 'This device';
+
+  @override
+  String get activeNow => 'Active now';
+
+  @override
+  String get logoutDevice => 'Logout';
+
+  @override
+  String get logoutDeviceConfirmTitle => 'Logout from device?';
+
+  @override
+  String logoutDeviceConfirmMessage(String deviceName) {
+    return 'The session on \"$deviceName\" will be ended.';
+  }
+
+  @override
+  String get logoutAllOtherDevices => 'Logout all other devices';
+
+  @override
+  String get logoutAllConfirmTitle => 'Logout all other devices?';
+
+  @override
+  String get logoutAllConfirmMessage =>
+      'All sessions except this device will be ended.';
+
+  @override
+  String get noOtherDevices => 'No other devices logged in.';
+
+  @override
+  String get deviceLogoutSuccess => 'Device logged out.';
+
+  @override
+  String get allDevicesLogoutSuccess => 'All other devices logged out.';
+
+  @override
+  String get editProfile => 'Edit Profile';
+
+  @override
+  String get dateOfBirth => 'Date of Birth';
+
+  @override
+  String get gender => 'Gender';
+
+  @override
+  String get genderMale => 'Male';
+
+  @override
+  String get genderFemale => 'Female';
+
+  @override
+  String get genderOther => 'Other';
+
+  @override
+  String get saveChanges => 'Save Changes';
+
+  @override
+  String get profileUpdateSuccess => 'Profile updated successfully';
+
+  @override
+  String get profileUpdateFailed => 'Failed to update profile';
+
+  @override
+  String get changeAvatar => 'Change avatar';
+
+  @override
+  String get optionalLabel => 'Optional';
+
+  @override
+  String get requiredLabel => 'Required';
+
+  @override
+  String get genderOtherConfirmMessage =>
+      'Are you sure you want to select \"Other\" as your gender?';
+
+  @override
+  String get dateOfBirthEmptyTitle => 'Your date of birth is empty';
+
+  @override
+  String get dateOfBirthEmptyMessage =>
+      'Are you sure you want to continue? You can add your date of birth in the settings.';
+
+  @override
+  String get createReportTitle => 'Create Report';
+
+  @override
+  String get reportTitleLabel => 'Title *';
+
+  @override
+  String get reportDescLabel => 'Description *';
+
+  @override
+  String get reportAddressLabel => 'Address';
+
+  @override
+  String get reportLocationDescLabel => 'Location Description';
+
+  @override
+  String get reportAnonymous => 'Send anonymously';
+
+  @override
+  String get submitReport => 'Submit Report';
+
+  @override
+  String get pickImage => 'Gallery';
+
+  @override
+  String get takePhoto => 'Take photo';
+
+  @override
+  String get reloadLocation => 'Reload Location';
+
+  @override
+  String get maxImagesError => 'Max 10 images allowed';
+
+  @override
+  String get requiredFieldError => 'This field is required';
+
+  @override
+  String get uploadingReport =>
+      'Uploading report, please do not close the app...';
+
+  @override
+  String get locationServicesDisabled => 'Location services are disabled.';
+
+  @override
+  String get locationPermissionsDenied => 'Location permissions are denied.';
+
+  @override
+  String get locationPermissionsPermanentlyDenied =>
+      'Location permissions are permanently denied.';
+
+  @override
+  String uploadingImageProgress(Object current, Object total) {
+    return 'Uploading image... ($current/$total)';
+  }
+
+  @override
+  String get uploadingImage => 'Uploading image';
+
+  @override
+  String imageProgress(Object current, Object total) {
+    return 'Image $current/$total';
+  }
+
+  @override
+  String get creatingReportSystem => 'Creating report...';
+
+  @override
+  String get almostDone => 'Almost done';
+
+  @override
+  String get creatingReportOnSystem => 'Creating report on the system...';
+
+  @override
+  String get createReportSuccess => 'Create report successfully!';
+
+  @override
+  String get success => 'Success';
+
+  @override
+  String get reportRecorded => 'Your report has been recorded.';
+
+  @override
+  String errorString(Object error) {
+    return 'Error: $error';
+  }
+
+  @override
+  String get errorPrefix => 'Error';
+
+  @override
+  String cannotCreateReportError(Object error) {
+    return 'Cannot create report: $error';
+  }
+
+  @override
+  String errorOccurredSendingReport(Object error) {
+    return 'An error occurred while sending report: $error';
+  }
+
+  @override
+  String sendingReportProgress(Object current, Object total) {
+    return 'Sending report... ($current/$total)';
+  }
+
+  @override
+  String get navigateToReport => 'Navigate';
+
+  @override
+  String get viewDetail => 'View Detail';
+
+  @override
+  String get myLocation => 'My Location';
+
+  @override
+  String get filterReports => 'Filter Reports';
+
+  @override
+  String get refresh => 'Refresh';
+
+  @override
+  String get filter => 'Filter';
+
+  @override
+  String get calculatingDistance => 'Calculating distance...';
+
+  @override
+  String get reportDetails => 'Report Details';
+
+  @override
+  String get turnOnLocationToViewDistance =>
+      'Turn on location to view the distance from the incident to your location';
+
+  @override
+  String get openInGoogleMaps => 'Open in Google Maps';
+
+  @override
+  String get createdAtLabel => 'Created at';
+
+  @override
+  String get statusLabel => 'Status';
+
+  @override
+  String get severityLabel => 'Severity';
+
+  @override
+  String get severityLow => 'Low';
+
+  @override
+  String get severityMedium => 'Medium';
+
+  @override
+  String get severityHigh => 'High';
+
+  @override
+  String get severityCritical => 'Critical';
+
+  @override
+  String get locationServiceDisabledError =>
+      'Please enable location services on your device';
+
+  @override
+  String get locationPermissionDeniedForeverError =>
+      'Location permissions are permanently denied, please go to settings to enable';
+
+  @override
+  String get cannotOpenGoogleMapsError => 'Cannot open Google Maps';
+
+  @override
+  String errorOccurred(Object error) {
+    return 'An error occurred:\n$error';
+  }
+
+  @override
+  String get retryButton => 'Retry';
+
+  @override
+  String get minuteAgo => 'm ago';
+
+  @override
+  String get hourAgo => 'h ago';
+
+  @override
+  String get dayAgo => 'd ago';
+
+  @override
+  String get justNow => 'Just now';
+
+  @override
+  String get routeHome => 'Home';
+
+  @override
+  String get routeSettings => 'Settings';
+
+  @override
+  String get routeMap => 'Map';
+
+  @override
+  String get routeCreateReport => 'Create Report';
+
+  @override
+  String get routeMyReports => 'My Reports';
+
+  @override
+  String get routeEditProfile => 'Edit Profile';
+
+  @override
+  String get routeChangePassword => 'Change Password';
+
+  @override
+  String get routeManageDevices => 'Manage Devices';
+
+  @override
+  String get routeNotifications => 'Notifications';
+
+  @override
+  String get markAllAsRead => 'Mark all as read';
+
+  @override
+  String get emptyNotification => 'You have no notifications.';
+
+  @override
+  String get unread => 'Unread';
+
+  @override
+  String get assignedStaff => 'Assigned Staff';
+
+  @override
+  String get routeCommunityFeed => 'All report';
+
+  @override
+  String get feedTabLatest => 'Latest';
+
+  @override
+  String get feedTabNearby => 'Near me';
+
+  @override
+  String get feedEmpty => 'No community reports yet';
+
+  @override
+  String get feedAnonymous => 'Anonymous user';
+
+  @override
+  String get feedSeeMore => 'See more';
+
+  @override
+  String get feedTimelineSubmitted => 'Submitted';
+
+  @override
+  String get feedTimelineProcessing => 'Processing';
+
+  @override
+  String get feedTimelineDone => 'Done';
+
+  @override
+  String get feedShare => 'Share';
+
+  @override
+  String get feedViewOnMap => 'View map';
+
+  @override
+  String get feedCopiedLink => 'Report info copied to clipboard';
+
+  @override
+  String feedPhotosCount(int count) {
+    return '$count photos';
+  }
+
+  @override
+  String get reviewReport => 'Review';
+
+  @override
+  String get reviewQuestion => 'Has your report been resolved?';
+
+  @override
+  String get reviewResolvedOption => 'Resolved';
+
+  @override
+  String get reviewUnresolvedOption => 'Not resolved';
+
+  @override
+  String get rateStaffTitle => 'Rate handling staff';
+
+  @override
+  String get rateStaffSubtitle => 'Please rate the staff member (1 - 5 stars)';
+
+  @override
+  String get unresolvedReasonLabel => 'Reason for unresolved';
+
+  @override
+  String get unresolvedReasonHint =>
+      'Please describe why you feel this report is not resolved...';
+
+  @override
+  String get attachEvidencePhotos =>
+      'Evidence photos (at least 1 photo required)';
+
+  @override
+  String get attachEvidencePhotoHint =>
+      'At least 1 photo and description required to submit';
+
+  @override
+  String get submitReview => 'Submit review';
+
+  @override
+  String get submittingReview => 'Submitting review...';
+
+  @override
+  String get reviewSuccess => 'Review submitted successfully!';
+
+  @override
+  String get unresolvedReviewTitle => 'Unresolved feedback';
+
+  @override
+  String get resolutionInfo => 'Resolution result';
+
+  @override
+  String get resolutionNote => 'Resolution note';
+
+  @override
+  String get resolutionImages => 'Resolution photos';
+
+  @override
+  String get resolvedAtLabel => 'Completed at';
+
+  @override
+  String get reviewRatingLabel => 'Citizen rating';
+
+  @override
+  String get cameraOption => 'Camera';
+
+  @override
+  String get galleryOption => 'Gallery';
+
+  @override
+  String get closeButton => 'Close';
+
+  @override
+  String get rehandling => 'Re-handling';
+
+  @override
+  String get unsatisfactoryBadge => 'Unsatisfactory resolution';
+
+  @override
+  String get latestNews => 'Latest News';
+
+  @override
+  String get routeNewsList => 'News';
+
+  @override
+  String get emptyNewsTitle => 'No news yet';
+
+  @override
+  String get emptyNewsDescription =>
+      'There are currently no news or announcements.';
+
+  @override
+  String get mapNormalReports => 'Normal';
+
+  @override
+  String mapClusterReportsTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reports in this area',
+      one: '1 report in this area',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get mapClusterSortHint => 'Most dangerous first, then newest';
+
+  @override
+  String get mapZoomInForMore => 'Zoom in to see more reports';
+
+  @override
+  String get mapLoadReportsFailed => 'Couldn\'t load reports on the map';
+
+  @override
+  String get mapFilterAll => 'All';
+
+  @override
+  String get viewOnMap => 'View on map';
+
+  @override
+  String get mapFocusedReportHidden =>
+      'This report isn\'t currently shown on the map';
+
+  @override
+  String get locationSection => 'Incident Location';
+
+  @override
+  String get noAddress => 'No address provided';
+
+  @override
+  String get locationDescriptionLabel => 'Location description';
+
+  @override
+  String nearbyReportsAlertTitle(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count reports near you',
+      one: '1 report near you',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String nearbyDistanceInMeters(int distance) {
+    return '${distance}m away';
+  }
+
+  @override
+  String get actionUnderstood => 'Got it';
+
+  @override
+  String get actionViewDetail => 'View details';
+
+  @override
+  String get noImages => 'No images available';
+
+  @override
+  String get actionPrevious => 'Previous';
+
+  @override
+  String get actionNext => 'Next';
+
+  @override
+  String get editReport => 'Edit';
+
+  @override
+  String get cancelReport => 'Cancel Request';
+
+  @override
+  String get cancelReportConfirmTitle => 'Cancel Report Request';
+
+  @override
+  String get cancelReportConfirmMessage =>
+      'Are you sure you want to cancel this report request? It will be moved to the rejected list.';
+
+  @override
+  String get cancelReportSuccess => 'Report request cancelled successfully';
+
+  @override
+  String get updateReportSuccess => 'Report updated successfully';
+
+  @override
+  String get youCreatedThisReport => 'You created this report';
+
+  @override
+  String get myReportBadge => 'Your report';
+
+  @override
+  String get editReportTitle => 'Edit Report';
+
+  @override
+  String get editReportOnlyPending => 'Only pending reports can be edited';
+
+  @override
+  String get cancelReportOnlyPending => 'Only pending reports can be cancelled';
+
+  @override
+  String get genericError => 'An error occurred, please try again later';
+
+  @override
+  String get mapSettings => 'Map Settings';
+
+  @override
+  String get mapDensityToggle => 'Show report density';
+
+  @override
+  String get mapDensityDescription =>
+      'Display high-density report areas grouped by color (50m)';
+
+  @override
+  String get densityLegendTitle => 'Report Density';
+
+  @override
+  String get densityLow => '1–2 reports (Low)';
+
+  @override
+  String get densityMedium => '3–5 reports (Medium)';
+
+  @override
+  String get densityHigh => 'Over 5 reports (High)';
+
+  @override
+  String get mapBack => 'Back';
+
+  @override
+  String get filterTimeframe => 'Timeframe';
+
+  @override
+  String get timeframeAll => 'All time';
+
+  @override
+  String get timeframe1Month => '1 month';
+
+  @override
+  String get timeframe3Months => '3 months';
+
+  @override
+  String get timeframe6Months => '6 months';
+
+  @override
+  String get timeframe9Months => '9 months';
+
+  @override
+  String get timeframe12Months => '12 months';
+
+  @override
+  String get routeConversations => 'Conversations';
+
+  @override
+  String get routeChatDetail => 'Chat Detail';
+
+  @override
+  String get conversations => 'Messages';
+
+  @override
+  String get noConversations => 'No conversations yet';
+
+  @override
+  String get noConversationsSub =>
+      'You can message support staff from the detail of your active reports.';
+
+  @override
+  String get searchConversationsPlaceholder => 'Search by name or content...';
+
+  @override
+  String get roleStaff => 'Staff';
+
+  @override
+  String get roleAdmin => 'Admin';
+
+  @override
+  String get chatInputHint => 'Type a message...';
+
+  @override
+  String get emptyMessages => 'No messages yet. Start chatting!';
+
+  @override
+  String get errorLoadMessages => 'Failed to load messages';
+
+  @override
+  String get anonymousPerson => 'Anonymous User';
+
+  @override
+  String get supportStaff => 'Support Staff';
+
+  @override
+  String get managementBoard => 'Management';
+
+  @override
+  String get chatDisabledNotice =>
+      'The report has been resolved. Chat is currently in read-only history mode.';
+
+  @override
+  String get chatWithStaff => 'Message staff';
+
+  @override
+  String get viewStaffChat => 'View support messages';
+
+  @override
+  String get cannotStartChat =>
+      'Unable to start conversation, please try again later';
+
+  @override
+  String get routeConversationInfo => 'Conversation Info';
+
+  @override
+  String get conversationInfoTitle => 'Conversation Info';
+
+  @override
+  String get activeReportsSection => 'Active Reports';
+
+  @override
+  String get allReportsProcessed => 'All reports have been processed';
+
+  @override
+  String get conversationClosedNotice =>
+      'Conversation closed as all reports have been processed';
+
+  @override
+  String get conversationActiveNotice => 'Conversation is currently active';
+
+  @override
+  String get callButtonLabel => 'Call';
+
+  @override
+  String get videoCallButtonLabel => 'Video call';
+
+  @override
+  String get videoCallComingSoon => 'Video call feature is under development';
+
+  @override
+  String get conversationRefreshed =>
+      'Conversation info and messages refreshed successfully';
+
+  @override
+  String get conversationRefreshFailed =>
+      'Could not refresh conversation, please try again later';
+
+  @override
+  String get cannotMakePhoneCall => 'Cannot make phone call';
+
+  @override
+  String get noPhoneNumber => 'No phone number available';
+
+  @override
+  String get staffNoPosition => 'No position';
+
+  @override
+  String get rehandlingBadge => 'Re-handling';
+
+  @override
+  String get roleClient => 'Resident';
+
+  @override
+  String get contextIdentified => 'Identified';
+
+  @override
+  String get contextAnonymous => 'Anonymous';
+
+  @override
+  String get contextIdentifiedTag => 'Identified';
+
+  @override
+  String get contextAnonymousTag => 'Anonymous';
+
+  @override
+  String get noIdentifiedReports => 'No active identified reports';
+
+  @override
+  String get noAnonymousReports => 'No active anonymous reports';
+
+  @override
+  String get anonymousProtectionBanner =>
+      'Anonymous discussion. Your personal identity is strictly protected.';
+
+  @override
+  String get contextIdentifiedTooltip => 'Identified reports conversation';
+
+  @override
+  String get contextAnonymousTooltip => 'Anonymous reports conversation';
+
+  @override
+  String get youCreatedThisReportAnonymously =>
+      'You created this report anonymously';
+
+  @override
+  String get callOptionsTitle => 'Call options';
+
+  @override
+  String get cellularCall => 'Cellular call';
+
+  @override
+  String get cellularCallDesc => 'Open default phone app';
+
+  @override
+  String get freeCall => 'Free in-app voice call';
+
+  @override
+  String get featureUnderDevelopment => 'Feature under development';
+
+  @override
+  String get comingSoon => 'Coming soon';
+
+  @override
+  String get phoneNotAvailable => 'Phone number is not available';
+
+  @override
+  String get freeCallComingSoon =>
+      'Free in-app voice call feature is under development';
+
+  @override
+  String get searchReportsPlaceholder =>
+      'Search by title, description or address...';
+
+  @override
+  String get noMatchingReports => 'No matching reports';
+
+  @override
+  String get sortLabel => 'Sort';
+
+  @override
+  String get clearFilters => 'Clear filters';
+
+  @override
+  String resultsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count results',
+      one: '1 result',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get nearbyLocationUnavailable =>
+      'Couldn\'t get your location. Showing the latest reports instead.';
+
+  @override
+  String filterSelectedTooltip(Object label, Object value) {
+    return '$label: $value';
+  }
+
+  @override
+  String get pickSingleDate => 'A specific day…';
+
+  @override
+  String get pickDateRange => 'A date range…';
+
+  @override
+  String get notificationFilterUnread => 'Unread';
+
+  @override
+  String notificationFilterUnreadCount(String count) {
+    return 'Unread ($count)';
+  }
+
+  @override
+  String get allNotificationsRead => 'You\'re all caught up';
+
+  @override
+  String get viewAllNotifications => 'View all notifications';
+
+  @override
+  String get contextIdentifiedExplanation =>
+      'Identified: Staff will know that you created this report.';
+
+  @override
+  String get contextAnonymousExplanation =>
+      'Anonymous: Staff will definitely not know who created this report.';
+
+  @override
+  String get contextExplanationTitle => 'Conversation Context Info';
+
+  @override
+  String get contextExplanationGotIt => 'Got it';
+
+  @override
+  String get chooseFromGallery => 'Choose photo from gallery';
+
+  @override
+  String get chooseVideo => 'Choose video';
+
+  @override
+  String get attachReport => 'Attach report';
+
+  @override
+  String get markAsRead => 'Mark as read';
+
+  @override
+  String get typingText => 'typing...';
+
+  @override
+  String get pressAndHoldToRecord => 'Press and hold to record';
+
+  @override
+  String get slideLeftToCancel => 'Slide left to cancel';
+
+  @override
+  String get releaseToCancel => 'Release to cancel';
+
+  @override
+  String get selectReportToAttach => 'Select report to attach';
+
+  @override
+  String get voiceMessageSnippet => 'Voice message';
+
+  @override
+  String get imageSnippet => 'Photo';
+
+  @override
+  String get videoSnippet => 'Video';
+
+  @override
+  String get attachedReportSnippet => 'Attached report';
+
+  @override
+  String get reportDeadlineLabel => 'Resolution deadline';
+
+  @override
+  String get deadlineOverdueBadge => 'Overdue';
+
+  @override
+  String daysRemainingLabel(int days) {
+    return '$days days left';
+  }
+
+  @override
+  String get overdueOnlyFilter => 'Overdue';
+
+  @override
+  String get rejectedReasonTitle => 'Rejection Reason';
+
+  @override
+  String get noRejectionReasonProvided => 'Rejected by administrator.';
+
+  @override
+  String get reportCategoryLabel => 'Incident Category';
+
+  @override
+  String get reportCategoryHint => 'Select a category';
+
+  @override
+  String get reportCategoryRequired => 'Please select an incident category';
+
+  @override
+  String get reportCategoryLoadError => 'Could not load categories';
+
+  @override
+  String get reportCategoryEmpty => 'No categories available';
+
+  @override
+  String get callFreeVoiceDesc => 'Free internet voice call';
+
+  @override
+  String get callPermissionDenied =>
+      'Voice call unavailable for this conversation';
+
+  @override
+  String get callActionLabel => 'Call';
+
+  @override
+  String get emergencyContacts => 'Emergency contacts';
+
+  @override
+  String get emergencyTabMine => 'My contacts';
+
+  @override
+  String get emergencyTabGuardian => 'I look out for';
+
+  @override
+  String get emergencyAddContact => 'Add contact';
+
+  @override
+  String emergencyCapacity(Object count, Object max) {
+    return '$count/$max · Receive your SOS';
+  }
+
+  @override
+  String get emergencyLimitShort => 'All 5 contacts added';
+
+  @override
+  String get emergencyEmptyMineTitle => 'No emergency contacts yet';
+
+  @override
+  String get emergencyReorder => 'Reorder';
+
+  @override
+  String get emergencyReorderDone => 'Done';
+
+  @override
+  String emergencyInviteFrom(Object name) {
+    return '$name wants to add you';
+  }
+
+  @override
+  String get emergencyEmptyMine =>
+      'No one is on your emergency list yet. Add family or friends so they are alerted if something happens to you.';
+
+  @override
+  String get emergencyStatusAwaitingInvite => 'Awaiting reply';
+
+  @override
+  String get emergencyStatusRejected => 'Declined';
+
+  @override
+  String get emergencyStatusRevoked => 'Left';
+
+  @override
+  String get emergencyChannelApp => 'Alerts in the app';
+
+  @override
+  String get emergencyChannelSms => 'Alerts by SMS';
+
+  @override
+  String get emergencyRelationParent => 'Parent';
+
+  @override
+  String get emergencyRelationSpouse => 'Spouse';
+
+  @override
+  String get emergencyRelationChild => 'Child';
+
+  @override
+  String get emergencyRelationSibling => 'Sibling';
+
+  @override
+  String get emergencyRelationRelative => 'Relative';
+
+  @override
+  String get emergencyRelationFriend => 'Friend';
+
+  @override
+  String get emergencyRelationNeighbor => 'Neighbour';
+
+  @override
+  String get emergencyRelationOther => 'Other';
+
+  @override
+  String get emergencyEdit => 'Edit';
+
+  @override
+  String get emergencyDelete => 'Remove';
+
+  @override
+  String get emergencyMoreActions => 'More actions';
+
+  @override
+  String get emergencyDragHandle => 'Drag to change priority';
+
+  @override
+  String emergencyDeleteTitle(Object name) {
+    return 'Remove $name from your emergency list?';
+  }
+
+  @override
+  String emergencyDeleteMessage(Object name) {
+    return '$name will no longer receive your SOS alerts.';
+  }
+
+  @override
+  String get emergencyDeleted => 'Contact removed';
+
+  @override
+  String get emergencyFormAddTitle => 'Add emergency contact';
+
+  @override
+  String get emergencyFormEditTitle => 'Edit emergency contact';
+
+  @override
+  String get emergencyFormName => 'Contact name';
+
+  @override
+  String get emergencyFormNameRequired => 'Please enter a name';
+
+  @override
+  String get emergencyFormPhoneRequired => 'Please enter a phone number';
+
+  @override
+  String get emergencyFormPhoneInvalid =>
+      'Enter a valid Vietnamese mobile number';
+
+  @override
+  String get emergencyFormRelationship => 'Relationship';
+
+  @override
+  String get emergencyFormRelationshipRequired =>
+      'Please choose a relationship';
+
+  @override
+  String get emergencyFormAccountEmail => 'SmartSpace account email (optional)';
+
+  @override
+  String get emergencyFormAccountEmailHelp =>
+      'If this person uses SmartSpace, they get the invitation and alerts in the app. Leave it empty to reach them by SMS.';
+
+  @override
+  String get emergencyFormEmailInvalid => 'Enter a valid email';
+
+  @override
+  String get emergencyFormConsent =>
+      'I confirm this person agreed to receive my emergency alerts by SMS';
+
+  @override
+  String get emergencyFormConsentRequired =>
+      'Please confirm this person agreed';
+
+  @override
+  String get emergencyFormReconfirmNote =>
+      'Changing the phone number or linked account asks this person to agree again.';
+
+  @override
+  String get emergencyFormSave => 'Save';
+
+  @override
+  String emergencyInviteSent(Object name) {
+    return 'Invitation sent to $name in the app';
+  }
+
+  @override
+  String get emergencyContactSaved => 'Contact saved';
+
+  @override
+  String get emergencyGuardianIntro =>
+      'People who added you to their emergency list. You are alerted when they send an SOS.';
+
+  @override
+  String get emergencyInvitationsHeader => 'Invitations';
+
+  @override
+  String get emergencyGuardingHeader => 'Looking out for';
+
+  @override
+  String emergencyListedAs(Object relationship) {
+    return 'Listed as: $relationship';
+  }
+
+  @override
+  String get emergencyAccept => 'Accept';
+
+  @override
+  String get emergencyDecline => 'Decline';
+
+  @override
+  String get emergencyLeave => 'Leave list';
+
+  @override
+  String emergencyLeaveTitle(Object name) {
+    return 'Leave $name\'s emergency list?';
+  }
+
+  @override
+  String emergencyLeaveMessage(Object name) {
+    return 'You will stop receiving SOS alerts from $name. They will be told.';
+  }
+
+  @override
+  String emergencyAccepted(Object name) {
+    return 'You are now $name\'s emergency contact';
+  }
+
+  @override
+  String get emergencyDeclined => 'Invitation declined';
+
+  @override
+  String get emergencyLeft => 'You left the emergency list';
+
+  @override
+  String get emergencyEmptyGuardian =>
+      'No one has added you to their emergency list.';
+
+  @override
+  String get emergencyLoadFailed => 'Could not load your emergency contacts.';
+
+  @override
+  String get sosSlideLabel => 'Slide to send SOS';
+
+  @override
+  String get sosSlideSemantics => 'Send SOS';
+
+  @override
+  String get sosSlideHint =>
+      'The management board and your emergency contacts get your location';
+
+  @override
+  String get sosConfirmTitle => 'Send an SOS?';
+
+  @override
+  String get sosConfirmMessage =>
+      'The management board and your emergency contacts will get your location right away.';
+
+  @override
+  String get sosConfirmSend => 'Send SOS';
+
+  @override
+  String get sosActiveBanner => 'Your SOS is active';
+
+  @override
+  String get sosActiveBannerHint => 'Tap to see status or end it';
+
+  @override
+  String get sosCountdownTitle => 'Sending SOS';
+
+  @override
+  String sosCountdownMessage(Object seconds) {
+    return 'Your SOS goes out in $seconds s';
+  }
+
+  @override
+  String get sosLocating => 'Getting your location…';
+
+  @override
+  String get sosSending => 'Sending…';
+
+  @override
+  String get sosLocationUnavailable =>
+      'Could not get your location. Turn on location and try again, or call an emergency number now.';
+
+  @override
+  String get sosLocationPermissionDenied =>
+      'SmartSpace needs location access to send an SOS.';
+
+  @override
+  String get sosOpenSettings => 'Open settings';
+
+  @override
+  String get sosSendFailed =>
+      'Could not send the SOS. Try again or call an emergency number now.';
+
+  @override
+  String get sosActiveTitle => 'SOS active';
+
+  @override
+  String sosWaitingAck(Object count) {
+    return 'The management board and $count contacts were alerted. Waiting for a response.';
+  }
+
+  @override
+  String sosAcknowledgedBy(Object name) {
+    return '$name received your SOS and is helping you.';
+  }
+
+  @override
+  String sosLocationUpdatedAt(Object time) {
+    return 'Location updated at $time';
+  }
+
+  @override
+  String get sosSharingLocation => 'Sharing your location every 15 seconds';
+
+  @override
+  String get sosCallEmergency => 'Emergency numbers';
+
+  @override
+  String get sosCallPolice => 'Police 113';
+
+  @override
+  String get sosCallFire => 'Fire 114';
+
+  @override
+  String get sosCallAmbulance => 'Ambulance 115';
+
+  @override
+  String get sosCallRescue => 'Rescue 112';
+
+  @override
+  String get sosImSafe => 'I am safe';
+
+  @override
+  String get sosSafeConfirmTitle => 'End your SOS?';
+
+  @override
+  String get sosSafeConfirmMessage =>
+      'The management board and your emergency contacts will be told you are safe.';
+
+  @override
+  String get sosEndedTitle => 'SOS ended';
+
+  @override
+  String get sosEndedSafe => 'Glad you are safe. Everyone has been told.';
+
+  @override
+  String get sosEndedByAdmin => 'The management board closed your SOS.';
+
+  @override
+  String get sosBackHome => 'Back to home';
+
+  @override
+  String get sosTrackingNotifTitle => 'SOS active';
+
+  @override
+  String get sosTrackingNotifText =>
+      'Sharing your location with the management board and your emergency contacts';
+
+  @override
+  String sosWatchTitle(Object name) {
+    return 'SOS from $name';
+  }
+
+  @override
+  String sosWatchActive(Object name) {
+    return '$name needs urgent help';
+  }
+
+  @override
+  String get sosWatchAcknowledged => 'The management board is handling it';
+
+  @override
+  String sosWatchSafe(Object name) {
+    return '$name is safe';
+  }
+
+  @override
+  String get sosWatchClosed => 'This SOS has ended';
+
+  @override
+  String get sosOpenMap => 'Open map';
+
+  @override
+  String sosCallPerson(Object name) {
+    return 'Call $name';
+  }
+
+  @override
+  String get sosLoadFailed => 'Could not load this SOS.';
+
+  @override
+  String sosSentAt(Object time) {
+    return 'Sent at $time';
+  }
+
+  @override
+  String sosAccuracy(Object meters) {
+    return 'Accurate to about $meters m';
+  }
 }

@@ -2,8 +2,8 @@
 
 import 'package:flutter/material.dart';
 import 'package:smartspace_staff/l10n/app_localizations.dart';
-import '../../../core/localization/locale_provider.dart';
-import '../../../core/theme/theme_provider.dart';
+import 'package:mobile_shared/core/localization/locale_provider.dart';
+import 'package:mobile_shared/core/theme/theme_provider.dart';
 
 class LoginSetting extends StatelessWidget {
   const LoginSetting({super.key});

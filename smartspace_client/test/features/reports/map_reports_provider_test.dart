@@ -1,0 +1,258 @@
+import 'dart:async';
+
+import 'package:flutter_test/flutter_test.dart';
+import 'package:mobile_shared/core/api/api_response.dart';
+import 'package:mobile_shared/features/map/models/map_bounds.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import 'package:smartspace_client/features/reports/models/map_report_filter.dart';
+import 'package:smartspace_client/features/reports/models/map_reports_result.dart';
+import 'package:smartspace_client/features/reports/models/report_model.dart';
+import 'package:smartspace_client/features/reports/models/report_timeframe.dart';
+import 'package:smartspace_client/features/reports/providers/map_reports_provider.dart';
+import 'package:smartspace_client/features/reports/repositories/report_repo.dart';
+import 'package:smartspace_client/features/reports/services/report_service.dart';
+
+/// Repo giả: mỗi lần gọi trả về một Completer để test điều khiển thứ tự response.
+class _FakeReportRepo implements ReportRepo {
+  final List<MapBounds> requestedBounds = [];
+  final List<MapReportFilter> requestedFilters = [];
+  final List<String?> requestedTimeframes = [];
+  final List<Completer<ApiResponse<MapReportsResult>>> pending = [];
+
+  @override
+  Future<ApiResponse<MapReportsResult>> getReportsInBounds(
+    MapBounds bounds, {
+    MapReportFilter filter = MapReportFilter.all,
+    String? timeframe,
+    int limit = 300,
+  }) {
+    requestedBounds.add(bounds);
+    requestedFilters.add(filter);
+    requestedTimeframes.add(timeframe);
+    final completer = Completer<ApiResponse<MapReportsResult>>();
+    pending.add(completer);
+    return completer.future;
+  }
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+ReportModel _report(String id) => ReportModel(
+      id: id,
+      title: id,
+      description: '',
+      imageUrl: '',
+      latitude: 10.8,
+      longitude: 106.7,
+      status: ReportStatus.pending,
+      createdAt: DateTime(2026, 1, 1),
+    );
+
+ApiResponse<MapReportsResult> _ok(List<String> ids, {bool truncated = false}) => ApiResponse(
+      success: true,
+      message: 'ok',
+      data: MapReportsResult(reports: ids.map(_report).toList(), truncated: truncated),
+    );
+
+void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  const viewport = MapBounds(minLat: 10.7, maxLat: 10.9, minLng: 106.6, maxLng: 106.8);
+  const insideViewport = MapBounds(minLat: 10.75, maxLat: 10.85, minLng: 106.65, maxLng: 106.75);
+
+  late _FakeReportRepo repo;
+  late DateTime now;
+  late MapReportsNotifier notifier;
+
+  setUp(() {
+    SharedPreferences.setMockInitialValues({});
+    repo = _FakeReportRepo();
+    now = DateTime(2026, 1, 1, 12);
+    notifier = MapReportsNotifier(ReportService(reportRepo: repo), now: () => now);
+  });
+
+  tearDown(() => notifier.dispose());
+
+  // Test Case ID: SMP-012
+  // Description: Kiểm tra loadForViewport mở rộng bounds theo prefetchFactor khi gọi API và cập nhật trạng thái isLoading và reports.
+  test('tải khung rộng hơn màn hình theo prefetchFactor', () async {
+    final future = notifier.loadForViewport(viewport);
+    expect(notifier.state.isLoading, isTrue);
+    expect(repo.requestedBounds.single, viewport.expandBy(MapReportsNotifier.prefetchFactor));
+
+    repo.pending.single.complete(_ok(['a', 'b']));
+    await future;
+
+    expect(notifier.state.isLoading, isFalse);
+    expect(notifier.state.reports.map((r) => r.id), ['a', 'b']);
+  });
+
+  // Test Case ID: SMP-013
+  // Description: Kiểm tra khi viewport mới nằm gọn trong vùng đã tải trước đó và dữ liệu còn hạn freshness thì không gọi lại API.
+  test('khung mới nằm trong vùng đã tải và còn mới → không gọi lại API', () async {
+    final future = notifier.loadForViewport(viewport);
+    repo.pending.single.complete(_ok(['a']));
+    await future;
+
+    await notifier.loadForViewport(insideViewport);
+    expect(repo.requestedBounds, hasLength(1));
+  });
+
+  // Test Case ID: SMP-014
+  // Description: Kiểm tra khi thời gian vượt quá ngưỡng freshness thì loadForViewport gọi lại API dù nằm trong vùng cũ.
+  test('dữ liệu quá hạn freshness → gọi lại API', () async {
+    final future = notifier.loadForViewport(viewport);
+    repo.pending.single.complete(_ok(['a']));
+    await future;
+
+    now = now.add(MapReportsNotifier.freshness + const Duration(seconds: 1));
+    unawaited(notifier.loadForViewport(insideViewport));
+    expect(repo.requestedBounds, hasLength(2));
+  });
+
+  // Test Case ID: SMP-015
+  // Description: Kiểm tra khi response có truncated=true, gọi lại đúng viewport cũ không lặp request, còn đổi viewport khác sẽ tải lại.
+  test('truncated: khung khác phải tải lại, nhưng cùng khung thì không lặp request', () async {
+    final future = notifier.loadForViewport(viewport);
+    repo.pending.single.complete(_ok(['a'], truncated: true));
+    await future;
+
+    // Map idle lặp lại với đúng khung cũ → không gọi lại (tránh vòng lặp vô hạn)
+    await notifier.loadForViewport(viewport);
+    expect(repo.requestedBounds, hasLength(1));
+
+    // Zoom vào (khung khác) → còn report bị cắt bớt nên phải tải lại
+    unawaited(notifier.loadForViewport(insideViewport));
+    expect(repo.requestedBounds, hasLength(2));
+  });
+
+  // Test Case ID: SMP-016
+  // Description: Kiểm tra response của request cũ hoàn tất sau request mới hơn sẽ bị bỏ qua, giữ kết quả mới.
+  test('response của request cũ về sau request mới thì bị bỏ', () async {
+    final first = notifier.loadForViewport(viewport);
+    final second = notifier.loadForViewport(insideViewport, force: true);
+
+    repo.pending[1].complete(_ok(['new']));
+    await second;
+    repo.pending[0].complete(_ok(['stale']));
+    await first;
+
+    expect(notifier.state.reports.map((r) => r.id), ['new']);
+  });
+
+  // Test Case ID: SMP-017
+  // Description: Kiểm tra khi API trả về lỗi, notifier giữ nguyên danh sách cũ, lưu thông báo error, tắt isLoading và cho phép thử lại.
+  test('lỗi: giữ dữ liệu cũ, lưu error, và cho phép thử lại cùng khung', () async {
+    final first = notifier.loadForViewport(viewport);
+    repo.pending.single.complete(_ok(['a']));
+    await first;
+
+    final second = notifier.loadForViewport(insideViewport, force: true);
+    repo.pending[1].complete(ApiResponse(success: false, message: 'boom'));
+    await second;
+
+    expect(notifier.state.reports.map((r) => r.id), ['a']);
+    expect(notifier.state.error, 'boom');
+    expect(notifier.state.isLoading, isFalse);
+
+    unawaited(notifier.loadForViewport(insideViewport));
+    expect(repo.requestedBounds, hasLength(3));
+  });
+
+  // Test Case ID: SMP-018
+  // Description: Kiểm tra gọi refresh() bỏ qua cache và tải lại khung viewport gần nhất.
+  test('refresh: tải lại khung gần nhất, bỏ qua cache', () async {
+    final first = notifier.loadForViewport(viewport);
+    repo.pending.single.complete(_ok(['a']));
+    await first;
+
+    unawaited(notifier.refresh());
+    expect(repo.requestedBounds, hasLength(2));
+  });
+
+  // Test Case ID: SMP-019
+  // Description: Kiểm tra MapReportsNotifier lọc bỏ các report có tọa độ (0, 0) khỏi danh sách state.reports.
+  test('bỏ report không có toạ độ (0,0)', () async {
+    final future = notifier.loadForViewport(viewport);
+    repo.pending.single.complete(ApiResponse(
+      success: true,
+      message: 'ok',
+      data: MapReportsResult(
+        reports: [_report('a'), _report('zero').copyWith(latitude: 0, longitude: 0)],
+        truncated: false,
+      ),
+    ));
+    await future;
+
+    expect(notifier.state.reports.map((r) => r.id), ['a']);
+  });
+
+  // Test Case ID: SMP-020
+  // Description: Kiểm tra lần gọi loadForViewport mặc định gửi tham số filter là MapReportFilter.all.
+  test('mặc định gửi filter=all', () async {
+    unawaited(notifier.loadForViewport(viewport));
+    expect(repo.requestedFilters.single, MapReportFilter.all);
+  });
+
+  // Test Case ID: SMP-021
+  // Description: Kiểm tra setFilter sang giá trị mới sẽ bỏ cache và tải lại khung gần nhất với filter mới.
+  test('đổi filter: bỏ cache, tải lại ngay khung gần nhất với filter mới', () async {
+    final first = notifier.loadForViewport(viewport);
+    repo.pending.single.complete(_ok(['a']));
+    await first;
+
+    unawaited(notifier.setFilter(MapReportFilter.mine));
+    expect(notifier.state.filter, MapReportFilter.mine);
+    expect(repo.requestedFilters, [MapReportFilter.all, MapReportFilter.mine]);
+    expect(repo.requestedBounds.last, viewport.expandBy(MapReportsNotifier.prefetchFactor));
+
+    // Khung đã nằm trong vùng tải nhưng là dữ liệu của filter cũ → vẫn phải tải lại
+    repo.pending.last.complete(_ok(['mine-1']));
+    await Future<void>.delayed(Duration.zero);
+    expect(notifier.state.reports.map((r) => r.id), ['mine-1']);
+    expect(notifier.state.filter, MapReportFilter.mine);
+  });
+
+  // Test Case ID: SMP-022
+  // Description: Kiểm tra gọi setFilter với chính filter hiện tại không kích hoạt gọi lại API.
+  test('chọn lại filter đang dùng → không gọi lại API', () async {
+    final first = notifier.loadForViewport(viewport);
+    repo.pending.single.complete(_ok(['a']));
+    await first;
+
+    await notifier.setFilter(MapReportFilter.all);
+    expect(repo.requestedBounds, hasLength(1));
+  });
+
+  // Test Case ID: SMP-023
+  // Description: Kiểm tra response của filter cũ trả về sau khi đã đổi sang filter mới sẽ bị bỏ qua.
+  test('response của filter cũ về sau khi đã đổi filter thì bị bỏ', () async {
+    unawaited(notifier.loadForViewport(viewport));
+    unawaited(notifier.setFilter(MapReportFilter.pending));
+    expect(repo.pending, hasLength(2));
+
+    repo.pending.last.complete(_ok(['pending-1']));
+    repo.pending.first.complete(_ok(['stale']));
+    await Future<void>.delayed(Duration.zero);
+
+    expect(notifier.state.reports.map((r) => r.id), ['pending-1']);
+    expect(notifier.state.filter, MapReportFilter.pending);
+  });
+
+  // Test Case ID: SMP-024
+  // Description: Kiểm tra setTimeframe sang giá trị mới (month3) bỏ cache và tải lại khung gần nhất với timeframe '3m'.
+  test('đổi timeframe: bỏ cache, tải lại ngay khung gần nhất với timeframe mới', () async {
+    final first = notifier.loadForViewport(viewport);
+    repo.pending.single.complete(_ok(['a']));
+    await first;
+
+    unawaited(notifier.setTimeframe(ReportTimeframe.month3));
+    expect(notifier.state.timeframe, ReportTimeframe.month3);
+    expect(repo.requestedTimeframes, ['all', '3m']);
+
+    repo.pending.last.complete(_ok(['tf-3m']));
+    await Future<void>.delayed(Duration.zero);
+    expect(notifier.state.reports.map((r) => r.id), ['tf-3m']);
+    expect(notifier.state.timeframe, ReportTimeframe.month3);
+  });
+}

@@ -34,6 +34,9 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class JwtService implements IJwtService {
 
+    /** Thời hạn access token — các cơ chế thu hồi tức thì (vd: khóa tài khoản) dựa vào giá trị này. */
+    public static final long ACCESS_TOKEN_TTL_MINUTES = 30;
+
     @NonFinal
     @Value("${jwt.signerKey}")
     protected String signerKey;
@@ -41,12 +44,12 @@ public class JwtService implements IJwtService {
     private final InvalidatedTokenRepository invalidatedTokenRepository;
 
     @Override
-    public TokenPayload generateAccessToken(User user) {
+    public TokenPayload generateAccessToken(User user, String deviceId) {
         JWSHeader header = new JWSHeader(JWSAlgorithm.HS512);
 
         Date issueTime = new Date();
         Date expiryTime = new Date(Instant.ofEpochMilli(issueTime.getTime())
-                .plus(10, ChronoUnit.MINUTES)
+                .plus(ACCESS_TOKEN_TTL_MINUTES, ChronoUnit.MINUTES)
                 .toEpochMilli());
         String jwtId = UUID.randomUUID().toString();
 
@@ -58,6 +61,7 @@ public class JwtService implements IJwtService {
                 .jwtID(jwtId)
                 .claim("scope", buildScope(user))
                 .claim("userId", user.getId())
+                .claim("deviceId", deviceId)
                 .claim("tokenType", "access")
                 .build();
 
@@ -75,7 +79,7 @@ public class JwtService implements IJwtService {
                     .build();
         } catch (JOSEException e) {
             log.error("Cannot create token", e);
-            throw new RuntimeException("Can not generate token", e);
+            throw new RuntimeException("system.internal_error", e);
         }
     }
 
@@ -95,6 +99,7 @@ public class JwtService implements IJwtService {
                 .issueTime(issueTime)
                 .expirationTime(expiryTime)
                 .jwtID(jwtId)
+                .claim("userId", user.getId())
                 .claim("tokenType", "refresh")
                 .claim("rememberMe", rememberMe)
                 .build();
@@ -113,7 +118,7 @@ public class JwtService implements IJwtService {
                     .build();
         } catch (JOSEException e) {
             log.error("Cannot create token", e);
-            throw new RuntimeException("Can not generate token", e);
+            throw new RuntimeException("system.internal_error", e);
         }
     }
 
@@ -127,11 +132,25 @@ public class JwtService implements IJwtService {
             var verified = signedJWT.verify(verifier);
 
             if (!(verified && expiryTime.after(new Date())))
-                throw new UnauthorizedException("Token is invalid or expired");
+                throw new UnauthorizedException("auth.token.invalid_or_expired");
 
             return signedJWT;
         } catch (JOSEException | ParseException e) {
-            throw new UnauthorizedException("Token is invalid");
+            throw new UnauthorizedException("auth.token.invalid");
+        }
+    }
+
+    @Override
+    public SignedJWT verifySignature(String token) {
+        try {
+            JWSVerifier verifier = new MACVerifier(signerKey.getBytes());
+            SignedJWT signedJWT = SignedJWT.parse(token);
+            if (!signedJWT.verify(verifier)) {
+                throw new UnauthorizedException("auth.token.invalid");
+            }
+            return signedJWT;
+        } catch (JOSEException | ParseException e) {
+            throw new UnauthorizedException("auth.token.invalid");
         }
     }
 
@@ -159,7 +178,7 @@ public class JwtService implements IJwtService {
                     .build();
 
         } catch (ParseException e) {
-            throw new RuntimeException("Invalid JWT token", e);
+            throw new RuntimeException("auth.token.invalid", e);
         }
     }
 

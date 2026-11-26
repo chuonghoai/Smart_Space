@@ -9,7 +9,10 @@ class AppLocalizationsVi extends AppLocalizations {
   AppLocalizationsVi([String locale = 'vi']) : super(locale);
 
   @override
-  String get appTitle => 'Smart Space';
+  String get appTitle => 'SmartSpace';
+
+  @override
+  String get actionView => 'Xem';
 
   @override
   String get login => 'Đăng nhập';
@@ -238,6 +241,18 @@ class AppLocalizationsVi extends AppLocalizations {
   String get myReports => 'Phản ánh của tôi';
 
   @override
+  String get totalReports => 'Tổng phản ánh';
+
+  @override
+  String get today => 'Hôm nay';
+
+  @override
+  String get thisWeek => 'Tuần này';
+
+  @override
+  String get older => 'Cũ hơn';
+
+  @override
   String get notifications => 'Thông báo';
 
   @override
@@ -250,7 +265,7 @@ class AppLocalizationsVi extends AppLocalizations {
   String get home => 'Trang chủ';
 
   @override
-  String get recentReports => 'Phản ánh gần đây';
+  String get recentReports => 'Gần đây';
 
   @override
   String get noReportsYet => 'Chưa có phản ánh nào';
@@ -262,13 +277,22 @@ class AppLocalizationsVi extends AppLocalizations {
   String get logout => 'Đăng xuất';
 
   @override
-  String get dangerousReports => 'Cảnh báo nguy hiểm';
+  String get dangerousReports => 'Nguy hiểm';
 
   @override
   String get map => 'Bản đồ';
 
   @override
   String get news => 'Tin tức';
+
+  @override
+  String get newsDetail => 'Chi tiết tin tức';
+
+  @override
+  String get newsNotFound => 'Không tìm thấy tin tức';
+
+  @override
+  String get targetAdmin => 'Admin';
 
   @override
   String get instructions => 'Hướng dẫn';
@@ -280,8 +304,8 @@ class AppLocalizationsVi extends AppLocalizations {
   String get dangerous => 'NGUY HIỂM';
 
   @override
-  String distanceFromYou(String value, String unit) {
-    return 'Cách bạn $value $unit';
+  String distanceFromYou(Object distance) {
+    return 'Cách bạn: $distance km';
   }
 
   @override
@@ -310,6 +334,10 @@ class AppLocalizationsVi extends AppLocalizations {
 
   @override
   String get sessionExpired => 'Phiên đăng nhập hết hạn';
+
+  @override
+  String get sessionRevokedOnThisDevice =>
+      'Bạn đã bị đăng xuất khỏi thiết bị này từ một thiết bị khác.';
 
   @override
   String get settingsTitle => 'Cài đặt';
@@ -404,4 +432,1285 @@ class AppLocalizationsVi extends AppLocalizations {
   @override
   String get passwordReqSpecial =>
       'Bao gồm ít nhất một ký tự đặc biệt !@#\$^()_';
+
+  @override
+  String get loggedInDevices => 'Thiết bị đã đăng nhập';
+
+  @override
+  String get thisDevice => 'Thiết bị này';
+
+  @override
+  String get activeNow => 'Đang hoạt động';
+
+  @override
+  String get logoutDevice => 'Đăng xuất';
+
+  @override
+  String get logoutDeviceConfirmTitle => 'Đăng xuất khỏi thiết bị?';
+
+  @override
+  String logoutDeviceConfirmMessage(String deviceName) {
+    return 'Phiên đăng nhập trên \"$deviceName\" sẽ bị kết thúc.';
+  }
+
+  @override
+  String get logoutAllOtherDevices => 'Đăng xuất tất cả thiết bị khác';
+
+  @override
+  String get logoutAllConfirmTitle => 'Đăng xuất tất cả thiết bị khác?';
+
+  @override
+  String get logoutAllConfirmMessage =>
+      'Tất cả phiên ngoại trừ thiết bị này sẽ bị kết thúc.';
+
+  @override
+  String get noOtherDevices => 'Không có thiết bị khác đang đăng nhập.';
+
+  @override
+  String get deviceLogoutSuccess => 'Đã đăng xuất thiết bị.';
+
+  @override
+  String get allDevicesLogoutSuccess => 'Đã đăng xuất tất cả thiết bị khác.';
+
+  @override
+  String get editProfile => 'Chỉnh sửa hồ sơ';
+
+  @override
+  String get dateOfBirth => 'Ngày sinh';
+
+  @override
+  String get gender => 'Giới tính';
+
+  @override
+  String get genderMale => 'Nam';
+
+  @override
+  String get genderFemale => 'Nữ';
+
+  @override
+  String get genderOther => 'Khác';
+
+  @override
+  String get saveChanges => 'Lưu thay đổi';
+
+  @override
+  String get profileUpdateSuccess => 'Cập nhật hồ sơ thành công';
+
+  @override
+  String get profileUpdateFailed => 'Cập nhật hồ sơ thất bại';
+
+  @override
+  String get changeAvatar => 'Đổi ảnh đại diện';
+
+  @override
+  String get optionalLabel => 'Không bắt buộc';
+
+  @override
+  String get requiredLabel => 'Bắt buộc';
+
+  @override
+  String get genderOtherConfirmMessage =>
+      'Bạn có chắc chắn muốn chọn giới tính \"Khác\"?';
+
+  @override
+  String get dateOfBirthEmptyTitle => 'Bạn chưa nhập ngày sinh';
+
+  @override
+  String get dateOfBirthEmptyMessage =>
+      'Bạn có muốn tiếp tục? Có thể thêm ngày sinh trong cài đặt sau.';
+
+  @override
+  String get createReportTitle => 'Tạo phản ánh';
+
+  @override
+  String get reportTitleLabel => 'Tiêu đề *';
+
+  @override
+  String get reportDescLabel => 'Mô tả *';
+
+  @override
+  String get reportAddressLabel => 'Địa chỉ';
+
+  @override
+  String get reportLocationDescLabel => 'Mô tả vị trí';
+
+  @override
+  String get reportAnonymous => 'Gửi ẩn danh';
+
+  @override
+  String get submitReport => 'Gửi phản ánh';
+
+  @override
+  String get pickImage => 'Thư viện';
+
+  @override
+  String get takePhoto => 'Chụp ảnh';
+
+  @override
+  String get reloadLocation => 'Tải lại vị trí';
+
+  @override
+  String get maxImagesError => 'Chỉ được chọn tối đa 10 ảnh';
+
+  @override
+  String get requiredFieldError => 'Trường này là bắt buộc';
+
+  @override
+  String get uploadingReport =>
+      'Đang tải phản ánh lên, vui lòng không đóng ứng dụng...';
+
+  @override
+  String get locationServicesDisabled => 'Dịch vụ vị trí bị vô hiệu hóa.';
+
+  @override
+  String get locationPermissionsDenied => 'Quyền truy cập vị trí bị từ chối.';
+
+  @override
+  String get locationPermissionsPermanentlyDenied =>
+      'Quyền truy cập vị trí bị từ chối vĩnh viễn.';
+
+  @override
+  String uploadingImageProgress(Object current, Object total) {
+    return 'Đang tải ảnh lên... ($current/$total)';
+  }
+
+  @override
+  String get uploadingImage => 'Đang tải ảnh lên';
+
+  @override
+  String imageProgress(Object current, Object total) {
+    return 'Ảnh $current/$total';
+  }
+
+  @override
+  String get creatingReportSystem => 'Đang tạo phản ánh...';
+
+  @override
+  String get almostDone => 'Sắp hoàn tất';
+
+  @override
+  String get creatingReportOnSystem => 'Đang tạo phản ánh trên hệ thống...';
+
+  @override
+  String get createReportSuccess => 'Tạo phản ánh thành công!';
+
+  @override
+  String get success => 'Thành công';
+
+  @override
+  String get reportRecorded => 'Phản ánh của bạn đã được ghi nhận.';
+
+  @override
+  String errorString(Object error) {
+    return 'Lỗi: $error';
+  }
+
+  @override
+  String get errorPrefix => 'Lỗi';
+
+  @override
+  String cannotCreateReportError(Object error) {
+    return 'Không thể tạo phản ánh: $error';
+  }
+
+  @override
+  String errorOccurredSendingReport(Object error) {
+    return 'Có lỗi xảy ra khi gửi phản ánh: $error';
+  }
+
+  @override
+  String sendingReportProgress(Object current, Object total) {
+    return 'Đang gửi phản ánh... ($current/$total)';
+  }
+
+  @override
+  String get navigateToReport => 'Chỉ đường';
+
+  @override
+  String get viewDetail => 'Xem chi tiết';
+
+  @override
+  String get myLocation => 'Vị trí của tôi';
+
+  @override
+  String get filterReports => 'Bộ lọc báo cáo';
+
+  @override
+  String get refresh => 'Làm mới';
+
+  @override
+  String get filter => 'Bộ lọc';
+
+  @override
+  String get calculatingDistance => 'Đang tính khoảng cách...';
+
+  @override
+  String get reportDetails => 'Chi tiết phản ánh';
+
+  @override
+  String get turnOnLocationToViewDistance =>
+      'Bật vị trí để xem khoảng cách từ nơi xảy ra đến vị trí của bạn';
+
+  @override
+  String get openInGoogleMaps => 'Mở trên Google Maps';
+
+  @override
+  String get createdAtLabel => 'Thời gian tạo';
+
+  @override
+  String get statusLabel => 'Trạng thái';
+
+  @override
+  String get severityLabel => 'Mức độ';
+
+  @override
+  String get severityLow => 'Thấp';
+
+  @override
+  String get severityMedium => 'Trung bình';
+
+  @override
+  String get severityHigh => 'Cao';
+
+  @override
+  String get severityCritical => 'Khẩn cấp';
+
+  @override
+  String get locationServiceDisabledError =>
+      'Vui lòng bật dịch vụ vị trí trên thiết bị';
+
+  @override
+  String get locationPermissionDeniedForeverError =>
+      'Quyền vị trí bị từ chối vĩnh viễn, vui lòng vào cài đặt để bật';
+
+  @override
+  String get cannotOpenGoogleMapsError => 'Không thể mở Google Maps';
+
+  @override
+  String errorOccurred(Object error) {
+    return 'Đã xảy ra lỗi:\n$error';
+  }
+
+  @override
+  String get retryButton => 'Thử lại';
+
+  @override
+  String get minuteAgo => 'p trước';
+
+  @override
+  String get hourAgo => 'h trước';
+
+  @override
+  String get dayAgo => 'ngày trước';
+
+  @override
+  String get justNow => 'Vừa xong';
+
+  @override
+  String get routeHome => 'Trang chủ';
+
+  @override
+  String get routeSettings => 'Cài đặt';
+
+  @override
+  String get routeMap => 'Bản đồ';
+
+  @override
+  String get routeCreateReport => 'Tạo phản ánh';
+
+  @override
+  String get routeMyReports => 'Phản ánh của tôi';
+
+  @override
+  String get routeEditProfile => 'Chỉnh sửa hồ sơ';
+
+  @override
+  String get routeChangePassword => 'Đổi mật khẩu';
+
+  @override
+  String get routeManageDevices => 'Quản lý thiết bị';
+
+  @override
+  String get routeNotifications => 'Thông báo';
+
+  @override
+  String get markAllAsRead => 'Đánh dấu tất cả đã đọc';
+
+  @override
+  String get emptyNotification => 'Bạn chưa có thông báo nào.';
+
+  @override
+  String get unread => 'Chưa đọc';
+
+  @override
+  String get assignedStaff => 'Nhân viên xử lý';
+
+  @override
+  String get routeCommunityFeed => 'Tất cả phản ánh';
+
+  @override
+  String get feedTabLatest => 'Mới nhất';
+
+  @override
+  String get feedTabNearby => 'Gần tôi';
+
+  @override
+  String get feedEmpty => 'Chưa có phản ánh nào trong cộng đồng';
+
+  @override
+  String get feedAnonymous => 'Người dùng ẩn danh';
+
+  @override
+  String get feedSeeMore => 'Xem thêm';
+
+  @override
+  String get feedTimelineSubmitted => 'Đã gửi';
+
+  @override
+  String get feedTimelineProcessing => 'Đang xử lý';
+
+  @override
+  String get feedTimelineDone => 'Hoàn thành';
+
+  @override
+  String get feedShare => 'Chia sẻ';
+
+  @override
+  String get feedViewOnMap => 'Xem vị trí';
+
+  @override
+  String get feedCopiedLink => 'Đã sao chép thông tin phản ánh';
+
+  @override
+  String feedPhotosCount(int count) {
+    return '$count ảnh';
+  }
+
+  @override
+  String get reviewReport => 'Đánh giá';
+
+  @override
+  String get reviewQuestion => 'Phản ánh của bạn đã được xử lý hay chưa?';
+
+  @override
+  String get reviewResolvedOption => 'Đã xử lý';
+
+  @override
+  String get reviewUnresolvedOption => 'Chưa được xử lý';
+
+  @override
+  String get rateStaffTitle => 'Đánh giá nhân viên xử lý';
+
+  @override
+  String get rateStaffSubtitle =>
+      'Vui lòng chọn số sao để đánh giá nhân viên (1 - 5 sao)';
+
+  @override
+  String get unresolvedReasonLabel => 'Lý do chưa được xử lý';
+
+  @override
+  String get unresolvedReasonHint =>
+      'Vui lòng mô tả chi tiết lý do phản ánh chưa được xử lý...';
+
+  @override
+  String get attachEvidencePhotos =>
+      'Ảnh chụp thực tế (bắt buộc ít nhất 1 ảnh)';
+
+  @override
+  String get attachEvidencePhotoHint =>
+      'Cần ít nhất 1 ảnh chụp và ghi rõ lý do để gửi';
+
+  @override
+  String get submitReview => 'Gửi đánh giá';
+
+  @override
+  String get submittingReview => 'Đang gửi đánh giá...';
+
+  @override
+  String get reviewSuccess => 'Gửi đánh giá thành công!';
+
+  @override
+  String get unresolvedReviewTitle => 'Phản hồi chưa được xử lý thỏa đáng';
+
+  @override
+  String get resolutionInfo => 'Kết quả xử lý';
+
+  @override
+  String get resolutionNote => 'Ghi chú xử lý';
+
+  @override
+  String get resolutionImages => 'Ảnh kết quả xử lý';
+
+  @override
+  String get resolvedAtLabel => 'Thời gian hoàn thành';
+
+  @override
+  String get reviewRatingLabel => 'Đánh giá người dân';
+
+  @override
+  String get cameraOption => 'Máy ảnh';
+
+  @override
+  String get galleryOption => 'Bộ sưu tập';
+
+  @override
+  String get closeButton => 'Đóng';
+
+  @override
+  String get rehandling => 'Xử lý lại';
+
+  @override
+  String get unsatisfactoryBadge => 'Xử lý chưa thỏa đáng';
+
+  @override
+  String get latestNews => 'Tin tức mới nhất';
+
+  @override
+  String get routeNewsList => 'Tin tức';
+
+  @override
+  String get emptyNewsTitle => 'Chưa có tin tức nào';
+
+  @override
+  String get emptyNewsDescription =>
+      'Hiện tại chưa có tin tức hoặc thông báo mới nào.';
+
+  @override
+  String get mapNormalReports => 'Thông thường';
+
+  @override
+  String mapClusterReportsTitle(int count) {
+    return 'Khu vực này có $count phản ánh';
+  }
+
+  @override
+  String get mapClusterSortHint => 'Nguy hiểm trước, mới nhất trước';
+
+  @override
+  String get mapZoomInForMore => 'Phóng to để xem thêm phản ánh';
+
+  @override
+  String get mapLoadReportsFailed => 'Không tải được phản ánh trên bản đồ';
+
+  @override
+  String get mapFilterAll => 'Tất cả';
+
+  @override
+  String get viewOnMap => 'Xem trên bản đồ';
+
+  @override
+  String get mapFocusedReportHidden =>
+      'Phản ánh này hiện không hiển thị trên bản đồ';
+
+  @override
+  String get locationSection => 'Vị trí sự cố';
+
+  @override
+  String get noAddress => 'Chưa cập nhật địa chỉ';
+
+  @override
+  String get locationDescriptionLabel => 'Mô tả vị trí';
+
+  @override
+  String nearbyReportsAlertTitle(int count) {
+    return 'Gần bạn có $count phản ánh';
+  }
+
+  @override
+  String nearbyDistanceInMeters(int distance) {
+    return 'Cách bạn ${distance}m';
+  }
+
+  @override
+  String get actionUnderstood => 'Đã hiểu';
+
+  @override
+  String get actionViewDetail => 'Xem chi tiết';
+
+  @override
+  String get noImages => 'Không có hình ảnh';
+
+  @override
+  String get actionPrevious => 'Trước';
+
+  @override
+  String get actionNext => 'Tiếp theo';
+
+  @override
+  String get editReport => 'Chỉnh sửa';
+
+  @override
+  String get cancelReport => 'Hủy yêu cầu';
+
+  @override
+  String get cancelReportConfirmTitle => 'Hủy yêu cầu phản ánh';
+
+  @override
+  String get cancelReportConfirmMessage =>
+      'Bạn có chắc chắn muốn hủy yêu cầu phản ánh này không? Phản ánh sẽ được chuyển vào danh sách từ chối.';
+
+  @override
+  String get cancelReportSuccess => 'Đã hủy yêu cầu phản ánh thành công';
+
+  @override
+  String get updateReportSuccess => 'Cập nhật phản ánh thành công';
+
+  @override
+  String get youCreatedThisReport => 'Bạn là người tạo phản ánh này';
+
+  @override
+  String get myReportBadge => 'Của bạn';
+
+  @override
+  String get editReportTitle => 'Chỉnh sửa phản ánh';
+
+  @override
+  String get editReportOnlyPending =>
+      'Chỉ có thể chỉnh sửa phản ánh đang ở trạng thái chờ xử lý';
+
+  @override
+  String get cancelReportOnlyPending =>
+      'Chỉ có thể hủy yêu cầu phản ánh đang ở trạng thái chờ xử lý';
+
+  @override
+  String get genericError => 'Đã có lỗi xảy ra, vui lòng thử lại sau';
+
+  @override
+  String get mapSettings => 'Cài đặt bản đồ';
+
+  @override
+  String get mapDensityToggle => 'Hiển thị mật độ phản ánh';
+
+  @override
+  String get mapDensityDescription =>
+      'Hiển thị các khu vực có nhiều phản ánh theo màu sắc (50m)';
+
+  @override
+  String get densityLegendTitle => 'Mật độ phản ánh';
+
+  @override
+  String get densityLow => '1–2 phản ánh (Thấp)';
+
+  @override
+  String get densityMedium => '3–5 phản ánh (Trung bình)';
+
+  @override
+  String get densityHigh => 'Trên 5 phản ánh (Cao)';
+
+  @override
+  String get mapBack => 'Quay lại';
+
+  @override
+  String get filterTimeframe => 'Khoảng thời gian';
+
+  @override
+  String get timeframeAll => 'Tất cả';
+
+  @override
+  String get timeframe1Month => '1 tháng';
+
+  @override
+  String get timeframe3Months => '3 tháng';
+
+  @override
+  String get timeframe6Months => '6 tháng';
+
+  @override
+  String get timeframe9Months => '9 tháng';
+
+  @override
+  String get timeframe12Months => '12 tháng';
+
+  @override
+  String get routeConversations => 'Hội thoại';
+
+  @override
+  String get routeChatDetail => 'Chi tiết tin nhắn';
+
+  @override
+  String get conversations => 'Tin nhắn';
+
+  @override
+  String get noConversations => 'Chưa có cuộc trò chuyện nào';
+
+  @override
+  String get noConversationsSub =>
+      'Bạn có thể gửi tin nhắn hỗ trợ từ chi tiết các phản ánh đang xử lý.';
+
+  @override
+  String get searchConversationsPlaceholder =>
+      'Tìm kiếm theo tên hoặc nội dung...';
+
+  @override
+  String get roleStaff => 'Nhân viên';
+
+  @override
+  String get roleAdmin => 'Quản trị viên';
+
+  @override
+  String get chatInputHint => 'Nhập tin nhắn...';
+
+  @override
+  String get emptyMessages => 'Chưa có tin nhắn nào. Bắt đầu trò chuyện ngay!';
+
+  @override
+  String get errorLoadMessages => 'Không thể tải tin nhắn';
+
+  @override
+  String get anonymousPerson => 'Người dùng ẩn danh';
+
+  @override
+  String get supportStaff => 'Nhân viên hỗ trợ';
+
+  @override
+  String get managementBoard => 'Ban quản lý';
+
+  @override
+  String get chatDisabledNotice =>
+      'Phản ánh đã hoàn tất xử lý. Khung chat hiện ở chế độ xem lại lịch sử.';
+
+  @override
+  String get chatWithStaff => 'Nhắn tin cho nhân viên';
+
+  @override
+  String get viewStaffChat => 'Xem tin nhắn hỗ trợ';
+
+  @override
+  String get cannotStartChat =>
+      'Không thể kết nối trò chuyện, vui lòng thử lại sau';
+
+  @override
+  String get routeConversationInfo => 'Thông tin hội thoại';
+
+  @override
+  String get conversationInfoTitle => 'Thông tin hội thoại';
+
+  @override
+  String get activeReportsSection => 'Phản ánh đang xử lý';
+
+  @override
+  String get allReportsProcessed => 'Tất cả phản ánh đã được xử lý xong';
+
+  @override
+  String get conversationClosedNotice =>
+      'Cuộc hội thoại đã đóng do toàn bộ phản ánh đã hoàn tất';
+
+  @override
+  String get conversationActiveNotice => 'Cuộc hội thoại đang hoạt động';
+
+  @override
+  String get callButtonLabel => 'Gọi điện';
+
+  @override
+  String get videoCallButtonLabel => 'Video call';
+
+  @override
+  String get videoCallComingSoon => 'Tính năng gọi video call đang phát triển';
+
+  @override
+  String get conversationRefreshed =>
+      'Đã làm mới thông tin và tin nhắn hội thoại';
+
+  @override
+  String get conversationRefreshFailed =>
+      'Không thể làm mới hội thoại, vui lòng thử lại sau';
+
+  @override
+  String get cannotMakePhoneCall => 'Không thể thực hiện cuộc gọi';
+
+  @override
+  String get noPhoneNumber => 'Chưa cập nhật số điện thoại';
+
+  @override
+  String get staffNoPosition => 'Chưa có chức vụ';
+
+  @override
+  String get rehandlingBadge => 'Xử lý lại';
+
+  @override
+  String get roleClient => 'Cư dân';
+
+  @override
+  String get contextIdentified => 'Không ẩn danh';
+
+  @override
+  String get contextAnonymous => 'Ẩn danh';
+
+  @override
+  String get contextIdentifiedTag => 'Không ẩn danh';
+
+  @override
+  String get contextAnonymousTag => 'Ẩn danh';
+
+  @override
+  String get noIdentifiedReports =>
+      'Không có phản ánh không ẩn danh nào đang xử lý';
+
+  @override
+  String get noAnonymousReports => 'Không có phản ánh ẩn danh nào đang xử lý';
+
+  @override
+  String get anonymousProtectionBanner =>
+      'Đang trao đổi ẩn danh. Danh tính của bạn được bảo vệ tuyệt đối.';
+
+  @override
+  String get contextIdentifiedTooltip => 'Hội thoại phản ánh công khai';
+
+  @override
+  String get contextAnonymousTooltip => 'Hội thoại phản ánh ẩn danh';
+
+  @override
+  String get youCreatedThisReportAnonymously =>
+      'Bạn đã tạo phản ánh này dưới hình thức ẩn danh';
+
+  @override
+  String get callOptionsTitle => 'Tùy chọn cuộc gọi';
+
+  @override
+  String get cellularCall => 'Gọi điện qua di động';
+
+  @override
+  String get cellularCallDesc => 'Mở ứng dụng gọi điện mặc định';
+
+  @override
+  String get freeCall => 'Gọi miễn phí qua ứng dụng';
+
+  @override
+  String get featureUnderDevelopment => 'Tính năng đang được phát triển';
+
+  @override
+  String get comingSoon => 'Sắp ra mắt';
+
+  @override
+  String get phoneNotAvailable => 'Số điện thoại không khả dụng';
+
+  @override
+  String get freeCallComingSoon =>
+      'Tính năng gọi miễn phí qua internet đang được phát triển';
+
+  @override
+  String get searchReportsPlaceholder =>
+      'Tìm theo tiêu đề, mô tả hoặc địa chỉ...';
+
+  @override
+  String get noMatchingReports => 'Không tìm thấy phản ánh phù hợp';
+
+  @override
+  String get sortLabel => 'Sắp xếp';
+
+  @override
+  String get clearFilters => 'Xoá lọc';
+
+  @override
+  String resultsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count kết quả',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get nearbyLocationUnavailable =>
+      'Không lấy được vị trí của bạn. Đang hiển thị phản ánh mới nhất.';
+
+  @override
+  String filterSelectedTooltip(Object label, Object value) {
+    return '$label: $value';
+  }
+
+  @override
+  String get pickSingleDate => 'Một ngày cụ thể…';
+
+  @override
+  String get pickDateRange => 'Khoảng ngày…';
+
+  @override
+  String get notificationFilterUnread => 'Chưa đọc';
+
+  @override
+  String notificationFilterUnreadCount(String count) {
+    return 'Chưa đọc ($count)';
+  }
+
+  @override
+  String get allNotificationsRead => 'Bạn đã đọc hết thông báo';
+
+  @override
+  String get viewAllNotifications => 'Xem tất cả thông báo';
+
+  @override
+  String get contextIdentifiedExplanation =>
+      'Không ẩn danh: Nhân viên biết bạn là người tạo phản ánh này.';
+
+  @override
+  String get contextAnonymousExplanation =>
+      'Ẩn danh: Nhân viên tuyệt đối không biết bạn là người tạo phản ánh.';
+
+  @override
+  String get contextExplanationTitle => 'Thông tin ngữ cảnh hội thoại';
+
+  @override
+  String get contextExplanationGotIt => 'Đã hiểu';
+
+  @override
+  String get chooseFromGallery => 'Chọn ảnh từ thư viện';
+
+  @override
+  String get chooseVideo => 'Chọn video';
+
+  @override
+  String get attachReport => 'Đính kèm phản ánh';
+
+  @override
+  String get markAsRead => 'Đánh dấu đã đọc';
+
+  @override
+  String get typingText => 'đang nhập...';
+
+  @override
+  String get pressAndHoldToRecord => 'Nhấn giữ để ghi âm';
+
+  @override
+  String get slideLeftToCancel => 'Trượt sang để hủy';
+
+  @override
+  String get releaseToCancel => 'Thả để hủy';
+
+  @override
+  String get selectReportToAttach => 'Chọn phản ánh để gửi';
+
+  @override
+  String get voiceMessageSnippet => 'Tin nhắn thoại';
+
+  @override
+  String get imageSnippet => 'Hình ảnh';
+
+  @override
+  String get videoSnippet => 'Video';
+
+  @override
+  String get attachedReportSnippet => 'Phản ánh đính kèm';
+
+  @override
+  String get reportDeadlineLabel => 'Hạn xử lý';
+
+  @override
+  String get deadlineOverdueBadge => 'Quá hạn';
+
+  @override
+  String daysRemainingLabel(int days) {
+    return 'Còn $days ngày';
+  }
+
+  @override
+  String get overdueOnlyFilter => 'Quá hạn';
+
+  @override
+  String get rejectedReasonTitle => 'Lý do từ chối';
+
+  @override
+  String get noRejectionReasonProvided =>
+      'Phản ánh đã bị quản trị viên từ chối.';
+
+  @override
+  String get reportCategoryLabel => 'Danh mục phản ánh';
+
+  @override
+  String get reportCategoryHint => 'Chọn danh mục';
+
+  @override
+  String get reportCategoryRequired => 'Vui lòng chọn danh mục phản ánh';
+
+  @override
+  String get reportCategoryLoadError => 'Không thể tải danh sách danh mục';
+
+  @override
+  String get reportCategoryEmpty => 'Chưa có danh mục phản ánh nào';
+
+  @override
+  String get callFreeVoiceDesc => 'Gọi thoại miễn phí qua internet';
+
+  @override
+  String get callPermissionDenied =>
+      'Không khả dụng cuộc gọi thoại cho hội thoại này';
+
+  @override
+  String get callActionLabel => 'Gọi điện';
+
+  @override
+  String get emergencyContacts => 'Liên hệ khẩn cấp';
+
+  @override
+  String get emergencyTabMine => 'Của tôi';
+
+  @override
+  String get emergencyTabGuardian => 'Tôi bảo hộ';
+
+  @override
+  String get emergencyAddContact => 'Thêm liên hệ';
+
+  @override
+  String emergencyCapacity(Object count, Object max) {
+    return '$count/$max · Nhận SOS của bạn';
+  }
+
+  @override
+  String get emergencyLimitShort => 'Đã đủ 5 liên hệ';
+
+  @override
+  String get emergencyEmptyMineTitle => 'Chưa có liên hệ khẩn cấp';
+
+  @override
+  String get emergencyReorder => 'Sắp xếp';
+
+  @override
+  String get emergencyReorderDone => 'Xong';
+
+  @override
+  String emergencyInviteFrom(Object name) {
+    return '$name muốn thêm bạn';
+  }
+
+  @override
+  String get emergencyEmptyMine =>
+      'Chưa có ai trong danh sách khẩn cấp. Thêm người thân để họ được báo khi bạn gặp sự cố.';
+
+  @override
+  String get emergencyStatusAwaitingInvite => 'Chờ chấp nhận';
+
+  @override
+  String get emergencyStatusRejected => 'Đã từ chối';
+
+  @override
+  String get emergencyStatusRevoked => 'Đã rời';
+
+  @override
+  String get emergencyChannelApp => 'Nhận cảnh báo qua ứng dụng';
+
+  @override
+  String get emergencyChannelSms => 'Nhận cảnh báo qua SMS';
+
+  @override
+  String get emergencyRelationParent => 'Cha / Mẹ';
+
+  @override
+  String get emergencyRelationSpouse => 'Vợ / Chồng';
+
+  @override
+  String get emergencyRelationChild => 'Con';
+
+  @override
+  String get emergencyRelationSibling => 'Anh / Chị / Em';
+
+  @override
+  String get emergencyRelationRelative => 'Họ hàng';
+
+  @override
+  String get emergencyRelationFriend => 'Bạn bè';
+
+  @override
+  String get emergencyRelationNeighbor => 'Hàng xóm';
+
+  @override
+  String get emergencyRelationOther => 'Khác';
+
+  @override
+  String get emergencyEdit => 'Sửa';
+
+  @override
+  String get emergencyDelete => 'Xoá';
+
+  @override
+  String get emergencyMoreActions => 'Thao tác khác';
+
+  @override
+  String get emergencyDragHandle => 'Kéo để đổi thứ tự ưu tiên';
+
+  @override
+  String emergencyDeleteTitle(Object name) {
+    return 'Xoá $name khỏi danh sách khẩn cấp?';
+  }
+
+  @override
+  String emergencyDeleteMessage(Object name) {
+    return '$name sẽ không nhận cảnh báo SOS của bạn nữa.';
+  }
+
+  @override
+  String get emergencyDeleted => 'Đã xoá liên hệ';
+
+  @override
+  String get emergencyFormAddTitle => 'Thêm liên hệ khẩn cấp';
+
+  @override
+  String get emergencyFormEditTitle => 'Sửa liên hệ khẩn cấp';
+
+  @override
+  String get emergencyFormName => 'Tên người liên hệ';
+
+  @override
+  String get emergencyFormNameRequired => 'Vui lòng nhập tên';
+
+  @override
+  String get emergencyFormPhoneRequired => 'Vui lòng nhập số điện thoại';
+
+  @override
+  String get emergencyFormPhoneInvalid => 'Số di động Việt Nam không hợp lệ';
+
+  @override
+  String get emergencyFormRelationship => 'Mối quan hệ';
+
+  @override
+  String get emergencyFormRelationshipRequired => 'Vui lòng chọn mối quan hệ';
+
+  @override
+  String get emergencyFormAccountEmail =>
+      'Email tài khoản SmartSpace (không bắt buộc)';
+
+  @override
+  String get emergencyFormAccountEmailHelp =>
+      'Nếu người này dùng SmartSpace, họ nhận lời mời và cảnh báo trong ứng dụng. Để trống thì hệ thống liên hệ qua SMS.';
+
+  @override
+  String get emergencyFormEmailInvalid => 'Email không hợp lệ';
+
+  @override
+  String get emergencyFormConsent =>
+      'Tôi xác nhận người này đã đồng ý nhận cảnh báo khẩn cấp của tôi qua SMS';
+
+  @override
+  String get emergencyFormConsentRequired =>
+      'Vui lòng xác nhận người này đã đồng ý';
+
+  @override
+  String get emergencyFormReconfirmNote =>
+      'Đổi số điện thoại hoặc tài khoản liên kết sẽ cần người này đồng ý lại.';
+
+  @override
+  String get emergencyFormSave => 'Lưu';
+
+  @override
+  String emergencyInviteSent(Object name) {
+    return 'Đã gửi lời mời tới $name trong ứng dụng';
+  }
+
+  @override
+  String get emergencyContactSaved => 'Đã lưu liên hệ';
+
+  @override
+  String get emergencyGuardianIntro =>
+      'Những người đã thêm bạn vào danh sách khẩn cấp. Bạn sẽ nhận cảnh báo khi họ gửi SOS.';
+
+  @override
+  String get emergencyInvitationsHeader => 'Lời mời';
+
+  @override
+  String get emergencyGuardingHeader => 'Đang bảo hộ';
+
+  @override
+  String emergencyListedAs(Object relationship) {
+    return 'Bạn là: $relationship';
+  }
+
+  @override
+  String get emergencyAccept => 'Chấp nhận';
+
+  @override
+  String get emergencyDecline => 'Từ chối';
+
+  @override
+  String get emergencyLeave => 'Rời danh sách';
+
+  @override
+  String emergencyLeaveTitle(Object name) {
+    return 'Rời danh sách khẩn cấp của $name?';
+  }
+
+  @override
+  String emergencyLeaveMessage(Object name) {
+    return 'Bạn sẽ không nhận cảnh báo SOS của $name nữa. Họ sẽ được thông báo.';
+  }
+
+  @override
+  String emergencyAccepted(Object name) {
+    return 'Bạn đã là liên hệ khẩn cấp của $name';
+  }
+
+  @override
+  String get emergencyDeclined => 'Đã từ chối lời mời';
+
+  @override
+  String get emergencyLeft => 'Đã rời danh sách khẩn cấp';
+
+  @override
+  String get emergencyEmptyGuardian =>
+      'Chưa có ai thêm bạn vào danh sách khẩn cấp.';
+
+  @override
+  String get emergencyLoadFailed => 'Không tải được danh sách khẩn cấp.';
+
+  @override
+  String get sosSlideLabel => 'Trượt để gửi SOS';
+
+  @override
+  String get sosSlideSemantics => 'Gửi tín hiệu SOS';
+
+  @override
+  String get sosSlideHint =>
+      'Ban quản trị và liên hệ khẩn cấp sẽ nhận vị trí của bạn';
+
+  @override
+  String get sosConfirmTitle => 'Gửi tín hiệu SOS?';
+
+  @override
+  String get sosConfirmMessage =>
+      'Ban quản trị và liên hệ khẩn cấp sẽ nhận vị trí của bạn ngay.';
+
+  @override
+  String get sosConfirmSend => 'Gửi SOS';
+
+  @override
+  String get sosActiveBanner => 'SOS của bạn đang hoạt động';
+
+  @override
+  String get sosActiveBannerHint => 'Nhấn để xem trạng thái hoặc kết thúc';
+
+  @override
+  String get sosCountdownTitle => 'Đang gửi SOS';
+
+  @override
+  String sosCountdownMessage(Object seconds) {
+    return 'Tín hiệu sẽ được gửi sau $seconds giây';
+  }
+
+  @override
+  String get sosLocating => 'Đang lấy vị trí…';
+
+  @override
+  String get sosSending => 'Đang gửi…';
+
+  @override
+  String get sosLocationUnavailable =>
+      'Không lấy được vị trí. Hãy bật định vị và thử lại, hoặc gọi ngay số khẩn cấp.';
+
+  @override
+  String get sosLocationPermissionDenied =>
+      'SmartSpace cần quyền vị trí để gửi SOS.';
+
+  @override
+  String get sosOpenSettings => 'Mở cài đặt';
+
+  @override
+  String get sosSendFailed =>
+      'Không gửi được SOS. Hãy thử lại hoặc gọi ngay số khẩn cấp.';
+
+  @override
+  String get sosActiveTitle => 'SOS đang hoạt động';
+
+  @override
+  String sosWaitingAck(Object count) {
+    return 'Đã báo Ban quản trị và $count liên hệ. Đang chờ tiếp nhận.';
+  }
+
+  @override
+  String sosAcknowledgedBy(Object name) {
+    return '$name đã tiếp nhận và đang hỗ trợ bạn.';
+  }
+
+  @override
+  String sosLocationUpdatedAt(Object time) {
+    return 'Vị trí cập nhật lúc $time';
+  }
+
+  @override
+  String get sosSharingLocation => 'Đang chia sẻ vị trí mỗi 15 giây';
+
+  @override
+  String get sosCallEmergency => 'Gọi khẩn cấp';
+
+  @override
+  String get sosCallPolice => 'Công an 113';
+
+  @override
+  String get sosCallFire => 'Cứu hỏa 114';
+
+  @override
+  String get sosCallAmbulance => 'Cấp cứu 115';
+
+  @override
+  String get sosCallRescue => 'Cứu nạn 112';
+
+  @override
+  String get sosImSafe => 'Tôi đã an toàn';
+
+  @override
+  String get sosSafeConfirmTitle => 'Kết thúc SOS?';
+
+  @override
+  String get sosSafeConfirmMessage =>
+      'Ban quản trị và liên hệ khẩn cấp sẽ được báo là bạn đã an toàn.';
+
+  @override
+  String get sosEndedTitle => 'SOS đã kết thúc';
+
+  @override
+  String get sosEndedSafe => 'Rất vui vì bạn an toàn. Mọi người đã được báo.';
+
+  @override
+  String get sosEndedByAdmin =>
+      'Ban quản trị đã kết thúc tín hiệu SOS của bạn.';
+
+  @override
+  String get sosBackHome => 'Về trang chủ';
+
+  @override
+  String get sosTrackingNotifTitle => 'SOS đang hoạt động';
+
+  @override
+  String get sosTrackingNotifText =>
+      'Đang chia sẻ vị trí với Ban quản trị và liên hệ khẩn cấp';
+
+  @override
+  String sosWatchTitle(Object name) {
+    return 'SOS của $name';
+  }
+
+  @override
+  String sosWatchActive(Object name) {
+    return '$name đang cần giúp đỡ khẩn cấp';
+  }
+
+  @override
+  String get sosWatchAcknowledged => 'Ban quản trị đã tiếp nhận';
+
+  @override
+  String sosWatchSafe(Object name) {
+    return '$name đã an toàn';
+  }
+
+  @override
+  String get sosWatchClosed => 'SOS này đã kết thúc';
+
+  @override
+  String get sosOpenMap => 'Mở bản đồ';
+
+  @override
+  String sosCallPerson(Object name) {
+    return 'Gọi $name';
+  }
+
+  @override
+  String get sosLoadFailed => 'Không tải được tín hiệu SOS.';
+
+  @override
+  String sosSentAt(Object time) {
+    return 'Gửi lúc $time';
+  }
+
+  @override
+  String sosAccuracy(Object meters) {
+    return 'Sai số khoảng $meters m';
+  }
 }

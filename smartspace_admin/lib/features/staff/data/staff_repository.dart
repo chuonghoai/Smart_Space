@@ -1,0 +1,153 @@
+import 'package:dio/dio.dart';
+import 'package:mobile_shared/core/api/api_client.dart';
+import 'package:mobile_shared/core/api/api_response.dart';
+import 'package:smartspace_admin/features/staff/models/staff_statistics_model.dart';
+import 'package:smartspace_admin/features/staff/models/staff_trend_model.dart';
+
+import '../models/staff_list_response.dart';
+
+class StaffRepository {
+  Future<ApiResponse<StaffListResponse>> getStaffs({
+    int page = 1,
+    int size = 10,
+    String? search,
+    String? status,
+    String? positionId,
+  }) async {
+    return apiClient.get(
+      '/admin/staffs',
+      queryParameters: {
+        'page': page,
+        'size': size,
+        if (search != null && search.isNotEmpty) 'search': search,
+        if (status != null && status != 'all') 'status': status,
+        if (positionId != null && positionId != 'all') 'positionId': positionId,
+      },
+      decoder: (json) =>
+          StaffListResponse.fromJson(json as Map<String, dynamic>),
+    );
+  }
+
+  Future<ApiResponse> updateStaffStatus(String staffId, String status) async {
+    return apiClient.put(
+      '/admin/staffs/$staffId/status',
+      data: {'status': status},
+    );
+  }
+
+  /// Backend gửi email thông tin đăng nhập (SMTP) đồng bộ trước khi trả kết quả,
+  /// nên request này cần chờ lâu hơn mặc định (10s). Giá trị phải lớn hơn tổng
+  /// SMTP timeout của backend (~25s, xem `spring.mail.properties` ở backend) để
+  /// app luôn nhận được kết quả thật thay vì timeout trong khi backend vẫn tạo.
+  static const _createStaffTimeout = Duration(seconds: 30);
+
+  Future<ApiResponse> createStaff({
+    required String fullName,
+    required String email,
+    String? phone,
+    String? dateOfBirth,
+    String? gender,
+    String? avatarUrl,
+    String? positionId,
+    double? baseLatitude,
+    double? baseLongitude,
+    String? baseAddress,
+  }) async {
+    return apiClient.post(
+      '/admin/staffs',
+      options: Options(receiveTimeout: _createStaffTimeout),
+      data: {
+        'fullName': fullName,
+        'email': email,
+        if (phone != null && phone.isNotEmpty) 'phone': phone,
+        if (dateOfBirth != null) 'dateOfBirth': dateOfBirth,
+        if (gender != null) 'gender': gender,
+        if (avatarUrl != null) 'avatarUrl': avatarUrl,
+        if (positionId != null) 'positionId': positionId,
+        'baseLatitude': ?baseLatitude,
+        'baseLongitude': ?baseLongitude,
+        if (baseAddress != null && baseAddress.isNotEmpty)
+          'baseAddress': baseAddress,
+      },
+    );
+  }
+
+  /// [positionId]: null = giữ nguyên, '' = bỏ chức vụ, giá trị = đổi chức vụ.
+  /// Chỉ cập nhật hồ sơ — email & mật khẩu (thông tin đăng nhập) admin không được sửa.
+  Future<ApiResponse> updateStaff({
+    required String staffId,
+    required String fullName,
+    String? phone,
+    String? dateOfBirth,
+    String? gender,
+    String? avatarUrl,
+    String? positionId,
+    double? baseLatitude,
+    double? baseLongitude,
+    String? baseAddress,
+    bool clearBaseLocation = false,
+  }) async {
+    return apiClient.put(
+      '/admin/staffs/$staffId',
+      data: {
+        'fullName': fullName,
+        if (phone != null) 'phone': phone,
+        if (dateOfBirth != null) 'dateOfBirth': dateOfBirth,
+        if (gender != null) 'gender': gender,
+        if (avatarUrl != null) 'avatarUrl': avatarUrl,
+        if (positionId != null) 'positionId': positionId,
+        if (clearBaseLocation)
+          'clearBaseLocation': true
+        else ...{
+          'baseLatitude': ?baseLatitude,
+          'baseLongitude': ?baseLongitude,
+          if (baseAddress != null) 'baseAddress': baseAddress,
+        },
+      },
+    );
+  }
+
+  Future<StaffStatisticsModel> getStatistics({int? year, int? month}) async {
+    final response = await apiClient.get<StaffStatisticsModel>(
+      '/admin/staffs/statistics',
+      queryParameters: {
+        'year': ?year,
+        'month': ?month,
+      },
+      decoder: (json) =>
+          StaffStatisticsModel.fromJson(json as Map<String, dynamic>),
+    );
+    if (response.success && response.data != null) {
+      return response.data!;
+    }
+    throw Exception(response.message);
+  }
+
+  /// period: 'daily' | 'weekly' | 'monthly'
+  Future<List<StaffTrendItem>> getTrend(
+    String period, {
+    int? year,
+    int? month,
+  }) async {
+    final response = await apiClient.get<List<StaffTrendItem>>(
+      '/admin/staffs/trend',
+      queryParameters: {
+        'period': period,
+        'year': ?year,
+        'month': ?month,
+      },
+      decoder: (json) {
+        final items = (json as Map<String, dynamic>)['items'] as List? ?? [];
+        return items
+            .map((e) => StaffTrendItem.fromJson(e as Map<String, dynamic>))
+            .toList();
+      },
+    );
+    if (response.success && response.data != null) {
+      return response.data!;
+    }
+    throw Exception(response.message);
+  }
+}
+
+final staffRepository = StaffRepository();

@@ -1,0 +1,40 @@
+package com.vn.smart_space.dto.response.admin;
+
+import java.time.LocalDate;
+import java.util.Map;
+
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
+
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+@FieldDefaults(level = AccessLevel.PRIVATE)
+public class StaffResponse {
+    String id;
+    String fullName;
+    String email;
+    String phoneNumber;
+    String avatarUrl;
+    LocalDate dateOfBirth;
+    String gender; // "male" | "female" | "other"
+    String status; // "active" | "blocked"
+    long processingCount;
+    String positionId;
+    String positionName;
+    Double baseLatitude;
+    Double baseLongitude;
+    String baseAddress;
+
+    // Weighted workload & assignment recommendation
+    long weightedLoad;
+    long overdueCount;
+    boolean isOverloaded;
+    String assignmentHint; // "recommended" | "normal" | "overloaded"
+    Map<String, Long> severityBreakdown;
+}

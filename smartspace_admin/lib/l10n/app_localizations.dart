@@ -473,7 +473,7 @@ abstract class AppLocalizations {
   /// No description provided for @pleaseEnterFullName.
   ///
   /// In en, this message translates to:
-  /// **'Please enter full name'**
+  /// **'Please enter your full name'**
   String get pleaseEnterFullName;
 
   /// No description provided for @pleaseEnterPhoneNumber.
@@ -529,6 +529,96 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Please enter confirm password'**
   String get pleaseEnterConfirmPassword;
+
+  /// No description provided for @backToLogin.
+  ///
+  /// In en, this message translates to:
+  /// **'Back to Login'**
+  String get backToLogin;
+
+  /// No description provided for @adminPortalBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Civic Management & Operations'**
+  String get adminPortalBadge;
+
+  /// No description provided for @adminPortalSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Centralized administration for municipal infrastructure, public reports, and community operations.'**
+  String get adminPortalSubtitle;
+
+  /// No description provided for @adminFeatureRealtime.
+  ///
+  /// In en, this message translates to:
+  /// **'Real-time Monitoring'**
+  String get adminFeatureRealtime;
+
+  /// No description provided for @adminFeatureRealtimeDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Live tracking of municipal incidents, sensor alerts, and citizen feedback.'**
+  String get adminFeatureRealtimeDesc;
+
+  /// No description provided for @adminFeatureCoordination.
+  ///
+  /// In en, this message translates to:
+  /// **'Rapid Incident Response'**
+  String get adminFeatureCoordination;
+
+  /// No description provided for @adminFeatureCoordinationDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Seamless task assignment and progress auditing across operational staff.'**
+  String get adminFeatureCoordinationDesc;
+
+  /// No description provided for @adminFeatureSecurity.
+  ///
+  /// In en, this message translates to:
+  /// **'Enterprise Access Control'**
+  String get adminFeatureSecurity;
+
+  /// No description provided for @adminFeatureSecurityDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Role-based authorization and encrypted administrative session management.'**
+  String get adminFeatureSecurityDesc;
+
+  /// No description provided for @forgotPasswordHeroTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Security Recovery'**
+  String get forgotPasswordHeroTitle;
+
+  /// No description provided for @forgotPasswordHeroSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure two-step verification to restore your administrative credentials.'**
+  String get forgotPasswordHeroSubtitle;
+
+  /// No description provided for @stepEmailVerification.
+  ///
+  /// In en, this message translates to:
+  /// **'1. Request verification code via registered email'**
+  String get stepEmailVerification;
+
+  /// No description provided for @stepPasswordReset.
+  ///
+  /// In en, this message translates to:
+  /// **'2. Verify OTP and establish a new secure password'**
+  String get stepPasswordReset;
+
+  /// No description provided for @forgotPasswordHelpNote.
+  ///
+  /// In en, this message translates to:
+  /// **'If you no longer have access to this email, contact system administrator.'**
+  String get forgotPasswordHelpNote;
+
+  /// No description provided for @systemSecureNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'SmartSpace Protected Administrative Environment'**
+  String get systemSecureNotice;
 
   /// No description provided for @search.
   ///
@@ -697,6 +787,12 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Session expired'**
   String get sessionExpired;
+
+  /// No description provided for @sessionRevokedOnThisDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'You have been signed out of this device from another device.'**
+  String get sessionRevokedOnThisDevice;
 
   /// No description provided for @settingsTitle.
   ///
@@ -883,6 +979,5419 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Include at least one special character !@#\$^()_'**
   String get passwordReqSpecial;
+
+  /// No description provided for @users.
+  ///
+  /// In en, this message translates to:
+  /// **'Users'**
+  String get users;
+
+  /// No description provided for @staff.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get staff;
+
+  /// No description provided for @admins.
+  ///
+  /// In en, this message translates to:
+  /// **'Admins'**
+  String get admins;
+
+  /// No description provided for @issues.
+  ///
+  /// In en, this message translates to:
+  /// **'Issues'**
+  String get issues;
+
+  /// No description provided for @needsYourAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs Your Attention'**
+  String get needsYourAttention;
+
+  /// No description provided for @recentActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent Activity'**
+  String get recentActivity;
+
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @pendingConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Confirmation'**
+  String get pendingConfirmation;
+
+  /// No description provided for @inProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'In Progress'**
+  String get inProgress;
+
+  /// No description provided for @resolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get resolved;
+
+  /// No description provided for @noRecentActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'No recent activity'**
+  String get noRecentActivity;
+
+  /// No description provided for @adminOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Overview'**
+  String get adminOverview;
+
+  /// No description provided for @noPendingReports.
+  ///
+  /// In en, this message translates to:
+  /// **'No pending reports'**
+  String get noPendingReports;
+
+  /// No description provided for @pendingReportsAttention.
+  ///
+  /// In en, this message translates to:
+  /// **'You have {count} pending report(s) that need confirmation.'**
+  String pendingReportsAttention(int count);
+
+  /// No description provided for @newBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'New'**
+  String get newBadge;
+
+  /// No description provided for @actionView.
+  ///
+  /// In en, this message translates to:
+  /// **'View'**
+  String get actionView;
+
+  /// No description provided for @newReportToastTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'New report submitted'**
+  String get newReportToastTitle;
+
+  /// No description provided for @pendingIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pendingIssues;
+
+  /// No description provided for @processingIssues.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing'**
+  String get processingIssues;
+
+  /// No description provided for @viewAllReports.
+  ///
+  /// In en, this message translates to:
+  /// **'View all'**
+  String get viewAllReports;
+
+  /// No description provided for @newReportsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Newly Submitted Reports'**
+  String get newReportsSectionTitle;
+
+  /// No description provided for @noAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'No address provided'**
+  String get noAddress;
+
+  /// No description provided for @reportDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Details'**
+  String get reportDetailTitle;
+
+  /// No description provided for @reportInfoSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Information'**
+  String get reportInfoSection;
+
+  /// No description provided for @reporterInfoSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Reporter'**
+  String get reporterInfoSection;
+
+  /// No description provided for @anonymousUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous User'**
+  String get anonymousUser;
+
+  /// No description provided for @anonymousDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'The user chose to remain anonymous when submitting this report'**
+  String get anonymousDescription;
+
+  /// No description provided for @locationSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Incident Location'**
+  String get locationSection;
+
+  /// No description provided for @openInGoogleMaps.
+  ///
+  /// In en, this message translates to:
+  /// **'Open in Google Maps'**
+  String get openInGoogleMaps;
+
+  /// No description provided for @assignStaffSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign Staff'**
+  String get assignStaffSection;
+
+  /// No description provided for @selectStaffPrompt.
+  ///
+  /// In en, this message translates to:
+  /// **'Select staff to process'**
+  String get selectStaffPrompt;
+
+  /// No description provided for @noStaffAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No staff found in the system'**
+  String get noStaffAvailable;
+
+  /// No description provided for @severitySection.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity Level'**
+  String get severitySection;
+
+  /// No description provided for @severityLow.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get severityLow;
+
+  /// No description provided for @severityMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get severityMedium;
+
+  /// No description provided for @severityHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get severityHigh;
+
+  /// No description provided for @severityCritical.
+  ///
+  /// In en, this message translates to:
+  /// **'Critical'**
+  String get severityCritical;
+
+  /// No description provided for @processReportButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Process Report'**
+  String get processReportButton;
+
+  /// No description provided for @assignSuccessMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff assigned and processing started successfully!'**
+  String get assignSuccessMessage;
+
+  /// No description provided for @assignFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to process report, please try again.'**
+  String get assignFailedMessage;
+
+  /// No description provided for @assignedStaffInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Staff'**
+  String get assignedStaffInfo;
+
+  /// No description provided for @createdAtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Submitted At'**
+  String get createdAtLabel;
+
+  /// No description provided for @statusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get statusLabel;
+
+  /// No description provided for @cannotOpenMaps.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot open map application'**
+  String get cannotOpenMaps;
+
+  /// No description provided for @changeStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Change staff'**
+  String get changeStaff;
+
+  /// No description provided for @noImageAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No image available'**
+  String get noImageAvailable;
+
+  /// No description provided for @anonymousAdminNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous report (Visible only to administrators)'**
+  String get anonymousAdminNotice;
+
+  /// No description provided for @anonymousUserNote.
+  ///
+  /// In en, this message translates to:
+  /// **'The user posted this report anonymously'**
+  String get anonymousUserNote;
+
+  /// No description provided for @manageReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Reports'**
+  String get manageReports;
+
+  /// No description provided for @manageUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Users'**
+  String get manageUsers;
+
+  /// No description provided for @manageStaffs.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Staffs'**
+  String get manageStaffs;
+
+  /// No description provided for @spaceMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Space Map'**
+  String get spaceMap;
+
+  /// No description provided for @addStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Staff'**
+  String get addStaff;
+
+  /// No description provided for @activeStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get activeStatus;
+
+  /// No description provided for @blockedStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked'**
+  String get blockedStatus;
+
+  /// No description provided for @staffMember.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get staffMember;
+
+  /// No description provided for @processingStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing'**
+  String get processingStatus;
+
+  /// No description provided for @viewDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'View Details'**
+  String get viewDetails;
+
+  /// No description provided for @staffNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff not found'**
+  String get staffNotFound;
+
+  /// No description provided for @filterByStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get filterByStatus;
+
+  /// No description provided for @addNewStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Add new staff'**
+  String get addNewStaff;
+
+  /// No description provided for @create.
+  ///
+  /// In en, this message translates to:
+  /// **'Create'**
+  String get create;
+
+  /// No description provided for @addStaffSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff added successfully'**
+  String get addStaffSuccess;
+
+  /// No description provided for @totalStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Staff'**
+  String get totalStaff;
+
+  /// No description provided for @phoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone'**
+  String get phoneNumber;
+
+  /// No description provided for @statusTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get statusTitle;
+
+  /// No description provided for @noStaffInSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'No staff in system'**
+  String get noStaffInSystem;
+
+  /// No description provided for @noStaffFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No matching staff found'**
+  String get noStaffFound;
+
+  /// No description provided for @lockAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock Account'**
+  String get lockAccount;
+
+  /// No description provided for @unlockAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock Account'**
+  String get unlockAccount;
+
+  /// No description provided for @lockAccountConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to lock this staff account?'**
+  String get lockAccountConfirm;
+
+  /// No description provided for @unlockAccountConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to unlock this staff account?'**
+  String get unlockAccountConfirm;
+
+  /// No description provided for @updateStatusSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Status updated successfully'**
+  String get updateStatusSuccess;
+
+  /// No description provided for @updateStatusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update status'**
+  String get updateStatusFailed;
+
+  /// No description provided for @processingReports.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} reports processing'**
+  String processingReports(int count);
+
+  /// No description provided for @dateOfBirth.
+  ///
+  /// In en, this message translates to:
+  /// **'Date of Birth'**
+  String get dateOfBirth;
+
+  /// No description provided for @gender.
+  ///
+  /// In en, this message translates to:
+  /// **'Gender'**
+  String get gender;
+
+  /// No description provided for @genderMale.
+  ///
+  /// In en, this message translates to:
+  /// **'Male'**
+  String get genderMale;
+
+  /// No description provided for @genderFemale.
+  ///
+  /// In en, this message translates to:
+  /// **'Female'**
+  String get genderFemale;
+
+  /// No description provided for @genderOther.
+  ///
+  /// In en, this message translates to:
+  /// **'Other'**
+  String get genderOther;
+
+  /// No description provided for @createStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Staff'**
+  String get createStaff;
+
+  /// No description provided for @uploadAvatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Upload Avatar'**
+  String get uploadAvatar;
+
+  /// No description provided for @changeAvatar.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Photo'**
+  String get changeAvatar;
+
+  /// No description provided for @avatarSizeError.
+  ///
+  /// In en, this message translates to:
+  /// **'Image must be less than 5MB'**
+  String get avatarSizeError;
+
+  /// No description provided for @selectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date'**
+  String get selectDate;
+
+  /// No description provided for @selectGender.
+  ///
+  /// In en, this message translates to:
+  /// **'Select gender'**
+  String get selectGender;
+
+  /// No description provided for @addStaffFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to add staff'**
+  String get addStaffFailed;
+
+  /// No description provided for @editStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Staff'**
+  String get editStaff;
+
+  /// No description provided for @updateStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get updateStaff;
+
+  /// No description provided for @updateStaffSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff updated successfully'**
+  String get updateStaffSuccess;
+
+  /// No description provided for @updateStaffFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update staff'**
+  String get updateStaffFailed;
+
+  /// No description provided for @staffEmailNotEditable.
+  ///
+  /// In en, this message translates to:
+  /// **'Login email cannot be changed'**
+  String get staffEmailNotEditable;
+
+  /// No description provided for @editInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get editInfo;
+
+  /// No description provided for @staffStatusChart.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Status'**
+  String get staffStatusChart;
+
+  /// No description provided for @workloadChart.
+  ///
+  /// In en, this message translates to:
+  /// **'Workload Distribution'**
+  String get workloadChart;
+
+  /// No description provided for @activeStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get activeStaff;
+
+  /// No description provided for @blockedStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Blocked'**
+  String get blockedStaff;
+
+  /// No description provided for @reportsProcessing.
+  ///
+  /// In en, this message translates to:
+  /// **'reports processing'**
+  String get reportsProcessing;
+
+  /// No description provided for @noWorkloadData.
+  ///
+  /// In en, this message translates to:
+  /// **'No staff currently processing reports'**
+  String get noWorkloadData;
+
+  /// No description provided for @reportDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Dashboard'**
+  String get reportDashboard;
+
+  /// No description provided for @totalReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Reports'**
+  String get totalReports;
+
+  /// No description provided for @pendingReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pendingReports;
+
+  /// No description provided for @processingReportsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing'**
+  String get processingReportsLabel;
+
+  /// No description provided for @resolvedReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get resolvedReports;
+
+  /// No description provided for @rejectedReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get rejectedReports;
+
+  /// No description provided for @reportTrend.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Trend'**
+  String get reportTrend;
+
+  /// No description provided for @daily.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily'**
+  String get daily;
+
+  /// No description provided for @weekly.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get weekly;
+
+  /// No description provided for @monthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get monthly;
+
+  /// No description provided for @severityDistribution.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity Distribution'**
+  String get severityDistribution;
+
+  /// No description provided for @noData.
+  ///
+  /// In en, this message translates to:
+  /// **'No data available'**
+  String get noData;
+
+  /// No description provided for @reportList.
+  ///
+  /// In en, this message translates to:
+  /// **'Report List'**
+  String get reportList;
+
+  /// No description provided for @tableView.
+  ///
+  /// In en, this message translates to:
+  /// **'Table'**
+  String get tableView;
+
+  /// No description provided for @kanbanView.
+  ///
+  /// In en, this message translates to:
+  /// **'Kanban'**
+  String get kanbanView;
+
+  /// No description provided for @filterBySeverity.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity'**
+  String get filterBySeverity;
+
+  /// No description provided for @filterByAssignee.
+  ///
+  /// In en, this message translates to:
+  /// **'Assignee'**
+  String get filterByAssignee;
+
+  /// No description provided for @selectDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Date'**
+  String get selectDateRange;
+
+  /// No description provided for @clearFilters.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Filters'**
+  String get clearFilters;
+
+  /// No description provided for @reporter.
+  ///
+  /// In en, this message translates to:
+  /// **'Reporter'**
+  String get reporter;
+
+  /// No description provided for @reportIdShort.
+  ///
+  /// In en, this message translates to:
+  /// **'ID'**
+  String get reportIdShort;
+
+  /// No description provided for @noReportsFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No reports found'**
+  String get noReportsFound;
+
+  /// No description provided for @loadMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Load More'**
+  String get loadMore;
+
+  /// No description provided for @invalidTransition.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid status transition'**
+  String get invalidTransition;
+
+  /// No description provided for @reportTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Title'**
+  String get reportTitle;
+
+  /// No description provided for @severityLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity'**
+  String get severityLabel;
+
+  /// No description provided for @assignee.
+  ///
+  /// In en, this message translates to:
+  /// **'Assignee'**
+  String get assignee;
+
+  /// No description provided for @createdDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Created Date'**
+  String get createdDate;
+
+  /// No description provided for @pendingStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pendingStatus;
+
+  /// No description provided for @editProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get editProfile;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Changes'**
+  String get saveChanges;
+
+  /// No description provided for @profileUpdateSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile updated successfully'**
+  String get profileUpdateSuccess;
+
+  /// No description provided for @profileUpdateFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to update profile'**
+  String get profileUpdateFailed;
+
+  /// No description provided for @mapFilterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter Reports'**
+  String get mapFilterTitle;
+
+  /// No description provided for @mapHeatmapMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Heatmap'**
+  String get mapHeatmapMode;
+
+  /// No description provided for @mapMarkerMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Markers'**
+  String get mapMarkerMode;
+
+  /// No description provided for @mapClusterCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} reports'**
+  String mapClusterCount(int count);
+
+  /// No description provided for @mapStaffTracking.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Tracking'**
+  String get mapStaffTracking;
+
+  /// No description provided for @mapNewReportToast.
+  ///
+  /// In en, this message translates to:
+  /// **'New report at {address}'**
+  String mapNewReportToast(String address);
+
+  /// No description provided for @mapAssignStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign Staff'**
+  String get mapAssignStaff;
+
+  /// No description provided for @mapNearestStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Nearest Staff'**
+  String get mapNearestStaff;
+
+  /// No description provided for @mapViewDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'View Detail'**
+  String get mapViewDetail;
+
+  /// No description provided for @mapNoReportsInArea.
+  ///
+  /// In en, this message translates to:
+  /// **'No reports in this area'**
+  String get mapNoReportsInArea;
+
+  /// No description provided for @mapFilterStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Status'**
+  String get mapFilterStatus;
+
+  /// No description provided for @mapFilterSeverity.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity'**
+  String get mapFilterSeverity;
+
+  /// No description provided for @mapFilterDateRange.
+  ///
+  /// In en, this message translates to:
+  /// **'Date Range'**
+  String get mapFilterDateRange;
+
+  /// No description provided for @mapFilterAssignee.
+  ///
+  /// In en, this message translates to:
+  /// **'Assignee'**
+  String get mapFilterAssignee;
+
+  /// No description provided for @mapFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get mapFilterAll;
+
+  /// No description provided for @mapFilterClear.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Filters'**
+  String get mapFilterClear;
+
+  /// No description provided for @mapFilterApply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get mapFilterApply;
+
+  /// No description provided for @mapLegendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Legend'**
+  String get mapLegendTitle;
+
+  /// No description provided for @mapRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get mapRefresh;
+
+  /// No description provided for @mapMyLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'My Location'**
+  String get mapMyLocation;
+
+  /// No description provided for @minuteAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'min ago'**
+  String get minuteAgo;
+
+  /// No description provided for @hourAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'h ago'**
+  String get hourAgo;
+
+  /// No description provided for @dayAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'days ago'**
+  String get dayAgo;
+
+  /// No description provided for @routeHome.
+  ///
+  /// In en, this message translates to:
+  /// **'Home'**
+  String get routeHome;
+
+  /// No description provided for @routeSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Settings'**
+  String get routeSettings;
+
+  /// No description provided for @routeEditProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Profile'**
+  String get routeEditProfile;
+
+  /// No description provided for @routeChangePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get routeChangePassword;
+
+  /// No description provided for @routeStaffManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Staffs'**
+  String get routeStaffManagement;
+
+  /// No description provided for @routeReportDashboard.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Dashboard'**
+  String get routeReportDashboard;
+
+  /// No description provided for @routeReportList.
+  ///
+  /// In en, this message translates to:
+  /// **'Report List'**
+  String get routeReportList;
+
+  /// No description provided for @routeSpaceMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Space Map'**
+  String get routeSpaceMap;
+
+  /// No description provided for @mapQuickAssignTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Assign'**
+  String get mapQuickAssignTitle;
+
+  /// No description provided for @mapSelectSeverity.
+  ///
+  /// In en, this message translates to:
+  /// **'Select severity'**
+  String get mapSelectSeverity;
+
+  /// No description provided for @routeNotifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get routeNotifications;
+
+  /// No description provided for @emptyNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'No notifications'**
+  String get emptyNotification;
+
+  /// No description provided for @justNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Just now'**
+  String get justNow;
+
+  /// No description provided for @markAllAsRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark all as read'**
+  String get markAllAsRead;
+
+  /// No description provided for @unassignedStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Unassigned'**
+  String get unassignedStaff;
+
+  /// No description provided for @assignedTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned to'**
+  String get assignedTo;
+
+  /// No description provided for @routePositionManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Position Management'**
+  String get routePositionManagement;
+
+  /// No description provided for @managePositions.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Positions'**
+  String get managePositions;
+
+  /// No description provided for @positionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Position'**
+  String get positionLabel;
+
+  /// No description provided for @positionName.
+  ///
+  /// In en, this message translates to:
+  /// **'Position name'**
+  String get positionName;
+
+  /// No description provided for @positionCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Position code'**
+  String get positionCode;
+
+  /// No description provided for @positionDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get positionDescription;
+
+  /// No description provided for @addPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Add position'**
+  String get addPosition;
+
+  /// No description provided for @editPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit position'**
+  String get editPosition;
+
+  /// No description provided for @deletePosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete position'**
+  String get deletePosition;
+
+  /// No description provided for @deletePositionConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this position?'**
+  String get deletePositionConfirm;
+
+  /// No description provided for @positionInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get positionInactive;
+
+  /// No description provided for @positionActiveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get positionActiveLabel;
+
+  /// No description provided for @noPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'No position'**
+  String get noPosition;
+
+  /// No description provided for @selectPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Select position'**
+  String get selectPosition;
+
+  /// No description provided for @filterByPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by position'**
+  String get filterByPosition;
+
+  /// No description provided for @allPositions.
+  ///
+  /// In en, this message translates to:
+  /// **'All positions'**
+  String get allPositions;
+
+  /// No description provided for @emptyPositionList.
+  ///
+  /// In en, this message translates to:
+  /// **'No positions yet'**
+  String get emptyPositionList;
+
+  /// No description provided for @positionStaffCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} staff'**
+  String positionStaffCount(int count);
+
+  /// No description provided for @positionSaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Position saved successfully'**
+  String get positionSaveSuccess;
+
+  /// No description provided for @positionDeleteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Position deleted successfully'**
+  String get positionDeleteSuccess;
+
+  /// No description provided for @positionActionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to complete the action. Please try again'**
+  String get positionActionFailed;
+
+  /// No description provided for @positionNameRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a position name'**
+  String get positionNameRequired;
+
+  /// No description provided for @positionCodeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a position code'**
+  String get positionCodeRequired;
+
+  /// No description provided for @totalPositions.
+  ///
+  /// In en, this message translates to:
+  /// **'Total positions'**
+  String get totalPositions;
+
+  /// No description provided for @positionAssignedStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned staff'**
+  String get positionAssignedStaff;
+
+  /// No description provided for @actionsColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'Actions'**
+  String get actionsColumn;
+
+  /// No description provided for @positionCodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'e.g. ELECTRICIAN, PLUMBER'**
+  String get positionCodeHint;
+
+  /// No description provided for @loggedInDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'Logged in devices'**
+  String get loggedInDevices;
+
+  /// No description provided for @thisDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'This device'**
+  String get thisDevice;
+
+  /// No description provided for @activeNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Active now'**
+  String get activeNow;
+
+  /// No description provided for @logoutDevice.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout'**
+  String get logoutDevice;
+
+  /// No description provided for @logoutDeviceConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout from device?'**
+  String get logoutDeviceConfirmTitle;
+
+  /// No description provided for @logoutDeviceConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The session on \"{deviceName}\" will be ended.'**
+  String logoutDeviceConfirmMessage(String deviceName);
+
+  /// No description provided for @logoutAllOtherDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout all other devices'**
+  String get logoutAllOtherDevices;
+
+  /// No description provided for @logoutAllConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Logout all other devices?'**
+  String get logoutAllConfirmTitle;
+
+  /// No description provided for @logoutAllConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'All sessions except this device will be ended.'**
+  String get logoutAllConfirmMessage;
+
+  /// No description provided for @noOtherDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'No other devices logged in.'**
+  String get noOtherDevices;
+
+  /// No description provided for @deviceLogoutSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Device logged out.'**
+  String get deviceLogoutSuccess;
+
+  /// No description provided for @allDevicesLogoutSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'All other devices logged out.'**
+  String get allDevicesLogoutSuccess;
+
+  /// No description provided for @routeManageDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage Devices'**
+  String get routeManageDevices;
+
+  /// No description provided for @routeUserManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'User Management'**
+  String get routeUserManagement;
+
+  /// No description provided for @totalUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Total users'**
+  String get totalUsers;
+
+  /// No description provided for @newUsers30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'New users (30 days)'**
+  String get newUsers30Days;
+
+  /// No description provided for @activeReporters30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Contributors (30 days)'**
+  String get activeReporters30Days;
+
+  /// No description provided for @reports30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports (30 days)'**
+  String get reports30Days;
+
+  /// No description provided for @percentOfUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% of all users'**
+  String percentOfUsers(String percent);
+
+  /// No description provided for @changeVsPrevious30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'{change} vs previous 30 days'**
+  String changeVsPrevious30Days(String change);
+
+  /// No description provided for @noPreviousPeriodData.
+  ///
+  /// In en, this message translates to:
+  /// **'No data for previous 30 days'**
+  String get noPreviousPeriodData;
+
+  /// No description provided for @registrationTrend.
+  ///
+  /// In en, this message translates to:
+  /// **'New registrations'**
+  String get registrationTrend;
+
+  /// No description provided for @newUsersCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} new users'**
+  String newUsersCount(int count);
+
+  /// No description provided for @weekOf.
+  ///
+  /// In en, this message translates to:
+  /// **'Week of {date}'**
+  String weekOf(String date);
+
+  /// No description provided for @topContributors.
+  ///
+  /// In en, this message translates to:
+  /// **'Top contributors'**
+  String get topContributors;
+
+  /// No description provided for @anonymousReportsExcluded.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous reports are not counted'**
+  String get anonymousReportsExcluded;
+
+  /// No description provided for @reportCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} reports'**
+  String reportCountLabel(int count);
+
+  /// No description provided for @reportsColumn.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get reportsColumn;
+
+  /// No description provided for @joinedDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined'**
+  String get joinedDate;
+
+  /// No description provided for @joinedOn.
+  ///
+  /// In en, this message translates to:
+  /// **'Joined {date}'**
+  String joinedOn(String date);
+
+  /// No description provided for @sortBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Sort by'**
+  String get sortBy;
+
+  /// No description provided for @sortNewest.
+  ///
+  /// In en, this message translates to:
+  /// **'Newest'**
+  String get sortNewest;
+
+  /// No description provided for @sortOldest.
+  ///
+  /// In en, this message translates to:
+  /// **'Oldest'**
+  String get sortOldest;
+
+  /// No description provided for @sortByName.
+  ///
+  /// In en, this message translates to:
+  /// **'Name (A–Z)'**
+  String get sortByName;
+
+  /// No description provided for @searchUsersHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name, email or phone'**
+  String get searchUsersHint;
+
+  /// No description provided for @noUsersInSystem.
+  ///
+  /// In en, this message translates to:
+  /// **'No users yet'**
+  String get noUsersInSystem;
+
+  /// No description provided for @noUsersFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No users match your search'**
+  String get noUsersFound;
+
+  /// No description provided for @userDetailTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'User details'**
+  String get userDetailTitle;
+
+  /// No description provided for @reportActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Report activity'**
+  String get reportActivity;
+
+  /// No description provided for @noPublicReports.
+  ///
+  /// In en, this message translates to:
+  /// **'This user has no public reports yet'**
+  String get noPublicReports;
+
+  /// No description provided for @notProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'Not provided'**
+  String get notProvided;
+
+  /// No description provided for @allUsersLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'All users loaded'**
+  String get allUsersLoaded;
+
+  /// No description provided for @loadMoreFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load more users'**
+  String get loadMoreFailed;
+
+  /// No description provided for @statistics.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics'**
+  String get statistics;
+
+  /// No description provided for @statisticsLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load statistics'**
+  String get statisticsLoadFailed;
+
+  /// No description provided for @closeAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get closeAction;
+
+  /// No description provided for @paginationSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{from}–{to} of {total}'**
+  String paginationSummary(int from, int to, int total);
+
+  /// No description provided for @staffActiveBlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'{active} active · {blocked} blocked'**
+  String staffActiveBlocked(int active, int blocked);
+
+  /// No description provided for @reportsInProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports in progress'**
+  String get reportsInProgress;
+
+  /// No description provided for @avgPerActiveStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg. {value} per active staff'**
+  String avgPerActiveStaff(String value);
+
+  /// No description provided for @resolved30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved (30 days)'**
+  String get resolved30Days;
+
+  /// No description provided for @avgResolutionTime30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg. resolution time (30 days)'**
+  String get avgResolutionTime30Days;
+
+  /// No description provided for @notEnoughData.
+  ///
+  /// In en, this message translates to:
+  /// **'Not enough data yet'**
+  String get notEnoughData;
+
+  /// No description provided for @durationMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} min'**
+  String durationMinutes(String value);
+
+  /// No description provided for @durationHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} h'**
+  String durationHours(String value);
+
+  /// No description provided for @durationDays.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} days'**
+  String durationDays(String value);
+
+  /// No description provided for @processingFlow.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing flow'**
+  String get processingFlow;
+
+  /// No description provided for @assignedSeries.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned'**
+  String get assignedSeries;
+
+  /// No description provided for @resolvedSeries.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get resolvedSeries;
+
+  /// No description provided for @assignedReportsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} assigned'**
+  String assignedReportsCount(int count);
+
+  /// No description provided for @resolvedReportsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} resolved'**
+  String resolvedReportsCount(int count);
+
+  /// No description provided for @workloadSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports in progress per staff'**
+  String get workloadSubtitle;
+
+  /// No description provided for @resolvedLast30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} resolved in the last 30 days'**
+  String resolvedLast30Days(int count);
+
+  /// No description provided for @resolutionInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution Information'**
+  String get resolutionInfo;
+
+  /// No description provided for @resolutionImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution Photos'**
+  String get resolutionImages;
+
+  /// No description provided for @noResolutionImages.
+  ///
+  /// In en, this message translates to:
+  /// **'No resolution photos provided'**
+  String get noResolutionImages;
+
+  /// No description provided for @resolutionNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution Note'**
+  String get resolutionNote;
+
+  /// No description provided for @staffNoAdditionalNote.
+  ///
+  /// In en, this message translates to:
+  /// **'{staffName} did not provide any additional notes'**
+  String staffNoAdditionalNote(String staffName);
+
+  /// No description provided for @resolvedAtLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved At'**
+  String get resolvedAtLabel;
+
+  /// No description provided for @citizenReviewUnresolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Citizen feedback: Not resolved'**
+  String get citizenReviewUnresolved;
+
+  /// No description provided for @citizenRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Citizen Rating'**
+  String get citizenRating;
+
+  /// No description provided for @citizenReviewReason.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for unresolved status'**
+  String get citizenReviewReason;
+
+  /// No description provided for @citizenReviewPhotos.
+  ///
+  /// In en, this message translates to:
+  /// **'Photos provided by citizen'**
+  String get citizenReviewPhotos;
+
+  /// No description provided for @reopenReportButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Request Re-handling'**
+  String get reopenReportButton;
+
+  /// No description provided for @reopenReportConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Request re-handling for this report?'**
+  String get reopenReportConfirmTitle;
+
+  /// No description provided for @reopenReportConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'The status will be changed back to \'Processing\' and the assigned staff will be notified to re-handle the issue.'**
+  String get reopenReportConfirmMessage;
+
+  /// No description provided for @reopenReportSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Report reopened to Processing and staff notified!'**
+  String get reopenReportSuccess;
+
+  /// No description provided for @unsatisfactoryBannerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsatisfactory Reports'**
+  String get unsatisfactoryBannerTitle;
+
+  /// No description provided for @unsatisfactoryProcessedCountFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} unsatisfactory'**
+  String unsatisfactoryProcessedCountFormat(int count);
+
+  /// No description provided for @rehandlingProcessingCountFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} in progress'**
+  String rehandlingProcessingCountFormat(int count);
+
+  /// No description provided for @unsatisfactoryPendingTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Review'**
+  String get unsatisfactoryPendingTab;
+
+  /// No description provided for @unsatisfactoryProcessingTab.
+  ///
+  /// In en, this message translates to:
+  /// **'In Progress'**
+  String get unsatisfactoryProcessingTab;
+
+  /// No description provided for @rehandlingBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-handling'**
+  String get rehandlingBadge;
+
+  /// No description provided for @routeUnsatisfactoryReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Unsatisfactory Reports'**
+  String get routeUnsatisfactoryReports;
+
+  /// No description provided for @noUnsatisfactoryPending.
+  ///
+  /// In en, this message translates to:
+  /// **'No reports pending review'**
+  String get noUnsatisfactoryPending;
+
+  /// No description provided for @noUnsatisfactoryProcessing.
+  ///
+  /// In en, this message translates to:
+  /// **'No reports being re-handled'**
+  String get noUnsatisfactoryProcessing;
+
+  /// No description provided for @manageNews.
+  ///
+  /// In en, this message translates to:
+  /// **'News Management'**
+  String get manageNews;
+
+  /// No description provided for @quickAccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Access'**
+  String get quickAccess;
+
+  /// No description provided for @emptyNewsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No news yet'**
+  String get emptyNewsTitle;
+
+  /// No description provided for @emptyNewsDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'There are no news articles published yet. Create a new article to notify the community.'**
+  String get emptyNewsDescription;
+
+  /// No description provided for @createNewNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Create News'**
+  String get createNewNews;
+
+  /// No description provided for @editNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit News'**
+  String get editNews;
+
+  /// No description provided for @newsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'News Title'**
+  String get newsTitle;
+
+  /// No description provided for @newsTitleHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter news title...'**
+  String get newsTitleHint;
+
+  /// No description provided for @newsTitleRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter news title'**
+  String get newsTitleRequired;
+
+  /// No description provided for @newsContent.
+  ///
+  /// In en, this message translates to:
+  /// **'News Content'**
+  String get newsContent;
+
+  /// No description provided for @newsContentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter content (Markdown/Readme supported)...'**
+  String get newsContentHint;
+
+  /// No description provided for @newsContentRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter news content'**
+  String get newsContentRequired;
+
+  /// No description provided for @newsImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Attached Images'**
+  String get newsImages;
+
+  /// No description provided for @addImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Images'**
+  String get addImages;
+
+  /// No description provided for @preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get preview;
+
+  /// No description provided for @editor.
+  ///
+  /// In en, this message translates to:
+  /// **'Editor'**
+  String get editor;
+
+  /// No description provided for @newsDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'News Detail'**
+  String get newsDetail;
+
+  /// No description provided for @deleteNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete News'**
+  String get deleteNews;
+
+  /// No description provided for @confirmDeleteNewsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Delete News'**
+  String get confirmDeleteNewsTitle;
+
+  /// No description provided for @confirmDeleteNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this news? This action cannot be undone.'**
+  String get confirmDeleteNews;
+
+  /// No description provided for @deleteNewsSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'News deleted successfully'**
+  String get deleteNewsSuccess;
+
+  /// No description provided for @createNewsSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'News created successfully'**
+  String get createNewsSuccess;
+
+  /// No description provided for @updateNewsSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'News updated successfully'**
+  String get updateNewsSuccess;
+
+  /// No description provided for @newsAuthor.
+  ///
+  /// In en, this message translates to:
+  /// **'Author'**
+  String get newsAuthor;
+
+  /// No description provided for @newsCreatedDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Posted Date'**
+  String get newsCreatedDate;
+
+  /// No description provided for @newsCreatedTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Time'**
+  String get newsCreatedTime;
+
+  /// No description provided for @routeNewsManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'News Management'**
+  String get routeNewsManagement;
+
+  /// No description provided for @routeCreateNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Create News'**
+  String get routeCreateNews;
+
+  /// No description provided for @routeNewsDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'News Detail'**
+  String get routeNewsDetail;
+
+  /// No description provided for @routeEditNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit News'**
+  String get routeEditNews;
+
+  /// No description provided for @formatBold.
+  ///
+  /// In en, this message translates to:
+  /// **'Bold'**
+  String get formatBold;
+
+  /// No description provided for @formatItalic.
+  ///
+  /// In en, this message translates to:
+  /// **'Italic'**
+  String get formatItalic;
+
+  /// No description provided for @formatHeading.
+  ///
+  /// In en, this message translates to:
+  /// **'Heading'**
+  String get formatHeading;
+
+  /// No description provided for @formatBulletList.
+  ///
+  /// In en, this message translates to:
+  /// **'Bullet List'**
+  String get formatBulletList;
+
+  /// No description provided for @formatNumberedList.
+  ///
+  /// In en, this message translates to:
+  /// **'Numbered List'**
+  String get formatNumberedList;
+
+  /// No description provided for @formatQuote.
+  ///
+  /// In en, this message translates to:
+  /// **'Quote'**
+  String get formatQuote;
+
+  /// No description provided for @formatCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Code'**
+  String get formatCode;
+
+  /// No description provided for @sendNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'Send notification'**
+  String get sendNotification;
+
+  /// No description provided for @sendNotificationSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Send push notifications to users when this news is created'**
+  String get sendNotificationSubtitle;
+
+  /// No description provided for @notificationTarget.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification Target'**
+  String get notificationTarget;
+
+  /// No description provided for @targetAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get targetAll;
+
+  /// No description provided for @targetAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get targetAdmin;
+
+  /// No description provided for @targetStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get targetStaff;
+
+  /// No description provided for @targetClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Client'**
+  String get targetClient;
+
+  /// No description provided for @livePreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Preview'**
+  String get livePreview;
+
+  /// No description provided for @latestNews.
+  ///
+  /// In en, this message translates to:
+  /// **'Latest News'**
+  String get latestNews;
+
+  /// No description provided for @viewAllNews.
+  ///
+  /// In en, this message translates to:
+  /// **'View all'**
+  String get viewAllNews;
+
+  /// No description provided for @allActivities.
+  ///
+  /// In en, this message translates to:
+  /// **'All Recent Activities'**
+  String get allActivities;
+
+  /// No description provided for @filterActor.
+  ///
+  /// In en, this message translates to:
+  /// **'Actor'**
+  String get filterActor;
+
+  /// No description provided for @filterTopic.
+  ///
+  /// In en, this message translates to:
+  /// **'Topic'**
+  String get filterTopic;
+
+  /// No description provided for @actorAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get actorAll;
+
+  /// No description provided for @actorAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get actorAdmin;
+
+  /// No description provided for @actorStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get actorStaff;
+
+  /// No description provided for @topicAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get topicAll;
+
+  /// No description provided for @topicNews.
+  ///
+  /// In en, this message translates to:
+  /// **'News'**
+  String get topicNews;
+
+  /// No description provided for @topicReportCreate.
+  ///
+  /// In en, this message translates to:
+  /// **'Create Report'**
+  String get topicReportCreate;
+
+  /// No description provided for @topicReportAssign.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign Report'**
+  String get topicReportAssign;
+
+  /// No description provided for @topicReportProcess.
+  ///
+  /// In en, this message translates to:
+  /// **'Process Report'**
+  String get topicReportProcess;
+
+  /// No description provided for @noActivitiesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No activities found'**
+  String get noActivitiesFound;
+
+  /// No description provided for @routeAllActivities.
+  ///
+  /// In en, this message translates to:
+  /// **'All Recent Activities'**
+  String get routeAllActivities;
+
+  /// No description provided for @mapClusterReportsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 report in this area} other{{count} reports in this area}}'**
+  String mapClusterReportsTitle(int count);
+
+  /// No description provided for @mapClusterSortHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending first, then newest'**
+  String get mapClusterSortHint;
+
+  /// No description provided for @mapZoomInForMore.
+  ///
+  /// In en, this message translates to:
+  /// **'Zoom in to see more reports'**
+  String get mapZoomInForMore;
+
+  /// No description provided for @mapLoadReportsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load reports on the map'**
+  String get mapLoadReportsFailed;
+
+  /// No description provided for @viewOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'View on map'**
+  String get viewOnMap;
+
+  /// No description provided for @mapFocusedReportHidden.
+  ///
+  /// In en, this message translates to:
+  /// **'This report doesn\'t match the current map filters'**
+  String get mapFocusedReportHidden;
+
+  /// No description provided for @locationDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Location description'**
+  String get locationDescriptionLabel;
+
+  /// No description provided for @invalidNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid value'**
+  String get invalidNumber;
+
+  /// No description provided for @copySuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied to clipboard'**
+  String get copySuccess;
+
+  /// No description provided for @copy.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copy;
+
+  /// No description provided for @note.
+  ///
+  /// In en, this message translates to:
+  /// **'Note'**
+  String get note;
+
+  /// No description provided for @adminNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Note'**
+  String get adminNote;
+
+  /// No description provided for @processedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Processed At'**
+  String get processedAt;
+
+  /// No description provided for @createdAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Created At'**
+  String get createdAt;
+
+  /// No description provided for @statusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get statusPending;
+
+  /// No description provided for @statusApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get statusApproved;
+
+  /// No description provided for @statusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get statusRejected;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @searchStaffHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Search staff by name, email, phone...'**
+  String get searchStaffHint;
+
+  /// No description provided for @viewReportDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'View Report Details'**
+  String get viewReportDetail;
+
+  /// No description provided for @copied.
+  ///
+  /// In en, this message translates to:
+  /// **'Copied'**
+  String get copied;
+
+  /// No description provided for @statusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get statusCancelled;
+
+  /// No description provided for @connectionStable.
+  ///
+  /// In en, this message translates to:
+  /// **'Stable connection'**
+  String get connectionStable;
+
+  /// No description provided for @connectionConnecting.
+  ///
+  /// In en, this message translates to:
+  /// **'Connecting services...'**
+  String get connectionConnecting;
+
+  /// No description provided for @connectionDisconnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection lost. Click to reconnect.'**
+  String get connectionDisconnected;
+
+  /// No description provided for @scrollLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll left'**
+  String get scrollLeft;
+
+  /// No description provided for @scrollRight.
+  ///
+  /// In en, this message translates to:
+  /// **'Scroll right'**
+  String get scrollRight;
+
+  /// No description provided for @staffCreatedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff account created'**
+  String get staffCreatedTitle;
+
+  /// No description provided for @staffCreatedCredentialsSent.
+  ///
+  /// In en, this message translates to:
+  /// **'The login password has been sent to:'**
+  String get staffCreatedCredentialsSent;
+
+  /// No description provided for @staffCreatedCheckInboxHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask the staff member to check their inbox (including Spam) and change the password after signing in for the first time.'**
+  String get staffCreatedCheckInboxHint;
+
+  /// No description provided for @mapSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Map Settings'**
+  String get mapSettings;
+
+  /// No description provided for @mapDensityToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Density'**
+  String get mapDensityToggle;
+
+  /// No description provided for @mapDensityDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Show H3 density grid by report level'**
+  String get mapDensityDescription;
+
+  /// No description provided for @densityLegendTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Density'**
+  String get densityLegendTitle;
+
+  /// No description provided for @densityLow.
+  ///
+  /// In en, this message translates to:
+  /// **'1–2 reports (Low)'**
+  String get densityLow;
+
+  /// No description provided for @densityMedium.
+  ///
+  /// In en, this message translates to:
+  /// **'3–5 reports (Medium)'**
+  String get densityMedium;
+
+  /// No description provided for @densityHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'Over 5 reports (High)'**
+  String get densityHigh;
+
+  /// No description provided for @filterTimeframe.
+  ///
+  /// In en, this message translates to:
+  /// **'Timeframe'**
+  String get filterTimeframe;
+
+  /// No description provided for @timeframeAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get timeframeAll;
+
+  /// No description provided for @timeframe1Month.
+  ///
+  /// In en, this message translates to:
+  /// **'1 month'**
+  String get timeframe1Month;
+
+  /// No description provided for @timeframe3Months.
+  ///
+  /// In en, this message translates to:
+  /// **'3 months'**
+  String get timeframe3Months;
+
+  /// No description provided for @timeframe6Months.
+  ///
+  /// In en, this message translates to:
+  /// **'6 months'**
+  String get timeframe6Months;
+
+  /// No description provided for @timeframe9Months.
+  ///
+  /// In en, this message translates to:
+  /// **'9 months'**
+  String get timeframe9Months;
+
+  /// No description provided for @timeframe12Months.
+  ///
+  /// In en, this message translates to:
+  /// **'12 months'**
+  String get timeframe12Months;
+
+  /// No description provided for @filterReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter Reports'**
+  String get filterReports;
+
+  /// No description provided for @myLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'My Location'**
+  String get myLocation;
+
+  /// No description provided for @locationPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Location permission denied'**
+  String get locationPermissionDenied;
+
+  /// No description provided for @locationServiceDisabled.
+  ///
+  /// In en, this message translates to:
+  /// **'Location services disabled'**
+  String get locationServiceDisabled;
+
+  /// No description provided for @routeConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversations'**
+  String get routeConversations;
+
+  /// No description provided for @routeChatDetail.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat Detail'**
+  String get routeChatDetail;
+
+  /// No description provided for @conversations.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversations'**
+  String get conversations;
+
+  /// No description provided for @messages.
+  ///
+  /// In en, this message translates to:
+  /// **'Messages'**
+  String get messages;
+
+  /// No description provided for @noConversations.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations yet'**
+  String get noConversations;
+
+  /// No description provided for @noConversationsSub.
+  ///
+  /// In en, this message translates to:
+  /// **'New conversations will appear here when chats begin.'**
+  String get noConversationsSub;
+
+  /// No description provided for @searchConversationsPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Search by name or content...'**
+  String get searchConversationsPlaceholder;
+
+  /// No description provided for @filterRoleAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterRoleAll;
+
+  /// No description provided for @filterRoleClient.
+  ///
+  /// In en, this message translates to:
+  /// **'Resident'**
+  String get filterRoleClient;
+
+  /// No description provided for @filterRoleStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff'**
+  String get filterRoleStaff;
+
+  /// No description provided for @filterRoleAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin'**
+  String get filterRoleAdmin;
+
+  /// No description provided for @filterPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'Position'**
+  String get filterPosition;
+
+  /// No description provided for @filterPositionAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All positions'**
+  String get filterPositionAll;
+
+  /// No description provided for @filterPositionSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by Staff Position'**
+  String get filterPositionSheetTitle;
+
+  /// No description provided for @applyFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get applyFilter;
+
+  /// No description provided for @resetFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Reset'**
+  String get resetFilter;
+
+  /// No description provided for @cannotMessageClientTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot Message Resident Directly'**
+  String get cannotMessageClientTitle;
+
+  /// No description provided for @cannotMessageClientMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'You can only message or make a free call to a resident when there is at least one re-handling report from them that is currently being processed.'**
+  String get cannotMessageClientMessage;
+
+  /// No description provided for @phoneNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Phone number is not available'**
+  String get phoneNotAvailable;
+
+  /// No description provided for @cannotLaunchPhone.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot launch phone dialer'**
+  String get cannotLaunchPhone;
+
+  /// No description provided for @chatWithUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Message'**
+  String get chatWithUser;
+
+  /// No description provided for @callUser.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get callUser;
+
+  /// No description provided for @conversationLockedNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'This conversation has ended because the report has been completed. The chat is in read-only mode.'**
+  String get conversationLockedNotice;
+
+  /// No description provided for @messageInputPlaceholder.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a message...'**
+  String get messageInputPlaceholder;
+
+  /// No description provided for @systemNotification.
+  ///
+  /// In en, this message translates to:
+  /// **'System notification'**
+  String get systemNotification;
+
+  /// No description provided for @yesterday.
+  ///
+  /// In en, this message translates to:
+  /// **'Yesterday'**
+  String get yesterday;
+
+  /// No description provided for @callStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Call staff'**
+  String get callStaff;
+
+  /// No description provided for @messageStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Message staff'**
+  String get messageStaff;
+
+  /// No description provided for @callReporter.
+  ///
+  /// In en, this message translates to:
+  /// **'Call reporter'**
+  String get callReporter;
+
+  /// No description provided for @messageReporter.
+  ///
+  /// In en, this message translates to:
+  /// **'Message reporter'**
+  String get messageReporter;
+
+  /// No description provided for @routeConversationInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation Info'**
+  String get routeConversationInfo;
+
+  /// No description provided for @conversationInfoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation Info'**
+  String get conversationInfoTitle;
+
+  /// No description provided for @activeReportsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Active Reports'**
+  String get activeReportsSection;
+
+  /// No description provided for @allReportsProcessed.
+  ///
+  /// In en, this message translates to:
+  /// **'All reports have been processed'**
+  String get allReportsProcessed;
+
+  /// No description provided for @conversationClosedNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation closed as all reports have been processed'**
+  String get conversationClosedNotice;
+
+  /// No description provided for @conversationActiveNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation is currently active'**
+  String get conversationActiveNotice;
+
+  /// No description provided for @callButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Call'**
+  String get callButtonLabel;
+
+  /// No description provided for @videoCallButtonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Video call'**
+  String get videoCallButtonLabel;
+
+  /// No description provided for @videoCallComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Video call feature is under development'**
+  String get videoCallComingSoon;
+
+  /// No description provided for @anonymousUserProtectionNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Contact info is protected for anonymous users'**
+  String get anonymousUserProtectionNote;
+
+  /// No description provided for @conversationRefreshed.
+  ///
+  /// In en, this message translates to:
+  /// **'Conversation info and messages refreshed successfully'**
+  String get conversationRefreshed;
+
+  /// No description provided for @conversationRefreshFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not refresh conversation, please try again later'**
+  String get conversationRefreshFailed;
+
+  /// No description provided for @anonymousPerson.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous User'**
+  String get anonymousPerson;
+
+  /// No description provided for @otherUsers.
+  ///
+  /// In en, this message translates to:
+  /// **'Other User'**
+  String get otherUsers;
+
+  /// No description provided for @cannotMakePhoneCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot make phone call'**
+  String get cannotMakePhoneCall;
+
+  /// No description provided for @noPhoneNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'No phone number available'**
+  String get noPhoneNumber;
+
+  /// No description provided for @staffNoPosition.
+  ///
+  /// In en, this message translates to:
+  /// **'No position'**
+  String get staffNoPosition;
+
+  /// No description provided for @cannotStartChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Cannot start conversation'**
+  String get cannotStartChat;
+
+  /// No description provided for @callOptionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Call options'**
+  String get callOptionsTitle;
+
+  /// No description provided for @cellularCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Cellular call'**
+  String get cellularCall;
+
+  /// No description provided for @cellularCallDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Open default phone app'**
+  String get cellularCallDesc;
+
+  /// No description provided for @freeCall.
+  ///
+  /// In en, this message translates to:
+  /// **'Free in-app voice call'**
+  String get freeCall;
+
+  /// No description provided for @featureUnderDevelopment.
+  ///
+  /// In en, this message translates to:
+  /// **'Feature under development'**
+  String get featureUnderDevelopment;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming soon'**
+  String get comingSoon;
+
+  /// No description provided for @freeCallComingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Free in-app voice call feature is under development'**
+  String get freeCallComingSoon;
+
+  /// No description provided for @adminBoard.
+  ///
+  /// In en, this message translates to:
+  /// **'Board of Administrators'**
+  String get adminBoard;
+
+  /// No description provided for @routeAdminBoard.
+  ///
+  /// In en, this message translates to:
+  /// **'Board of Administrators'**
+  String get routeAdminBoard;
+
+  /// No description provided for @addAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'Add administrator'**
+  String get addAdmin;
+
+  /// No description provided for @addNewAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'New administrator'**
+  String get addNewAdmin;
+
+  /// No description provided for @createAdminAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Create account'**
+  String get createAdminAction;
+
+  /// No description provided for @addAdminFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not create the administrator account'**
+  String get addAdminFailed;
+
+  /// No description provided for @youBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get youBadge;
+
+  /// No description provided for @lockAdminConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock the administrator account of {name}? They will be signed out of every device immediately.'**
+  String lockAdminConfirm(String name);
+
+  /// No description provided for @unlockAdminConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlock the administrator account of {name}? They will be able to sign in again.'**
+  String unlockAdminConfirm(String name);
+
+  /// No description provided for @cannotLockSelf.
+  ///
+  /// In en, this message translates to:
+  /// **'You cannot lock your own account'**
+  String get cannotLockSelf;
+
+  /// No description provided for @cannotLockLastAdmin.
+  ///
+  /// In en, this message translates to:
+  /// **'At least one active administrator is required'**
+  String get cannotLockLastAdmin;
+
+  /// No description provided for @adminCreatedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Administrator account created'**
+  String get adminCreatedTitle;
+
+  /// No description provided for @adminCreatedCheckInboxHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask them to check their inbox (including Spam) and change the password after signing in for the first time.'**
+  String get adminCreatedCheckInboxHint;
+
+  /// No description provided for @noAdminFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No administrators match your search'**
+  String get noAdminFound;
+
+  /// No description provided for @allAdminsLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'All administrators loaded'**
+  String get allAdminsLoaded;
+
+  /// No description provided for @loadMoreAdminsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load more administrators'**
+  String get loadMoreAdminsFailed;
+
+  /// No description provided for @invalidPhoneFormat.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid phone number (8–15 digits, may start with +)'**
+  String get invalidPhoneFormat;
+
+  /// No description provided for @fullnameTooLong.
+  ///
+  /// In en, this message translates to:
+  /// **'Full name must not exceed 100 characters'**
+  String get fullnameTooLong;
+
+  /// No description provided for @selectAdminHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select an administrator to see their details and recent activity'**
+  String get selectAdminHint;
+
+  /// No description provided for @activityLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load recent activity'**
+  String get activityLoadFailed;
+
+  /// No description provided for @activityHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Activity history'**
+  String get activityHistory;
+
+  /// No description provided for @adminTotalBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Total'**
+  String get adminTotalBadge;
+
+  /// No description provided for @loadMoreActivitiesFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load more activities'**
+  String get loadMoreActivitiesFailed;
+
+  /// No description provided for @allActivitiesLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'All activities loaded'**
+  String get allActivitiesLoaded;
+
+  /// No description provided for @chooseFromGallery.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose photo from gallery'**
+  String get chooseFromGallery;
+
+  /// No description provided for @chooseVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose video'**
+  String get chooseVideo;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take photo'**
+  String get takePhoto;
+
+  /// No description provided for @attachReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach report'**
+  String get attachReport;
+
+  /// No description provided for @markAsRead.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as read'**
+  String get markAsRead;
+
+  /// No description provided for @typingText.
+  ///
+  /// In en, this message translates to:
+  /// **'typing...'**
+  String get typingText;
+
+  /// No description provided for @pressAndHoldToRecord.
+  ///
+  /// In en, this message translates to:
+  /// **'Press and hold to record'**
+  String get pressAndHoldToRecord;
+
+  /// No description provided for @slideLeftToCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Slide left to cancel'**
+  String get slideLeftToCancel;
+
+  /// No description provided for @releaseToCancel.
+  ///
+  /// In en, this message translates to:
+  /// **'Release to cancel'**
+  String get releaseToCancel;
+
+  /// No description provided for @selectReportToAttach.
+  ///
+  /// In en, this message translates to:
+  /// **'Select report to attach'**
+  String get selectReportToAttach;
+
+  /// No description provided for @noPositionsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No positions available'**
+  String get noPositionsAvailable;
+
+  /// No description provided for @voiceMessageSnippet.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice message'**
+  String get voiceMessageSnippet;
+
+  /// No description provided for @imageSnippet.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo'**
+  String get imageSnippet;
+
+  /// No description provided for @videoSnippet.
+  ///
+  /// In en, this message translates to:
+  /// **'Video'**
+  String get videoSnippet;
+
+  /// No description provided for @attachedReportSnippet.
+  ///
+  /// In en, this message translates to:
+  /// **'Attached report'**
+  String get attachedReportSnippet;
+
+  /// No description provided for @reportDeadlineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolution deadline'**
+  String get reportDeadlineLabel;
+
+  /// No description provided for @deadlineOverdueBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get deadlineOverdueBadge;
+
+  /// No description provided for @expectedCompletionDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Est. completion: {date}'**
+  String expectedCompletionDate(String date);
+
+  /// No description provided for @staffDeadlinePerformanceTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Deadline Performance'**
+  String get staffDeadlinePerformanceTitle;
+
+  /// No description provided for @staffDeadlinePerformanceSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracks overdue tasks and late vs. on-time completions by staff'**
+  String get staffDeadlinePerformanceSubtitle;
+
+  /// No description provided for @noStaffMissedDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'No staff members have missed a deadline'**
+  String get noStaffMissedDeadline;
+
+  /// No description provided for @staffMissedDeadlineSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} overdue active · {lateCount} completed late'**
+  String staffMissedDeadlineSummary(int count, int lateCount);
+
+  /// No description provided for @onTimeRateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{rate}% on time'**
+  String onTimeRateLabel(String rate);
+
+  /// No description provided for @overdueActiveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue active'**
+  String get overdueActiveLabel;
+
+  /// No description provided for @completedLateLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed late'**
+  String get completedLateLabel;
+
+  /// No description provided for @completedOnTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed on time'**
+  String get completedOnTimeLabel;
+
+  /// No description provided for @missedDeadlineBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Missed deadline'**
+  String get missedDeadlineBadge;
+
+  /// No description provided for @onTimeBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'On time'**
+  String get onTimeBadge;
+
+  /// No description provided for @noDeadlineRecordsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No assigned deadline data yet'**
+  String get noDeadlineRecordsYet;
+
+  /// No description provided for @staffDeadlineStatsBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'{overdue} overdue · {late} late · {onTime} on time'**
+  String staffDeadlineStatsBreakdown(int overdue, int late, int onTime);
+
+  /// No description provided for @rejectReportButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject report'**
+  String get rejectReportButton;
+
+  /// No description provided for @rejectReportConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject this report?'**
+  String get rejectReportConfirmTitle;
+
+  /// No description provided for @rejectReportConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'This action will mark the report as rejected and notify the reporter.'**
+  String get rejectReportConfirmMessage;
+
+  /// No description provided for @rejectReportReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejection reason'**
+  String get rejectReportReasonLabel;
+
+  /// No description provided for @rejectReportReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain why this report cannot be processed...'**
+  String get rejectReportReasonHint;
+
+  /// No description provided for @rejectReportReasonRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a rejection reason'**
+  String get rejectReportReasonRequired;
+
+  /// No description provided for @confirmRejectAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm reject'**
+  String get confirmRejectAction;
+
+  /// No description provided for @rejectSuccessMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Report rejected successfully'**
+  String get rejectSuccessMessage;
+
+  /// No description provided for @rejectFailedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not reject report, please try again'**
+  String get rejectFailedMessage;
+
+  /// No description provided for @rejectedReasonTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejection Reason'**
+  String get rejectedReasonTitle;
+
+  /// No description provided for @noRejectionReasonProvided.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected by administrator.'**
+  String get noRejectionReasonProvided;
+
+  /// No description provided for @lockRequestsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock proposals'**
+  String get lockRequestsTab;
+
+  /// No description provided for @lockRequestsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Account lock proposals'**
+  String get lockRequestsTitle;
+
+  /// No description provided for @lockFilterPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get lockFilterPending;
+
+  /// No description provided for @lockFilterResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get lockFilterResolved;
+
+  /// No description provided for @noPendingLockRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No proposals are awaiting votes'**
+  String get noPendingLockRequests;
+
+  /// No description provided for @noResolvedLockRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'No resolved proposals yet'**
+  String get noResolvedLockRequests;
+
+  /// No description provided for @loadMoreLockRequestsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t load more proposals'**
+  String get loadMoreLockRequestsFailed;
+
+  /// No description provided for @allLockRequestsLoaded.
+  ///
+  /// In en, this message translates to:
+  /// **'All proposals loaded'**
+  String get allLockRequestsLoaded;
+
+  /// No description provided for @selectLockRequestHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a proposal to see its details and vote'**
+  String get selectLockRequestHint;
+
+  /// No description provided for @lockStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting votes'**
+  String get lockStatusPending;
+
+  /// No description provided for @lockStatusApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Approved'**
+  String get lockStatusApproved;
+
+  /// No description provided for @lockStatusRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected'**
+  String get lockStatusRejected;
+
+  /// No description provided for @lockStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get lockStatusCancelled;
+
+  /// No description provided for @lockStatusExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get lockStatusExpired;
+
+  /// No description provided for @lockProposedBy.
+  ///
+  /// In en, this message translates to:
+  /// **'Proposed by {name}'**
+  String lockProposedBy(String name);
+
+  /// No description provided for @lockDeadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Voting closes: {time}'**
+  String lockDeadline(String time);
+
+  /// No description provided for @lockResolvedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Ended: {time}'**
+  String lockResolvedAt(String time);
+
+  /// No description provided for @lockApprovalsProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Endorsed {count}/{required}'**
+  String lockApprovalsProgress(int count, int required);
+
+  /// No description provided for @lockRejectionsProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected {count}/{required}'**
+  String lockRejectionsProgress(int count, int required);
+
+  /// No description provided for @lockAwaitingYourVote.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs your vote'**
+  String get lockAwaitingYourVote;
+
+  /// No description provided for @lockReasonLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason'**
+  String get lockReasonLabel;
+
+  /// No description provided for @lockEvidenceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence'**
+  String get lockEvidenceLabel;
+
+  /// No description provided for @lockVotesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Votes'**
+  String get lockVotesLabel;
+
+  /// No description provided for @noVotesYet.
+  ///
+  /// In en, this message translates to:
+  /// **'No votes yet'**
+  String get noVotesYet;
+
+  /// No description provided for @lockVoteApprove.
+  ///
+  /// In en, this message translates to:
+  /// **'Endorse'**
+  String get lockVoteApprove;
+
+  /// No description provided for @lockVoteReject.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject'**
+  String get lockVoteReject;
+
+  /// No description provided for @lockVoteApproveConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Endorse this lock proposal?'**
+  String get lockVoteApproveConfirmTitle;
+
+  /// No description provided for @lockVoteRejectConfirmTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Reject this lock proposal?'**
+  String get lockVoteRejectConfirmTitle;
+
+  /// No description provided for @lockVoteApproveConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Once {required} administrators endorse it, the account of {name} will be locked immediately. Votes cannot be changed.'**
+  String lockVoteApproveConfirmMessage(int required, String name);
+
+  /// No description provided for @lockVoteRejectConfirmMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Once {required} administrators reject it, the proposal is dismissed. Votes cannot be changed.'**
+  String lockVoteRejectConfirmMessage(int required);
+
+  /// No description provided for @lockVoteCommentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Comment (optional)'**
+  String get lockVoteCommentHint;
+
+  /// No description provided for @lockVoteSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Your vote has been recorded'**
+  String get lockVoteSubmitted;
+
+  /// No description provided for @lockVoteBlockedProposer.
+  ///
+  /// In en, this message translates to:
+  /// **'You proposed this lock, so you cannot vote on it'**
+  String get lockVoteBlockedProposer;
+
+  /// No description provided for @lockVoteBlockedAlreadyVoted.
+  ///
+  /// In en, this message translates to:
+  /// **'You have already voted on this proposal'**
+  String get lockVoteBlockedAlreadyVoted;
+
+  /// No description provided for @lockVoteBlockedClosed.
+  ///
+  /// In en, this message translates to:
+  /// **'Voting on this proposal has ended'**
+  String get lockVoteBlockedClosed;
+
+  /// No description provided for @lockCancelAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel proposal'**
+  String get lockCancelAction;
+
+  /// No description provided for @lockCancelConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancel the lock proposal for {name}?'**
+  String lockCancelConfirm(String name);
+
+  /// No description provided for @lockCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Proposal cancelled'**
+  String get lockCancelled;
+
+  /// No description provided for @lockActionFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Couldn\'t complete the action. Please try again.'**
+  String get lockActionFailed;
+
+  /// No description provided for @viewUserProfile.
+  ///
+  /// In en, this message translates to:
+  /// **'View user'**
+  String get viewUserProfile;
+
+  /// No description provided for @proposeLockAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Propose account lock'**
+  String get proposeLockAction;
+
+  /// No description provided for @proposeLockSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The account is locked only after {required} other administrators endorse it within {hours} hours.'**
+  String proposeLockSubtitle(int required, int hours);
+
+  /// No description provided for @lockReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Describe the violation clearly: what happened, when, and how serious it is'**
+  String get lockReasonHint;
+
+  /// No description provided for @lockReasonTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'The reason must be at least 20 characters'**
+  String get lockReasonTooShort;
+
+  /// No description provided for @lockEvidenceImages.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence images (up to {max})'**
+  String lockEvidenceImages(int max);
+
+  /// No description provided for @lockAddImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add image'**
+  String get lockAddImage;
+
+  /// No description provided for @lockRemoveImage.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove image'**
+  String get lockRemoveImage;
+
+  /// No description provided for @lockImageTooLarge.
+  ///
+  /// In en, this message translates to:
+  /// **'Each image must be 5MB or smaller'**
+  String get lockImageTooLarge;
+
+  /// No description provided for @lockEvidenceReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Related reports'**
+  String get lockEvidenceReports;
+
+  /// No description provided for @lockNoPublicReports.
+  ///
+  /// In en, this message translates to:
+  /// **'This user has no public reports'**
+  String get lockNoPublicReports;
+
+  /// No description provided for @lockEvidenceRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Add at least one piece of evidence: an image or a report'**
+  String get lockEvidenceRequired;
+
+  /// No description provided for @lockSubmitProposal.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit proposal'**
+  String get lockSubmitProposal;
+
+  /// No description provided for @lockProposalSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Proposal sent to the Board of Administrators'**
+  String get lockProposalSent;
+
+  /// No description provided for @lockPendingBanner.
+  ///
+  /// In en, this message translates to:
+  /// **'This account has a lock proposal awaiting votes'**
+  String get lockPendingBanner;
+
+  /// No description provided for @viewLockProposal.
+  ///
+  /// In en, this message translates to:
+  /// **'View proposal'**
+  String get viewLockProposal;
+
+  /// No description provided for @unlockReasonHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Reason for unlocking (required)'**
+  String get unlockReasonHint;
+
+  /// No description provided for @unlockReasonTooShort.
+  ///
+  /// In en, this message translates to:
+  /// **'The reason must be at least 10 characters'**
+  String get unlockReasonTooShort;
+
+  /// No description provided for @userUnlocked.
+  ///
+  /// In en, this message translates to:
+  /// **'User account unlocked'**
+  String get userUnlocked;
+
+  /// No description provided for @lockFilterAwaitingMine.
+  ///
+  /// In en, this message translates to:
+  /// **'Needs your vote'**
+  String get lockFilterAwaitingMine;
+
+  /// No description provided for @noAwaitingLockRequests.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing needs your vote right now'**
+  String get noAwaitingLockRequests;
+
+  /// No description provided for @lockFindingAwaiting.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} proposals need your vote · the nearest: {timeLeft}'**
+  String lockFindingAwaiting(int count, String timeLeft);
+
+  /// No description provided for @lockFindingOthers.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing needs your vote · {count} awaiting other administrators'**
+  String lockFindingOthers(int count);
+
+  /// No description provided for @lockUpdatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Updated {time}'**
+  String lockUpdatedAt(String time);
+
+  /// No description provided for @lockRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh'**
+  String get lockRefresh;
+
+  /// No description provided for @lockTimeLeftHours.
+  ///
+  /// In en, this message translates to:
+  /// **'{hours} h left'**
+  String lockTimeLeftHours(int hours);
+
+  /// No description provided for @lockTimeLeftMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'{minutes} min left'**
+  String lockTimeLeftMinutes(int minutes);
+
+  /// No description provided for @lockTimeOverdue.
+  ///
+  /// In en, this message translates to:
+  /// **'Voting time is up'**
+  String get lockTimeOverdue;
+
+  /// No description provided for @lockBallotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Ballot'**
+  String get lockBallotTitle;
+
+  /// No description provided for @lockSeatEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'Empty seat'**
+  String get lockSeatEmpty;
+
+  /// No description provided for @lockOutcomeApproved.
+  ///
+  /// In en, this message translates to:
+  /// **'Account locked at {time}'**
+  String lockOutcomeApproved(String time);
+
+  /// No description provided for @lockOutcomeRejected.
+  ///
+  /// In en, this message translates to:
+  /// **'Rejected at {time}'**
+  String lockOutcomeRejected(String time);
+
+  /// No description provided for @lockOutcomeCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled at {time}'**
+  String lockOutcomeCancelled(String time);
+
+  /// No description provided for @lockOutcomeExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired at {time} without enough votes'**
+  String lockOutcomeExpired(String time);
+
+  /// No description provided for @lockEvidenceSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Evidence · {images} images · {reports} reports'**
+  String lockEvidenceSummary(int images, int reports);
+
+  /// No description provided for @lockVotesCast.
+  ///
+  /// In en, this message translates to:
+  /// **'Votes cast'**
+  String get lockVotesCast;
+
+  /// No description provided for @lockProposedByYou.
+  ///
+  /// In en, this message translates to:
+  /// **'Proposed by you'**
+  String get lockProposedByYou;
+
+  /// No description provided for @lockMoreActions.
+  ///
+  /// In en, this message translates to:
+  /// **'More actions'**
+  String get lockMoreActions;
+
+  /// No description provided for @lockReasonHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'At least 20 characters. The user will receive this reason.'**
+  String get lockReasonHelper;
+
+  /// No description provided for @lockEvidenceHelper.
+  ///
+  /// In en, this message translates to:
+  /// **'At least one image or one report'**
+  String get lockEvidenceHelper;
+
+  /// No description provided for @lockWhatHappensTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'What happens next'**
+  String get lockWhatHappensTitle;
+
+  /// No description provided for @lockWhatHappensBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{required} other administrators must endorse within {hours} hours before the account is locked. The user receives the reason only, never the evidence.'**
+  String lockWhatHappensBody(int required, int hours);
+
+  /// No description provided for @lockProposalSentTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Lock proposal sent'**
+  String get lockProposalSentTitle;
+
+  /// No description provided for @lockProposalSentBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The Board of Administrators has been notified. The account is locked once {required} other administrators endorse it within {hours} hours.'**
+  String lockProposalSentBody(int required, int hours);
+
+  /// No description provided for @lockBlockedNotEnoughAdmins.
+  ///
+  /// In en, this message translates to:
+  /// **'At least {min} active administrators are needed to vote on a lock. Add an administrator in the Board of Administrators.'**
+  String lockBlockedNotEnoughAdmins(int min);
+
+  /// No description provided for @lockBlockedNotActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Only active accounts can be proposed for locking'**
+  String get lockBlockedNotActive;
+
+  /// No description provided for @daysRemainingLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{days}d remaining'**
+  String daysRemainingLabel(int days);
+
+  /// No description provided for @overdueOnlyFilter.
+  ///
+  /// In en, this message translates to:
+  /// **'Overdue'**
+  String get overdueOnlyFilter;
+
+  /// No description provided for @excellentBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Excellent'**
+  String get excellentBadge;
+
+  /// No description provided for @staffEfficiencyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Work efficiency: {rate}%'**
+  String staffEfficiencyLabel(String rate);
+
+  /// No description provided for @staffEfficiencyNoData.
+  ///
+  /// In en, this message translates to:
+  /// **'Work efficiency: —'**
+  String get staffEfficiencyNoData;
+
+  /// No description provided for @statsMonthLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Statistics month'**
+  String get statsMonthLabel;
+
+  /// No description provided for @resolvedInMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved this month'**
+  String get resolvedInMonth;
+
+  /// No description provided for @avgResolutionTimeInMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg resolution time'**
+  String get avgResolutionTimeInMonth;
+
+  /// No description provided for @resolvedMonthCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} resolved in month'**
+  String resolvedMonthCount(int count);
+
+  /// No description provided for @staffMonthlyWorkloadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Workload in {month}'**
+  String staffMonthlyWorkloadTitle(String month);
+
+  /// No description provided for @staffMonthlyWorkloadBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'{processing} in progress, {resolved} resolved, {overdue} overdue, {rehandling} rehandling'**
+  String staffMonthlyWorkloadBreakdown(
+    int processing,
+    int resolved,
+    int overdue,
+    int rehandling,
+  );
+
+  /// No description provided for @viewAssignedReportsAction.
+  ///
+  /// In en, this message translates to:
+  /// **'View assigned reports'**
+  String get viewAssignedReportsAction;
+
+  /// No description provided for @routeCategoryManagement.
+  ///
+  /// In en, this message translates to:
+  /// **'Category Management'**
+  String get routeCategoryManagement;
+
+  /// No description provided for @manageCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Categories'**
+  String get manageCategories;
+
+  /// No description provided for @addCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Category'**
+  String get addCategory;
+
+  /// No description provided for @editCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Category'**
+  String get editCategory;
+
+  /// No description provided for @deleteCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete Category'**
+  String get deleteCategory;
+
+  /// No description provided for @deleteCategoryConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete this category?'**
+  String get deleteCategoryConfirm;
+
+  /// No description provided for @emptyCategoryList.
+  ///
+  /// In en, this message translates to:
+  /// **'No report categories yet'**
+  String get emptyCategoryList;
+
+  /// No description provided for @categoryCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Category Code'**
+  String get categoryCode;
+
+  /// No description provided for @categoryCodeRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter category code'**
+  String get categoryCodeRequired;
+
+  /// No description provided for @categoryNameVi.
+  ///
+  /// In en, this message translates to:
+  /// **'Vietnamese Name'**
+  String get categoryNameVi;
+
+  /// No description provided for @categoryNameViRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter Vietnamese name'**
+  String get categoryNameViRequired;
+
+  /// No description provided for @categoryNameEn.
+  ///
+  /// In en, this message translates to:
+  /// **'English Name'**
+  String get categoryNameEn;
+
+  /// No description provided for @categoryNameEnRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter English name'**
+  String get categoryNameEnRequired;
+
+  /// No description provided for @categoryDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get categoryDescription;
+
+  /// No description provided for @categoryIconLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Icon'**
+  String get categoryIconLabel;
+
+  /// No description provided for @categoryDefaultSeverity.
+  ///
+  /// In en, this message translates to:
+  /// **'Default Severity'**
+  String get categoryDefaultSeverity;
+
+  /// No description provided for @categoryDisplayOrder.
+  ///
+  /// In en, this message translates to:
+  /// **'Order'**
+  String get categoryDisplayOrder;
+
+  /// No description provided for @categoryActiveLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active'**
+  String get categoryActiveLabel;
+
+  /// No description provided for @categoryInactive.
+  ///
+  /// In en, this message translates to:
+  /// **'Inactive'**
+  String get categoryInactive;
+
+  /// No description provided for @categoryPositionsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned Positions'**
+  String get categoryPositionsLabel;
+
+  /// No description provided for @categoryPositionsHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff with these positions are eligible for auto-assignment in this category'**
+  String get categoryPositionsHint;
+
+  /// No description provided for @categoryNoPositionsMapped.
+  ///
+  /// In en, this message translates to:
+  /// **'No position mapped'**
+  String get categoryNoPositionsMapped;
+
+  /// No description provided for @categoryNoActivePositions.
+  ///
+  /// In en, this message translates to:
+  /// **'No active positions available. Please create positions first.'**
+  String get categoryNoActivePositions;
+
+  /// No description provided for @categorySaveSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Category saved successfully'**
+  String get categorySaveSuccess;
+
+  /// No description provided for @categoryDeleteSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Category deleted successfully'**
+  String get categoryDeleteSuccess;
+
+  /// No description provided for @totalCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Categories'**
+  String get totalCategories;
+
+  /// No description provided for @categoriesMappedPositions.
+  ///
+  /// In en, this message translates to:
+  /// **'Mapped to Positions'**
+  String get categoriesMappedPositions;
+
+  /// No description provided for @categoryReportCountLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Reports'**
+  String get categoryReportCountLabel;
+
+  /// No description provided for @categoryIconEco.
+  ///
+  /// In en, this message translates to:
+  /// **'Environment'**
+  String get categoryIconEco;
+
+  /// No description provided for @categoryIconConstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Infrastructure'**
+  String get categoryIconConstruction;
+
+  /// No description provided for @categoryIconBolt.
+  ///
+  /// In en, this message translates to:
+  /// **'Electricity / Lighting'**
+  String get categoryIconBolt;
+
+  /// No description provided for @categoryIconWater.
+  ///
+  /// In en, this message translates to:
+  /// **'Water / Drainage'**
+  String get categoryIconWater;
+
+  /// No description provided for @categoryIconShield.
+  ///
+  /// In en, this message translates to:
+  /// **'Public Order'**
+  String get categoryIconShield;
+
+  /// No description provided for @categoryIconPark.
+  ///
+  /// In en, this message translates to:
+  /// **'Trees / Parks'**
+  String get categoryIconPark;
+
+  /// No description provided for @categoryIconTraffic.
+  ///
+  /// In en, this message translates to:
+  /// **'Traffic'**
+  String get categoryIconTraffic;
+
+  /// No description provided for @categoryIconGeneral.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get categoryIconGeneral;
+
+  /// No description provided for @staffBaseLocationSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Representative Area / Coordinates'**
+  String get staffBaseLocationSection;
+
+  /// No description provided for @staffBaseAddressLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Representative Address / Area'**
+  String get staffBaseAddressLabel;
+
+  /// No description provided for @staffBaseLatitudeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude'**
+  String get staffBaseLatitudeLabel;
+
+  /// No description provided for @staffBaseLongitudeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude'**
+  String get staffBaseLongitudeLabel;
+
+  /// No description provided for @staffPickLocationOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick on Map'**
+  String get staffPickLocationOnMap;
+
+  /// No description provided for @staffUseCurrentGps.
+  ///
+  /// In en, this message translates to:
+  /// **'Current GPS'**
+  String get staffUseCurrentGps;
+
+  /// No description provided for @staffClearLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear Location'**
+  String get staffClearLocation;
+
+  /// No description provided for @staffLocationNotSet.
+  ///
+  /// In en, this message translates to:
+  /// **'Representative location not set'**
+  String get staffLocationNotSet;
+
+  /// No description provided for @staffLocationPairRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Both latitude and longitude are required'**
+  String get staffLocationPairRequired;
+
+  /// No description provided for @staffLocationInvalidLat.
+  ///
+  /// In en, this message translates to:
+  /// **'Latitude must be between -90 and 90'**
+  String get staffLocationInvalidLat;
+
+  /// No description provided for @staffLocationInvalidLng.
+  ///
+  /// In en, this message translates to:
+  /// **'Longitude must be between -180 and 180'**
+  String get staffLocationInvalidLng;
+
+  /// No description provided for @staffLocationPickerTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick Representative Location'**
+  String get staffLocationPickerTitle;
+
+  /// No description provided for @staffLocationPickerHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap or drag the pin on the map to set the staff member\'s representative location.'**
+  String get staffLocationPickerHint;
+
+  /// No description provided for @staffLocationConfirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm Location'**
+  String get staffLocationConfirm;
+
+  /// No description provided for @staffLocationWebNoToken.
+  ///
+  /// In en, this message translates to:
+  /// **'MAPBOX_ACCESS_TOKEN is not configured. Please enter latitude and longitude manually.'**
+  String get staffLocationWebNoToken;
+
+  /// No description provided for @staffLocationGpsFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not obtain current GPS coordinates'**
+  String get staffLocationGpsFailed;
+
+  /// No description provided for @reportCategoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get reportCategoryLabel;
+
+  /// No description provided for @autoAssignSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Smart Assignment'**
+  String get autoAssignSectionTitle;
+
+  /// No description provided for @autoAssignTriggerButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-Assign'**
+  String get autoAssignTriggerButton;
+
+  /// No description provided for @autoAssignTopCandidates.
+  ///
+  /// In en, this message translates to:
+  /// **'Top {count} Recommended Staff'**
+  String autoAssignTopCandidates(int count);
+
+  /// No description provided for @autoAssignAssignNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Assign Now'**
+  String get autoAssignAssignNow;
+
+  /// No description provided for @autoAssignSelectCandidate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select'**
+  String get autoAssignSelectCandidate;
+
+  /// No description provided for @autoAssignSelectedCandidate.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected'**
+  String get autoAssignSelectedCandidate;
+
+  /// No description provided for @autoAssignEligibleCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} eligible candidates'**
+  String autoAssignEligibleCount(int count);
+
+  /// No description provided for @autoAssignModeAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode: Auto'**
+  String get autoAssignModeAuto;
+
+  /// No description provided for @autoAssignModeAssist.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode: Assist'**
+  String get autoAssignModeAssist;
+
+  /// No description provided for @autoAssignModeManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Mode: Manual'**
+  String get autoAssignModeManual;
+
+  /// No description provided for @autoAssignScoreLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Score'**
+  String get autoAssignScoreLabel;
+
+  /// No description provided for @autoAssignDistanceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Distance'**
+  String get autoAssignDistanceLabel;
+
+  /// No description provided for @autoAssignMonthlyLoadLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly load'**
+  String get autoAssignMonthlyLoadLabel;
+
+  /// No description provided for @autoAssignActiveLoadLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Active load'**
+  String get autoAssignActiveLoadLabel;
+
+  /// No description provided for @autoAssignOnTimeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'30d on-time'**
+  String get autoAssignOnTimeLabel;
+
+  /// No description provided for @autoAssignTasksCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} tasks'**
+  String autoAssignTasksCount(int count);
+
+  /// No description provided for @autoAssignScoreValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{score}/100'**
+  String autoAssignScoreValue(String score);
+
+  /// No description provided for @autoAssignWeightPercent.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}%'**
+  String autoAssignWeightPercent(int percent);
+
+  /// No description provided for @autoAssignDistanceKm.
+  ///
+  /// In en, this message translates to:
+  /// **'{distance} km'**
+  String autoAssignDistanceKm(String distance);
+
+  /// No description provided for @autoAssignLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load staff recommendations. Please try again.'**
+  String get autoAssignLoadFailed;
+
+  /// No description provided for @autoAssignDecisionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-Assign Decision Breakdown'**
+  String get autoAssignDecisionTitle;
+
+  /// No description provided for @autoAssignSourceAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'System Auto-Assigned'**
+  String get autoAssignSourceAuto;
+
+  /// No description provided for @autoAssignSourceRecommendClick.
+  ///
+  /// In en, this message translates to:
+  /// **'1-Tap Suggested Assign'**
+  String get autoAssignSourceRecommendClick;
+
+  /// No description provided for @autoAssignSourceOverridden.
+  ///
+  /// In en, this message translates to:
+  /// **'Overridden by Admin'**
+  String get autoAssignSourceOverridden;
+
+  /// No description provided for @autoAssignSourceRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending Admin Confirmation'**
+  String get autoAssignSourceRecommended;
+
+  /// No description provided for @autoAssignSourceFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Fallback to Manual'**
+  String get autoAssignSourceFallback;
+
+  /// No description provided for @autoAssignSourceManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual Assignment'**
+  String get autoAssignSourceManual;
+
+  /// No description provided for @autoAssignOverriddenNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin reassigned this report to {staffName}.'**
+  String autoAssignOverriddenNotice(String staffName);
+
+  /// No description provided for @autoAssignSnapshotTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Candidate Ranking Snapshot'**
+  String get autoAssignSnapshotTitle;
+
+  /// No description provided for @autoAssignSuccessMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Report auto-assigned to best matching staff'**
+  String get autoAssignSuccessMessage;
+
+  /// No description provided for @autoAssignFailedFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to auto-assign report'**
+  String get autoAssignFailedFallback;
+
+  /// No description provided for @reassignStaffButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Reassign Staff'**
+  String get reassignStaffButton;
+
+  /// No description provided for @autoAssignNoCandidatesDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'No staff matched the eligibility filters (position, base coordinates, radius, concurrent load limit).'**
+  String get autoAssignNoCandidatesDefault;
+
+  /// No description provided for @routeAutoAssignCenter.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-Assign Center'**
+  String get routeAutoAssignCenter;
+
+  /// No description provided for @autoAssignCenterTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-Assign Dispatch Center'**
+  String get autoAssignCenterTitle;
+
+  /// No description provided for @autoAssignCenterSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Configure dispatch mode, multi-criteria weights, live dry-run simulation, and monthly workload fairness'**
+  String get autoAssignCenterSubtitle;
+
+  /// No description provided for @autoAssignRefreshAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Refresh data'**
+  String get autoAssignRefreshAction;
+
+  /// No description provided for @autoAssignKpiTotalDecisions.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Decisions'**
+  String get autoAssignKpiTotalDecisions;
+
+  /// No description provided for @autoAssignKpiBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'{autoCount} auto · {recommendCount} 1-tap · {fallbackCount} fallback'**
+  String autoAssignKpiBreakdown(
+    int autoCount,
+    int recommendCount,
+    int fallbackCount,
+  );
+
+  /// No description provided for @autoAssignKpiSuccessRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-Assign Success Rate'**
+  String get autoAssignKpiSuccessRate;
+
+  /// No description provided for @autoAssignKpiSuccessSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Passed 2-stage eligibility filter'**
+  String get autoAssignKpiSuccessSub;
+
+  /// No description provided for @autoAssignKpiAcceptanceRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Admin Acceptance Rate'**
+  String get autoAssignKpiAcceptanceRate;
+
+  /// No description provided for @autoAssignKpiOverriddenSub.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} overridden by Admin'**
+  String autoAssignKpiOverriddenSub(int count);
+
+  /// No description provided for @autoAssignKpiFairnessIndex.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Fairness Index'**
+  String get autoAssignKpiFairnessIndex;
+
+  /// No description provided for @autoAssignKpiFairnessSub.
+  ///
+  /// In en, this message translates to:
+  /// **'Avg {avg} tasks/staff · std ±{std}'**
+  String autoAssignKpiFairnessSub(String avg, String std);
+
+  /// No description provided for @autoAssignConfigCardTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Dispatch Mode & Scoring Weights'**
+  String get autoAssignConfigCardTitle;
+
+  /// No description provided for @autoAssignConfigCardDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'All 4 weights automatically lock to 100%. Adjusting sliders immediately updates the Dry-Run Simulator.'**
+  String get autoAssignConfigCardDesc;
+
+  /// No description provided for @autoAssignModeOptionAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto (AUTO)'**
+  String get autoAssignModeOptionAuto;
+
+  /// No description provided for @autoAssignModeOptionAssist.
+  ///
+  /// In en, this message translates to:
+  /// **'Assist (ASSIST)'**
+  String get autoAssignModeOptionAssist;
+
+  /// No description provided for @autoAssignModeOptionManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual (MANUAL)'**
+  String get autoAssignModeOptionManual;
+
+  /// No description provided for @autoAssignModeDescAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'New reports are automatically scored and immediately assigned to the #1 eligible staff member.'**
+  String get autoAssignModeDescAuto;
+
+  /// No description provided for @autoAssignModeDescAssist.
+  ///
+  /// In en, this message translates to:
+  /// **'System pre-calculates and recommends the Top 3 candidates for 1-tap Admin approval.'**
+  String get autoAssignModeDescAssist;
+
+  /// No description provided for @autoAssignModeDescManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Disables automatic dispatch on report creation; Admin assigns manually or triggers recommendations on demand.'**
+  String get autoAssignModeDescManual;
+
+  /// No description provided for @autoAssignWeightsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Multi-Criteria Scoring Weights (Total = 100%)'**
+  String get autoAssignWeightsHeader;
+
+  /// No description provided for @autoAssignResetWeightsButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Default (35/30/20/15)'**
+  String get autoAssignResetWeightsButton;
+
+  /// No description provided for @autoAssignThresholdsHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'Eligibility Thresholds & Quotas'**
+  String get autoAssignThresholdsHeader;
+
+  /// No description provided for @autoAssignMaxRadiusLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Max dispatch radius (km)'**
+  String get autoAssignMaxRadiusLabel;
+
+  /// No description provided for @autoAssignMaxConcurrentLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Max concurrent tasks'**
+  String get autoAssignMaxConcurrentLabel;
+
+  /// No description provided for @autoAssignTargetMonthlyLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Target monthly tasks'**
+  String get autoAssignTargetMonthlyLabel;
+
+  /// No description provided for @autoAssignSaveConfigButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Save Configuration'**
+  String get autoAssignSaveConfigButton;
+
+  /// No description provided for @autoAssignConfigSavedSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-assign configuration updated successfully'**
+  String get autoAssignConfigSavedSuccess;
+
+  /// No description provided for @autoAssignConfigSaveFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save auto-assign configuration'**
+  String get autoAssignConfigSaveFailed;
+
+  /// No description provided for @autoAssignSimulatorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Live Dry-Run Simulator'**
+  String get autoAssignSimulatorTitle;
+
+  /// No description provided for @autoAssignSimulatorDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a category and hypothetical incident coordinates to test candidate ranking with current weights (no DB writes).'**
+  String get autoAssignSimulatorDesc;
+
+  /// No description provided for @autoAssignSimCategoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Hypothetical Incident Category'**
+  String get autoAssignSimCategoryLabel;
+
+  /// No description provided for @autoAssignSimPickOnMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Pick on Map'**
+  String get autoAssignSimPickOnMap;
+
+  /// No description provided for @autoAssignSimRunButton.
+  ///
+  /// In en, this message translates to:
+  /// **'Run Simulation'**
+  String get autoAssignSimRunButton;
+
+  /// No description provided for @autoAssignSimPresetDistrict1.
+  ///
+  /// In en, this message translates to:
+  /// **'District 1 Preset'**
+  String get autoAssignSimPresetDistrict1;
+
+  /// No description provided for @autoAssignSimPresetThuDuc.
+  ///
+  /// In en, this message translates to:
+  /// **'Thu Duc Preset'**
+  String get autoAssignSimPresetThuDuc;
+
+  /// No description provided for @autoAssignSimPresetBinhThanh.
+  ///
+  /// In en, this message translates to:
+  /// **'Binh Thanh Preset'**
+  String get autoAssignSimPresetBinhThanh;
+
+  /// No description provided for @autoAssignSimNoWriterBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Dry-Run Only · No DB Writes'**
+  String get autoAssignSimNoWriterBadge;
+
+  /// No description provided for @autoAssignFairnessSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Workload Distribution & Team Fairness'**
+  String get autoAssignFairnessSectionTitle;
+
+  /// No description provided for @autoAssignFairnessSectionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Compare current month workload, active processing tasks, and 30-day on-time rate across active staff.'**
+  String get autoAssignFairnessSectionDesc;
+
+  /// No description provided for @autoAssignFairnessRangeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Min: {min} tasks · Max: {max} tasks'**
+  String autoAssignFairnessRangeLabel(int min, int max);
+
+  /// No description provided for @autoAssignStaffMonthlyQuotaText.
+  ///
+  /// In en, this message translates to:
+  /// **'{current}/{target} monthly'**
+  String autoAssignStaffMonthlyQuotaText(int current, int target);
+
+  /// No description provided for @autoAssignStaffActiveQuotaText.
+  ///
+  /// In en, this message translates to:
+  /// **'{active}/{maxActive} active'**
+  String autoAssignStaffActiveQuotaText(int active, int maxActive);
+
+  /// No description provided for @autoAssignStaffOnTimeText.
+  ///
+  /// In en, this message translates to:
+  /// **'{rate}% on-time'**
+  String autoAssignStaffOnTimeText(String rate);
+
+  /// No description provided for @autoAssignLogsSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Assignment Decision Logs'**
+  String get autoAssignLogsSectionTitle;
+
+  /// No description provided for @autoAssignLogsSectionDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed audit log of auto-assignments, 1-tap recommendations, fallbacks, and Admin overrides.'**
+  String get autoAssignLogsSectionDesc;
+
+  /// No description provided for @autoAssignLogsFilterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All outcomes'**
+  String get autoAssignLogsFilterAll;
+
+  /// No description provided for @autoAssignLogsFilterAssigned.
+  ///
+  /// In en, this message translates to:
+  /// **'Assigned'**
+  String get autoAssignLogsFilterAssigned;
+
+  /// No description provided for @autoAssignLogsFilterRecommended.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get autoAssignLogsFilterRecommended;
+
+  /// No description provided for @autoAssignLogsFilterOverridden.
+  ///
+  /// In en, this message translates to:
+  /// **'Overridden'**
+  String get autoAssignLogsFilterOverridden;
+
+  /// No description provided for @autoAssignLogsFilterFallback.
+  ///
+  /// In en, this message translates to:
+  /// **'Fallback'**
+  String get autoAssignLogsFilterFallback;
+
+  /// No description provided for @autoAssignLogsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No assignment decision logs match the current filter'**
+  String get autoAssignLogsEmpty;
+
+  /// No description provided for @autoAssignLogViewReport.
+  ///
+  /// In en, this message translates to:
+  /// **'Open report'**
+  String get autoAssignLogViewReport;
+
+  /// No description provided for @autoAssignLogPageInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {current}/{total} ({count} records)'**
+  String autoAssignLogPageInfo(int current, int total, int count);
+
+  /// No description provided for @mapStaffStationsToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Stations'**
+  String get mapStaffStationsToggle;
+
+  /// No description provided for @mapStaffStationsLegend.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Base Station'**
+  String get mapStaffStationsLegend;
+
+  /// No description provided for @mapStaffStationSheetTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Base Station'**
+  String get mapStaffStationSheetTitle;
+
+  /// No description provided for @mapStaffActiveTasksCount.
+  ///
+  /// In en, this message translates to:
+  /// **'Active processing: {count} reports'**
+  String mapStaffActiveTasksCount(int count);
+
+  /// No description provided for @mapFilterByThisStaff.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter reports assigned to this staff'**
+  String get mapFilterByThisStaff;
+
+  /// No description provided for @autoAssignModeShortAuto.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto'**
+  String get autoAssignModeShortAuto;
+
+  /// No description provided for @autoAssignModeShortAssist.
+  ///
+  /// In en, this message translates to:
+  /// **'Assist'**
+  String get autoAssignModeShortAssist;
+
+  /// No description provided for @autoAssignModeShortManual.
+  ///
+  /// In en, this message translates to:
+  /// **'Manual'**
+  String get autoAssignModeShortManual;
+
+  /// No description provided for @autoAssignToggleWeightsExpand.
+  ///
+  /// In en, this message translates to:
+  /// **'Customize weights & thresholds'**
+  String get autoAssignToggleWeightsExpand;
+
+  /// No description provided for @autoAssignToggleWeightsCollapse.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse weights & thresholds'**
+  String get autoAssignToggleWeightsCollapse;
+
+  /// No description provided for @autoAssignSectionExpand.
+  ///
+  /// In en, this message translates to:
+  /// **'Expand'**
+  String get autoAssignSectionExpand;
+
+  /// No description provided for @autoAssignSectionCollapse.
+  ///
+  /// In en, this message translates to:
+  /// **'Collapse'**
+  String get autoAssignSectionCollapse;
+
+  /// No description provided for @autoAssignTabFairness.
+  ///
+  /// In en, this message translates to:
+  /// **'Workload Fairness'**
+  String get autoAssignTabFairness;
+
+  /// No description provided for @autoAssignTabLogs.
+  ///
+  /// In en, this message translates to:
+  /// **'Decision Logs'**
+  String get autoAssignTabLogs;
+
+  /// No description provided for @smartAlertsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Operational Alerts & 7-Day Pulse'**
+  String get smartAlertsTitle;
+
+  /// No description provided for @smartAlertsAllHealthy.
+  ///
+  /// In en, this message translates to:
+  /// **'Operations steady — no anomalies detected'**
+  String get smartAlertsAllHealthy;
+
+  /// No description provided for @volumeSpikeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unusual report surge today'**
+  String get volumeSpikeTitle;
+
+  /// No description provided for @volumeSpikeSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{todayCount} reports today vs 14d avg ({avg})'**
+  String volumeSpikeSubtitle(int todayCount, String avg);
+
+  /// No description provided for @volumeSpikeZScoreBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Z = {zScore}'**
+  String volumeSpikeZScoreBadge(String zScore);
+
+  /// No description provided for @slaAtRiskTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Early SLA breach warning'**
+  String get slaAtRiskTitle;
+
+  /// No description provided for @slaAtRiskSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{pending} pending, {processing} processing nearing deadline'**
+  String slaAtRiskSubtitle(int pending, int processing);
+
+  /// No description provided for @slaAtRiskShort.
+  ///
+  /// In en, this message translates to:
+  /// **'At SLA risk'**
+  String get slaAtRiskShort;
+
+  /// No description provided for @overloadedStaffTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff workload overload'**
+  String get overloadedStaffTitle;
+
+  /// No description provided for @overloadedStaffSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} staff exceeding severity-weighted capacity'**
+  String overloadedStaffSubtitle(int count);
+
+  /// No description provided for @pendingOver24hTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Unassigned backlog > 24h'**
+  String get pendingOver24hTitle;
+
+  /// No description provided for @pendingOver24hSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} reports waiting assignment over 24h'**
+  String pendingOver24hSubtitle(int count);
+
+  /// No description provided for @pulse7dTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 7 days pulse'**
+  String get pulse7dTitle;
+
+  /// No description provided for @pulseInflowLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Incoming'**
+  String get pulseInflowLabel;
+
+  /// No description provided for @pulseOutflowLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get pulseOutflowLabel;
+
+  /// No description provided for @trendBaselineLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'14d avg'**
+  String get trendBaselineLabel;
+
+  /// No description provided for @trendAnomalyBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Spike'**
+  String get trendAnomalyBadge;
+
+  /// No description provided for @trendAnomalyCountBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} spike days'**
+  String trendAnomalyCountBadge(int count);
+
+  /// No description provided for @trendInsufficientBaseline.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient baseline (needs >= 7 active days)'**
+  String get trendInsufficientBaseline;
+
+  /// No description provided for @bottleneckShort.
+  ///
+  /// In en, this message translates to:
+  /// **'Slow > P90'**
+  String get bottleneckShort;
+
+  /// No description provided for @bottleneckStatLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Bottleneck (>P90)'**
+  String get bottleneckStatLabel;
+
+  /// No description provided for @filterAtRiskLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'At SLA risk'**
+  String get filterAtRiskLabel;
+
+  /// No description provided for @filterBottleneckLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Slow > P90'**
+  String get filterBottleneckLabel;
+
+  /// No description provided for @weightedLoadLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Weighted load'**
+  String get weightedLoadLabel;
+
+  /// No description provided for @weightedLoadValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{points} pts ({tasks} tasks)'**
+  String weightedLoadValue(int points, int tasks);
+
+  /// No description provided for @teamAvgWeightedLoadLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Team avg load: {avg} pts'**
+  String teamAvgWeightedLoadLabel(String avg);
+
+  /// No description provided for @staffOverloadedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Overloaded'**
+  String get staffOverloadedBadge;
+
+  /// No description provided for @staffRecommendedBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Recommended'**
+  String get staffRecommendedBadge;
+
+  /// No description provided for @staffBottleneckCountBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} slow >P90'**
+  String staffBottleneckCountBadge(int count);
+
+  /// No description provided for @spatialHotspotsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Area Hotspots (H3)'**
+  String get spatialHotspotsTitle;
+
+  /// No description provided for @spatialHotspotsToggle.
+  ///
+  /// In en, this message translates to:
+  /// **'Hotspots'**
+  String get spatialHotspotsToggle;
+
+  /// No description provided for @spatialHotspotsAcceleratingCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} accelerating zones'**
+  String spatialHotspotsAcceleratingCount(int count);
+
+  /// No description provided for @spatialHotspotAcceleratingBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Accelerating'**
+  String get spatialHotspotAcceleratingBadge;
+
+  /// No description provided for @spatialHotspotRiskScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Risk {score}'**
+  String spatialHotspotRiskScore(int score);
+
+  /// No description provided for @spatialHotspotStats.
+  ///
+  /// In en, this message translates to:
+  /// **'{recent} in 30d • Prev avg {prev} • {pending} pending'**
+  String spatialHotspotStats(int recent, String prev, int pending);
+
+  /// No description provided for @spatialHotspotsEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No prominent spatial risk hotspots'**
+  String get spatialHotspotsEmpty;
+
+  /// No description provided for @spatialHotspotFallbackName.
+  ///
+  /// In en, this message translates to:
+  /// **'H3 Cell #{shortId}'**
+  String spatialHotspotFallbackName(String shortId);
+
+  /// No description provided for @overloadedStaffModalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Overloaded Staff Members'**
+  String get overloadedStaffModalTitle;
+
+  /// No description provided for @overloadedStaffThresholdInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Overload threshold: > {threshold} load pts (1.5x team avg {teamAvg}) or >= 2 overdue'**
+  String overloadedStaffThresholdInfo(String threshold, String teamAvg);
+
+  /// No description provided for @overloadedStaffEmpty.
+  ///
+  /// In en, this message translates to:
+  /// **'No staff members are currently overloaded'**
+  String get overloadedStaffEmpty;
+
+  /// No description provided for @overloadedStaffMetricsRow.
+  ///
+  /// In en, this message translates to:
+  /// **'{weighted} pts • {processing} active • {overdue} overdue • {bottleneck} >P90'**
+  String overloadedStaffMetricsRow(
+    int weighted,
+    int processing,
+    int overdue,
+    int bottleneck,
+  );
+
+  /// No description provided for @overloadedSeverityBreakdownLine.
+  ///
+  /// In en, this message translates to:
+  /// **'Crit: {critical} • High: {high} • Med: {medium} • Low: {low}'**
+  String overloadedSeverityBreakdownLine(
+    int critical,
+    int high,
+    int medium,
+    int low,
+  );
+
+  /// No description provided for @staffDetailOverloadSectionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Workload Status'**
+  String get staffDetailOverloadSectionTitle;
+
+  /// No description provided for @staffLoadNormalBadge.
+  ///
+  /// In en, this message translates to:
+  /// **'Balanced'**
+  String get staffLoadNormalBadge;
+
+  /// No description provided for @staffLoadComparison.
+  ///
+  /// In en, this message translates to:
+  /// **'{weighted} weighted pts (Team avg: {teamAvg} pts)'**
+  String staffLoadComparison(int weighted, String teamAvg);
+
+  /// No description provided for @analyticsGuideTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Metrics & Report Guide'**
+  String get analyticsGuideTooltip;
+
+  /// No description provided for @guideWhatLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What it is'**
+  String get guideWhatLabel;
+
+  /// No description provided for @guidePurposeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Why it matters'**
+  String get guidePurposeLabel;
+
+  /// No description provided for @guideTellsLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'What it tells you'**
+  String get guideTellsLabel;
+
+  /// No description provided for @reportGuideTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Report Statistics Guide'**
+  String get reportGuideTitle;
+
+  /// No description provided for @reportGuideSlaAtRiskTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Early SLA Risk (At-Risk)'**
+  String get reportGuideSlaAtRiskTitle;
+
+  /// No description provided for @reportGuideSlaAtRiskWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending reports past >= 50% of their time to deadline, or processing reports with <= 24h left (or below the severity\'s historical average).'**
+  String get reportGuideSlaAtRiskWhat;
+
+  /// No description provided for @reportGuideSlaAtRiskPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Warns before reports actually breach their SLA deadline.'**
+  String get reportGuideSlaAtRiskPurpose;
+
+  /// No description provided for @reportGuideSlaAtRiskTells.
+  ///
+  /// In en, this message translates to:
+  /// **'Which reports should be assigned or escalated today to avoid overdue breaches.'**
+  String get reportGuideSlaAtRiskTells;
+
+  /// No description provided for @reportGuideP90Title.
+  ///
+  /// In en, this message translates to:
+  /// **'P90 Threshold & Bottlenecks (> P90)'**
+  String get reportGuideP90Title;
+
+  /// No description provided for @reportGuideP90What.
+  ///
+  /// In en, this message translates to:
+  /// **'The duration below which 90% of resolved reports in the last 90 days finished per severity (falls back to 80% of SLA window if < 10 samples).'**
+  String get reportGuideP90What;
+
+  /// No description provided for @reportGuideP90Purpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Spots stalled tasks early even before their hard deadline expires.'**
+  String get reportGuideP90Purpose;
+
+  /// No description provided for @reportGuideP90Tells.
+  ///
+  /// In en, this message translates to:
+  /// **'Tasks taking longer than 90% of similar historical cases — worth checking for blockers.'**
+  String get reportGuideP90Tells;
+
+  /// No description provided for @reportGuideTrendAnomalyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Trend, 14d Baseline & Spikes (Z-score)'**
+  String get reportGuideTrendAnomalyTitle;
+
+  /// No description provided for @reportGuideTrendAnomalyWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'Dashed line shows the rolling 14-day mean; red dots mark days with >= 5 reports and Z-score >= 2.0 (or >= 1.5x the 14-day average).'**
+  String get reportGuideTrendAnomalyWhat;
+
+  /// No description provided for @reportGuideTrendAnomalyPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Separates normal noise from sudden incident surges.'**
+  String get reportGuideTrendAnomalyPurpose;
+
+  /// No description provided for @reportGuideTrendAnomalyTells.
+  ///
+  /// In en, this message translates to:
+  /// **'When unusual spikes occur or when baseline data is still insufficient (< 7 active days).'**
+  String get reportGuideTrendAnomalyTells;
+
+  /// No description provided for @reportGuideFiltersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Stat Cards & List Filter Chips'**
+  String get reportGuideFiltersTitle;
+
+  /// No description provided for @reportGuideFiltersWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'Click any overview card or filter chip (Overdue, At SLA risk, Slow > P90, Rehandling) to narrow down the report list.'**
+  String get reportGuideFiltersWhat;
+
+  /// No description provided for @reportGuideFiltersPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Connects high-level metrics directly to actionable records.'**
+  String get reportGuideFiltersPurpose;
+
+  /// No description provided for @reportGuideFiltersTells.
+  ///
+  /// In en, this message translates to:
+  /// **'The exact list of reports currently requiring admin attention.'**
+  String get reportGuideFiltersTells;
+
+  /// No description provided for @staffGuideTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff Metrics Guide'**
+  String get staffGuideTitle;
+
+  /// No description provided for @staffGuideWeightedLoadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Severity-Weighted Load Points'**
+  String get staffGuideWeightedLoadTitle;
+
+  /// No description provided for @staffGuideWeightedLoadWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'Sum of active task weights by severity: Low = 1 pt, Medium = 2 pts, High = 3 pts, Critical = 5 pts.'**
+  String get staffGuideWeightedLoadWhat;
+
+  /// No description provided for @staffGuideWeightedLoadPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Measures true effort instead of treating simple and critical issues equally.'**
+  String get staffGuideWeightedLoadPurpose;
+
+  /// No description provided for @staffGuideWeightedLoadTells.
+  ///
+  /// In en, this message translates to:
+  /// **'Staff holding fewer tasks that are mostly High/Critical still carry heavy workload.'**
+  String get staffGuideWeightedLoadTells;
+
+  /// No description provided for @staffGuideOverloadTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Team Average Load & Overload'**
+  String get staffGuideOverloadTitle;
+
+  /// No description provided for @staffGuideOverloadWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'A staff member is marked Overloaded when weighted load > max(5, 1.5 x team avg) or overdue tasks >= 2.'**
+  String get staffGuideOverloadWhat;
+
+  /// No description provided for @staffGuideOverloadPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Prevents assigning new reports to already saturated staff.'**
+  String get staffGuideOverloadPurpose;
+
+  /// No description provided for @staffGuideOverloadTells.
+  ///
+  /// In en, this message translates to:
+  /// **'Who needs relief vs who has capacity (Recommended badge) for new assignments.'**
+  String get staffGuideOverloadTells;
+
+  /// No description provided for @staffGuideEfficiencyTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'On-Time Efficiency & Monthly Stats'**
+  String get staffGuideEfficiencyTitle;
+
+  /// No description provided for @staffGuideEfficiencyWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'Percentage of evaluated tasks resolved before or on their deadline within the selected month.'**
+  String get staffGuideEfficiencyWhat;
+
+  /// No description provided for @staffGuideEfficiencyPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Tracks SLA discipline per staff member over time.'**
+  String get staffGuideEfficiencyPurpose;
+
+  /// No description provided for @staffGuideEfficiencyTells.
+  ///
+  /// In en, this message translates to:
+  /// **'Consistency in meeting deadlines and accumulated late/rehandling volume.'**
+  String get staffGuideEfficiencyTells;
+
+  /// No description provided for @staffGuideBottleneckTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Slow Tasks (> P90)'**
+  String get staffGuideBottleneckTitle;
+
+  /// No description provided for @staffGuideBottleneckWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'Count of active tasks held longer than the historical P90 resolution duration for that severity.'**
+  String get staffGuideBottleneckWhat;
+
+  /// No description provided for @staffGuideBottleneckPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Flags long-running assignments that may be blocked on-site.'**
+  String get staffGuideBottleneckPurpose;
+
+  /// No description provided for @staffGuideBottleneckTells.
+  ///
+  /// In en, this message translates to:
+  /// **'Which staff may need support or reassignment on stalled reports.'**
+  String get staffGuideBottleneckTells;
+
+  /// No description provided for @spatialGuideTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Spatial Hotspots (H3) Guide'**
+  String get spatialGuideTitle;
+
+  /// No description provided for @spatialGuideH3Title.
+  ///
+  /// In en, this message translates to:
+  /// **'H3 Hexagon Cells (Resolution 11)'**
+  String get spatialGuideH3Title;
+
+  /// No description provided for @spatialGuideH3What.
+  ///
+  /// In en, this message translates to:
+  /// **'Groups nearby reports into uniform Uber H3 Resolution-11 hexagonal zones across campus.'**
+  String get spatialGuideH3What;
+
+  /// No description provided for @spatialGuideH3Purpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Detects real spatial clusters independent of rigid text labels.'**
+  String get spatialGuideH3Purpose;
+
+  /// No description provided for @spatialGuideH3Tells.
+  ///
+  /// In en, this message translates to:
+  /// **'Clicking a zone centers the map camera straight onto that cluster.'**
+  String get spatialGuideH3Tells;
+
+  /// No description provided for @spatialGuideRiskScoreTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Risk Score & Red Highlight'**
+  String get spatialGuideRiskScoreTitle;
+
+  /// No description provided for @spatialGuideRiskScoreWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'Computed as (Pending x 2) + (High/Critical x 3) + (Overdue x 4). Red highlights accelerating or high-priority cells.'**
+  String get spatialGuideRiskScoreWhat;
+
+  /// No description provided for @spatialGuideRiskScorePurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Ranks zones by operational urgency rather than raw count alone.'**
+  String get spatialGuideRiskScorePurpose;
+
+  /// No description provided for @spatialGuideRiskScoreTells.
+  ///
+  /// In en, this message translates to:
+  /// **'Higher Risk means more severe, overdue, or unaddressed issues clustered there.'**
+  String get spatialGuideRiskScoreTells;
+
+  /// No description provided for @spatialGuideAcceleratingTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'\"Accelerating\" Badge'**
+  String get spatialGuideAcceleratingTitle;
+
+  /// No description provided for @spatialGuideAcceleratingWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'Triggered when a zone logs >= 3 reports in the last 30 days and >= 2x the 30-day average of the preceding 90 days.'**
+  String get spatialGuideAcceleratingWhat;
+
+  /// No description provided for @spatialGuideAcceleratingPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Early warning for newly emerging or worsening problem areas.'**
+  String get spatialGuideAcceleratingPurpose;
+
+  /// No description provided for @spatialGuideAcceleratingTells.
+  ///
+  /// In en, this message translates to:
+  /// **'Zones deteriorating faster than historical baseline that need field inspection.'**
+  String get spatialGuideAcceleratingTells;
+
+  /// No description provided for @spatialGuideStatsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Zone Stats (30d • Prev avg • Pending)'**
+  String get spatialGuideStatsTitle;
+
+  /// No description provided for @spatialGuideStatsWhat.
+  ///
+  /// In en, this message translates to:
+  /// **'Shows last-30d report count, prior 90-day 30d baseline average, and currently pending reports in the cell.'**
+  String get spatialGuideStatsWhat;
+
+  /// No description provided for @spatialGuideStatsPurpose.
+  ///
+  /// In en, this message translates to:
+  /// **'Provides clear before/after context for each zone.'**
+  String get spatialGuideStatsPurpose;
+
+  /// No description provided for @spatialGuideStatsTells.
+  ///
+  /// In en, this message translates to:
+  /// **'Whether inflow in this area is outpacing local resolution.'**
+  String get spatialGuideStatsTells;
+
+  /// No description provided for @callFreeVoiceDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Free internet voice call'**
+  String get callFreeVoiceDesc;
+
+  /// No description provided for @callPermissionDenied.
+  ///
+  /// In en, this message translates to:
+  /// **'Voice call unavailable for this conversation'**
+  String get callPermissionDenied;
+
+  /// No description provided for @rehandlingReportsSection.
+  ///
+  /// In en, this message translates to:
+  /// **'Re-handling reports'**
+  String get rehandlingReportsSection;
+
+  /// No description provided for @checkingEligibility.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking eligibility...'**
+  String get checkingEligibility;
+
+  /// No description provided for @attachRehandlingReports.
+  ///
+  /// In en, this message translates to:
+  /// **'Attach re-handling reports'**
+  String get attachRehandlingReports;
+
+  /// No description provided for @cannotMessageAnonymousNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Anonymous user: only in-app chat and free calls are supported.'**
+  String get cannotMessageAnonymousNotice;
+
+  /// No description provided for @routeSosCenter.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS alerts'**
+  String get routeSosCenter;
+
+  /// No description provided for @sosTabOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get sosTabOpen;
+
+  /// No description provided for @sosTabResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get sosTabResolved;
+
+  /// No description provided for @sosEmptyOpen.
+  ///
+  /// In en, this message translates to:
+  /// **'No SOS is open right now.'**
+  String get sosEmptyOpen;
+
+  /// No description provided for @sosEmptyResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'No SOS has ended yet.'**
+  String get sosEmptyResolved;
+
+  /// No description provided for @sosStatusActive.
+  ///
+  /// In en, this message translates to:
+  /// **'Awaiting response'**
+  String get sosStatusActive;
+
+  /// No description provided for @sosStatusAcknowledged.
+  ///
+  /// In en, this message translates to:
+  /// **'Being handled'**
+  String get sosStatusAcknowledged;
+
+  /// No description provided for @sosResolutionSafe.
+  ///
+  /// In en, this message translates to:
+  /// **'Sender is safe'**
+  String get sosResolutionSafe;
+
+  /// No description provided for @sosResolutionHandled.
+  ///
+  /// In en, this message translates to:
+  /// **'Handled'**
+  String get sosResolutionHandled;
+
+  /// No description provided for @sosResolutionFalseAlarm.
+  ///
+  /// In en, this message translates to:
+  /// **'False alarm'**
+  String get sosResolutionFalseAlarm;
+
+  /// No description provided for @sosSentAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Sent at {time}'**
+  String sosSentAt(Object time);
+
+  /// No description provided for @sosHandledBy.
+  ///
+  /// In en, this message translates to:
+  /// **'{name} is handling it'**
+  String sosHandledBy(Object name);
+
+  /// No description provided for @sosLocationUpdatedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Location updated at {time}'**
+  String sosLocationUpdatedAt(Object time);
+
+  /// No description provided for @sosSignalLost.
+  ///
+  /// In en, this message translates to:
+  /// **'No new location since {time}'**
+  String sosSignalLost(Object time);
+
+  /// No description provided for @sosAccuracy.
+  ///
+  /// In en, this message translates to:
+  /// **'Accurate to about {meters} m'**
+  String sosAccuracy(Object meters);
+
+  /// No description provided for @sosNotifiedContacts.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} emergency contacts alerted'**
+  String sosNotifiedContacts(Object count);
+
+  /// No description provided for @sosOpenMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Open map'**
+  String get sosOpenMap;
+
+  /// No description provided for @sosCallSender.
+  ///
+  /// In en, this message translates to:
+  /// **'Call {name}'**
+  String sosCallSender(Object name);
+
+  /// No description provided for @sosAcknowledge.
+  ///
+  /// In en, this message translates to:
+  /// **'Take this SOS'**
+  String get sosAcknowledge;
+
+  /// No description provided for @sosResolve.
+  ///
+  /// In en, this message translates to:
+  /// **'End SOS'**
+  String get sosResolve;
+
+  /// No description provided for @sosResolveTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'End the SOS from {name}?'**
+  String sosResolveTitle(Object name);
+
+  /// No description provided for @sosResolveHandled.
+  ///
+  /// In en, this message translates to:
+  /// **'Help was given'**
+  String get sosResolveHandled;
+
+  /// No description provided for @sosResolveFalseAlarm.
+  ///
+  /// In en, this message translates to:
+  /// **'False alarm'**
+  String get sosResolveFalseAlarm;
+
+  /// No description provided for @sosResolveNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Note (optional)'**
+  String get sosResolveNote;
+
+  /// No description provided for @sosAcknowledgedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'You took this SOS'**
+  String get sosAcknowledgedToast;
+
+  /// No description provided for @sosResolvedToast.
+  ///
+  /// In en, this message translates to:
+  /// **'SOS ended'**
+  String get sosResolvedToast;
+
+  /// No description provided for @sosTrackTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent locations'**
+  String get sosTrackTitle;
+
+  /// No description provided for @sosLoadFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not load SOS alerts.'**
+  String get sosLoadFailed;
+
+  /// No description provided for @sosEndedAt.
+  ///
+  /// In en, this message translates to:
+  /// **'Ended at {time}'**
+  String sosEndedAt(Object time);
+
+  /// No description provided for @sosCannotOpenMap.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not open the map'**
+  String get sosCannotOpenMap;
 }
 
 class _AppLocalizationsDelegate

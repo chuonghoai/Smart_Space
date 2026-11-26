@@ -18,9 +18,44 @@ public class ReportResponse {
     private Double longitude;
     private String status;
 
+    private String severity;
+
     @JsonProperty("created_at")
     private String createdAt;
 
     @JsonProperty("distance_in_meters")
     private Double distanceInMeters;
+
+    @JsonProperty("assigned_at")
+    private String assignedAt;
+
+    @JsonProperty("is_review_resolved")
+    private Boolean isReviewResolved;
+
+    @JsonProperty("deadline")
+    private String deadline;
+
+    @JsonProperty("resolved_at")
+    private String resolvedAt;
+
+    @JsonProperty("is_overdue")
+    private Boolean isOverdue;
+
+    @JsonProperty("remaining_days")
+    private Long remainingDays;
+
+    @JsonProperty("user_id")
+    private String userId;
+
+    @JsonProperty("category_id")
+    private String categoryId;
+
+    @JsonProperty("category_code")
+    private String categoryCode;
+
+    @JsonProperty("category_name_vi")
+    private String categoryNameVi;
+
+    @JsonProperty("category_name_en")
+    private String categoryNameEn;
 }

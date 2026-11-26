@@ -1,22 +1,45 @@
 import 'package:go_router/go_router.dart';
+import 'package:mobile_shared/features/map/models/map_focus_target.dart';
 import 'package:smartspace_client/routes/router_path.dart';
-import 'package:smartspace_client/ui/responsive/screens/auth/login_screen.dart';
-import 'package:smartspace_client/ui/responsive/screens/settings/change_password_screen.dart';
-import 'package:smartspace_client/ui/responsive/screens/settings/settings_screen.dart';
+import 'package:smartspace_client/ui/mobile/auth/login/login_screen.dart';
+import 'package:smartspace_client/ui/mobile/auth/register/register_email_screen.dart';
+import 'package:smartspace_client/ui/mobile/auth/register/register_otp_screen.dart';
+import 'package:smartspace_client/ui/mobile/auth/register/register_password_screen.dart';
+import 'package:smartspace_client/ui/mobile/auth/forgot_password/forgot_password_screen.dart';
+import 'package:smartspace_client/ui/mobile/home/home_screen.dart';
+import 'package:smartspace_client/ui/mobile/map/map_screen.dart';
+import 'package:smartspace_client/ui/mobile/settings/change_password_screen.dart';
+import 'package:smartspace_client/ui/mobile/settings/edit_profile_screen.dart';
+import 'package:smartspace_client/ui/mobile/settings/manage_devices_screen.dart';
+import 'package:smartspace_client/ui/mobile/emergency/emergency_contacts_screen.dart';
+import 'package:smartspace_client/ui/mobile/sos/sos_active_screen.dart';
+import 'package:smartspace_client/ui/mobile/sos/sos_countdown_screen.dart';
+import 'package:smartspace_client/ui/mobile/sos/sos_watch_screen.dart';
+import 'package:smartspace_client/ui/mobile/settings/settings_screen.dart';
 import 'package:smartspace_client/ui/shared/splash/splash_screen.dart';
-import 'package:smartspace_client/ui/responsive/screens/home/home_screen.dart';
-import 'package:smartspace_client/ui/responsive/screens/auth/complete_profile_screen.dart';
-
-import 'package:smartspace_client/ui/responsive/screens/auth/register_email_screen.dart';
-import 'package:smartspace_client/ui/responsive/screens/auth/register_otp_screen.dart';
-import 'package:smartspace_client/ui/responsive/screens/auth/register_password_screen.dart';
-import 'package:smartspace_client/ui/responsive/screens/auth/forgot_password_screen.dart';
+import 'package:smartspace_client/ui/mobile/auth/register/complete_profile_screen.dart';
+import 'package:smartspace_client/features/reports/models/report_detail_model.dart';
+import 'package:smartspace_client/ui/mobile/reports/create_report_screen.dart';
+import 'package:smartspace_client/ui/mobile/reports/presentation/report_detail_screen.dart';
+import 'package:smartspace_client/ui/mobile/reports/my_reports_screen.dart';
+import 'package:smartspace_client/ui/mobile/reports/feed/report_feed_screen.dart';
+import 'package:mobile_shared/core/toast/toast_service.dart';
+import 'package:smartspace_client/ui/mobile/search/search_screen.dart';
+import 'package:smartspace_client/ui/mobile/notifications/notification_screen.dart';
+import 'package:smartspace_client/ui/mobile/news/client_news_detail_screen.dart';
+import 'package:smartspace_client/ui/mobile/news/client_news_list_screen.dart';
+import 'package:mobile_shared/features/chat/models/conversation_model.dart';
+import 'package:smartspace_client/ui/mobile/chat/client_conversations_screen.dart';
+import 'package:smartspace_client/ui/mobile/chat/client_chat_detail_screen.dart';
+import 'package:smartspace_client/ui/mobile/chat/client_conversation_info_screen.dart';
+import 'package:mobile_shared/features/call/widgets/voice_call_screen.dart';
 import 'package:flutter/material.dart';
 
-final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+/// Re-export for convenience so existing callers of navigatorKey still compile.
+final GlobalKey<NavigatorState> navigatorKey = sharedNavigatorKey;
 
 final appRouter = GoRouter(
-  navigatorKey: navigatorKey,
+  navigatorKey: sharedNavigatorKey,
   initialLocation: RouterPath.splash,
   routes: [
     GoRoute(
@@ -25,39 +48,158 @@ final appRouter = GoRouter(
     ),
     GoRoute(
       path: RouterPath.login,
-      builder: (context, state) => const LoginScreen(),
+      builder: (context, state) => const MobileLoginScreen(),
     ),
     GoRoute(
       path: RouterPath.registerEmail,
-      builder: (context, state) => const RegisterEmailScreen(),
+      builder: (context, state) => const MobileRegisterEmailScreen(),
     ),
     GoRoute(
       path: RouterPath.registerOtp,
-      builder: (context, state) => const RegisterOtpScreen(),
+      builder: (context, state) => const MobileRegisterOtpScreen(),
     ),
     GoRoute(
       path: RouterPath.registerPassword,
-      builder: (context, state) => const RegisterPasswordScreen(),
+      builder: (context, state) => const MobileRegisterPasswordScreen(),
     ),
     GoRoute(
       path: RouterPath.home,
-      builder: (context, state) => const HomeScreen(),
+      builder: (context, state) => const MobileHomeScreen(),
     ),
     GoRoute(
       path: RouterPath.completeProfile,
-      builder: (context, state) => const CompleteProfileScreen(),
+      builder: (context, state) => const MobileCompleteProfileScreen(),
     ),
     GoRoute(
       path: RouterPath.forgotPassword,
-      builder: (context, state) => const ForgotPasswordScreen(),
+      builder: (context, state) => const MobileForgotPasswordScreen(),
     ),
     GoRoute(
       path: RouterPath.settings,
-      builder: (context, state) => const SettingsScreen(),
+      builder: (context, state) => const MobileSettingsScreen(),
     ),
     GoRoute(
       path: RouterPath.changePassword,
-      builder: (context, state) => const ChangePasswordScreen(),
+      builder: (context, state) => const MobileChangePasswordScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.manageDevices,
+      builder: (context, state) => const MobileManageDevicesScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.emergencyContacts,
+      builder: (context, state) => MobileEmergencyContactsScreen(
+        initialTab: EmergencyContactsTab.fromQuery(state.uri.queryParameters['tab']),
+      ),
+    ),
+    GoRoute(
+      path: RouterPath.sosCountdown,
+      builder: (context, state) => const MobileSosCountdownScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.sosActive,
+      builder: (context, state) => const MobileSosActiveScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.sosWatch,
+      builder: (context, state) => MobileSosWatchScreen(sosId: state.pathParameters['id'] ?? ''),
+    ),
+    GoRoute(
+      path: RouterPath.editProfile,
+      builder: (context, state) => const MobileEditProfileScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.createReport,
+      builder: (context, state) => CreateReportScreen(
+        reportToEdit: state.extra as ReportDetailModel?,
+      ),
+    ),
+    GoRoute(
+      path: RouterPath.map,
+      builder: (context, state) => MobileMapScreen(
+        focus: MapFocusTarget.fromQueryParameters(state.uri.queryParameters),
+      ),
+    ),
+    GoRoute(
+      path: RouterPath.reportDetail,
+      builder: (context, state) {
+        final extra = state.extra;
+        final fromChat = (extra is Map && extra['fromChat'] == true);
+        return ReportDetailScreen(
+          reportId: state.pathParameters['id']!,
+          fromChat: fromChat,
+        );
+      },
+    ),
+    GoRoute(
+      path: RouterPath.notifications,
+      builder: (context, state) => const NotificationScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.myReports,
+      builder: (context, state) => const MyReportsScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.communityFeed,
+      builder: (context, state) => const ReportFeedScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.search,
+      pageBuilder: (context, state) => CustomTransitionPage(
+        key: state.pageKey,
+        child: const MobileSearchScreen(),
+        transitionsBuilder: (context, animation, secondaryAnimation, child) {
+          return FadeTransition(opacity: animation, child: child);
+        },
+      ),
+    ),
+    GoRoute(
+      path: RouterPath.news,
+      builder: (context, state) => const ClientNewsListScreen(),
+    ),
+    GoRoute(
+      path: '/news/:id',
+      builder: (context, state) {
+        final newsId = state.pathParameters['id'] ?? '';
+        return ClientNewsDetailScreen(newsId: newsId);
+      },
+    ),
+    GoRoute(
+      path: RouterPath.conversations,
+      builder: (context, state) => const ClientConversationsScreen(),
+    ),
+    GoRoute(
+      path: RouterPath.chatDetail,
+      builder: (context, state) {
+        final convId = state.pathParameters['id'] ?? '';
+        final partner = state.extra as ParticipantModel?;
+        return ClientChatDetailScreen(
+          conversationId: convId,
+          initialPartner: partner,
+        );
+      },
+    ),
+    GoRoute(
+      path: RouterPath.conversationInfo,
+      builder: (context, state) {
+        final convId = state.pathParameters['id'] ?? '';
+        return ClientConversationInfoScreen(
+          conversationId: convId,
+        );
+      },
+    ),
+    GoRoute(
+      path: RouterPath.voiceCall,
+      builder: (context, state) {
+        final callId = state.pathParameters['callId'] ?? '';
+        return VoiceCallScreen(
+          callId: callId,
+          onClose: () {
+            if (context.canPop()) context.pop();
+          },
+        );
+      },
     ),
   ],
 );
+

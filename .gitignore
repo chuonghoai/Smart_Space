@@ -1,2 +1,18 @@
 node_modules/
 npm-debug.log*
+
+# Ignore Flutter plugin registrant - auto-generated
+**/GeneratedPluginRegistrant.swift
+**/pubspec.lock
+.vscode/
+**/generated_plugins.cmake
+**/generated_plugin_registrant.cc
+**/generated_plugins.cmake
+smartspace_staff/windows/flutter/generated_plugins.cmake
+smartspace_admin/windows/flutter/generated_plugins.cmake
+weekly_reports/
+playwright-report/
+test-results/
+native-results/
+.env.playwright
+playwright/.cache/

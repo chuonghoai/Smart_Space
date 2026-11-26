@@ -1,6 +1,7 @@
 {
   "@@locale": "en",
   "appTitle": "Smart Space",
+  "actionView": "View",
   "login": "Log in",
   "email": "Email",
   "password": "Password",
@@ -62,7 +63,6 @@
   "pleaseEnterEmail": "Please enter email",
   "pleaseEnterOTP": "Please enter OTP",
   "pleaseEnterPassword": "Please enter password",
-  "passwordsDoNotMatch": "Passwords do not match",
   "pleaseEnterFullName": "Please enter full name",
   "pleaseEnterPhoneNumber": "Please enter phone number",
   "send": "Send",
@@ -77,29 +77,31 @@
   "createReport": "Create report",
   "subTitleCreateReport": "Report security and environmental issues",
   "myReports": "My reports",
+  "totalReports": "Total Reports",
+  "today": "Today",
+  "thisWeek": "This week",
+  "older": "Older",
   "notifications": "Notifications",
   "help": "Help",
   "aboutApp": "About app",
   "home": "Home",
-  "recentReports": "Recent reports",
+  "recentReports": "Recent",
   "noReportsYet": "No reports yet",
   "user": "User",
   "logout": "Log out",
-  "dangerousReports": "Dangerous warnings",
+  "dangerousReports": "Dangerous",
   "map": "Map",
   "news": "News",
+  "newsDetail": "News Detail",
+  "newsNotFound": "News not found",
+  "targetAdmin": "Admin",
   "instructions": "Instructions",
   "viewAll": "View all",
   "dangerous": "DANGEROUS",
-  "distanceFromYou": "{value} {unit} away",
+  "distanceFromYou": "{distance} km away",
   "@distanceFromYou": {
     "placeholders": {
-      "value": {
-        "type": "String"
-      },
-      "unit": {
-        "type": "String"
-      }
+      "distance": {}
     }
   },
   "unitMeter": "m",
@@ -111,6 +113,7 @@
   "reportStatusRejected": "Rejected",
   "reportStatusUnknown": "Unknown",
   "sessionExpired": "Session expired",
+  "sessionRevokedOnThisDevice": "You have been signed out of this device from another device.",
   "settingsTitle": "Settings",
   "accountSection": "Account",
   "shareHistory": "Share History",
@@ -129,7 +132,6 @@
   "logoutConfirmTitle": "Log out",
   "logoutConfirmMessage": "Are you sure you want to log out?",
   "cancel": "Cancel",
-
   "changePasswordTitle": "Change Password",
   "currentPassword": "Current Password",
   "confirmNewPassword": "Confirm New Password",
@@ -142,5 +144,589 @@
   "changePasswordFailed": "Failed to change password",
   "passwordReqLength": "Password must be 8-20 characters",
   "passwordReqMixed": "Include numbers, uppercase, lowercase",
-  "passwordReqSpecial": "Include at least one special character !@#$^()_"
+  "passwordReqSpecial": "Include at least one special character !@#$^()_",
+  "loggedInDevices": "Logged in devices",
+  "thisDevice": "This device",
+  "activeNow": "Active now",
+  "logoutDevice": "Logout",
+  "logoutDeviceConfirmTitle": "Logout from device?",
+  "logoutDeviceConfirmMessage": "The session on \"{deviceName}\" will be ended.",
+  "@logoutDeviceConfirmMessage": {
+    "placeholders": {
+      "deviceName": {
+        "type": "String"
+      }
+    }
+  },
+  "logoutAllOtherDevices": "Logout all other devices",
+  "logoutAllConfirmTitle": "Logout all other devices?",
+  "logoutAllConfirmMessage": "All sessions except this device will be ended.",
+  "noOtherDevices": "No other devices logged in.",
+  "deviceLogoutSuccess": "Device logged out.",
+  "allDevicesLogoutSuccess": "All other devices logged out.",
+  "editProfile": "Edit Profile",
+  "dateOfBirth": "Date of Birth",
+  "gender": "Gender",
+  "genderMale": "Male",
+  "genderFemale": "Female",
+  "genderOther": "Other",
+  "saveChanges": "Save Changes",
+  "profileUpdateSuccess": "Profile updated successfully",
+  "profileUpdateFailed": "Failed to update profile",
+  "changeAvatar": "Change avatar",
+  "optionalLabel": "Optional",
+  "requiredLabel": "Required",
+  "genderOtherConfirmMessage": "Are you sure you want to select \"Other\" as your gender?",
+  "dateOfBirthEmptyTitle": "Your date of birth is empty",
+  "dateOfBirthEmptyMessage": "Are you sure you want to continue? You can add your date of birth in the settings.",
+  "createReportTitle": "Create Report",
+  "reportTitleLabel": "Title *",
+  "reportDescLabel": "Description *",
+  "reportAddressLabel": "Address",
+  "reportLocationDescLabel": "Location Description",
+  "reportAnonymous": "Send anonymously",
+  "submitReport": "Submit Report",
+  "pickImage": "Gallery",
+  "takePhoto": "Camera",
+  "reloadLocation": "Reload Location",
+  "maxImagesError": "Max 10 images allowed",
+  "requiredFieldError": "This field is required",
+  "uploadingReport": "Uploading report, please do not close the app...",
+  "locationServicesDisabled": "Location services are disabled.",
+  "locationPermissionsDenied": "Location permissions are denied.",
+  "locationPermissionsPermanentlyDenied": "Location permissions are permanently denied.",
+  "uploadingImageProgress": "Uploading image... ({current}/{total})",
+  "@uploadingImageProgress": {
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "uploadingImage": "Uploading image",
+  "imageProgress": "Image {current}/{total}",
+  "@imageProgress": {
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "creatingReportSystem": "Creating report...",
+  "almostDone": "Almost done",
+  "creatingReportOnSystem": "Creating report on the system...",
+  "createReportSuccess": "Create report successfully!",
+  "success": "Success",
+  "reportRecorded": "Your report has been recorded.",
+  "errorString": "Error: {error}",
+  "@errorString": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorPrefix": "Error",
+  "cannotCreateReportError": "Cannot create report: {error}",
+  "@cannotCreateReportError": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "errorOccurredSendingReport": "An error occurred while sending report: {error}",
+  "@errorOccurredSendingReport": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "sendingReportProgress": "Sending report... ({current}/{total})",
+  "@sendingReportProgress": {
+    "placeholders": {
+      "current": {},
+      "total": {}
+    }
+  },
+  "navigateToReport": "Navigate",
+  "viewDetail": "View Detail",
+  "myLocation": "My Location",
+  "filterReports": "Filter Reports",
+  "refresh": "Refresh",
+  "filter": "Filter",
+  "calculatingDistance": "Calculating distance...",
+  "reportDetails": "Report Details",
+  "turnOnLocationToViewDistance": "Turn on location to view the distance from the incident to your location",
+  "openInGoogleMaps": "Open in Google Maps",
+  "createdAtLabel": "Created at",
+  "statusLabel": "Status",
+  "severityLabel": "Severity",
+  "severityLow": "Low",
+  "severityMedium": "Medium",
+  "severityHigh": "High",
+  "severityCritical": "Critical",
+  "locationServiceDisabledError": "Please enable location services on your device",
+  "locationPermissionDeniedForeverError": "Location permissions are permanently denied, please go to settings to enable",
+  "cannotOpenGoogleMapsError": "Cannot open Google Maps",
+  "errorOccurred": "An error occurred:\n{error}",
+  "@errorOccurred": {
+    "placeholders": {
+      "error": {}
+    }
+  },
+  "retryButton": "Retry",
+  "minuteAgo": "m ago",
+  "hourAgo": "h ago",
+  "dayAgo": "d ago",
+  "justNow": "Just now",
+  "routeHome": "Home",
+  "routeSettings": "Settings",
+  "routeMap": "Map",
+  "routeCreateReport": "Create Report",
+  "routeMyReports": "My Reports",
+  "routeEditProfile": "Edit Profile",
+  "routeChangePassword": "Change Password",
+  "routeManageDevices": "Manage Devices",
+  "routeNotifications": "Notifications",
+  "markAllAsRead": "Mark all as read",
+  "emptyNotification": "You have no notifications.",
+  "unread": "Unread",
+  "assignedStaff": "Assigned Staff",
+  "routeCommunityFeed": "All report",
+  "feedTabLatest": "Latest",
+  "feedTabNearby": "Near me",
+  "feedEmpty": "No community reports yet",
+  "feedAnonymous": "Anonymous user",
+  "feedSeeMore": "See more",
+  "feedTimelineSubmitted": "Submitted",
+  "feedTimelineProcessing": "Processing",
+  "feedTimelineDone": "Done",
+  "feedShare": "Share",
+  "feedViewOnMap": "View map",
+  "feedCopiedLink": "Report info copied to clipboard",
+  "feedPhotosCount": "{count} photos",
+  "@feedPhotosCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "reviewReport": "Review",
+  "reviewQuestion": "Has your report been resolved?",
+  "reviewResolvedOption": "Resolved",
+  "reviewUnresolvedOption": "Not resolved",
+  "rateStaffTitle": "Rate handling staff",
+  "rateStaffSubtitle": "Please rate the staff member (1 - 5 stars)",
+  "unresolvedReasonLabel": "Reason for unresolved",
+  "unresolvedReasonHint": "Please describe why you feel this report is not resolved...",
+  "attachEvidencePhotos": "Evidence photos (at least 1 photo required)",
+  "attachEvidencePhotoHint": "At least 1 photo and description required to submit",
+  "submitReview": "Submit review",
+  "submittingReview": "Submitting review...",
+  "reviewSuccess": "Review submitted successfully!",
+  "unresolvedReviewTitle": "Unresolved feedback",
+  "resolutionInfo": "Resolution result",
+  "resolutionNote": "Resolution note",
+  "resolutionImages": "Resolution photos",
+  "resolvedAtLabel": "Completed at",
+  "reviewRatingLabel": "Citizen rating",
+  "cameraOption": "Camera",
+  "galleryOption": "Gallery",
+  "closeButton": "Close",
+  "rehandling": "Re-handling",
+  "unsatisfactoryBadge": "Unsatisfactory resolution",
+  "latestNews": "Latest News",
+  "routeNewsList": "News",
+  "emptyNewsTitle": "No news yet",
+  "emptyNewsDescription": "There are currently no news or announcements.",
+  "mapNormalReports": "Normal",
+  "mapClusterReportsTitle": "{count, plural, =1{1 report in this area} other{{count} reports in this area}}",
+  "@mapClusterReportsTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "mapClusterSortHint": "Most dangerous first, then newest",
+  "mapZoomInForMore": "Zoom in to see more reports",
+  "mapLoadReportsFailed": "Couldn't load reports on the map",
+  "mapFilterAll": "All",
+  "viewOnMap": "View on map",
+  "mapFocusedReportHidden": "This report isn't currently shown on the map",
+  "locationSection": "Incident Location",
+  "noAddress": "No address provided",
+  "locationDescriptionLabel": "Location description",
+  "nearbyReportsAlertTitle": "{count, plural, =1{1 report near you} other{{count} reports near you}}",
+  "@nearbyReportsAlertTitle": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nearbyDistanceInMeters": "{distance}m away",
+  "@nearbyDistanceInMeters": {
+    "placeholders": {
+      "distance": {
+        "type": "int"
+      }
+    }
+  },
+  "actionUnderstood": "Got it",
+  "actionViewDetail": "View details",
+  "noImages": "No images available",
+  "actionPrevious": "Previous",
+  "actionNext": "Next",
+  "editReport": "Edit",
+  "cancelReport": "Cancel Request",
+  "cancelReportConfirmTitle": "Cancel Report Request",
+  "cancelReportConfirmMessage": "Are you sure you want to cancel this report request? It will be moved to the rejected list.",
+  "cancelReportSuccess": "Report request cancelled successfully",
+  "updateReportSuccess": "Report updated successfully",
+  "youCreatedThisReport": "You created this report",
+  "myReportBadge": "Your report",
+  "saveChanges": "Save Changes",
+  "editReportTitle": "Edit Report",
+  "editReportOnlyPending": "Only pending reports can be edited",
+  "cancelReportOnlyPending": "Only pending reports can be cancelled",
+    "genericError": "An error occurred, please try again later",
+  "mapSettings": "Map Settings",
+  "mapDensityToggle": "Show report density",
+  "mapDensityDescription": "Display high-density report areas grouped by color (50m)",
+  "densityLegendTitle": "Report Density",
+  "densityLow": "1–2 reports (Low)",
+  "densityMedium": "3–5 reports (Medium)",
+  "densityHigh": "Over 5 reports (High)",
+  "mapBack": "Back",
+  "filterTimeframe": "Timeframe",
+  "timeframeAll": "All time",
+  "timeframe1Month": "1 month",
+  "timeframe3Months": "3 months",
+  "timeframe6Months": "6 months",
+  "timeframe9Months": "9 months",
+  "timeframe12Months": "12 months",
+  "routeConversations": "Conversations",
+  "routeChatDetail": "Chat Detail",
+  "conversations": "Messages",
+  "noConversations": "No conversations yet",
+  "noConversationsSub": "You can message support staff from the detail of your active reports.",
+  "searchConversationsPlaceholder": "Search by name or content...",
+  "roleStaff": "Staff",
+  "roleAdmin": "Admin",
+  "chatInputHint": "Type a message...",
+  "emptyMessages": "No messages yet. Start chatting!",
+  "errorLoadMessages": "Failed to load messages",
+  "anonymousPerson": "Anonymous User",
+  "supportStaff": "Support Staff",
+  "managementBoard": "Management",
+  "chatDisabledNotice": "The report has been resolved. Chat is currently in read-only history mode.",
+  "chatWithStaff": "Message staff",
+  "viewStaffChat": "View support messages",
+  "cannotStartChat": "Unable to start conversation, please try again later",
+  "routeConversationInfo": "Conversation Info",
+  "conversationInfoTitle": "Conversation Info",
+  "activeReportsSection": "Active Reports",
+  "allReportsProcessed": "All reports have been processed",
+  "conversationClosedNotice": "Conversation closed as all reports have been processed",
+  "conversationActiveNotice": "Conversation is currently active",
+  "callButtonLabel": "Call",
+  "videoCallButtonLabel": "Video call",
+  "videoCallComingSoon": "Video call feature is under development",
+  "conversationRefreshed": "Conversation info and messages refreshed successfully",
+  "conversationRefreshFailed": "Could not refresh conversation, please try again later",
+  "cannotMakePhoneCall": "Cannot make phone call",
+  "noPhoneNumber": "No phone number available",
+  "staffNoPosition": "No position",
+  "rehandlingBadge": "Re-handling",
+  "roleClient": "Resident",
+  "refresh": "Refresh",
+  "contextIdentified": "Identified",
+  "contextAnonymous": "Anonymous",
+  "contextIdentifiedTag": "Identified",
+  "contextAnonymousTag": "Anonymous",
+  "noIdentifiedReports": "No active identified reports",
+  "noAnonymousReports": "No active anonymous reports",
+  "anonymousProtectionBanner": "Anonymous discussion. Your personal identity is strictly protected.",
+  "contextIdentifiedTooltip": "Identified reports conversation",
+  "contextAnonymousTooltip": "Anonymous reports conversation",
+  "youCreatedThisReportAnonymously": "You created this report anonymously",
+  "callOptionsTitle": "Call options",
+  "cellularCall": "Cellular call",
+  "cellularCallDesc": "Open default phone app",
+  "freeCall": "Free in-app voice call",
+  "featureUnderDevelopment": "Feature under development",
+  "comingSoon": "Coming soon",
+  "phoneNotAvailable": "Phone number is not available",
+  "freeCallComingSoon": "Free in-app voice call feature is under development",
+  "searchReportsPlaceholder": "Search by title, description or address...",
+  "noMatchingReports": "No matching reports",
+  "sortLabel": "Sort",
+  "clearFilters": "Clear filters",
+  "resultsCount": "{count, plural, =1{1 result} other{{count} results}}",
+  "@resultsCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "nearbyLocationUnavailable": "Couldn't get your location. Showing the latest reports instead.",
+  "filterSelectedTooltip": "{label}: {value}",
+  "@filterSelectedTooltip": {
+    "placeholders": {
+      "label": {},
+      "value": {}
+    }
+  },
+  "pickSingleDate": "A specific day…",
+  "pickDateRange": "A date range…",
+  "notificationFilterUnread": "Unread",
+  "notificationFilterUnreadCount": "Unread ({count})",
+  "@notificationFilterUnreadCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "allNotificationsRead": "You're all caught up",
+  "viewAllNotifications": "View all notifications",
+  "contextIdentifiedExplanation": "Identified: Staff will know that you created this report.",
+  "contextAnonymousExplanation": "Anonymous: Staff will definitely not know who created this report.",
+  "contextExplanationTitle": "Conversation Context Info",
+  "contextExplanationGotIt": "Got it",
+  "chooseFromGallery": "Choose photo from gallery",
+  "chooseVideo": "Choose video",
+  "takePhoto": "Take photo",
+  "attachReport": "Attach report",
+  "markAsRead": "Mark as read",
+  "typingText": "typing...",
+  "pressAndHoldToRecord": "Press and hold to record",
+  "slideLeftToCancel": "Slide left to cancel",
+  "releaseToCancel": "Release to cancel",
+  "selectReportToAttach": "Select report to attach",
+  "voiceMessageSnippet": "Voice message",
+  "imageSnippet": "Photo",
+  "videoSnippet": "Video",
+  "attachedReportSnippet": "Attached report",
+  "reportDeadlineLabel": "Resolution deadline",
+  "deadlineOverdueBadge": "Overdue",
+  "daysRemainingLabel": "{days} days left",
+  "@daysRemainingLabel": {
+    "placeholders": {
+      "days": {
+        "type": "int"
+      }
+    }
+  },
+  "overdueOnlyFilter": "Overdue",
+  "rejectedReasonTitle": "Rejection Reason",
+  "noRejectionReasonProvided": "Rejected by administrator.",
+  "reportCategoryLabel": "Incident Category",
+  "reportCategoryHint": "Select a category",
+  "reportCategoryRequired": "Please select an incident category",
+  "reportCategoryLoadError": "Could not load categories",
+  "reportCategoryEmpty": "No categories available",
+  "callFreeVoiceDesc": "Free internet voice call",
+  "callPermissionDenied": "Voice call unavailable for this conversation",
+  "callActionLabel": "Call",
+  "emergencyContacts": "Emergency contacts",
+  "emergencyTabMine": "My contacts",
+  "emergencyTabGuardian": "I look out for",
+  "emergencyAddContact": "Add contact",
+  "emergencyCapacity": "{count}/{max} · Receive your SOS",
+  "@emergencyCapacity": {
+    "placeholders": {
+      "count": {},
+      "max": {}
+    }
+  },
+  "emergencyLimitShort": "All 5 contacts added",
+  "emergencyEmptyMineTitle": "No emergency contacts yet",
+  "emergencyReorder": "Reorder",
+  "emergencyReorderDone": "Done",
+  "emergencyInviteFrom": "{name} wants to add you",
+  "@emergencyInviteFrom": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyEmptyMine": "No one is on your emergency list yet. Add family or friends so they are alerted if something happens to you.",
+  "emergencyStatusAwaitingInvite": "Awaiting reply",
+  "emergencyStatusRejected": "Declined",
+  "emergencyStatusRevoked": "Left",
+  "emergencyChannelApp": "Alerts in the app",
+  "emergencyChannelSms": "Alerts by SMS",
+  "emergencyRelationParent": "Parent",
+  "emergencyRelationSpouse": "Spouse",
+  "emergencyRelationChild": "Child",
+  "emergencyRelationSibling": "Sibling",
+  "emergencyRelationRelative": "Relative",
+  "emergencyRelationFriend": "Friend",
+  "emergencyRelationNeighbor": "Neighbour",
+  "emergencyRelationOther": "Other",
+  "emergencyEdit": "Edit",
+  "emergencyDelete": "Remove",
+  "emergencyMoreActions": "More actions",
+  "emergencyDragHandle": "Drag to change priority",
+  "emergencyDeleteTitle": "Remove {name} from your emergency list?",
+  "@emergencyDeleteTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyDeleteMessage": "{name} will no longer receive your SOS alerts.",
+  "@emergencyDeleteMessage": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyDeleted": "Contact removed",
+  "emergencyFormAddTitle": "Add emergency contact",
+  "emergencyFormEditTitle": "Edit emergency contact",
+  "emergencyFormName": "Contact name",
+  "emergencyFormNameRequired": "Please enter a name",
+  "emergencyFormPhoneRequired": "Please enter a phone number",
+  "emergencyFormPhoneInvalid": "Enter a valid Vietnamese mobile number",
+  "emergencyFormRelationship": "Relationship",
+  "emergencyFormRelationshipRequired": "Please choose a relationship",
+  "emergencyFormAccountEmail": "SmartSpace account email (optional)",
+  "emergencyFormAccountEmailHelp": "If this person uses SmartSpace, they get the invitation and alerts in the app. Leave it empty to reach them by SMS.",
+  "emergencyFormEmailInvalid": "Enter a valid email",
+  "emergencyFormConsent": "I confirm this person agreed to receive my emergency alerts by SMS",
+  "emergencyFormConsentRequired": "Please confirm this person agreed",
+  "emergencyFormReconfirmNote": "Changing the phone number or linked account asks this person to agree again.",
+  "emergencyFormSave": "Save",
+  "emergencyInviteSent": "Invitation sent to {name} in the app",
+  "@emergencyInviteSent": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyContactSaved": "Contact saved",
+  "emergencyGuardianIntro": "People who added you to their emergency list. You are alerted when they send an SOS.",
+  "emergencyInvitationsHeader": "Invitations",
+  "emergencyGuardingHeader": "Looking out for",
+  "emergencyListedAs": "Listed as: {relationship}",
+  "@emergencyListedAs": {
+    "placeholders": {
+      "relationship": {}
+    }
+  },
+  "emergencyAccept": "Accept",
+  "emergencyDecline": "Decline",
+  "emergencyLeave": "Leave list",
+  "emergencyLeaveTitle": "Leave {name}'s emergency list?",
+  "@emergencyLeaveTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyLeaveMessage": "You will stop receiving SOS alerts from {name}. They will be told.",
+  "@emergencyLeaveMessage": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyAccepted": "You are now {name}'s emergency contact",
+  "@emergencyAccepted": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "emergencyDeclined": "Invitation declined",
+  "emergencyLeft": "You left the emergency list",
+  "emergencyEmptyGuardian": "No one has added you to their emergency list.",
+  "emergencyLoadFailed": "Could not load your emergency contacts.",
+  "sosSlideLabel": "Slide to send SOS",
+  "sosSlideSemantics": "Send SOS",
+  "sosSlideHint": "The management board and your emergency contacts get your location",
+  "sosConfirmTitle": "Send an SOS?",
+  "sosConfirmMessage": "The management board and your emergency contacts will get your location right away.",
+  "sosConfirmSend": "Send SOS",
+  "sosActiveBanner": "Your SOS is active",
+  "sosActiveBannerHint": "Tap to see status or end it",
+  "sosCountdownTitle": "Sending SOS",
+  "sosCountdownMessage": "Your SOS goes out in {seconds} s",
+  "@sosCountdownMessage": {
+    "placeholders": {
+      "seconds": {}
+    }
+  },
+  "sosLocating": "Getting your location…",
+  "sosSending": "Sending…",
+  "sosLocationUnavailable": "Could not get your location. Turn on location and try again, or call an emergency number now.",
+  "sosLocationPermissionDenied": "SmartSpace needs location access to send an SOS.",
+  "sosOpenSettings": "Open settings",
+  "sosSendFailed": "Could not send the SOS. Try again or call an emergency number now.",
+  "sosActiveTitle": "SOS active",
+  "sosWaitingAck": "The management board and {count} contacts were alerted. Waiting for a response.",
+  "@sosWaitingAck": {
+    "placeholders": {
+      "count": {}
+    }
+  },
+  "sosAcknowledgedBy": "{name} received your SOS and is helping you.",
+  "@sosAcknowledgedBy": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosLocationUpdatedAt": "Location updated at {time}",
+  "@sosLocationUpdatedAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosSharingLocation": "Sharing your location every 15 seconds",
+  "sosCallEmergency": "Emergency numbers",
+  "sosCallPolice": "Police 113",
+  "sosCallFire": "Fire 114",
+  "sosCallAmbulance": "Ambulance 115",
+  "sosCallRescue": "Rescue 112",
+  "sosImSafe": "I am safe",
+  "sosSafeConfirmTitle": "End your SOS?",
+  "sosSafeConfirmMessage": "The management board and your emergency contacts will be told you are safe.",
+  "sosEndedTitle": "SOS ended",
+  "sosEndedSafe": "Glad you are safe. Everyone has been told.",
+  "sosEndedByAdmin": "The management board closed your SOS.",
+  "sosBackHome": "Back to home",
+  "sosTrackingNotifTitle": "SOS active",
+  "sosTrackingNotifText": "Sharing your location with the management board and your emergency contacts",
+  "sosWatchTitle": "SOS from {name}",
+  "@sosWatchTitle": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosWatchActive": "{name} needs urgent help",
+  "@sosWatchActive": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosWatchAcknowledged": "The management board is handling it",
+  "sosWatchSafe": "{name} is safe",
+  "@sosWatchSafe": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosWatchClosed": "This SOS has ended",
+  "sosOpenMap": "Open map",
+  "sosCallPerson": "Call {name}",
+  "@sosCallPerson": {
+    "placeholders": {
+      "name": {}
+    }
+  },
+  "sosLoadFailed": "Could not load this SOS.",
+  "sosSentAt": "Sent at {time}",
+  "@sosSentAt": {
+    "placeholders": {
+      "time": {}
+    }
+  },
+  "sosAccuracy": "Accurate to about {meters} m",
+  "@sosAccuracy": {
+    "placeholders": {
+      "meters": {}
+    }
+  }
 }

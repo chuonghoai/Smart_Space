@@ -1,0 +1,728 @@
+name: Playwright Automation Testing
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    types:
+      - opened
+      - synchronize
+      - reopened
+    branches:
+      - main
+      - dev
+
+# Tự động hủy workflow cũ trên cùng branch (main hoặc dev) hoặc cùng một Pull Request
+# khi có commit mới được đẩy lên, tránh chạy đè các bản cũ.
+concurrency:
+  group: >-
+    ${{ github.event_name == 'pull_request'
+        && format('playwright-pr-{0}-{1}', github.event.pull_request.base.ref, github.event.pull_request.number)
+        || format('playwright-{0}', github.ref_name) }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  PW_RUN_DB_PASSWORD: ${{ format('ci-{0}', github.run_id) }}
+
+jobs:
+  backend-test:
+    name: Backend Test (Native + Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: smart_space
+          MYSQL_ROOT_PASSWORD: ${{ format('ci-{0}', github.run_id) }}
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -p${{ format('ci-{0}', github.run_id) }}"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install Node dependencies & Playwright Chromium
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Resolve CI Test Credentials & Signer Key
+        env:
+          SEC_PW_ADMIN_EMAIL: ${{ secrets.PW_ADMIN_EMAIL }}
+          SEC_PW_ADMIN_PASSWORD: ${{ secrets.PW_ADMIN_PASSWORD }}
+          SEC_PW_STAFF_EMAIL: ${{ secrets.PW_STAFF_EMAIL }}
+          SEC_PW_STAFF_PASSWORD: ${{ secrets.PW_STAFF_PASSWORD }}
+          SEC_PW_CLIENT_EMAIL: ${{ secrets.PW_CLIENT_EMAIL }}
+          SEC_PW_CLIENT_PASSWORD: ${{ secrets.PW_CLIENT_PASSWORD }}
+          SEC_JWT_SIGNER_KEY: ${{ secrets.JWT_SIGNER_KEY }}
+        run: |
+          node -e '
+            const fs = require("node:fs");
+            const dataInit = fs.readFileSync("SmartSpace_Backend/src/main/java/com/vn/smart_space/configuration/DataInitializer.java", "utf8");
+            for (const m of dataInit.matchAll(/@Value\("\$\{(PW_[A-Z_]+):([^}]+)\}"\)/g)) {
+              const key = m[1];
+              const val = (process.env["SEC_" + key] || "").trim() || m[2].trim();
+              if (key.includes("PASSWORD")) console.log("::add-mask::" + val);
+              fs.appendFileSync(process.env.GITHUB_ENV, `${key}=${val}\n`);
+            }
+            const ctrlTest = fs.readFileSync("SmartSpace_Backend/src/test/java/com/vn/smart_space/controller/admin/AccountLockRequestManagementTest.java", "utf8");
+            const skMatch = ctrlTest.match(/SIGNER_KEY\s*=\s*"([^"]+)"/);
+            const jwtKey = (process.env.SEC_JWT_SIGNER_KEY || "").trim() || (skMatch ? skMatch[1] : "");
+            if (!jwtKey) throw new Error("Không xác định được JWT_SIGNER_KEY cho CI.");
+            console.log("::add-mask::" + jwtKey);
+            fs.appendFileSync(process.env.GITHUB_ENV, `JWT_SIGNER_KEY=${jwtKey}\n`);
+          '
+
+      - name: Prepare Backend Firebase service account
+        env:
+          FIREBASE_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -z "$FIREBASE_JSON" ]; then
+            echo "::error::Thiếu GitHub Secret FIREBASE_SERVICE_ACCOUNT_JSON để khởi chạy Spring Boot Backend."
+            exit 1
+          fi
+          printf '%s' "$FIREBASE_JSON" > SmartSpace_Backend/src/main/resources/smart-space-36687-firebase-adminsdk-fbsvc-5c08d9199a.json
+
+      - name: Ensure MySQL client CLI is available
+        run: |
+          if ! command -v mysql >/dev/null 2>&1; then
+            sudo apt-get update -qq
+            sudo apt-get install -y -qq default-mysql-client
+          fi
+
+      - name: Run All Backend Tests (Native Unit + Playwright + Live Integration + App Context)
+        env:
+          DB_PASSWORD: ${{ env.PW_RUN_DB_PASSWORD }}
+          REDIS_URL: redis://127.0.0.1:6379
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME || 'ci-placeholder@example.invalid' }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD || 'ci-placeholder' }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID || 'ci-placeholder' }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET || 'ci-placeholder' }}
+          GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI || 'http://localhost:8989/auth/google/callback' }}
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME || 'ci-placeholder' }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY || 'ci-placeholder' }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET || 'ci-placeholder' }}
+        run: |
+          mkdir -p native-results/backend/surefire-unit native-results/backend/surefire-controller native-results/backend/surefire-app
+
+          UNIT_EXIT=0
+          PW_EXIT=0
+          CTRL_EXIT=0
+          APP_EXIT=0
+          BE_PID=""
+
+          stop_backend() {
+            if [ -n "$BE_PID" ] && kill -0 "$BE_PID" 2>/dev/null; then
+              kill "$BE_PID" 2>/dev/null || true
+              wait "$BE_PID" 2>/dev/null || true
+            fi
+            BE_PID=""
+          }
+          trap stop_backend EXIT
+
+          wait_backend_ready() {
+            for i in $(seq 1 90); do
+              if ! kill -0 "$BE_PID" 2>/dev/null; then
+                echo "Backend thoát sớm khi khởi chạy! Log gần nhất:"
+                tail -n 60 native-results/backend/backend.log || true
+                return 1
+              fi
+              CODE=$(curl -s -o /dev/null -w '%{http_code}' http://localhost:8989/v3/api-docs || true)
+              if [ "$CODE" = "200" ]; then
+                return 0
+              fi
+              sleep 1
+            done
+            echo "Quá thời gian chờ Backend 90s:"
+            tail -n 60 native-results/backend/backend.log || true
+            return 1
+          }
+
+          echo "=== 1/4: Native Backend Unit Tests ==="
+          set +e
+          npm run backend:test:native
+          UNIT_EXIT=$?
+          set -e
+          cp SmartSpace_Backend/target/surefire-reports/TEST-*.xml native-results/backend/surefire-unit/ 2>/dev/null || true
+
+          echo "=== Build Backend JAR & Seed Ephemeral MySQL ==="
+          (cd SmartSpace_Backend && mvn package -DskipTests -Dfile.encoding=UTF-8)
+
+          # Khởi chạy lần 1 để Hibernate tự tạo schema bảng trước khi import seed_data.sql
+          (cd SmartSpace_Backend && java -Xmx512m -Dfile.encoding=UTF-8 -jar target/SmartSpace-0.0.1-SNAPSHOT.jar --server.port=8989) > native-results/backend/backend.log 2>&1 &
+          BE_PID=$!
+          wait_backend_ready
+          stop_backend
+
+          mysql --protocol=tcp -h 127.0.0.1 -P 3306 -uroot -p"$DB_PASSWORD" --default-character-set=utf8mb4 smart_space < SmartSpace_Backend/seed_data.sql
+
+          # Khởi chạy lần 2 trên DB đã seed (chạy DataInitializer + ReportDeadlineSyncInitializer)
+          (cd SmartSpace_Backend && java -Xmx512m -Dfile.encoding=UTF-8 -jar target/SmartSpace-0.0.1-SNAPSHOT.jar --server.port=8989) >> native-results/backend/backend.log 2>&1 &
+          BE_PID=$!
+          wait_backend_ready
+
+          echo "=== 2/4: Playwright Backend API Tests ==="
+          set +e
+          npm run backend:test
+          PW_EXIT=$?
+          set -e
+
+          echo "=== Seed Redis Sessions for Controller Integration Tests ==="
+          node -e '
+            (async () => {
+              const logins = [
+                { email: "admin@gmail.com", role: "admin", deviceId: "test-device-uuid" },
+                { email: "admin@gmail.com", role: "admin", deviceId: "test-admin-device" },
+                { email: "user@gmail.com", role: "client", deviceId: "test-device-uuid" },
+                { email: "user@gmail.com", role: "client", deviceId: "test-device-client-1" },
+                { email: "cudan@gmail.com", role: "client", deviceId: "test-device-uuid" },
+                { email: "staff1@gmail.com", role: "staff", deviceId: "test-device-uuid" },
+                { email: "staff2@gmail.com", role: "staff", deviceId: "test-device-uuid" },
+              ];
+              for (const item of logins) {
+                const res = await fetch("http://localhost:8989/auth/login", {
+                  method: "POST",
+                  headers: { "Content-Type": "application/json" },
+                  body: JSON.stringify({
+                    email: item.email,
+                    password: "Ad123456!",
+                    deviceId: item.deviceId,
+                    deviceName: "CI Integration Seed",
+                    platform: "android",
+                    role: item.role,
+                    rememberMe: true,
+                  }),
+                });
+                const body = await res.text();
+                if (!res.ok) {
+                  throw new Error(`Seed Redis session thất bại cho ${item.email} (${item.deviceId}): HTTP ${res.status} - ${body}`);
+                }
+              }
+              console.log(`Seeded ${logins.length} Redis sessions successfully.`);
+            })().catch((err) => { console.error(err); process.exit(1); });
+          '
+
+          echo "=== 3/4: Native Backend Controller Integration Tests ==="
+          rm -f SmartSpace_Backend/target/surefire-reports/TEST-*.xml
+          set +e
+          npm run backend:test:integration
+          CTRL_EXIT=$?
+          set -e
+          cp SmartSpace_Backend/target/surefire-reports/TEST-*.xml native-results/backend/surefire-controller/ 2>/dev/null || true
+
+          stop_backend
+
+          echo "=== Seed Overdue Reports for SmartSpaceApplicationTests ==="
+          mysql --protocol=tcp -h 127.0.0.1 -P 3306 -uroot -p"$DB_PASSWORD" --default-character-set=utf8mb4 smart_space -e "
+            INSERT IGNORE INTO reports (id, created_at, updated_at, assigned_at, resolved_at, deadline, title, description, image_url, latitude, longitude, severity, status, user_id, assigned_staff_id, image_urls, address, location_description, is_anonymous)
+            VALUES
+            ('r_ci_overdue_proc', DATE_SUB(NOW(), INTERVAL 20 DAY), DATE_SUB(NOW(), INTERVAL 20 DAY), DATE_SUB(NOW(), INTERVAL 20 DAY), NULL, NULL, 'CI Overdue Processing', 'Report seed cho SmartSpaceApplicationTests (processing qua han)', 'https://picsum.photos/400/300?random=91', 10.7626, 106.6601, 'low', 'processing', 'u2', 'u5', 'https://picsum.photos/400/300?random=91', 'Quan 10, TP.HCM', 'Seed CI', FALSE),
+            ('r_ci_overdue_done', DATE_SUB(NOW(), INTERVAL 20 DAY), DATE_SUB(NOW(), INTERVAL 1 DAY), DATE_SUB(NOW(), INTERVAL 20 DAY), DATE_SUB(NOW(), INTERVAL 1 DAY), NULL, 'CI Overdue Completed Late', 'Report seed cho SmartSpaceApplicationTests (processed tre han)', 'https://picsum.photos/400/300?random=92', 10.7636, 106.6611, 'low', 'processed', 'u2', 'u5', 'https://picsum.photos/400/300?random=92', 'Quan 10, TP.HCM', 'Seed CI', FALSE);
+          "
+
+          echo "=== 4/4: Native Backend SmartSpaceApplicationTests ==="
+          rm -f SmartSpace_Backend/target/surefire-reports/TEST-*.xml
+          set +e
+          npm run backend:test:app
+          APP_EXIT=$?
+          set -e
+          cp SmartSpace_Backend/target/surefire-reports/TEST-*.xml native-results/backend/surefire-app/ 2>/dev/null || true
+
+          echo "Backend stage exit codes: UNIT=$UNIT_EXIT PW=$PW_EXIT CTRL=$CTRL_EXIT APP=$APP_EXIT"
+          if [ "$UNIT_EXIT" -ne 0 ] || [ "$PW_EXIT" -ne 0 ] || [ "$CTRL_EXIT" -ne 0 ] || [ "$APP_EXIT" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: Upload Backend Test Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: backend-playwright-report
+          path: |
+            playwright-report/backend/
+            test-results/backend/
+            native-results/backend/
+          if-no-files-found: warn
+          retention-days: 14
+
+  admin-test:
+    name: Admin Test (Native + Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: smart_space
+          MYSQL_ROOT_PASSWORD: ${{ format('ci-{0}', github.run_id) }}
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -p${{ format('ci-{0}', github.run_id) }}"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install Node dependencies & Playwright Chromium
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Resolve CI Test Credentials
+        env:
+          SEC_PW_ADMIN_EMAIL: ${{ secrets.PW_ADMIN_EMAIL }}
+          SEC_PW_ADMIN_PASSWORD: ${{ secrets.PW_ADMIN_PASSWORD }}
+          SEC_PW_STAFF_EMAIL: ${{ secrets.PW_STAFF_EMAIL }}
+          SEC_PW_STAFF_PASSWORD: ${{ secrets.PW_STAFF_PASSWORD }}
+          SEC_PW_CLIENT_EMAIL: ${{ secrets.PW_CLIENT_EMAIL }}
+          SEC_PW_CLIENT_PASSWORD: ${{ secrets.PW_CLIENT_PASSWORD }}
+        run: |
+          node -e '
+            const fs = require("node:fs");
+            const dataInit = fs.readFileSync("SmartSpace_Backend/src/main/java/com/vn/smart_space/configuration/DataInitializer.java", "utf8");
+            for (const m of dataInit.matchAll(/@Value\("\$\{(PW_[A-Z_]+):([^}]+)\}"\)/g)) {
+              const key = m[1];
+              const val = (process.env["SEC_" + key] || "").trim() || m[2].trim();
+              if (key.includes("PASSWORD")) console.log("::add-mask::" + val);
+              fs.appendFileSync(process.env.GITHUB_ENV, `${key}=${val}\n`);
+            }
+          '
+
+      - name: Prepare Backend secrets & Flutter dependencies
+        env:
+          FIREBASE_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -z "$FIREBASE_JSON" ]; then
+            echo "::error::Thiếu GitHub Secret FIREBASE_SERVICE_ACCOUNT_JSON để khởi chạy Spring Boot Backend."
+            exit 1
+          fi
+          printf '%s' "$FIREBASE_JSON" > SmartSpace_Backend/src/main/resources/smart-space-36687-firebase-adminsdk-fbsvc-5c08d9199a.json
+          [ -f smartspace_admin/.env ] || printf 'GOOGLE_CLIENT_ID=\nMAPBOX_ACCESS_TOKEN=\n' > smartspace_admin/.env
+          (cd mobile_shared && flutter pub get)
+          cd smartspace_admin && flutter pub get
+
+      - name: Run Admin Native + Playwright Tests
+        env:
+          DB_PASSWORD: ${{ env.PW_RUN_DB_PASSWORD }}
+          REDIS_URL: redis://127.0.0.1:6379
+          JWT_SIGNER_KEY: ${{ secrets.JWT_SIGNER_KEY || format('ci-ephemeral-hs512-key-{0}-{1}-smartspace-automation-testing-pad', github.run_id, github.run_number) }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME || 'ci-placeholder@example.invalid' }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD || 'ci-placeholder' }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID || 'ci-placeholder' }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET || 'ci-placeholder' }}
+          GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI || 'http://localhost:8989/auth/google/callback' }}
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME || 'ci-placeholder' }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY || 'ci-placeholder' }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET || 'ci-placeholder' }}
+          PW_REBUILD_BACKEND: 'true'
+          PW_REBUILD_WEB: 'true'
+        run: |
+          mkdir -p native-results/admin
+          NATIVE_EXIT=0
+          PW_EXIT=0
+
+          set +e
+          (cd smartspace_admin && flutter test --file-reporter="json:../native-results/admin/native-admin.json")
+          NATIVE_EXIT=$?
+          npm run admin:test
+          PW_EXIT=$?
+          set -e
+
+          echo "Admin stage exit codes: NATIVE=$NATIVE_EXIT PW=$PW_EXIT"
+          if [ "$NATIVE_EXIT" -ne 0 ] || [ "$PW_EXIT" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: Upload Admin Test Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: admin-playwright-report
+          path: |
+            playwright-report/admin/
+            test-results/admin/
+            native-results/admin/
+          if-no-files-found: warn
+          retention-days: 14
+
+  staff-test:
+    name: Staff Test (Native + Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: smart_space
+          MYSQL_ROOT_PASSWORD: ${{ format('ci-{0}', github.run_id) }}
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -p${{ format('ci-{0}', github.run_id) }}"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install Node dependencies & Playwright Chromium
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Resolve CI Test Credentials
+        env:
+          SEC_PW_ADMIN_EMAIL: ${{ secrets.PW_ADMIN_EMAIL }}
+          SEC_PW_ADMIN_PASSWORD: ${{ secrets.PW_ADMIN_PASSWORD }}
+          SEC_PW_STAFF_EMAIL: ${{ secrets.PW_STAFF_EMAIL }}
+          SEC_PW_STAFF_PASSWORD: ${{ secrets.PW_STAFF_PASSWORD }}
+          SEC_PW_CLIENT_EMAIL: ${{ secrets.PW_CLIENT_EMAIL }}
+          SEC_PW_CLIENT_PASSWORD: ${{ secrets.PW_CLIENT_PASSWORD }}
+        run: |
+          node -e '
+            const fs = require("node:fs");
+            const dataInit = fs.readFileSync("SmartSpace_Backend/src/main/java/com/vn/smart_space/configuration/DataInitializer.java", "utf8");
+            for (const m of dataInit.matchAll(/@Value\("\$\{(PW_[A-Z_]+):([^}]+)\}"\)/g)) {
+              const key = m[1];
+              const val = (process.env["SEC_" + key] || "").trim() || m[2].trim();
+              if (key.includes("PASSWORD")) console.log("::add-mask::" + val);
+              fs.appendFileSync(process.env.GITHUB_ENV, `${key}=${val}\n`);
+            }
+          '
+
+      - name: Prepare Backend secrets & Flutter dependencies
+        env:
+          FIREBASE_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -z "$FIREBASE_JSON" ]; then
+            echo "::error::Thiếu GitHub Secret FIREBASE_SERVICE_ACCOUNT_JSON để khởi chạy Spring Boot Backend."
+            exit 1
+          fi
+          printf '%s' "$FIREBASE_JSON" > SmartSpace_Backend/src/main/resources/smart-space-36687-firebase-adminsdk-fbsvc-5c08d9199a.json
+          [ -f smartspace_staff/.env ] || printf 'GOOGLE_CLIENT_ID=\nMAPBOX_ACCESS_TOKEN=\n' > smartspace_staff/.env
+          (cd mobile_shared && flutter pub get)
+          cd smartspace_staff && flutter pub get
+
+      - name: Run Staff Native + Playwright Tests
+        env:
+          DB_PASSWORD: ${{ env.PW_RUN_DB_PASSWORD }}
+          REDIS_URL: redis://127.0.0.1:6379
+          JWT_SIGNER_KEY: ${{ secrets.JWT_SIGNER_KEY || format('ci-ephemeral-hs512-key-{0}-{1}-smartspace-automation-testing-pad', github.run_id, github.run_number) }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME || 'ci-placeholder@example.invalid' }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD || 'ci-placeholder' }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID || 'ci-placeholder' }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET || 'ci-placeholder' }}
+          GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI || 'http://localhost:8989/auth/google/callback' }}
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME || 'ci-placeholder' }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY || 'ci-placeholder' }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET || 'ci-placeholder' }}
+          PW_REBUILD_BACKEND: 'true'
+          PW_REBUILD_WEB: 'true'
+        run: |
+          mkdir -p native-results/staff
+          NATIVE_EXIT=0
+          PW_EXIT=0
+
+          set +e
+          (cd smartspace_staff && flutter test --file-reporter="json:../native-results/staff/native-staff.json")
+          NATIVE_EXIT=$?
+          npm run staff:test
+          PW_EXIT=$?
+          set -e
+
+          echo "Staff stage exit codes: NATIVE=$NATIVE_EXIT PW=$PW_EXIT"
+          if [ "$NATIVE_EXIT" -ne 0 ] || [ "$PW_EXIT" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: Upload Staff Test Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: staff-playwright-report
+          path: |
+            playwright-report/staff/
+            test-results/staff/
+            native-results/staff/
+          if-no-files-found: warn
+          retention-days: 14
+
+  client-test:
+    name: Client & Shared Test (Native + Playwright)
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_DATABASE: smart_space
+          MYSQL_ROOT_PASSWORD: ${{ format('ci-{0}', github.run_id) }}
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping -h 127.0.0.1 -uroot -p${{ format('ci-{0}', github.run_id) }}"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+      redis:
+        image: redis:7
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd="redis-cli ping"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@v4
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: maven
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+
+      - name: Install Node dependencies & Playwright Chromium
+        run: |
+          npm ci
+          npx playwright install --with-deps chromium
+
+      - name: Resolve CI Test Credentials
+        env:
+          SEC_PW_ADMIN_EMAIL: ${{ secrets.PW_ADMIN_EMAIL }}
+          SEC_PW_ADMIN_PASSWORD: ${{ secrets.PW_ADMIN_PASSWORD }}
+          SEC_PW_STAFF_EMAIL: ${{ secrets.PW_STAFF_EMAIL }}
+          SEC_PW_STAFF_PASSWORD: ${{ secrets.PW_STAFF_PASSWORD }}
+          SEC_PW_CLIENT_EMAIL: ${{ secrets.PW_CLIENT_EMAIL }}
+          SEC_PW_CLIENT_PASSWORD: ${{ secrets.PW_CLIENT_PASSWORD }}
+        run: |
+          node -e '
+            const fs = require("node:fs");
+            const dataInit = fs.readFileSync("SmartSpace_Backend/src/main/java/com/vn/smart_space/configuration/DataInitializer.java", "utf8");
+            for (const m of dataInit.matchAll(/@Value\("\$\{(PW_[A-Z_]+):([^}]+)\}"\)/g)) {
+              const key = m[1];
+              const val = (process.env["SEC_" + key] || "").trim() || m[2].trim();
+              if (key.includes("PASSWORD")) console.log("::add-mask::" + val);
+              fs.appendFileSync(process.env.GITHUB_ENV, `${key}=${val}\n`);
+            }
+          '
+
+      - name: Prepare Backend secrets & Flutter dependencies
+        env:
+          FIREBASE_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          if [ -z "$FIREBASE_JSON" ]; then
+            echo "::error::Thiếu GitHub Secret FIREBASE_SERVICE_ACCOUNT_JSON để khởi chạy Spring Boot Backend."
+            exit 1
+          fi
+          printf '%s' "$FIREBASE_JSON" > SmartSpace_Backend/src/main/resources/smart-space-36687-firebase-adminsdk-fbsvc-5c08d9199a.json
+          [ -f smartspace_client/.env ] || printf 'GOOGLE_CLIENT_ID=\nMAPBOX_ACCESS_TOKEN=\n' > smartspace_client/.env
+          (cd mobile_shared && flutter pub get)
+          cd smartspace_client && flutter pub get
+
+      - name: Run Shared + Client Native + Playwright Tests
+        env:
+          DB_PASSWORD: ${{ env.PW_RUN_DB_PASSWORD }}
+          REDIS_URL: redis://127.0.0.1:6379
+          JWT_SIGNER_KEY: ${{ secrets.JWT_SIGNER_KEY || format('ci-ephemeral-hs512-key-{0}-{1}-smartspace-automation-testing-pad', github.run_id, github.run_number) }}
+          MAIL_USERNAME: ${{ secrets.MAIL_USERNAME || 'ci-placeholder@example.invalid' }}
+          MAIL_PASSWORD: ${{ secrets.MAIL_PASSWORD || 'ci-placeholder' }}
+          GOOGLE_CLIENT_ID: ${{ secrets.GOOGLE_CLIENT_ID || 'ci-placeholder' }}
+          GOOGLE_CLIENT_SECRET: ${{ secrets.GOOGLE_CLIENT_SECRET || 'ci-placeholder' }}
+          GOOGLE_REDIRECT_URI: ${{ secrets.GOOGLE_REDIRECT_URI || 'http://localhost:8989/auth/google/callback' }}
+          CLOUDINARY_CLOUD_NAME: ${{ secrets.CLOUDINARY_CLOUD_NAME || 'ci-placeholder' }}
+          CLOUDINARY_API_KEY: ${{ secrets.CLOUDINARY_API_KEY || 'ci-placeholder' }}
+          CLOUDINARY_API_SECRET: ${{ secrets.CLOUDINARY_API_SECRET || 'ci-placeholder' }}
+          PW_REBUILD_BACKEND: 'true'
+          PW_REBUILD_WEB: 'true'
+        run: |
+          mkdir -p native-results/client
+          SHARED_EXIT=0
+          CLIENT_NATIVE_EXIT=0
+          PW_EXIT=0
+
+          set +e
+          (cd mobile_shared && flutter test --file-reporter="json:../native-results/client/native-shared.json")
+          SHARED_EXIT=$?
+          (cd smartspace_client && flutter test --file-reporter="json:../native-results/client/native-client.json")
+          CLIENT_NATIVE_EXIT=$?
+          npm run client:test
+          PW_EXIT=$?
+          set -e
+
+          echo "Client stage exit codes: SHARED=$SHARED_EXIT NATIVE=$CLIENT_NATIVE_EXIT PW=$PW_EXIT"
+          if [ "$SHARED_EXIT" -ne 0 ] || [ "$CLIENT_NATIVE_EXIT" -ne 0 ] || [ "$PW_EXIT" -ne 0 ]; then
+            exit 1
+          fi
+
+      - name: Upload Client Test Report
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: client-playwright-report
+          path: |
+            playwright-report/client/
+            test-results/client/
+            native-results/client/
+          if-no-files-found: warn
+          retention-days: 14
+
+  summary:
+    name: Final Summary
+    needs:
+      - backend-test
+      - admin-test
+      - staff-test
+      - client-test
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout exact commit
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Download Backend Report
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: backend-playwright-report
+          path: artifacts/backend
+
+      - name: Download Admin Report
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: admin-playwright-report
+          path: artifacts/admin
+
+      - name: Download Staff Report
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: staff-playwright-report
+          path: artifacts/staff
+
+      - name: Download Client Report
+        uses: actions/download-artifact@v4
+        continue-on-error: true
+        with:
+          name: client-playwright-report
+          path: artifacts/client
+
+      - name: Generate Final Summary Table
+        env:
+          RES_BACKEND: ${{ needs.backend-test.result }}
+          RES_ADMIN: ${{ needs.admin-test.result }}
+          RES_STAFF: ${{ needs.staff-test.result }}
+          RES_CLIENT: ${{ needs.client-test.result }}
+        run: node playwright/scripts/summarize-ci.mjs artifacts

@@ -1,5 +1,9 @@
 package com.vn.smart_space.model;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
+import com.vn.smart_space.consts.EAssignmentSource;
 import com.vn.smart_space.consts.EReportSeverity;
 import com.vn.smart_space.consts.EReportStatus;
 
@@ -14,7 +18,9 @@ import lombok.experimental.FieldDefaults;
 @Entity
 @Builder
 @FieldDefaults(level = AccessLevel.PRIVATE)
-@Table(name = "reports")
+@Table(name = "reports", indexes = {
+        @Index(name = "idx_reports_lat_lng", columnList = "latitude, longitude")
+})
 public class Report extends AbstractEntity {
 
     @Column(name = "title", nullable = false)
@@ -33,7 +39,7 @@ public class Report extends AbstractEntity {
     Double longitude;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "severity", nullable = false)
+    @Column(name = "severity")
     EReportSeverity severity;
 
     @Enumerated(EnumType.STRING)
@@ -44,7 +50,73 @@ public class Report extends AbstractEntity {
     @JoinColumn(name = "user_id")
     User user;
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "assigned_staff_id")
+    User assignedStaff;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "category_id")
+    ReportCategory category;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "conversation_id")
+    Conversation conversation;
+
+    @Column(name = "image_urls", columnDefinition = "TEXT")
+    String imageUrls;
+
+    @Column(name = "address")
+    String address;
+
+    @Column(name = "location_description", columnDefinition = "TEXT")
+    String locationDescription;
+
+    @Column(name = "is_anonymous")
+    Boolean isAnonymous;
+
     @Transient
     Double distanceInMeters;
 
+    @Column(name = "assigned_at")
+    Date assignedAt;
+
+    @Column(name = "resolved_note", columnDefinition = "TEXT")
+    String resolvedNote;
+
+    @Column(name = "resolved_image_urls", columnDefinition = "TEXT")
+    String resolvedImageUrls;
+
+    @Column(name = "resolved_at")
+    java.util.Date resolvedAt;
+
+    @Column(name = "is_review_resolved")
+    Boolean isReviewResolved;
+
+    @Column(name = "rating")
+    Integer rating;
+
+    @Column(name = "review_note", columnDefinition = "TEXT")
+    String reviewNote;
+
+    @Column(name = "review_image_urls", columnDefinition = "TEXT")
+    String reviewImageUrls;
+
+    @Column(name = "reviewed_at")
+    java.util.Date reviewedAt;
+
+    @Column(name = "deadline")
+    LocalDateTime deadline;
+
+    @Column(name = "rejected_reason", columnDefinition = "TEXT")
+    String rejectedReason;
+
+    @Column(name = "rejected_at")
+    java.util.Date rejectedAt;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "assignment_source", length = 30)
+    EAssignmentSource assignmentSource;
+
+    @Column(name = "decision_log_id")
+    String decisionLogId;
 }

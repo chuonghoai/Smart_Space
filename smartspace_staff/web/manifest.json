@@ -1,6 +1,6 @@
 {
-    "name": "smartspace_staff",
-    "short_name": "smartspace_staff",
+    "name": "SmartSpace Staff",
+    "short_name": "SmartSpace Staff",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

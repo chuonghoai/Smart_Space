@@ -1,6 +1,6 @@
 {
-    "name": "smartspace_admin",
-    "short_name": "smartspace_admin",
+    "name": "SmartSpace Admin",
+    "short_name": "SmartSpace Admin",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
